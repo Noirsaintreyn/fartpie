@@ -14,6 +14,9 @@ import warnings
 import requests
 warnings.filterwarnings('ignore')
 
+    app.run()
+    return {"status": "backend live"}def home():
+    return {"status": "backend live"}
 app = Flask(__name__)
 app.secret_key = 'degen-discovery-secret-key-2024'
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'
