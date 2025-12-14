@@ -9,4 +9,5 @@ gunicorn
 arch
 hmmlearn
 matplotlib
+xgboost
 

@@ -744,30 +744,64 @@ def calculate_garch_confidence_bands(forecasts, garch_vol_regime):
     return forecasts
 
 
-def calculate_most_probable_price_path(closes, volumes, levels, garch_vol_regime, phase_space, microstructure_state, forecast_periods=30):
+def calculate_most_probable_price_path(closes, volumes, levels, garch_vol_regime, phase_space, microstructure_state, forecast_periods=30, iv_surface_data=None):
     """
-    Calculate most probable price path using:
-    - Standard deviation (historical volatility)
-    - GARCH forecasts (time-varying volatility)
-    - Phase space dynamics (momentum and velocity)
-    - Levels (as attractors/repellors)
-    
-    Returns a path that minimizes uncertainty while respecting market structure
+    Calculate most probable price path using ML (Random Forest/XGBoost) that:
+    - Uses GARCH forecasts for volatility
+    - Hits/respects levels realistically
+    - Uses IV surface for implied volatility
+    - Uses standard deviation
+    - Shows realistic moves across levels
     """
     if len(closes) < 50:
         return None
     
+    try:
+        from sklearn.ensemble import RandomForestRegressor
+        try:
+            import xgboost as xgb
+            use_xgboost = True
+        except ImportError:
+            use_xgboost = False
+    except ImportError:
+        # Fallback to simpler method if ML libraries not available
+        use_xgboost = False
+        use_rf = False
+    else:
+        use_rf = True
+    
     current_price = closes[-1]
     returns = np.log(closes[1:] / closes[:-1]) * 100
     
-    # 1. Base forecast from GARCH
+    # 1. Prepare all levels sorted by distance
+    all_levels = []
+    for level_type, level_list in levels.items():
+        if isinstance(level_list, list):
+            all_levels.extend(level_list)
+    
+    # Sort levels by distance and strength
+    all_levels = sorted(all_levels, key=lambda x: (
+        abs(x.get('price', current_price) - current_price),
+        -x.get('strength', 0)
+    ))
+    
+    # 2. Get GARCH volatility forecasts
     garch_forecast_vols = garch_vol_regime.get('forecast_vol_array', [])
     if not garch_forecast_vols:
-        # Fallback to simple std dev
-        std_dev = np.std(returns) * np.sqrt(252) / 100  # Annualized, as decimal
-        garch_forecast_vols = [std_dev] * forecast_periods
+        std_dev = np.std(returns) * np.sqrt(252) / 100
+        garch_forecast_vols = [std_dev * 100] * forecast_periods  # As percentage
     
-    # 2. Phase space dynamics
+    # 3. Get IV surface data for current moneyness
+    current_iv = garch_vol_regime.get('current_vol', np.std(returns) * np.sqrt(252))
+    if iv_surface_data and 'surface' in iv_surface_data:
+        # Find ATM IV from surface
+        surface_points = iv_surface_data['surface'].get('surface', [])
+        if surface_points:
+            atm_points = [p for p in surface_points if abs(p.get('moneyness', 1.0) - 1.0) < 0.05]
+            if atm_points:
+                current_iv = np.mean([p.get('implied_vol', current_iv) for p in atm_points])
+    
+    # 4. Phase space dynamics
     if phase_space and len(phase_space.get('velocity', [])) > 0:
         recent_velocity = phase_space['velocity'][-1] if phase_space['velocity'] else 0
         recent_volume_momentum = phase_space['volume_momentum'][-1] if phase_space.get('volume_momentum') else 0
@@ -775,93 +809,165 @@ def calculate_most_probable_price_path(closes, volumes, levels, garch_vol_regime
         recent_velocity = np.gradient(closes)[-1] if len(closes) > 1 else 0
         recent_volume_momentum = 0
     
-    # 3. Level attraction/repulsion
-    all_levels = []
-    for level_type, level_list in levels.items():
-        if isinstance(level_list, list):
-            all_levels.extend(level_list)
-    
-    # Sort levels by distance from current price
-    all_levels = sorted(all_levels, key=lambda x: abs(x.get('price', current_price) - current_price))
-    
-    # 4. Market microstructure state
+    # 5. Market microstructure state
     market_state = microstructure_state.get('state', 'Unknown')
     capture_rate = microstructure_state.get('capture_rate', 0.5)
-    liquidity_permeability = microstructure_state.get('liquidity_permeability', 0.5)
     
-    # 5. Calculate path step by step
-    path = [current_price]
+    # 6. Build features for ML model
+    if use_rf or use_xgboost:
+        # Prepare training features from historical data
+        features = []
+        targets = []
+        
+        lookback = min(100, len(closes) - 1)
+        for i in range(lookback, len(closes)):
+            # Features: price momentum, volatility, volume, distance to nearest levels
+            price_momentum = (closes[i] - closes[i-5]) / closes[i-5] if i >= 5 else 0
+            vol = np.std(returns[max(0, i-20):i]) if i >= 20 else np.std(returns[:i])
+            vol_change = (vol - np.std(returns[max(0, i-40):max(0, i-20)])) if i >= 40 else 0
+            
+            # Distance to nearest levels
+            nearest_level_dist = 0
+            nearest_level_strength = 0
+            if all_levels:
+                nearest = min(all_levels, key=lambda x: abs(x.get('price', closes[i]) - closes[i]))
+                nearest_level_dist = (nearest.get('price', closes[i]) - closes[i]) / closes[i]
+                nearest_level_strength = nearest.get('strength', 0)
+            
+            # Volume momentum
+            vol_momentum = (volumes[i] - np.mean(volumes[max(0, i-20):i])) / (np.mean(volumes[max(0, i-20):i]) + 1) if i >= 20 else 0
+            
+            features.append([
+                price_momentum,
+                vol * 100,
+                vol_change * 100,
+                nearest_level_dist,
+                nearest_level_strength,
+                vol_momentum,
+                recent_velocity / closes[i] if closes[i] > 0 else 0
+            ])
+            
+            # Target: next period return
+            if i < len(closes) - 1:
+                target = (closes[i+1] - closes[i]) / closes[i]
+                targets.append(target)
+        
+        if len(features) > 20 and len(targets) > 0:
+            # Train model
+            X = np.array(features[:len(targets)])
+            y = np.array(targets)
+            
+            if use_xgboost:
+                model = xgb.XGBRegressor(n_estimators=50, max_depth=5, learning_rate=0.1, random_state=42)
+            else:
+                model = RandomForestRegressor(n_estimators=50, max_depth=5, random_state=42)
+            
+            model.fit(X, y)
+    
+    # 7. Generate path step by step, hitting levels
+    path = []
     current_pos = current_price
+    visited_levels = set()
     
     for step in range(forecast_periods):
-        # Base drift from phase space velocity (momentum)
-        momentum_drift = recent_velocity * (1 - step * 0.02)  # Decay momentum over time
-        
-        # Volatility from GARCH
+        # Get volatility for this step
         if step < len(garch_forecast_vols):
-            vol = garch_forecast_vols[step] / 100  # Convert to decimal
+            vol_pct = garch_forecast_vols[step] / 100  # Convert to decimal
         else:
-            vol = garch_forecast_vols[-1] / 100 if garch_forecast_vols else 0.02
+            vol_pct = garch_forecast_vols[-1] / 100 if garch_forecast_vols else current_iv / 100
         
-        # Standard deviation component
+        # Standard deviation
         std_dev = np.std(returns[-50:]) if len(returns) >= 50 else np.std(returns)
-        vol_combined = (vol * 0.7 + std_dev * 0.3)  # Blend GARCH and historical
+        vol_combined = (vol_pct * 0.7 + std_dev * 0.3)
         
-        # Level attraction/repulsion
-        level_force = 0.0
-        for level in all_levels[:5]:  # Consider top 5 nearest levels
-            level_price = level.get('price', current_price)
-            distance = level_price - current_pos
-            distance_pct = abs(distance) / current_price if current_price > 0 else 1.0
+        # Find nearest level
+        nearest_level = None
+        nearest_distance = float('inf')
+        for level in all_levels:
+            level_price = level.get('price', current_pos)
+            distance = abs(level_price - current_pos)
+            if distance < nearest_distance and level_price not in visited_levels:
+                nearest_distance = distance
+                nearest_level = level
+        
+        # Predict next move using ML if available
+        if (use_rf or use_xgboost) and len(features) > 20:
+            # Current features
+            price_momentum = (current_pos - closes[-5]) / closes[-5] if len(closes) >= 5 else 0
+            vol = np.std(returns[-20:]) if len(returns) >= 20 else np.std(returns)
+            vol_change = (vol - np.std(returns[-40:-20])) if len(returns) >= 40 else 0
             
-            if distance_pct < 0.15:  # Only consider nearby levels
-                strength = level.get('strength', 0.5)
-                reversion_prob = level.get('reversionProb', 0.5)
-                
-                # Attraction force (mean reversion to level)
-                if market_state == 'Coherent':
-                    # In coherent state, levels are strong attractors
-                    attraction = (level_price - current_pos) * strength * reversion_prob * 0.3
-                elif market_state == 'Thermal':
-                    # In thermal state, levels are precision points
-                    attraction = (level_price - current_pos) * strength * reversion_prob * 0.4
-                else:  # Fock
-                    # In Fock state, levels are permeable
-                    attraction = (level_price - current_pos) * strength * reversion_prob * 0.15
-                
-                level_force += attraction
+            nearest_level_dist = 0
+            nearest_level_strength = 0
+            if nearest_level:
+                nearest_level_dist = (nearest_level.get('price', current_pos) - current_pos) / current_pos
+                nearest_level_strength = nearest_level.get('strength', 0)
+            
+            vol_momentum = (volumes[-1] - np.mean(volumes[-20:])) / (np.mean(volumes[-20:]) + 1) if len(volumes) >= 20 else 0
+            
+            current_features = np.array([[
+                price_momentum,
+                vol * 100,
+                vol_change * 100,
+                nearest_level_dist,
+                nearest_level_strength,
+                vol_momentum,
+                recent_velocity / current_pos if current_pos > 0 else 0
+            ]])
+            
+            predicted_return = model.predict(current_features)[0]
+            base_move = current_pos * predicted_return
+        else:
+            # Fallback: momentum-based
+            base_move = recent_velocity * (1 - step * 0.02)
         
-        # Volume momentum influence
-        volume_force = recent_volume_momentum * current_pos * 0.0001  # Small influence
+        # Level attraction - make path hit levels
+        level_attraction = 0.0
+        if nearest_level and nearest_distance / current_pos < 0.10:  # Within 10%
+            level_price = nearest_level.get('price', current_pos)
+            strength = nearest_level.get('strength', 0.5)
+            reversion_prob = nearest_level.get('reversionProb', 0.5)
+            
+            # Strong attraction when close to level
+            distance_factor = 1.0 - (nearest_distance / current_pos) / 0.10
+            attraction_strength = strength * reversion_prob * distance_factor
+            
+            if market_state == 'Thermal':
+                attraction_strength *= 1.5  # Stronger in thermal
+            elif market_state == 'Coherent':
+                attraction_strength *= 1.2
+            
+            level_attraction = (level_price - current_pos) * attraction_strength * 0.4
+            
+            # If very close, snap to level
+            if nearest_distance / current_pos < 0.02:
+                current_pos = level_price
+                visited_levels.add(level_price)
+                path.append(float(current_pos))
+                recent_velocity *= 0.8  # Reduce velocity after hitting level
+                continue
         
-        # Mean reversion component (toward long-term average)
-        long_term_avg = np.mean(closes[-100:]) if len(closes) >= 100 else np.mean(closes)
-        mean_reversion = (long_term_avg - current_pos) * 0.05 * (1 - step * 0.01)
+        # Volatility component (using GARCH)
+        volatility_move = np.random.normal(0, vol_combined * np.sqrt(1/252)) * current_pos * 0.5
         
-        # Combine all forces
-        drift = momentum_drift + level_force + volume_force + mean_reversion
+        # Combine moves
+        next_price = current_pos + base_move + level_attraction + volatility_move
         
-        # Random component (reduced for "most probable" path)
-        # Use smaller random component to show most likely path
-        random_shock = np.random.normal(0, vol_combined * np.sqrt(1/252)) * 0.3  # 30% of full volatility
-        
-        # Update position
-        next_price = current_pos + drift + random_shock
-        
-        # Ensure price stays positive
-        next_price = max(next_price, current_price * 0.5)
+        # Ensure reasonable bounds
+        next_price = max(next_price, current_price * 0.7)
+        next_price = min(next_price, current_price * 1.3)
         
         path.append(float(next_price))
         current_pos = next_price
         
         # Update velocity (decay)
-        recent_velocity *= 0.95
+        recent_velocity = (current_pos - path[-2] if len(path) > 1 else 0) * 0.9
     
     return {
-        'path': path[1:],  # Exclude current price
+        'path': path,
         'current_price': float(current_price),
         'forecast_periods': forecast_periods,
-        'method': 'GARCH + Phase Space + Levels',
+        'method': 'XGBoost/Random Forest + GARCH + Levels + IV Surface' if (use_rf or use_xgboost) else 'GARCH + Levels + IV Surface',
         'market_state': market_state,
         'confidence': float(capture_rate)
     }
@@ -1509,8 +1615,17 @@ def get_data():
         
         # CALCULATE MOST PROBABLE PRICE PATH
         print("Calculating most probable price path...")
+        # Get IV surface data if available
+        iv_surface_data = None
+        try:
+            vol_surface = generate_volatility_surface(current_price, garch_vol_regime)
+            iv_surface_data = {'surface': vol_surface}
+        except:
+            pass
+        
         most_probable_path = calculate_most_probable_price_path(
-            closes, volumes, levels, garch_vol_regime, phase_space, micro_state, forecast_periods=30
+            closes, volumes, levels, garch_vol_regime, phase_space, micro_state, 
+            forecast_periods=30, iv_surface_data=iv_surface_data
         )
         
         return jsonify({
