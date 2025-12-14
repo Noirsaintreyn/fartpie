@@ -743,6 +743,129 @@ def calculate_garch_confidence_bands(forecasts, garch_vol_regime):
     
     return forecasts
 
+
+def calculate_most_probable_price_path(closes, volumes, levels, garch_vol_regime, phase_space, microstructure_state, forecast_periods=30):
+    """
+    Calculate most probable price path using:
+    - Standard deviation (historical volatility)
+    - GARCH forecasts (time-varying volatility)
+    - Phase space dynamics (momentum and velocity)
+    - Levels (as attractors/repellors)
+    
+    Returns a path that minimizes uncertainty while respecting market structure
+    """
+    if len(closes) < 50:
+        return None
+    
+    current_price = closes[-1]
+    returns = np.log(closes[1:] / closes[:-1]) * 100
+    
+    # 1. Base forecast from GARCH
+    garch_forecast_vols = garch_vol_regime.get('forecast_vol_array', [])
+    if not garch_forecast_vols:
+        # Fallback to simple std dev
+        std_dev = np.std(returns) * np.sqrt(252) / 100  # Annualized, as decimal
+        garch_forecast_vols = [std_dev] * forecast_periods
+    
+    # 2. Phase space dynamics
+    if phase_space and len(phase_space.get('velocity', [])) > 0:
+        recent_velocity = phase_space['velocity'][-1] if phase_space['velocity'] else 0
+        recent_volume_momentum = phase_space['volume_momentum'][-1] if phase_space.get('volume_momentum') else 0
+    else:
+        recent_velocity = np.gradient(closes)[-1] if len(closes) > 1 else 0
+        recent_volume_momentum = 0
+    
+    # 3. Level attraction/repulsion
+    all_levels = []
+    for level_type, level_list in levels.items():
+        if isinstance(level_list, list):
+            all_levels.extend(level_list)
+    
+    # Sort levels by distance from current price
+    all_levels = sorted(all_levels, key=lambda x: abs(x.get('price', current_price) - current_price))
+    
+    # 4. Market microstructure state
+    market_state = microstructure_state.get('state', 'Unknown')
+    capture_rate = microstructure_state.get('capture_rate', 0.5)
+    liquidity_permeability = microstructure_state.get('liquidity_permeability', 0.5)
+    
+    # 5. Calculate path step by step
+    path = [current_price]
+    current_pos = current_price
+    
+    for step in range(forecast_periods):
+        # Base drift from phase space velocity (momentum)
+        momentum_drift = recent_velocity * (1 - step * 0.02)  # Decay momentum over time
+        
+        # Volatility from GARCH
+        if step < len(garch_forecast_vols):
+            vol = garch_forecast_vols[step] / 100  # Convert to decimal
+        else:
+            vol = garch_forecast_vols[-1] / 100 if garch_forecast_vols else 0.02
+        
+        # Standard deviation component
+        std_dev = np.std(returns[-50:]) if len(returns) >= 50 else np.std(returns)
+        vol_combined = (vol * 0.7 + std_dev * 0.3)  # Blend GARCH and historical
+        
+        # Level attraction/repulsion
+        level_force = 0.0
+        for level in all_levels[:5]:  # Consider top 5 nearest levels
+            level_price = level.get('price', current_price)
+            distance = level_price - current_pos
+            distance_pct = abs(distance) / current_price if current_price > 0 else 1.0
+            
+            if distance_pct < 0.15:  # Only consider nearby levels
+                strength = level.get('strength', 0.5)
+                reversion_prob = level.get('reversionProb', 0.5)
+                
+                # Attraction force (mean reversion to level)
+                if market_state == 'Coherent':
+                    # In coherent state, levels are strong attractors
+                    attraction = (level_price - current_pos) * strength * reversion_prob * 0.3
+                elif market_state == 'Thermal':
+                    # In thermal state, levels are precision points
+                    attraction = (level_price - current_pos) * strength * reversion_prob * 0.4
+                else:  # Fock
+                    # In Fock state, levels are permeable
+                    attraction = (level_price - current_pos) * strength * reversion_prob * 0.15
+                
+                level_force += attraction
+        
+        # Volume momentum influence
+        volume_force = recent_volume_momentum * current_pos * 0.0001  # Small influence
+        
+        # Mean reversion component (toward long-term average)
+        long_term_avg = np.mean(closes[-100:]) if len(closes) >= 100 else np.mean(closes)
+        mean_reversion = (long_term_avg - current_pos) * 0.05 * (1 - step * 0.01)
+        
+        # Combine all forces
+        drift = momentum_drift + level_force + volume_force + mean_reversion
+        
+        # Random component (reduced for "most probable" path)
+        # Use smaller random component to show most likely path
+        random_shock = np.random.normal(0, vol_combined * np.sqrt(1/252)) * 0.3  # 30% of full volatility
+        
+        # Update position
+        next_price = current_pos + drift + random_shock
+        
+        # Ensure price stays positive
+        next_price = max(next_price, current_price * 0.5)
+        
+        path.append(float(next_price))
+        current_pos = next_price
+        
+        # Update velocity (decay)
+        recent_velocity *= 0.95
+    
+    return {
+        'path': path[1:],  # Exclude current price
+        'current_price': float(current_price),
+        'forecast_periods': forecast_periods,
+        'method': 'GARCH + Phase Space + Levels',
+        'market_state': market_state,
+        'confidence': float(capture_rate)
+    }
+
 # ============================================================================
 # VOLATILITY SURFACE CALCULATION
 # ============================================================================
@@ -1384,6 +1507,12 @@ def get_data():
             'volatility': vol_levels
         }
         
+        # CALCULATE MOST PROBABLE PRICE PATH
+        print("Calculating most probable price path...")
+        most_probable_path = calculate_most_probable_price_path(
+            closes, volumes, levels, garch_vol_regime, phase_space, micro_state, forecast_periods=30
+        )
+        
         return jsonify({
             'success': True,
             'priceData': price_data,
@@ -1395,7 +1524,8 @@ def get_data():
             'hmmRegime': hmm_regime,
             'hurstData': hurst_data,
             'forecasts': forecasts,
-            'macroIndicators': macro_indicators
+            'macroIndicators': macro_indicators,
+            'mostProbablePath': most_probable_path
         })
         
     except Exception as e:
