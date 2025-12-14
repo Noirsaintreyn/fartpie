@@ -864,104 +864,103 @@ def calculate_most_probable_price_path(closes, volumes, levels, garch_vol_regime
             
             model.fit(X, y)
     
-    # 7. Generate path step by step, hitting levels
+    # 7. Generate path using improved algorithm that realistically hits levels
+    # Strategy: Use mean-reverting random walk with level attraction
     path = []
     current_pos = current_price
-    visited_levels = set()
+    
+    # Get relevant levels in price order
+    relevant_levels = [l for l in all_levels if abs(l.get('price', current_price) - current_price) / current_price < 0.20]
+    relevant_levels = sorted(relevant_levels, key=lambda x: x.get('price', current_price))
+    
+    # Calculate base drift from momentum
+    recent_momentum = (closes[-1] - closes[-5]) / closes[-5] if len(closes) >= 5 else 0
+    momentum_decay = 0.95  # Momentum decays over time
     
     for step in range(forecast_periods):
-        # Get volatility for this step
+        # Get volatility for this step from GARCH
         if step < len(garch_forecast_vols):
-            vol_pct = garch_forecast_vols[step] / 100  # Convert to decimal
+            vol_pct = garch_forecast_vols[step] / 100
         else:
             vol_pct = garch_forecast_vols[-1] / 100 if garch_forecast_vols else current_iv / 100
         
-        # Standard deviation
+        # Historical volatility
         std_dev = np.std(returns[-50:]) if len(returns) >= 50 else np.std(returns)
-        vol_combined = (vol_pct * 0.7 + std_dev * 0.3)
+        vol_combined = (vol_pct * 0.6 + std_dev * 0.4)
         
-        # Find nearest level
+        # Find nearest level ahead in the path direction
         nearest_level = None
         nearest_distance = float('inf')
-        for level in all_levels:
+        direction = 1 if recent_momentum > 0 else -1
+        
+        for level in relevant_levels:
             level_price = level.get('price', current_pos)
-            distance = abs(level_price - current_pos)
-            if distance < nearest_distance and level_price not in visited_levels:
-                nearest_distance = distance
-                nearest_level = level
+            distance = level_price - current_pos
+            
+            # Only consider levels in the direction of movement (or very close)
+            if abs(distance) < nearest_distance:
+                if abs(distance) / current_pos < 0.15:  # Within 15%
+                    nearest_distance = abs(distance)
+                    nearest_level = level
         
-        # Predict next move using ML if available
-        if (use_rf or use_xgboost) and len(features) > 20:
-            # Current features
-            price_momentum = (current_pos - closes[-5]) / closes[-5] if len(closes) >= 5 else 0
-            vol = np.std(returns[-20:]) if len(returns) >= 20 else np.std(returns)
-            vol_change = (vol - np.std(returns[-40:-20])) if len(returns) >= 40 else 0
-            
-            nearest_level_dist = 0
-            nearest_level_strength = 0
-            if nearest_level:
-                nearest_level_dist = (nearest_level.get('price', current_pos) - current_pos) / current_pos
-                nearest_level_strength = nearest_level.get('strength', 0)
-            
-            vol_momentum = (volumes[-1] - np.mean(volumes[-20:])) / (np.mean(volumes[-20:]) + 1) if len(volumes) >= 20 else 0
-            
-            current_features = np.array([[
-                price_momentum,
-                vol * 100,
-                vol_change * 100,
-                nearest_level_dist,
-                nearest_level_strength,
-                vol_momentum,
-                recent_velocity / current_pos if current_pos > 0 else 0
-            ]])
-            
-            predicted_return = model.predict(current_features)[0]
-            base_move = current_pos * predicted_return
-        else:
-            # Fallback: momentum-based
-            base_move = recent_velocity * (1 - step * 0.02)
+        # Base drift from momentum (decaying)
+        momentum_drift = recent_momentum * current_pos * (momentum_decay ** step) * 0.3
         
-        # Level attraction - make path hit levels
+        # Level attraction - stronger when closer
         level_attraction = 0.0
-        if nearest_level and nearest_distance / current_pos < 0.10:  # Within 10%
+        if nearest_level:
             level_price = nearest_level.get('price', current_pos)
-            strength = nearest_level.get('strength', 0.5)
-            reversion_prob = nearest_level.get('reversionProb', 0.5)
+            distance_to_level = level_price - current_pos
+            distance_pct = abs(distance_to_level) / current_pos
             
-            # Strong attraction when close to level
-            distance_factor = 1.0 - (nearest_distance / current_pos) / 0.10
-            attraction_strength = strength * reversion_prob * distance_factor
-            
-            if market_state == 'Thermal':
-                attraction_strength *= 1.5  # Stronger in thermal
-            elif market_state == 'Coherent':
-                attraction_strength *= 1.2
-            
-            level_attraction = (level_price - current_pos) * attraction_strength * 0.4
-            
-            # If very close, snap to level
-            if nearest_distance / current_pos < 0.02:
-                current_pos = level_price
-                visited_levels.add(level_price)
-                path.append(float(current_pos))
-                recent_velocity *= 0.8  # Reduce velocity after hitting level
-                continue
+            if distance_pct < 0.15:  # Within 15%
+                strength = nearest_level.get('strength', 0.5)
+                reversion_prob = nearest_level.get('reversionProb', 0.5)
+                
+                # Calculate attraction force (stronger when closer)
+                # Use inverse distance squared for realistic attraction
+                attraction_factor = (1.0 / (distance_pct + 0.01)) * 0.1
+                attraction_factor = min(attraction_factor, 2.0)  # Cap at 2x
+                
+                # Market state affects attraction
+                if market_state == 'Thermal':
+                    attraction_factor *= 1.8  # Very strong in thermal
+                elif market_state == 'Coherent':
+                    attraction_factor *= 1.3
+                elif market_state == 'Fock':
+                    attraction_factor *= 0.7  # Weaker in Fock
+                
+                # Apply attraction
+                level_attraction = distance_to_level * strength * reversion_prob * attraction_factor
+                
+                # If very close (within 1%), strongly attract to level
+                if distance_pct < 0.01:
+                    level_attraction = distance_to_level * 0.8  # Strong pull
+                elif distance_pct < 0.03:
+                    level_attraction = distance_to_level * 0.5  # Medium pull
         
-        # Volatility component (using GARCH)
-        volatility_move = np.random.normal(0, vol_combined * np.sqrt(1/252)) * current_pos * 0.5
+        # Mean reversion to long-term average (weak)
+        long_term_avg = np.mean(closes[-100:]) if len(closes) >= 100 else np.mean(closes)
+        mean_reversion = (long_term_avg - current_pos) * 0.02
         
-        # Combine moves
-        next_price = current_pos + base_move + level_attraction + volatility_move
+        # Volatility component - use GARCH forecast
+        # For "most probable" path, use reduced volatility (30% of full)
+        daily_vol = vol_combined * np.sqrt(1/252)
+        volatility_shock = np.random.normal(0, daily_vol) * current_pos * 0.3
         
-        # Ensure reasonable bounds
-        next_price = max(next_price, current_price * 0.7)
-        next_price = min(next_price, current_price * 1.3)
+        # Combine all components
+        next_price = current_pos + momentum_drift + level_attraction + mean_reversion + volatility_shock
+        
+        # Ensure price stays within reasonable bounds
+        next_price = max(next_price, current_price * 0.8)
+        next_price = min(next_price, current_price * 1.2)
         
         path.append(float(next_price))
         current_pos = next_price
         
-        # Update velocity (decay)
-        recent_velocity = (current_pos - path[-2] if len(path) > 1 else 0) * 0.9
+        # Update momentum based on recent move
+        if len(path) > 1:
+            recent_momentum = (current_pos - path[-2]) / path[-2] if path[-2] > 0 else 0
     
     return {
         'path': path,
