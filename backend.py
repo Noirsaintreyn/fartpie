@@ -746,8 +746,11 @@ def calculate_garch_confidence_bands(forecasts, garch_vol_regime):
 
 def calculate_most_probable_price_path(closes, volumes, levels, garch_vol_regime, phase_space, microstructure_state, forecast_periods=30, iv_surface_data=None):
     """
-    SIMPLIFIED: Find highest probability confluence and show most probable move there
-    Just shows where price is most likely to go based on confluence of levels
+    Calculate most probable price path using:
+    - Phase space velocity/momentum for DIRECTION
+    - GARCH/IV for expected RANGE
+    - Levels for TARGETS
+    - High probability confluence for most probable move
     """
     if len(closes) < 50:
         return None
@@ -755,108 +758,209 @@ def calculate_most_probable_price_path(closes, volumes, levels, garch_vol_regime
     current_price = closes[-1]
     returns = np.log(closes[1:] / closes[:-1]) * 100
     
-    # 1. Get all levels and find highest confluence
+    # 1. DETERMINE DIRECTION from Phase Space
+    if phase_space and len(phase_space.get('velocity', [])) > 0:
+        recent_velocity = phase_space['velocity'][-1] if phase_space['velocity'] else 0
+        # Average velocity over last 5 periods for more stable direction
+        if len(phase_space['velocity']) >= 5:
+            avg_velocity = np.mean(phase_space['velocity'][-5:])
+        else:
+            avg_velocity = recent_velocity
+    else:
+        # Fallback: calculate from price gradient
+        recent_velocity = np.gradient(closes)[-1] if len(closes) > 1 else 0
+        if len(closes) >= 5:
+            avg_velocity = np.mean(np.gradient(closes)[-5:])
+        else:
+            avg_velocity = recent_velocity
+    
+    # Determine direction: positive = up, negative = down
+    direction = 1 if avg_velocity > 0 else -1
+    velocity_strength = abs(avg_velocity) / current_price if current_price > 0 else 0
+    
+    # 2. GET EXPECTED RANGE from GARCH/IV
+    garch_forecast_vols = garch_vol_regime.get('forecast_vol_array', [])
+    current_vol = garch_vol_regime.get('current_vol', np.std(returns) * np.sqrt(252))
+    
+    if garch_forecast_vols:
+        # Use average of next 10 days for expected range
+        expected_vol = np.mean(garch_forecast_vols[:min(10, len(garch_forecast_vols))]) / 100
+    else:
+        expected_vol = current_vol / 100
+    
+    # Expected range: 1-2 standard deviations
+    daily_vol = expected_vol * np.sqrt(1/252)
+    expected_range_1sd = current_price * daily_vol
+    expected_range_2sd = current_price * daily_vol * 2
+    
+    # 3. GET ALL LEVELS and filter by direction and range
     all_levels = []
     for level_type, level_list in levels.items():
         if isinstance(level_list, list):
             all_levels.extend(level_list)
     
-    # Focus on confluence levels first (highest probability)
-    confluence_levels = [l for l in all_levels if l.get('category') == 'ML-Confluence']
+    # Filter levels: must be within expected range AND in direction of momentum (or very close)
+    candidate_levels = []
+    for level in all_levels:
+        level_price = level.get('price', current_price)
+        distance = level_price - current_price
+        distance_pct = abs(distance) / current_price if current_price > 0 else 1.0
+        
+        # Must be within 2 standard deviations
+        if distance_pct < (expected_range_2sd / current_price) or distance_pct < 0.15:
+            # Check if in direction of momentum (or very close for mean reversion)
+            in_direction = (distance * direction > 0) or (abs(distance) / current_price < 0.03)
+            
+            if in_direction or distance_pct < 0.05:  # Always consider very close levels
+                candidate_levels.append(level)
     
-    # Find the highest probability confluence level
+    # 4. FIND HIGHEST PROBABILITY CONFLUENCE in the right direction
+    # Prioritize confluence levels
+    confluence_levels = [l for l in candidate_levels if l.get('category') == 'ML-Confluence']
+    
     target_level = None
     highest_probability = 0
     
-    # Look for confluence levels with high reversion probability
-    for level in confluence_levels:
+    # Score each candidate level
+    for level in candidate_levels:
+        level_price = level.get('price', current_price)
+        distance = level_price - current_price
+        distance_pct = abs(distance) / current_price if current_price > 0 else 1.0
+        
         reversion_prob = level.get('reversionProb', 0)
         strength = level.get('strength', 0)
         confluence_count = level.get('confluence_count', 1)
         
-        # Calculate combined probability
-        combined_prob = (reversion_prob * 0.6 + strength * 0.4) * (1 + confluence_count * 0.1)
+        # Base probability from level strength
+        base_prob = (reversion_prob * 0.6 + strength * 0.4)
+        
+        # Boost for confluence
+        if level.get('category') == 'ML-Confluence':
+            base_prob *= (1 + confluence_count * 0.15)
+        
+        # Direction bonus: higher score if level is in direction of momentum
+        direction_bonus = 1.0
+        if velocity_strength > 0.001:  # If there's meaningful momentum
+            if (distance * direction > 0):  # Level is in direction of momentum
+                direction_bonus = 1.3  # 30% bonus for following momentum
+            elif (distance * direction < 0):  # Level is against momentum
+                direction_bonus = 0.7  # Penalty for going against momentum
+        
+        # Distance factor: closer is better (but not too close - that's already reached)
+        if distance_pct < 0.02:
+            distance_factor = 0.8  # Already very close, less interesting
+        elif distance_pct < 0.10:
+            distance_factor = 1.2  # Sweet spot
+        else:
+            distance_factor = 1.0 - (distance_pct - 0.10) * 0.5  # Farther = less interesting
+        
+        # Market state adjustment
+        market_state = microstructure_state.get('state', 'Unknown')
+        state_factor = 1.0
+        if market_state == 'Coherent':
+            state_factor = 1.2  # Stronger in coherent
+        elif market_state == 'Thermal':
+            state_factor = 1.1
+        
+        # Combined probability
+        combined_prob = base_prob * direction_bonus * distance_factor * state_factor
         
         if combined_prob > highest_probability:
             highest_probability = combined_prob
             target_level = level
     
-    # If no good confluence, find strongest level within reasonable distance
-    if not target_level or highest_probability < 0.6:
-        for level in all_levels:
-            distance_pct = abs(level.get('price', current_price) - current_price) / current_price
-            if distance_pct < 0.15:  # Within 15%
-                reversion_prob = level.get('reversionProb', 0)
-                strength = level.get('strength', 0)
-                combined_prob = reversion_prob * 0.7 + strength * 0.3
-                
-                if combined_prob > highest_probability:
-                    highest_probability = combined_prob
-                    target_level = level
-    
-    if not target_level:
-        # Fallback: just extend current trend
-        recent_momentum = (closes[-1] - closes[-5]) / closes[-5] if len(closes) >= 5 else 0
+    # 5. If no good target found, use momentum-based extension
+    if not target_level or highest_probability < 0.4:
+        # Extend in direction of momentum with GARCH volatility
         path = []
         for step in range(forecast_periods):
-            next_price = current_price * (1 + recent_momentum * (0.95 ** step) * 0.1)
+            # Momentum component (decays)
+            momentum_component = avg_velocity * (0.95 ** step) * 0.5
+            
+            # Volatility component (from GARCH)
+            if step < len(garch_forecast_vols):
+                step_vol = garch_forecast_vols[step] / 100
+            else:
+                step_vol = expected_vol
+            
+            daily_vol = step_vol * np.sqrt(1/252)
+            vol_component = np.random.normal(0, daily_vol) * current_price * 0.2
+            
+            next_price = current_price + momentum_component + vol_component
             path.append(float(next_price))
+            current_price = next_price
+        
         return {
             'path': path,
-            'current_price': float(current_price),
+            'current_price': float(closes[-1]),
             'forecast_periods': forecast_periods,
-            'method': 'Simple Trend',
+            'method': 'Momentum + GARCH',
             'target_level': None,
-            'probability': 0.5
+            'probability': 0.4,
+            'direction': 'up' if direction > 0 else 'down'
         }
     
-    # 2. Generate simple path to target level
+    # 6. GENERATE PATH to target level using GARCH volatility
     target_price = target_level.get('price', current_price)
     distance = target_price - current_price
     distance_pct = abs(distance) / current_price if current_price > 0 else 0
     
-    # Get volatility for smoothing
-    garch_forecast_vols = garch_vol_regime.get('forecast_vol_array', [])
+    # Calculate steps needed based on volatility
+    # Use GARCH forecast to determine how fast we can move
     if garch_forecast_vols:
-        avg_vol = np.mean(garch_forecast_vols[:min(10, len(garch_forecast_vols))]) / 100
+        avg_forecast_vol = np.mean(garch_forecast_vols[:min(forecast_periods, len(garch_forecast_vols))]) / 100
     else:
-        avg_vol = np.std(returns) * np.sqrt(252) / 100
+        avg_forecast_vol = expected_vol
     
-    # Generate smooth path to target
+    # Steps to target: based on volatility and distance
+    daily_move_capacity = avg_forecast_vol * np.sqrt(1/252) * current_price
+    steps_to_target = max(3, min(forecast_periods, int(abs(distance) / (daily_move_capacity * 2))))
+    
+    # Generate path
     path = []
-    steps_to_target = max(5, min(forecast_periods, int(distance_pct / (avg_vol * 0.1))))
+    current_pos = closes[-1]
     
     for step in range(forecast_periods):
         if step < steps_to_target:
-            # Move toward target with slight smoothing
+            # Move toward target
             progress = (step + 1) / steps_to_target
-            # Use ease-in-out curve for smooth movement
+            # Smooth easing function
             eased_progress = progress * progress * (3 - 2 * progress)
-            next_price = current_price + (distance * eased_progress)
             
-            # Add small volatility component
-            daily_vol = avg_vol * np.sqrt(1/252)
-            noise = np.random.normal(0, daily_vol) * next_price * 0.1
-            next_price += noise
+            base_move = distance * eased_progress
+            
+            # Add volatility from GARCH (realistic movement)
+            if step < len(garch_forecast_vols):
+                step_vol = garch_forecast_vols[step] / 100
+            else:
+                step_vol = avg_forecast_vol
+            
+            daily_vol = step_vol * np.sqrt(1/252)
+            # Add small random component for realism (20% of full vol)
+            volatility_component = np.random.normal(0, daily_vol) * current_pos * 0.2
+            
+            next_price = closes[-1] + base_move + volatility_component
         else:
-            # After reaching target, stay near it with small oscillations
-            oscillation = np.sin(step * 0.3) * target_price * avg_vol * 0.02
+            # Reached target, stay near it with small oscillations
+            oscillation = np.sin(step * 0.2) * target_price * avg_forecast_vol * 0.01
             next_price = target_price + oscillation
         
         path.append(float(next_price))
     
     return {
         'path': path,
-        'current_price': float(current_price),
+        'current_price': float(closes[-1]),
         'forecast_periods': forecast_periods,
-        'method': 'High Probability Confluence',
+        'method': 'Phase Space Direction + GARCH Range + Confluence',
         'target_level': {
             'price': float(target_price),
             'strength': float(target_level.get('strength', 0)),
             'reversionProb': float(target_level.get('reversionProb', 0)),
             'confluence_count': target_level.get('confluence_count', 1)
         },
-        'probability': float(highest_probability)
+        'probability': float(highest_probability),
+        'direction': 'up' if direction > 0 else 'down',
+        'velocity_strength': float(velocity_strength)
     }
 
 # ============================================================================
