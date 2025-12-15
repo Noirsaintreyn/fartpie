@@ -1421,53 +1421,173 @@ def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pa
         recent_momentum = features_dict.get('avg_velocity', 0) * current_price
         theoretical_close = current_price + recent_momentum * 0.5
     
-    # High: Based on IV cone and state
+    # HIGH: Find highest probability high using confluence of IV + OI + Levels + Max Pain + State
+    # Base IV cone range for candidate highs
     if state_id == 4:  # Shock state
-        high_extension = 1.8 * sigma_day
+        max_high_extension = 1.8 * sigma_day
     elif state_id == 2:  # Trend state
-        high_extension = 1.2 * sigma_day
+        max_high_extension = 1.2 * sigma_day
     else:  # Compression/Rotation
-        high_extension = 0.9 * sigma_day
+        max_high_extension = 0.9 * sigma_day
     
-    # Adjust high based on levels above
-    if levels:
-        resistance_levels = [l for l in levels if l.get('price', 0) > current_price]
-        if resistance_levels:
-            nearest_resistance = min(resistance_levels, key=lambda x: abs(x.get('price', 0) - current_price))
-            resistance_price = nearest_resistance.get('price', current_price)
-            # Cap high at nearest resistance (with potential overshoot in trend/shock)
-            high_cap = resistance_price + (0.3 * sigma_day if state_id in [2, 4] else 0.1 * sigma_day)
-            high_extension = min(high_extension, high_cap - current_price)
+    candidate_highs = []
     
-    theoretical_high = current_price + high_extension
+    # 1. Add IV cone boundaries as candidates
+    iv_high_candidates = [
+        iv_cone['eod_upper'],
+        iv_cone['hodlod_upper'],
+        current_price + max_high_extension
+    ]
     
-    # Low: Symmetric logic
+    # 2. Add levels above price as candidates
+    if levels and len(levels) > 0:
+        resistance_levels = [l for l in levels if l.get('price', 0) > current_price and l.get('price', 0) <= current_price + max_high_extension * 1.5]
+        for level in resistance_levels:
+            level_price = level.get('price', current_price)
+            # Score this level as a potential high
+            oi_score = calculate_oi_confluence_score(level_price, current_price, levels, max_pain)
+            
+            # Calculate confluence score: IV proximity + OI + Level strength + Max Pain + State
+            iv_proximity = 1.0 - min(abs(level_price - iv_cone['hodlod_upper']) / sigma_day, 1.0) if sigma_day > 0 else 0.5
+            level_strength = level.get('strength', 0.5) * level.get('reversionProb', 0.5)
+            max_pain_factor = 1.0
+            if max_pain and abs(level_price - max_pain['price']) < current_price * 0.02:
+                max_pain_factor = 1.0 + max_pain['gravity'] * 0.3
+            
+            # State machine adjustment
+            state_factor = 1.2 if state_id == 2 else (1.3 if state_id == 4 else 1.0)  # Higher in trend/shock
+            
+            confluence_score = (
+                iv_proximity * 0.3 +
+                oi_score['sticky_score'] * 0.3 +
+                level_strength * 0.2 +
+                max_pain_factor * 0.1 +
+                (level.get('confluence_count', 1) / 5.0) * 0.1
+            ) * state_factor
+            
+            candidate_highs.append({
+                'price': level_price,
+                'score': confluence_score,
+                'oi_sticky': oi_score['sticky_score'],
+                'level_strength': level_strength,
+                'iv_proximity': iv_proximity
+            })
+    
+    # Add IV cone candidates
+    for iv_candidate in iv_high_candidates:
+        if iv_candidate > current_price:
+            # Score IV cone candidate
+            oi_score = calculate_oi_confluence_score(iv_candidate, current_price, levels or [], max_pain)
+            iv_proximity = 1.0
+            confluence_score = (
+                iv_proximity * 0.4 +
+                oi_score['sticky_score'] * 0.3 +
+                (1.0 if max_pain and abs(iv_candidate - max_pain['price']) < current_price * 0.02 else 0.5) * 0.3
+            )
+            candidate_highs.append({
+                'price': iv_candidate,
+                'score': confluence_score,
+                'oi_sticky': oi_score['sticky_score'],
+                'level_strength': 0.5,
+                'iv_proximity': iv_proximity
+            })
+    
+    # Select highest probability high
+    if candidate_highs:
+        best_high = max(candidate_highs, key=lambda x: x['score'])
+        theoretical_high = best_high['price']
+        high_prob = min(best_high['score'], 0.95)
+    else:
+        # Fallback to IV cone
+        theoretical_high = current_price + max_high_extension
+        high_prob = 0.55
+    
+    # LOW: Symmetric logic - find highest probability low using confluence
     if state_id == 4:  # Shock state
-        low_extension = 1.8 * sigma_day
+        max_low_extension = 1.8 * sigma_day
     elif state_id == 2:  # Trend state
-        low_extension = 1.2 * sigma_day
+        max_low_extension = 1.2 * sigma_day
     else:  # Compression/Rotation
-        low_extension = 0.9 * sigma_day
+        max_low_extension = 0.9 * sigma_day
     
-    # Adjust low based on levels below
-    if levels:
-        support_levels = [l for l in levels if l.get('price', 0) < current_price]
-        if support_levels:
-            nearest_support = min(support_levels, key=lambda x: abs(x.get('price', 0) - current_price))
-            support_price = nearest_support.get('price', current_price)
-            # Cap low at nearest support (with potential overshoot in trend/shock)
-            low_cap = support_price - (0.3 * sigma_day if state_id in [2, 4] else 0.1 * sigma_day)
-            low_extension = min(low_extension, current_price - low_cap)
+    candidate_lows = []
     
-    theoretical_low = current_price - low_extension
+    # 1. Add IV cone boundaries as candidates
+    iv_low_candidates = [
+        iv_cone['eod_lower'],
+        iv_cone['hodlod_lower'],
+        current_price - max_low_extension
+    ]
+    
+    # 2. Add levels below price as candidates
+    if levels and len(levels) > 0:
+        support_levels = [l for l in levels if l.get('price', 0) < current_price and l.get('price', 0) >= current_price - max_low_extension * 1.5]
+        for level in support_levels:
+            level_price = level.get('price', current_price)
+            # Score this level as a potential low
+            oi_score = calculate_oi_confluence_score(level_price, current_price, levels, max_pain)
+            
+            # Calculate confluence score: IV proximity + OI + Level strength + Max Pain + State
+            iv_proximity = 1.0 - min(abs(level_price - iv_cone['hodlod_lower']) / sigma_day, 1.0) if sigma_day > 0 else 0.5
+            level_strength = level.get('strength', 0.5) * level.get('reversionProb', 0.5)
+            max_pain_factor = 1.0
+            if max_pain and abs(level_price - max_pain['price']) < current_price * 0.02:
+                max_pain_factor = 1.0 + max_pain['gravity'] * 0.3
+            
+            # State machine adjustment
+            state_factor = 1.2 if state_id == 2 else (1.3 if state_id == 4 else 1.0)
+            
+            confluence_score = (
+                iv_proximity * 0.3 +
+                oi_score['sticky_score'] * 0.3 +
+                level_strength * 0.2 +
+                max_pain_factor * 0.1 +
+                (level.get('confluence_count', 1) / 5.0) * 0.1
+            ) * state_factor
+            
+            candidate_lows.append({
+                'price': level_price,
+                'score': confluence_score,
+                'oi_sticky': oi_score['sticky_score'],
+                'level_strength': level_strength,
+                'iv_proximity': iv_proximity
+            })
+    
+    # Add IV cone candidates
+    for iv_candidate in iv_low_candidates:
+        if iv_candidate < current_price:
+            # Score IV cone candidate
+            oi_score = calculate_oi_confluence_score(iv_candidate, current_price, levels or [], max_pain)
+            iv_proximity = 1.0
+            confluence_score = (
+                iv_proximity * 0.4 +
+                oi_score['sticky_score'] * 0.3 +
+                (1.0 if max_pain and abs(iv_candidate - max_pain['price']) < current_price * 0.02 else 0.5) * 0.3
+            )
+            candidate_lows.append({
+                'price': iv_candidate,
+                'score': confluence_score,
+                'oi_sticky': oi_score['sticky_score'],
+                'level_strength': 0.5,
+                'iv_proximity': iv_proximity
+            })
+    
+    # Select highest probability low
+    if candidate_lows:
+        best_low = max(candidate_lows, key=lambda x: x['score'])
+        theoretical_low = best_low['price']
+        low_prob = min(best_low['score'], 0.95)
+    else:
+        # Fallback to IV cone
+        theoretical_low = current_price - max_low_extension
+        low_prob = 0.55
     
     # Open: Use current price (for intraday forecast)
     theoretical_open = current_price
     
-    # Probabilities (heuristic)
+    # Probabilities (from confluence scoring above for high/low, max pain for close)
     close_prob = 0.65 if max_pain and max_pain['gravity'] > 0.6 else 0.5
-    high_prob = 0.70 if state_id in [2, 4] else 0.55
-    low_prob = 0.70 if state_id in [2, 4] else 0.55
+    # high_prob and low_prob are now set above from confluence scoring
     
     return {
         'open': float(theoretical_open),
@@ -1479,7 +1599,7 @@ def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pa
             'high_reached': float(high_prob),
             'low_reached': float(low_prob)
         },
-        'method': 'IV Cone + State Machine + Max Pain',
+        'method': 'IV Cone + OI Confluence + Levels + Max Pain + State Machine',
         'state': market_state.get('state', 'Unknown'),
         'features': features_dict
     }
@@ -2183,24 +2303,44 @@ def get_ohlc_forecast():
         # Estimate max pain
         max_pain = estimate_max_pain(closes, volumes, current_price)
         
-        # Get levels using simplified detection (for OHLC forecast)
-        # In production, could integrate with full level detection from /api/data
+        # Get levels using simplified detection (for OHLC forecast context)
+        # These are used as confluence factors, not primary signals
         from scipy.signal import find_peaks
+        all_levels = []
         if len(closes) > 20:
             smoothed = savgol_filter(closes, window_length=min(11, len(closes)//2*2+1), polyorder=3) if len(closes) > 11 else closes
             price_range = max(closes) - min(closes)
             min_prominence = price_range * 0.02
-            peaks, _ = find_peaks(smoothed, prominence=min_prominence, distance=5)
-            valleys, _ = find_peaks(-smoothed, prominence=min_prominence, distance=5)
-            all_levels = []
+            peaks, peak_props = find_peaks(smoothed, prominence=min_prominence, distance=5)
+            valleys, valley_props = find_peaks(-smoothed, prominence=min_prominence, distance=5)
+            
+            # Find confluence (levels close together)
+            all_candidate_prices = []
             for peak_idx in peaks:
                 if peak_idx < len(closes):
-                    all_levels.append({'price': float(closes[peak_idx]), 'strength': 0.7, 'category': 'Peak'})
+                    all_candidate_prices.append(float(closes[peak_idx]))
             for valley_idx in valleys:
                 if valley_idx < len(closes):
-                    all_levels.append({'price': float(closes[valley_idx]), 'strength': 0.7, 'category': 'Valley'})
-        else:
-            all_levels = []
+                    all_candidate_prices.append(float(closes[valley_idx]))
+            
+            # Group nearby levels for confluence scoring
+            used_prices = set()
+            for price in sorted(all_candidate_prices):
+                if price in used_prices:
+                    continue
+                # Find nearby levels (within 0.5%)
+                nearby = [p for p in all_candidate_prices if abs(p - price) / price < 0.005 and p not in used_prices]
+                confluence_count = len(nearby)
+                # Strength based on how many algorithms agree (proxy via confluence)
+                base_strength = 0.5 + min(confluence_count * 0.1, 0.4)
+                all_levels.append({
+                    'price': price,
+                    'strength': base_strength,
+                    'reversionProb': base_strength,  # Higher strength = more likely to hold
+                    'confluence_count': confluence_count,
+                    'category': 'Peak-Valley'
+                })
+                used_prices.update(nearby)
         
         # Get phase space (optional)
         phase_space = calculate_phase_space_coordinates(closes, volumes)
