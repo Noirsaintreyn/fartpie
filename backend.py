@@ -316,8 +316,12 @@ def calculate_phase_space_coordinates(closes, volumes):
     # Normalize price position with better edge case handling
     price_range = np.max(closes) - np.min(closes)
     if price_range == 0 or price_range < 1e-8:
-        # If all prices are the same, use a small default range to avoid division issues
-        price_position = np.full_like(closes, 50.0)  # Set to middle (50%) instead of all zeros
+        # If all prices are the same, use percentage changes from first price
+        if len(closes) > 1:
+            price_changes = np.diff(closes) / closes[:-1] * 100  # Percentage changes
+            price_position = np.concatenate([[0], np.cumsum(price_changes)])  # Cumulative percentage position
+        else:
+            price_position = np.array([0.0])
     else:
         price_position = (closes - np.min(closes)) / price_range * 100
     
