@@ -315,13 +315,17 @@ def calculate_phase_space_coordinates(closes, volumes):
     
     # Normalize price position with better edge case handling
     price_range = np.max(closes) - np.min(closes)
-    if price_range == 0 or price_range < 1e-8:
-        # If all prices are the same, use percentage changes from first price
+    
+    # Better handling of constant prices using percentage change method
+    if price_range < 1e-10:
+        print("Warning: Price range near zero, using percentage change method")
+        price_position = np.zeros_like(closes)
         if len(closes) > 1:
-            price_changes = np.diff(closes) / closes[:-1] * 100  # Percentage changes
-            price_position = np.concatenate([[0], np.cumsum(price_changes)])  # Cumulative percentage position
-        else:
-            price_position = np.array([0.0])
+            # Use percentage changes to avoid division by zero
+            pct_changes = np.diff(closes) / (closes[:-1] + 1e-10) * 100
+            price_position[1:] = np.cumsum(pct_changes)
+        # Clip to reasonable range to prevent extreme values
+        price_position = np.clip(price_position, -100, 100)
     else:
         price_position = (closes - np.min(closes)) / price_range * 100
     
@@ -506,6 +510,7 @@ def fit_garch_model(returns, p=1, q=1):
         # Check for sufficient variance to avoid numerical instability
         returns_std = np.std(returns)
         if returns_std < 1e-6 or np.isnan(returns_std) or np.isinf(returns_std):
+            print("Warning: Returns have near-zero variance, skipping GARCH")
             return None
         
         # Fit GARCH model
@@ -2058,6 +2063,27 @@ def get_data():
         lows = hist['Low'].values
         volumes = hist['Volume'].values
         current_price = closes[-1]
+        
+        # Validate data quality - check for NaN/Inf and insufficient data
+        if (np.any(np.isnan(closes)) or np.any(np.isinf(closes)) or
+            np.any(np.isnan(highs)) or np.any(np.isinf(highs)) or
+            np.any(np.isnan(lows)) or np.any(np.isinf(lows))):
+            return jsonify({
+                'success': False,
+                'error': 'Price data contains invalid values (NaN or Inf)'
+            }), 400
+
+        if len(closes) < 50:
+            return jsonify({
+                'success': False,
+                'error': 'Insufficient data for analysis (minimum 50 bars required)'
+            }), 400
+
+        if np.std(closes) < 1e-6:
+            return jsonify({
+                'success': False,
+                'error': 'Price data has insufficient variance for analysis'
+            }), 400
         
         print(f"Current: ${current_price:.2f} | Bars: {len(closes)}")
         
