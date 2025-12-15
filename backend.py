@@ -51,7 +51,8 @@ print(f"📁 Database file exists: {os.path.exists(DB_PATH)}")
 def health():
     return {"status": "backend live"}
   
-FRED_API_KEY = '024452292701539abb68abc50276eb70'
+# FRED API Key - use environment variable if available, otherwise use default (for development only)
+FRED_API_KEY = os.environ.get('FRED_API_KEY', '024452292701539abb68abc50276eb70')
 
 # Simple password hashing
 def hash_password(password):
@@ -312,10 +313,11 @@ def calculate_phase_space_coordinates(closes, volumes):
     if len(closes) < 5:
         return None
     
-    # Normalize price position
+    # Normalize price position with better edge case handling
     price_range = np.max(closes) - np.min(closes)
-    if price_range == 0:
-        price_position = np.zeros_like(closes)
+    if price_range == 0 or price_range < 1e-8:
+        # If all prices are the same, use a small default range to avoid division issues
+        price_position = np.full_like(closes, 50.0)  # Set to middle (50%) instead of all zeros
     else:
         price_position = (closes - np.min(closes)) / price_range * 100
     
@@ -497,6 +499,11 @@ def fit_garch_model(returns, p=1, q=1):
         if len(returns) < 50:
             return None
         
+        # Check for sufficient variance to avoid numerical instability
+        returns_std = np.std(returns)
+        if returns_std < 1e-6 or np.isnan(returns_std) or np.isinf(returns_std):
+            return None
+        
         # Fit GARCH model
         model = arch_model(returns, vol='Garch', p=p, q=q, rescale=False)
         result = model.fit(disp='off', show_warning=False)
@@ -583,8 +590,8 @@ def calculate_garch_volatility_regime(closes):
     long_run_vol = garch_results['long_run_vol']
     forecast_vol = garch_results['forecast_vol']
     
-    # Calculate vol ratio (current vs long-run)
-    vol_ratio = current_vol / long_run_vol if long_run_vol > 0 else 1.0
+    # Calculate vol ratio (current vs long-run) with division by zero protection
+    vol_ratio = current_vol / long_run_vol if long_run_vol > 1e-8 else 1.0
     
     # Determine regime based on GARCH parameters and current vol
     if vol_ratio > 1.5:
@@ -636,8 +643,8 @@ def enhance_levels_with_microstructure(levels, closes, volumes, current_price, g
     """
     ENHANCED: Uses GARCH + Market Microstructure State for superior level predictions
     """
-    # Add safety check at the start
-    if not levels or len(levels) == 0:
+    # Add safety check at the start - validate levels is a list
+    if not levels or not isinstance(levels, list) or len(levels) == 0:
         return [], detect_market_regime_hmm(closes), calculate_hurst_exponent(closes), garch_vol_regime, microstructure_state
     
     # Get existing regime data
@@ -951,7 +958,12 @@ def calculate_most_probable_price_path(closes, volumes, levels, garch_vol_regime
                 step_vol = expected_vol
             
             daily_vol = step_vol * np.sqrt(1/252)
-            vol_component = np.random.normal(0, daily_vol) * current_price * 0.2
+            # Clamp volatility to prevent extreme values that can cause instability
+            daily_vol = np.clip(daily_vol, 0, 0.1)  # Max 10% daily vol
+            vol_component = np.random.normal(0, abs(daily_vol)) * current_price * 0.2
+            # Ensure vol_component doesn't create NaN or infinite values
+            if np.isnan(vol_component) or np.isinf(vol_component):
+                vol_component = 0
             
             next_price = current_price + momentum_component + vol_component
             path.append(float(next_price))
@@ -1003,8 +1015,13 @@ def calculate_most_probable_price_path(closes, volumes, levels, garch_vol_regime
                 step_vol = avg_forecast_vol
             
             daily_vol = step_vol * np.sqrt(1/252)
+            # Clamp volatility to prevent extreme values
+            daily_vol = np.clip(daily_vol, 0, 0.1)  # Max 10% daily vol
             # Add small random component for realism (20% of full vol)
-            volatility_component = np.random.normal(0, daily_vol) * current_pos * 0.2
+            volatility_component = np.random.normal(0, abs(daily_vol)) * current_pos * 0.2
+            # Ensure volatility_component doesn't create NaN or infinite values
+            if np.isnan(volatility_component) or np.isinf(volatility_component):
+                volatility_component = 0
             
             next_price = closes[-1] + base_move + volatility_component
         else:
