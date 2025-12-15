@@ -13,6 +13,8 @@ import sqlite3
 import hashlib
 import warnings
 import requests
+import os
+from pathlib import Path
 from arch import arch_model
 warnings.filterwarnings('ignore')
 
@@ -24,6 +26,26 @@ app.config["SESSION_COOKIE_SAMESITE"] = "None"
 app.config["SESSION_COOKIE_SECURE"] = True  # True only when using HTTPS
 
 CORS(app, supports_credentials=True, origins=["*"])
+
+# Database path - use persistent location
+# Priority: 1) DB_PATH env var, 2) /app/data (common in Docker/containers), 3) /data, 4) current dir
+if 'DB_PATH' in os.environ:
+    DB_DIR = os.path.dirname(os.environ['DB_PATH']) if os.path.dirname(os.environ['DB_PATH']) else os.getcwd()
+    DB_PATH = os.environ['DB_PATH']
+elif os.path.exists('/app'):
+    DB_DIR = '/app/data'
+    DB_PATH = '/app/data/users.db'
+elif os.path.exists('/data'):
+    DB_DIR = '/data'
+    DB_PATH = '/data/users.db'
+else:
+    DB_DIR = os.getcwd()
+    DB_PATH = os.path.join(DB_DIR, 'users.db')
+
+os.makedirs(DB_DIR, exist_ok=True)
+print(f"📁 Database location: {DB_PATH}")
+print(f"📁 Database directory exists: {os.path.exists(DB_DIR)}")
+print(f"📁 Database file exists: {os.path.exists(DB_PATH)}")
 
 @app.route("/")
 def health():
@@ -40,7 +62,18 @@ def check_password(password, hashed):
 
 # Initialize database
 def init_db():
-    conn = sqlite3.connect('users.db')
+    try:
+        # Test if we can write to the directory
+        test_file = os.path.join(DB_DIR, '.test_write')
+        with open(test_file, 'w') as f:
+            f.write('test')
+        os.remove(test_file)
+        print(f"✓ Database directory is writable: {DB_DIR}")
+    except Exception as e:
+        print(f"⚠️  WARNING: Cannot write to database directory {DB_DIR}: {e}")
+        print(f"⚠️  Database may not persist across restarts!")
+    
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS users
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -60,11 +93,45 @@ def init_db():
         print("✓ Admin account created")
     except sqlite3.IntegrityError:
         print("✓ Admin account already exists")
+    
+    # Count existing users
+    c.execute("SELECT COUNT(*) FROM users")
+    user_count = c.fetchone()[0]
+    print(f"✓ Database initialized with {user_count} user(s)")
     conn.close()
 
 @app.route('/api/test', methods=['GET'])
 def test():
     return jsonify({'success': True, 'message': 'Backend is running!'})
+
+@app.route('/api/db-info', methods=['GET'])
+def db_info():
+    """Debug endpoint to check database location and status"""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("SELECT COUNT(*) FROM users")
+        user_count = c.fetchone()[0]
+        c.execute("SELECT username, created_at FROM users")
+        users = c.fetchall()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'db_path': DB_PATH,
+            'db_dir': DB_DIR,
+            'db_exists': os.path.exists(DB_PATH),
+            'dir_writable': os.access(DB_DIR, os.W_OK),
+            'user_count': user_count,
+            'users': [{'username': u[0], 'created_at': u[1]} for u in users]
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'db_path': DB_PATH,
+            'db_dir': DB_DIR
+        }), 500
 
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -79,7 +146,7 @@ def register():
     hashed_password = hash_password(password)
     
     try:
-        conn = sqlite3.connect('users.db')
+        conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         c.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
                   (username, email, hashed_password))
@@ -100,7 +167,7 @@ def login():
     if not username or not password:
         return jsonify({'success': False, 'error': 'Missing credentials'}), 400
     
-    conn = sqlite3.connect('users.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("SELECT id, username, password, is_active, is_admin FROM users WHERE username = ?", (username,))
     user_data = c.fetchone()
@@ -146,7 +213,7 @@ def logout():
 @app.route('/api/check-auth', methods=['GET'])
 def check_auth():
     if 'user_id' in session:
-        conn = sqlite3.connect('users.db')
+        conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         c.execute("SELECT is_active FROM users WHERE id = ?", (session['user_id'],))
         result = c.fetchone()
@@ -165,7 +232,7 @@ def get_users():
     if not session.get('is_admin'):
         return jsonify({'success': False, 'error': 'Unauthorized'}), 403
     
-    conn = sqlite3.connect('users.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("SELECT id, username, email, is_active, created_at, last_login FROM users WHERE is_admin = 0")
     users = c.fetchall()
@@ -192,7 +259,7 @@ def disable_user():
     data = request.json
     user_id = data.get('user_id')
     
-    conn = sqlite3.connect('users.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("UPDATE users SET is_active = 0 WHERE id = ? AND is_admin = 0", (user_id,))
     conn.commit()
@@ -208,7 +275,7 @@ def enable_user():
     data = request.json
     user_id = data.get('user_id')
     
-    conn = sqlite3.connect('users.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("UPDATE users SET is_active = 1 WHERE id = ?", (user_id,))
     conn.commit()
@@ -220,7 +287,7 @@ def require_auth():
     if 'user_id' not in session:
         return {'error': 'Not authenticated', 'code': 401}
     
-    conn = sqlite3.connect('users.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("SELECT is_active FROM users WHERE id = ?", (session['user_id'],))
     result = c.fetchone()
@@ -1068,6 +1135,356 @@ def generate_volatility_surface(current_price, garch_vol_regime):
 
 
 # ============================================================================
+# OHLC FORECAST SYSTEM: IV Cone + State Machine + Max Pain + XGBoost
+# ============================================================================
+
+def compute_iv_cone(current_price, iv_annualized, T_days=1):
+    """
+    Compute IV cone bands: EOD, HOD/LOD, and extreme bands
+    
+    Parameters:
+    -----------
+    current_price : float
+        Current stock price
+    iv_annualized : float
+        Annualized implied volatility (as decimal, e.g., 0.20 for 20%)
+    T_days : int
+        Time horizon in trading days (default: 1 for intraday/EOD)
+    
+    Returns:
+    --------
+    dict : Cone bands in price levels
+    """
+    T = T_days / 252.0  # Convert to years
+    sigma_day = current_price * iv_annualized * np.sqrt(T)
+    
+    return {
+        'eod_upper': current_price + 0.7 * sigma_day,
+        'eod_lower': current_price - 0.7 * sigma_day,
+        'hodlod_upper': current_price + 1.2 * sigma_day,
+        'hodlod_lower': current_price - 1.2 * sigma_day,
+        'extreme_upper': current_price + 1.8 * sigma_day,
+        'extreme_lower': current_price - 1.8 * sigma_day,
+        'sigma_day': float(sigma_day),
+        'current_price': float(current_price),
+        'iv_annualized': float(iv_annualized)
+    }
+
+def detect_market_state(closes, volumes, iv_cone, current_price, day_open=None):
+    """
+    State machine: Compression/Pin, Trend/Expansion, Mean-Reversion Rotation, Breakout/Shock
+    
+    Returns:
+    --------
+    dict : State information
+    """
+    if len(closes) < 10:
+        return {'state': 'Unknown', 'state_id': 0, 'confidence': 0.0}
+    
+    day_open = day_open if day_open is not None else closes[-1]
+    move_so_far = (current_price - day_open) / day_open
+    sigma_day = iv_cone['sigma_day']
+    move_in_sigma = abs(move_so_far * day_open) / sigma_day if sigma_day > 0 else 0
+    
+    # Calculate recent momentum and range
+    recent_closes = closes[-5:]
+    momentum = (recent_closes[-1] - recent_closes[0]) / recent_closes[0]
+    
+    # Calculate realized volatility (last 5 days)
+    returns = np.log(closes[-5:] / np.roll(closes[-5:], 1))[1:]
+    realized_vol = np.std(returns) * np.sqrt(252) * current_price
+    
+    # STATE 1: Compression / Pin
+    if move_in_sigma < 0.6 and abs(momentum) < 0.005:
+        return {
+            'state': 'Compression/Pin',
+            'state_id': 1,
+            'confidence': 0.8,
+            'assumptions': 'Fades work, max pain matters, OI sticky'
+        }
+    
+    # STATE 4: Breakout / Shock
+    if move_in_sigma > 1.8 or realized_vol > iv_cone['sigma_day'] * 2.5:
+        return {
+            'state': 'Breakout/Shock',
+            'state_id': 4,
+            'confidence': 0.9,
+            'assumptions': 'Cone violated, trade with flow, ignore max pain'
+        }
+    
+    # STATE 2: Trend / Expansion
+    if move_in_sigma > 1.0 and abs(momentum) > 0.01:
+        direction = 'Up' if momentum > 0 else 'Down'
+        return {
+            'state': f'Trend/Expansion-{direction}',
+            'state_id': 2,
+            'confidence': 0.75,
+            'assumptions': 'Levels are targets/retests, max pain weak'
+        }
+    
+    # STATE 3: Mean-Reversion Rotation
+    if 0.6 < move_in_sigma < 1.3 and abs(momentum) < 0.008:
+        return {
+            'state': 'Mean-Reversion Rotation',
+            'state_id': 3,
+            'confidence': 0.7,
+            'assumptions': 'Rotations between levels, max pain regains influence'
+        }
+    
+    # Default to compression
+    return {
+        'state': 'Compression/Pin',
+        'state_id': 1,
+        'confidence': 0.5,
+        'assumptions': 'Fades work, max pain matters, OI sticky'
+    }
+
+def estimate_max_pain(closes, volumes, current_price):
+    """
+    Estimate max pain from price distribution and volume profile
+    (Theoretical approach when real options data isn't available)
+    
+    Returns:
+    --------
+    dict : Max pain estimate
+    """
+    if len(closes) < 20:
+        return {
+            'price': float(current_price),
+            'gravity': 0.5,
+            'dist_sigma': 0.0
+        }
+    
+    # Estimate max pain as volume-weighted average price (VWAP) or median of recent range
+    recent_window = min(20, len(closes))
+    recent_closes = closes[-recent_window:]
+    recent_volumes = volumes[-recent_window:] if len(volumes) >= recent_window else np.ones(recent_window)
+    
+    # Use median price as proxy for max pain (where most trading occurred)
+    max_pain_estimate = float(np.median(recent_closes))
+    
+    # Calculate distance in percentage
+    dist_pct = (current_price - max_pain_estimate) / current_price
+    dist_sigma = abs(dist_pct) * current_price / (np.std(np.diff(recent_closes)) * np.sqrt(252) * current_price) if np.std(np.diff(recent_closes)) > 0 else 0
+    
+    # Gravity strength (stronger when closer)
+    gravity = np.exp(-abs(dist_sigma)) if dist_sigma > 0 else 1.0
+    
+    return {
+        'price': max_pain_estimate,
+        'gravity': float(gravity),
+        'dist_sigma': float(dist_sigma),
+        'dist_pct': float(dist_pct)
+    }
+
+def calculate_oi_confluence_score(level_price, current_price, all_levels, max_pain=None):
+    """
+    Score OI confluence for a level (theoretical approach)
+    Uses level clustering and max pain proximity as proxy
+    
+    Returns:
+    --------
+    dict : OI confluence features
+    """
+    # Find levels near this level (within 0.5%)
+    nearby_threshold = current_price * 0.005
+    nearby_levels = [l for l in all_levels if abs(l.get('price', 0) - level_price) < nearby_threshold]
+    confluence_count = len(nearby_levels)
+    
+    # OI total near level (proxy: confluence strength)
+    oi_total_near = sum(l.get('strength', 0.5) for l in nearby_levels) / max(len(all_levels), 1)
+    
+    # OI imbalance (estimate from level position relative to price)
+    # If level is above price with high confluence -> call wall -> resistance
+    # If level is below price with high confluence -> put wall -> support
+    oi_imbalance = 0.5  # Neutral by default
+    if level_price > current_price and confluence_count > 2:
+        oi_imbalance = 0.7  # Call-heavy
+    elif level_price < current_price and confluence_count > 2:
+        oi_imbalance = 0.3  # Put-heavy
+    
+    # Max pain proximity boost
+    max_pain_boost = 0.0
+    if max_pain and abs(level_price - max_pain['price']) < current_price * 0.01:
+        max_pain_boost = max_pain['gravity'] * 0.3
+    
+    # Sticky score: combination of confluence and max pain
+    sticky_score = min(oi_total_near + max_pain_boost, 1.0)
+    
+    return {
+        'oi_total_near': float(oi_total_near),
+        'oi_imbalance': float(oi_imbalance),
+        'confluence_count': confluence_count,
+        'sticky_score': float(sticky_score),
+        'max_pain_boost': float(max_pain_boost)
+    }
+
+def build_ohlc_features(closes, volumes, levels, iv_cone, market_state, max_pain, current_price, phase_space=None, iv_surface_data=None):
+    """
+    Build feature vector for XGBoost OHLC forecast
+    
+    Returns:
+    --------
+    dict : Feature vector
+    """
+    features = {}
+    
+    # A) Level features
+    if levels and len(levels) > 0:
+        level_distances = [(abs(l.get('price', current_price) - current_price) / current_price) for l in levels[:10]]
+        if level_distances:
+            features['min_level_distance'] = float(min(level_distances))
+            features['avg_level_distance'] = float(np.mean(level_distances))
+            features['level_count'] = len(levels)
+        else:
+            features['min_level_distance'] = 0.1
+            features['avg_level_distance'] = 0.1
+            features['level_count'] = 0
+    else:
+        features['min_level_distance'] = 0.1
+        features['avg_level_distance'] = 0.1
+        features['level_count'] = 0
+    
+    # B) IV cone features
+    features['sigma_day'] = float(iv_cone['sigma_day'])
+    move_so_far = abs(current_price - closes[-1]) if len(closes) > 0 else 0
+    features['move_so_far_sigma'] = float(move_so_far / iv_cone['sigma_day']) if iv_cone['sigma_day'] > 0 else 0
+    features['inside_eod_cone'] = 1 if iv_cone['eod_lower'] <= current_price <= iv_cone['eod_upper'] else 0
+    features['inside_hodlod_cone'] = 1 if iv_cone['hodlod_lower'] <= current_price <= iv_cone['hodlod_upper'] else 0
+    
+    # C) Max pain features
+    if max_pain:
+        features['dist_max_pain_sigma'] = float(max_pain['dist_sigma'])
+        features['max_pain_gravity'] = float(max_pain['gravity'])
+        features['above_max_pain'] = 1 if current_price > max_pain['price'] else 0
+    else:
+        features['dist_max_pain_sigma'] = 0.0
+        features['max_pain_gravity'] = 0.5
+        features['above_max_pain'] = 0
+    
+    # D) State machine features (one-hot encoded)
+    state_id = market_state.get('state_id', 1)
+    features['state_compression'] = 1 if state_id == 1 else 0
+    features['state_trend'] = 1 if state_id == 2 else 0
+    features['state_rotation'] = 1 if state_id == 3 else 0
+    features['state_shock'] = 1 if state_id == 4 else 0
+    
+    # E) Phase space features (if available)
+    if phase_space:
+        recent_velocities = phase_space.get('velocity', [])[-5:] if phase_space.get('velocity') else []
+        features['avg_velocity'] = float(np.mean(recent_velocities)) if recent_velocities else 0.0
+        recent_momentums = phase_space.get('momentum', [])[-5:] if phase_space.get('momentum') else []
+        features['avg_momentum'] = float(np.mean(recent_momentums)) if recent_momentums else 0.0
+    else:
+        features['avg_velocity'] = 0.0
+        features['avg_momentum'] = 0.0
+    
+    # F) Recent price action
+    if len(closes) >= 5:
+        returns = np.diff(closes[-5:]) / closes[-5:-1]
+        features['recent_volatility'] = float(np.std(returns))
+        features['recent_trend'] = float(returns[-1] if len(returns) > 0 else 0)
+    else:
+        features['recent_volatility'] = 0.01
+        features['recent_trend'] = 0.0
+    
+    return features
+
+def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pain, current_price, phase_space=None, iv_surface_data=None):
+    """
+    Forecast theoretical OHLC using XGBoost-like approach
+    (Simplified for now - can be enhanced with actual XGBoost model)
+    
+    Returns:
+    --------
+    dict : Forecasted OHLC with probabilities
+    """
+    try:
+        from xgboost import XGBRegressor
+        use_xgboost = True
+    except ImportError:
+        use_xgboost = False
+    
+    # Build features
+    features_dict = build_ohlc_features(closes, volumes, levels, iv_cone, market_state, max_pain, current_price, phase_space, iv_surface_data)
+    feature_vector = np.array(list(features_dict.values())).reshape(1, -1)
+    
+    # For now, use rule-based forecast (can be replaced with trained XGBoost model)
+    sigma_day = iv_cone['sigma_day']
+    state_id = market_state.get('state_id', 1)
+    
+    # Theoretical Close (Max Pain influence)
+    if max_pain and max_pain['gravity'] > 0.6 and state_id in [1, 3]:  # Compression or Rotation
+        theoretical_close = max_pain['price'] * 0.7 + current_price * 0.3  # Blend toward max pain
+    else:
+        # Trend following or shock state
+        recent_momentum = features_dict.get('avg_velocity', 0) * current_price
+        theoretical_close = current_price + recent_momentum * 0.5
+    
+    # High: Based on IV cone and state
+    if state_id == 4:  # Shock state
+        high_extension = 1.8 * sigma_day
+    elif state_id == 2:  # Trend state
+        high_extension = 1.2 * sigma_day
+    else:  # Compression/Rotation
+        high_extension = 0.9 * sigma_day
+    
+    # Adjust high based on levels above
+    if levels:
+        resistance_levels = [l for l in levels if l.get('price', 0) > current_price]
+        if resistance_levels:
+            nearest_resistance = min(resistance_levels, key=lambda x: abs(x.get('price', 0) - current_price))
+            resistance_price = nearest_resistance.get('price', current_price)
+            # Cap high at nearest resistance (with potential overshoot in trend/shock)
+            high_cap = resistance_price + (0.3 * sigma_day if state_id in [2, 4] else 0.1 * sigma_day)
+            high_extension = min(high_extension, high_cap - current_price)
+    
+    theoretical_high = current_price + high_extension
+    
+    # Low: Symmetric logic
+    if state_id == 4:  # Shock state
+        low_extension = 1.8 * sigma_day
+    elif state_id == 2:  # Trend state
+        low_extension = 1.2 * sigma_day
+    else:  # Compression/Rotation
+        low_extension = 0.9 * sigma_day
+    
+    # Adjust low based on levels below
+    if levels:
+        support_levels = [l for l in levels if l.get('price', 0) < current_price]
+        if support_levels:
+            nearest_support = min(support_levels, key=lambda x: abs(x.get('price', 0) - current_price))
+            support_price = nearest_support.get('price', current_price)
+            # Cap low at nearest support (with potential overshoot in trend/shock)
+            low_cap = support_price - (0.3 * sigma_day if state_id in [2, 4] else 0.1 * sigma_day)
+            low_extension = min(low_extension, current_price - low_cap)
+    
+    theoretical_low = current_price - low_extension
+    
+    # Open: Use current price (for intraday forecast)
+    theoretical_open = current_price
+    
+    # Probabilities (heuristic)
+    close_prob = 0.65 if max_pain and max_pain['gravity'] > 0.6 else 0.5
+    high_prob = 0.70 if state_id in [2, 4] else 0.55
+    low_prob = 0.70 if state_id in [2, 4] else 0.55
+    
+    return {
+        'open': float(theoretical_open),
+        'high': float(theoretical_high),
+        'low': float(theoretical_low),
+        'close': float(theoretical_close),
+        'probabilities': {
+            'close_near_forecast': float(close_prob),
+            'high_reached': float(high_prob),
+            'low_reached': float(low_prob)
+        },
+        'method': 'IV Cone + State Machine + Max Pain',
+        'state': market_state.get('state', 'Unknown'),
+        'features': features_dict
+    }
+
+# ============================================================================
 # FRED API & OTHER EXISTING FUNCTIONS
 # ============================================================================
 
@@ -1729,6 +2146,95 @@ def get_phase_space():
             'microstructureState': microstructure_state,
             'garchRegime': garch_vol_regime,
             'currentPrice': float(closes[-1])
+        })
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+# NEW ENDPOINT: OHLC FORECAST
+@app.route('/api/ohlc-forecast', methods=['GET'])
+def get_ohlc_forecast():
+    auth_error = require_auth()
+    if auth_error:
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
+    
+    ticker = request.args.get('ticker', 'SPY')
+    
+    try:
+        print(f"Generating OHLC forecast for {ticker}...")
+        
+        stock = yf.Ticker(ticker)
+        hist = stock.history(period='6mo', interval='1d')
+        
+        if len(hist) == 0:
+            return jsonify({'success': False, 'error': 'No data available'}), 400
+        
+        closes = hist['Close'].values
+        volumes = hist['Volume'].values
+        opens = hist['Open'].values if 'Open' in hist.columns else closes
+        highs = hist['High'].values if 'High' in hist.columns else closes
+        lows = hist['Low'].values if 'Low' in hist.columns else closes
+        
+        if len(closes) < 50:
+            return jsonify({'success': False, 'error': 'Insufficient data'}), 400
+        
+        current_price = closes[-1]
+        day_open = opens[-1] if len(opens) > 0 else current_price
+        
+        # Get GARCH regime for IV
+        garch_vol_regime = calculate_garch_volatility_regime(closes)
+        iv_annualized = garch_vol_regime.get('current_vol', 20.0) / 100.0  # Convert to decimal
+        
+        # Compute IV cone
+        iv_cone = compute_iv_cone(current_price, iv_annualized, T_days=1)
+        
+        # Detect market state
+        market_state = detect_market_state(closes, volumes, iv_cone, current_price, day_open)
+        
+        # Estimate max pain
+        max_pain = estimate_max_pain(closes, volumes, current_price)
+        
+        # Get levels using simplified detection (for OHLC forecast)
+        # In production, could integrate with full level detection from /api/data
+        from scipy.signal import find_peaks
+        if len(closes) > 20:
+            smoothed = savgol_filter(closes, window_length=min(11, len(closes)//2*2+1), polyorder=3) if len(closes) > 11 else closes
+            price_range = max(closes) - min(closes)
+            min_prominence = price_range * 0.02
+            peaks, _ = find_peaks(smoothed, prominence=min_prominence, distance=5)
+            valleys, _ = find_peaks(-smoothed, prominence=min_prominence, distance=5)
+            all_levels = []
+            for peak_idx in peaks:
+                if peak_idx < len(closes):
+                    all_levels.append({'price': float(closes[peak_idx]), 'strength': 0.7, 'category': 'Peak'})
+            for valley_idx in valleys:
+                if valley_idx < len(closes):
+                    all_levels.append({'price': float(closes[valley_idx]), 'strength': 0.7, 'category': 'Valley'})
+        else:
+            all_levels = []
+        
+        # Get phase space (optional)
+        phase_space = calculate_phase_space_coordinates(closes, volumes)
+        
+        # Forecast OHLC
+        ohlc_forecast = forecast_ohlc_xgboost(
+            closes, volumes, all_levels, iv_cone, market_state, max_pain,
+            current_price, phase_space=phase_space
+        )
+        
+        print(f"✓ OHLC forecast generated: Close={ohlc_forecast['close']:.2f}, High={ohlc_forecast['high']:.2f}, Low={ohlc_forecast['low']:.2f}")
+        
+        return jsonify({
+            'success': True,
+            'ticker': ticker,
+            'forecast': ohlc_forecast,
+            'iv_cone': iv_cone,
+            'market_state': market_state,
+            'max_pain': max_pain,
+            'current_price': float(current_price),
+            'day_open': float(day_open)
         })
         
     except Exception as e:
