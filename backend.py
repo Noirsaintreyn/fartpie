@@ -2021,20 +2021,7 @@ def get_data():
             'volatility': vol_levels
         }
         
-        # CALCULATE MOST PROBABLE PRICE PATH
-        print("Calculating most probable price path...")
-        # Get IV surface data if available
-        iv_surface_data = None
-        try:
-            vol_surface = generate_volatility_surface(current_price, garch_vol_regime)
-            iv_surface_data = {'surface': vol_surface}
-        except:
-            pass
-        
-        most_probable_path = calculate_most_probable_price_path(
-            closes, volumes, levels, garch_vol_regime, phase_space, micro_state, 
-            forecast_periods=30, iv_surface_data=iv_surface_data
-        )
+        # Removed most_probable_path calculation to prevent NaN errors and improve performance
         
         return jsonify({
             'success': True,
@@ -2048,7 +2035,7 @@ def get_data():
             'hurstData': hurst_data,
             'forecasts': forecasts,
             'macroIndicators': macro_indicators,
-            'mostProbablePath': most_probable_path
+            'mostProbablePath': None
         })
         
     except Exception as e:
