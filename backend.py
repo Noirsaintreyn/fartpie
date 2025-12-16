@@ -1707,7 +1707,7 @@ def build_ohlc_features(closes, volumes, levels, iv_cone, market_state, max_pain
     
     return features
 
-def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pain, current_price, phase_space=None, iv_surface_data=None, microstructure_state=None, oi_features=None, model_close=None, garch_regime=None):
+def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pain, current_price, phase_space=None, iv_surface_data=None, microstructure_state=None, oi_features=None, model_close=None, garch_regime=None, options_data=None):
     """
     Forecast theoretical OHLC using XGBoost-like approach
     (Simplified for now - can be enhanced with actual XGBoost model)
@@ -1791,14 +1791,44 @@ def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pa
             # Calculate confluence score: IV proximity + OI + Level strength + Max Pain + State
             iv_proximity = 1.0 - min(abs(level_price - iv_cone['hodlod_upper']) / sigma_day, 1.0) if sigma_day > 0 else 0.5
             
-            # NEW: OI gravity from options data
+            # NEW: OI gravity from options data (uses actual OI density)
             oi_gravity = 1.0  # Default neutral
-            if oi_features:
-                # Check if level is near OI wall
-                dist_to_wall = abs(level_price - oi_features['oi_wall_above']) / current_price
-                if dist_to_wall < 0.01:  # Within 1%
-                    oi_gravity = 1.0 + 0.25  # Boost for OI wall proximity
-                elif dist_to_wall < 0.02:  # Within 2%
+            if oi_features and options_data and options_data.get('success'):
+                try:
+                    calls = options_data['calls']
+                    puts = options_data['puts']
+                    # Calculate OI density near this level using Gaussian kernel
+                    level_oi_density = 0.0
+                    bandwidth = current_price * 0.01  # 1% bandwidth
+                    for _, opt in pd.concat([calls, puts]).iterrows():
+                        strike = opt['strike']
+                        oi = opt.get('openInterest', 0)
+                        if oi > 0:
+                            dist = abs(strike - level_price) / bandwidth
+                            level_oi_density += oi * np.exp(-0.5 * dist * dist)
+                    
+                    total_oi_all = calls['openInterest'].sum() + puts['openInterest'].sum()
+                    if total_oi_all > 0:
+                        normalized_density = level_oi_density / total_oi_all
+                        oi_gravity = 1.0 + min(normalized_density * 2.0, 0.5)
+                    
+                    # Additional wall proximity boost
+                    dist_to_wall = abs(level_price - oi_features.get('oi_wall_above', current_price * 1.01)) / current_price
+                    if dist_to_wall < 0.005:
+                        oi_gravity *= 1.15
+                except:
+                    # Fallback to simple wall proximity
+                    dist_to_wall = abs(level_price - oi_features.get('oi_wall_above', current_price * 1.01)) / current_price
+                    if dist_to_wall < 0.01:
+                        oi_gravity = 1.0 + 0.25
+                    elif dist_to_wall < 0.02:
+                        oi_gravity = 1.0 + 0.10
+            elif oi_features:
+                # Fallback: simple wall proximity
+                dist_to_wall = abs(level_price - oi_features.get('oi_wall_above', current_price * 1.01)) / current_price
+                if dist_to_wall < 0.01:
+                    oi_gravity = 1.0 + 0.25
+                elif dist_to_wall < 0.02:
                     oi_gravity = 1.0 + 0.10
             
             # NEW: IV edge alignment (preference for levels near IV 1σ/2σ boundaries)
@@ -1843,17 +1873,43 @@ def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pa
                 'iv_proximity': iv_proximity
             })
     
-    # Add IV cone candidates
+    # Add IV cone candidates (with OI gravity and IV edge alignment)
     for iv_candidate in iv_high_candidates:
         if iv_candidate > current_price:
             # Score IV cone candidate
             oi_score = calculate_oi_confluence_score(iv_candidate, current_price, levels or [], max_pain)
-            iv_proximity = 1.0
+            iv_proximity = 1.0  # IV cone candidates are naturally aligned
+            
+            # NEW: OI gravity from options data
+            oi_gravity = 1.0
+            if oi_features:
+                dist_to_wall = abs(iv_candidate - oi_features['oi_wall_above']) / current_price
+                if dist_to_wall < 0.01:
+                    oi_gravity = 1.0 + 0.25
+                elif dist_to_wall < 0.02:
+                    oi_gravity = 1.0 + 0.10
+            
+            # NEW: IV edge alignment (this IS an IV boundary, so max boost)
+            iv_edge_alignment = 1.0 + 0.20  # IV cone candidates get full IV edge bonus
+            
+            max_pain_factor = 1.0
+            if max_pain and abs(iv_candidate - max_pain['price']) < current_price * 0.02:
+                max_pain_factor = 1.0 + max_pain['gravity'] * 0.3
+            
+            # State machine adjustment
+            state_factor = 1.2 if state_id == 2 else (1.3 if state_id == 4 else 1.0)
+            if micro_state_name == 'Fock':
+                state_factor *= (1.0 + micro_overshoot * 0.5)
+            elif micro_state_name == 'Thermal':
+                state_factor *= (1.0 - (1.0 - micro_permeability) * 0.3)
+            
             confluence_score = (
-                iv_proximity * 0.4 +
-                oi_score['sticky_score'] * 0.3 +
-                (1.0 if max_pain and abs(iv_candidate - max_pain['price']) < current_price * 0.02 else 0.5) * 0.3
-            )
+                iv_proximity * 0.35 +
+                oi_score['sticky_score'] * 0.25 +
+                max_pain_factor * 0.15 +
+                0.25  # Reserve for OI/IV bonuses
+            ) * state_factor * oi_gravity * iv_edge_alignment
+            
             candidate_highs.append({
                 'price': iv_candidate,
                 'score': confluence_score,
@@ -1952,17 +2008,43 @@ def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pa
                 'iv_proximity': iv_proximity
             })
     
-    # Add IV cone candidates
+    # Add IV cone candidates (with OI gravity and IV edge alignment)
     for iv_candidate in iv_low_candidates:
         if iv_candidate < current_price:
             # Score IV cone candidate
             oi_score = calculate_oi_confluence_score(iv_candidate, current_price, levels or [], max_pain)
-            iv_proximity = 1.0
+            iv_proximity = 1.0  # IV cone candidates are naturally aligned
+            
+            # NEW: OI gravity from options data
+            oi_gravity = 1.0
+            if oi_features:
+                dist_to_wall = abs(iv_candidate - oi_features['oi_wall_below']) / current_price
+                if dist_to_wall < 0.01:
+                    oi_gravity = 1.0 + 0.25
+                elif dist_to_wall < 0.02:
+                    oi_gravity = 1.0 + 0.10
+            
+            # NEW: IV edge alignment (this IS an IV boundary, so max boost)
+            iv_edge_alignment = 1.0 + 0.20  # IV cone candidates get full IV edge bonus
+            
+            max_pain_factor = 1.0
+            if max_pain and abs(iv_candidate - max_pain['price']) < current_price * 0.02:
+                max_pain_factor = 1.0 + max_pain['gravity'] * 0.3
+            
+            # State machine adjustment
+            state_factor = 1.2 if state_id == 2 else (1.3 if state_id == 4 else 1.0)
+            if micro_state_name == 'Fock':
+                state_factor *= (1.0 + micro_overshoot * 0.5)
+            elif micro_state_name == 'Thermal':
+                state_factor *= (1.0 - (1.0 - micro_permeability) * 0.3)
+            
             confluence_score = (
-                iv_proximity * 0.4 +
-                oi_score['sticky_score'] * 0.3 +
-                (1.0 if max_pain and abs(iv_candidate - max_pain['price']) < current_price * 0.02 else 0.5) * 0.3
-            )
+                iv_proximity * 0.35 +
+                oi_score['sticky_score'] * 0.25 +
+                max_pain_factor * 0.15 +
+                0.25  # Reserve for OI/IV bonuses
+            ) * state_factor * oi_gravity * iv_edge_alignment
+            
             candidate_lows.append({
                 'price': iv_candidate,
                 'score': confluence_score,
@@ -2774,7 +2856,8 @@ def get_ohlc_forecast():
         ohlc_forecast = forecast_ohlc_xgboost(
             closes, volumes, all_levels, iv_cone, market_state, max_pain,
             current_price, phase_space=phase_space, microstructure_state=microstructure_state,
-            oi_features=oi_features, model_close=model_close, garch_regime=garch_vol_regime
+            oi_features=oi_features, model_close=model_close, garch_regime=garch_vol_regime,
+            options_data=options_data if options_data.get('success') else None
         )
         
         print(f"✓ OHLC forecast generated: Close={ohlc_forecast['close']:.2f}, High={ohlc_forecast['high']:.2f}, Low={ohlc_forecast['low']:.2f}")
