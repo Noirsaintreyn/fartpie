@@ -21,11 +21,24 @@ warnings.filterwarnings('ignore')
 app = Flask(__name__)
 app.secret_key = "degen-discovery-secret-key-2024"
 
-# session cookies for cross-domain login
+# Session cookie configuration
+# SECURE=True only in production (HTTPS), False in development (HTTP)
+IS_PROD = os.environ.get("ENV") == "production" or os.environ.get("FLASK_ENV") == "production"
 app.config["SESSION_COOKIE_SAMESITE"] = "None"
-app.config["SESSION_COOKIE_SECURE"] = True  # True only when using HTTPS
+app.config["SESSION_COOKIE_SECURE"] = IS_PROD
 
-CORS(app, supports_credentials=True, origins=["*"])
+# CORS: Cannot use wildcard "*" with credentials=True per browser spec
+# Must explicitly list allowed frontend origins (where requests come FROM)
+ALLOWED_ORIGINS = [
+    "https://degencap.uk",
+    "https://www.degencap.uk",
+    "http://localhost:5173",  # Vite dev server default
+    "http://localhost:5174",  # Vite alternate port
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+]
+
+CORS(app, supports_credentials=True, origins=ALLOWED_ORIGINS)
 
 # Database path - use persistent location
 # Priority: 1) DB_PATH env var, 2) /app/data (common in Docker/containers), 3) /data, 4) current dir
