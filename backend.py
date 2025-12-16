@@ -1177,25 +1177,300 @@ def generate_volatility_surface(current_price, garch_vol_regime):
 # OHLC FORECAST SYSTEM: IV Cone + State Machine + Max Pain + XGBoost
 # ============================================================================
 
-def compute_iv_cone(current_price, iv_annualized, T_days=1):
+def get_options_chain_yf(ticker):
+    """
+    Get options chain data from yfinance for nearest expiry
+    
+    Returns:
+    --------
+    dict : {
+        'calls': DataFrame with strike, openInterest, impliedVolatility, lastPrice, etc.
+        'puts': DataFrame with same structure
+        'expiry': str, expiry date
+        'spot': float, current spot price
+        'success': bool
+    }
+    """
+    try:
+        stock = yf.Ticker(ticker)
+        
+        # Get available expiry dates
+        try:
+            expirations = stock.options
+            if not expirations or len(expirations) == 0:
+                return {'success': False, 'error': 'No options available'}
+        except:
+            return {'success': False, 'error': 'Options data not available'}
+        
+        # Use nearest expiry (first one)
+        nearest_expiry = expirations[0]
+        
+        # Get option chain
+        try:
+            opt_chain = stock.option_chain(nearest_expiry)
+            calls = opt_chain.calls
+            puts = opt_chain.puts
+            
+            # Get current price
+            hist = stock.history(period='1d', interval='1d')
+            spot = float(hist['Close'].iloc[-1]) if len(hist) > 0 else None
+            
+            if spot is None:
+                return {'success': False, 'error': 'Could not get spot price'}
+            
+            return {
+                'success': True,
+                'calls': calls,
+                'puts': puts,
+                'expiry': nearest_expiry,
+                'spot': spot
+            }
+        except Exception as e:
+            return {'success': False, 'error': f'Error fetching option chain: {str(e)}'}
+            
+    except Exception as e:
+        return {'success': False, 'error': f'Error with ticker {ticker}: {str(e)}'}
+
+
+def compute_max_pain_from_options(calls, puts, spot):
+    """
+    Compute max pain from actual options chain data
+    
+    Parameters:
+    -----------
+    calls : DataFrame
+        Calls data with 'strike' and 'openInterest' columns
+    puts : DataFrame
+        Puts data with 'strike' and 'openInterest' columns
+    spot : float
+        Current spot price
+    
+    Returns:
+    --------
+    dict : {
+        'price': float, max pain strike
+        'gravity': float, 0-1 strength based on total OI
+        'total_oi': float, total open interest at max pain
+        'payout_at_mp': float, total payout if settles at max pain
+    }
+    """
+    try:
+        # Get unique strikes
+        all_strikes = sorted(set(list(calls['strike'].values) + list(puts['strike'].values)))
+        
+        min_payout = float('inf')
+        max_pain_strike = spot
+        
+        for strike in all_strikes:
+            # Calculate total payout if expiry settles at this strike
+            total_payout = 0.0
+            
+            # Calls that are ITM (strike < expiry price) lose value
+            itm_calls = calls[calls['strike'] < strike]
+            for _, call in itm_calls.iterrows():
+                loss = (strike - call['strike']) * call.get('openInterest', 0)
+                total_payout += loss
+            
+            # Puts that are ITM (strike > expiry price) lose value
+            itm_puts = puts[puts['strike'] > strike]
+            for _, put in itm_puts.iterrows():
+                loss = (put['strike'] - strike) * put.get('openInterest', 0)
+                total_payout += loss
+            
+            if total_payout < min_payout:
+                min_payout = total_payout
+                max_pain_strike = strike
+        
+        # Calculate gravity (0-1) based on total OI
+        total_oi = calls['openInterest'].sum() + puts['openInterest'].sum()
+        max_oi = max(calls['openInterest'].max(), puts['openInterest'].max()) if len(calls) > 0 and len(puts) > 0 else 0
+        
+        # Gravity increases if max pain has high OI nearby
+        mp_calls_oi = calls[abs(calls['strike'] - max_pain_strike) < spot * 0.01]['openInterest'].sum()
+        mp_puts_oi = puts[abs(puts['strike'] - max_pain_strike) < spot * 0.01]['openInterest'].sum()
+        mp_oi = mp_calls_oi + mp_puts_oi
+        
+        gravity = min(0.5 + (mp_oi / max(total_oi, 1)) * 0.5, 1.0) if total_oi > 0 else 0.5
+        
+        return {
+            'price': float(max_pain_strike),
+            'gravity': float(gravity),
+            'total_oi': float(total_oi),
+            'payout_at_mp': float(min_payout)
+        }
+    except Exception as e:
+        # Fallback: return spot as max pain with neutral gravity
+        return {
+            'price': float(spot),
+            'gravity': 0.5,
+            'total_oi': 0.0,
+            'payout_at_mp': 0.0
+        }
+
+
+def compute_oi_features(calls, puts, spot):
+    """
+    Compute Open Interest features for level scoring
+    
+    Returns:
+    --------
+    dict : {
+        'put_call_oi_ratio': float, ratio of puts/calls OI near ATM
+        'oi_wall_above': float, price level with largest OI cluster above spot
+        'oi_wall_below': float, price level with largest OI cluster below spot
+        'oi_skew': float, OI-weighted distance up vs down (-1 to 1)
+        'atm_oi': float, total OI near ATM (within ±0.5%)
+    }
+    """
+    try:
+        # Define ATM range (±0.5%)
+        atm_range = spot * 0.005
+        
+        # Filter options near ATM
+        atm_calls = calls[(calls['strike'] >= spot - atm_range) & (calls['strike'] <= spot + atm_range)]
+        atm_puts = puts[(puts['strike'] >= spot - atm_range) & (puts['strike'] <= spot + atm_range)]
+        
+        calls_oi_near = atm_calls['openInterest'].sum()
+        puts_oi_near = atm_puts['openInterest'].sum()
+        
+        # Put-call OI ratio
+        put_call_ratio = puts_oi_near / (calls_oi_near + 1e-10)
+        
+        # Find OI walls (largest OI clusters)
+        # Above spot
+        above_calls = calls[calls['strike'] > spot]
+        above_puts = puts[puts['strike'] > spot]
+        if len(above_calls) > 0 or len(above_puts) > 0:
+            # Group by strike proximity (within 0.5%)
+            above_strikes = sorted(set(list(above_calls['strike'].values) + list(above_puts['strike'].values)))
+            max_oi_above = 0
+            oi_wall_above = spot * 1.01  # Default 1% above
+            for strike in above_strikes:
+                nearby_calls = above_calls[abs(above_calls['strike'] - strike) < spot * 0.005]
+                nearby_puts = above_puts[abs(above_puts['strike'] - strike) < spot * 0.005]
+                total_oi = nearby_calls['openInterest'].sum() + nearby_puts['openInterest'].sum()
+                if total_oi > max_oi_above:
+                    max_oi_above = total_oi
+                    oi_wall_above = strike
+        else:
+            oi_wall_above = spot * 1.01
+        
+        # Below spot
+        below_calls = calls[calls['strike'] < spot]
+        below_puts = puts[puts['strike'] < spot]
+        if len(below_calls) > 0 or len(below_puts) > 0:
+            below_strikes = sorted(set(list(below_calls['strike'].values) + list(below_puts['strike'].values)), reverse=True)
+            max_oi_below = 0
+            oi_wall_below = spot * 0.99  # Default 1% below
+            for strike in below_strikes:
+                nearby_calls = below_calls[abs(below_calls['strike'] - strike) < spot * 0.005]
+                nearby_puts = below_puts[abs(below_puts['strike'] - strike) < spot * 0.005]
+                total_oi = nearby_calls['openInterest'].sum() + nearby_puts['openInterest'].sum()
+                if total_oi > max_oi_below:
+                    max_oi_below = total_oi
+                    oi_wall_below = strike
+        else:
+            oi_wall_below = spot * 0.99
+        
+        # OI skew: weighted average distance of OI above vs below
+        # Positive = more OI above (call-heavy), Negative = more OI below (put-heavy)
+        total_oi_above = above_calls['openInterest'].sum() + above_puts['openInterest'].sum() if len(above_calls) > 0 or len(above_puts) > 0 else 0
+        total_oi_below = below_calls['openInterest'].sum() + below_puts['openInterest'].sum() if len(below_calls) > 0 or len(below_puts) > 0 else 0
+        
+        weighted_dist_above = 0
+        if total_oi_above > 0:
+            for _, opt in pd.concat([above_calls, above_puts]).iterrows():
+                dist_pct = (opt['strike'] - spot) / spot
+                weighted_dist_above += dist_pct * opt['openInterest']
+            weighted_dist_above /= total_oi_above
+        
+        weighted_dist_below = 0
+        if total_oi_below > 0:
+            for _, opt in pd.concat([below_calls, below_puts]).iterrows():
+                dist_pct = (spot - opt['strike']) / spot
+                weighted_dist_below += dist_pct * opt['openInterest']
+            weighted_dist_below /= total_oi_below
+        
+        total_oi_all = total_oi_above + total_oi_below
+        if total_oi_all > 0:
+            oi_skew = (weighted_dist_above * total_oi_above - weighted_dist_below * total_oi_below) / (total_oi_all * spot * 0.02)  # Normalize
+            oi_skew = np.clip(oi_skew, -1, 1)
+        else:
+            oi_skew = 0.0
+        
+        atm_oi = calls_oi_near + puts_oi_near
+        
+        return {
+            'put_call_oi_ratio': float(put_call_ratio),
+            'oi_wall_above': float(oi_wall_above),
+            'oi_wall_below': float(oi_wall_below),
+            'oi_skew': float(oi_skew),
+            'atm_oi': float(atm_oi)
+        }
+    except Exception as e:
+        # Fallback
+        return {
+            'put_call_oi_ratio': 1.0,
+            'oi_wall_above': spot * 1.01,
+            'oi_wall_below': spot * 0.99,
+            'oi_skew': 0.0,
+            'atm_oi': 0.0
+        }
+
+
+def compute_iv_cone(current_price, iv_annualized, T_days=1, options_data=None):
     """
     Compute IV cone bands: EOD, HOD/LOD, and extreme bands
+    Uses real IV from options if available, otherwise uses provided IV
     
     Parameters:
     -----------
     current_price : float
         Current stock price
     iv_annualized : float
-        Annualized implied volatility (as decimal, e.g., 0.20 for 20%)
+        Annualized implied volatility (as decimal, e.g., 0.20 for 20%) - used as fallback
     T_days : int
         Time horizon in trading days (default: 1 for intraday/EOD)
+    options_data : dict, optional
+        Options chain data from get_options_chain_yf()
     
     Returns:
     --------
-    dict : Cone bands in price levels
+    dict : Cone bands in price levels with IV source info
     """
+    # Try to get real IV from options first
+    iv_from_options = None
+    if options_data and options_data.get('success'):
+        try:
+            calls = options_data['calls']
+            puts = options_data['puts']
+            spot = options_data['spot']
+            
+            # Get ATM IV (weighted average of near-ATM strikes)
+            atm_range = spot * 0.01  # ±1%
+            atm_calls = calls[(calls['strike'] >= spot - atm_range) & (calls['strike'] <= spot + atm_range)]
+            atm_puts = puts[(puts['strike'] >= spot - atm_range) & (puts['strike'] <= spot + atm_range)]
+            
+            if len(atm_calls) > 0 and len(atm_puts) > 0:
+                # Weight by open interest
+                calls_iv = atm_calls['impliedVolatility'].values
+                calls_oi = atm_calls['openInterest'].values
+                puts_iv = atm_puts['impliedVolatility'].values
+                puts_oi = atm_puts['openInterest'].values
+                
+                total_oi = np.sum(calls_oi) + np.sum(puts_oi)
+                if total_oi > 0:
+                    weighted_iv = (np.sum(calls_iv * calls_oi) + np.sum(puts_iv * puts_oi)) / total_oi
+                    iv_from_options = float(weighted_iv)  # Already as decimal from yfinance
+        except:
+            pass
+    
+    # Use options IV if available, otherwise fallback to provided IV
+    iv_to_use = iv_from_options if iv_from_options is not None else iv_annualized
+    iv_source = 'options' if iv_from_options is not None else 'garch'
+    
     T = T_days / 252.0  # Convert to years
-    sigma_day = current_price * iv_annualized * np.sqrt(T)
+    sigma_day = current_price * iv_to_use * np.sqrt(T)
     
     return {
         'eod_upper': current_price + 0.7 * sigma_day,
@@ -1206,7 +1481,10 @@ def compute_iv_cone(current_price, iv_annualized, T_days=1):
         'extreme_lower': current_price - 1.8 * sigma_day,
         'sigma_day': float(sigma_day),
         'current_price': float(current_price),
-        'iv_annualized': float(iv_annualized)
+        'iv_annualized': float(iv_to_use),
+        'iv_source': iv_source,
+        'iv_1sigma': [current_price - sigma_day, current_price + sigma_day],
+        'iv_2sigma': [current_price - 2*sigma_day, current_price + 2*sigma_day]
     }
 
 def detect_market_state(closes, volumes, iv_cone, current_price, day_open=None):
@@ -1429,7 +1707,7 @@ def build_ohlc_features(closes, volumes, levels, iv_cone, market_state, max_pain
     
     return features
 
-def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pain, current_price, phase_space=None, iv_surface_data=None):
+def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pain, current_price, phase_space=None, iv_surface_data=None, microstructure_state=None, oi_features=None, model_close=None, garch_regime=None):
     """
     Forecast theoretical OHLC using XGBoost-like approach
     (Simplified for now - can be enhanced with actual XGBoost model)
@@ -1452,13 +1730,37 @@ def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pa
     sigma_day = iv_cone['sigma_day']
     state_id = market_state.get('state_id', 1)
     
-    # Theoretical Close (Max Pain influence)
-    if max_pain and max_pain['gravity'] > 0.6 and state_id in [1, 3]:  # Compression or Rotation
-        theoretical_close = max_pain['price'] * 0.7 + current_price * 0.3  # Blend toward max pain
-    else:
-        # Trend following or shock state
+    # Get microstructure state (Fock/Thermal/Coherent) for gating
+    micro_state_name = microstructure_state.get('state', 'Coherent') if microstructure_state else 'Coherent'
+    micro_overshoot = microstructure_state.get('overshoot_bias', 0.2) if microstructure_state else 0.2
+    micro_permeability = microstructure_state.get('liquidity_permeability', 0.5) if microstructure_state else 0.5
+    
+    # Use model_close from N-BEATS/TCN if provided, else use momentum estimate
+    if model_close is None:
         recent_momentum = features_dict.get('avg_velocity', 0) * current_price
-        theoretical_close = current_price + recent_momentum * 0.5
+        model_close = current_price + recent_momentum * 0.5
+    
+    # Theoretical Close (State-adjusted Max Pain blend)
+    # Thermal: close sticks closer to max pain (0.75 max pain, 0.25 model)
+    # Coherent: close can drift (0.45 max pain, 0.55 model)
+    # Fock: close less pinned (0.30 max pain, 0.70 model)
+    if max_pain and max_pain.get('price'):
+        if micro_state_name == 'Thermal':
+            max_pain_weight = 0.75
+        elif micro_state_name == 'Coherent':
+            max_pain_weight = 0.45
+        elif micro_state_name == 'Fock':
+            max_pain_weight = 0.30
+        else:
+            max_pain_weight = 0.60  # Default blend
+        
+        # Adjust weight based on max pain gravity
+        max_pain_weight *= max_pain.get('gravity', 0.5) / 0.5  # Scale to gravity
+        max_pain_weight = np.clip(max_pain_weight, 0.2, 0.85)  # Keep reasonable bounds
+        
+        theoretical_close = max_pain['price'] * max_pain_weight + model_close * (1 - max_pain_weight)
+    else:
+        theoretical_close = model_close
     
     # HIGH: Find highest probability high using confluence of IV + OI + Levels + Max Pain + State
     # Base IV cone range for candidate highs
@@ -1488,21 +1790,50 @@ def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pa
             
             # Calculate confluence score: IV proximity + OI + Level strength + Max Pain + State
             iv_proximity = 1.0 - min(abs(level_price - iv_cone['hodlod_upper']) / sigma_day, 1.0) if sigma_day > 0 else 0.5
+            
+            # NEW: OI gravity from options data
+            oi_gravity = 1.0  # Default neutral
+            if oi_features:
+                # Check if level is near OI wall
+                dist_to_wall = abs(level_price - oi_features['oi_wall_above']) / current_price
+                if dist_to_wall < 0.01:  # Within 1%
+                    oi_gravity = 1.0 + 0.25  # Boost for OI wall proximity
+                elif dist_to_wall < 0.02:  # Within 2%
+                    oi_gravity = 1.0 + 0.10
+            
+            # NEW: IV edge alignment (preference for levels near IV 1σ/2σ boundaries)
+            iv_edge_alignment = 1.0  # Default neutral
+            if 'iv_1sigma' in iv_cone and 'iv_2sigma' in iv_cone:
+                iv_1sigma_upper = iv_cone['iv_1sigma'][1]
+                iv_2sigma_upper = iv_cone['iv_2sigma'][1]
+                dist_to_1sigma = abs(level_price - iv_1sigma_upper) / current_price
+                dist_to_2sigma = abs(level_price - iv_2sigma_upper) / current_price
+                if dist_to_1sigma < 0.005:  # Very close to 1σ
+                    iv_edge_alignment = 1.0 + 0.20
+                elif dist_to_2sigma < 0.005:  # Very close to 2σ
+                    iv_edge_alignment = 1.0 + 0.15
+            
             level_strength = level.get('strength', 0.5) * level.get('reversionProb', 0.5)
             max_pain_factor = 1.0
             if max_pain and abs(level_price - max_pain['price']) < current_price * 0.02:
                 max_pain_factor = 1.0 + max_pain['gravity'] * 0.3
             
-            # State machine adjustment
+            # State machine adjustment (use microstructure state for Fock/Thermal/Coherent gating)
             state_factor = 1.2 if state_id == 2 else (1.3 if state_id == 4 else 1.0)  # Higher in trend/shock
+            # Fock allows overshoot, Thermal clamps tighter
+            if micro_state_name == 'Fock':
+                state_factor *= (1.0 + micro_overshoot * 0.5)  # Allow more extension
+            elif micro_state_name == 'Thermal':
+                state_factor *= (1.0 - (1.0 - micro_permeability) * 0.3)  # Tighter clamping
             
             confluence_score = (
-                iv_proximity * 0.3 +
-                oi_score['sticky_score'] * 0.3 +
-                level_strength * 0.2 +
-                max_pain_factor * 0.1 +
-                (level.get('confluence_count', 1) / 5.0) * 0.1
-            ) * state_factor
+                iv_proximity * 0.25 +
+                oi_score['sticky_score'] * 0.25 +
+                level_strength * 0.20 +
+                max_pain_factor * 0.10 +
+                (level.get('confluence_count', 1) / 5.0) * 0.10 +
+                0.10  # Reserve for OI/IV bonuses
+            ) * state_factor * oi_gravity * iv_edge_alignment
             
             candidate_highs.append({
                 'price': level_price,
@@ -2350,65 +2681,71 @@ def get_ohlc_forecast():
         current_price = closes[-1]
         day_open = opens[-1] if len(opens) > 0 else current_price
         
-        # Get GARCH regime for IV
+        # Get microstructure state (Fock/Thermal/Coherent) - KEEP EXISTING
+        returns = np.log(closes[1:] / closes[:-1]) * 100
+        microstructure_state = detect_market_microstructure_state(closes, volumes, returns)
+        
+        # Get GARCH regime for IV fallback - KEEP EXISTING
         garch_vol_regime = calculate_garch_volatility_regime(closes)
-        iv_annualized = garch_vol_regime.get('current_vol', 20.0) / 100.0  # Convert to decimal
+        iv_annualized_garch = garch_vol_regime.get('current_vol', 20.0) / 100.0  # Convert to decimal
         
-        # Compute IV cone
-        iv_cone = compute_iv_cone(current_price, iv_annualized, T_days=1)
+        # Get N-BEATS/TCN forecasts - KEEP EXISTING
+        forecasts = generate_price_forecast(closes, highs, lows, volumes, forecast_periods=20)
+        model_close = current_price  # Default fallback
+        if forecasts and 'scenarios' in forecasts and len(forecasts['scenarios']) > 0:
+            # Use ensemble average for next-step close prediction
+            next_steps = [s['forecast'][0] if len(s.get('forecast', [])) > 0 else current_price 
+                         for s in forecasts['scenarios']]
+            if next_steps:
+                model_close = float(np.mean(next_steps))
         
-        # Detect market state
+        # NEW: Fetch real options data
+        options_data = get_options_chain_yf(ticker)
+        oi_features = None
+        max_pain_from_opts = None
+        
+        if options_data.get('success'):
+            print(f"✓ Options data retrieved for {ticker}")
+            calls = options_data['calls']
+            puts = options_data['puts']
+            spot_opts = options_data['spot']
+            
+            # Compute max pain from real options
+            max_pain_from_opts = compute_max_pain_from_options(calls, puts, spot_opts)
+            
+            # Compute OI features
+            oi_features = compute_oi_features(calls, puts, spot_opts)
+        else:
+            print(f"⚠ Options data not available, using fallbacks: {options_data.get('error', 'Unknown')}")
+        
+        # Compute IV cone (uses options IV if available, else GARCH fallback)
+        iv_cone = compute_iv_cone(current_price, iv_annualized_garch, T_days=1, options_data=options_data)
+        
+        # Detect market state (Compression/Trend/Rotation/Shock) - KEEP EXISTING
         market_state = detect_market_state(closes, volumes, iv_cone, current_price, day_open)
         
-        # Estimate max pain
-        max_pain = estimate_max_pain(closes, volumes, current_price)
+        # Use max pain from options if available, else fallback to estimate
+        if max_pain_from_opts:
+            max_pain = max_pain_from_opts
+        else:
+            max_pain = estimate_max_pain(closes, volumes, current_price)
         
-        # Get levels using simplified detection (for OHLC forecast context)
-        # These are used as confluence factors, not primary signals
-        from scipy.signal import find_peaks
-        all_levels = []
-        if len(closes) > 20:
-            smoothed = savgol_filter(closes, window_length=min(11, len(closes)//2*2+1), polyorder=3) if len(closes) > 11 else closes
-            price_range = max(closes) - min(closes)
-            min_prominence = price_range * 0.02
-            peaks, peak_props = find_peaks(smoothed, prominence=min_prominence, distance=5)
-            valleys, valley_props = find_peaks(-smoothed, prominence=min_prominence, distance=5)
-            
-            # Find confluence (levels close together)
-            all_candidate_prices = []
-            for peak_idx in peaks:
-                if peak_idx < len(closes):
-                    all_candidate_prices.append(float(closes[peak_idx]))
-            for valley_idx in valleys:
-                if valley_idx < len(closes):
-                    all_candidate_prices.append(float(closes[valley_idx]))
-            
-            # Group nearby levels for confluence scoring
-            used_prices = set()
-            for price in sorted(all_candidate_prices):
-                if price in used_prices:
-                    continue
-                # Find nearby levels (within 0.5%)
-                nearby = [p for p in all_candidate_prices if abs(p - price) / price < 0.005 and p not in used_prices]
-                confluence_count = len(nearby)
-                # Strength based on how many algorithms agree (proxy via confluence)
-                base_strength = 0.5 + min(confluence_count * 0.1, 0.4)
-                all_levels.append({
-                    'price': price,
-                    'strength': base_strength,
-                    'reversionProb': base_strength,  # Higher strength = more likely to hold
-                    'confluence_count': confluence_count,
-                    'category': 'Peak-Valley'
-                })
-                used_prices.update(nearby)
+        # Get levels using full level detection from main endpoint (better confluence)
+        # Use the same algorithms as the main /api/data endpoint
+        peak_valley_levels = find_peaks_valleys_scipy(highs, lows, closes)
+        vol_levels = calculate_vol_levels(closes, current_price)
+        # Add more algorithms as needed for better level detection
         
-        # Get phase space (optional)
+        all_levels = peak_valley_levels + vol_levels
+        
+        # Get phase space (optional) - KEEP EXISTING
         phase_space = calculate_phase_space_coordinates(closes, volumes)
         
-        # Forecast OHLC
+        # Forecast OHLC with enhanced features
         ohlc_forecast = forecast_ohlc_xgboost(
             closes, volumes, all_levels, iv_cone, market_state, max_pain,
-            current_price, phase_space=phase_space
+            current_price, phase_space=phase_space, microstructure_state=microstructure_state,
+            oi_features=oi_features, model_close=model_close, garch_regime=garch_vol_regime
         )
         
         print(f"✓ OHLC forecast generated: Close={ohlc_forecast['close']:.2f}, High={ohlc_forecast['high']:.2f}, Low={ohlc_forecast['low']:.2f}")
@@ -2419,7 +2756,9 @@ def get_ohlc_forecast():
             'forecast': ohlc_forecast,
             'iv_cone': iv_cone,
             'market_state': market_state,
+            'microstructure_state': microstructure_state,  # Fock/Thermal/Coherent
             'max_pain': max_pain,
+            'oi_features': oi_features,
             'current_price': float(current_price),
             'day_open': float(day_open)
         })
