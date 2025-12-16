@@ -2859,8 +2859,37 @@ def get_ohlc_forecast():
         else:
             print(f"⚠ Options data not available, using fallbacks: {options_data.get('error', 'Unknown')}")
         
-        # Compute IV cone (uses options IV if available, else GARCH fallback)
+        # Get volatility surface for IV term structure (used for IV/GARCH blending)
+        vol_surface_data = None
+        try:
+            vol_surface = generate_volatility_surface(current_price, garch_vol_regime)
+            vol_surface_data = vol_surface  # Store for use in forecast
+        except Exception as e:
+            print(f"⚠ Volatility surface generation failed: {e}")
+        
+        # Compute IV cone (uses options IV if available, blends with GARCH based on state)
+        # State-based blending: Thermal (more IV), Fock (more GARCH), Coherent (balanced)
+        micro_state_name = microstructure_state.get('state', 'Coherent')
+        if micro_state_name == 'Thermal':
+            iv_blend_weight = 0.7  # Prefer IV in Thermal (sticky, precision events)
+        elif micro_state_name == 'Fock':
+            iv_blend_weight = 0.3  # Prefer GARCH/realized in Fock (chaotic, use realized vol)
+        else:  # Coherent
+            iv_blend_weight = 0.5  # Balanced blend
+        
         iv_cone = compute_iv_cone(current_price, iv_annualized_garch, T_days=1, options_data=options_data)
+        
+        # Blend IV and GARCH sigma based on state
+        if iv_cone['iv_source'] == 'options' and iv_blend_weight < 1.0:
+            # Blend options IV with GARCH
+            iv_sigma = iv_cone['sigma_day']
+            garch_sigma = current_price * iv_annualized_garch * np.sqrt(1/252)
+            blended_sigma = iv_blend_weight * iv_sigma + (1 - iv_blend_weight) * garch_sigma
+            # Recompute cone with blended sigma
+            blended_iv = blended_sigma / (current_price * np.sqrt(1/252))
+            iv_cone = compute_iv_cone(current_price, blended_iv, T_days=1, options_data=None)
+            iv_cone['iv_source'] = 'blended'
+            iv_cone['blend_weight'] = iv_blend_weight
         
         # Detect market state (Compression/Trend/Rotation/Shock) - KEEP EXISTING
         market_state = detect_market_state(closes, volumes, iv_cone, current_price, day_open)
