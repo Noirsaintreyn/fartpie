@@ -1899,21 +1899,50 @@ def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pa
             
             # Calculate confluence score: IV proximity + OI + Level strength + Max Pain + State
             iv_proximity = 1.0 - min(abs(level_price - iv_cone['hodlod_lower']) / sigma_day, 1.0) if sigma_day > 0 else 0.5
+            
+            # NEW: OI gravity from options data
+            oi_gravity = 1.0  # Default neutral
+            if oi_features:
+                # Check if level is near OI wall
+                dist_to_wall = abs(level_price - oi_features['oi_wall_below']) / current_price
+                if dist_to_wall < 0.01:  # Within 1%
+                    oi_gravity = 1.0 + 0.25  # Boost for OI wall proximity
+                elif dist_to_wall < 0.02:  # Within 2%
+                    oi_gravity = 1.0 + 0.10
+            
+            # NEW: IV edge alignment (preference for levels near IV 1σ/2σ boundaries)
+            iv_edge_alignment = 1.0  # Default neutral
+            if 'iv_1sigma' in iv_cone and 'iv_2sigma' in iv_cone:
+                iv_1sigma_lower = iv_cone['iv_1sigma'][0]
+                iv_2sigma_lower = iv_cone['iv_2sigma'][0]
+                dist_to_1sigma = abs(level_price - iv_1sigma_lower) / current_price
+                dist_to_2sigma = abs(level_price - iv_2sigma_lower) / current_price
+                if dist_to_1sigma < 0.005:  # Very close to 1σ
+                    iv_edge_alignment = 1.0 + 0.20
+                elif dist_to_2sigma < 0.005:  # Very close to 2σ
+                    iv_edge_alignment = 1.0 + 0.15
+            
             level_strength = level.get('strength', 0.5) * level.get('reversionProb', 0.5)
             max_pain_factor = 1.0
             if max_pain and abs(level_price - max_pain['price']) < current_price * 0.02:
                 max_pain_factor = 1.0 + max_pain['gravity'] * 0.3
             
-            # State machine adjustment
+            # State machine adjustment (use microstructure state for Fock/Thermal/Coherent gating)
             state_factor = 1.2 if state_id == 2 else (1.3 if state_id == 4 else 1.0)
+            # Fock allows overshoot, Thermal clamps tighter
+            if micro_state_name == 'Fock':
+                state_factor *= (1.0 + micro_overshoot * 0.5)  # Allow more extension
+            elif micro_state_name == 'Thermal':
+                state_factor *= (1.0 - (1.0 - micro_permeability) * 0.3)  # Tighter clamping
             
             confluence_score = (
-                iv_proximity * 0.3 +
-                oi_score['sticky_score'] * 0.3 +
-                level_strength * 0.2 +
-                max_pain_factor * 0.1 +
-                (level.get('confluence_count', 1) / 5.0) * 0.1
-            ) * state_factor
+                iv_proximity * 0.25 +
+                oi_score['sticky_score'] * 0.25 +
+                level_strength * 0.20 +
+                max_pain_factor * 0.10 +
+                (level.get('confluence_count', 1) / 5.0) * 0.10 +
+                0.10  # Reserve for OI/IV bonuses
+            ) * state_factor * oi_gravity * iv_edge_alignment
             
             candidate_lows.append({
                 'price': level_price,
