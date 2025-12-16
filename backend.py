@@ -874,17 +874,47 @@ def calculate_most_probable_price_path(closes, volumes, levels, garch_vol_regime
     direction = 1 if avg_velocity > 0 else -1
     velocity_strength = abs(avg_velocity) / current_price if current_price > 0 else 0
     
-    # 2. GET EXPECTED RANGE from GARCH/IV
+    # 2. GET EXPECTED RANGE from IV cone (primary) + GARCH (fallback/blend)
+    # Try to use IV from surface data first
+    iv_atm = None
+    if iv_surface_data and isinstance(iv_surface_data, dict):
+        # Extract ATM IV from surface (near moneyness=1.0, shortest maturity)
+        surface_points = iv_surface_data.get('surface', [])
+        if surface_points:
+            # Find ATM IV (closest to moneyness 1.0, shortest maturity)
+            atm_points = [p for p in surface_points if abs(p.get('moneyness', 1.0) - 1.0) < 0.05]
+            if atm_points:
+                shortest = min(atm_points, key=lambda x: x.get('maturity_days', 365))
+                iv_atm = shortest.get('implied_vol', None) / 100.0 if shortest.get('implied_vol') else None
+                # Also check atm_vol field
+                if iv_atm is None:
+                    iv_atm = iv_surface_data.get('atm_vol', None) / 100.0 if iv_surface_data.get('atm_vol') else None
+    
+    # Get GARCH volatility as fallback/blend
     garch_forecast_vols = garch_vol_regime.get('forecast_vol_array', [])
     current_vol = garch_vol_regime.get('current_vol', np.std(returns) * np.sqrt(252))
     
     if garch_forecast_vols:
-        # Use average of next 10 days for expected range
-        expected_vol = np.mean(garch_forecast_vols[:min(10, len(garch_forecast_vols))]) / 100
+        garch_expected_vol = np.mean(garch_forecast_vols[:min(10, len(garch_forecast_vols))]) / 100
     else:
-        expected_vol = current_vol / 100
+        garch_expected_vol = current_vol / 100
     
-    # Expected range: 1-2 standard deviations
+    # Use IV if available, otherwise use GARCH, or blend based on microstructure state
+    micro_state_name = microstructure_state.get('state', 'Coherent') if microstructure_state else 'Coherent'
+    if iv_atm is not None:
+        # Blend IV and GARCH based on state
+        if micro_state_name == 'Thermal':
+            iv_weight = 0.7  # Prefer IV in Thermal
+        elif micro_state_name == 'Fock':
+            iv_weight = 0.3  # Prefer GARCH in Fock
+        else:  # Coherent
+            iv_weight = 0.5  # Balanced
+        expected_vol = iv_weight * iv_atm + (1 - iv_weight) * garch_expected_vol
+    else:
+        # No IV available, use GARCH only
+        expected_vol = garch_expected_vol
+    
+    # Expected range: 1-2 standard deviations (now using IV-blended vol)
     daily_vol = expected_vol * np.sqrt(1/252)
     expected_range_1sd = current_price * daily_vol
     expected_range_2sd = current_price * daily_vol * 2
