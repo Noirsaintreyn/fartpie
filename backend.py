@@ -1956,14 +1956,44 @@ def forecast_ohlc_xgboost(closes, volumes, levels, iv_cone, market_state, max_pa
             # Calculate confluence score: IV proximity + OI + Level strength + Max Pain + State
             iv_proximity = 1.0 - min(abs(level_price - iv_cone['hodlod_lower']) / sigma_day, 1.0) if sigma_day > 0 else 0.5
             
-            # NEW: OI gravity from options data
+            # NEW: OI gravity from options data (uses actual OI density)
             oi_gravity = 1.0  # Default neutral
-            if oi_features:
-                # Check if level is near OI wall
-                dist_to_wall = abs(level_price - oi_features['oi_wall_below']) / current_price
-                if dist_to_wall < 0.01:  # Within 1%
-                    oi_gravity = 1.0 + 0.25  # Boost for OI wall proximity
-                elif dist_to_wall < 0.02:  # Within 2%
+            if oi_features and options_data and options_data.get('success'):
+                try:
+                    calls = options_data['calls']
+                    puts = options_data['puts']
+                    # Calculate OI density near this level using Gaussian kernel
+                    level_oi_density = 0.0
+                    bandwidth = current_price * 0.01  # 1% bandwidth
+                    for _, opt in pd.concat([calls, puts]).iterrows():
+                        strike = opt['strike']
+                        oi = opt.get('openInterest', 0)
+                        if oi > 0:
+                            dist = abs(strike - level_price) / bandwidth
+                            level_oi_density += oi * np.exp(-0.5 * dist * dist)
+                    
+                    total_oi_all = calls['openInterest'].sum() + puts['openInterest'].sum()
+                    if total_oi_all > 0:
+                        normalized_density = level_oi_density / total_oi_all
+                        oi_gravity = 1.0 + min(normalized_density * 2.0, 0.5)
+                    
+                    # Additional wall proximity boost
+                    dist_to_wall = abs(level_price - oi_features.get('oi_wall_below', current_price * 0.99)) / current_price
+                    if dist_to_wall < 0.005:
+                        oi_gravity *= 1.15
+                except:
+                    # Fallback to simple wall proximity
+                    dist_to_wall = abs(level_price - oi_features.get('oi_wall_below', current_price * 0.99)) / current_price
+                    if dist_to_wall < 0.01:
+                        oi_gravity = 1.0 + 0.25
+                    elif dist_to_wall < 0.02:
+                        oi_gravity = 1.0 + 0.10
+            elif oi_features:
+                # Fallback: simple wall proximity
+                dist_to_wall = abs(level_price - oi_features.get('oi_wall_below', current_price * 0.99)) / current_price
+                if dist_to_wall < 0.01:
+                    oi_gravity = 1.0 + 0.25
+                elif dist_to_wall < 0.02:
                     oi_gravity = 1.0 + 0.10
             
             # NEW: IV edge alignment (preference for levels near IV 1σ/2σ boundaries)
