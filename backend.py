@@ -2911,12 +2911,13 @@ def get_ohlc_forecast():
         # Get phase space (optional) - KEEP EXISTING
         phase_space = calculate_phase_space_coordinates(closes, volumes)
         
-        # Forecast OHLC with enhanced features
+        # Forecast OHLC with enhanced features (including vol surface data)
         ohlc_forecast = forecast_ohlc_xgboost(
             closes, volumes, all_levels, iv_cone, market_state, max_pain,
             current_price, phase_space=phase_space, microstructure_state=microstructure_state,
             oi_features=oi_features, model_close=model_close, garch_regime=garch_vol_regime,
-            options_data=options_data if options_data.get('success') else None
+            options_data=options_data if options_data.get('success') else None,
+            iv_surface_data=vol_surface_data
         )
         
         print(f"✓ OHLC forecast generated: Close={ohlc_forecast['close']:.2f}, High={ohlc_forecast['high']:.2f}, Low={ohlc_forecast['low']:.2f}")
