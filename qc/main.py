@@ -17,6 +17,10 @@ def OnData(self, data):
     if not data.ContainsKey(self.symbol):
         return
 
-    price = data[self.symbol].Close
+    bar = data[self.symbol]
+    if bar is None:
+        return
+
+    price = bar.Close
     self.Debug(f"{self.Time} | SPY price: {price}")
 
