@@ -10,11 +10,13 @@ class ProbabilisticExecution(QCAlgorithm):
         self.symbol = self.AddEquity("SPY", Resolution.Minute).Symbol
         self.SetWarmUp(30)
 
- def OnData(self, data):
+def OnData(self, data):
     if self.IsWarmingUp:
         return
 
-    price = data[self.symbol].Close
+    if not data.ContainsKey(self.symbol):
+        return
 
+    price = data[self.symbol].Close
     self.Debug(f"{self.Time} | SPY price: {price}")
 
