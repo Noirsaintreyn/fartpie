@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LSTM Forecast - Where is price going today?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e5e5e5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+
+        .control-group input,
+        .control-group select {
+            width: 100%;
+            padding: 10px;
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+        }
+
+        .btn:disabled {
+            background: #4b5563;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+        }
+
+        .spinner {
+            border: 3px solid #333;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Include LSTM Forecast Styles */
+        ${LSTM_FORECAST_STYLES}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 LSTM Forecast</h1>
+            <p style="color: #9ca3af;">"Where is price going today?" - Level-Based Prediction</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="ticker">Ticker</label>
+                <input type="text" id="ticker" value="SPY" placeholder="SPY, NQ=F, etc.">
+            </div>
+            <div class="control-group">
+                <label for="timeframe">Timeframe</label>
+                <select id="timeframe">
+                    <option value="1m">1 Minute</option>
+                    <option value="5m" selected>5 Minutes</option>
+                    <option value="15m">15 Minutes</option>
+                    <option value="1h">1 Hour</option>
+                    <option value="4h">4 Hours</option>
+                    <option value="1d">1 Day</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="lookback">Lookback Window</label>
+                <input type="number" id="lookback" value="20" min="10" max="100">
+            </div>
+            <div class="control-group">
+                <label for="apiUrl">API URL</label>
+                <input type="text" id="apiUrl" value="http://localhost:5001" placeholder="API Base URL">
+            </div>
+            <div class="control-group">
+                <button class="btn" id="getForecast">Get Forecast</button>
+            </div>
+        </div>
+
+        <div id="forecastContainer"></div>
+    </div>
+
+    <script>
+        // Include the LSTM Forecast class
+        ${LSTM_FORECAST_STYLES}
+
+        class LSTMForecast {
+            constructor(apiBaseUrl = 'http://localhost:5001', authToken = null) {
+                this.apiBaseUrl = apiBaseUrl;
+                this.authToken = authToken;
+            }
+
+            async getForecast(ticker, timeframe = '5m', lookback = 20) {
+                try {
+                    const url = new URL(`${this.apiBaseUrl}/api/lstm-forecast`);
+                    url.searchParams.set('ticker', ticker);
+                    url.searchParams.set('timeframe', timeframe);
+                    url.searchParams.set('lookback', lookback.toString());
+
+                    const headers = {
+                        'Content-Type': 'application/json'
+                    };
+
+                    if (this.authToken) {
+                        headers['Authorization'] = `Bearer ${this.authToken}`;
+                    }
+
+                    const response = await fetch(url.toString(), {
+                        method: 'GET',
+                        headers: headers,
+                        credentials: 'include'
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.error || `HTTP ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error('LSTM Forecast Error:', error);
+                    throw error;
+                }
+            }
+
+            formatForecast(forecastData) {
+                if (!forecastData.success) {
+                    return {
+                        error: forecastData.error,
+                        suggestion: forecastData.suggestion || null
+                    };
+                }
+
+                const answer = forecastData.answer;
+                const bounds = forecastData.theoretical_bounds;
+                const levels = forecastData.levels_detected;
+
+                return {
+                    question: forecastData.question,
+                    target: {
+                        price: answer.target_price,
+                        move: answer.target_pct_move,
+                        moveFormatted: `${answer.target_pct_move >= 0 ? '+' : ''}${answer.target_pct_move.toFixed(2)}%`,
+                        confidence: answer.confidence,
+                        confidenceFormatted: `${(answer.confidence * 100).toFixed(1)}%`,
+                        timeMinutes: answer.expected_time_minutes,
+                        timeBars: answer.expected_time_bars,
+                        timeFormatted: this.formatTime(answer.expected_time_minutes)
+                    },
+                    closestLevel: answer.closest_level,
+                    attention: answer.attention_focus,
+                    bounds: {
+                        hodPM: bounds.hod_premarket,
+                        lodPM: bounds.lod_premarket,
+                        hodID: bounds.hod_intraday,
+                        lodID: bounds.lod_intraday
+                    },
+                    levels: levels,
+                    modelUsed: forecastData.model_used
+                };
+            }
+
+            formatTime(minutes) {
+                if (minutes < 60) {
+                    return `${Math.round(minutes)} minutes`;
+                } else if (minutes < 1440) {
+                    const hours = Math.floor(minutes / 60);
+                    const mins = Math.round(minutes % 60);
+                    return mins > 0 ? `${hours}h ${mins}m` : `${hours} hours`;
+                } else {
+                    const days = Math.floor(minutes / 1440);
+                    const hours = Math.floor((minutes % 1440) / 60);
+                    return hours > 0 ? `${days}d ${hours}h` : `${days} days`;
+                }
+            }
+
+            renderForecast(formattedData, container) {
+                if (formattedData.error) {
+                    container.innerHTML = `
+                        <div class="lstm-forecast-error">
+                            <h3>⚠️ Forecast Error</h3>
+                            <p>${formattedData.error}</p>
+                            ${formattedData.suggestion ? `<p class="suggestion">💡 ${formattedData.suggestion}</p>` : ''}
+                        </div>
+                    `;
+                    return;
+                }
+
+                const target = formattedData.target;
+                const isUp = target.move >= 0;
+                const confidenceColor = target.confidence > 0.7 ? '#10b981' : target.confidence > 0.5 ? '#f59e0b' : '#ef4444';
+
+                container.innerHTML = `
+                    <div class="lstm-forecast-container">
+                        <div class="lstm-forecast-header">
+                            <h3>🎯 ${formattedData.question}</h3>
+                            <span class="model-badge">${formattedData.modelUsed}</span>
+                        </div>
+
+                        <div class="lstm-forecast-target">
+                            <div class="target-price">
+                                <div class="target-label">Target Price</div>
+                                <div class="target-value">$${target.price.toFixed(2)}</div>
+                                <div class="target-move ${isUp ? 'up' : 'down'}">
+                                    ${target.moveFormatted}
+                                </div>
+                            </div>
+
+                            <div class="target-metrics">
+                                <div class="metric">
+                                    <div class="metric-label">Confidence</div>
+                                    <div class="metric-value" style="color: ${confidenceColor}">
+                                        ${target.confidenceFormatted}
+                                    </div>
+                                </div>
+                                <div class="metric">
+                                    <div class="metric-label">Expected Time</div>
+                                    <div class="metric-value">${target.timeFormatted}</div>
+                                </div>
+                                <div class="metric">
+                                    <div class="metric-label">Time (Bars)</div>
+                                    <div class="metric-value">${target.timeBars}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        ${formattedData.closestLevel ? `
+                            <div class="lstm-forecast-level">
+                                <div class="level-label">🎯 Closest Level</div>
+                                <div class="level-info">
+                                    <span class="level-price">$${formattedData.closestLevel.price?.toFixed(2) || 'N/A'}</span>
+                                    ${formattedData.closestLevel.strength ? `
+                                        <span class="level-strength">Strength: ${(formattedData.closestLevel.strength * 100).toFixed(0)}%</span>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <div class="lstm-forecast-bounds">
+                            <div class="bounds-header">📊 Theoretical Bounds</div>
+                            <div class="bounds-grid">
+                                <div class="bound-item">
+                                    <div class="bound-label">Pre-market HOD</div>
+                                    <div class="bound-value">$${formattedData.bounds.hodPM.toFixed(2)}</div>
+                                </div>
+                                <div class="bound-item">
+                                    <div class="bound-label">Pre-market LOD</div>
+                                    <div class="bound-value">$${formattedData.bounds.lodPM.toFixed(2)}</div>
+                                </div>
+                                <div class="bound-item">
+                                    <div class="bound-label">Intraday HOD</div>
+                                    <div class="bound-value">$${formattedData.bounds.hodID.toFixed(2)}</div>
+                                </div>
+                                <div class="bound-item">
+                                    <div class="bound-label">Intraday LOD</div>
+                                    <div class="bound-value">$${formattedData.bounds.lodID.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lstm-forecast-levels">
+                            <div class="levels-header">🔍 Levels Detected</div>
+                            <div class="levels-grid">
+                                <div class="level-type">HDBSCAN: ${formattedData.levels.hdbscan}</div>
+                                <div class="level-type">OPTICS: ${formattedData.levels.optics}</div>
+                                <div class="level-type">Interaction: ${formattedData.levels.interaction}</div>
+                                <div class="level-type">ML-Confluence: ${formattedData.levels.ml_confluence}</div>
+                                <div class="level-type">Multiscale: ${formattedData.levels.multiscale}</div>
+                            </div>
+                        </div>
+
+                        ${formattedData.attention && formattedData.attention.weights ? `
+                            <div class="lstm-forecast-attention">
+                                <div class="attention-header">👁️ Attention Focus</div>
+                                <div class="attention-info">
+                                    Most important bar: ${formattedData.attention.most_important_bar}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize
+        const forecast = new LSTMForecast();
+        const container = document.getElementById('forecastContainer');
+        const btn = document.getElementById('getForecast');
+
+        btn.addEventListener('click', async () => {
+            const ticker = document.getElementById('ticker').value.trim();
+            const timeframe = document.getElementById('timeframe').value;
+            const lookback = parseInt(document.getElementById('lookback').value);
+            const apiUrl = document.getElementById('apiUrl').value.trim();
+
+            if (!ticker) {
+                alert('Please enter a ticker symbol');
+                return;
+            }
+
+            btn.disabled = true;
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading forecast...</p>
+                </div>
+            `;
+
+            try {
+                forecast.apiBaseUrl = apiUrl || 'http://localhost:5001';
+                const data = await forecast.getForecast(ticker, timeframe, lookback);
+                const formatted = forecast.formatForecast(data);
+                forecast.renderForecast(formatted, container);
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="lstm-forecast-error">
+                        <h3>⚠️ Error</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        // Auto-load on page load (optional)
+        // btn.click();
+    </script>
+</body>
+</html>
