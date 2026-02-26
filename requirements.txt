@@ -1,8 +1,8 @@
 flask
 flask-cors
 yfinance
-pandas
-numpy
+pandas<2.2
+numpy<2.0
 scikit-learn
 hdbscan>=0.8.33
 scipy
@@ -10,7 +10,3 @@ arch>=6.3.0,<7.0.0
 statsmodels
 gunicorn
 torch
-# Optional (install separately if needed):
-# lightgbm  # ~50MB - only needed for LGBM models (has RandomForest fallback)
-# ripser  # ~20MB - only used for topological analysis (optional)
-# persim  # ~5MB - only used with ripser (optional)
