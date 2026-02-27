@@ -120,6 +120,19 @@ def train_level_detector(ticker='SPY', timeframe='1d', lookback=100, epochs=30, 
     
     print(f"Fetching {period} of {interval} data...")
     hist = stock.history(period=period, interval=interval)
+
+    # If user requested 4h, yfinance doesn't support 4h directly.
+    # We download 1h data above and resample it into 4h candles.
+    if timeframe == '4h':
+        if not isinstance(hist.index, pd.DatetimeIndex):
+            hist.index = pd.to_datetime(hist.index)
+        hist = hist.resample('4H').agg({
+            'Open': 'first',
+            'High': 'max',
+            'Low': 'min',
+            'Close': 'last',
+            'Volume': 'sum'
+        }).dropna()
     
     if len(hist) < lookback * 2:
         print(f"Error: Need at least {lookback * 2} bars, got {len(hist)}")
