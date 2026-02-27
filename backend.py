@@ -1936,7 +1936,8 @@ def calculate_garch_confidence_bands(forecasts, garch_vol_regime):
         return forecasts
     
     ensemble = forecasts['ensemble']
-    current_vol = garch_vol_regime['current_vol']
+    # Be defensive: garch_vol_regime may be missing current_vol for some timeframes (e.g. intraday/4h)
+    current_vol = float(garch_vol_regime.get('current_vol', 20.0))
     forecast_vols = garch_vol_regime.get('forecast_vol_array', [current_vol] * 10)
     
     upper_band = []
@@ -2338,7 +2339,8 @@ def generate_volatility_surface(current_price, garch_vol_regime):
     
     # FIXED: Explicit decimal/percentage naming for unit safety
     if garch_vol_regime.get('garch_params') is not None:
-        atm_vol_pct = garch_vol_regime['current_vol']  # Percentage (e.g., 20.0 = 20%)
+        # Be defensive: fall back to 20% if current_vol is missing
+        atm_vol_pct = float(garch_vol_regime.get('current_vol', 20.0))  # Percentage (e.g., 20.0 = 20%)
         atm_vol_dec = atm_vol_pct / 100.0  # Decimal (e.g., 0.20 = 20%)
     else:
         atm_vol_pct = 20.0
