@@ -4632,7 +4632,7 @@ def get_data():
         return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
     
     ticker = request.args.get('ticker', 'SPY')
-    timeframe = request.args.get('timeframe', '1d').strip().lower()
+    timeframe = request.args.get('timeframe', '1d').strip().lower().replace('240m','4h').replace('4hour','4h').replace('4hours','4h').replace('60m','1h')
     start_date = request.args.get('start_date', None)
     end_date = request.args.get('end_date', None)
     historical_mode = request.args.get('historical_mode', 'false').lower() == 'true'
@@ -10064,7 +10064,7 @@ def get_level_constrained_hod_lod():
         return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
     
     ticker = request.args.get('ticker', 'SPY')
-    timeframe = request.args.get('timeframe', '1d').strip().lower()
+    timeframe = request.args.get('timeframe', '1d').strip().lower().replace('240m','4h').replace('4hour','4h').replace('4hours','4h').replace('60m','1h')
     
     try:
         print(f"Calculating level-constrained HOD/LOD for {ticker}...")
@@ -10475,7 +10475,7 @@ def get_state_conditioned_hod_lod():
         return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
     
     ticker = request.args.get('ticker', 'SPY')
-    timeframe = request.args.get('timeframe', '1d').strip().lower()
+    timeframe = request.args.get('timeframe', '1d').strip().lower().replace('240m','4h').replace('4hour','4h').replace('4hours','4h').replace('60m','1h')
     quantile = float(request.args.get('quantile', 0.8))
     use_intraday = timeframe in ['1m', '5m', '15m', '1h', '4h']
     
@@ -11139,7 +11139,7 @@ def get_lstm_forecast():
         return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
     
     ticker = request.args.get('ticker', 'SPY')
-    timeframe = request.args.get('timeframe', '5m').strip().lower()
+    timeframe = request.args.get('timeframe', '5m').strip().lower().replace('240m','4h').replace('4hour','4h').replace('4hours','4h').replace('60m','1h')
     lookback_window = int(request.args.get('lookback', 20))
     
     # Note: PyTorch is optional - we'll use level-based heuristic if torch is not available
