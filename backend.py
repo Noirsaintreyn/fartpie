@@ -6670,6 +6670,57 @@ def garman_klass_daily_volatility(open_, high, low, close):
     # Return DAILY volatility (no sqrt(252) multiplier)
     return np.sqrt(np.mean(variance))
 
+def compute_session_sigma_from_range(hist: pd.DataFrame, window: int = 60) -> float:
+    """
+    Robust session volatility estimator from intraday/daily ranges.
+
+    Uses a median ensemble of:
+      - Parkinson
+      - Rogers–Satchell
+      - Garman–Klass
+    over a rolling window, then takes the latest sigma.
+    """
+    if len(hist) < 10:
+        raise ValueError("Not enough data for range-based session sigma")
+
+    recent = hist.tail(window).copy()
+
+    # Per-bar variances
+    var_pk = []
+    var_rs = []
+    var_gk = []
+    for _, row in recent.iterrows():
+        try:
+            var_pk.append(parkinson_daily_volatility([row["High"]], [row["Low"]])**2)
+        except Exception:
+            var_pk.append(np.nan)
+        try:
+            var_rs.append(rogers_satchell_daily_volatility([row["Open"]], [row["High"]], [row["Low"]], [row["Close"]])**2)
+        except Exception:
+            var_rs.append(np.nan)
+        try:
+            var_gk.append(garman_klass_daily_volatility([row["Open"]], [row["High"]], [row["Low"]], [row["Close"]])**2)
+        except Exception:
+            var_gk.append(np.nan)
+
+    var_pk = np.array(var_pk, dtype=float)
+    var_rs = np.array(var_rs, dtype=float)
+    var_gk = np.array(var_gk, dtype=float)
+
+    # Rolling means and median ensemble
+    roll_pk = pd.Series(var_pk).rolling(window=min(window, len(var_pk)), min_periods=5).mean().values
+    roll_rs = pd.Series(var_rs).rolling(window=min(window, len(var_rs)), min_periods=5).mean().values
+    roll_gk = pd.Series(var_gk).rolling(window=min(window, len(var_gk)), min_periods=5).mean().values
+
+    var_stack = np.vstack([roll_pk, roll_rs, roll_gk])
+    var_median = np.nanmedian(var_stack, axis=0)
+
+    if not np.isfinite(var_median[-1]) or var_median[-1] <= 0:
+        raise ValueError("Invalid median variance from range estimators")
+
+    sigma_session = float(np.sqrt(var_median[-1]))  # decimal, e.g. 0.015 = 1.5%
+    return sigma_session
+
 def parkinson_daily_volatility(high, low):
     """
     Parkinson for SINGLE PERIOD
@@ -6899,32 +6950,32 @@ def compute_session_volatility(hist: pd.DataFrame, window: int = 60) -> dict:
     closes = recent['Close'].values
     current_price = closes[-1]
     
-    # 1. Calculate DAILY (non-annualized) volatility using Garman-Klass
-    # Ensure all values are positive and valid
-    opens = np.maximum(opens, 1e-9)
-    highs = np.maximum(highs, opens * 0.99)
-    lows = np.maximum(lows, opens * 0.99)
-    closes = np.maximum(closes, lows)
-    
-    log_hl = np.log(highs / (lows + 1e-9))
-    log_co = np.log(closes / (opens + 1e-9))
-    variance = 0.5 * (log_hl ** 2) - (2 * np.log(2) - 1) * (log_co ** 2)
-    
-    # Handle negative variance (can happen if close-open correlation is high)
-    variance = np.maximum(variance, 1e-9)  # Ensure non-negative
-    
-    # Session volatility (for next period)
-    mean_variance = np.mean(variance)
-    if mean_variance <= 0 or not np.isfinite(mean_variance):
-        # Fallback: use simple close-to-close volatility
-        returns = np.diff(np.log(closes))
-        mean_variance = np.var(returns)
+    # 1. Try robust range-based ensemble (Parkinson + RS + GK) for session sigma
+    try:
+        sigma_session = compute_session_sigma_from_range(recent, window=min(window, len(recent)))
+        method = 'range_ensemble_session'
+    except Exception as e:
+        print(f"⚠ compute_session_volatility: range-based sigma failed ({e}), falling back to GK/returns")
+        # 2. Fallback: DAILY (non-annualized) volatility using Garman-Klass
+        opens = np.maximum(opens, 1e-9)
+        highs = np.maximum(highs, opens * 0.99)
+        lows = np.maximum(lows, opens * 0.99)
+        closes = np.maximum(closes, lows)
+        
+        log_hl = np.log(highs / (lows + 1e-9))
+        log_co = np.log(closes / (opens + 1e-9))
+        variance = 0.5 * (log_hl ** 2) - (2 * np.log(2) - 1) * (log_co ** 2)
+        
+        variance = np.maximum(variance, 1e-9)  # Ensure non-negative
+        mean_variance = np.mean(variance)
         if mean_variance <= 0 or not np.isfinite(mean_variance):
-            # Last resort: use price range
-            price_range = np.max(highs) - np.min(lows)
-            mean_variance = (price_range / current_price) ** 2 / len(closes)
-    
-    sigma_session = np.sqrt(mean_variance)  # Decimal (e.g., 0.015 = 1.5%)
+            returns = np.diff(np.log(closes))
+            mean_variance = np.var(returns)
+            if mean_variance <= 0 or not np.isfinite(mean_variance):
+                price_range = np.max(highs) - np.min(lows)
+                mean_variance = (price_range / current_price) ** 2 / max(len(closes), 1)
+        sigma_session = np.sqrt(mean_variance)
+        method = 'garman_klass_session_fallback'
     
     # Ensure sigma_session is valid
     if sigma_session <= 0 or not np.isfinite(sigma_session):
@@ -6943,11 +6994,11 @@ def compute_session_volatility(hist: pd.DataFrame, window: int = 60) -> dict:
         print(f"⚠ compute_session_volatility: Invalid sigma_price, using fallback: {sigma_price:.4f}")
     
     return {
-        'sigma_session': float(sigma_session),  # Next period vol (decimal)
-        'sigma_session_pct': float(sigma_session * 100),  # Next period vol (%)
+        'sigma_session': float(sigma_session),          # Next period vol (decimal)
+        'sigma_session_pct': float(sigma_session * 100),# Next period vol (%)
         'sigma_annual_pct': float(sigma_annual * 100),  # Annualized (%)
-        'sigma_price': float(sigma_price),  # Expected $ range
-        'method': 'garman_klass_session'
+        'sigma_price': float(sigma_price),              # Expected $ range
+        'method': method
     }
 
 def compute_volatility_cone(hist: pd.DataFrame, window: int = 252) -> dict:
