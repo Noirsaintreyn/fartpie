@@ -22,64 +22,65 @@ except ImportError as e:
     sys.exit(1)
 
 class LevelDetectionNet(nn.Module):
-    """
-    Neural Network for Level Prediction
-    CNN + Attention for pattern recognition in OHLC data + Volume Profile features
-
-    This mirrors the canonical implementation in backend.py so training
-    and inference use the same architecture.
-    """
-    def __init__(self, lookback=100, use_volume_profile=True):
+    """CNN + (Bi)LSTM/GRU for per-bar level prediction (mirrors backend.LevelDetectionNet)."""
+    def __init__(
+        self,
+        lookback: int = 100,
+        rnn_type: str = 'bilstm',   # 'bilstm' or 'bigru'
+        hidden_size: int = 64,
+        num_layers: int = 1,
+        use_volume_profile: bool = True,
+        volume_feature_dim: int = 5,
+    ):
         super().__init__()
         self.use_volume_profile = use_volume_profile
+        self.rnn_type = rnn_type.lower()
 
-        # CNN for OHLC patterns
+        # CNN over OHLC (4 channels)
         self.conv1 = nn.Conv1d(4, 64, kernel_size=5, padding=2)
         self.conv2 = nn.Conv1d(64, 128, kernel_size=5, padding=2)
         self.conv3 = nn.Conv1d(128, 64, kernel_size=5, padding=2)
 
-        # Optional volume profile branch (per-bar features)
-        if use_volume_profile:
-            self.volume_fc = nn.Sequential(
-                nn.Linear(5, 32),
-                nn.ReLU(),
-                nn.Linear(32, 32)
-            )
-            combined_dim = 64 + 32
-        else:
-            combined_dim = 64
+        base_feat_dim = 64
 
-        # Attention over time
-        self.attention = nn.MultiheadAttention(combined_dim, num_heads=4)
-        # Output: per-bar logits
-        self.fc = nn.Linear(combined_dim, 1)
+        if self.use_volume_profile:
+            self.volume_proj = nn.Linear(volume_feature_dim, 32)
+            base_feat_dim += 32
+
+        if self.rnn_type == 'bigru':
+            self.rnn = nn.GRU(
+                input_size=base_feat_dim,
+                hidden_size=hidden_size,
+                num_layers=num_layers,
+                batch_first=True,
+                bidirectional=True,
+            )
+        else:
+            self.rnn = nn.LSTM(
+                input_size=base_feat_dim,
+                hidden_size=hidden_size,
+                num_layers=num_layers,
+                batch_first=True,
+                bidirectional=True,
+            )
+
+        self.fc = nn.Linear(2 * hidden_size, 1)
 
     def forward(self, ohlc, volume_profile_features=None):
-        """
-        ohlc: [batch, lookback, 4]
-        volume_profile_features: [batch, lookback, 5] (optional)
-        """
-        # Conv1d expects [batch, channels, length]
-        x = ohlc.transpose(1, 2)
-        x = torch.relu(self.conv1(x))
-        x = torch.relu(self.conv2(x))
-        x = torch.relu(self.conv3(x))
+        # ohlc: [batch, seq_len, 4]
+        x = ohlc.transpose(1, 2)          # [B, 4, L]
+        x = torch.relu(self.conv1(x))     # [B, 64, L]
+        x = torch.relu(self.conv2(x))     # [B, 128, L]
+        x = torch.relu(self.conv3(x))     # [B, 64, L]
+        x = x.transpose(1, 2)             # [B, L, 64]
 
-        # Back to [batch, lookback, features]
-        x = x.transpose(1, 2)
-
-        # Add volume profile features if enabled
         if self.use_volume_profile and volume_profile_features is not None:
-            vol_features = self.volume_fc(volume_profile_features)
-            x = torch.cat([x, vol_features], dim=2)
+            v = self.volume_proj(volume_profile_features)   # [B, L, 32]
+            x = torch.cat([x, v], dim=-1)                  # [B, L, base_feat_dim]
 
-        # Attention expects [lookback, batch, features]
-        x = x.transpose(0, 1)
-        x, _ = self.attention(x, x, x)
-        x = x.transpose(0, 1)
-
-        logits = self.fc(x)
-        return logits.squeeze(-1)
+        rnn_out, _ = self.rnn(x)          # [B, L, 2*hidden_size]
+        logits = self.fc(rnn_out)         # [B, L, 1]
+        return logits.squeeze(-1)         # [B, L]
 
 def calculate_hdbscan_levels(highs, lows, closes, timeframe='1d'):
     """

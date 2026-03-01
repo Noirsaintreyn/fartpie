@@ -3609,75 +3609,80 @@ def persistent_homology_levels(highs, lows, closes, max_levels=8):
 if TORCH_AVAILABLE and nn is not None:
     class LevelDetectionNet(nn.Module):
         """
-        Neural Network for Level Prediction
-        CNN + Attention for pattern recognition in OHLC data + Volume Profile features
-        
-        Enhanced with volume profile to combine:
-        - Temporal patterns (OHLC sequences)
-        - Spatial volume information (where volume clusters)
+        CNN + (Bi)LSTM/GRU for per-bar level prediction.
+
+        - CNN over OHLC (4 channels)
+        - Optional volume profile features concatenated per time step
+        - Bidirectional LSTM/GRU over the sequence
         """
-        def __init__(self, lookback=100, use_volume_profile=True):
+        def __init__(
+            self,
+            lookback: int = 100,
+            rnn_type: str = 'bilstm',   # 'bilstm' or 'bigru'
+            hidden_size: int = 64,
+            num_layers: int = 1,
+            use_volume_profile: bool = True,
+            volume_feature_dim: int = 5,
+        ):
             super().__init__()
             self.use_volume_profile = use_volume_profile
-            
-            # CNN for pattern recognition in OHLC
+            self.rnn_type = rnn_type.lower()
+
+            # CNN over OHLC (4 channels)
             self.conv1 = nn.Conv1d(4, 64, kernel_size=5, padding=2)
             self.conv2 = nn.Conv1d(64, 128, kernel_size=5, padding=2)
             self.conv3 = nn.Conv1d(128, 64, kernel_size=5, padding=2)
-            
-            # Volume profile features (per-bar): distance to POC, in VA, volume at price
-            if use_volume_profile:
-                # Volume profile feature dimension
-                self.volume_fc = nn.Sequential(
-                    nn.Linear(5, 32),  # 5 volume profile features per bar
-                    nn.ReLU(),
-                    nn.Linear(32, 32)
+
+            base_feat_dim = 64
+
+            # Optional volume profile projection
+            if self.use_volume_profile:
+                self.volume_proj = nn.Linear(volume_feature_dim, 32)
+                base_feat_dim += 32
+
+            # BiLSTM / BiGRU
+            if self.rnn_type == 'bigru':
+                self.rnn = nn.GRU(
+                    input_size=base_feat_dim,
+                    hidden_size=hidden_size,
+                    num_layers=num_layers,
+                    batch_first=True,
+                    bidirectional=True,
                 )
-                # Combine CNN features (64) + volume features (32) = 96
-                combined_dim = 64 + 32
             else:
-                combined_dim = 64
-            
-            # Attention for "where to look"
-            self.attention = nn.MultiheadAttention(combined_dim, num_heads=4)
-            
-            # Output: logits (before sigmoid) for level probability
-            self.fc = nn.Linear(combined_dim, 1)
-        
+                self.rnn = nn.LSTM(
+                    input_size=base_feat_dim,
+                    hidden_size=hidden_size,
+                    num_layers=num_layers,
+                    batch_first=True,
+                    bidirectional=True,
+                )
+
+            # Final per-time-step classifier (2*hidden_size from bidirectional RNN)
+            self.fc = nn.Linear(2 * hidden_size, 1)
+
         def forward(self, ohlc, volume_profile_features=None):
             """
-            ohlc: [batch, lookback, 4] (Open, High, Low, Close)
-            volume_profile_features: [batch, lookback, 5] optional - (dist_to_poc, dist_to_va_high, dist_to_va_low, in_value_area, volume_at_price)
+            ohlc: [batch, seq_len, 4]
+            volume_profile_features: [batch, seq_len, volume_feature_dim] (optional)
             """
-            # Transpose for Conv1d: [batch, 4, lookback]
-            x = ohlc.transpose(1, 2)
-            
-            # Convolutional feature extraction
-            x = torch.relu(self.conv1(x))
-            x = torch.relu(self.conv2(x))
-            x = torch.relu(self.conv3(x))
-            
-            # Back to [batch, lookback, features]
-            x = x.transpose(1, 2)  # [batch, lookback, 64]
-            
-            # Add volume profile features if available
+            # Conv over OHLC
+            x = ohlc.transpose(1, 2)          # [B, 4, L]
+            x = torch.relu(self.conv1(x))     # [B, 64, L]
+            x = torch.relu(self.conv2(x))     # [B, 128, L]
+            x = torch.relu(self.conv3(x))     # [B, 64, L]
+            x = x.transpose(1, 2)             # [B, L, 64]
+
+            # Concatenate volume features if enabled
             if self.use_volume_profile and volume_profile_features is not None:
-                vol_features = self.volume_fc(volume_profile_features)  # [batch, lookback, 32]
-                x = torch.cat([x, vol_features], dim=2)  # [batch, lookback, 96]
-            
-            # Transpose for attention: [lookback, batch, features]
-            x = x.transpose(0, 1)
-            
-            # Self-attention (find important bars)
-            x, _ = self.attention(x, x, x)
-            
-            # Back to [batch, lookback, features]
-            x = x.transpose(0, 1)
-            
-            # Predict level logits for each bar (before sigmoid)
-            level_logits = self.fc(x)
-            
-            return level_logits.squeeze(-1)  # [batch, lookback]
+                v = self.volume_proj(volume_profile_features)   # [B, L, 32]
+                x = torch.cat([x, v], dim=-1)                  # [B, L, base_feat_dim]
+
+            # BiRNN over sequence
+            rnn_out, _ = self.rnn(x)          # [B, L, 2*hidden_size]
+
+            logits = self.fc(rnn_out)         # [B, L, 1]
+            return logits.squeeze(-1)         # [B, L]
 else:
     # Dummy class when torch is not available
     class LevelDetectionNet:
