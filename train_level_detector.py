@@ -22,65 +22,57 @@ except ImportError as e:
     sys.exit(1)
 
 class LevelDetectionNet(nn.Module):
-    """CNN + (Bi)LSTM/GRU for per-bar level prediction (mirrors backend.LevelDetectionNet)."""
-    def __init__(
-        self,
-        lookback: int = 100,
-        rnn_type: str = 'bilstm',   # 'bilstm' or 'bigru'
-        hidden_size: int = 64,
-        num_layers: int = 1,
-        use_volume_profile: bool = True,
-        volume_feature_dim: int = 5,
-    ):
+    """Neural Network for Level Prediction - CNN + Attention (+ optional volume features)"""
+    def __init__(self, lookback=100, use_volume_profile: bool = False, volume_feature_dim: int = 5):
         super().__init__()
         self.use_volume_profile = use_volume_profile
-        self.rnn_type = rnn_type.lower()
+        self.lookback = lookback
 
-        # CNN over OHLC (4 channels)
+        # OHLC conv backbone
         self.conv1 = nn.Conv1d(4, 64, kernel_size=5, padding=2)
         self.conv2 = nn.Conv1d(64, 128, kernel_size=5, padding=2)
         self.conv3 = nn.Conv1d(128, 64, kernel_size=5, padding=2)
 
-        base_feat_dim = 64
+        # If we use volume profile, project it and concatenate with conv output
+        if self.use_volume_profile:
+            self.vol_proj = nn.Linear(volume_feature_dim, 32)  # 5 → 32
+            attn_input_dim = 64 + 32
+        else:
+            self.vol_proj = None
+            attn_input_dim = 64
+
+        self.attention = nn.MultiheadAttention(attn_input_dim, num_heads=4, batch_first=False)
+
+        # Final per-bar classifier
+        self.fc = nn.Linear(attn_input_dim, 1)
+
+    def forward(self, ohlc: torch.Tensor, volume_profile_features: torch.Tensor = None):
+        """
+        ohlc: [batch, seq_len, 4]
+        volume_profile_features: [batch, seq_len, volume_feature_dim] or None
+        """
+        # CNN on OHLC
+        x = ohlc.transpose(1, 2)             # [B, 4, L]
+        x = torch.relu(self.conv1(x))        # [B, 64, L]
+        x = torch.relu(self.conv2(x))        # [B, 128, L]
+        x = torch.relu(self.conv3(x))        # [B, 64, L]
+        x = x.transpose(1, 2)                # [B, L, 64]
 
         if self.use_volume_profile:
-            self.volume_proj = nn.Linear(volume_feature_dim, 32)
-            base_feat_dim += 32
+            if volume_profile_features is None:
+                raise ValueError("volume_profile_features is required when use_volume_profile=True")
+            # Project volume features and concatenate
+            vol = self.vol_proj(volume_profile_features)   # [B, L, 32]
+            x = torch.cat([x, vol], dim=-1)                # [B, L, 96]
 
-        if self.rnn_type == 'bigru':
-            self.rnn = nn.GRU(
-                input_size=base_feat_dim,
-                hidden_size=hidden_size,
-                num_layers=num_layers,
-                batch_first=True,
-                bidirectional=True,
-            )
-        else:
-            self.rnn = nn.LSTM(
-                input_size=base_feat_dim,
-                hidden_size=hidden_size,
-                num_layers=num_layers,
-                batch_first=True,
-                bidirectional=True,
-            )
+        # Attention expects [L, B, C]
+        x = x.transpose(0, 1)                # [L, B, C]
+        x, _ = self.attention(x, x, x)       # [L, B, C]
+        x = x.transpose(0, 1)                # [B, L, C]
 
-        self.fc = nn.Linear(2 * hidden_size, 1)
-
-    def forward(self, ohlc, volume_profile_features=None):
-        # ohlc: [batch, seq_len, 4]
-        x = ohlc.transpose(1, 2)          # [B, 4, L]
-        x = torch.relu(self.conv1(x))     # [B, 64, L]
-        x = torch.relu(self.conv2(x))     # [B, 128, L]
-        x = torch.relu(self.conv3(x))     # [B, 64, L]
-        x = x.transpose(1, 2)             # [B, L, 64]
-
-        if self.use_volume_profile and volume_profile_features is not None:
-            v = self.volume_proj(volume_profile_features)   # [B, L, 32]
-            x = torch.cat([x, v], dim=-1)                  # [B, L, base_feat_dim]
-
-        rnn_out, _ = self.rnn(x)          # [B, L, 2*hidden_size]
-        logits = self.fc(rnn_out)         # [B, L, 1]
-        return logits.squeeze(-1)         # [B, L]
+        # Per-bar logits
+        level_logits = self.fc(x)            # [B, L, 1]
+        return level_logits.squeeze(-1)      # [B, L]
 
 def calculate_hdbscan_levels(highs, lows, closes, timeframe='1d'):
     """

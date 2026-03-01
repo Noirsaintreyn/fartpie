@@ -3828,33 +3828,37 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
         if len(X_train) == 0:
             return {'success': False, 'error': 'No training samples generated'}
         
-        X_train = np.array(X_train, dtype=np.float32)
-        y_train = np.array(y_train, dtype=np.float32)
-        
+        X_train = np.array(X_train, dtype=np.float32)          # [N, L, 4]
+        X_volume = np.array(X_volume, dtype=np.float32)        # [N, L, 5]
+        y_train = np.array(y_train, dtype=np.float32)          # [N, L]
+
         print(f"Generated {len(X_train)} training samples")
         print(f"Positive label rate: {np.mean(y_train):.2%}")
         
-        # Split train/val
+        # Train/val split
         split_idx = int(len(X_train) * 0.8)
         X_train_split = X_train[:split_idx]
+        X_volume_train = X_volume[:split_idx]
         y_train_split = y_train[:split_idx]
+
         X_val = X_train[split_idx:]
+        X_volume_val = X_volume[split_idx:]
         y_val = y_train[split_idx:]
         
         # Convert to tensors
         X_train_tensor = torch.FloatTensor(X_train_split)
         X_volume_train_tensor = torch.FloatTensor(X_volume_train)
         y_train_tensor = torch.FloatTensor(y_train_split)
+
         X_val_tensor = torch.FloatTensor(X_val)
         X_volume_val_tensor = torch.FloatTensor(X_volume_val)
         y_val_tensor = torch.FloatTensor(y_val)
         
         # Initialize model (with volume profile)
-        model = LevelDetectionNet(lookback=lookback, use_volume_profile=True)
+        model = LevelDetectionNet(lookback=lookback, use_volume_profile=True, volume_feature_dim=5)
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-        criterion = nn.BCEWithLogitsLoss()  # Binary cross-entropy for level/no-level
+        criterion = nn.BCEWithLogitsLoss()
         
-        # Training loop
         print(f"Training for {epochs} epochs...")
         best_val_loss = float('inf')
         train_losses = []
@@ -3862,25 +3866,24 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
         
         for epoch in range(epochs):
             model.train()
-            epoch_loss = 0
+            epoch_loss = 0.0
             
             # Mini-batch training
             for batch_start in range(0, len(X_train_tensor), batch_size):
                 batch_end = min(batch_start + batch_size, len(X_train_tensor))
-                X_batch = X_train_tensor[batch_start:batch_end]
-                X_vol_batch = X_volume_train_tensor[batch_start:batch_end]
-                y_batch = y_train_tensor[batch_start:batch_end]
+                X_batch = X_train_tensor[batch_start:batch_end]                # [B, L, 4]
+                X_vol_batch = X_volume_train_tensor[batch_start:batch_end]    # [B, L, 5]
+                y_batch = y_train_tensor[batch_start:batch_end]               # [B, L]
                 
                 optimizer.zero_grad()
-                logits = model(X_batch, volume_profile_features=X_vol_batch)
-                # Use logits directly (model outputs before sigmoid)
+                logits = model(X_batch, volume_profile_features=X_vol_batch)  # [B, L]
                 loss = criterion(logits, y_batch)
                 loss.backward()
                 optimizer.step()
                 
                 epoch_loss += loss.item()
             
-            avg_train_loss = epoch_loss / (len(X_train_tensor) / batch_size)
+            avg_train_loss = epoch_loss / max(1, (len(X_train_tensor) / batch_size))
             train_losses.append(avg_train_loss)
             
             # Validation
@@ -3890,18 +3893,17 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
                 val_loss = criterion(val_logits, y_val_tensor).item()
                 val_losses.append(val_loss)
                 
-                # Calculate accuracy (threshold at 0.5 after sigmoid)
                 val_probs = torch.sigmoid(val_logits)
                 val_preds = (val_probs > 0.5).float()
                 val_acc = (val_preds == y_val_tensor).float().mean().item()
             
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
-                # Save best model
                 torch.save(model.state_dict(), 'level_detector.pth')
             
             if (epoch + 1) % 10 == 0:
-                print(f"Epoch {epoch+1}/{epochs}: Train Loss={avg_train_loss:.4f}, Val Loss={val_loss:.4f}, Val Acc={val_acc:.2%}")
+                print(f"Epoch {epoch+1}/{epochs}: Train Loss={avg_train_loss:.4f}, "
+                      f"Val Loss={val_loss:.4f}, Val Acc={val_acc:.2%}")
         
         print(f"✓ Training complete! Best validation loss: {best_val_loss:.4f}")
         print(f"✓ Model saved to level_detector.pth")
@@ -3914,7 +3916,6 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
             final_preds = (final_probs > 0.5).float()
             final_acc = (final_preds == y_val_tensor).float().mean().item()
             
-            # Precision/Recall
             true_positives = ((final_preds == 1) & (y_val_tensor == 1)).float().sum().item()
             predicted_positives = (final_preds == 1).float().sum().item()
             actual_positives = (y_val_tensor == 1).float().sum().item()
@@ -3932,8 +3933,8 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
                 'recall': float(recall),
                 'f1_score': float(f1),
                 'best_val_loss': float(best_val_loss),
-                'train_samples': len(X_train_split),
-                'val_samples': len(X_val)
+                'train_samples': int(len(X_train_split)),
+                'val_samples': int(len(X_val))
             },
             'training_history': {
                 'train_losses': [float(x) for x in train_losses],
