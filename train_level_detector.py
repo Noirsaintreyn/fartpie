@@ -22,57 +22,91 @@ except ImportError as e:
     sys.exit(1)
 
 class LevelDetectionNet(nn.Module):
-    """Neural Network for Level Prediction - CNN + Attention (+ optional volume features)"""
-    def __init__(self, lookback=100, use_volume_profile: bool = False, volume_feature_dim: int = 5):
+    """
+    CNN + BiLSTM + Attention level detector
+    - Input 1: OHLC sequence [batch, seq_len, 4]
+    - Input 2: Volume-profile features [batch, seq_len, 5] (optional)
+    - Output: logits [batch, seq_len] (per-bar: level vs no-level)
+    """
+    def __init__(self, lookback=100, use_volume_profile=True,
+                 cnn_channels=(64, 128), lstm_hidden=64, lstm_layers=1,
+                 attn_heads=4, dropout=0.2):
         super().__init__()
-        self.use_volume_profile = use_volume_profile
+        
         self.lookback = lookback
+        self.use_volume_profile = use_volume_profile
+        
+        ohlc_dim = 4
+        vol_dim = 5 if use_volume_profile else 0
+        input_dim = ohlc_dim + vol_dim
+        
+        # 1) Project inputs
+        self.input_proj = nn.Linear(input_dim, cnn_channels[0])
+        
+        # 2) CNN stack over time dimension (Conv1d expects [B, C, T])
+        self.conv1 = nn.Conv1d(cnn_channels[0], cnn_channels[0], kernel_size=5, padding=2)
+        self.conv2 = nn.Conv1d(cnn_channels[0], cnn_channels[1], kernel_size=5, padding=2)
+        
+        # 3) BiLSTM
+        self.bilstm = nn.LSTM(
+            input_size=cnn_channels[1],
+            hidden_size=lstm_hidden,
+            num_layers=lstm_layers,
+            batch_first=True,
+            bidirectional=True
+        )
+        lstm_out_dim = lstm_hidden * 2  # bi-directional
+        
+        # 4) Multi-head self-attention on top of LSTM output
+        self.attn = nn.MultiheadAttention(
+            embed_dim=lstm_out_dim,
+            num_heads=attn_heads,
+            dropout=dropout,
+            batch_first=True
+        )
+        
+        # 5) Final classifier per time-step
+        self.fc = nn.Linear(lstm_out_dim, 1)
+        
+        self.dropout = nn.Dropout(dropout)
 
-        # OHLC conv backbone
-        self.conv1 = nn.Conv1d(4, 64, kernel_size=5, padding=2)
-        self.conv2 = nn.Conv1d(64, 128, kernel_size=5, padding=2)
-        self.conv3 = nn.Conv1d(128, 64, kernel_size=5, padding=2)
-
-        # If we use volume profile, project it and concatenate with conv output
-        if self.use_volume_profile:
-            self.vol_proj = nn.Linear(volume_feature_dim, 32)  # 5 → 32
-            attn_input_dim = 64 + 32
-        else:
-            self.vol_proj = None
-            attn_input_dim = 64
-
-        self.attention = nn.MultiheadAttention(attn_input_dim, num_heads=4, batch_first=False)
-
-        # Final per-bar classifier
-        self.fc = nn.Linear(attn_input_dim, 1)
-
-    def forward(self, ohlc: torch.Tensor, volume_profile_features: torch.Tensor = None):
+    def forward(self, ohlc_features, volume_profile_features=None):
         """
-        ohlc: [batch, seq_len, 4]
-        volume_profile_features: [batch, seq_len, volume_feature_dim] or None
+        ohlc_features: [batch, seq_len, 4]
+        volume_profile_features: [batch, seq_len, 5] or None
+        returns: logits [batch, seq_len]
         """
-        # CNN on OHLC
-        x = ohlc.transpose(1, 2)             # [B, 4, L]
-        x = torch.relu(self.conv1(x))        # [B, 64, L]
-        x = torch.relu(self.conv2(x))        # [B, 128, L]
-        x = torch.relu(self.conv3(x))        # [B, 64, L]
-        x = x.transpose(1, 2)                # [B, L, 64]
-
         if self.use_volume_profile:
             if volume_profile_features is None:
-                raise ValueError("volume_profile_features is required when use_volume_profile=True")
-            # Project volume features and concatenate
-            vol = self.vol_proj(volume_profile_features)   # [B, L, 32]
-            x = torch.cat([x, vol], dim=-1)                # [B, L, 96]
-
-        # Attention expects [L, B, C]
-        x = x.transpose(0, 1)                # [L, B, C]
-        x, _ = self.attention(x, x, x)       # [L, B, C]
-        x = x.transpose(0, 1)                # [B, L, C]
-
-        # Per-bar logits
-        level_logits = self.fc(x)            # [B, L, 1]
-        return level_logits.squeeze(-1)      # [B, L]
+                raise ValueError("Model created with use_volume_profile=True but no volume_profile_features passed")
+            x = torch.cat([ohlc_features, volume_profile_features], dim=-1)
+        else:
+            x = ohlc_features  # [B, T, 4]
+        
+        # Input projection
+        x = self.input_proj(x)  # [B, T, C]
+        x = torch.relu(x)
+        x = self.dropout(x)
+        
+        # CNN over time
+        x = x.transpose(1, 2)  # [B, C, T]
+        x = torch.relu(self.conv1(x))
+        x = torch.relu(self.conv2(x))
+        x = self.dropout(x)
+        x = x.transpose(1, 2)  # [B, T, C_cnn]
+        
+        # BiLSTM
+        x, _ = self.bilstm(x)  # [B, T, 2*hidden]
+        x = self.dropout(x)
+        
+        # Self-attention
+        attn_out, attn_weights = self.attn(x, x, x)  # [B, T, D], [B, T, T]
+        x = x + attn_out  # residual
+        x = self.dropout(x)
+        
+        # Per-time-step logits
+        logits = self.fc(x).squeeze(-1)  # [B, T]
+        return logits, attn_weights
 
 def calculate_hdbscan_levels(highs, lows, closes, timeframe='1d'):
     """

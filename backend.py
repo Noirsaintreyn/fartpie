@@ -3609,106 +3609,102 @@ def persistent_homology_levels(highs, lows, closes, max_levels=8):
 if TORCH_AVAILABLE and nn is not None:
     class LevelDetectionNet(nn.Module):
         """
-        CNN + (Bi)LSTM/GRU for per-bar level prediction.
-
-        - CNN over OHLC (4 channels)
-        - Optional volume profile features concatenated per time step
-        - Bidirectional LSTM/GRU over the sequence
+        CNN + BiLSTM + Attention level detector
+        - Input 1: OHLC sequence [batch, seq_len, 4]
+        - Input 2: Volume-profile features [batch, seq_len, 5] (optional)
+        - Output: logits [batch, seq_len] (per-bar: level vs no-level)
         """
-        def __init__(
-            self,
-            lookback: int = 100,
-            rnn_type: str = 'bilstm',   # 'bilstm' or 'bigru'
-            hidden_size: int = 64,
-            num_layers: int = 1,
-            use_volume_profile: bool = True,
-            volume_feature_dim: int = 5,
-        ):
+        def __init__(self, lookback=100, use_volume_profile=True,
+                     cnn_channels=(64, 128), lstm_hidden=64, lstm_layers=1,
+                     attn_heads=4, dropout=0.2):
             super().__init__()
+            
+            self.lookback = lookback
             self.use_volume_profile = use_volume_profile
-            self.rnn_type = rnn_type.lower()
+            
+            ohlc_dim = 4
+            vol_dim = 5 if use_volume_profile else 0
+            input_dim = ohlc_dim + vol_dim
+            
+            # 1) Project inputs
+            self.input_proj = nn.Linear(input_dim, cnn_channels[0])
+            
+            # 2) CNN stack over time dimension (Conv1d expects [B, C, T])
+            self.conv1 = nn.Conv1d(cnn_channels[0], cnn_channels[0], kernel_size=5, padding=2)
+            self.conv2 = nn.Conv1d(cnn_channels[0], cnn_channels[1], kernel_size=5, padding=2)
+            
+            # 3) BiLSTM
+            self.bilstm = nn.LSTM(
+                input_size=cnn_channels[1],
+                hidden_size=lstm_hidden,
+                num_layers=lstm_layers,
+                batch_first=True,
+                bidirectional=True
+            )
+            lstm_out_dim = lstm_hidden * 2  # bi-directional
+            
+            # 4) Multi-head self-attention on top of LSTM output
+            self.attn = nn.MultiheadAttention(
+                embed_dim=lstm_out_dim,
+                num_heads=attn_heads,
+                dropout=dropout,
+                batch_first=True
+            )
+            
+            # 5) Final classifier per time-step
+            self.fc = nn.Linear(lstm_out_dim, 1)
+            
+            self.dropout = nn.Dropout(dropout)
 
-            # CNN over OHLC (4 channels)
-            self.conv1 = nn.Conv1d(4, 64, kernel_size=5, padding=2)
-            self.conv2 = nn.Conv1d(64, 128, kernel_size=5, padding=2)
-            self.conv3 = nn.Conv1d(128, 64, kernel_size=5, padding=2)
-
-            base_feat_dim = 64
-
-            # Optional volume profile projection
+        def forward(self, ohlc_features, volume_profile_features=None):
+            """
+            ohlc_features: [batch, seq_len, 4]
+            volume_profile_features: [batch, seq_len, 5] or None
+            returns: logits [batch, seq_len]
+            """
             if self.use_volume_profile:
-                self.volume_proj = nn.Linear(volume_feature_dim, 32)
-                base_feat_dim += 32
-
-            # BiLSTM / BiGRU
-            if self.rnn_type == 'bigru':
-                self.rnn = nn.GRU(
-                    input_size=base_feat_dim,
-                    hidden_size=hidden_size,
-                    num_layers=num_layers,
-                    batch_first=True,
-                    bidirectional=True,
-                )
+                if volume_profile_features is None:
+                    raise ValueError("Model created with use_volume_profile=True but no volume_profile_features passed")
+                x = torch.cat([ohlc_features, volume_profile_features], dim=-1)
             else:
-                self.rnn = nn.LSTM(
-                    input_size=base_feat_dim,
-                    hidden_size=hidden_size,
-                    num_layers=num_layers,
-                    batch_first=True,
-                    bidirectional=True,
-                )
-
-            # Final per-time-step classifier (2*hidden_size from bidirectional RNN)
-            self.fc = nn.Linear(2 * hidden_size, 1)
-
-        def forward(self, ohlc, volume_profile_features=None):
-            """
-            ohlc: [batch, seq_len, 4]
-            volume_profile_features: [batch, seq_len, volume_feature_dim] (optional)
-            """
-            # Conv over OHLC
-            x = ohlc.transpose(1, 2)          # [B, 4, L]
-            x = torch.relu(self.conv1(x))     # [B, 64, L]
-            x = torch.relu(self.conv2(x))     # [B, 128, L]
-            x = torch.relu(self.conv3(x))     # [B, 64, L]
-            x = x.transpose(1, 2)             # [B, L, 64]
-
-            # Concatenate volume features if enabled
-            if self.use_volume_profile and volume_profile_features is not None:
-                v = self.volume_proj(volume_profile_features)   # [B, L, 32]
-                x = torch.cat([x, v], dim=-1)                  # [B, L, base_feat_dim]
-
-            # BiRNN over sequence
-            rnn_out, _ = self.rnn(x)          # [B, L, 2*hidden_size]
-
-            logits = self.fc(rnn_out)         # [B, L, 1]
-            return logits.squeeze(-1)         # [B, L]
+                x = ohlc_features  # [B, T, 4]
+            
+            # Input projection
+            x = self.input_proj(x)  # [B, T, C]
+            x = torch.relu(x)
+            x = self.dropout(x)
+            
+            # CNN over time
+            x = x.transpose(1, 2)  # [B, C, T]
+            x = torch.relu(self.conv1(x))
+            x = torch.relu(self.conv2(x))
+            x = self.dropout(x)
+            x = x.transpose(1, 2)  # [B, T, C_cnn]
+            
+            # BiLSTM
+            x, _ = self.bilstm(x)  # [B, T, 2*hidden]
+            x = self.dropout(x)
+            
+            # Self-attention
+            attn_out, attn_weights = self.attn(x, x, x)  # [B, T, D], [B, T, T]
+            x = x + attn_out  # residual
+            x = self.dropout(x)
+            
+            # Per-time-step logits
+            logits = self.fc(x).squeeze(-1)  # [B, T]
+            return logits, attn_weights
 else:
     # Dummy class when torch is not available
     class LevelDetectionNet:
         def __init__(self, *args, **kwargs):
             pass
 
-def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, epochs=50, batch_size=32):
+def train_level_detection_network(ticker='SPY', timeframe='1d',
+                                  lookback=100, epochs=50, batch_size=32):
     """
-    Train the neural network level detector
-    
-    Training approach:
-    1. Use HDBSCAN/OPTICS levels as ground truth (most accurate)
-    2. For each historical bar, label it as level=1 if it's near a detected level
-    3. Train CNN+Attention to predict which bars are levels
-    
-    Parameters:
-    -----------
-    ticker: str - Stock ticker to train on
-    timeframe: str - Timeframe for data
-    lookback: int - Number of bars to look back
-    epochs: int - Training epochs
-    batch_size: int - Batch size
-    
-    Returns:
-    --------
-    dict: Training metrics and model path
+    Train the neural network level detector using:
+    - HDBSCAN + OPTICS levels as pseudo-ground-truth
+    - OHLC + volume-profile features
     """
     if not TORCH_AVAILABLE:
         return {'success': False, 'error': 'PyTorch not available'}
@@ -3716,7 +3712,7 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
     try:
         print(f"Training level detection network for {ticker} at {timeframe}...")
         
-        # Fetch historical data
+        # 1) Fetch data
         stock = yf.Ticker(ticker)
         interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
         interval = interval_map.get(timeframe, '1d')
@@ -3724,21 +3720,32 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
         period = period_map.get(timeframe, '1y')
         
         hist = stock.history(period=period, interval=interval)
+        if timeframe == '4h':
+            # resample 1h to 4h
+            if not isinstance(hist.index, pd.DatetimeIndex):
+                hist.index = pd.to_datetime(hist.index)
+            hist = hist.resample('4H').agg({
+                'Open': 'first',
+                'High': 'max',
+                'Low': 'min',
+                'Close': 'last',
+                'Volume': 'sum'
+            }).dropna()
+
         if len(hist) < lookback * 2:
-            return {'success': False, 'error': f'Insufficient data: need at least {lookback * 2} bars'}
+            return {'success': False, 'error': f'Insufficient data: need at least {lookback * 2} bars, got {len(hist)}'}
         
         closes = hist['Close'].values
         highs = hist['High'].values
         lows = hist['Low'].values
         volumes = hist['Volume'].values if 'Volume' in hist.columns else np.ones(len(closes))
         
-        # Prepare training data
+        # 2) Generate windows
         print("Generating training samples...")
         X_train = []
-        X_volume = []  # Volume profile features
+        X_volume = []
         y_train = []
         
-        # For each window, detect levels using HDBSCAN/OPTICS (ground truth)
         for i in range(lookback, len(hist) - 10):
             window_hist = hist.iloc[i-lookback:i]
             window_highs = highs[i-lookback:i]
@@ -3746,52 +3753,50 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
             window_closes = closes[i-lookback:i]
             window_volumes = volumes[i-lookback:i] if len(volumes) >= i else np.ones(lookback)
             
-            # Calculate volume profile for this window
+            # --- Volume profile for this window ---
             volume_profile = calculate_volume_profile(
                 window_highs, window_lows, window_closes, window_volumes, bins=30
             )
             
-            # Detect levels using HDBSCAN (most accurate method)
-            hdbscan_levels = calculate_hdbscan_levels(window_highs, window_lows, window_closes, timeframe=timeframe)
-            optics_levels = enhanced_optics_levels(window_highs, window_lows, window_closes, timeframe=timeframe)
-            
-            # Combine as ground truth
+            # --- Ground truth levels (HDBSCAN + OPTICS) ---
+            hdbscan_levels = calculate_hdbscan_levels(
+                window_highs, window_lows, window_closes, timeframe=timeframe
+            )
+            optics_levels = enhanced_optics_levels(
+                window_highs, window_lows, window_closes, timeframe=timeframe
+            )
             all_truth_levels = hdbscan_levels + optics_levels
             truth_prices = [l.get('price', 0) for l in all_truth_levels if 'price' in l]
             
-            # Prepare OHLC input
+            # --- OHLC normalization ---
             ohlc_data = window_hist[['Open', 'High', 'Low', 'Close']].values
-            
-            # Normalize
             ohlc_mean = ohlc_data.mean(axis=0)
             ohlc_std = ohlc_data.std(axis=0) + 1e-9
-            ohlc_normalized = (ohlc_data - ohlc_mean) / ohlc_std
+            ohlc_normalized = (ohlc_data - ohlc_mean) / ohlc_std  # [lookback, 4]
             
-            # Prepare volume profile features for each bar
+            # --- Volume-profile per-bar features ---
             volume_features = []
             if volume_profile:
                 poc = volume_profile.get('poc', np.mean(window_closes))
                 va_high = volume_profile.get('value_area_high', np.max(window_closes))
                 va_low = volume_profile.get('value_area_low', np.min(window_closes))
                 volume_dist = volume_profile.get('volume_distribution', {})
+                std_close = np.std(window_closes) + 1e-9
+                max_vol = max(volume_dist.values()) if volume_dist else 1.0
                 
-                for j, close_price in enumerate(window_closes):
-                    # Distance to POC (normalized)
-                    dist_to_poc = abs(close_price - poc) / (np.std(window_closes) + 1e-9)
-                    
-                    # Distance to value area
-                    dist_to_va_high = abs(close_price - va_high) / (np.std(window_closes) + 1e-9)
-                    dist_to_va_low = abs(close_price - va_low) / (np.std(window_closes) + 1e-9)
-                    
-                    # In value area (binary)
+                for close_price in window_closes:
+                    dist_to_poc = abs(close_price - poc) / std_close
+                    dist_to_va_high = abs(close_price - va_high) / std_close
+                    dist_to_va_low = abs(close_price - va_low) / std_close
                     in_value_area = 1.0 if va_low <= close_price <= va_high else 0.0
                     
-                    # Volume at this price (normalized)
-                    closest_price = min(volume_dist.keys(), key=lambda p: abs(p - close_price)) if volume_dist else poc
-                    if abs(closest_price - close_price) / close_price < 0.01:
-                        volume_at_price = volume_dist.get(closest_price, 0.0)
-                        max_vol = max(volume_dist.values()) if volume_dist else 1.0
-                        volume_at_price_norm = volume_at_price / (max_vol + 1e-9)
+                    if volume_dist:
+                        closest_price = min(volume_dist.keys(), key=lambda p: abs(p - close_price))
+                        if abs(closest_price - close_price) / close_price < 0.01:
+                            volume_at_price = volume_dist.get(closest_price, 0.0)
+                            volume_at_price_norm = volume_at_price / (max_vol + 1e-9)
+                        else:
+                            volume_at_price_norm = 0.0
                     else:
                         volume_at_price_norm = 0.0
                     
@@ -3803,24 +3808,22 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
                         float(volume_at_price_norm)
                     ])
             else:
-                # Default volume features if no volume profile
                 volume_features = [[0.0, 0.0, 0.0, 0.0, 0.0]] * lookback
             
-            volume_features = np.array(volume_features, dtype=np.float32)
+            volume_features = np.array(volume_features, dtype=np.float32)  # [lookback, 5]
             
-            # Create labels: 1 if bar is near a level, 0 otherwise
-            labels = np.zeros(lookback)
-            price_tolerance = np.std(window_closes) * 0.01  # 1% of std dev
+            # --- Labels (bars near any level) ---
+            labels = np.zeros(lookback, dtype=np.float32)
+            price_tolerance = np.std(window_closes) * 0.01  # 1% of std-dev
             
             for j, close_price in enumerate(window_closes):
-                # Check if this bar's close is near any truth level
                 for truth_price in truth_prices:
                     if abs(close_price - truth_price) < price_tolerance:
                         labels[j] = 1.0
                         break
             
-            # Only add if we have at least some positive labels
-            if np.sum(labels) > 0:
+            # keep only windows with at least 1 positive
+            if labels.sum() > 0:
                 X_train.append(ohlc_normalized)
                 X_volume.append(volume_features)
                 y_train.append(labels)
@@ -3828,55 +3831,66 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
         if len(X_train) == 0:
             return {'success': False, 'error': 'No training samples generated'}
         
-        X_train = np.array(X_train, dtype=np.float32)          # [N, L, 4]
-        X_volume = np.array(X_volume, dtype=np.float32)        # [N, L, 5]
-        y_train = np.array(y_train, dtype=np.float32)          # [N, L]
-
+        X_train = np.array(X_train, dtype=np.float32)      # [N, T, 4]
+        X_volume = np.array(X_volume, dtype=np.float32)    # [N, T, 5]
+        y_train = np.array(y_train, dtype=np.float32)      # [N, T]
+        
         print(f"Generated {len(X_train)} training samples")
         print(f"Positive label rate: {np.mean(y_train):.2%}")
         
-        # Train/val split
+        # 3) Train/val split
         split_idx = int(len(X_train) * 0.8)
         X_train_split = X_train[:split_idx]
         X_volume_train = X_volume[:split_idx]
         y_train_split = y_train[:split_idx]
-
+        
         X_val = X_train[split_idx:]
         X_volume_val = X_volume[split_idx:]
         y_val = y_train[split_idx:]
         
-        # Convert to tensors
+        # 4) Tensors
         X_train_tensor = torch.FloatTensor(X_train_split)
         X_volume_train_tensor = torch.FloatTensor(X_volume_train)
         y_train_tensor = torch.FloatTensor(y_train_split)
-
+        
         X_val_tensor = torch.FloatTensor(X_val)
         X_volume_val_tensor = torch.FloatTensor(X_volume_val)
         y_val_tensor = torch.FloatTensor(y_val)
         
-        # Initialize model (with volume profile)
-        model = LevelDetectionNet(lookback=lookback, use_volume_profile=True, volume_feature_dim=5)
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        # 5) Model, optimizer, loss
+        model = LevelDetectionNet(
+            lookback=lookback,
+            use_volume_profile=True,
+            cnn_channels=(64, 128),
+            lstm_hidden=64,
+            lstm_layers=1,
+            attn_heads=4,
+            dropout=0.2
+        )
+        
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
         criterion = nn.BCEWithLogitsLoss()
         
-        print(f"Training for {epochs} epochs...")
         best_val_loss = float('inf')
         train_losses = []
         val_losses = []
+        
+        print(f"Training for {epochs} epochs...")
         
         for epoch in range(epochs):
             model.train()
             epoch_loss = 0.0
             
-            # Mini-batch training
+            # mini-batch training
             for batch_start in range(0, len(X_train_tensor), batch_size):
                 batch_end = min(batch_start + batch_size, len(X_train_tensor))
-                X_batch = X_train_tensor[batch_start:batch_end]                # [B, L, 4]
-                X_vol_batch = X_volume_train_tensor[batch_start:batch_end]    # [B, L, 5]
-                y_batch = y_train_tensor[batch_start:batch_end]               # [B, L]
+                
+                X_batch = X_train_tensor[batch_start:batch_end]           # [B, T, 4]
+                X_vol_batch = X_volume_train_tensor[batch_start:batch_end]# [B, T, 5]
+                y_batch = y_train_tensor[batch_start:batch_end]           # [B, T]
                 
                 optimizer.zero_grad()
-                logits = model(X_batch, volume_profile_features=X_vol_batch)  # [B, L]
+                logits, _ = model(X_batch, volume_profile_features=X_vol_batch)  # [B, T]
                 loss = criterion(logits, y_batch)
                 loss.backward()
                 optimizer.step()
@@ -3886,10 +3900,10 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
             avg_train_loss = epoch_loss / max(1, (len(X_train_tensor) / batch_size))
             train_losses.append(avg_train_loss)
             
-            # Validation
+            # --- Validation ---
             model.eval()
             with torch.no_grad():
-                val_logits = model(X_val_tensor, volume_profile_features=X_volume_val_tensor)
+                val_logits, _ = model(X_val_tensor, volume_profile_features=X_volume_val_tensor)
                 val_loss = criterion(val_logits, y_val_tensor).item()
                 val_losses.append(val_loss)
                 
@@ -3901,27 +3915,28 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
                 best_val_loss = val_loss
                 torch.save(model.state_dict(), 'level_detector.pth')
             
-            if (epoch + 1) % 10 == 0:
-                print(f"Epoch {epoch+1}/{epochs}: Train Loss={avg_train_loss:.4f}, "
-                      f"Val Loss={val_loss:.4f}, Val Acc={val_acc:.2%}")
+            if (epoch + 1) % 10 == 0 or epoch == 0:
+                print(f"Epoch {epoch+1}/{epochs} - Train Loss: {avg_train_loss:.4f}, "
+                      f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2%}")
         
-        print(f"✓ Training complete! Best validation loss: {best_val_loss:.4f}")
-        print(f"✓ Model saved to level_detector.pth")
+        print(f"[OK] Training complete. Best val loss: {best_val_loss:.4f}")
+        print("[OK] Model saved to level_detector.pth")
         
-        # Final evaluation
+        # Final metrics on val
         model.eval()
         with torch.no_grad():
-            final_logits = model(X_val_tensor, volume_profile_features=X_volume_val_tensor)
+            final_logits, _ = model(X_val_tensor, volume_profile_features=X_volume_val_tensor)
             final_probs = torch.sigmoid(final_logits)
             final_preds = (final_probs > 0.5).float()
+            
             final_acc = (final_preds == y_val_tensor).float().mean().item()
             
-            true_positives = ((final_preds == 1) & (y_val_tensor == 1)).float().sum().item()
-            predicted_positives = (final_preds == 1).float().sum().item()
-            actual_positives = (y_val_tensor == 1).float().sum().item()
+            tp = ((final_preds == 1) & (y_val_tensor == 1)).float().sum().item()
+            pp = (final_preds == 1).float().sum().item()
+            ap = (y_val_tensor == 1).float().sum().item()
             
-            precision = true_positives / (predicted_positives + 1e-9)
-            recall = true_positives / (actual_positives + 1e-9)
+            precision = tp / (pp + 1e-9)
+            recall = tp / (ap + 1e-9)
             f1 = 2 * (precision * recall) / (precision + recall + 1e-9)
         
         return {
@@ -3941,11 +3956,11 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
                 'val_losses': [float(x) for x in val_losses]
             }
         }
-        
+    
     except Exception as e:
         import traceback
         error_trace = traceback.format_exc()
-        print(f"Training failed: {error_trace}")
+        print(f"Training failed:\n{error_trace}")
         return {'success': False, 'error': str(e)}
 
 def detect_levels_with_neural_network(hist, lookback=100, threshold=0.7):
@@ -4018,7 +4033,7 @@ def detect_levels_with_neural_network(hist, lookback=100, threshold=0.7):
                 model.load_state_dict(torch.load(model_path, map_location='cpu'))
                 model.eval()
                 with torch.no_grad():
-                    level_logits = model(ohlc_tensor, volume_profile_features=volume_tensor)
+                    level_logits, _ = model(ohlc_tensor, volume_profile_features=volume_tensor)
                     # Apply sigmoid to get probabilities
                     level_probs = torch.sigmoid(level_logits)
                     # Extract levels where probability > threshold
