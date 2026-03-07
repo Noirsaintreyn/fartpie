@@ -4104,6 +4104,188 @@ def detect_levels_with_neural_network(hist, lookback=100, threshold=0.7):
         print(f"Neural Network level detection failed: {e}")
         return []
 
+def detect_levels_with_deepsupp(hist, model_path='deepsupp_v4.pt', device='cpu'):
+    """
+    DeepSupp v4 level detector (corr-series transformer autoencoder).
+
+    Requires a pre-trained model file saved via deepsupp_levels.save_deepsupp_model().
+    If the model file is missing or DeepSupp deps fail to load, returns [].
+    """
+    if not TORCH_AVAILABLE or hist is None or len(hist) < 60:
+        return []
+
+    try:
+        if not os.path.exists(model_path):
+            return []
+
+        from deepsupp_levels import load_deepsupp_model, compute_deepsupp_levels
+
+        # yfinance style columns → deepsupp expects lowercase ohlcv
+        df = hist.copy()
+        df = df.rename(columns={
+            'Open': 'open',
+            'High': 'high',
+            'Low': 'low',
+            'Close': 'close',
+            'Volume': 'volume'
+        })
+
+        required = {'open', 'high', 'low', 'close', 'volume'}
+        if not required.issubset(set(map(str.lower, df.columns))):
+            # If rename failed due to unexpected schema
+            if not required.issubset(set(df.columns)):
+                return []
+
+        model, meta = load_deepsupp_model(model_path, device=device)
+
+        records = compute_deepsupp_levels(
+            df[['open', 'high', 'low', 'close', 'volume']].dropna(),
+            model,
+            vol_lookback=int(meta.vol_lookback),
+            corr_window=int(meta.corr_window),
+            seq_len=int(meta.seq_len),
+            device=device,
+            verbose=False
+        )
+
+        levels = []
+        for r in records:
+            strength = float(getattr(r, 'strength', 0.0))
+            levels.append({
+                'price': float(getattr(r, 'price', np.nan)),
+                'type': 'DeepSupp',
+                'strength': strength,
+                'category': 'DeepSupp',
+                'source': 'DeepSupp',
+                'kind': str(getattr(r, 'kind', 'level')),
+                'touches': int(getattr(r, 'n_members', 1)),
+                'coverage': float(getattr(r, 'coverage', 0.0)),
+                'quality': float(getattr(r, 'quality', 0.0)),
+                'tightness': float(getattr(r, 'tightness', 0.0)),
+                'score_mean': float(getattr(r, 'score_mean', 0.0)),
+                'score_max': float(getattr(r, 'score_max', 0.0)),
+                'price_std': float(getattr(r, 'price_std', 0.0)),
+                'displacement': float(getattr(r, 'displacement', 0.0)),
+                'cluster_id': int(getattr(r, 'cluster_id', -1)),
+                'breakoutProb': float(1 - strength),
+                'reversionProb': float(strength),
+            })
+
+        levels = [l for l in levels if isinstance(l.get('price'), (int, float)) and not (np.isnan(l.get('price')) or np.isinf(l.get('price')))]
+        return sorted(levels, key=lambda x: x.get('strength', 0.0), reverse=True)[:12]
+
+    except Exception as e:
+        print(f"DeepSupp level detection failed: {e}")
+        return []
+
+def train_deepsupp_level_model(
+    ticker: str = "SPY",
+    timeframe: str = "1d",
+    vol_lookback: int = 20,
+    corr_window: int = 20,
+    seq_len: int = 16,
+    d_model: int = 64,
+    n_heads: int = 4,
+    n_layers: int = 2,
+    latent_dim: int = 16,
+    dropout: float = 0.1,
+    epochs: int = 50,
+    batch_size: int = 32,
+    lr: float = 1e-3,
+    device: str = "cpu",
+    model_path: str = "deepsupp_v4.pt",
+) -> dict:
+    """
+    Train a DeepSupp v4 model on real OHLCV data and save to model_path.
+    """
+    if not TORCH_AVAILABLE:
+        return {"success": False, "error": "PyTorch not available"}
+
+    try:
+        import yfinance as yf
+        import pandas as pd
+        from deepsupp_levels import build_and_train, save_deepsupp_model
+
+        stock = yf.Ticker(ticker)
+
+        interval_map = {"1m": "1m", "5m": "5m", "15m": "15m", "30m": "30m", "1h": "1h", "4h": "1h", "1d": "1d"}
+        interval = interval_map.get(timeframe, "1d")
+        period_map = {"1m": "5d", "5m": "1mo", "15m": "3mo", "30m": "3mo", "1h": "6mo", "4h": "1y", "1d": "2y"}
+        period = period_map.get(timeframe, "1y")
+
+        hist = stock.history(period=period, interval=interval)
+        if hist is None or len(hist) == 0:
+            return {"success": False, "error": f"No historical data for {ticker} at {timeframe}"}
+
+        if timeframe == "4h":
+            # resample 1h to 4h, same style as level detector
+            if not isinstance(hist.index, pd.DatetimeIndex):
+                hist.index = pd.to_datetime(hist.index)
+            hist = hist.resample("4H").agg({
+                "Open": "first",
+                "High": "max",
+                "Low": "min",
+                "Close": "last",
+                "Volume": "sum",
+            }).dropna()
+
+        if len(hist) < 400:
+            return {"success": False, "error": f"Insufficient data to train DeepSupp (need >=400 bars, have {len(hist)})"}
+
+        df = hist[["Open", "High", "Low", "Close", "Volume"]].rename(columns={
+            "Open": "open",
+            "High": "high",
+            "Low": "low",
+            "Close": "close",
+            "Volume": "volume",
+        }).dropna()
+
+        print(f"Training DeepSupp v4 for {ticker} at {timeframe} on {len(df)} bars...")
+
+        model = build_and_train(
+            df,
+            vol_lookback=vol_lookback,
+            corr_window=corr_window,
+            seq_len=seq_len,
+            d_model=d_model,
+            n_heads=n_heads,
+            n_layers=n_layers,
+            latent_dim=latent_dim,
+            dropout=dropout,
+            epochs=epochs,
+            batch_size=batch_size,
+            lr=lr,
+            device=device,
+            verbose=True,
+        )
+
+        save_deepsupp_model(model, model_path)
+
+        meta = model.metadata
+        meta_dict = meta.to_dict() if meta is not None else {}
+
+        print(f"[OK] DeepSupp training complete. Saved to {model_path}")
+
+        return {
+            "success": True,
+            "model_path": model_path,
+            "meta": meta_dict,
+            "training": {
+                "ticker": ticker,
+                "timeframe": timeframe,
+                "epochs": epochs,
+                "batch_size": batch_size,
+                "seq_len": seq_len,
+                "corr_window": corr_window,
+                "vol_lookback": vol_lookback,
+            },
+        }
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"DeepSupp training failed:\n{error_trace}")
+        return {"success": False, "error": str(e)}
+
 if TORCH_AVAILABLE and nn is not None:
     class LevelValidator(nn.Module):
         """
@@ -4962,6 +5144,16 @@ def get_data():
         except Exception as e:
             print(f"Neural Network level detection failed: {e}")
             neural_network_levels_result = []
+
+        # NEW: DeepSupp v4 (corr-series attention autoencoder)
+        deepsupp_levels_result = []
+        try:
+            if TORCH_AVAILABLE:
+                deepsupp_levels_result = detect_levels_with_deepsupp(hist_data_subset, model_path='deepsupp_v4.pt', device='cpu')
+                print(f"DeepSupp: Generated {len(deepsupp_levels_result) if deepsupp_levels_result else 0} levels")
+        except Exception as e:
+            print(f"DeepSupp level detection failed: {e}")
+            deepsupp_levels_result = []
         
         # SECONDARY: IsolationForest (event pivot candidates)
         isolation_forest_levels = find_pivot_anomalies(hist_highs, hist_lows, hist_closes)
@@ -4997,6 +5189,7 @@ def get_data():
         wyckoff_levels_result = wyckoff_levels_result or []
         persistent_homology_levels_result = persistent_homology_levels_result or []
         neural_network_levels_result = neural_network_levels_result or []
+        deepsupp_levels_result = deepsupp_levels_result or []
         isolation_forest_levels = isolation_forest_levels or []
         peak_valley_levels = peak_valley_levels or []
         pivot_levels = pivot_levels or []
@@ -5007,7 +5200,8 @@ def get_data():
         all_ml_levels = (hdbscan_levels + enhanced_optics_levels_result + kde_levels_result + 
                         multiscale_hdbscan_levels_result + time_weighted_levels_result + 
                         wyckoff_levels_result + persistent_homology_levels_result + 
-                        neural_network_levels_result + isolation_forest_levels + peak_valley_levels) 
+                        neural_network_levels_result + deepsupp_levels_result +
+                        isolation_forest_levels + peak_valley_levels) 
         
         # CRITICAL: Preserve levels BEFORE merge (they get consumed by merge)
         # We need BOTH merged levels AND original levels for structural array
@@ -5022,6 +5216,7 @@ def get_data():
         wyckoff_raw_before_merge = [l.copy() for l in wyckoff_levels_result] if wyckoff_levels_result else []
         persistent_homology_raw_before_merge = [l.copy() for l in persistent_homology_levels_result] if persistent_homology_levels_result else []
         neural_network_raw_before_merge = [l.copy() for l in neural_network_levels_result] if neural_network_levels_result else []
+        deepsupp_raw_before_merge = [l.copy() for l in deepsupp_levels_result] if deepsupp_levels_result else []
         
         # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
         # Use timeframe-aware threshold (cleaner than regime-aware for this step)
@@ -5130,6 +5325,7 @@ def get_data():
         wyckoff_ml = []
         persistent_homology_ml = []
         neural_network_ml = []
+        deepsupp_ml = []
         
         for l in all_levels_combined:
             category = l.get('category', '')
@@ -5171,6 +5367,10 @@ def get_data():
                     l_copy = l.copy()
                     l_copy['category'] = 'Neural-Network'  # Restore category
                     neural_network_ml.append(l_copy)
+                if 'DeepSupp' in sources:
+                    l_copy = l.copy()
+                    l_copy['category'] = 'DeepSupp'
+                    deepsupp_ml.append(l_copy)
             # Check unmerged levels (preserved original categories)
             elif category == 'OPTICS':
                 enhanced_optics_ml.append(l)
@@ -5186,6 +5386,8 @@ def get_data():
                 persistent_homology_ml.append(l)
             elif category == 'Neural-Network':
                 neural_network_ml.append(l)
+            elif category == 'DeepSupp':
+                deepsupp_ml.append(l)
         
         # Fallback: Use raw levels if extraction found nothing (shouldn't happen but safety)
         if len(enhanced_optics_ml) == 0 and len(enhanced_optics_raw_before_merge) > 0:
@@ -5202,6 +5404,8 @@ def get_data():
             persistent_homology_ml = persistent_homology_raw_before_merge
         if len(neural_network_ml) == 0 and len(neural_network_raw_before_merge) > 0:
             neural_network_ml = neural_network_raw_before_merge
+        if len(deepsupp_ml) == 0 and len(deepsupp_raw_before_merge) > 0:
+            deepsupp_ml = deepsupp_raw_before_merge
         
         # DEBUG: Log new level counts
         print(f"🔍 NEW LEVEL DETECTION METHODS:")
@@ -5212,11 +5416,12 @@ def get_data():
         print(f"   Wyckoff: {len(wyckoff_ml)} levels")
         print(f"   Persistent Homology (TDA): {len(persistent_homology_ml)} levels")
         print(f"   Neural Network: {len(neural_network_ml)} levels")
+        print(f"   DeepSupp: {len(deepsupp_ml)} levels")
         if len(neural_network_ml) > 0:
             print(f"   ✓ Neural Network levels found: {[l.get('price') for l in neural_network_ml[:3]]}")
         
         # Combine all structural density-based levels
-        hdbscan_ml = hdbscan_ml + enhanced_optics_ml + kde_ml + multiscale_hdbscan_ml + time_weighted_ml + wyckoff_ml + persistent_homology_ml + neural_network_ml
+        hdbscan_ml = hdbscan_ml + enhanced_optics_ml + kde_ml + multiscale_hdbscan_ml + time_weighted_ml + wyckoff_ml + persistent_homology_ml + neural_network_ml + deepsupp_ml
         
         isolation_forest_ml = [l for l in all_levels_combined if l['category'] == 'Isolation-Forest']
         peak_valley_ml = [l for l in all_levels_combined if l['category'] == 'Peak-Valley']
@@ -11775,6 +11980,57 @@ def api_train_level_detector():
         import traceback
         error_trace = traceback.format_exc()
         print(f"ERROR in /api/train-level-detector: {error_trace}")
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/api/train-deepsupp-levels', methods=['POST'])
+def api_train_deepsupp_levels():
+    """
+    Train the DeepSupp v4 structural level model.
+
+    POST body (JSON):
+    {
+        "ticker": "SPY"           (optional, default: "SPY"),
+        "timeframe": "1d"         (optional, default: "1d"),
+        "vol_lookback": 20        (optional, default: 20),
+        "corr_window": 20         (optional, default: 20),
+        "seq_len": 16             (optional, default: 16),
+        "epochs": 50              (optional, default: 50),
+        "batch_size": 32          (optional, default: 32),
+        "model_path": "deepsupp_v4.pt"  (optional, default: "deepsupp_v4.pt")
+    }
+    """
+    auth_error = require_auth()
+    if auth_error:
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
+
+    try:
+        data = request.get_json() or {}
+        ticker = data.get('ticker', 'SPY')
+        timeframe = data.get('timeframe', '1d')
+        vol_lookback = int(data.get('vol_lookback', 20))
+        corr_window = int(data.get('corr_window', 20))
+        seq_len = int(data.get('seq_len', 16))
+        epochs = int(data.get('epochs', 50))
+        batch_size = int(data.get('batch_size', 32))
+        model_path = data.get('model_path', 'deepsupp_v4.pt')
+
+        result = train_deepsupp_level_model(
+            ticker=ticker,
+            timeframe=timeframe,
+            vol_lookback=vol_lookback,
+            corr_window=corr_window,
+            seq_len=seq_len,
+            epochs=epochs,
+            batch_size=batch_size,
+            model_path=model_path,
+        )
+
+        status = 200 if result.get('success') else 400
+        return jsonify(result), status
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"ERROR in /api/train-deepsupp-levels: {error_trace}")
         return jsonify({'success': False, 'error': str(e)}), 400
 
 @app.route("/api/ml/train-hodlod-stack", methods=["POST"])
