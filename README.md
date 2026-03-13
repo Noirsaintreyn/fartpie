@@ -15,7 +15,6 @@ Both feed into the production level stack alongside HDBSCAN, OPTICS, KDE, local 
 
 The neural network level detector is implemented as `LevelDetectionNet` in:
 
-- `train_level_detector.py` (standalone trainer / CLI)
 - `backend.py` (inline definition + `/api/train-level-detector`)
 
 ### What it predicts
@@ -63,7 +62,6 @@ The neural network level detector is implemented as `LevelDetectionNet` in:
 ### Training and fallback
 
 - Training is done via:
-  - `python train_level_detector.py` (standalone), or
   - `POST /api/train-level-detector` (backend endpoint).
 - If the trained weights file (`level_detector.pth`) is missing or invalid:
   - The system **falls back to local extrema detection** (scipy `argrelextrema`) with a default strength,
