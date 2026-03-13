@@ -2290,33 +2290,6 @@ def add_fibonacci_metadata_to_levels(all_levels, fib_levels, sigma_price, thresh
     
     return all_levels
 
-def find_gap_levels(hist_data):
-    gap_levels = []
-    for i in range(1, len(hist_data)):
-        curr = hist_data.iloc[i]
-        prev = hist_data.iloc[i-1]
-        if curr['Low'] > prev['High']:
-            gap_mid = (curr['Low'] + prev['High']) / 2
-            filled = False
-            for j in range(i+1, len(hist_data)):
-                if hist_data.iloc[j]['Low'] <= gap_mid:
-                    filled = True
-                    break
-            if not filled and len(hist_data) - i < 100:
-                gap_levels.append({'price': float(gap_mid), 'type': 'Gap Up', 'strength': 0.85,
-                                  'breakoutProb': 0.15, 'reversionProb': 0.85, 'category': 'Gap'})
-        elif curr['High'] < prev['Low']:
-            gap_mid = (prev['Low'] + curr['High']) / 2
-            filled = False
-            for j in range(i+1, len(hist_data)):
-                if hist_data.iloc[j]['High'] >= gap_mid:
-                    filled = True
-                    break
-            if not filled and len(hist_data) - i < 100:
-                gap_levels.append({'price': float(gap_mid), 'type': 'Gap Down', 'strength': 0.85,
-                                  'breakoutProb': 0.15, 'reversionProb': 0.85, 'category': 'Gap'})
-    return gap_levels
-
 def find_pivot_anomalies(highs, lows, closes):
     """
     Pivots are structural anomalies in price flow.
@@ -4444,7 +4417,6 @@ def get_data():
         # CLASSICAL STRUCTURAL (constraints/magnets, not ML discovery)
         pivot_levels = calculate_pivot_points(hist_data_subset, timeframe)
         fib_levels = calculate_fibonacci_levels(hist_highs, hist_lows)  # For metadata only, not primary levels
-        gap_levels = find_gap_levels(hist_data_subset)
 
         # ---- HARD GUARD: ensure all level outputs are lists ----
         hdbscan_levels = hdbscan_levels or []
@@ -4460,7 +4432,6 @@ def get_data():
         peak_valley_levels = peak_valley_levels or []
         pivot_levels = pivot_levels or []
         fib_levels = fib_levels or []
-        gap_levels = gap_levels or []
         
         # ML LEVELS: Primary discovery algorithms only (including new methods)
         all_ml_levels = (hdbscan_levels + enhanced_optics_levels_result + kde_levels_result + 
@@ -4521,7 +4492,7 @@ def get_data():
         # Combine ML levels with classical structural (as constraints)
         # NOTE: Fibonacci is NOT added here - it will be added as metadata only
         all_levels_combined = (confluence_levels + all_ml_levels + 
-                              pivot_levels + gap_levels)
+                              pivot_levels)
         
         # Add Fibonacci as metadata/confluence to nearby levels (not as primary levels)
         all_levels_combined = add_fibonacci_metadata_to_levels(
@@ -4693,7 +4664,6 @@ def get_data():
         peak_valley_ml = [l for l in all_levels_combined if l['category'] == 'Peak-Valley']
         
         pivot_classical = [l for l in all_levels_combined if l['category'] == 'Pivot']
-        gap_classical = [l for l in all_levels_combined if l['category'] == 'Gap']
         
         # DEBUG: Log level counts before building response
         print(f"Level organization - HDBSCAN: {len(hdbscan_ml)}, Confluence: {len(ml_confluence)}, Event: {len(isolation_forest_ml)}, Interaction: {len(local_interaction_levels)}, Fallback: {len(peak_valley_ml)}")
@@ -4728,8 +4698,7 @@ def get_data():
 
             # CLASSICAL REFERENCES (constraints, not ML discovery)
             'classicalStructural': {
-                'pivots': pivot_classical,
-                'gaps': gap_classical
+                'pivots': pivot_classical
             },
             
             # Backward compatibility: Include old fields
@@ -4742,7 +4711,7 @@ def get_data():
             'volatility': [], # Removed from production
             'pivots': pivot_classical,  # Also at top level for backward compatibility
             'fibonacci': [],  # Removed as primary level - now metadata only
-            'gaps': gap_classical      # Also at top level for backward compatibility
+            'gaps': []      # Also at top level for backward compatibility
         }
         
         # CRITICAL DEBUG: Log final counts before sending to frontend
@@ -7990,14 +7959,13 @@ def get_level_constrained_hod_lod():
             peak_valley_levels = find_peaks_valleys_scipy(highs, lows, closes)
             pivot_levels = calculate_pivot_points(hist_data_subset, timeframe)
             fib_levels = calculate_fibonacci_levels(highs, lows)
-            gap_levels = find_gap_levels(hist_data_subset)
 
             all_ml_levels = hdbscan_levels + isolation_forest_levels + peak_valley_levels
             all_ml_levels = agglomerative_merge_levels(
                 all_ml_levels, distance_threshold_pct=None, timeframe=timeframe
             )
             confluence_levels = get_ml_confluence_levels(all_ml_levels)
-            all_levels_combined = confluence_levels + all_ml_levels + pivot_levels + gap_levels
+            all_levels_combined = confluence_levels + all_ml_levels + pivot_levels
             all_levels_combined = add_fibonacci_metadata_to_levels(
                 all_levels_combined, fib_levels, sigma_price, threshold_sigma=1.0
             )
