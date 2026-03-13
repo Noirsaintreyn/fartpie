@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request, session, send_from_directory
 from flask.json.provider import DefaultJSONProvider
 from flask_cors import CORS
 import yfinance as yf
@@ -8736,6 +8736,18 @@ def api_train_deepsupp_levels():
         return jsonify({'success': False, 'error': str(e)}), 400
 
 
+@app.route('/backtest')
+def serve_backtest_page():
+    """Serve the backtest HTML page directly from the backend."""
+    return send_from_directory('.', 'backtest.html')
+
+
+@app.route('/backtest-frontend.js')
+def serve_backtest_js():
+    """Serve the backtest frontend JavaScript."""
+    return send_from_directory('.', 'backtest-frontend.js', mimetype='application/javascript')
+
+
 @app.route('/api/backtest', methods=['POST'])
 def api_backtest():
     """
@@ -8843,6 +8855,6 @@ except Exception as e:
     # Don't crash - let the app start and retry on first request
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001)                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+    app.run(host='0.0.0.0', port=5001)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 

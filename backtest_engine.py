@@ -290,6 +290,8 @@ def backtest_levels(
             'Open': 'first', 'High': 'max', 'Low': 'min',
             'Close': 'last', 'Volume': 'sum',
         }).dropna()
+        if len(hist) < lookback_bars + eval_bars + 10:
+            return {'success': False, 'error': f'Insufficient data after 4h resampling for {ticker} (got {len(hist)} bars, need {lookback_bars + eval_bars + 10})'}
 
     total_bars = len(hist)
     start_idx = lookback_bars
@@ -339,7 +341,7 @@ def backtest_levels(
         timestamps = hist_window.index
 
         current_price = closes[-1]
-        sigma_price = np.std(np.diff(np.log(closes))) * current_price if len(closes) > 1 else current_price * 0.01
+        sigma_price = np.std(np.diff(np.log(closes))) * 100 * current_price if len(closes) > 1 else current_price * 0.01
 
         future_closes = future_window['Close'].values
         future_highs = future_window['High'].values
@@ -521,6 +523,8 @@ def backtest_hodlod(
             'Open': 'first', 'High': 'max', 'Low': 'min',
             'Close': 'last', 'Volume': 'sum',
         }).dropna()
+        if len(hist) < lookback_bars + 10:
+            return {'success': False, 'error': f'Insufficient data after 4h resampling for {ticker} (got {len(hist)} bars, need {lookback_bars + 10})'}
 
     total_bars = len(hist)
     start_idx = lookback_bars
@@ -566,7 +570,7 @@ def backtest_hodlod(
 
         current_price = closes[-1]
         log_returns = np.diff(np.log(closes))
-        sigma_price = np.std(log_returns) * current_price if len(log_returns) > 0 else current_price * 0.01
+        sigma_price = np.std(log_returns) * 100 * current_price if len(log_returns) > 0 else current_price * 0.01
 
         actual_hod = float(next_bar['High'])
         actual_lod = float(next_bar['Low'])
