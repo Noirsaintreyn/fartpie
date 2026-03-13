@@ -8,5 +8,6 @@ hdbscan>=0.8.33
 scipy
 arch>=6.3.0,<7.0.0
 statsmodels
+lightgbm
 gunicorn
 torch

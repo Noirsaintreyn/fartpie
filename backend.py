@@ -24,12 +24,6 @@ except ImportError:
     XGBOOST_AVAILABLE = False
     xgb = None
 
-try:
-    from statsmodels.tsa.regime_switching.markov_regression import MarkovRegression
-    STATSMODELS_AVAILABLE = True
-except ImportError:
-    STATSMODELS_AVAILABLE = False
-    MarkovRegression = None
 
 try:
     import torch
@@ -63,6 +57,15 @@ import sqlite3
 import json
 import uuid
 from typing import Optional, Dict, Any, List, Tuple
+
+from theoretical_bounds import (
+    TheoreticalBoundsPipeline,
+    PipelineConfig,
+    LivePredictor,
+    LiveForecast,
+    validate_ohlcv,
+    add_mid_range,
+)
 
 # ============================================================================
 # YFINANCE INTERVAL FIX - Handles all timeframes correctly (including 4h)
@@ -355,66 +358,6 @@ def init_db():
                           is_admin INTEGER DEFAULT 0,
                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                           last_login TIMESTAMP)''')
-            
-            # --- ML eval table: predictions + realized + intermediates ---
-            c.execute('''
-            CREATE TABLE IF NOT EXISTS hodlod_eval (
-                id TEXT PRIMARY KEY,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-                ticker TEXT NOT NULL,
-                timeframe TEXT NOT NULL,
-                pred_ts TEXT NOT NULL,          -- ISO timestamp of prediction moment
-                session_date TEXT NOT NULL,     -- YYYY-MM-DD (the session this prediction belongs to)
-
-                spot REAL,
-
-                sigma_daily_pct REAL,
-                sigma_price REAL,
-
-                micro_state TEXT,
-                micro_conf REAL,
-                garch_regime TEXT,
-                lss REAL,
-
-                -- Intermediate pipeline outputs (so we can blame modules)
-                base_hod REAL,
-                base_lod REAL,
-
-                lss_hod REAL,
-                lss_lod REAL,
-                lss_meta TEXT,
-
-                oi_hod REAL,
-                oi_lod REAL,
-                oi_meta TEXT,
-
-                rf_hod REAL,
-                rf_lod REAL,
-                rf_meta TEXT,
-
-                final_hod REAL,
-                final_lod REAL,
-
-                -- Realized
-                realized_hod REAL,
-                realized_lod REAL,
-                realized_ts TEXT,
-
-                -- Feature snapshot used by ML_FEATURES
-                features_json TEXT
-            )
-            ''')
-
-            # --- optional: store learned calibration knobs per regime bucket ---
-            c.execute('''
-            CREATE TABLE IF NOT EXISTS hodlod_calibration (
-                key TEXT PRIMARY KEY,           -- e.g. "Fock|highLSS|highVol"
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                params_json TEXT                -- {"tail_mult":1.1,"oi_clip_mult":0.6,"rf_clip":1.7}
-            )
-            ''')
-            
             conn.commit()
             
             # Admin account: rey / flood
@@ -1024,46 +967,7 @@ def apply_liquidity_stress_to_microstructure(micro, lss):
 
     return micro
 
-def tail_usage_multiplier_from_lss(lss, micro_state=None, override_tail_mult: float = None):
-    """
-    Returns a multiplier for how aggressively to use sigma bands,
-    without changing sigma itself.
-    """
-    # baseline: small expansion when stress is high
-    m = 1.0 + 0.35 * lss  # up to 1.35
 
-    # If already in Fock, allow a bit more tail usage
-    if micro_state == "Fock":
-        m += 0.15 * lss  # up to +0.15 extra
-    # If Thermal, be conservative (OPTIONAL REFINEMENT: cap tighter)
-    if micro_state == "Thermal":
-        m -= 0.10 * lss
-        m = min(m, 1.15)  # Cap at 1.15 to reduce rare over-extension in quiet sessions
-
-    m = float(np.clip(m, 0.90, 1.60))
-    if isinstance(override_tail_mult, (int, float)) and override_tail_mult > 0:
-        m = float(np.clip(override_tail_mult, 0.90, 1.80))
-    return m
-
-def adjust_hod_lod_usage(base_hod, base_lod, sigma_price, lss, micro_state, override_tail_mult: float = None):
-    """
-    Adjusts where you place expected HOD/LOD relative to sigma usage.
-    Does NOT change sigma_price.
-    """
-    mult = tail_usage_multiplier_from_lss(lss, micro_state=micro_state, override_tail_mult=override_tail_mult)
-    
-    mid = (base_hod + base_lod) / 2.0
-    hod_dist = base_hod - mid
-    lod_dist = mid - base_lod
-
-    adj_hod = mid + hod_dist * mult
-    adj_lod = mid - lod_dist * mult
-
-    meta = {
-        "tail_usage_mult": mult,
-        "lss": float(lss)
-    }
-    return float(adj_hod), float(adj_lod), meta
 
 def _iso(ts):
     try:
@@ -1079,260 +983,15 @@ def _session_date_from_timestamp(ts) -> str:
     dt = pd.to_datetime(ts)
     return dt.date().isoformat()
 
-def ml_log_prediction(
-    ticker: str,
-    timeframe: str,
-    pred_ts,
-    spot: float,
-    sigma_daily_pct: float,
-    sigma_price: float,
-    micro_state: str,
-    micro_conf: float,
-    garch_regime: str,
-    lss: float,
-    base_hod: float, base_lod: float,
-    lss_hod: Optional[float], lss_lod: Optional[float], lss_meta: Optional[dict],
-    oi_hod: Optional[float], oi_lod: Optional[float], oi_meta: Optional[dict],
-    rf_hod: Optional[float], rf_lod: Optional[float], rf_meta: Optional[dict],
-    final_hod: float, final_lod: float,
-    features_dict: dict
-) -> str:
-    """Insert a prediction row. Returns row_id."""
-    row_id = str(uuid.uuid4())
-    session_date = _session_date_from_timestamp(pred_ts)
-
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("""
-        INSERT INTO hodlod_eval (
-            id, ticker, timeframe, pred_ts, session_date,
-            spot, sigma_daily_pct, sigma_price,
-            micro_state, micro_conf, garch_regime, lss,
-            base_hod, base_lod,
-            lss_hod, lss_lod, lss_meta,
-            oi_hod, oi_lod, oi_meta,
-            rf_hod, rf_lod, rf_meta,
-            final_hod, final_lod,
-            features_json
-        ) VALUES (?,?,?,?,?,
-                  ?,?,?, ?,?,?,?,
-                  ?,?,
-                  ?,?,?, ?,?,?, ?,?,?, ?,?,
-                  ?)
-    """, (
-        row_id, ticker, timeframe, _iso(pred_ts), session_date,
-        float(spot) if spot is not None else None,
-        float(sigma_daily_pct) if sigma_daily_pct is not None else None,
-        float(sigma_price) if sigma_price is not None else None,
-
-        micro_state, float(micro_conf) if micro_conf is not None else None,
-        garch_regime, float(lss) if lss is not None else None,
-
-        float(base_hod), float(base_lod),
-
-        float(lss_hod) if lss_hod is not None else None,
-        float(lss_lod) if lss_lod is not None else None,
-        json.dumps(lss_meta or {}),
-
-        float(oi_hod) if oi_hod is not None else None,
-        float(oi_lod) if oi_lod is not None else None,
-        json.dumps(oi_meta or {}),
-
-        float(rf_hod) if rf_hod is not None else None,
-        float(rf_lod) if rf_lod is not None else None,
-        json.dumps(rf_meta or {}),
-
-        float(final_hod), float(final_lod),
-
-        json.dumps(features_dict or {})
-    ))
-    conn.commit()
-    conn.close()
-    return row_id
-
-def ml_update_realized(row_id: str, realized_hod: float, realized_lod: float, realized_ts=None) -> bool:
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("""
-        UPDATE hodlod_eval
-        SET realized_hod = ?, realized_lod = ?, realized_ts = ?
-        WHERE id = ?
-    """, (float(realized_hod), float(realized_lod), _iso(realized_ts or datetime.utcnow()), row_id))
-    conn.commit()
-    updated = (c.rowcount > 0)
-    conn.close()
-    return updated
-
-def _lss_bucket(lss: float) -> str:
-    if lss is None: return "na"
-    if lss >= 0.66: return "highLSS"
-    if lss >= 0.33: return "midLSS"
-    return "lowLSS"
-
-def _vol_bucket_from_sigma(sigma_daily_pct: float) -> str:
-    if sigma_daily_pct is None: return "na"
-    if sigma_daily_pct >= 2.0: return "highVol"
-    if sigma_daily_pct >= 1.0: return "midVol"
-    return "lowVol"
-
-def calibration_key(micro_state: str, lss: float, sigma_daily_pct: float) -> str:
-    return f"{micro_state}|{_lss_bucket(lss)}|{_vol_bucket_from_sigma(sigma_daily_pct)}"
-
-def get_calibration_params(key: str) -> dict:
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("SELECT params_json FROM hodlod_calibration WHERE key = ?", (key,))
-    row = c.fetchone()
-    conn.close()
-    if not row:
-        return {}  # default = no overrides
-    try:
-        return json.loads(row[0] or "{}")
-    except Exception:
-        return {}
-
-def upsert_calibration_params(key: str, params: dict) -> None:
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("""
-        INSERT INTO hodlod_calibration (key, params_json, updated_at)
-        VALUES (?, ?, CURRENT_TIMESTAMP)
-        ON CONFLICT(key) DO UPDATE SET
-            params_json = excluded.params_json,
-            updated_at = CURRENT_TIMESTAMP
-    """, (key, json.dumps(params or {})))
-    conn.commit()
-    conn.close()
-
-def compute_oi_walls(
-    spot: float,
-    call_oi_by_strike: dict | None,
-    put_oi_by_strike: dict | None,
-    strike_window_pct: float = 0.12,   # only look ±12% around spot
-    min_oi: float = 1.0,
-):
-    """
-    Compute 'call wall' and 'put wall' from raw OI (no Greeks).
-    call wall = strike with max call OI (within window)
-    put wall  = strike with max put OI (within window)
-
-    Returns:
-      {
-        "call_wall": float|None,
-        "put_wall": float|None,
-        "call_wall_oi": float|None,
-        "put_wall_oi": float|None,
-        "window": {"low":..., "high":...}
-      }
-    """
-    if not spot or spot <= 0:
-        return {"call_wall": None, "put_wall": None, "call_wall_oi": None, "put_wall_oi": None, "window": None}
-
-    low = spot * (1.0 - strike_window_pct)
-    high = spot * (1.0 + strike_window_pct)
-
-    def _best_wall(oi_map):
-        if not oi_map:
-            return (None, None)
-        best_k = None
-        best_v = -1.0
-        for k, v in oi_map.items():
-            try:
-                strike = float(k)
-                oi = float(v)
-            except Exception:
-                continue
-            if strike < low or strike > high:
-                continue
-            if oi < min_oi:
-                continue
-            if oi > best_v:
-                best_v = oi
-                best_k = strike
-        if best_k is None:
-            return (None, None)
-        return (float(best_k), float(best_v))
-
-    call_wall, call_wall_oi = _best_wall(call_oi_by_strike)
-    put_wall, put_wall_oi = _best_wall(put_oi_by_strike)
-
-    return {
-        "call_wall": call_wall,
-        "put_wall": put_wall,
-        "call_wall_oi": call_wall_oi,
-        "put_wall_oi": put_wall_oi,
-        "window": {"low": float(low), "high": float(high)}
-    }
 
 
-def apply_oi_walls_to_hod_lod(
-    hod: float,
-    lod: float,
-    spot: float,
-    walls: dict,
-    micro_state: str = "Unknown",
-    clip_buffer_pct: float = 0.0015,  # 0.15% buffer so you don't clip exactly on the strike
-    override_clip_mult: float = None
-):
-    """
-    Treat walls as STRUCTURAL constraints (magnets/boundaries), not volatility estimators.
 
-    Behavior:
-    - If call_wall exists and is inside your computed hod, cap hod to call_wall (minus small buffer)
-    - If put_wall exists and is inside your computed lod, cap lod to put_wall (plus small buffer)
-    - Make clipping state-aware (Fock clips less aggressively; Thermal clips more)
-    """
-    call_wall = walls.get("call_wall")
-    put_wall = walls.get("put_wall")
 
-    meta = {
-        "used": False,
-        "clipped_hod": False,
-        "clipped_lod": False,
-        "call_wall": call_wall,
-        "put_wall": put_wall,
-    }
 
-    if not spot or spot <= 0:
-        return float(hod), float(lod), meta
 
-    # State-aware clip intensity
-    # Fock = allow overshoots more often, Thermal = pin/constraints matter more
-    if isinstance(override_clip_mult, (int, float)) and override_clip_mult > 0:
-        clip_mult = float(np.clip(override_clip_mult, 0.10, 1.50))
-    else:
-        if micro_state == "Fock":
-            clip_mult = 0.35   # light clipping
-        elif micro_state == "Thermal":
-            clip_mult = 1.00   # full clipping
-        else:  # Coherent/Unknown
-            clip_mult = 0.70
 
-    buffer = spot * clip_buffer_pct * clip_mult
 
-    new_hod = float(hod)
-    new_lod = float(lod)
 
-    if isinstance(call_wall, (int, float)) and call_wall > 0:
-        # Only clip if wall is between spot and hod (i.e., relevant resistance boundary)
-        if spot < call_wall < new_hod:
-            new_hod = float(call_wall - buffer)
-            meta["used"] = True
-            meta["clipped_hod"] = True
-
-    if isinstance(put_wall, (int, float)) and put_wall > 0:
-        # Only clip if wall is between lod and spot (i.e., relevant support boundary)
-        if new_lod < put_wall < spot:
-            new_lod = float(put_wall + buffer)
-            meta["used"] = True
-            meta["clipped_lod"] = True
-
-    # Safety: don't invert
-    if new_lod >= new_hod:
-        # fallback: keep original
-        return float(hod), float(lod), meta
-
-    return new_hod, new_lod, meta
 
 def detect_market_microstructure_state(closes, volumes, returns, highs=None, lows=None):
     """
@@ -1491,8 +1150,7 @@ def detect_market_microstructure_state(closes, volumes, returns, highs=None, low
         'level_multipliers': level_multipliers
     }
     
-    # NOTE: LSS adjustments are applied in adjust_hod_lod_usage, not here
-    # This prevents double-adjustment of permeability and overshoot bias
+    # NOTE: LSS adjustments are applied via microstructure state, not here
     if lss_features:
         result['liquidity_stress_features'] = lss_features
     result['lss'] = float(lss)  # Store LSS value for later use
@@ -2628,125 +2286,9 @@ def calculate_hurst_exponent(closes, max_lag=20):
         level_multiplier = 1.0
     return {'hurst': float(H), 'regime': regime, 'level_multiplier': level_multiplier}
 
-def fit_gumbel_copula(u_series, d_series):
-    """
-    Gumbel copula captures upper-tail dependence
-    (HOD and LOD both extreme on same day)
-    """
-    if len(u_series) != len(d_series) or len(u_series) < 10:
-        return {'theta': 1.0, 'tau': 0.0}
-    
-    # Convert to uniform margins
-    u_uniform = (pd.Series(u_series).rank() / (len(u_series) + 1)).values
-    d_uniform = (pd.Series(d_series).rank() / (len(d_series) + 1)).values
-    
-    # Estimate Kendall's tau
-    tau, _ = kendalltau(u_uniform, d_uniform)
-    
-    # Gumbel parameter from tau
-    theta = 1 / (1 - tau) if tau < 1 else 2.0
-    theta = max(1.0, theta)  # Gumbel requires θ ≥ 1
-    
-    return {'theta': float(theta), 'tau': float(tau)}
 
-def conditional_hod_quantile(u_quantile, lod_uniform, theta, q=0.8):
-    """
-    Given LOD is at lod_uniform percentile,
-    what's the q-th quantile of HOD?
-    """
-    # Conditional CDF of U|V=v
-    v = lod_uniform
-    u = np.linspace(0.01, 0.99, 100)
-    
-    # Gumbel conditional
-    t = (-np.log(u))**theta + (-np.log(v))**theta
-    C = np.exp(-t**(1/theta))
-    dC_dv = C * (t**(1/theta - 1)) * ((-np.log(v))**(theta-1)) / v
-    
-    # Find u such that P(U ≤ u | V = v) = q
-    cond_cdf = dC_dv / (dC_dv.sum() + 1e-9)
-    cond_cdf_cum = np.cumsum(cond_cdf)
-    
-    idx = np.where(cond_cdf_cum >= q)[0]
-    if len(idx) > 0:
-        return float(u[idx[0]])
-    return float(u[-1])
 
-def fit_regime_switching(u_series, d_series, exog_features, n_regimes=3):
-    """
-    Markov-switching regression
-    Automatically learns regime transitions
-    """
-    if not STATSMODELS_AVAILABLE:
-        return {'current_regime': 1, 'current_probs': [0.33, 0.34, 0.33], 'next_probs': [0.33, 0.34, 0.33], 'transition_matrix': [[0.33, 0.33, 0.34], [0.33, 0.34, 0.33], [0.33, 0.33, 0.34]]}
-    
-    if len(u_series) != len(d_series) or len(u_series) < 30:
-        return {'current_regime': 1, 'current_probs': [0.33, 0.34, 0.33], 'next_probs': [0.33, 0.34, 0.33], 'transition_matrix': [[0.33, 0.33, 0.34], [0.33, 0.34, 0.33], [0.33, 0.33, 0.34]]}
-    
-    try:
-        # Dependent variable: total range
-        y = np.array(u_series) + np.array(d_series)
-        
-        # Exogenous features
-        X = np.array(exog_features) if not isinstance(exog_features, np.ndarray) else exog_features
-        
-        # Ensure X is 2D
-        if X.ndim == 1:
-            X = X.reshape(-1, 1)
-        
-        # Fit model
-        model = MarkovRegression(
-            y, k_regimes=n_regimes, exog=X,
-            switching_variance=True
-        )
-        
-        result = model.fit()
-        
-        # Get current regime probabilities
-        smoothed_probs = result.smoothed_marginal_probabilities
-        current_regime_probs = smoothed_probs.iloc[-1].values if hasattr(smoothed_probs, 'iloc') else smoothed_probs[-1]
-        
-        # Transition matrix
-        transition_matrix = result.regime_transition
-        
-        # Next-period regime forecast
-        next_regime_probs = current_regime_probs @ transition_matrix
-        
-        return {
-            'current_regime': int(np.argmax(current_regime_probs)),
-            'current_probs': current_regime_probs.tolist() if hasattr(current_regime_probs, 'tolist') else list(current_regime_probs),
-            'next_probs': next_regime_probs.tolist() if hasattr(next_regime_probs, 'tolist') else list(next_regime_probs),
-            'transition_matrix': transition_matrix.tolist() if hasattr(transition_matrix, 'tolist') else transition_matrix
-        }
-    except:
-        return {'current_regime': 1, 'current_probs': [0.33, 0.34, 0.33], 'next_probs': [0.33, 0.34, 0.33], 'transition_matrix': [[0.33, 0.33, 0.34], [0.33, 0.34, 0.33], [0.33, 0.33, 0.34]]}
 
-def fractional_brownian_adjustment(base_hod, base_lod, hurst, sigma):
-    """
-    Adjust predictions based on Hurst exponent
-    H > 0.5: trending (wider range)
-    H < 0.5: mean-reverting (narrower range)
-    """
-    # Fractional scaling
-    # σ_fBm(t) = σ × t^H  (vs. σ × √t for Brownian)
-    
-    if hurst > 0.6:  # Trending
-        # Expect larger moves
-        multiplier = 1.0 + 0.3 * (hurst - 0.5) / 0.5  # Up to 1.3x
-    elif hurst < 0.4:  # Mean-reverting
-        # Expect smaller moves
-        multiplier = 1.0 - 0.2 * (0.5 - hurst) / 0.5  # Down to 0.8x
-    else:
-        multiplier = 1.0
-    
-    mid = (base_hod + base_lod) / 2
-    hod_dist = base_hod - mid
-    lod_dist = mid - base_lod
-    
-    adj_hod = mid + hod_dist * multiplier
-    adj_lod = mid - lod_dist * multiplier
-    
-    return float(adj_hod), float(adj_lod)
 
 # [ALL THE LEVEL DETECTION FUNCTIONS - KEEPING THEM EXACTLY AS BEFORE]
 
@@ -5689,38 +5231,25 @@ FEATURE_ORDER = [
 ]
 
 # ============================================================================
-# EQUATION ARCHITECTURE: HARD PHYSICS vs LEARNABLE
+# EQUATION ARCHITECTURE: FVECM + LEVEL REFINEMENT
 # ============================================================================
 #
 # HARD PHYSICS (never learned, always fixed):
 # - GARCH volatility estimation (fit_garch_model, calculate_garch_volatility_regime)
-#   Reason: Volatility is a fundamental market property, not a calibration parameter
 # - State machine detection (detect_market_microstructure_state)
-#   Reason: State classification is structural, calibration happens via multipliers
 # - Liquidity stress scoring (liquidity_stress_score)
-#   Reason: LSS is an observation, not a tunable parameter
-# - OI wall computation (compute_oi_walls)
-#   Reason: Wall positions are market data, not learnable
 #
-# LEARNABLE (can be calibrated per regime):
-# - Tail usage multiplier (tail_usage_multiplier_from_lss → adjust_hod_lod_usage)
-#   Calibration: override_tail_mult in hodlod_calibration table
-#   Bounds: [0.70, 1.80] (hard constraint)
-# - OI clipping intensity (apply_oi_walls_to_hod_lod)
-#   Calibration: override_oi_clip_mult in hodlod_calibration table
-#   Bounds: [0.10, 1.50] (hard constraint)
-# - RF adjustment strength (rf_adjust_hod_lod)
-#   Calibration: rf_clip (future: can clip RF adjustments)
-#   Bounds: [0.50, 2.50] (hard constraint)
+# FVECM PIPELINE (theoretical_bounds package):
+# - Layer 1: VECM on (mid_log, range_log) -- cointegration-based structural envelope
+# - Layer 2: LightGBM residual corrector on normalized (e_mid, e_range)
+# - Layer 3: Hard constraints + confidence bands (reconstruct.py)
+# - Layer 4: Corrected HOD/LOD via LivePredictor (pre-open, zero look-ahead)
 #
 # STRUCTURAL CONSTRAINTS (enforced, never learned):
 # - HOD > LOD (always enforced)
-# - OI walls clip, not predict (structural boundaries)
-# - RF applied after structural constraints (ordering preserved)
-# - Residual correction applied last (learns remaining bias)
+# - Range clipped to [0.1%, 15%] of close
+# - Level refinement applied after FVECM prediction
 #
-# ============================================================================
-# SELF-LEARNING ML FRAMEWORK - HOD/LOD PREDICTION
 # ============================================================================
 
 # State and regime mappings for ML features
@@ -5754,451 +5283,18 @@ ML_FEATURES = [
     "jump_intensity", "wickiness_score", "tail_usage_mult"
 ]
 
-def prepare_features(df):
-    """Convert categorical features to numeric"""
-    df = df.copy()
-    
-    # Map categorical to numeric
-    if "micro_state" in df.columns:
-        df["micro_state"] = df["micro_state"].map(STATE_MAP).fillna(-1)
-    if "garch_regime" in df.columns:
-        df["garch_regime"] = df["garch_regime"].map(REGIME_MAP).fillna(0)
-    if "hmm_regime" in df.columns:
-        df["hmm_regime"] = df["hmm_regime"].map(REGIME_MAP).fillna(0)
-    if "hurst_state" in df.columns:
-        df["hurst_state"] = df["hurst_state"].map(REGIME_MAP).fillna(0)
-    
-    # Ensure numeric types
-    for feat in ML_FEATURES:
-        if feat in df.columns:
-            df[feat] = pd.to_numeric(df[feat], errors='coerce')
-    
-    return df
 
-def compute_hod_error_sigma(df):
-    """
-    Compute HOD prediction error in sigma units
-    Positive = overshoot (actual > predicted)
-    Negative = undershoot (actual < predicted)
-    """
-    error = (df["realized_HOD"] - df["predicted_HOD"]) / (df["sigma_price"] + 1e-9)
-    return error.clip(-3, 3)  # Cap at ±3σ to handle outliers
 
-def compute_lod_error_sigma(df):
-    """
-    Compute LOD prediction error in sigma units
-    Positive = overshoot (actual < predicted, price went lower)
-    Negative = undershoot (actual > predicted, price didn't go as low)
-    """
-    error = (df["predicted_LOD"] - df["realized_LOD"]) / (df["sigma_price"] + 1e-9)
-    return error.clip(-3, 3)  # Cap at ±3σ to handle outliers
 
-def train_rf_dual(df, verbose=True):
-    """
-    Train separate Random Forest models for HOD and LOD adjustments
-    
-    Returns:
-    --------
-    (rf_hod, rf_lod, metrics)
-    """
-    df = prepare_features(df)
-    
-    # Compute targets
-    df["target_hod"] = compute_hod_error_sigma(df)
-    df["target_lod"] = compute_lod_error_sigma(df)
-    
-    # Drop rows with missing features or targets
-    required_cols = ML_FEATURES + ["target_hod", "target_lod"]
-    df_clean = df.dropna(subset=required_cols)
-    
-    if len(df_clean) < 100:
-        raise ValueError(f"Insufficient data: {len(df_clean)} rows after cleaning (need 100+)")
-    
-    X = df_clean[ML_FEATURES].values
-    y_hod = df_clean["target_hod"].values
-    y_lod = df_clean["target_lod"].values
-    
-    # Time series cross-validation
-    tscv = TimeSeriesSplit(n_splits=5)
-    
-    # Initialize models
-    rf_hod = RandomForestRegressor(
-        n_estimators=300,
-        max_depth=6,
-        min_samples_leaf=30,
-        max_features=0.6,
-        random_state=42,
-        n_jobs=-1
-    )
-    
-    rf_lod = RandomForestRegressor(
-        n_estimators=300,
-        max_depth=6,
-        min_samples_leaf=30,
-        max_features=0.6,
-        random_state=43,  # Different seed for diversity
-        n_jobs=-1
-    )
-    
-    # Cross-validation
-    maes_hod, maes_lod = [], []
-    rmses_hod, rmses_lod = [], []
-    
-    for fold, (train_idx, val_idx) in enumerate(tscv.split(X), 1):
-        X_train, X_val = X[train_idx], X[val_idx]
-        y_hod_train, y_hod_val = y_hod[train_idx], y_hod[val_idx]
-        y_lod_train, y_lod_val = y_lod[train_idx], y_lod[val_idx]
-        
-        # Train HOD model
-        rf_hod.fit(X_train, y_hod_train)
-        preds_hod = rf_hod.predict(X_val)
-        mae_hod = mean_absolute_error(y_hod_val, preds_hod)
-        rmse_hod = np.sqrt(mean_squared_error(y_hod_val, preds_hod))
-        maes_hod.append(mae_hod)
-        rmses_hod.append(rmse_hod)
-        
-        # Train LOD model
-        rf_lod.fit(X_train, y_lod_train)
-        preds_lod = rf_lod.predict(X_val)
-        mae_lod = mean_absolute_error(y_lod_val, preds_lod)
-        rmse_lod = np.sqrt(mean_squared_error(y_lod_val, preds_lod))
-        maes_lod.append(mae_lod)
-        rmses_lod.append(rmse_lod)
-        
-        if verbose:
-            print(f"Fold {fold}: HOD MAE={mae_hod:.4f}σ, LOD MAE={mae_lod:.4f}σ")
-    
-    # Final training on all data
-    rf_hod.fit(X, y_hod)
-    rf_lod.fit(X, y_lod)
-    
-    metrics = {
-        'hod_mae': np.mean(maes_hod),
-        'hod_rmse': np.mean(rmses_hod),
-        'lod_mae': np.mean(maes_lod),
-        'lod_rmse': np.mean(rmses_lod),
-        'n_samples': len(df_clean)
-    }
-    
-    if verbose:
-        print(f"\n{'='*60}")
-        print(f"FINAL CV RESULTS (n={len(df_clean)})")
-        print(f"{'='*60}")
-        print(f"HOD: MAE={metrics['hod_mae']:.4f}σ, RMSE={metrics['hod_rmse']:.4f}σ")
-        print(f"LOD: MAE={metrics['lod_mae']:.4f}σ, RMSE={metrics['lod_rmse']:.4f}σ")
-        print(f"{'='*60}\n")
-    
-    return rf_hod, rf_lod, metrics
 
-def train_lgbm_dual(df, verbose=True):
-    """
-    Train separate LightGBM models for HOD and LOD adjustments
-    LightGBM is 10-100x faster than RF and often 5-15% more accurate
-    
-    Returns:
-    --------
-    (lgbm_hod, lgbm_lod, metrics)
-    """
-    if not LIGHTGBM_AVAILABLE:
-        raise ImportError("lightgbm is not installed. Install it with: pip install lightgbm")
-    
-    df = prepare_features(df)
-    
-    # Compute targets
-    df["target_hod"] = compute_hod_error_sigma(df)
-    df["target_lod"] = compute_lod_error_sigma(df)
-    
-    # Drop rows with missing features or targets
-    required_cols = ML_FEATURES + ["target_hod", "target_lod"]
-    df_clean = df.dropna(subset=required_cols)
-    
-    if len(df_clean) < 100:
-        raise ValueError(f"Insufficient data: {len(df_clean)} rows after cleaning (need 100+)")
-    
-    X = df_clean[ML_FEATURES].values
-    y_hod = df_clean["target_hod"].values
-    y_lod = df_clean["target_lod"].values
-    
-    # Time series cross-validation
-    tscv = TimeSeriesSplit(n_splits=5)
-    
-    # LightGBM parameters
-    params = {
-        'objective': 'regression',
-        'metric': 'mae',
-        'boosting_type': 'gbdt',
-        'num_leaves': 31,
-        'learning_rate': 0.05,
-        'feature_fraction': 0.8,
-        'bagging_fraction': 0.8,
-        'bagging_freq': 5,
-        'verbose': -1,
-        'min_data_in_leaf': 20,
-        'lambda_l1': 0.1,  # L1 regularization
-        'lambda_l2': 0.1,  # L2 regularization
-        'random_state': 42
-    }
-    
-    # Cross-validation
-    maes_hod, maes_lod = [], []
-    rmses_hod, rmses_lod = [], []
-    
-    for fold, (train_idx, val_idx) in enumerate(tscv.split(X), 1):
-        X_train, X_val = X[train_idx], X[val_idx]
-        y_hod_train, y_hod_val = y_hod[train_idx], y_hod[val_idx]
-        y_lod_train, y_lod_val = y_lod[train_idx], y_lod[val_idx]
-        
-        # Train HOD model
-        lgbm_hod_fold = lgb.LGBMRegressor(**params, n_estimators=500)
-        lgbm_hod_fold.fit(
-            X_train, y_hod_train,
-            eval_set=[(X_val, y_hod_val)],
-            early_stopping_rounds=50,
-            verbose=False
-        )
-        preds_hod = lgbm_hod_fold.predict(X_val)
-        mae_hod = mean_absolute_error(y_hod_val, preds_hod)
-        rmse_hod = np.sqrt(mean_squared_error(y_hod_val, preds_hod))
-        maes_hod.append(mae_hod)
-        rmses_hod.append(rmse_hod)
-        
-        # Train LOD model
-        lgbm_lod_fold = lgb.LGBMRegressor(**params, n_estimators=500, random_state=43)
-        lgbm_lod_fold.fit(
-            X_train, y_lod_train,
-            eval_set=[(X_val, y_lod_val)],
-            early_stopping_rounds=50,
-            verbose=False
-        )
-        preds_lod = lgbm_lod_fold.predict(X_val)
-        mae_lod = mean_absolute_error(y_lod_val, preds_lod)
-        rmse_lod = np.sqrt(mean_squared_error(y_lod_val, preds_lod))
-        maes_lod.append(mae_lod)
-        rmses_lod.append(rmse_lod)
-        
-        if verbose:
-            print(f"Fold {fold}: HOD MAE={mae_hod:.4f}σ, LOD MAE={mae_lod:.4f}σ")
-    
-    # Final training on all data
-    lgbm_hod = lgb.LGBMRegressor(**params, n_estimators=500)
-    lgbm_hod.fit(
-        X, y_hod,
-        eval_set=[(X, y_hod)],
-        early_stopping_rounds=50,
-        verbose=False
-    )
-    
-    lgbm_lod = lgb.LGBMRegressor(**params, n_estimators=500, random_state=43)
-    lgbm_lod.fit(
-        X, y_lod,
-        eval_set=[(X, y_lod)],
-        early_stopping_rounds=50,
-        verbose=False
-    )
-    
-    metrics = {
-        'hod_mae': np.mean(maes_hod),
-        'hod_rmse': np.mean(rmses_hod),
-        'lod_mae': np.mean(maes_lod),
-        'lod_rmse': np.mean(rmses_lod),
-        'n_samples': len(df_clean)
-    }
-    
-    if verbose:
-        print(f"\n{'='*60}")
-        print(f"FINAL CV RESULTS (LightGBM, n={len(df_clean)})")
-        print(f"{'='*60}")
-        print(f"HOD: MAE={metrics['hod_mae']:.4f}σ, RMSE={metrics['hod_rmse']:.4f}σ")
-        print(f"LOD: MAE={metrics['lod_mae']:.4f}σ, RMSE={metrics['lod_rmse']:.4f}σ")
-        print(f"{'='*60}\n")
-    
-    return lgbm_hod, lgbm_lod, metrics
 
-def print_feature_importance(rf_hod, rf_lod):
-    """Print feature importance for both models"""
-    print("\n" + "="*60)
-    print("FEATURE IMPORTANCE")
-    print("="*60)
-    
-    # HOD model
-    print("\nHOD Model - Top 10 Features:")
-    importances_hod = rf_hod.feature_importances_
-    pairs_hod = sorted(zip(ML_FEATURES, importances_hod), key=lambda x: x[1], reverse=True)
-    for i, (feat, imp) in enumerate(pairs_hod[:10], 1):
-        print(f"{i:2}. {feat:<30} {imp:.4f}")
-    
-    # LOD model
-    print("\nLOD Model - Top 10 Features:")
-    importances_lod = rf_lod.feature_importances_
-    pairs_lod = sorted(zip(ML_FEATURES, importances_lod), key=lambda x: x[1], reverse=True)
-    for i, (feat, imp) in enumerate(pairs_lod[:10], 1):
-        print(f"{i:2}. {feat:<30} {imp:.4f}")
-    
-    # Show differences
-    print("\nFeature Importance Differences (HOD - LOD):")
-    diff_dict = {f: importances_hod[i] - importances_lod[i] 
-                 for i, f in enumerate(ML_FEATURES)}
-    sorted_diffs = sorted(diff_dict.items(), key=lambda x: abs(x[1]), reverse=True)
-    for feat, diff in sorted_diffs[:10]:
-        direction = "HOD" if diff > 0 else "LOD"
-        print(f"{feat:<30} {diff:+.4f} (favors {direction})")
 
-def rf_adjust_hod_lod(rf_hod, rf_lod, feature_dict, base_hod, base_lod, sigma_price):
-    """
-    Adjust base HOD/LOD predictions using trained Random Forest models
-    
-    Parameters:
-    -----------
-    rf_hod, rf_lod : RandomForestRegressor
-        Trained models for HOD and LOD adjustments
-    feature_dict : dict
-        Dictionary with keys matching ML_FEATURES
-    base_hod, base_lod : float
-        Base predictions from state machine
-    sigma_price : float
-        Current volatility (price * sigma_daily / 100)
-    
-    Returns:
-    --------
-    (adjusted_hod, adjusted_lod, metadata)
-    """
-    # Extract features in correct order
-    X = np.array([feature_dict.get(f, 0) for f in ML_FEATURES]).reshape(1, -1)
-    
-    # Predict adjustments in sigma units
-    adj_hod_sigma = rf_hod.predict(X)[0]
-    adj_lod_sigma = rf_lod.predict(X)[0]
-    
-    # Clip to reasonable range (±2σ adjustment)
-    adj_hod_sigma = np.clip(adj_hod_sigma, -2.0, 2.0)
-    adj_lod_sigma = np.clip(adj_lod_sigma, -2.0, 2.0)
-    
-    # Apply adjustments
-    adjusted_hod = base_hod + adj_hod_sigma * sigma_price
-    adjusted_lod = base_lod - adj_lod_sigma * sigma_price
-    
-    # Ensure HOD > LOD
-    if adjusted_hod < adjusted_lod:
-        # If crossed, use base predictions
-        adjusted_hod = base_hod
-        adjusted_lod = base_lod
-    
-    metadata = {
-        'adj_hod_sigma': float(adj_hod_sigma),
-        'adj_lod_sigma': float(adj_lod_sigma),
-        'base_hod': float(base_hod),
-        'base_lod': float(base_lod),
-        'rf_enhanced': True
-    }
-    
-    return float(adjusted_hod), float(adjusted_lod), metadata
 
-def lgbm_adjust_hod_lod(lgbm_hod, lgbm_lod, feature_dict, base_hod, base_lod, sigma_price):
-    """
-    Adjust base HOD/LOD predictions using trained LightGBM models
-    
-    Parameters:
-    -----------
-    lgbm_hod, lgbm_lod : LGBMRegressor
-        Trained LightGBM models for HOD and LOD adjustments
-    feature_dict : dict
-        Dictionary with keys matching ML_FEATURES
-    base_hod, base_lod : float
-        Base predictions from state machine
-    sigma_price : float
-        Current volatility (price * sigma_daily / 100)
-    
-    Returns:
-    --------
-    (adjusted_hod, adjusted_lod, metadata)
-    """
-    # Extract features in correct order
-    X = np.array([feature_dict.get(f, 0) for f in ML_FEATURES]).reshape(1, -1)
-    
-    # Predict adjustments in sigma units
-    adj_hod_sigma = lgbm_hod.predict(X)[0]
-    adj_lod_sigma = lgbm_lod.predict(X)[0]
-    
-    # Clip to reasonable range (±2σ adjustment)
-    adj_hod_sigma = np.clip(adj_hod_sigma, -2.0, 2.0)
-    adj_lod_sigma = np.clip(adj_lod_sigma, -2.0, 2.0)
-    
-    # Apply adjustments
-    adjusted_hod = base_hod + adj_hod_sigma * sigma_price
-    adjusted_lod = base_lod - adj_lod_sigma * sigma_price
-    
-    # Ensure HOD > LOD
-    if adjusted_hod < adjusted_lod:
-        # If crossed, use base predictions
-        adjusted_hod = base_hod
-        adjusted_lod = base_lod
-    
-    metadata = {
-        'adj_hod_sigma': float(adj_hod_sigma),
-        'adj_lod_sigma': float(adj_lod_sigma),
-        'base_hod': float(base_hod),
-        'base_lod': float(base_lod),
-        'lgbm_enhanced': True
-    }
-    
-    return float(adjusted_hod), float(adjusted_lod), metadata
 
 # ============================================================================
 # ADVANCED ML MODELS FOR HOD/LOD PREDICTION
 # ============================================================================
 
-def train_xgb_quantile(df, quantiles=[0.1, 0.5, 0.9], target='hod'):
-    """
-    XGBoost with Quantile Regression
-    Predict multiple quantiles simultaneously - gives confidence intervals, not just point estimates
-    """
-    if not XGBOOST_AVAILABLE:
-        return {}
-    
-    try:
-        from sklearn.model_selection import train_test_split
-        df = prepare_features(df)
-        target_col = f"target_{target}"
-        
-        if target_col not in df.columns:
-            df[target_col] = compute_hod_error_sigma(df) if target == 'hod' else compute_lod_error_sigma(df)
-        
-        df_clean = df.dropna(subset=ML_FEATURES + [target_col])
-        if len(df_clean) < 100:
-            return {}
-        
-        X = df_clean[ML_FEATURES].values
-        y = df_clean[target_col].values
-        
-        # Split data
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        
-        models = {}
-        for q in quantiles:
-            try:
-                xgb_model = xgb.XGBRegressor(
-                    objective='reg:quantileerror',
-                    quantile_alpha=q,
-                    tree_method='hist',
-                    learning_rate=0.05,
-                    max_depth=6,
-                    n_estimators=500,
-                    subsample=0.8,
-                    colsample_bytree=0.8,
-                    random_state=42,
-                    verbosity=0
-                )
-                xgb_model.fit(X_train, y_train)
-                models[f'q{int(q*100)}'] = xgb_model
-                print(f"✓ Trained XGBoost quantile {q} model for {target}")
-            except Exception as e:
-                print(f"XGBoost quantile {q} failed: {e}")
-                continue
-        
-        return models
-    except Exception as e:
-        print(f"train_xgb_quantile failed: {e}")
-        return {}
 
 if TORCH_AVAILABLE and nn is not None:
     class AttentionHODLOD(nn.Module):
@@ -6304,141 +5400,6 @@ else:
         def __init__(self, *args, **kwargs):
             pass
 
-def train_meta_ensemble(df):
-    """
-    Ensemble Meta-Model (Stacking 2.0)
-    Level 1: Train diverse base models
-    Level 2: Train meta-model on base predictions
-    Level 3: Residual correction
-    """
-    if len(df) < 100:
-        return None
-    
-    try:
-        from sklearn.linear_model import Ridge
-        from sklearn.ensemble import GradientBoostingRegressor
-        
-        df = prepare_features(df)
-        df["target_hod"] = compute_hod_error_sigma(df)
-        df["target_lod"] = compute_lod_error_sigma(df)
-        
-        df_clean = df.dropna(subset=ML_FEATURES + ["target_hod", "target_lod"])
-        if len(df_clean) < 100:
-            return None
-        
-        X = df_clean[ML_FEATURES].values
-        y_hod = df_clean["target_hod"].values
-        y_lod = df_clean["target_lod"].values
-        
-        # Level 1: Diverse base models
-        base_models_hod = {}
-        base_models_lod = {}
-        
-        if LIGHTGBM_AVAILABLE:
-            base_models_hod['lgbm'] = lgb.LGBMRegressor(n_estimators=300, learning_rate=0.05, verbose=-1, random_state=42)
-            base_models_lod['lgbm'] = lgb.LGBMRegressor(n_estimators=300, learning_rate=0.05, verbose=-1, random_state=43)
-        
-        if XGBOOST_AVAILABLE:
-            base_models_hod['xgb'] = xgb.XGBRegressor(n_estimators=300, learning_rate=0.05, random_state=42, verbosity=0)
-            base_models_lod['xgb'] = xgb.XGBRegressor(n_estimators=300, learning_rate=0.05, random_state=43, verbosity=0)
-        
-        base_models_hod['rf'] = RandomForestRegressor(n_estimators=200, max_depth=8, random_state=42, n_jobs=-1)
-        base_models_lod['rf'] = RandomForestRegressor(n_estimators=200, max_depth=8, random_state=43, n_jobs=-1)
-        
-        base_models_hod['gbm'] = GradientBoostingRegressor(n_estimators=200, learning_rate=0.05, random_state=42)
-        base_models_lod['gbm'] = GradientBoostingRegressor(n_estimators=200, learning_rate=0.05, random_state=43)
-        
-        # Train base models with CV
-        tscv = TimeSeriesSplit(n_splits=5)
-        base_predictions_hod = np.zeros((len(X), len(base_models_hod)))
-        base_predictions_lod = np.zeros((len(X), len(base_models_lod)))
-        
-        for fold, (train_idx, val_idx) in enumerate(tscv.split(X)):
-            for i, (name, model_hod) in enumerate(base_models_hod.items()):
-                model_hod.fit(X[train_idx], y_hod[train_idx])
-                base_predictions_hod[val_idx, i] = model_hod.predict(X[val_idx])
-                
-                model_lod = base_models_lod[name]
-                model_lod.fit(X[train_idx], y_lod[train_idx])
-                base_predictions_lod[val_idx, i] = model_lod.predict(X[val_idx])
-        
-        # Train final models on all data
-        for name, model in base_models_hod.items():
-            model.fit(X, y_hod)
-        for name, model in base_models_lod.items():
-            model.fit(X, y_lod)
-        
-        # Level 2: Meta-model (learns optimal weighting)
-        meta_features_hod = np.hstack([X, base_predictions_hod])
-        meta_features_lod = np.hstack([X, base_predictions_lod])
-        
-        meta_model_hod = Ridge(alpha=1.0)
-        meta_model_lod = Ridge(alpha=1.0)
-        meta_model_hod.fit(meta_features_hod, y_hod)
-        meta_model_lod.fit(meta_features_lod, y_lod)
-        
-        # Level 3: Residual correction
-        meta_preds_hod = meta_model_hod.predict(meta_features_hod)
-        meta_preds_lod = meta_model_lod.predict(meta_features_lod)
-        
-        residuals_hod = y_hod - meta_preds_hod
-        residuals_lod = y_lod - meta_preds_lod
-        
-        if LIGHTGBM_AVAILABLE:
-            residual_model_hod = lgb.LGBMRegressor(n_estimators=100, learning_rate=0.1, verbose=-1, random_state=42)
-            residual_model_lod = lgb.LGBMRegressor(n_estimators=100, learning_rate=0.1, verbose=-1, random_state=43)
-        else:
-            residual_model_hod = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)
-            residual_model_lod = RandomForestRegressor(n_estimators=100, random_state=43, n_jobs=-1)
-        
-        residual_model_hod.fit(X, residuals_hod)
-        residual_model_lod.fit(X, residuals_lod)
-        
-        print("✓ Meta-ensemble trained successfully")
-        return {
-            'base_models_hod': base_models_hod,
-            'base_models_lod': base_models_lod,
-            'meta_model_hod': meta_model_hod,
-            'meta_model_lod': meta_model_lod,
-            'residual_model_hod': residual_model_hod,
-            'residual_model_lod': residual_model_lod
-        }
-    except Exception as e:
-        print(f"train_meta_ensemble failed: {e}")
-        return None
-
-def predict_meta_ensemble(meta_ensemble, feature_dict):
-    """
-    Predict using meta-ensemble
-    """
-    if meta_ensemble is None:
-        return None, None
-    
-    try:
-        X = np.array([feature_dict.get(f, 0) for f in ML_FEATURES]).reshape(1, -1)
-        
-        # Level 1: Base predictions
-        base_preds_hod = np.column_stack([m.predict(X) for m in meta_ensemble['base_models_hod'].values()])
-        base_preds_lod = np.column_stack([m.predict(X) for m in meta_ensemble['base_models_lod'].values()])
-        
-        # Level 2: Meta predictions
-        meta_features_hod = np.hstack([X, base_preds_hod])
-        meta_features_lod = np.hstack([X, base_preds_lod])
-        
-        meta_pred_hod = meta_ensemble['meta_model_hod'].predict(meta_features_hod)[0]
-        meta_pred_lod = meta_ensemble['meta_model_lod'].predict(meta_features_lod)[0]
-        
-        # Level 3: Residual correction
-        residual_correction_hod = meta_ensemble['residual_model_hod'].predict(X)[0]
-        residual_correction_lod = meta_ensemble['residual_model_lod'].predict(X)[0]
-        
-        final_hod = meta_pred_hod + residual_correction_hod
-        final_lod = meta_pred_lod + residual_correction_lod
-        
-        return final_hod, final_lod
-    except Exception as e:
-        print(f"predict_meta_ensemble failed: {e}")
-        return None, None
 
 def realized_kernel_volatility(highs, lows, opens, closes, H=5):
     """
@@ -6649,62 +5610,6 @@ else:
             raise ImportError("PyTorch required for DQN agent")
 
 
-def save_models(rf_hod, rf_lod, metrics, filepath='hod_lod_models.pkl'):
-    """Save trained models and metrics"""
-    with open(filepath, 'wb') as f:
-        pickle.dump({
-            'rf_hod': rf_hod,
-            'rf_lod': rf_lod,
-            'metrics': metrics,
-            'features': ML_FEATURES,
-            'version': '1.0'
-        }, f)
-    print(f"✓ Models saved to {filepath}")
-
-def load_models(filepath='hod_lod_models.pkl'):
-    """Load trained models"""
-    with open(filepath, 'rb') as f:
-        data = pickle.load(f)
-    return data['rf_hod'], data['rf_lod'], data['metrics']
-
-def save_stack_models(base_hod, base_lod, resid_hod, resid_lod, metrics, filepath='hod_lod_stack.pkl', model_type='rf'):
-    with open(filepath, 'wb') as f:
-        data = {
-            'resid_hod': resid_hod,
-            'resid_lod': resid_lod,
-            'metrics': metrics,
-            'features': ML_FEATURES,
-            'version': '1.0-stack',
-            'model_type': model_type
-        }
-        # Store base models with type-specific key
-        if model_type == 'lgbm':
-            data['lgbm_hod'] = base_hod
-            data['lgbm_lod'] = base_lod
-            # Also store as rf_* for backward compatibility
-            data['rf_hod'] = base_hod
-            data['rf_lod'] = base_lod
-        else:
-            data['rf_hod'] = base_hod
-            data['rf_lod'] = base_lod
-        pickle.dump(data, f)
-    print(f"✓ Stack models saved to {filepath} (type: {model_type})")
-
-def load_stack_models(filepath='hod_lod_stack.pkl'):
-    with open(filepath, 'rb') as f:
-        data = pickle.load(f)
-    model_type = data.get('model_type', 'rf')  # Default to 'rf' for backward compatibility
-    base_hod = data.get('lgbm_hod') if model_type == 'lgbm' else data.get('rf_hod')
-    base_lod = data.get('lgbm_lod') if model_type == 'lgbm' else data.get('rf_lod')
-    # Fallback to rf_* if lgbm_* not found
-    if base_hod is None:
-        base_hod = data.get('rf_hod')
-    if base_lod is None:
-        base_lod = data.get('rf_lod')
-    return base_hod, base_lod, data.get('resid_hod'), data.get('resid_lod'), data.get('metrics', {}), model_type
-
-# ============================================================================
-# VOLATILITY ESTIMATORS - ENHANCED
 # ============================================================================
 
 def ewma_volatility(returns, lam=0.94):
@@ -7692,138 +6597,11 @@ def compute_daily_sigma_pct(hist: pd.DataFrame, garch_vol=None, iv_surface=None)
 # STATE MACHINE ENHANCEMENTS - FOR IMPROVED HOD/LOD PREDICTIONS
 # ============================================================================
 
-def build_transition_matrix(state_history, n_states):
-    """Build Markov transition matrix - NEW FUNCTION"""
-    T = np.zeros((n_states, n_states))
-    for i in range(len(state_history) - 1):
-        if state_history[i] is not None and state_history[i+1] is not None:
-            T[state_history[i], state_history[i+1]] += 1
-    
-    row_sums = T.sum(axis=1, keepdims=True)
-    T = np.divide(T, row_sums, where=row_sums > 0, out=np.zeros_like(T))
-    return T
 
-def predict_next_state_distribution(current_state, transition_matrix):
-    """Return probability distribution over next states - NEW FUNCTION"""
-    if current_state is None or current_state >= len(transition_matrix):
-        return None
-    return transition_matrix[current_state].tolist()
 
-def compute_state_durations(state_series):
-    """How long does each state typically last? - NEW FUNCTION"""
-    durations = {s: [] for s in set(state_series) if s is not None}
-    if len(state_series) == 0:
-        return {}
-    
-    current_state = state_series[0]
-    duration = 1
-    
-    for s in state_series[1:]:
-        if s == current_state:
-            duration += 1
-        else:
-            if current_state is not None:
-                durations[current_state].append(duration)
-            current_state = s
-            duration = 1
-    
-    if current_state is not None:
-        durations[current_state].append(duration)
-    
-    return {
-        s: {
-            'mean_duration': float(np.mean(d)) if d else 0,
-            'median_duration': float(np.median(d)) if d else 0,
-            'max_duration': int(max(d)) if d else 0
-        }
-        for s, d in durations.items() if d
-    }
 
-def build_state_joint_quantiles(state_series, u_series, d_series, quantiles=[0.5, 0.68, 0.8, 0.95]):
-    """
-    Build joint (HOD, LOD) distribution per state - ENHANCED VERSION
-    This REPLACES your original build_state_quantiles if you want joint distributions
-    OR keep both - this one gives you multiple quantiles + correlation
-    """
-    out = {}
-    states = sorted(set(s for s in state_series if s is not None))
-    
-    for s in states:
-        pairs = [(u, d) for st, u, d in zip(state_series, u_series, d_series) 
-                 if st == s and u is not None and d is not None]
-        
-        if len(pairs) < 30:
-            continue
-        
-        us, ds = zip(*pairs)
-        us = np.array(us)
-        ds = np.array(ds)
-        
-        total_range = us + ds
-        
-        out[s] = {
-            'quantiles': {
-                q: {
-                    'q_u': float(np.quantile(us, q)),
-                    'q_d': float(np.quantile(ds, q)),
-                    'q_range': float(np.quantile(total_range, q)),
-                }
-                for q in quantiles
-            },
-            'correlation': float(np.corrcoef(us, ds)[0, 1]) if len(us) > 1 else 0.0,
-            'n': len(pairs)
-        }
-    
-    return out
 
-def hybrid_state_prediction(gmm_state, gmm_probs, microstructure_state, state_quantiles):
-    """
-    Combine GMM clustering with microstructure physics - NEW FUNCTION
-    This enhances your predictions by incorporating market microstructure
-    """
-    if gmm_state not in state_quantiles:
-        return None, None
-    
-    q_data = state_quantiles[gmm_state].get('quantiles', {})
-    if 0.8 not in q_data:
-        return None, None
-    
-    q_u = q_data[0.8]['q_u']
-    q_d = q_data[0.8]['q_d']
-    
-    # Microstructure adjustments
-    if microstructure_state['state'] == 'Fock':
-        q_u *= (1 + microstructure_state['liquidity_permeability'] * 0.3)
-        q_d *= (1 + microstructure_state['liquidity_permeability'] * 0.3)
-    elif microstructure_state['state'] == 'Thermal':
-        q_u *= 0.85
-        q_d *= 0.85
-    elif microstructure_state['state'] == 'Coherent':
-        capture_bias = microstructure_state['capture_rate'] - 0.5
-        if capture_bias > 0:
-            q_u *= 1.2
-            q_d *= 0.8
-        else:
-            q_u *= 0.8
-            q_d *= 1.2
-    
-    return float(q_u), float(q_d)
 
-def adaptive_quantile(gmm_probs, base_quantile=0.8):
-    """
-    Adjust quantile based on state confidence - NEW FUNCTION
-    """
-    if not gmm_probs or len(gmm_probs) == 0:
-        return base_quantile
-    
-    confidence = max(gmm_probs)
-    
-    if confidence > 0.7:
-        return base_quantile
-    elif confidence > 0.5:
-        return min(base_quantile + 0.05, 0.95)
-    else:
-        return min(base_quantile + 0.10, 0.95)
 
 def add_intraday_features(feature_dict, timestamp, hist):
     """
@@ -9977,129 +8755,6 @@ def predict_price_target(
             'lod_level_probs': lod_probs.squeeze().cpu().numpy().tolist() if lod_probs is not None else None
         }
 
-def predict_hod_lod_from_levels(
-    model,
-    recent_features,  # [lookback_window, n_features]
-    current_price,
-    candidate_levels,  # List of all candidate levels (including theoretical HOD/LOD)
-    theoretical_hod,
-    theoretical_lod
-):
-    """
-    Predict which level will become actual HOD/LOD using LSTM
-    
-    Uses all levels (including theoretical HOD/LOD as candidates) and predicts
-    probability distribution over levels based on patterns, volume, and level interactions.
-    
-    Returns:
-    --------
-    dict : {
-        'predicted_hod_level': level that will be HOD,
-        'predicted_lod_level': level that will be LOD,
-        'hod_probabilities': {level_price: probability},
-        'lod_probabilities': {level_price: probability},
-        'confidence': model confidence
-    }
-    """
-    if not TORCH_AVAILABLE or model is None:
-        return None
-    
-    # Add theoretical HOD/LOD as candidate levels if not already present
-    candidate_prices = [l.get('price', 0) for l in candidate_levels if 'price' in l]
-    
-    # Add theoretical bounds as levels
-    theoretical_hod_level = {
-        'price': theoretical_hod,
-        'type': 'Theoretical HOD',
-        'strength': 0.8,
-        'is_theoretical': True
-    }
-    theoretical_lod_level = {
-        'price': theoretical_lod,
-        'type': 'Theoretical LOD',
-        'strength': 0.8,
-        'is_theoretical': True
-    }
-    
-    # Combine all candidates (remove duplicates)
-    all_candidates = candidate_levels + [theoretical_hod_level, theoretical_lod_level]
-    unique_candidates = {}
-    for cand in all_candidates:
-        price = cand.get('price', 0)
-        if price > 0:
-            if price not in unique_candidates:
-                unique_candidates[price] = cand
-            else:
-                # Keep the one with higher strength
-                if cand.get('strength', 0.5) > unique_candidates[price].get('strength', 0.5):
-                    unique_candidates[price] = cand
-    
-    # Sort candidates by price
-    sorted_candidates = sorted(unique_candidates.values(), key=lambda x: x.get('price', 0))
-    
-    # Limit to max_levels (if model has this attribute)
-    max_levels = getattr(model, 'max_levels', 50)
-    if len(sorted_candidates) > max_levels:
-        # Keep most relevant (closest to current price and strongest)
-        sorted_candidates = sorted(sorted_candidates, 
-                                  key=lambda x: (abs(x.get('price', 0) - current_price) / current_price, 
-                                               -x.get('strength', 0.5)))[:max_levels]
-    
-    model.eval()
-    
-    with torch.no_grad():
-        # Add batch dimension
-        X = torch.FloatTensor(recent_features).unsqueeze(0)  # [1, seq_len, features]
-        
-        # Forward pass
-        result = model(X, return_attention=True)
-        
-        # Check if model has HOD/LOD prediction capability
-        if len(result) < 6:
-            # Old model - use fallback
-            return None
-        
-        price_pred, confidence, time_pred, attn_weights, hod_probs, lod_probs = result
-        
-        # Get probabilities for each candidate level
-        hod_probs_np = hod_probs.squeeze().cpu().numpy()  # [max_levels]
-        lod_probs_np = lod_probs.squeeze().cpu().numpy()  # [max_levels]
-        
-        # Map probabilities to actual level prices
-        hod_probabilities = {}
-        lod_probabilities = {}
-        
-        for i, cand in enumerate(sorted_candidates):
-            if i < len(hod_probs_np):
-                price = cand.get('price', 0)
-                hod_probabilities[price] = float(hod_probs_np[i])
-                lod_probabilities[price] = float(lod_probs_np[i])
-        
-        # Find most likely HOD/LOD levels
-        if hod_probabilities:
-            predicted_hod_price = max(hod_probabilities.items(), key=lambda x: x[1])[0]
-            predicted_hod_level = next((c for c in sorted_candidates if abs(c.get('price', 0) - predicted_hod_price) < 0.01), None)
-        else:
-            predicted_hod_level = theoretical_hod_level
-            predicted_hod_price = theoretical_hod
-        
-        if lod_probabilities:
-            predicted_lod_price = max(lod_probabilities.items(), key=lambda x: x[1])[0]
-            predicted_lod_level = next((c for c in sorted_candidates if abs(c.get('price', 0) - predicted_lod_price) < 0.01), None)
-        else:
-            predicted_lod_level = theoretical_lod_level
-            predicted_lod_price = theoretical_lod
-        
-        return {
-            'predicted_hod_level': predicted_hod_level,
-            'predicted_lod_level': predicted_lod_level,
-            'predicted_hod_price': float(predicted_hod_price),
-            'predicted_lod_price': float(predicted_lod_price),
-            'hod_probabilities': hod_probabilities,
-            'lod_probabilities': lod_probabilities,
-            'confidence': float(confidence.squeeze().item()),
-            'candidate_levels': sorted_candidates[:20]  # Top 20 for reference
-        }
 
 def monte_carlo_lstm_forecast(
     model,
@@ -10331,1082 +8986,227 @@ def monte_carlo_lstm_forecast(
     }
 
 # NEW ENDPOINT: LEVEL-CONSTRAINED HOD/LOD PREDICTION
+# ALIAS: Keep old endpoint name for backward compatibility
+
+
+
+# ============================================================================
+# FVECM-BASED HOD/LOD PREDICTION (replaces old state-conditioned and level-constrained)
+# ============================================================================
+
 @app.route('/api/level-constrained-hod-lod', methods=['GET'])
 def get_level_constrained_hod_lod():
     """
-    Enhanced HOD/LOD prediction using your level detection as constraints
-    Instead of pure statistical ranges, this finds the most probable HOD/LOD
-    by weighting detected levels with volatility expectations
+    HOD/LOD prediction using the FVECM (Fractionally Vectorized Error Correction Model).
+    Replaces the old multi-layered HOD/LOD pipeline with a cleaner 2-layer approach:
+      Layer 1: VECM on (mid_log, range_log) -- cointegration-based structural envelope
+      Layer 2: LightGBM residual corrector on normalized residuals
     """
     auth_error = require_auth()
     if auth_error:
         return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
-    
+
     ticker = request.args.get('ticker', 'SPY')
     timeframe = request.args.get('timeframe', '1d').strip().lower().replace('240m','4h').replace('4hour','4h').replace('4hours','4h').replace('60m','1h')
-    
+
     try:
-        print(f"Calculating level-constrained HOD/LOD for {ticker}...")
-        
         stock = yf.Ticker(ticker)
-        
-        # For futures, use alternative interval formats that yfinance accepts better
+
+        # Determine fetch parameters
         is_futures = '=' in ticker
         if is_futures:
-            # Use minute-based intervals for futures (yfinance prefers these)
-            # Note: 4h is not supported by yfinance - will use resampling from 60m
             interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '60m', '4h': '60m', '1d': '1d'}
         else:
-            # Note: 4h is not supported by yfinance - will use resampling from 1h
             interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
-        
         interval = interval_map.get(timeframe, '1d')
-        
-        # Simple fix: Use shorter periods for futures on intraday timeframes
+
         if is_futures and timeframe in ['1m', '5m', '15m', '1h', '4h']:
-            # Futures have limited intraday data - use shorter periods
-            # 15m and 1h get slightly longer periods as they're more reliable
             period_map = {'1m': '5d', '5m': '5d', '15m': '7d', '1h': '7d', '4h': '10d', '1d': '2y'}
         else:
             period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
-        
         period = period_map.get(timeframe, '1y')
-        
-        # Try to get data, with fallback to shorter periods if needed
-        # More aggressive fallback for 15m, 1h, and 4h
+
+        # Fetch data (with resampling for 4h)
         hist = None
-        if is_futures and timeframe == '1h':
-            # For 1h futures, try many combinations
-            attempts = [
-                ('60m', '5d'), ('60m', '3d'), ('60m', '2d'), ('60m', '1d'),
-                ('1h', '5d'), ('1h', '3d'), ('1h', '2d'), ('1h', '1d'),
-            ]
-            for attempt_interval, attempt_period in attempts:
-                try:
-                    print(f"Trying {ticker} 1h: interval={attempt_interval}, period={attempt_period}")
-                    hist = stock.history(period=attempt_period, interval=attempt_interval)
-                    if hist is not None and len(hist) > 0:
-                        print(f"✓ Successfully fetched {len(hist)} bars for {ticker} 1h")
-                        break
-                except Exception as e:
-                    error_msg = str(e)
-                    print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:150]}")
-                    continue
-        elif is_futures and timeframe == '4h':
-            # For 4h futures, yfinance doesn't support '4h' or '240m' - must fetch 1h/60m and resample
-            print(f"Fetching 4h data for {ticker} (will resample from 1h/60m)...")
+        if timeframe == '4h':
             try:
                 hist = fetch_historical_data_with_resampling(
-                    ticker=ticker,
-                    timeframe='4h',
-                    period=period,
-                    is_futures=True
+                    ticker=ticker, timeframe='4h', period=period, is_futures=is_futures
                 )
-            except Exception as e:
-                print(f"⚠ Resampling fetch failed: {e}")
+            except Exception:
                 hist = None
-        elif is_futures and timeframe in ['1m', '5m', '15m']:
-            if timeframe in ['15m']:
-                attempts = [period, '5d', '3d', '2d', '1d']
-            else:
-                attempts = [period, '5d', '2d', '1d']
-            
-            for attempt_period in attempts:
-                interval_options = [interval]
-                if timeframe == '15m':
-                    interval_options = ['15m']
-                
-                for attempt_interval in interval_options:
-                    try:
-                        hist = stock.history(period=attempt_period, interval=attempt_interval)
-                        if hist is not None and len(hist) > 0:
-                            print(f"✓ Successfully fetched {len(hist)} bars for {ticker} at {timeframe}")
-                            break
-                    except Exception as e:
-                        error_msg = str(e)
-                        if "pattern" not in error_msg.lower() and "expected" not in error_msg.lower():
-                            print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:100]}")
-                        continue
-                
-                if hist is not None and len(hist) > 0:
-                    break
-        else:
-            attempts = [period]
+        elif is_futures and timeframe in ['1m', '5m', '15m', '1h']:
+            attempts = [period, '5d', '3d', '2d', '1d']
             for attempt_period in attempts:
                 try:
                     hist = stock.history(period=attempt_period, interval=interval)
                     if hist is not None and len(hist) > 0:
                         break
-                except Exception as e:
+                except Exception:
                     continue
-        
+        else:
+            try:
+                hist = stock.history(period=period, interval=interval)
+            except Exception:
+                hist = None
+
         if hist is None or len(hist) == 0:
-            return jsonify({'success': False, 'error': f'No data available for {ticker} at {timeframe}. Futures have limited intraday data availability.'}), 400
-        
+            return jsonify({'success': False, 'error': f'No data available for {ticker} at {timeframe}'}), 400
+
         closes = hist['Close'].values
         highs = hist['High'].values if 'High' in hist.columns else closes
         lows = hist['Low'].values if 'Low' in hist.columns else closes
         volumes = hist['Volume'].values if 'Volume' in hist.columns else np.ones(len(closes))
-        current_price = closes[-1]
-        
-        # 1. Get session volatility (for next-period prediction, not annualized)
-        garch_vol_regime = calculate_garch_volatility_regime(closes)
-        
-        # Use session volatility for accuracy
+        current_price = float(closes[-1])
+
+        # Session volatility
+        session_vol_pct = 1.5
+        sigma_price = (session_vol_pct / 100) * current_price
         if all(col in hist.columns for col in ['Open', 'High', 'Low', 'Close']):
             try:
                 vol_result = compute_session_volatility(hist, window=60)
-                session_vol_pct = vol_result['sigma_session_pct']  # Next session % (1-3%)
-                sigma_price = vol_result['sigma_price']  # Expected $ range
-                sigma_annual_pct = vol_result['sigma_annual_pct']  # For logging/comparison
-                method = 'Session Volatility + Levels'
-                
-                # Validate
-                if np.isnan(session_vol_pct) or not np.isfinite(session_vol_pct) or session_vol_pct <= 0:
-                    raise ValueError("Invalid session volatility")
-                
-                print(f"✓ Session vol: {session_vol_pct:.2f}% (annualized: {sigma_annual_pct:.1f}%, σ_price: ${sigma_price:.2f})")
-                
-            except Exception as e:
-                print(f"⚠ Session vol failed: {e}, using fallback")
-                returns = np.log(closes[1:] / closes[:-1])
-                if len(returns) > 0:
-                    sigma_session = np.std(returns)
-                    session_vol_pct = sigma_session * 100
-                    sigma_price = sigma_session * current_price
-                else:
-                    session_vol_pct = 1.5  # 1.5% default session vol
-                    sigma_price = (session_vol_pct / 100) * current_price
-                method = 'Fallback Session Vol + Levels'
-        else:
-            # No OHLC data, use close-to-close returns
-            returns = np.log(closes[1:] / closes[:-1])
-            if len(returns) > 0:
-                sigma_session = np.std(returns)
-                session_vol_pct = sigma_session * 100
-                sigma_price = sigma_session * current_price
-            else:
-                session_vol_pct = 1.5  # 1.5% default session vol
-                sigma_price = (session_vol_pct / 100) * current_price
-            method = 'Fallback Session Vol + Levels'
-        
-        # Final validation
-        if np.isnan(session_vol_pct) or not np.isfinite(session_vol_pct) or session_vol_pct <= 0:
-            print(f"⚠ Invalid session_vol_pct: {session_vol_pct}, using default 1.5%")
-            session_vol_pct = 1.5
-        
-        # Recalculate sigma_price if needed
-        if np.isnan(sigma_price) or not np.isfinite(sigma_price) or sigma_price <= 0:
-            print(f"⚠ Invalid sigma_price: {sigma_price}, recalculating")
-            sigma_price = (session_vol_pct / 100) * current_price
-        
-        # 2. Get microstructure state (affects how we weight levels)
+                session_vol_pct = vol_result['sigma_session_pct']
+                sigma_price = vol_result['sigma_price']
+            except Exception:
+                pass
+
+        # Microstructure state (kept as useful context)
         returns = np.log(closes[1:] / closes[:-1]) * 100
         microstructure_state = detect_market_microstructure_state(closes, volumes, returns, highs, lows)
-        
-        # 3. DETECT ALL YOUR LEVELS (using your existing functions)
-        print("Running level detection algorithms...")
-        
-        hist_data_subset = hist.tail(min(len(hist), 100))
-        
-        # PRIMARY: HDBSCAN (state-of-the-art density clustering)
-        hdbscan_levels = calculate_hdbscan_levels(highs, lows, closes, timeframe=timeframe)
-        
-        # SECONDARY: IsolationForest (event pivot candidates)
-        isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
-        
-        # FALLBACK: Peak/Valley (last-resort when density clustering fails)
-        peak_valley_levels = find_peaks_valleys_scipy(highs, lows, closes)
-        
-        # Neural Network levels (with volume profile)
+
+        # GARCH regime
+        garch_vol_regime = calculate_garch_volatility_regime(closes)
+
+        # --- FVECM Pipeline ---
         try:
-            neural_network_levels_result = detect_levels_with_neural_network(hist_data_subset, lookback=100, threshold=0.5)
-            print(f"Neural Network: Generated {len(neural_network_levels_result) if neural_network_levels_result else 0} levels")
+            ohlcv_df = hist[['Open', 'High', 'Low', 'Close', 'Volume']].copy()
+            ohlcv_df = ohlcv_df.rename(columns={
+                'Open': 'Open', 'High': 'High', 'Low': 'Low',
+                'Close': 'Close', 'Volume': 'Volume'
+            })
+
+            pipeline = TheoreticalBoundsPipeline(PipelineConfig(
+                train_window=min(250, len(ohlcv_df) - 1),
+                min_train_window=min(180, max(60, len(ohlcv_df) // 2)),
+            ))
+            result_df = pipeline.run(ohlcv_df)
+
+            if result_df is not None and len(result_df) > 0 and 'HOD_corrected' in result_df.columns:
+                last = result_df.iloc[-1]
+                predicted_hod = float(last.get('HOD_corrected', current_price + sigma_price))
+                predicted_lod = float(last.get('LOD_corrected', current_price - sigma_price))
+
+                # Fallback if values are NaN
+                if np.isnan(predicted_hod) or not np.isfinite(predicted_hod):
+                    predicted_hod = current_price + sigma_price
+                if np.isnan(predicted_lod) or not np.isfinite(predicted_lod):
+                    predicted_lod = current_price - sigma_price
+
+                # Safety: ensure HOD > LOD
+                if predicted_hod <= predicted_lod:
+                    predicted_hod = current_price + sigma_price
+                    predicted_lod = current_price - sigma_price
+            else:
+                # Pipeline didn't produce results (insufficient data) - use volatility fallback
+                predicted_hod = current_price + sigma_price
+                predicted_lod = current_price - sigma_price
+
         except Exception as e:
-            print(f"Neural Network level detection failed: {e}")
-            neural_network_levels_result = []
-        
-        # MeanShift removed from level production - now used as validator only
-        # (validates HDBSCAN levels and boosts confidence if agrees)
-        
-        # CLASSICAL STRUCTURAL (constraints/magnets, not ML discovery)
-        pivot_levels = calculate_pivot_points(hist_data_subset, timeframe)
-        fib_levels = calculate_fibonacci_levels(highs, lows)  # For metadata only, not primary levels
-        gap_levels = find_gap_levels(hist_data_subset)
-        
-        # ML LEVELS: Primary discovery algorithms only (including neural network)
-        all_ml_levels = (hdbscan_levels + isolation_forest_levels + peak_valley_levels + 
-                        (neural_network_levels_result if neural_network_levels_result else []))
-        
-        # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
-        # Use timeframe-aware threshold (cleaner than regime-aware for this step)
-        all_ml_levels = agglomerative_merge_levels(
-            all_ml_levels,
-            distance_threshold_pct=None,  # Will use timeframe-aware default
-            timeframe=timeframe
-        )
-        
-        confluence_levels = get_ml_confluence_levels(all_ml_levels)
-        
-        # Combine ML levels with classical structural (as constraints)
-        # NOTE: Fibonacci is NOT added here - it will be added as metadata only
-        all_levels_combined = (confluence_levels + all_ml_levels + 
-                              pivot_levels + gap_levels)
-        
-        # Add Fibonacci as metadata/confluence to nearby levels (not as primary levels)
-        all_levels_combined = add_fibonacci_metadata_to_levels(
-            all_levels_combined, fib_levels, sigma_price, threshold_sigma=1.0
-        )
-        
-        # 4. ENHANCE LEVELS with microstructure
-        all_levels_combined, hmm_regime, hurst_data, garch_regime, micro_state = enhance_levels_with_microstructure(
-            all_levels_combined, closes, volumes, current_price, garch_vol_regime, microstructure_state, sigma_price=sigma_price
-        )
-        
-        print(f"✓ Detected {len(all_levels_combined)} total levels")
-        
-        # NEW: Apply Fractional Brownian Motion adjustment if Hurst is available
-        if hurst_data and 'hurst' in hurst_data:
-            try:
-                # Get base sigma first (will adjust after fractional Brownian)
-                base_sigma = sigma_price
-                
-                # Calculate base predictions from volatility
-                base_hod_2std_temp = current_price + 2.0 * base_sigma
-                base_lod_2std_temp = current_price - 2.0 * base_sigma
-                
-                # Apply fractional Brownian adjustment
-                adj_hod_2std, adj_lod_2std = fractional_brownian_adjustment(
-                    base_hod_2std_temp, base_lod_2std_temp, hurst_data['hurst'], base_sigma
-                )
-                
-                # Recalculate sigma_price if adjustment was significant
-                if abs(adj_hod_2std - base_hod_2std_temp) > base_sigma * 0.1:
-                    sigma_price = (adj_hod_2std - adj_lod_2std) / 4.0  # Recalculate sigma from adjusted range
-                    print(f"✓ Applied fractional Brownian adjustment (Hurst={hurst_data['hurst']:.3f})")
-            except Exception as e:
-                print(f"⚠ Fractional Brownian adjustment failed: {e}")
-        
-        # 5. FIND MOST PROBABLE HOD/LOD using levels as attractors
-        
-        # Separate into resistance (above current) and support (below current)
-        resistance_levels = [l for l in all_levels_combined if l['price'] > current_price]
-        support_levels = [l for l in all_levels_combined if l['price'] < current_price]
-        
-        # Sort by distance from current price
-        resistance_levels.sort(key=lambda x: x['price'])
-        support_levels.sort(key=lambda x: -x['price'])
-        
-        # Calculate base predictions from volatility (your sigma ranges)
-        base_hod_1std = current_price + 1.0 * sigma_price
-        base_lod_1std = current_price - 1.0 * sigma_price
-        base_hod_2std = current_price + 2.0 * sigma_price
-        base_lod_2std = current_price - 2.0 * sigma_price
-        base_hod_3std = current_price + 3.0 * sigma_price
-        base_lod_3std = current_price - 3.0 * sigma_price
-        
-        # Get lower timeframe theoretical LOD for validation
-        lower_tf_lod = None
+            print(f"FVECM pipeline failed: {e}, using volatility fallback")
+            predicted_hod = current_price + sigma_price
+            predicted_lod = current_price - sigma_price
+
+        # Level detection (kept for refinement context)
+        all_levels_combined = []
         try:
-            if timeframe in ['1h', '4h', '1d']:
-                lower_tf_hist = stock.history(period='5d', interval='15m')
-                if len(lower_tf_hist) > 0:
-                    lower_tf_vol = compute_session_volatility(lower_tf_hist, window=60)
-                    lower_tf_sigma = lower_tf_vol['sigma_price']
-                    lower_tf_lod = current_price - 1.5 * lower_tf_sigma
-        except:
-            pass
-        
-        # FIND MOST PROBABLE HOD/LOD using your refined approach
-        predicted_hod, predicted_lod, refinement_debug = refine_extrema_with_levels(
-            spot=current_price,
-            hod_th=base_hod_2std,  # Use 2σ as envelope bound
-            lod_th=base_lod_2std,
-            levels=all_levels_combined,
-            state=micro_state,
-            timeframe=timeframe,
-            lower_tf_lod=lower_tf_lod
-        )
-        
-        # Find which levels were selected
-        selected_resistance = refinement_debug.get('best_hod')
-        selected_support = refinement_debug.get('best_lod')
-        
-        # Calculate confidence scores
+            hist_data_subset = hist.tail(min(len(hist), 100))
+            hdbscan_levels = calculate_hdbscan_levels(highs, lows, closes, timeframe=timeframe)
+            isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
+            peak_valley_levels = find_peaks_valleys_scipy(highs, lows, closes)
+            pivot_levels = calculate_pivot_points(hist_data_subset, timeframe)
+            fib_levels = calculate_fibonacci_levels(highs, lows)
+            gap_levels = find_gap_levels(hist_data_subset)
+
+            all_ml_levels = hdbscan_levels + isolation_forest_levels + peak_valley_levels
+            all_ml_levels = agglomerative_merge_levels(
+                all_ml_levels, distance_threshold_pct=None, timeframe=timeframe
+            )
+            confluence_levels = get_ml_confluence_levels(all_ml_levels)
+            all_levels_combined = confluence_levels + all_ml_levels + pivot_levels + gap_levels
+            all_levels_combined = add_fibonacci_metadata_to_levels(
+                all_levels_combined, fib_levels, sigma_price, threshold_sigma=1.0
+            )
+
+            all_levels_combined, hmm_regime, hurst_data, garch_regime, micro_state = enhance_levels_with_microstructure(
+                all_levels_combined, closes, volumes, current_price, garch_vol_regime, microstructure_state, sigma_price=sigma_price
+            )
+
+            # Refine FVECM predictions with detected levels
+            predicted_hod, predicted_lod, refinement_debug = refine_extrema_with_levels(
+                spot=current_price,
+                hod_th=predicted_hod,
+                lod_th=predicted_lod,
+                levels=all_levels_combined,
+                state=micro_state,
+                timeframe=timeframe,
+            )
+        except Exception as e:
+            print(f"Level refinement failed: {e}")
+
+        # Confidence
+        resistance_levels = [l for l in all_levels_combined if l.get('price', 0) > current_price]
+        support_levels = [l for l in all_levels_combined if l.get('price', 0) < current_price]
         hod_confidence = calculate_level_confidence(predicted_hod, resistance_levels, current_price, sigma_price)
         lod_confidence = calculate_level_confidence(predicted_lod, support_levels, current_price, sigma_price)
-        
-        # Multi-timeframe confluence (soft structural ceilings/floors)
-        mtf_confluence = compute_mtf_confluence(
-            ticker=ticker,
-            spot=current_price,
-            sigma_price=sigma_price,
-            micro_state=micro_state.get('state', 'Unknown'),
-            lookback=20
-        )
-        
-        # Apply MTF structural constraints (soft caps, not hard limits)
-        if mtf_confluence['apply']:
-            # Soft structural ceilings/floors - improve confidence, not expand range
-            if mtf_confluence['resistance'] and predicted_hod > mtf_confluence['resistance']:
-                # Predicted HOD exceeds MTF resistance - cap it softly
-                predicted_hod = min(predicted_hod, mtf_confluence['resistance'] * 1.02)  # Allow 2% overshoot
-                print(f"✓ MTF resistance at ${mtf_confluence['resistance']:.2f} → capped HOD")
-            
-            if mtf_confluence['support'] and predicted_lod < mtf_confluence['support']:
-                # Predicted LOD below MTF support - cap it softly
-                predicted_lod = max(predicted_lod, mtf_confluence['support'] * 0.98)  # Allow 2% undershoot
-                print(f"✓ MTF support at ${mtf_confluence['support']:.2f} → capped LOD")
-            
-            # Boost confidence if MTF structure is confirmed
-            hod_confidence = min(1.0, hod_confidence + mtf_confluence['confidence_boost'])
-            lod_confidence = min(1.0, lod_confidence + mtf_confluence['confidence_boost'])
-            print(f"✓ MTF confluence confirmed → confidence boost: {mtf_confluence['confidence_boost']:.1%}")
-        
-        # Convert session vol pct to decimal for stdDev (frontend expects decimal)
+
         std_dev_decimal = session_vol_pct / 100.0
-        
+
         return jsonify({
             'success': True,
             'ticker': ticker,
             'timeframe': timeframe,
-            'currentPrice': float(current_price),
-            'sigmaDailyPct': float(session_vol_pct),  # Session vol for next period
-            'sigmaPrice': float(sigma_price),
-            'stdDev': float(std_dev_decimal),  # Frontend expects decimal (will multiply by 100)
-                                'method': method,
-            
-            # Frontend expects: hod['1std'], hod['2std'], hod['3std']
-                                'hod': {
-                '1std': float(base_hod_1std),
-                '2std': float(base_hod_2std),
-                '3std': float(base_hod_3std)
-            },
-            
-            # Frontend expects: lod['1std'], lod['2std'], lod['3std']
-                                'lod': {
-                '1std': float(base_lod_1std),
-                '2std': float(base_lod_2std),
-                '3std': float(base_lod_3std)
-            },
-            
-            # Additional data (for advanced use)
-            'predicted': {
+            'currentPrice': current_price,
+            'method': 'FVECM + Level Refinement',
+            'stdDev': std_dev_decimal,
+            'sigma_price': float(sigma_price),
+            'predictions': {
                 'hod': float(predicted_hod),
                 'lod': float(predicted_lod),
-                'hod_distance_pct': float((predicted_hod - current_price) / current_price * 100),
-                'lod_distance_pct': float((current_price - predicted_lod) / current_price * 100),
-                'hod_confidence': float(hod_confidence),
-                'lod_confidence': float(lod_confidence)
+                'hod_pct': (float(predicted_hod) - current_price) / current_price * 100,
+                'lod_pct': (current_price - float(predicted_lod)) / current_price * 100,
             },
-            
-            # Base statistical ranges (for comparison)
-            'statistical': {
-                'hod_1std': float(base_hod_1std),
-                'lod_1std': float(base_lod_1std),
-                'hod_2std': float(base_hod_2std),
-                'lod_2std': float(base_lod_2std),
-                'hod_3std': float(base_hod_3std),
-                'lod_3std': float(base_lod_3std)
+            'confidence': {
+                'hod': float(hod_confidence),
+                'lod': float(lod_confidence),
             },
-            
-            # Selected levels (if any)
-            'selectedLevels': {
-                'resistance': sanitize_for_json(selected_resistance) if selected_resistance else None,
-                'support': sanitize_for_json(selected_support) if selected_support else None
-            },
-            
-            # All nearby levels (for visualization)
-            'nearbyLevels': {
-                'resistance': sanitize_for_json(resistance_levels[:5]),
-                'support': sanitize_for_json(support_levels[:5])
-            },
-            
-            # Refinement debug info
-            'refinement': sanitize_for_json(refinement_debug),
-            
-            'microstructure': sanitize_for_json(micro_state),
-            'garchRegime': sanitize_for_json(garch_regime),
-            'mtfConfluence': sanitize_for_json(mtf_confluence) if 'mtf_confluence' in locals() else None
+            'microstructure': sanitize_for_json(microstructure_state),
+            'garchRegime': sanitize_for_json(garch_vol_regime),
+            'levels': sanitize_for_json(all_levels_combined[:30]) if all_levels_combined else [],
         })
-        
+
     except Exception as e:
         import traceback
         error_trace = traceback.format_exc()
         print(f"ERROR in /api/level-constrained-hod-lod: {error_trace}")
-        return jsonify({'success': False, 'error': str(e)}), 400
+        return jsonify({'success': False, 'error': str(e) or 'Unknown error'}), 400
 
-# ALIAS: Keep old endpoint name for backward compatibility
+
 @app.route('/api/stdv-hod-lod', methods=['GET'])
 def get_stdv_hod_lod():
     """Alias for /api/level-constrained-hod-lod - backward compatibility"""
     return get_level_constrained_hod_lod()
 
-# NEW ENDPOINT: STATE-CONDITIONED HOD/LOD
+
 @app.route('/api/state-conditioned-hod-lod', methods=['GET'])
 def get_state_conditioned_hod_lod():
     """
-    NEW ENDPOINT - State machine + clustering HOD/LOD prediction
-    Uses state machine enhancements for more accurate predictions
+    State-conditioned HOD/LOD prediction -- now powered by FVECM.
+    Delegates to the same FVECM pipeline as level-constrained-hod-lod,
+    keeping the endpoint for backward compatibility.
     """
-    auth_error = require_auth()
-    if auth_error:
-        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
-    
-    ticker = request.args.get('ticker', 'SPY')
-    timeframe = request.args.get('timeframe', '1d').strip().lower().replace('240m','4h').replace('4hour','4h').replace('4hours','4h').replace('60m','1h')
-    quantile = float(request.args.get('quantile', 0.8))
-    use_intraday = timeframe in ['1m', '5m', '15m', '1h', '4h']
-    
-    try:
-        stock = yf.Ticker(ticker)
-        
-        # For futures, use alternative interval formats that yfinance accepts better
-        is_futures = '=' in ticker
-        if is_futures:
-            # Use minute-based intervals for futures (yfinance prefers these)
-            # Note: 4h is not supported by yfinance - will use resampling from 60m
-            interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '60m', '4h': '60m', '1d': '1d'}
-        else:
-            # Note: 4h is not supported by yfinance - will use resampling from 1h
-            interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
-        
-        interval = interval_map.get(timeframe, '1d')
-        
-        # Simple fix: Use shorter periods for futures on intraday timeframes
-        if is_futures and timeframe in ['1m', '5m', '15m', '1h', '4h']:
-            # Futures have limited intraday data - use shorter periods
-            # 15m and 1h get slightly longer periods as they're more reliable
-            period_map = {'1m': '5d', '5m': '5d', '15m': '7d', '1h': '7d', '4h': '10d', '1d': '2y'}
-        else:
-            period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
-        
-        period = period_map.get(timeframe, '1y')
-        
-        # Try to get data, with fallback to shorter periods if needed
-        # Use resampling for 4h (yfinance doesn't support it directly)
-        hist = None
-        if timeframe == '4h':
-            # For 4h, yfinance doesn't support it - must fetch 1h/60m and resample
-            print(f"Fetching 4h data for {ticker} (will resample from 1h/60m)...")
-            try:
-                hist = fetch_historical_data_with_resampling(
-                    ticker=ticker,
-                    timeframe='4h',
-                    period=period,
-                    is_futures=is_futures
-                )
-            except Exception as e:
-                print(f"⚠ Resampling fetch failed: {e}")
-                hist = None
-        elif is_futures and timeframe in ['1m', '5m', '15m', '1h']:
-            if timeframe in ['15m', '1h']:
-                attempts = [period, '5d', '3d', '2d', '1d']  # More attempts for 15m and 1h
-            else:
-                attempts = [period, '5d', '2d', '1d']
-            
-            for attempt_period in attempts:
-                # Try both the mapped interval and original timeframe format
-                interval_options = [interval]
-                if timeframe == '1h' and interval == '60m':
-                    interval_options = ['60m', '1h']
-                elif timeframe == '15m':
-                    interval_options = ['15m']
-                
-                for attempt_interval in interval_options:
-                    try:
-                        hist = stock.history(period=attempt_period, interval=attempt_interval)
-                        if hist is not None and len(hist) > 0:
-                            print(f"✓ Successfully fetched {len(hist)} bars for {ticker} at {timeframe} with interval={attempt_interval}, period={attempt_period}")
-                            break
-                    except Exception as e:
-                        error_msg = str(e)
-                        if "pattern" not in error_msg.lower() and "expected" not in error_msg.lower():
-                            print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:100]}")
-                        continue
-                
-                if hist is not None and len(hist) > 0:
-                    break
-        else:
-            attempts = [period]
-            for attempt_period in attempts:
-                try:
-                    hist = stock.history(period=attempt_period, interval=interval)
-                    if hist is not None and len(hist) > 0:
-                        break
-                except Exception as e:
-                    continue
-        
-        if hist is None or len(hist) == 0:
-            return jsonify({'success': False, 'error': f'No data available for {ticker} at {timeframe}. Futures have limited intraday data availability.'}), 400
-        
-        if len(hist) < 120:
-            return jsonify({'success': False, 'error': 'Insufficient data (need at least 120 periods)'}), 400
-        
-        closes = hist['Close'].values
-        highs = hist['High'].values if 'High' in hist.columns else closes
-        lows = hist['Low'].values if 'Low' in hist.columns else closes
-        volumes = hist['Volume'].values if 'Volume' in hist.columns else np.ones(len(closes))
-        current_price = closes[-1]
-        
-        # 1. Get GARCH regime (reuse existing function)
-        garch_regime = calculate_garch_volatility_regime(closes)
-        
-        # 2. Get microstructure state
-        returns = np.log(closes[1:] / closes[:-1]) * 100
-        microstructure = detect_market_microstructure_state(closes, volumes, returns, highs, lows)
-        
-        # 3. Build historical HOD/LOD ranges (u_series, d_series)
-        u_series = []  # Upward moves (HOD relative to previous close)
-        d_series = []  # Downward moves (LOD relative to previous close)
-        
-        for i in range(1, len(hist)):
-            prev_close = closes[i-1]
-            period_high = highs[i]
-            period_low = lows[i]
-            
-            # HOD: how far up from previous close (in sigma units)
-            u_move = (period_high - prev_close) / prev_close if prev_close > 0 else 0
-            # LOD: how far down from previous close (in sigma units)
-            d_move = (prev_close - period_low) / prev_close if prev_close > 0 else 0
-            
-            u_series.append(u_move)
-            d_series.append(d_move)
-        
-        # 4. Fit GMM to assign states based on price features
-        if len(u_series) >= 60:
-            feature_data = []
-            min_window = 20
-            for i in range(min_window, len(returns)):
-                window_returns = returns[max(0, i-min_window):i]
-                idx = i
-                feature_data.append([
-                    np.mean(window_returns) if len(window_returns) > 0 else 0,
-                    np.std(window_returns) if len(window_returns) > 0 else 0,
-                    u_series[idx] if idx < len(u_series) else 0,
-                    d_series[idx] if idx < len(d_series) else 0
-                ])
-            
-            if len(feature_data) >= 40:
-                feature_array = np.array(feature_data)
-                scaler = StandardScaler()
-                feature_scaled = scaler.fit_transform(feature_array)
-                
-                n_states = 4
-                gmm = GaussianMixture(n_components=n_states, random_state=42, max_iter=100)
-                gmm.fit(feature_scaled)
-                
-                # Assign states to all periods that have features
-                state_history = [None] * min_window
-                for i, feat in enumerate(feature_scaled):
-                    state = gmm.predict(feat.reshape(1, -1))[0]
-                    state_history.append(state)
-                
-                # Use state assignments for periods with features
-                valid_u_series = u_series[min_window:min_window+len(feature_scaled)]
-                valid_d_series = d_series[min_window:min_window+len(feature_scaled)]
-                valid_state_history = state_history[min_window:min_window+len(feature_scaled)]
-                
-                # 5. Build state quantiles using enhanced joint quantiles
-                state_quantiles = build_state_joint_quantiles(
-                    valid_state_history, 
-                    valid_u_series, 
-                    valid_d_series,
-                    quantiles=[0.5, 0.68, 0.8, 0.95]
-                )
-                
-                # NEW: Fit Gumbel Copula for joint HOD/LOD modeling
-                copula_params = {}
-                try:
-                    copula_params = fit_gumbel_copula(valid_u_series, valid_d_series)
-                    print(f"✓ Copula fitted: theta={copula_params.get('theta', 1.0):.3f}, tau={copula_params.get('tau', 0.0):.3f}")
-                except Exception as e:
-                    print(f"⚠ Copula fitting failed: {e}")
-                
-                # NEW: Fit Regime Switching model as alternative to GMM
-                regime_switching_params = {}
-                try:
-                    if STATSMODELS_AVAILABLE and len(valid_u_series) >= 60:
-                        exog_features = feature_scaled if len(feature_scaled) >= len(valid_u_series) else feature_array[:len(valid_u_series)]
-                        regime_switching_params = fit_regime_switching(valid_u_series, valid_d_series, exog_features, n_regimes=3)
-                        print(f"✓ Regime switching fitted: current_regime={regime_switching_params.get('current_regime', 1)}")
-                except Exception as e:
-                    print(f"⚠ Regime switching failed: {e}")
-                
-                # 6. Build transition matrix
-                transition_matrix = build_transition_matrix(valid_state_history, n_states)
-                
-                # 7. Predict current state
-                if len(feature_scaled) > 0:
-                    current_features = feature_scaled[-1:].reshape(1, -1)
-                    current_state = gmm.predict(current_features)[0]
-                    state_probs = gmm.predict_proba(current_features)[0].tolist()
-                else:
-                    current_state = valid_state_history[-1] if valid_state_history else 0
-                    state_probs = [0.25] * n_states
-                
-                # 8. Predict next state distribution
-                next_state_probs = predict_next_state_distribution(current_state, transition_matrix)
-                
-                # 9. Adaptive quantile
-                adaptive_q = adaptive_quantile(state_probs, quantile)
-                
-                # 10. Calculate predictions using hybrid prediction
-                # Use SESSION volatility (not annualized) for next-period prediction
-                try:
-                    if all(col in hist.columns for col in ['Open', 'High', 'Low', 'Close']):
-                        vol_result = compute_session_volatility(hist, window=60)
-                        sigma_session_pct = vol_result['sigma_session_pct']  # Next session % (1-3%)
-                        sigma_price = vol_result['sigma_price']  # Expected $ range
-                        sigma_annual_pct = vol_result['sigma_annual_pct']  # For logging/comparison
-                        
-                        print(f"✓ Session vol: {sigma_session_pct:.2f}% (annualized: {sigma_annual_pct:.1f}%, σ_price: ${sigma_price:.2f})")
-                    else:
-                        # Fallback: use close-to-close
-                        returns = np.log(closes[1:] / closes[:-1])
-                        sigma_session = np.std(returns)  # Daily vol (not annualized)
-                        sigma_session_pct = sigma_session * 100
-                        sigma_price = sigma_session * current_price
-                        sigma_annual_pct = sigma_session_pct * np.sqrt(252)
-                except Exception as e:
-                    print(f"⚠ Sigma calculation error: {e}")
-                    # Emergency fallback
-                    returns = np.log(closes[1:] / closes[:-1])
-                    sigma_session = np.std(returns)
-                    sigma_session_pct = sigma_session * 100
-                    sigma_price = sigma_session * current_price
-                    sigma_annual_pct = sigma_session_pct * np.sqrt(252)
-                
-                # Use session_vol_pct for sigma_daily (for backward compatibility in response)
-                sigma_daily = sigma_session_pct
+    return get_level_constrained_hod_lod()
 
-                hod, lod = None, None
-                base_hod, base_lod = None, None
-                hod_pct, lod_pct = None, None
-                lss = 0.0
-                lss_feats = {}
-                lss_meta = {'tail_usage_mult': 1.0}
 
-                if current_state in state_quantiles:
-                    q_data = state_quantiles[current_state].get('quantiles', {})
-                    # Use adaptive quantile, fallback to closest available quantile
-                    if adaptive_q in q_data:
-                        target_q = adaptive_q
-                    elif 0.8 in q_data:
-                        target_q = 0.8
-                    elif 0.95 in q_data:
-                        target_q = 0.95
-                    elif len(q_data) > 0:
-                        target_q = max(q_data.keys())
-                    else:
-                        target_q = None
-                    
-                    if target_q and target_q in q_data:
-                        q_u_raw = q_data[target_q]['q_u']
-                        q_d_raw = q_data[target_q]['q_d']
-                        
-                        # Apply microstructure adjustments (from hybrid_state_prediction logic)
-                        q_u = q_u_raw
-                        q_d = q_d_raw
-                        
-                        if microstructure['state'] == 'Fock':
-                            q_u *= (1 + microstructure['liquidity_permeability'] * 0.3)
-                            q_d *= (1 + microstructure['liquidity_permeability'] * 0.3)
-                        elif microstructure['state'] == 'Thermal':
-                            q_u *= 0.85
-                            q_d *= 0.85
-                        elif microstructure['state'] == 'Coherent':
-                            capture_bias = microstructure['capture_rate'] - 0.5
-                            if capture_bias > 0:
-                                q_u *= 1.2
-                                q_d *= 0.8
-                            else:
-                                q_u *= 0.8
-                                q_d *= 1.2
-                        
-                        # Convert to price levels
-                        base_hod = float(current_price * (1 + q_u))
-                        base_lod = float(current_price * (1 - q_d))
-                        
-                        # --- calibration overrides based on current environment ---
-                        cal_key = calibration_key(microstructure['state'], 0.0, sigma_daily)  # lss will be computed below
-                        cal = get_calibration_params(cal_key)
-                        override_tail_mult = cal.get("tail_mult", None)
-                        rf_clip = cal.get("rf_clip", None)  # optional
-                        
-                        # NEW: Adjust for liquidity stress
-                        try:
-                            # Pass full arrays - function will slice internally based on window parameter
-                            opens = hist['Open'].values if 'Open' in hist.columns else closes
-                            
-                            lss, lss_feats = liquidity_stress_score(
-                                opens, highs, lows, closes, volumes,
-                                window=50
-                            )
-                            
-                            # Recompute calibration key with actual lss
-                            cal_key = calibration_key(microstructure['state'], lss, sigma_daily)
-                            cal = get_calibration_params(cal_key)
-                            override_tail_mult = cal.get("tail_mult", None)
-                            rf_clip = cal.get("rf_clip", None)
-                            
-                            # FIX: Use session volatility for sigma_price (not annualized)
-                            # sigma_session_pct is already calculated above, use it
-                            sigma_price = (sigma_session_pct / 100.0) * current_price
-                            
-                            # Use volume z-score as a sigma modifier
-                            # If volume is abnormally low, widen sigma slightly (thin tape risk)
-                            vz = volume_zscore(volumes)
-                            sigma_price *= (1.0 + np.clip(-vz, 0, 2) * 0.05)
-                            
-                            # 1) BASE from state machine (already computed)
-                            # (q_u and q_d are already percentage moves from GMM, so this is correct)
-                            base_hod = float(base_hod)
-                            base_lod = float(base_lod)
-                            
-                            # 2) LSS adjustment (save intermediate)
-                            lss_hod, lss_lod, lss_meta = adjust_hod_lod_usage(
-                                base_hod=base_hod,
-                                base_lod=base_lod,
-                                sigma_price=sigma_price,  # Now correctly scaled with session vol
-                                lss=lss,
-                                micro_state=microstructure['state'],
-                                override_tail_mult=override_tail_mult
-                            )
-                            
-                            # 2.5) Range consumption adjustment (for intraday timeframes)
-                            # How much of today's expected range has already been consumed?
-                            if timeframe in ['1m', '5m', '15m', '1h', '4h']:
-                                try:
-                                    range_consumption = compute_range_consumption(hist, current_price, sigma_price)
-                                    
-                                    # Adjust predictions if range is mostly consumed
-                                    if range_consumption['consumed_pct'] > 0.8:
-                                        # Already used 80% of expected range → expect mean reversion
-                                        lss_hod = min(lss_hod, current_price + range_consumption['remaining_up'] * 1.2)
-                                        lss_lod = max(lss_lod, current_price - range_consumption['remaining_down'] * 1.2)
-                                        print(f"✓ Range consumption: {range_consumption['consumed_pct']:.1%} consumed → adjusted HOD/LOD for mean reversion")
-                                except Exception as e:
-                                    print(f"⚠ Range consumption calculation failed: {e}")
-                                    range_consumption = {'consumed_pct': 0.0, 'bias': 'active'}
-                            else:
-                                range_consumption = {'consumed_pct': 0.0, 'bias': 'active'}
-                            
-                            # 3) Level refinement - detect levels and refine using them
-                            # This is where your detected levels come into play
-                            all_levels_combined = []
-                            try:
-                                # Detect all levels (same as level-constrained endpoint)
-                                hist_data_subset = hist.tail(min(len(hist), 100))
-                                
-                                # PRIMARY: HDBSCAN (state-of-the-art density clustering)
-                                hdbscan_levels = calculate_hdbscan_levels(highs, lows, closes, timeframe=timeframe)
-                                
-                                # SECONDARY: IsolationForest (event pivot candidates)
-                                isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
-                                
-                                # FALLBACK: Peak/Valley (last-resort when density clustering fails)
-                                peak_valley_levels = find_peaks_valleys_scipy(highs, lows, closes)
-                                
-                                # MeanShift removed from level production - now used as validator only
-                                # (validates HDBSCAN levels and boosts confidence if agrees)
-                                
-                                # CLASSICAL STRUCTURAL (constraints/magnets, not ML discovery)
-                                pivot_levels = calculate_pivot_points(hist_data_subset, timeframe)
-                                fib_levels = calculate_fibonacci_levels(highs, lows)  # For metadata only, not primary levels
-                                gap_levels = find_gap_levels(hist_data_subset)
-                                
-                                # ML LEVELS: Primary discovery algorithms only
-                                all_ml_levels = (hdbscan_levels + isolation_forest_levels + peak_valley_levels)
-                                
-                                # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
-                                # Use timeframe-aware threshold (cleaner than regime-aware for this step)
-                                all_ml_levels = agglomerative_merge_levels(
-                                    all_ml_levels,
-                                    distance_threshold_pct=None,  # Will use timeframe-aware default
-                                    timeframe=timeframe
-                                )
-                                
-                                confluence_levels = get_ml_confluence_levels(all_ml_levels)
-                                
-                                # Combine ML levels with classical structural (as constraints)
-                                # NOTE: Fibonacci is NOT added here - it will be added as metadata only
-                                all_levels_combined = (confluence_levels + all_ml_levels + 
-                                                      pivot_levels + gap_levels)
-                                
-                                # Add Fibonacci as metadata/confluence to nearby levels (not as primary levels)
-                                all_levels_combined = add_fibonacci_metadata_to_levels(
-                                    all_levels_combined, fib_levels, sigma_price, threshold_sigma=1.0
-                                )
-                                
-                                # Enhance levels with microstructure
-                                all_levels_combined, hmm_regime, hurst_data, garch_regime_enhanced, micro_state_enhanced = enhance_levels_with_microstructure(
-                                    all_levels_combined, closes, volumes, current_price, garch_vol_regime, microstructure, sigma_price=sigma_price
-                                )
-                                
-                                print(f"✓ Detected {len(all_levels_combined)} levels for refinement")
-                                
-                                # Refine using levels (KEEP THIS - it's good!)
-                                # Get lower timeframe theoretical LOD for validation
-                                lower_tf_lod = None
-                                try:
-                                    if timeframe in ['1h', '4h', '1d']:
-                                        lower_tf_hist = stock.history(period='5d', interval='15m')
-                                        if len(lower_tf_hist) > 0:
-                                            lower_tf_vol = compute_session_volatility(lower_tf_hist, window=60)
-                                            lower_tf_sigma = lower_tf_vol['sigma_price']
-                                            lower_tf_lod = current_price - 1.5 * lower_tf_sigma
-                                except:
-                                    pass
-                                
-                                predicted_hod, predicted_lod, refinement_debug = refine_extrema_with_levels(
-                                    spot=current_price,
-                                    hod_th=lss_hod,  # Use LSS-adjusted as envelope
-                                    lod_th=lss_lod,
-                                    levels=all_levels_combined,  # Your detected levels
-                                    state=microstructure,
-                                    timeframe=timeframe,
-                                    lower_tf_lod=lower_tf_lod
-                                )
-                                
-                                # Use refined predictions
-                                refined_hod = predicted_hod
-                                refined_lod = predicted_lod
-                                
-                                # Multi-timeframe confluence (soft structural ceilings/floors)
-                                mtf_confluence = compute_mtf_confluence(
-                                    ticker=ticker,
-                                    spot=current_price,
-                                    sigma_price=sigma_price,
-                                    micro_state=microstructure.get('state', 'Unknown'),
-                                    lookback=20
-                                )
-                                
-                                # Apply MTF structural constraints (soft caps, not hard limits)
-                                if mtf_confluence['apply']:
-                                    # Soft structural ceilings/floors - improve confidence, not expand range
-                                    if mtf_confluence['resistance'] and refined_hod > mtf_confluence['resistance']:
-                                        # Refined HOD exceeds MTF resistance - cap it softly
-                                        refined_hod = min(refined_hod, mtf_confluence['resistance'] * 1.02)  # Allow 2% overshoot
-                                        print(f"✓ MTF resistance at ${mtf_confluence['resistance']:.2f} → capped HOD")
-                                    
-                                    if mtf_confluence['support'] and refined_lod < mtf_confluence['support']:
-                                        # Refined LOD below MTF support - cap it softly
-                                        refined_lod = max(refined_lod, mtf_confluence['support'] * 0.98)  # Allow 2% undershoot
-                                        print(f"✓ MTF support at ${mtf_confluence['support']:.2f} → capped LOD")
-                                    
-                                    print(f"✓ MTF confluence confirmed → confidence boost: {mtf_confluence['confidence_boost']:.1%}")
-                                
-                            except Exception as e:
-                                print(f"⚠ Level refinement failed: {e}, using LSS-adjusted values")
-                                import traceback
-                                traceback.print_exc()
-                                refined_hod = lss_hod
-                                refined_lod = lss_lod
-                            
-                            # 4) RF adjustment (optional) - use refined values if available
-                            rf_hod = rf_lod = None
-                            rf_meta = {}
-                            # Use refined values from level refinement, fallback to LSS-adjusted
-                            final_hod = float(refined_hod) if 'refined_hod' in locals() else float(lss_hod)
-                            final_lod = float(refined_lod) if 'refined_lod' in locals() else float(lss_lod)
-                            
-                            # Build feature_dict in canonical ML_FEATURES order (FIX 1: strict ordering)
-                            # This ensures features_json matches exactly what RF models expect
-                            feature_dict = {feat: 0.0 for feat in ML_FEATURES}  # Initialize all with defaults
-                            
-                            # Populate available features (maintain canonical order)
-                            feature_dict['sigma_daily_pct'] = float(sigma_daily)
-                            feature_dict['micro_state'] = STATE_MAP.get(microstructure.get('state', 'Unknown'), -1)
-                            feature_dict['micro_confidence'] = float(microstructure.get('confidence', 0.0))
-                            feature_dict['liquidity_stress'] = float(lss)
-                            feature_dict['tail_usage_mult'] = float(lss_meta.get('tail_usage_mult', 1.0))
-                            # Add range consumption to RF features (for intraday)
-                            feature_dict['range_consumption'] = float(range_consumption.get('consumed_pct', 0.0))
-                            
-                            # OPTIONAL REFINEMENT: Persist MTF confluence in features_json for calibration
-                            if 'mtf_confluence' in locals() and mtf_confluence:
-                                feature_dict['mtf_resistance_count'] = float(mtf_confluence.get('details', {}).get('resistance_count', 0))
-                                feature_dict['mtf_support_count'] = float(mtf_confluence.get('details', {}).get('support_count', 0))
-                                feature_dict['mtf_confidence_boost'] = float(mtf_confluence.get('confidence_boost', 0.0))
-                            else:
-                                feature_dict['mtf_resistance_count'] = 0.0
-                                feature_dict['mtf_support_count'] = 0.0
-                                feature_dict['mtf_confidence_boost'] = 0.0
-                            
-                            if isinstance(garch_regime, dict):
-                                feature_dict['garch_regime'] = REGIME_MAP.get(garch_regime.get('regime', 'stable'), 0)
-                                # Populate sigma_garch_pct if available
-                                if 'current_vol' in garch_regime:
-                                    feature_dict['sigma_garch_pct'] = float(garch_regime['current_vol'])
-                            else:
-                                feature_dict['garch_regime'] = REGIME_MAP.get(str(garch_regime), 0)
-                            
-                            # Feature dict is already in canonical order (initialized with ML_FEATURES)
-                            # No need to reorder - Python 3.7+ dicts maintain insertion order
-                            # Just ensure all features are present with defaults
-                            for feat in ML_FEATURES:
-                                if feat not in feature_dict:
-                                    feature_dict[feat] = 0.0
-                            
-                            try:
-                                base_hod_model, base_lod_model, resid_hod_model, resid_lod_model, _, model_type = load_stack_models()
-                                
-                                # Use refined values as base for ML adjustment (if available), otherwise LSS-adjusted
-                                ml_base_hod = float(refined_hod) if 'refined_hod' in locals() else float(lss_hod)
-                                ml_base_lod = float(refined_lod) if 'refined_lod' in locals() else float(lss_lod)
-                                
-                                # Use LightGBM if available, otherwise RandomForest
-                                if model_type == 'lgbm' and LIGHTGBM_AVAILABLE:
-                                    try:
-                                        ml_hod, ml_lod, ml_meta = lgbm_adjust_hod_lod(
-                                            base_hod_model,
-                                            base_lod_model,
-                                            feature_dict=feature_dict,
-                                            base_hod=ml_base_hod,
-                                            base_lod=ml_base_lod,
-                                            sigma_price=float(sigma_price),
-                                        )
-                                        ml_meta['model_type'] = 'lgbm'
-                                    except Exception as e:
-                                        print(f"⚠ LightGBM adjustment failed: {e}, falling back to RF")
-                                        ml_hod, ml_lod, ml_meta = rf_adjust_hod_lod(
-                                            base_hod_model,
-                                            base_lod_model,
-                                            feature_dict=feature_dict,
-                                            base_hod=ml_base_hod,
-                                            base_lod=ml_base_lod,
-                                            sigma_price=float(sigma_price),
-                                        )
-                                        ml_meta['model_type'] = 'rf'
-                                else:
-                                    ml_hod, ml_lod, ml_meta = rf_adjust_hod_lod(
-                                        base_hod_model,
-                                        base_lod_model,
-                                        feature_dict=feature_dict,
-                                        base_hod=ml_base_hod,
-                                        base_lod=ml_base_lod,
-                                        sigma_price=float(sigma_price),
-                                    )
-                                    ml_meta['model_type'] = model_type if model_type else 'rf'
-                                rf_hod = ml_hod
-                                rf_lod = ml_lod
-                                rf_meta = ml_meta
-
-                            except Exception as e:
-                                print(f"⚠ ML model (RF/LGBM) failed: {e}")
-                                import traceback
-                                traceback.print_exc()
-                                # Continue without ML adjustment - use refined if available, otherwise LSS
-                                if 'refined_hod' in locals():
-                                    rf_hod = refined_hod
-                                    rf_lod = refined_lod
-                                else:
-                                    rf_hod = lss_hod
-                                    rf_lod = lss_lod
-                                rf_meta = {"rf_enhanced": False, "lgbm_enhanced": False, "note": "ml_model_failed"}
-                            
-                            # Apply residual correction if models are available
-                            if 'resid_hod_model' in locals() and resid_hod_model is not None and 'resid_lod_model' in locals() and resid_lod_model is not None:
-                                try:
-                                    X = np.array([feature_dict.get(f, 0.0) for f in ML_FEATURES]).reshape(1, -1)
-                                    resid_h = float(np.clip(resid_hod_model.predict(X)[0], -2.0, 2.0))
-                                    resid_l = float(np.clip(resid_lod_model.predict(X)[0], -2.0, 2.0))
-                                    rf_meta["residual_corrected"] = True
-                                    rf_meta["resid_hod_sigma"] = resid_h
-                                    rf_meta["resid_lod_sigma"] = resid_l
-                                except Exception as e:
-                                    print(f"⚠ Residual correction failed: {e}")
-                                    rf_meta["residual_corrected"] = False
-                            
-                            # Final HOD/LOD assignment
-                            # Priority: RF > Refined (from levels) > LSS-adjusted
-                            if rf_hod is not None:
-                                    final_hod = float(rf_hod)
-                            elif 'refined_hod' in locals():
-                                final_hod = float(refined_hod)
-                            else:
-                                final_hod = float(lss_hod)
-                            
-                            if rf_lod is not None:
-                                    final_lod = float(rf_lod)
-                            elif 'refined_lod' in locals():
-                                final_lod = float(refined_lod)
-                            else:
-                                final_lod = float(lss_lod)
-                            
-                            hod = final_hod
-                            lod = final_lod
-                            
-                        except Exception as e:
-                            print(f"⚠ Liquidity stress adjustment failed: {e}")
-                            import traceback
-                            traceback.print_exc()
-                            hod = base_hod
-                            lod = base_lod
-                            lss = 0.0
-                            lss_feats = {}
-                            lss_meta = {'tail_usage_mult': 1.0}
-                            rf_hod = rf_lod = None
-                            rf_meta = {}
-                            row_id = None
-                            cal_key = calibration_key(microstructure.get('state', 'Unknown'), 0.0, sigma_daily)
-                        
-                        hod_pct = (hod - current_price) / current_price * 100
-                        lod_pct = (current_price - lod) / current_price * 100
-                
-                # 11. Compute state durations
-                state_durations = compute_state_durations(valid_state_history)
-                
-                # Prepare response
-                response = {
-                    'success': True,
-                    'ticker': ticker,
-                    'timeframe': timeframe,
-                    'currentPrice': float(current_price),
-                    'sigmaDailyPct': float(sigma_daily),  # Session volatility for next period
-                    'currentState': {
-                        'state_id': int(current_state),
-                        'probabilities': state_probs,
-                        'confidence': float(max(state_probs)),
-                        'quantile_used': float(adaptive_q)
-                    },
-                    'nextStateProbs': next_state_probs,
-                    'predictions': {
-                        'hod': float(hod) if hod else None,
-                        'lod': float(lod) if lod else None,
-                        'hod_pct': float(hod_pct) if hod_pct else None,
-                        'lod_pct': float(lod_pct) if lod_pct else None,
-                        'hod_base': float(base_hod) if 'base_hod' in locals() and hod else None,
-                        'lod_base': float(base_lod) if 'base_lod' in locals() and lod else None,
-                        'hod_liquidity_adjusted': float(hod) if hod else None,
-                        'lod_liquidity_adjusted': float(lod) if lod else None,
-                        'liquidity_stress': float(lss) if 'lss' in locals() else 0.0,
-                        'liquidity_features': lss_feats if 'lss_feats' in locals() else {},
-                        'tail_usage_mult': float(lss_meta.get('tail_usage_mult', 1.0)) if 'lss_meta' in locals() else 1.0
-                    },
-                    'stateCharacteristics': state_quantiles.get(current_state, {}),
-                    'stateDurations': state_durations.get(current_state, {}),
-                    'microstructure': sanitize_for_json(microstructure),
-                    'garchRegime': sanitize_for_json(garch_regime),
-                    'mlEvalId': row_id if 'row_id' in locals() else None,
-                    'calibrationKey': cal_key if 'cal_key' in locals() else None
-                }
-                
-                return jsonify(response)
-        
-        # Fallback if state machine approach fails
-        return jsonify({
-            'success': False,
-            'error': 'Insufficient data for state machine analysis. Need at least 60 periods with features.'
-        }), 400
-        
-    except Exception as e:
-        import traceback
-        error_trace = traceback.format_exc()
-        print(f"ERROR in /api/state-conditioned-hod-lod: {error_trace}")
-        error_msg = str(e) if str(e) else "Unknown error occurred"
-        return jsonify({'success': False, 'error': error_msg}), 400
 
 @app.route('/api/lstm-forecast', methods=['GET'])
 def get_lstm_forecast():
@@ -11766,26 +9566,8 @@ def get_lstm_forecast():
                     # Get base prediction (with volatility for time calculation)
                     prediction = predict_price_target(model, recent_features, current_price, sigma_price=sigma_price, volatility_factor=1.0)
                     
-                    # Predict which level will be HOD/LOD (using all levels including theoretical as candidates)
+                    # HOD/LOD level prediction now handled by FVECM pipeline
                     hod_lod_prediction = None
-                    try:
-                        print("Predicting HOD/LOD levels from LSTM...")
-                        hod_lod_prediction = predict_hod_lod_from_levels(
-                            model=model,
-                            recent_features=recent_features,
-                            current_price=current_price,
-                            candidate_levels=all_levels,
-                            theoretical_hod=theoretical_hod_id,
-                            theoretical_lod=theoretical_lod_id
-                        )
-                        if hod_lod_prediction:
-                            print(f"✓ LSTM HOD prediction: ${hod_lod_prediction['predicted_hod_price']:.2f}")
-                            print(f"✓ LSTM LOD prediction: ${hod_lod_prediction['predicted_lod_price']:.2f}")
-                    except Exception as e:
-                        print(f"⚠ HOD/LOD level prediction failed: {e}")
-                        import traceback
-                        traceback.print_exc()
-                        hod_lod_prediction = None
                     
                     # Run Monte Carlo simulation (with regimes)
                     # Use fewer simulations for production (30 instead of 100 for speed)
@@ -11919,23 +9701,6 @@ def get_lstm_forecast():
         print(f"ERROR in /api/lstm-forecast: {error_trace}")
         return jsonify({'success': False, 'error': str(e)}), 400
 
-@app.route("/api/ml/hodlod-realized", methods=["POST"])
-def api_ml_hodlod_realized():
-    auth_error = require_auth()
-    if auth_error:
-        return jsonify({'success': False, **auth_error}), auth_error['code']
-
-    data = request.json or {}
-    row_id = data.get("mlEvalId")
-    realized_hod = data.get("realizedHOD")
-    realized_lod = data.get("realizedLOD")
-    realized_ts  = data.get("realizedTs")
-
-    if not row_id or realized_hod is None or realized_lod is None:
-        return jsonify({"success": False, "error": "mlEvalId, realizedHOD, realizedLOD required"}), 400
-
-    ok = ml_update_realized(row_id, float(realized_hod), float(realized_lod), realized_ts)
-    return jsonify({"success": ok})
 
 @app.route('/api/train-level-detector', methods=['POST'])
 def api_train_level_detector():
@@ -12033,309 +9798,9 @@ def api_train_deepsupp_levels():
         print(f"ERROR in /api/train-deepsupp-levels: {error_trace}")
         return jsonify({'success': False, 'error': str(e)}), 400
 
-@app.route("/api/ml/train-hodlod-stack", methods=["POST"])
-def api_ml_train_hodlod_stack():
-    auth_error = require_auth()
-    if auth_error:
-        return jsonify({'success': False, **auth_error}), auth_error['code']
 
-    data = request.json or {}
-    window = int(data.get("window", 400))   # rolling window size
 
-    # Pull last N realized samples
-    conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql_query(f"""
-        SELECT *
-        FROM hodlod_eval
-        WHERE realized_hod IS NOT NULL AND realized_lod IS NOT NULL
-        ORDER BY session_date DESC, pred_ts DESC
-        LIMIT {window}
-    """, conn)
-    conn.close()
 
-    if df.empty or len(df) < 120:
-        return jsonify({"success": False, "error": f"Need at least 120 realized samples (have {len(df)})"}), 400
-
-    # Rebuild features frame expected by your RF training
-    feats = df["features_json"].apply(lambda s: json.loads(s or "{}"))
-    feats_df = pd.json_normalize(feats)
-    feats_df = feats_df.reindex(columns=ML_FEATURES, fill_value=0.0)
-
-    # Build "training df" compatible with your existing compute_hod_error_sigma/compute_lod_error_sigma
-    train_df = pd.DataFrame({
-        "predicted_HOD": df["final_hod"].astype(float),
-        "predicted_LOD": df["final_lod"].astype(float),
-        "realized_HOD": df["realized_hod"].astype(float),
-        "realized_LOD": df["realized_lod"].astype(float),
-        "sigma_price": df["sigma_price"].astype(float).fillna(0.0),
-    })
-    for col in ML_FEATURES:
-        train_df[col] = feats_df[col].astype(float)
-
-    # 1) Train base models - prefer LightGBM if available, fallback to RF
-    if LIGHTGBM_AVAILABLE:
-        try:
-            lgbm_hod, lgbm_lod, metrics_base = train_lgbm_dual(train_df, verbose=True)
-            print("✓ Using LightGBM for base models")
-            use_lgbm = True
-            base_hod_model = lgbm_hod
-            base_lod_model = lgbm_lod
-        except Exception as e:
-            print(f"⚠ LightGBM training failed: {e}, falling back to RandomForest")
-            rf_hod, rf_lod, metrics_base = train_rf_dual(train_df, verbose=True)
-            use_lgbm = False
-            base_hod_model = rf_hod
-            base_lod_model = rf_lod
-    else:
-        rf_hod, rf_lod, metrics_base = train_rf_dual(train_df, verbose=True)
-        use_lgbm = False
-        base_hod_model = rf_hod
-        base_lod_model = rf_lod
-
-    # 2) Train residual models: remaining error AFTER final_hod/final_lod (in sigma units)
-    # residual targets (sigma)
-    eps = 1e-9
-    train_df["resid_hod_sigma"] = (train_df["realized_HOD"] - train_df["predicted_HOD"]) / (train_df["sigma_price"] + eps)
-    train_df["resid_lod_sigma"] = (train_df["predicted_LOD"] - train_df["realized_LOD"]) / (train_df["sigma_price"] + eps)
-    train_df["resid_hod_sigma"] = train_df["resid_hod_sigma"].clip(-3, 3)
-    train_df["resid_lod_sigma"] = train_df["resid_lod_sigma"].clip(-3, 3)
-
-    X = train_df[ML_FEATURES].values
-    y_rh = train_df["resid_hod_sigma"].values
-    y_rl = train_df["resid_lod_sigma"].values
-
-    resid_hod = RandomForestRegressor(
-        n_estimators=250, max_depth=6, min_samples_leaf=25, max_features=0.7,
-        random_state=101, n_jobs=-1
-    )
-    resid_lod = RandomForestRegressor(
-        n_estimators=250, max_depth=6, min_samples_leaf=25, max_features=0.7,
-        random_state=102, n_jobs=-1
-    )
-    resid_hod.fit(X, y_rh)
-    resid_lod.fit(X, y_rl)
-
-    metrics = {
-        **metrics_base,
-        "n_train": int(len(train_df)),
-        "stack": True,
-        "model_type": "LightGBM" if use_lgbm else "RandomForest"
-    }
-
-    if use_lgbm:
-        save_stack_models(base_hod_model, base_lod_model, resid_hod, resid_lod, metrics, model_type='lgbm')
-    else:
-        save_stack_models(base_hod_model, base_lod_model, resid_hod, resid_lod, metrics, model_type='rf')
-
-    return jsonify({"success": True, "metrics": metrics})
-
-@app.route("/api/ml/ablation-report", methods=["POST"])
-def api_ml_ablation_report():
-    """
-    Enhanced ablation report with detailed metrics per regime bucket.
-    
-    Returns:
-    - delta_rf, delta_lss: Change in error when removing each module
-      - Positive delta = module helped (removing it worsened error)
-      - Negative delta = module hurt (removing it improved error)
-    - Additional metrics: MAE, RMSE, sample counts, statistical significance
-    """
-    auth_error = require_auth()
-    if auth_error:
-        return jsonify({'success': False, **auth_error}), auth_error['code']
-
-    data = request.json or {}
-    window = int(data.get("window", 400))
-
-    conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql_query(f"""
-        SELECT *
-        FROM hodlod_eval
-        WHERE realized_hod IS NOT NULL AND realized_lod IS NOT NULL
-        ORDER BY session_date DESC, pred_ts DESC
-        LIMIT {window}
-    """, conn)
-    conn.close()
-
-    if df.empty:
-        return jsonify({"success": False, "error": "No realized samples in hodlod_eval"}), 400
-
-    # Define pipelines for ablation:
-    # full = final_hod/final_lod (all modules)
-    # no_rf = lss_hod/lss_lod (without RF)
-    # no_lss = base_hod/base_lod (without LSS adjustment)
-
-    def abs_err(hod_pred, lod_pred, hod_real, lod_real):
-        # Combine HOD + LOD absolute error in price units
-        return abs(hod_real - hod_pred) + abs(lod_pred - lod_real)
-    
-    def squared_err(hod_pred, lod_pred, hod_real, lod_real):
-        # Squared error for RMSE
-        return (hod_real - hod_pred)**2 + (lod_real - lod_pred)**2
-
-    rows = []
-    for _, r in df.iterrows():
-        hod_real = float(r["realized_hod"])
-        lod_real = float(r["realized_lod"])
-
-        e_full = abs_err(float(r["final_hod"]), float(r["final_lod"]), hod_real, lod_real)
-        e_no_rf = abs_err(float(r["lss_hod"]), float(r["lss_lod"]), hod_real, lod_real) if pd.notna(r["lss_hod"]) else None
-        e_no_lss = abs_err(float(r["base_hod"]), float(r["base_lod"]), hod_real, lod_real)
-        
-        se_full = squared_err(float(r["final_hod"]), float(r["final_lod"]), hod_real, lod_real)
-
-        micro = r.get("micro_state", "Unknown") or "Unknown"
-        key = calibration_key(micro, r.get("lss", None), r.get("sigma_daily_pct", None))
-
-        # Δ > 0 means module helped (removing it worsened error)
-        # Δ < 0 means module hurt (removing it improved error)
-        rows.append({
-            "bucket": key,
-            "micro_state": micro,
-            "e_full": e_full,
-            "se_full": se_full,
-            "delta_rf": (e_no_rf - e_full) if e_no_rf is not None else None,
-            "delta_lss": (e_no_lss - e_full),
-        })
-
-    rep = pd.DataFrame(rows)
-    
-    # Enhanced aggregation: mean, std, count, and RMSE
-    agg_dict = {
-        "delta_rf": ["mean", "std", "count"],
-        "delta_lss": ["mean", "std", "count"],
-        "e_full": ["mean"],
-        "se_full": ["mean"]
-    }
-    
-    grouped = rep.groupby("bucket").agg(agg_dict).reset_index()
-    
-    # Flatten column names
-    grouped.columns = ['_'.join(col).strip('_') if col[1] else col[0] for col in grouped.columns.values]
-    
-    # Calculate RMSE from mean squared error
-    if "se_full_mean" in grouped.columns:
-        grouped["rmse_full"] = np.sqrt(grouped["se_full_mean"])
-    
-    # Add sample counts (use any delta column count)
-    if "delta_lss_count" in grouped.columns:
-        grouped["n_samples"] = grouped["delta_lss_count"].astype(int)
-    
-    # Sort by delta_rf_mean (most impactful RF first)
-    if "delta_rf_mean" in grouped.columns:
-        grouped = grouped.sort_values("delta_rf_mean", ascending=True)
-    
-    # Convert to dict for JSON serialization
-    out = grouped.to_dict("records")
-    
-    # Add summary statistics
-    summary = {
-        "total_samples": len(rep),
-        "unique_buckets": len(grouped),
-        "buckets_with_rf": len(grouped[grouped["delta_rf_mean"].notna()]) if "delta_rf_mean" in grouped.columns else 0
-    }
-
-    return jsonify({"success": True, "report": out, "summary": summary})
-
-@app.route("/api/ml/auto-calibrate", methods=["POST"])
-def api_ml_auto_calibrate():
-    """
-    Enhanced auto-calibration with:
-    - Statistical significance thresholds
-    - Adaptive learning rates
-    - Hard physics constraints (prevents breaking fundamental rules)
-    - Bounds checking on parameters
-    """
-    auth_error = require_auth()
-    if auth_error:
-        return jsonify({'success': False, **auth_error}), auth_error['code']
-
-    data = request.json or {}
-    window = int(data.get("window", 400))
-    learning_rate = float(data.get("learning_rate", 0.15))  # How aggressively to adjust
-    min_samples = int(data.get("min_samples", 20))  # Minimum samples for statistical significance
-    significance_threshold = float(data.get("significance_threshold", -0.02))  # Delta must be this negative to trigger
-
-    # Call ablation internally using test request context
-    with app.test_request_context('/api/ml/ablation-report', method='POST', json={"window": window}):
-        resp = api_ml_ablation_report()
-    payload = resp.get_json()
-    if not payload.get("success"):
-        return jsonify(payload), 400
-
-    report = payload["report"]
-
-    # Hard physics constraints: absolute bounds that must never be violated
-    HARD_CONSTRAINTS = {
-        "tail_mult": {"min": 0.70, "max": 1.80},  # Tail usage multiplier bounds
-        "rf_clip": {"min": 0.50, "max": 2.50}  # RF adjustment bounds
-    }
-
-    updates = 0
-    changes_log = []
-    
-    for row in report:
-        key = row.get("bucket")
-        if not key:
-            continue
-            
-        n_samples = row.get("n_samples", 0)
-        if n_samples < min_samples:
-            continue  # Skip buckets with insufficient data
-        
-        delta_lss = row.get("delta_lss_mean")
-        delta_rf = row.get("delta_rf_mean")
-        delta_lss_std = row.get("delta_lss_std", None)
-
-        params = get_calibration_params(key)
-        changed = False
-        changes = {}
-
-        # LSS tail usage calibration (LEARNABLE - tail expansion can be tuned)
-        if isinstance(delta_lss, (int, float)) and delta_lss < significance_threshold:
-            # Negative delta_lss means tail usage hurt (removing it improved error)
-            # Reduce tail usage multiplier
-            current_tail = float(params.get("tail_mult", 1.10))
-            adjustment = learning_rate * abs(delta_lss) / 0.10
-            adjustment = min(adjustment, 0.25)  # Cap at 25%
-            new_tail = current_tail * (1.0 - adjustment)
-            
-            # Apply hard constraint
-            new_tail = np.clip(new_tail, HARD_CONSTRAINTS["tail_mult"]["min"], HARD_CONSTRAINTS["tail_mult"]["max"])
-            
-            if abs(new_tail - current_tail) > 0.01:
-                params["tail_mult"] = new_tail
-                changed = True
-                changes["tail_mult"] = {"old": current_tail, "new": new_tail, "delta": delta_lss}
-
-        # RF calibration (LEARNABLE - but more conservative)
-        if isinstance(delta_rf, (int, float)) and delta_rf < significance_threshold:
-            # Negative delta_rf means RF hurt (this is unusual, usually means overfitting)
-            # We don't have rf_clip in the pipeline yet, but we can log it for future use
-            # For now, we'll just track it
-            if "rf_note" not in params:
-                params["rf_note"] = f"RF may be overfitting (delta={delta_rf:.4f})"
-                changed = True
-
-        if changed and params:
-            upsert_calibration_params(key, params)
-            updates += 1
-            changes_log.append({
-                "bucket": key,
-                "n_samples": n_samples,
-                "changes": changes
-            })
-
-    return jsonify({
-        "success": True, 
-        "updatedBuckets": updates,
-        "changes": changes_log,
-        "constraints": HARD_CONSTRAINTS
-    })
-
-def api_ml_auto_calibrate_ablation_report():
-    """Helper function for auto-calibrate to call ablation report"""
-    return api_ml_ablation_report()
 
 # Ensure DB exists on startup (works with Gunicorn)
 @app.before_request
@@ -12373,6 +9838,6 @@ except Exception as e:
     # Don't crash - let the app start and retry on first request
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001) 
+    app.run(host='0.0.0.0', port=5001)       
 
 
