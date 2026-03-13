@@ -3658,7 +3658,23 @@ def detect_levels_with_deepsupp(hist, model_path='deepsupp_v4.pt', device='cpu')
 
     try:
         if not os.path.exists(model_path):
-            return []
+            print(f"⚠ DeepSupp model file '{model_path}' not found. Attempting auto-train...")
+            if hist is not None and len(hist) >= 400:
+                try:
+                    train_result = train_deepsupp_level_model(
+                        ticker="SPY", timeframe="1d",
+                        epochs=15, batch_size=32, model_path=model_path
+                    )
+                    if not train_result.get('success'):
+                        print(f"⚠ DeepSupp auto-train failed: {train_result.get('error', 'unknown')}")
+                        return []
+                    print(f"✓ DeepSupp auto-trained and saved to {model_path}")
+                except Exception as train_err:
+                    print(f"⚠ DeepSupp auto-train exception: {train_err}")
+                    return []
+            else:
+                print(f"⚠ Not enough data for auto-train ({len(hist) if hist is not None else 0} bars, need 400). Train manually via POST /api/train-deepsupp-levels")
+                return []
 
         from deepsupp_levels import load_deepsupp_model, compute_deepsupp_levels
 
@@ -9161,20 +9177,81 @@ def get_level_constrained_hod_lod():
 
         std_dev_decimal = session_vol_pct / 100.0
 
+        # Compute statistical sigma bands for frontend compatibility
+        base_hod_1std = current_price + 1.0 * sigma_price
+        base_lod_1std = current_price - 1.0 * sigma_price
+        base_hod_2std = current_price + 2.0 * sigma_price
+        base_lod_2std = current_price - 2.0 * sigma_price
+        base_hod_3std = current_price + 3.0 * sigma_price
+        base_lod_3std = current_price - 3.0 * sigma_price
+
+        # Find selected resistance/support from refinement
+        selected_resistance = refinement_debug.get('best_hod') if 'refinement_debug' in locals() and refinement_debug else None
+        selected_support = refinement_debug.get('best_lod') if 'refinement_debug' in locals() and refinement_debug else None
+
         return jsonify({
             'success': True,
             'ticker': ticker,
             'timeframe': timeframe,
             'currentPrice': current_price,
             'method': 'FVECM + Level Refinement',
+            'sigmaDailyPct': float(session_vol_pct),
+            'sigmaPrice': float(sigma_price),
             'stdDev': std_dev_decimal,
             'sigma_price': float(sigma_price),
+
+            # Frontend expects: hod['1std'], hod['2std'], hod['3std']
+            'hod': {
+                '1std': float(base_hod_1std),
+                '2std': float(base_hod_2std),
+                '3std': float(base_hod_3std)
+            },
+            'lod': {
+                '1std': float(base_lod_1std),
+                '2std': float(base_lod_2std),
+                '3std': float(base_lod_3std)
+            },
+
+            # Level-constrained predicted HOD/LOD
+            'predicted': {
+                'hod': float(predicted_hod),
+                'lod': float(predicted_lod),
+                'hod_distance_pct': float((predicted_hod - current_price) / current_price * 100),
+                'lod_distance_pct': float((current_price - predicted_lod) / current_price * 100),
+                'hod_confidence': float(hod_confidence),
+                'lod_confidence': float(lod_confidence)
+            },
+
+            # Also keep the 'predictions' key for any code using the new format
             'predictions': {
                 'hod': float(predicted_hod),
                 'lod': float(predicted_lod),
                 'hod_pct': (float(predicted_hod) - current_price) / current_price * 100,
                 'lod_pct': (current_price - float(predicted_lod)) / current_price * 100,
             },
+
+            # Base statistical ranges (for comparison)
+            'statistical': {
+                'hod_1std': float(base_hod_1std),
+                'lod_1std': float(base_lod_1std),
+                'hod_2std': float(base_hod_2std),
+                'lod_2std': float(base_lod_2std),
+                'hod_3std': float(base_hod_3std),
+                'lod_3std': float(base_lod_3std)
+            },
+
+            # Selected levels (if any)
+            'selectedLevels': {
+                'resistance': sanitize_for_json(selected_resistance) if selected_resistance else None,
+                'support': sanitize_for_json(selected_support) if selected_support else None
+            },
+
+            # Nearby levels (for visualization)
+            'nearbyLevels': {
+                'resistance': sanitize_for_json(resistance_levels[:5]),
+                'support': sanitize_for_json(support_levels[:5])
+            },
+
             'confidence': {
                 'hod': float(hod_confidence),
                 'lod': float(lod_confidence),
@@ -9386,8 +9463,18 @@ def get_lstm_forecast():
         neural_network_levels = detect_levels_with_neural_network(hist, lookback=100, threshold=0.5)
         print(f"✓ Neural Network levels detected: {len(neural_network_levels)} levels")
         
-        # ML confluence (includes neural network levels)
-        all_ml_levels = hdbscan_levels + optics_levels + interaction_levels + neural_network_levels
+        # DeepSupp levels
+        deepsupp_levels = []
+        try:
+            if TORCH_AVAILABLE:
+                deepsupp_levels = detect_levels_with_deepsupp(hist, model_path='deepsupp_v4.pt', device='cpu')
+                print(f"✓ DeepSupp levels detected: {len(deepsupp_levels)} levels")
+        except Exception as e:
+            print(f"DeepSupp level detection failed: {e}")
+            deepsupp_levels = []
+
+        # ML confluence (includes neural network + deepsupp levels)
+        all_ml_levels = hdbscan_levels + optics_levels + interaction_levels + neural_network_levels + deepsupp_levels
         ml_confluence_levels = get_ml_confluence_levels(all_ml_levels)
         
         # 2a. Get Multi-Timeframe Levels (for enhanced LSTM prediction)
@@ -9404,7 +9491,7 @@ def get_lstm_forecast():
         # 3. Predict level reactions AND which levels will become actual HOD/LOD
         # NOTE: neural_network_levels are included in all_levels for theoretical HOD/LOD refinement
         print("Predicting level reactions and HOD/LOD candidates...")
-        all_levels = hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels + multiscale_levels + neural_network_levels
+        all_levels = hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels + multiscale_levels + neural_network_levels + deepsupp_levels
         start_of_move_price = closes[0] if len(closes) > 0 else current_price  # Session start
         
         level_reactions = []
@@ -9688,7 +9775,8 @@ def get_lstm_forecast():
                 'interaction': len(interaction_levels),
                 'ml_confluence': len(ml_confluence_levels),
                 'multiscale': len(multiscale_levels),
-                'neural_network': len(neural_network_levels)
+                'neural_network': len(neural_network_levels),
+                'deepsupp': len(deepsupp_levels)
             },
             'microstructure_state': sanitize_for_json(microstructure_state) if microstructure_state else None
         }
@@ -9838,6 +9926,6 @@ except Exception as e:
     # Don't crash - let the app start and retry on first request
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001)       
+    app.run(host='0.0.0.0', port=5001)                                                                                                                                                                                                                                
 
 
