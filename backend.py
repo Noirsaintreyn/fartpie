@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session, send_from_directory
+from flask import Flask, jsonify, request, session, send_from_directory, render_template
 from flask.json.provider import DefaultJSONProvider
 from flask_cors import CORS
 import yfinance as yf
@@ -321,7 +321,12 @@ CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
 @app.route("/")
 def health():
     return {"status": "backend live"}
-  
+
+@app.route("/backtest")
+def backtest_ui():
+    """Serve the backtest interface"""
+    return render_template('backtest.html')
+
 FRED_API_KEY = '024452292701539abb68abc50276eb70'
 
 # Simple password hashing
@@ -2154,213 +2159,7 @@ def calculate_hurst_exponent(closes, max_lag=20):
 
 
 
-# [ALL THE LEVEL DETECTION FUNCTIONS - KEEPING THEM EXACTLY AS BEFORE]
-
-def find_peaks_valleys_scipy(highs, lows, closes, prominence=0.02):
-    price_range = highs.max() - lows.min()
-    min_prominence = price_range * prominence
-    if len(closes) > 11:
-        smoothed = savgol_filter(closes, window_length=11, polyorder=3)
-    else:
-        smoothed = closes
-    peaks, peak_props = find_peaks(smoothed, prominence=min_prominence, distance=5)
-    valleys, valley_props = find_peaks(-smoothed, prominence=min_prominence, distance=5)
-    levels = []
-    for i, peak_idx in enumerate(peaks):
-        if peak_idx >= len(highs):
-            continue
-        level_price = highs[peak_idx]
-        touches = np.sum(np.abs(highs - level_price) < level_price * 0.005)
-        bars_ago = len(closes) - peak_idx
-        recency = 1.0 / (1 + bars_ago / 50)
-        prom_strength = min(peak_props['prominences'][i] / min_prominence / 3, 0.9)
-        strength = (prom_strength * 0.6 + recency * 0.4) * min(touches / 3, 1.0)
-        levels.append({'price': float(level_price), 'type': 'Peak Resistance', 'touches': int(touches), 
-                      'strength': float(strength), 'breakoutProb': float(1 - strength), 
-                      'reversionProb': float(strength), 'category': 'Peak-Valley'})
-    for i, valley_idx in enumerate(valleys):
-        if valley_idx >= len(lows):
-            continue
-        level_price = lows[valley_idx]
-        touches = np.sum(np.abs(lows - level_price) < level_price * 0.005)
-        bars_ago = len(closes) - valley_idx
-        recency = 1.0 / (1 + bars_ago / 50)
-        prom_strength = min(valley_props['prominences'][i] / min_prominence / 3, 0.9)
-        strength = (prom_strength * 0.6 + recency * 0.4) * min(touches / 3, 1.0)
-        levels.append({'price': float(level_price), 'type': 'Valley Support', 'touches': int(touches),
-                      'strength': float(strength), 'breakoutProb': float(1 - strength),
-                      'reversionProb': float(strength), 'category': 'Peak-Valley'})
-    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:10]
-
-def calculate_meanshift_levels(highs, lows, closes):
-    all_prices = np.concatenate([highs, lows, closes]).reshape(-1, 1)
-    bandwidth = estimate_bandwidth(all_prices, quantile=0.15, n_samples=min(len(all_prices), 1000))
-    if bandwidth == 0:
-        bandwidth = (all_prices.max() - all_prices.min()) / 20
-    ms = MeanShift(bandwidth=bandwidth, bin_seeding=True)
-    ms.fit(all_prices)
-    cluster_centers = ms.cluster_centers_.flatten()
-    labels = ms.labels_
-    levels = []
-    for i, center in enumerate(cluster_centers):
-        touches = np.sum(labels == i)
-        strength = min(touches / len(all_prices) * 10, 0.90)
-        levels.append({'price': float(center), 'type': 'MeanShift', 'touches': int(touches), 
-                      'strength': strength, 'breakoutProb': float(1 - strength), 
-                      'reversionProb': float(strength), 'category': 'MeanShift'})
-    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:6]
-
-
-def calculate_pivot_points(hist_data, timeframe):
-    if len(hist_data) < 2:
-        return []
-    prev = hist_data.iloc[-2]
-    high, low, close = prev['High'], prev['Low'], prev['Close']
-    pivot = (high + low + close) / 3
-    r1 = 2 * pivot - low
-    s1 = 2 * pivot - high
-    r2 = pivot + (high - low)
-    s2 = pivot - (high - low)
-    r3 = high + 2 * (pivot - low)
-    s3 = low - 2 * (high - pivot)
-    period_name = "Day" if timeframe == "1d" else "Period"
-    return [
-        {'price': float(pivot), 'type': f'{period_name} Pivot', 'strength': 0.85, 'breakoutProb': 0.15, 'reversionProb': 0.85, 'category': 'Pivot'},
-        {'price': float(r1), 'type': f'{period_name} R1', 'strength': 0.75, 'breakoutProb': 0.25, 'reversionProb': 0.75, 'category': 'Pivot'},
-        {'price': float(s1), 'type': f'{period_name} S1', 'strength': 0.75, 'breakoutProb': 0.25, 'reversionProb': 0.75, 'category': 'Pivot'},
-        {'price': float(r2), 'type': f'{period_name} R2', 'strength': 0.65, 'breakoutProb': 0.35, 'reversionProb': 0.65, 'category': 'Pivot'},
-        {'price': float(s2), 'type': f'{period_name} S2', 'strength': 0.65, 'breakoutProb': 0.35, 'reversionProb': 0.65, 'category': 'Pivot'},
-        {'price': float(r3), 'type': f'{period_name} R3', 'strength': 0.55, 'breakoutProb': 0.45, 'reversionProb': 0.55, 'category': 'Pivot'},
-        {'price': float(s3), 'type': f'{period_name} S3', 'strength': 0.55, 'breakoutProb': 0.45, 'reversionProb': 0.55, 'category': 'Pivot'},
-    ]
-
-def calculate_fibonacci_levels(highs, lows):
-    """
-    Calculate Fibonacci retracement levels.
-    NOTE: These are NOT primary levels - they are psychological references.
-    Use as metadata/confluence only, not as level generators.
-    """
-    if len(highs) < 20:
-        return []
-    recent_high = np.max(highs[-50:])
-    recent_low = np.min(lows[-50:])
-    range_val = recent_high - recent_low
-    fib_ratios = [0.236, 0.382, 0.5, 0.618, 0.786]
-    levels = []
-    for ratio in fib_ratios:
-        level_from_high = recent_high - (range_val * ratio)
-        levels.append({
-            'price': float(level_from_high), 
-            'type': f'Fib {ratio:.3f}',
-            'ratio': float(ratio),
-            'strength': 0.7, 
-            'breakoutProb': 0.3, 
-            'reversionProb': 0.7, 
-            'category': 'Fibonacci',
-            'is_metadata_only': True  # Flag: not a primary level
-        })
-    return levels
-
-def add_fibonacci_metadata_to_levels(all_levels, fib_levels, sigma_price, threshold_sigma=1.0):
-    """
-    Add Fibonacci as metadata/confluence to nearby levels, not as primary levels.
-    This treats Fib as a psychological reference, not discovered structure.
-    """
-    if not fib_levels or not all_levels or sigma_price <= 0:
-        return all_levels
-    
-    for level in all_levels:
-        level_price = level.get('price', 0)
-        nearby_fibs = []
-        
-        for fib in fib_levels:
-            fib_price = fib.get('price', 0)
-            distance_sigma = abs(fib_price - level_price) / sigma_price if sigma_price > 0 else float('inf')
-            
-            if distance_sigma < threshold_sigma:
-                nearby_fibs.append({
-                    'price': float(fib_price),
-                    'ratio': fib.get('ratio', 0),
-                    'distance_sigma': float(distance_sigma)
-                })
-        
-        if nearby_fibs:
-            level['fibonacci_confluence'] = nearby_fibs
-            level['has_fib_confluence'] = True
-    
-    return all_levels
-
-def find_pivot_anomalies(highs, lows, closes):
-    """
-    Pivots are structural anomalies in price flow.
-    Uses IsolationForest to detect unusual price movements that indicate pivot points.
-    """
-    if len(closes) < 10:
-        return []
-    
-    features = []
-    for i in range(2, len(closes) - 2):
-        # Local structure features
-        features.append([
-            closes[i] - closes[i-1],  # momentum
-            highs[i] - lows[i],        # range
-            closes[i] - closes[i-2],  # 2-bar momentum
-            np.std(closes[max(0, i-2):min(len(closes), i+3)]),  # local volatility
-        ])
-    
-    if len(features) < 5:
-        return []
-    
-    X = np.array(features)
-    
-    iso = IsolationForest(
-        contamination=0.05,  # 5% are pivots
-        random_state=42
-    )
-    
-    preds = iso.fit_predict(X)
-    anomaly_scores = iso.score_samples(X)
-    
-    # Negative scores = anomalies = potential pivots
-    pivot_indices = [i+2 for i, score in enumerate(anomaly_scores) 
-                     if preds[i] == -1 and score < -0.5]
-    
-    levels = []
-    for idx in pivot_indices:
-        if idx >= len(closes) or idx < 2 or idx >= len(closes) - 2:
-            continue
-            
-        # High or low pivot?
-        is_high = highs[idx] > max(highs[idx-1], highs[idx+1]) if idx > 0 and idx < len(highs) - 1 else False
-        is_low = lows[idx] < min(lows[idx-1], lows[idx+1]) if idx > 0 and idx < len(lows) - 1 else False
-        
-        score_idx = idx - 2  # Adjust for feature array indexing
-        if score_idx < 0 or score_idx >= len(anomaly_scores):
-            continue
-        
-        if is_high:
-            levels.append({
-                'price': float(highs[idx]),
-                'type': 'Anomaly Pivot High',
-                'strength': float(min(abs(anomaly_scores[score_idx]) / 2, 0.9)),
-                'breakoutProb': float(1 - min(abs(anomaly_scores[score_idx]) / 2, 0.9)),
-                'reversionProb': float(min(abs(anomaly_scores[score_idx]) / 2, 0.9)),
-                'category': 'Isolation-Forest',
-                'anomaly_score': float(anomaly_scores[score_idx])
-            })
-        
-        if is_low:
-            levels.append({
-                'price': float(lows[idx]),
-                'type': 'Anomaly Pivot Low',
-                'strength': float(min(abs(anomaly_scores[score_idx]) / 2, 0.9)),
-                'breakoutProb': float(1 - min(abs(anomaly_scores[score_idx]) / 2, 0.9)),
-                'reversionProb': float(min(abs(anomaly_scores[score_idx]) / 2, 0.9)),
-                'category': 'Isolation-Forest',
-                'anomaly_score': float(anomaly_scores[score_idx])
-            })
-    
-    return levels
+# LEVEL DETECTION: HDBSCAN + Neural Network (CNN+BiLSTM) + DeepSupp only
 
 def calculate_hdbscan_levels(highs, lows, closes, timeframe='1d'):
     """
@@ -2470,464 +2269,6 @@ def calculate_hdbscan_levels(highs, lows, closes, timeframe='1d'):
     price_list = [f"${l['price']:.2f}" for l in result]
     print(f"HDBSCAN: Returning {len(result)} levels with prices: {price_list}")
     return result
-
-def enhanced_optics_levels(highs, lows, closes, timeframe='1d'):
-    """
-    OPTICS with reachability-based strength scoring
-    Reachability distance = "how dense is this cluster?"
-    Better than HDBSCAN for some patterns
-    """
-    if len(closes) < 20:
-        return []
-    
-    all_prices = np.concatenate([highs, lows, closes]).reshape(-1, 1)
-    
-    optics = OPTICS(
-        min_samples=5,
-        xi=0.05,
-        min_cluster_size=10,
-        metric='euclidean'
-    )
-    
-    labels = optics.fit_predict(all_prices)
-    reachability = optics.reachability_[optics.ordering_]
-    
-    levels = []
-    for label in set(labels):
-        if label == -1:
-            continue
-        
-        cluster_mask = labels == label
-        cluster_prices = all_prices[cluster_mask].flatten()
-        center = np.median(cluster_prices)
-        
-        # NEW: Use reachability distance for strength
-        # Lower reachability = denser cluster = stronger level
-        cluster_indices = np.where(cluster_mask)[0]
-        ordering_map = {optics.ordering_[i]: i for i in range(len(optics.ordering_))}
-        cluster_reachability = [reachability[ordering_map.get(idx, 0)]
-                               for idx in cluster_indices if idx in ordering_map]
-        
-        if len(cluster_reachability) == 0:
-            continue
-        
-        avg_reachability = np.mean(cluster_reachability)
-        
-        # Inverse relationship: lower reach = higher strength
-        # Normalize by price scale
-        price_scale = np.ptp(all_prices)
-        normalized_reach = avg_reachability / (price_scale + 1e-9)
-        
-        # Convert to strength [0, 1]
-        strength = 1.0 / (1.0 + normalized_reach * 10)  # Sigmoid-like
-        
-        # NEW: Valley depth metric
-        # How "deep" is the valley in reachability plot?
-        ordering_positions = [ordering_map.get(idx, 0) for idx in cluster_indices if idx in ordering_map]
-        if len(ordering_positions) > 0:
-            cluster_reach_vals = reachability[ordering_positions]
-            local_min_reach = np.min(cluster_reach_vals)
-            start_idx = max(0, min(ordering_positions) - 5)
-            end_idx = min(len(reachability), max(ordering_positions) + 5)
-            surrounding_reach = np.mean(reachability[start_idx:end_idx])
-            valley_depth = (surrounding_reach - local_min_reach) / (surrounding_reach + 1e-9)
-            
-            # Boost strength for deep valleys
-            strength *= (1.0 + 0.5 * valley_depth)
-            strength = min(strength, 0.95)
-        else:
-            valley_depth = 0.0
-        
-        levels.append({
-            'price': float(center),
-            'type': 'OPTICS Density Valley',
-            'strength': float(strength),
-            'touches': len(cluster_prices),
-            'avg_reachability': float(avg_reachability),
-            'valley_depth': float(valley_depth),
-            'category': 'OPTICS',
-            'breakoutProb': float(1 - strength),
-            'reversionProb': float(strength)
-        })
-    
-    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:8]
-
-def kde_based_levels(highs, lows, closes, n_levels=10):
-    """
-    Find levels using kernel density estimation
-    Peaks in density = strong levels
-    """
-    all_prices = np.concatenate([highs, lows, closes])
-    
-    # Adaptive bandwidth (Scott's rule)
-    kde = gaussian_kde(all_prices, bw_method='scott')
-    
-    # Evaluate KDE on fine grid
-    price_range = np.ptp(all_prices)
-    grid = np.linspace(all_prices.min(), all_prices.max(), 1000)
-    density = kde(grid)
-    
-    # Find local maxima (peaks in density)
-    peak_indices = argrelextrema(density, np.greater, order=5)[0]
-    
-    levels = []
-    for idx in peak_indices:
-        price = grid[idx]
-        density_value = density[idx]
-        
-        # Strength from relative density
-        strength = density_value / np.max(density)
-        
-        # Count touches (prices within ±0.5% of this level)
-        touches = np.sum(np.abs(all_prices - price) < price * 0.005)
-        
-        # Prominence: how much does density drop around this peak?
-        left_valley = np.min(density[max(0, idx-20):idx]) if idx > 20 else 0
-        right_valley = np.min(density[idx:min(len(density), idx+20)]) if idx < len(density)-20 else 0
-        avg_valley = (left_valley + right_valley) / 2
-        prominence = (density_value - avg_valley) / (density_value + 1e-9)
-        
-        # Boost strength by prominence
-        strength *= (1.0 + prominence)
-        strength = min(strength, 0.95)
-        
-        levels.append({
-            'price': float(price),
-            'type': 'KDE Peak',
-            'strength': float(strength),
-            'touches': int(touches),
-            'density': float(density_value),
-            'prominence': float(prominence),
-            'category': 'KDE',
-            'breakoutProb': float(1 - strength),
-            'reversionProb': float(strength)
-        })
-    
-    # Sort by strength and return top N
-    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:n_levels]
-
-def multiscale_hdbscan_levels(highs, lows, closes, timeframe='1d'):
-    """
-    Run HDBSCAN at multiple scales to catch both major and minor levels
-    """
-    all_prices = np.concatenate([highs, lows, closes]).reshape(-1, 1)
-    
-    # Different scales
-    scales = [
-        {'min_cluster_size': 5, 'min_samples': 3, 'name': 'micro'},
-        {'min_cluster_size': 10, 'min_samples': 5, 'name': 'meso'},
-        {'min_cluster_size': 20, 'min_samples': 10, 'name': 'macro'}
-    ]
-    
-    all_levels = []
-    
-    for scale in scales:
-        clusterer = hdbscan.HDBSCAN(
-            min_cluster_size=scale['min_cluster_size'],
-            min_samples=scale['min_samples'],
-            metric='euclidean',
-            cluster_selection_method='eom'
-        )
-        
-        labels = clusterer.fit_predict(all_prices)
-        probabilities = clusterer.probabilities_
-        
-        for label in set(labels):
-            if label == -1:
-                continue
-            
-            cluster_mask = labels == label
-            cluster_prices = all_prices[cluster_mask].flatten()
-            cluster_probs = probabilities[cluster_mask]
-            
-            center = np.average(cluster_prices, weights=cluster_probs)
-            strength = np.mean(cluster_probs)
-            
-            # Boost strength for larger scales
-            scale_factor = {'micro': 0.8, 'meso': 1.0, 'macro': 1.2}[scale['name']]
-            strength *= scale_factor
-            
-            all_levels.append({
-                'price': float(center),
-                'type': f'HDBSCAN-{scale["name"]}',
-                'strength': float(min(strength, 0.95)),
-                'scale': scale['name'],
-                'cluster_size': int(np.sum(cluster_mask)),
-                'category': 'HDBSCAN-MultiScale',
-                'breakoutProb': float(1 - min(strength, 0.95)),
-                'reversionProb': float(min(strength, 0.95))
-            })
-    
-    # Hierarchical merge across scales
-    if len(all_levels) > 1:
-        prices = np.array([l['price'] for l in all_levels]).reshape(-1, 1)
-        clustering = AgglomerativeClustering(
-            n_clusters=None,
-            distance_threshold=np.std(prices) * 0.05,
-            linkage='ward'
-        )
-        labels = clustering.fit_predict(prices)
-        
-        merged = []
-        for label in set(labels):
-            cluster = [l for i, l in enumerate(all_levels) if labels[i] == label]
-            
-            # Weighted average by strength
-            strengths = np.array([l['strength'] for l in cluster])
-            prices_cluster = np.array([l['price'] for l in cluster])
-            
-            avg_price = np.average(prices_cluster, weights=strengths)
-            avg_strength = np.mean(strengths)
-            
-            # Boost if multiple scales agree
-            scale_agreement = len(set(l['scale'] for l in cluster))
-            if scale_agreement >= 2:
-                avg_strength *= 1.15
-            
-            merged.append({
-                'price': float(avg_price),
-                'type': 'HDBSCAN-MultiScale',
-                'strength': float(min(avg_strength, 0.95)),
-                'scales_detected': [l['scale'] for l in cluster],
-                'scale_agreement': scale_agreement,
-                'category': 'HDBSCAN-MultiScale',
-                'breakoutProb': float(1 - min(avg_strength, 0.95)),
-                'reversionProb': float(min(avg_strength, 0.95))
-            })
-        
-        return sorted(merged, key=lambda x: x['strength'], reverse=True)[:8]
-    
-    return sorted(all_levels, key=lambda x: x['strength'], reverse=True)[:8]
-
-def time_weighted_hdbscan(highs, lows, closes, timestamps, half_life_days=30):
-    """
-    Weight recent price action more heavily
-    Levels from 6 months ago are less relevant than last week's levels
-    """
-    all_prices = np.concatenate([highs, lows, closes])
-    all_times = np.concatenate([timestamps, timestamps, timestamps])
-    
-    # Convert timestamps to datetime if needed
-    if isinstance(all_times[0], (int, float)):
-        all_times = pd.to_datetime(all_times, unit='s')
-    
-    # Calculate time weights (exponential decay)
-    current_time = pd.to_datetime(timestamps[-1]) if isinstance(timestamps[-1], (int, float)) else timestamps[-1]
-    time_diffs = np.array([(current_time - pd.to_datetime(t) if isinstance(t, (int, float)) else current_time - t).days for t in all_times])
-    weights = np.exp(-time_diffs / half_life_days)
-    
-    # Weighted sampling (sample recent prices more)
-    n_samples = len(all_prices)
-    if n_samples > 0 and weights.sum() > 0:
-        sample_indices = np.random.choice(
-            n_samples,
-            size=n_samples,
-            replace=True,
-            p=weights / weights.sum()
-        )
-        
-        sampled_prices = all_prices[sample_indices].reshape(-1, 1)
-        
-        # Run HDBSCAN on weighted sample
-        clusterer = hdbscan.HDBSCAN(
-            min_cluster_size=10,
-            min_samples=5,
-            metric='euclidean'
-        )
-        
-        labels = clusterer.fit_predict(sampled_prices)
-        probabilities = clusterer.probabilities_
-        
-        levels = []
-        for label in set(labels):
-            if label == -1:
-                continue
-            
-            cluster_mask = labels == label
-            cluster_prices = sampled_prices[cluster_mask].flatten()
-            cluster_probs = probabilities[cluster_mask]
-            
-            center = np.average(cluster_prices, weights=cluster_probs)
-            strength = np.mean(cluster_probs)
-            
-            levels.append({
-                'price': float(center),
-                'type': 'Time-Weighted HDBSCAN',
-                'strength': float(min(strength, 0.95)),
-                'touches': len(cluster_prices),
-                'category': 'HDBSCAN-TimeWeighted',
-                'breakoutProb': float(1 - min(strength, 0.95)),
-                'reversionProb': float(min(strength, 0.95))
-            })
-        
-        return sorted(levels, key=lambda x: x['strength'], reverse=True)[:8]
-    
-    return []
-
-def detect_wyckoff_zones(hist, lookback=50):
-    """
-    Detect Wyckoff accumulation (support) and distribution (resistance) zones
-
-    Accumulation signs:
-    - Price consolidates after downtrend
-    - Volume increases on up-bars
-    - Springs/shakeouts below support
-
-    Distribution signs:
-    - Price consolidates after uptrend
-    - Volume increases on down-bars
-    - Upthrusts above resistance
-    """
-    if len(hist) < lookback:
-        return []
-    
-    recent = hist.tail(lookback) if hasattr(hist, 'tail') else hist[-lookback:]
-    
-    if isinstance(recent, pd.DataFrame):
-        closes = recent['Close'].values if 'Close' in recent.columns else recent.iloc[:, -1].values
-        highs = recent['High'].values if 'High' in recent.columns else recent.iloc[:, 1].values
-        lows = recent['Low'].values if 'Low' in recent.columns else recent.iloc[:, 2].values
-        volumes = recent['Volume'].values if 'Volume' in recent.columns else np.ones(len(recent))
-    else:
-        closes = np.array([c['Close'] if isinstance(c, dict) else c[-1] for c in recent])
-        highs = np.array([h['High'] if isinstance(h, dict) else h[1] for h in recent])
-        lows = np.array([l['Low'] if isinstance(l, dict) else l[2] for l in recent])
-        volumes = np.array([v.get('Volume', 1.0) if isinstance(v, dict) else 1.0 for v in recent])
-    
-    levels = []
-    
-    # Detect consolidation zones (low volatility)
-    rolling_std = pd.Series(closes).rolling(10).std()
-    low_vol_periods = rolling_std < rolling_std.quantile(0.3)
-    
-    # Find contiguous low-vol zones
-    zones = []
-    in_zone = False
-    zone_start = 0
-    
-    for i, is_low_vol in enumerate(low_vol_periods):
-        if is_low_vol and not in_zone:
-            zone_start = i
-            in_zone = True
-        elif not is_low_vol and in_zone:
-            if i - zone_start >= 5:  # Minimum 5 bars
-                zones.append((zone_start, i))
-            in_zone = False
-    
-    for start, end in zones:
-        zone_closes = closes[start:end]
-        zone_highs = highs[start:end]
-        zone_lows = lows[start:end]
-        zone_volumes = volumes[start:end]
-        
-        # Zone characteristics
-        zone_mid = (np.max(zone_highs) + np.min(zone_lows)) / 2
-        zone_width = np.max(zone_highs) - np.min(zone_lows)
-        
-        # Check for accumulation/distribution
-        # Accumulation: up-bars have higher volume
-        up_bars = zone_closes[1:] > zone_closes[:-1]
-        down_bars = ~up_bars
-        
-        up_vol = np.mean(zone_volumes[1:][up_bars]) if np.any(up_bars) else 0
-        down_vol = np.mean(zone_volumes[1:][down_bars]) if np.any(down_bars) else 0
-        
-        if up_vol > down_vol * 1.2:
-            zone_type = 'Wyckoff Accumulation'
-            strength = 0.80
-        elif down_vol > up_vol * 1.2:
-            zone_type = 'Wyckoff Distribution'
-            strength = 0.80
-        else:
-            zone_type = 'Wyckoff Consolidation'
-            strength = 0.65
-        
-        levels.append({
-            'price': float(zone_mid),
-            'type': zone_type,
-            'strength': float(strength),
-            'touches': len(zone_closes),
-            'zone_width': float(zone_width),
-            'category': 'Wyckoff',
-            'breakoutProb': float(1 - strength),
-            'reversionProb': float(strength)
-        })
-    
-    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:8]
-
-def persistent_homology_levels(highs, lows, closes, max_levels=8):
-    """
-    Use persistent homology to find levels that exist across multiple scales
-    
-    Intuition: 
-    - Build filtration at different price thresholds
-    - Levels that persist = structurally significant
-    """
-    if not RIPSER_AVAILABLE:
-        return []
-    
-    if len(closes) < 20:
-        return []
-    
-    all_prices = np.concatenate([highs, lows, closes])
-    
-    # Build point cloud (1D)
-    points = all_prices.reshape(-1, 1)
-    
-    try:
-        # Compute persistent homology
-        if not RIPSER_AVAILABLE or ripser is None:
-            return None  # Skip topological analysis if ripser not available
-        result = ripser(points, maxdim=0)
-        diagrams = result['dgms']
-        
-        # 0-dimensional persistence (connected components)
-        # Each bar in diagram = (birth, death) of a component
-        h0_diagram = diagrams[0]
-        
-        levels = []
-        for birth, death in h0_diagram:
-            if np.isinf(death):
-                continue
-            
-            # Persistence = how long this level "lived"
-            persistence = death - birth
-            
-            # Level price = midpoint of birth/death
-            level_price = (birth + death) / 2
-            
-            # Strength from persistence
-            finite_deaths = h0_diagram[~np.isinf(h0_diagram[:, 1])]
-            if len(finite_deaths) > 0:
-                max_persistence = np.max(finite_deaths[:, 1] - finite_deaths[:, 0])
-                strength = persistence / (max_persistence + 1e-9)
-            else:
-                strength = 0.5
-            
-            # Filter weak levels
-            if strength < 0.3:
-                continue
-            
-            # Count touches
-            touches = np.sum(np.abs(all_prices - level_price) < level_price * 0.005)
-            
-            levels.append({
-                'price': float(level_price),
-                'type': 'Persistent Homology',
-                'strength': float(strength),
-                'persistence': float(persistence),
-                'birth': float(birth),
-                'death': float(death),
-                'touches': int(touches),
-                'category': 'TDA',
-                'breakoutProb': float(1 - strength),
-                'reversionProb': float(strength)
-            })
-        
-        return sorted(levels, key=lambda x: x['persistence'], reverse=True)[:max_levels]
-    except Exception as e:
-        print(f"Persistent Homology failed: {e}")
-        return []
 
 if TORCH_AVAILABLE and nn is not None:
     class LevelDetectionNet(nn.Module):
@@ -3625,101 +2966,6 @@ def train_deepsupp_level_model(
         print(f"DeepSupp training failed:\n{error_trace}")
         return {"success": False, "error": str(e)}
 
-if TORCH_AVAILABLE and nn is not None:
-    class LevelValidator(nn.Module):
-        """
-        RL agent that learns: "Is this a real level or noise?"
-        """
-        def __init__(self, n_features):
-            super().__init__()
-            self.net = nn.Sequential(
-                nn.Linear(n_features, 128),
-                nn.ReLU(),
-                nn.Linear(128, 64),
-                nn.ReLU(),
-                nn.Linear(64, 2)  # [reject, accept]
-            )
-        
-        def forward(self, features):
-            return self.net(features)
-else:
-    # Dummy class when torch is not available
-    class LevelValidator:
-        def __init__(self, *args, **kwargs):
-            pass
-
-def validate_levels_with_rl(levels, current_price, sigma_price):
-    """
-    Use RL validator to filter out weak/noise levels
-    Falls back to simple filtering if model not available
-    """
-    if not TORCH_AVAILABLE or not levels:
-        return levels
-    
-    try:
-        validated_levels = []
-        
-        # Try to load pre-trained validator model
-        try:
-            model = LevelValidator(n_features=10)
-            model_path = 'level_validator.pth'
-            if os.path.exists(model_path):
-                model.load_state_dict(torch.load(model_path, map_location='cpu'))
-                model.eval()
-        except Exception as model_error:
-            model = None
-            print(f"Could not load RL validator model: {model_error}, using rule-based validation")
-        
-        for level in levels:
-            # Extract features for validation
-            strength = level.get('strength', 0.5)
-            distance_sigma = abs(level.get('price', current_price) - current_price) / (sigma_price + 1e-9)
-            touches = level.get('touches', 1)
-            category = level.get('category', 'Unknown')
-            
-            # Features: strength, distance, touches, category
-            features = np.array([
-                strength,
-                min(distance_sigma / 3.0, 1.0),  # Normalized distance
-                min(touches / 20.0, 1.0),  # Normalized touches
-                1.0 if category in ['Density (HDBSCAN)', 'HDBSCAN', 'OPTICS', 'KDE'] else 0.5,
-                1.0 if level.get('reversionProb', 0.5) > 0.6 else 0.5,
-                1.0 if level.get('breakoutProb', 0.5) < 0.4 else 0.5,
-                1.0 if 'confluence' in str(category).lower() else 0.5,
-                1.0 if distance_sigma < 2.0 else 0.5,
-                1.0 if touches >= 3 else 0.5,
-                1.0 if strength > 0.6 else 0.5
-            ])
-            
-            # Use model if available, otherwise use rule-based scoring
-            if model is not None:
-                with torch.no_grad():
-                    features_tensor = torch.FloatTensor(features).unsqueeze(0)
-                    output = model(features_tensor)
-                    action_probs = torch.softmax(output, dim=1)
-                    accept_prob = action_probs[0][1].item()
-                accept_score = accept_prob
-            else:
-                # Simple rule-based acceptance
-                accept_score = (
-                    strength * 0.3 +
-                    (1.0 - min(distance_sigma / 3.0, 1.0)) * 0.2 +
-                    min(touches / 20.0, 1.0) * 0.2 +
-                    (1.0 if category in ['Density (HDBSCAN)', 'HDBSCAN', 'OPTICS', 'KDE'] else 0.5) * 0.15 +
-                    level.get('reversionProb', 0.5) * 0.15
-                )
-            
-            # Accept if score > 0.5
-            if accept_score > 0.5:
-                level['rl_validation_score'] = float(accept_score)
-                validated_levels.append(level)
-        
-        return validated_levels
-        
-    except Exception as e:
-        print(f"RL validation failed: {e}")
-        return levels  # Return original levels if validation fails
-
 def calculate_contextual_success_probability(
     level_price,
     level_strength,
@@ -3857,71 +3103,6 @@ def enhance_levels_with_contextual_probability(
         enhanced.append(enhanced_level)
     
     return enhanced
-
-def calculate_local_interaction_levels(closes, current_price, sigma_price, lookback=200, bins=30, max_levels=5):
-    """
-    Local Interaction Levels: Short-memory, near current price, explicitly non-structural.
-    
-    This replaces MeanShift with a cleaner approach:
-    - Finds local density peaks in recent price histogram
-    - Only near current price (within ~2 sigma)
-    - Fast decay (not structural memory)
-    - Answers: "Where is price likely to react today?"
-    
-    This is NOT TA, NOT structural memory, NOT global clustering.
-    It's simply: where does price repeatedly visit in the recent window?
-    """
-    if len(closes) < 50:
-        return []
-    
-    closes = np.array(closes[-lookback:])
-    
-    # Build price histogram
-    hist, bin_edges = np.histogram(closes, bins=bins)
-    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
-    
-    # Find local density peaks (modes)
-    # prominence threshold avoids tiny noise peaks
-    prominence_threshold = np.max(hist) * 0.15
-    peaks, properties = find_peaks(hist, prominence=prominence_threshold)
-    
-    if len(peaks) == 0:
-        return []
-    
-    levels = []
-    for p in peaks:
-        price = float(bin_centers[p])
-        density_strength = hist[p] / np.max(hist)
-        distance_sigma = abs(price - current_price) / sigma_price if sigma_price > 0 else float('inf')
-        
-        # Soft gating: interaction should be reasonably close to current price
-        if distance_sigma > 2.0:
-            continue
-        
-        # Strength reflects local density, not structural memory
-        # Cap at 0.75 to keep it below structural levels
-        strength = min(0.75, 0.45 + density_strength * 0.4)
-        
-        levels.append({
-            'price': price,
-            'type': 'Local Interaction',
-            'category': 'Interaction',  # Explicit category
-            'source': 'Local Density',
-            'strength': float(strength),
-            'distance_sigma': float(distance_sigma),
-            'reversionProb': float(strength),
-            'breakoutProb': float(1 - strength),
-            'touches': int(hist[p]),  # Density count
-            'decay': 'fast',  # Explicitly short half-life
-            'density_prominence': float(density_strength)
-        })
-    
-    # Prioritize closest + strongest
-    levels = sorted(levels, key=lambda x: (x['distance_sigma'], -x['strength']))
-    
-    result = levels[:max_levels]
-    print(f"Local Interaction: Found {len(result)} levels near price (within 2 sigma)")
-    return result
 
 def merge_threshold_by_timeframe(tf):
     """
@@ -4321,60 +3502,7 @@ def get_data():
         hdbscan_levels = calculate_hdbscan_levels(hist_highs, hist_lows, hist_closes, timeframe=timeframe)
         print(f"HDBSCAN: Generated {len(hdbscan_levels) if hdbscan_levels else 0} levels")
         
-        # NEW: Enhanced OPTICS with reachability plots
-        try:
-            enhanced_optics_levels_result = enhanced_optics_levels(hist_highs, hist_lows, hist_closes, timeframe=timeframe)
-            print(f"Enhanced OPTICS: Generated {len(enhanced_optics_levels_result) if enhanced_optics_levels_result else 0} levels")
-        except Exception as e:
-            print(f"Enhanced OPTICS failed: {e}")
-            enhanced_optics_levels_result = []
-        
-        # NEW: KDE-based levels
-        try:
-            kde_levels_result = kde_based_levels(hist_highs, hist_lows, hist_closes, n_levels=10)
-            print(f"KDE: Generated {len(kde_levels_result) if kde_levels_result else 0} levels")
-        except Exception as e:
-            print(f"KDE levels failed: {e}")
-            kde_levels_result = []
-        
-        # NEW: Multi-scale HDBSCAN
-        try:
-            multiscale_hdbscan_levels_result = multiscale_hdbscan_levels(hist_highs, hist_lows, hist_closes, timeframe=timeframe)
-            print(f"Multi-scale HDBSCAN: Generated {len(multiscale_hdbscan_levels_result) if multiscale_hdbscan_levels_result else 0} levels")
-        except Exception as e:
-            print(f"Multi-scale HDBSCAN failed: {e}")
-            multiscale_hdbscan_levels_result = []
-        
-        # NEW: Time-weighted HDBSCAN (if timestamps available)
-        time_weighted_levels_result = []
-        try:
-            if hasattr(hist.index, 'values'):
-                timestamps = hist.index.values
-                time_weighted_levels_result = time_weighted_hdbscan(hist_highs, hist_lows, hist_closes, timestamps, half_life_days=30)
-                print(f"Time-weighted HDBSCAN: Generated {len(time_weighted_levels_result) if time_weighted_levels_result else 0} levels")
-        except Exception as e:
-            print(f"Time-weighted HDBSCAN failed: {e}")
-            time_weighted_levels_result = []
-        
-        # NEW: Wyckoff zones
-        try:
-            wyckoff_levels_result = detect_wyckoff_zones(hist_data_subset, lookback=50)
-            print(f"Wyckoff: Generated {len(wyckoff_levels_result) if wyckoff_levels_result else 0} levels")
-        except Exception as e:
-            print(f"Wyckoff zones failed: {e}")
-            wyckoff_levels_result = []
-        
-        # NEW: Persistent Homology (TDA)
-        persistent_homology_levels_result = []
-        try:
-            if RIPSER_AVAILABLE:
-                persistent_homology_levels_result = persistent_homology_levels(hist_highs, hist_lows, hist_closes, max_levels=8)
-                print(f"Persistent Homology: Generated {len(persistent_homology_levels_result) if persistent_homology_levels_result else 0} levels")
-        except Exception as e:
-            print(f"Persistent Homology failed: {e}")
-            persistent_homology_levels_result = []
-        
-        # NEW: Neural Network level detection
+        # Neural Network level detection (CNN+BiLSTM)
         neural_network_levels_result = []
         try:
             if TORCH_AVAILABLE:
@@ -4771,6 +3899,134 @@ def get_data():
         error_msg = str(e) if str(e) else "Unknown error occurred"
         return jsonify({'success': False, 'error': error_msg}), 400
 
+# NEW ENDPOINT: BACKTEST LEVELS
+@app.route('/api/backtest', methods=['GET'])
+def backtest_levels():
+    auth_error = require_auth()
+    if auth_error:
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
+    
+    ticker = request.args.get('ticker', 'SPY')
+    timeframe = request.args.get('timeframe', '1d')
+    method = request.args.get('method', 'hdbscan')  # hdbscan, neural_network, deepsupp
+    lookback = int(request.args.get('lookback', 200))
+    test_window = int(request.args.get('test_window', 20))
+    
+    try:
+        print(f"Running backtest for {ticker} {timeframe} - Method: {method}")
+        
+        # Get data
+        stock = yf.Ticker(ticker)
+        interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
+        interval = interval_map.get(timeframe, '1d')
+        period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
+        period = period_map.get(timeframe, '1y')
+        
+        hist = stock.history(period=period, interval=interval)
+        if len(hist) < lookback + test_window:
+            return jsonify({
+                'success': False, 
+                'error': f'Insufficient data: need {lookback + test_window} bars, got {len(hist)}'
+            }), 400
+        
+        # Run backtest
+        results = {
+            'ticker': ticker,
+            'timeframe': timeframe,
+            'method': method,
+            'lookback': lookback,
+            'test_window': test_window,
+            'total_levels': 0,
+            'touched_levels': 0,
+            'breakout_levels': 0,
+            'success_rate': 0.0,
+            'breakout_rate': 0.0,
+            'level_details': []
+        }
+        
+        # Slide window through data
+        for i in range(lookback, len(hist) - test_window):
+            hist_window = hist.iloc[i-lookback:i]
+            future_window = hist.iloc[i:i+test_window]
+            
+            hist_highs = hist_window['High'].values
+            hist_lows = hist_window['Low'].values
+            hist_closes = hist_window['Close'].values
+            current_price = hist.iloc[i]['Close']
+            
+            # Detect levels based on method
+            levels = []
+            try:
+                if method == 'hdbscan':
+                    levels = calculate_hdbscan_levels(hist_highs, hist_lows, hist_closes, timeframe)
+                elif method == 'neural_network' and TORCH_AVAILABLE:
+                    levels = detect_levels_with_neural_network(hist_window, lookback=100, threshold=0.7)
+                elif method == 'deepsupp' and TORCH_AVAILABLE:
+                    levels = detect_levels_with_deepsupp(hist_window, model_path='deepsupp_v4.pt', device='cpu')
+            except Exception as e:
+                print(f"Error in {method} at window {i}: {e}")
+                continue
+            
+            # Test each level
+            for level in levels:
+                level_price = level.get('price', 0)
+                strength = level.get('strength', 0.5)
+                
+                if not isinstance(level_price, (int, float)) or np.isnan(level_price):
+                    continue
+                
+                results['total_levels'] += 1
+                
+                # Test against future data
+                touched = False
+                breakout = False
+                touches = 0
+                
+                for _, row in future_window.iterrows():
+                    high, low = row['High'], row['Low']
+                    
+                    # Touch detection (0.5% tolerance)
+                    if low <= level_price <= high:
+                        touched = True
+                        touches += 1
+                    
+                    # Breakout detection (1% tolerance)
+                    if high > level_price * 1.01 or low < level_price * 0.99:
+                        breakout = True
+                
+                if touched:
+                    results['touched_levels'] += 1
+                if breakout:
+                    results['breakout_levels'] += 1
+                
+                # Store sample details
+                if len(results['level_details']) < 30:
+                    results['level_details'].append({
+                        'date': hist.iloc[i].name.strftime('%Y-%m-%d'),
+                        'price': float(level_price),
+                        'strength': float(strength),
+                        'current_price': float(current_price),
+                        'touched': touched,
+                        'breakout': breakout,
+                        'touches': touches
+                    })
+        
+        # Calculate rates
+        if results['total_levels'] > 0:
+            results['success_rate'] = results['touched_levels'] / results['total_levels']
+            results['breakout_rate'] = results['breakout_levels'] / results['total_levels']
+        
+        print(f"✓ Backtest complete: {results['total_levels']} levels, {results['success_rate']:.2%} success rate")
+        
+        return jsonify({
+            'success': True,
+            'results': results
+        })
+        
+    except Exception as e:
+        print(f"Backtest failed: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 # NEW ENDPOINT: VOLATILITY SURFACE
 @app.route('/api/volatility-surface', methods=['GET'])
 def get_volatility_surface():
@@ -4985,114 +4241,6 @@ ML_FEATURES = [
 
 
 # ============================================================================
-# ADVANCED ML MODELS FOR HOD/LOD PREDICTION
-# ============================================================================
-
-
-if TORCH_AVAILABLE and nn is not None:
-    class AttentionHODLOD(nn.Module):
-        """
-        Neural Network with Attention Mechanism for HOD/LOD prediction
-        Learns which features matter WHEN
-        """
-        def __init__(self, n_features, hidden_dim=64):
-            super().__init__()
-            
-            # Feature embedding
-            self.feature_embed = nn.Sequential(
-                nn.Linear(n_features, hidden_dim),
-                nn.ReLU(),
-                nn.Dropout(0.2)
-            )
-            
-            # Attention mechanism
-            self.attention = nn.Sequential(
-                nn.Linear(hidden_dim, hidden_dim),
-                nn.Tanh(),
-                nn.Linear(hidden_dim, 1)
-            )
-            
-            # Prediction heads
-            self.hod_head = nn.Sequential(
-                nn.Linear(hidden_dim, 32),
-                nn.ReLU(),
-                nn.Linear(32, 1)
-            )
-            
-            self.lod_head = nn.Sequential(
-                nn.Linear(hidden_dim, 32),
-                nn.ReLU(),
-                nn.Linear(32, 1)
-            )
-        
-        def forward(self, x):
-            # x: [batch, n_features]
-            embedded = self.feature_embed(x)  # [batch, hidden_dim]
-            
-            # Attention weights
-            attn_weights = torch.softmax(self.attention(embedded), dim=0)  # [batch, 1]
-            
-            # Weighted features
-            attended = embedded * attn_weights
-            
-            # Predictions
-            hod_pred = self.hod_head(attended)
-            lod_pred = self.lod_head(attended)
-            
-            return hod_pred, lod_pred, attn_weights
-else:
-    # Dummy class when torch is not available
-    class AttentionHODLOD:
-        def __init__(self, *args, **kwargs):
-            pass
-
-if TORCH_AVAILABLE and nn is not None:
-    class TemporalConvNet(nn.Module):
-        """
-        Temporal Convolution Network for sequence modeling
-        Captures temporal patterns in HOD/LOD
-        """
-        def __init__(self, n_features, n_channels=[64, 64, 32], kernel_size=3):
-            super().__init__()
-            
-            layers = []
-            num_levels = len(n_channels)
-            
-            for i in range(num_levels):
-                dilation = 2 ** i
-                in_channels = n_features if i == 0 else n_channels[i-1]
-                out_channels = n_channels[i]
-                
-                layers.append(nn.Conv1d(
-                    in_channels, out_channels, kernel_size,
-                    stride=1, dilation=dilation,
-                    padding=(kernel_size-1) * dilation
-                ))
-                layers.append(nn.ReLU())
-                layers.append(nn.Dropout(0.2))
-            
-            self.network = nn.Sequential(*layers)
-            
-            # Output heads
-            self.hod_head = nn.Linear(n_channels[-1], 1)
-            self.lod_head = nn.Linear(n_channels[-1], 1)
-        
-        def forward(self, x):
-            # x: [batch, seq_len, n_features]
-            x = x.transpose(1, 2)  # [batch, n_features, seq_len]
-            out = self.network(x)  # [batch, n_channels[-1], seq_len]
-            out = out[:, :, -1]  # Take last timestep
-            
-            hod_pred = self.hod_head(out)
-            lod_pred = self.lod_head(out)
-            
-            return hod_pred, lod_pred
-else:
-    # Dummy class when torch is not available
-    class TemporalConvNet:
-        def __init__(self, *args, **kwargs):
-            pass
-
 
 def realized_kernel_volatility(highs, lows, opens, closes, H=5):
     """
@@ -5138,170 +4286,6 @@ def realized_kernel_volatility(highs, lows, opens, closes, H=5):
     except Exception as e:
         print(f"realized_kernel_volatility failed: {e}")
         return None
-
-if TORCH_AVAILABLE and nn is not None:
-    class TransformerHODLOD(nn.Module):
-        """
-        Transformer with Positional Encoding for HOD/LOD prediction
-        State-of-the-art for sequence prediction
-        """
-        def __init__(self, n_features, d_model=128, nhead=8, num_layers=3):
-            super().__init__()
-            
-            self.embedding = nn.Linear(n_features, d_model)
-            
-            encoder_layer = nn.TransformerEncoderLayer(
-                d_model=d_model,
-                nhead=nhead,
-                dim_feedforward=512,
-                dropout=0.1,
-                batch_first=True
-            )
-            
-            self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
-            
-            self.hod_head = nn.Linear(d_model, 1)
-            self.lod_head = nn.Linear(d_model, 1)
-        
-        def forward(self, x, mask=None):
-            # x: [batch, seq_len, n_features]
-            x = self.embedding(x)  # [batch, seq_len, d_model]
-            
-            # Add positional encoding
-            seq_len = x.size(1)
-            position = torch.arange(seq_len, device=x.device).unsqueeze(0)
-            pos_encoding = self.positional_encoding(position, d_model=x.size(2))
-            x = x + pos_encoding
-            
-            # Transformer
-            out = self.transformer(x, src_key_padding_mask=mask)
-            
-            # Use last timestep
-            out = out[:, -1, :]
-            
-            hod_pred = self.hod_head(out)
-            lod_pred = self.lod_head(out)
-            
-            return hod_pred, lod_pred
-        
-        def positional_encoding(self, position, d_model):
-            """Sinusoidal positional encoding"""
-            pe = torch.zeros(position.size(0), position.size(1), d_model)
-            div_term = torch.exp(torch.arange(0, d_model, 2, device=position.device, dtype=torch.float32) * -(np.log(10000.0) / d_model))
-            pe[:, :, 0::2] = torch.sin(position.float() * div_term)
-            pe[:, :, 1::2] = torch.cos(position.float() * div_term)
-            return pe
-else:
-    # Dummy class when torch is not available
-    class TransformerHODLOD:
-        def __init__(self, *args, **kwargs):
-            pass
-
-if TORCH_AVAILABLE and nn is not None:
-    class QuantileSelector(nn.Module):
-        """
-        RL Agent for Adaptive Quantile Selection
-        Instead of fixed 80th percentile, learn WHICH quantile to use for each state
-        """
-        def __init__(self, n_features, n_actions=10):
-            """
-            n_actions: 10 quantiles [0.1, 0.2, ..., 1.0]
-            """
-            super().__init__()
-            self.network = nn.Sequential(
-                nn.Linear(n_features, 128),
-                nn.ReLU(),
-                nn.Linear(128, 64),
-                nn.ReLU(),
-                nn.Linear(64, n_actions)
-            )
-        
-        def forward(self, state):
-            return self.network(state)
-else:
-    # Dummy class when torch is not available
-    class QuantileSelector:
-        def __init__(self, *args, **kwargs):
-            pass
-
-if TORCH_AVAILABLE:
-    class DQNAgent:
-        """
-        Deep Q-Network Agent for Adaptive Quantile Selection
-        """
-        def __init__(self, n_features, n_actions=10):
-            if not TORCH_AVAILABLE:
-                raise ImportError("PyTorch required for DQN agent")
-            
-            self.n_actions = n_actions
-            self.quantiles = np.linspace(0.1, 1.0, n_actions)
-            
-            self.policy_net = QuantileSelector(n_features, n_actions)
-            self.target_net = QuantileSelector(n_features, n_actions)
-            self.target_net.load_state_dict(self.policy_net.state_dict())
-            
-            self.optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.001)
-            self.memory = []
-            self.max_memory = 10000
-            
-            self.epsilon = 1.0  # Exploration rate
-            self.epsilon_decay = 0.995
-            self.epsilon_min = 0.01
-            
-            self.gamma = 0.95  # Discount factor
-        
-        def select_quantile(self, state):
-            """Select which quantile to use"""
-            import random
-            if random.random() < self.epsilon:
-                action = random.randrange(self.n_actions)
-            else:
-                with torch.no_grad():
-                    state_tensor = torch.FloatTensor(state).unsqueeze(0)
-                    q_values = self.policy_net(state_tensor)
-                    action = q_values.argmax().item()
-            
-            return self.quantiles[action], action
-        
-        def train_step(self, batch_size=32):
-            """Train on a batch of experiences"""
-            import random
-            if len(self.memory) < batch_size:
-                return
-            
-            batch = random.sample(self.memory, batch_size)
-            states, actions, rewards, next_states, dones = zip(*batch)
-            
-            states = torch.FloatTensor(states)
-            actions = torch.LongTensor(actions)
-            rewards = torch.FloatTensor(rewards)
-            next_states = torch.FloatTensor(next_states)
-            dones = torch.FloatTensor(dones)
-            
-            # Current Q values
-            current_q = self.policy_net(states).gather(1, actions.unsqueeze(1))
-            
-            # Target Q values
-            with torch.no_grad():
-                next_q = self.target_net(next_states).max(1)[0]
-                target_q = rewards + (1 - dones) * self.gamma * next_q
-            
-            # Loss
-            loss = nn.MSELoss()(current_q.squeeze(), target_q)
-            
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
-            
-            # Decay epsilon
-            if self.epsilon > self.epsilon_min:
-                self.epsilon *= self.epsilon_decay
-else:
-    # Dummy class when torch is not available
-    class DQNAgent:
-        def __init__(self, *args, **kwargs):
-            raise ImportError("PyTorch required for DQN agent")
-
 
 # ============================================================================
 

@@ -191,7 +191,81 @@ The column order is fixed and stored in model metadata so the inference schema i
   - Injects them into the ML level stack for confluence / merging with other engines.
 
 If the DeepSupp model file is missing or invalid the detector simply returns `[]`, and the rest of the level stack continues to function as before.
-*** End of File
+
+## 📊 Backtesting
+
+### Web Interface
+
+A beautiful web interface is now available for backtesting level detection methods:
+
+1. **Start the server:**
+   ```bash
+   ./start_backtest.sh
+   # or
+   python3 backend.py
+   ```
+
+2. **Open the backtest interface:**
+   - Navigate to: http://localhost:5001/backtest
+   - Login with your credentials (test1 / pw or create an account)
+
+3. **Run backtests:**
+   - Select ticker symbol (SPY, AAPL, TSLA, etc.)
+   - Choose timeframe (1m, 5m, 15m, 1h, 4h, 1d)
+   - Pick detection method:
+     - **HDBSCAN**: Density clustering (no dependencies)
+     - **Neural Network**: CNN+BiLSTM (requires PyTorch + trained model)
+     - **DeepSupp**: Transformer-based (requires PyTorch + deepsupp_v4.pt)
+   - Adjust lookback/test windows
+   - Click "🚀 Run Backtest"
+
+4. **Features:**
+   - **Single Method Testing**: Test one method at a time
+   - **Compare All Methods**: Side-by-side comparison of all three methods
+   - **Export Results**: Download results as JSON
+   - **Real-time Metrics**: Success rate, breakout rate, level details
+   - **Keyboard Shortcuts**:
+     - `Ctrl+Enter`: Run backtest
+     - `Ctrl+C`: Compare all methods
+     - `Ctrl+S`: Export results
+
+### Command Line Backtesting
+
+For automated testing, use the command line tools:
+
+```bash
+# Prepare your data
+python3 prepare_data.py --input_dir /path/to/data --output_dir prepared_data
+
+# Run simple backtest (HDBSCAN only)
+python3 simple_backtest.py
+
+# Run comprehensive backtest
+python3 backtest_levels.py --data_dir prepared_data --output results
+```
+
+### API Endpoint
+
+You can also call the backtest API directly:
+
+```bash
+curl "http://localhost:5001/api/backtest?ticker=SPY&timeframe=1d&method=hdbscan&lookback=200&test_window=20"
+```
+
+### Understanding Results
+
+- **Success Rate**: % of levels that get touched/retested
+- **Breakout Rate**: % of levels that break through
+- **Total Levels**: How many levels were detected
+- **Touched Levels**: Levels that were actually tested by price
+
+## 📝 Notes
+
+- The system now focuses on three core level detection methods: HDBSCAN, Neural Network (CNN+BiLSTM), and DeepSupp
+- All other legacy methods have been removed for better performance and maintainability
+- The backend includes authentication system with user management
+- DeepSupp model (`deepsupp_v4.pt`) is included and ready to use
+- Web interface provides easy backtesting with beautiful visualizations
 
 How Neural Network Levels Are Solved
 
