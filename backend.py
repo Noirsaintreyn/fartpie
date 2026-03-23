@@ -3502,7 +3502,7 @@ def get_data():
         hdbscan_levels = calculate_hdbscan_levels(hist_highs, hist_lows, hist_closes, timeframe=timeframe)
         print(f"HDBSCAN: Generated {len(hdbscan_levels) if hdbscan_levels else 0} levels")
         
-        # Neural Network level detection (CNN+BiLSTM)
+# Neural Network level detection (CNN+BiLSTM)
         neural_network_levels_result = []
         try:
             if TORCH_AVAILABLE:
@@ -3512,7 +3512,7 @@ def get_data():
             print(f"Neural Network level detection failed: {e}")
             neural_network_levels_result = []
 
-        # NEW: DeepSupp v4 (corr-series attention autoencoder)
+        # DeepSupp v4 (corr-series attention autoencoder)
         deepsupp_levels_result = []
         try:
             if TORCH_AVAILABLE:
@@ -3521,65 +3521,24 @@ def get_data():
         except Exception as e:
             print(f"DeepSupp level detection failed: {e}")
             deepsupp_levels_result = []
-        
-        # SECONDARY: IsolationForest (event pivot candidates)
-        isolation_forest_levels = find_pivot_anomalies(hist_highs, hist_lows, hist_closes)
-        
-        # INTERACTION: Local density modes (near price, short memory, explicitly non-structural)
-        local_interaction_levels = calculate_local_interaction_levels(
-            hist_closes, 
-            current_price, 
-            sigma_price,
-            lookback=200 if not is_intraday else 300,  # More bars for intraday
-            bins=30,
-            max_levels=5
-        )
-        print(f"Local Interaction: Generated {len(local_interaction_levels) if local_interaction_levels else 0} levels")
-        
-        # FALLBACK: Peak/Valley (last-resort when density clustering fails)
-        peak_valley_levels = find_peaks_valleys_scipy(hist_highs, hist_lows, hist_closes)
-        
-        # MeanShift removed from level production - now used as validator only
-        # (validates HDBSCAN levels and boosts confidence if agrees)
-        
-        # CLASSICAL STRUCTURAL (constraints/magnets, not ML discovery)
-        pivot_levels = calculate_pivot_points(hist_data_subset, timeframe)
-        fib_levels = calculate_fibonacci_levels(hist_highs, hist_lows)  # For metadata only, not primary levels
 
         # ---- HARD GUARD: ensure all level outputs are lists ----
         hdbscan_levels = hdbscan_levels or []
-        enhanced_optics_levels_result = enhanced_optics_levels_result or []
-        kde_levels_result = kde_levels_result or []
         multiscale_hdbscan_levels_result = multiscale_hdbscan_levels_result or []
-        time_weighted_levels_result = time_weighted_levels_result or []
-        wyckoff_levels_result = wyckoff_levels_result or []
-        persistent_homology_levels_result = persistent_homology_levels_result or []
         neural_network_levels_result = neural_network_levels_result or []
         deepsupp_levels_result = deepsupp_levels_result or []
-        isolation_forest_levels = isolation_forest_levels or []
-        peak_valley_levels = peak_valley_levels or []
-        pivot_levels = pivot_levels or []
-        fib_levels = fib_levels or []
         
-        # ML LEVELS: Primary discovery algorithms only (including new methods)
-        all_ml_levels = (hdbscan_levels + enhanced_optics_levels_result + kde_levels_result + 
-                        multiscale_hdbscan_levels_result + time_weighted_levels_result + 
-                        wyckoff_levels_result + persistent_homology_levels_result + 
-                        neural_network_levels_result + deepsupp_levels_result +
-                        isolation_forest_levels + peak_valley_levels) 
+        # ML LEVELS: Primary discovery algorithms only
+        all_ml_levels = (hdbscan_levels + multiscale_hdbscan_levels_result + 
+                        neural_network_levels_result + deepsupp_levels_result)
         
         # CRITICAL: Preserve levels BEFORE merge (they get consumed by merge)
         # We need BOTH merged levels AND original levels for structural array
         hdbscan_raw_before_merge = [l.copy() for l in hdbscan_levels] if hdbscan_levels else []
         print(f"HDBSCAN RAW (before merge): {len(hdbscan_raw_before_merge)} levels")
         
-        # Preserve new level types before merge (same pattern as HDBSCAN)
-        enhanced_optics_raw_before_merge = [l.copy() for l in enhanced_optics_levels_result] if enhanced_optics_levels_result else []
-        kde_raw_before_merge = [l.copy() for l in kde_levels_result] if kde_levels_result else []
+        # Preserve level types before merge (same pattern as HDBSCAN)
         multiscale_hdbscan_raw_before_merge = [l.copy() for l in multiscale_hdbscan_levels_result] if multiscale_hdbscan_levels_result else []
-        time_weighted_raw_before_merge = [l.copy() for l in time_weighted_levels_result] if time_weighted_levels_result else []
-        wyckoff_raw_before_merge = [l.copy() for l in wyckoff_levels_result] if wyckoff_levels_result else []
-        persistent_homology_raw_before_merge = [l.copy() for l in persistent_homology_levels_result] if persistent_homology_levels_result else []
         neural_network_raw_before_merge = [l.copy() for l in neural_network_levels_result] if neural_network_levels_result else []
         deepsupp_raw_before_merge = [l.copy() for l in deepsupp_levels_result] if deepsupp_levels_result else []
         
@@ -3617,15 +3576,8 @@ def get_data():
         confluence_levels = get_ml_confluence_levels(all_ml_levels)
         confluence_levels = confluence_levels or []
 
-        # Combine ML levels with classical structural (as constraints)
-        # NOTE: Fibonacci is NOT added here - it will be added as metadata only
-        all_levels_combined = (confluence_levels + all_ml_levels + 
-                              pivot_levels)
-        
-        # Add Fibonacci as metadata/confluence to nearby levels (not as primary levels)
-        all_levels_combined = add_fibonacci_metadata_to_levels(
-            all_levels_combined, fib_levels, sigma_price, threshold_sigma=1.0
-        )
+        # Combine ML levels with confluence
+        all_levels_combined = confluence_levels + all_ml_levels
         
         # MICROSTRUCTURE-ENHANCED LEVEL ADJUSTMENT
         all_levels_combined, hmm_regime, hurst_data, garch_regime, micro_state = enhance_levels_with_microstructure(
@@ -3664,192 +3616,102 @@ def get_data():
         except Exception as e:
             print(f"⚠ RL validation failed: {e}, using all levels")
         
-        # ORGANIZE LEVELS BY CATEGORY - Separated into ML and Classical
-        ml_confluence = [l for l in all_levels_combined if l['category'] == 'ML-Confluence']
+        # ORGANIZE LEVELS BY CATEGORY
+        ml_confluence = [l for l in all_levels_combined if l.get('category') == 'ML-Confluence']
         
         # HDBSCAN levels: Use the merged HDBSCAN levels we preserved
-        # These are the agglomerative-merged levels that came from HDBSCAN
-        # If merge didn't happen or no merged levels, fall back to raw
         if len(hdbscan_merged) > 0:
             hdbscan_ml = hdbscan_merged
             print(f"Using {len(hdbscan_ml)} merged HDBSCAN levels for structural array")
         else:
-            # Fallback: Try to extract from all_levels_combined (shouldn't happen but safety)
             hdbscan_ml = [l for l in all_levels_combined if l.get('category') == 'Density (HDBSCAN)' or l.get('category') == 'HDBSCAN']
             if len(hdbscan_ml) == 0 and len(hdbscan_raw_before_merge) > 0:
-                # Last resort: Use raw HDBSCAN if merge consumed them
                 hdbscan_ml = hdbscan_raw_before_merge
                 print(f"Fallback: Using {len(hdbscan_ml)} raw HDBSCAN levels (merge may have consumed them)")
         
-        # NEW: Extract new level detection methods from merged levels (check sources) and unmerged levels
-        # Extract from merged levels by checking sources field, and from unmerged by category
-        enhanced_optics_ml = []
-        kde_ml = []
+        # Extract kept level types from merged levels
         multiscale_hdbscan_ml = []
-        time_weighted_ml = []
-        wyckoff_ml = []
-        persistent_homology_ml = []
         neural_network_ml = []
         deepsupp_ml = []
         
         for l in all_levels_combined:
             category = l.get('category', '')
-            sources = l.get('sources', l.get('source_algorithms', []))  # Check both field names
-            
-            # Normalize sources to list if it's a string or other type
+            sources = l.get('sources', l.get('source_algorithms', []))
             if isinstance(sources, str):
                 sources = [sources]
             elif not isinstance(sources, list):
                 sources = list(sources) if sources else []
             
-            # Check merged levels (category='Agglomerative-Merged' or 'Hierarchical' with sources)
             if category == 'Agglomerative-Merged' or category == 'Hierarchical':
-                if 'OPTICS' in sources:
-                    l_copy = l.copy()
-                    l_copy['category'] = 'OPTICS'  # Restore category
-                    enhanced_optics_ml.append(l_copy)
-                if 'KDE' in sources:
-                    l_copy = l.copy()
-                    l_copy['category'] = 'KDE'  # Restore category
-                    kde_ml.append(l_copy)
                 if 'HDBSCAN-MultiScale' in sources:
                     l_copy = l.copy()
-                    l_copy['category'] = 'HDBSCAN-MultiScale'  # Restore category
+                    l_copy['category'] = 'HDBSCAN-MultiScale'
                     multiscale_hdbscan_ml.append(l_copy)
-                if 'HDBSCAN-TimeWeighted' in sources:
-                    l_copy = l.copy()
-                    l_copy['category'] = 'HDBSCAN-TimeWeighted'  # Restore category
-                    time_weighted_ml.append(l_copy)
-                if 'Wyckoff' in sources:
-                    l_copy = l.copy()
-                    l_copy['category'] = 'Wyckoff'  # Restore category
-                    wyckoff_ml.append(l_copy)
-                if 'TDA' in sources:
-                    l_copy = l.copy()
-                    l_copy['category'] = 'TDA'  # Restore category
-                    persistent_homology_ml.append(l_copy)
                 if 'Neural-Network' in sources:
                     l_copy = l.copy()
-                    l_copy['category'] = 'Neural-Network'  # Restore category
+                    l_copy['category'] = 'Neural-Network'
                     neural_network_ml.append(l_copy)
                 if 'DeepSupp' in sources:
                     l_copy = l.copy()
                     l_copy['category'] = 'DeepSupp'
                     deepsupp_ml.append(l_copy)
-            # Check unmerged levels (preserved original categories)
-            elif category == 'OPTICS':
-                enhanced_optics_ml.append(l)
-            elif category == 'KDE':
-                kde_ml.append(l)
             elif category == 'HDBSCAN-MultiScale':
                 multiscale_hdbscan_ml.append(l)
-            elif category == 'HDBSCAN-TimeWeighted':
-                time_weighted_ml.append(l)
-            elif category == 'Wyckoff':
-                wyckoff_ml.append(l)
-            elif category == 'TDA':
-                persistent_homology_ml.append(l)
             elif category == 'Neural-Network':
                 neural_network_ml.append(l)
             elif category == 'DeepSupp':
                 deepsupp_ml.append(l)
         
-        # Fallback: Use raw levels if extraction found nothing (shouldn't happen but safety)
-        if len(enhanced_optics_ml) == 0 and len(enhanced_optics_raw_before_merge) > 0:
-            enhanced_optics_ml = enhanced_optics_raw_before_merge
-        if len(kde_ml) == 0 and len(kde_raw_before_merge) > 0:
-            kde_ml = kde_raw_before_merge
+        # Fallback: Use raw levels if extraction found nothing
         if len(multiscale_hdbscan_ml) == 0 and len(multiscale_hdbscan_raw_before_merge) > 0:
             multiscale_hdbscan_ml = multiscale_hdbscan_raw_before_merge
-        if len(time_weighted_ml) == 0 and len(time_weighted_raw_before_merge) > 0:
-            time_weighted_ml = time_weighted_raw_before_merge
-        if len(wyckoff_ml) == 0 and len(wyckoff_raw_before_merge) > 0:
-            wyckoff_ml = wyckoff_raw_before_merge
-        if len(persistent_homology_ml) == 0 and len(persistent_homology_raw_before_merge) > 0:
-            persistent_homology_ml = persistent_homology_raw_before_merge
         if len(neural_network_ml) == 0 and len(neural_network_raw_before_merge) > 0:
             neural_network_ml = neural_network_raw_before_merge
         if len(deepsupp_ml) == 0 and len(deepsupp_raw_before_merge) > 0:
             deepsupp_ml = deepsupp_raw_before_merge
         
-        # DEBUG: Log new level counts
-        print(f"🔍 NEW LEVEL DETECTION METHODS:")
-        print(f"   OPTICS: {len(enhanced_optics_ml)} levels")
-        print(f"   KDE: {len(kde_ml)} levels")
+        # DEBUG: Log level counts
+        print(f"   HDBSCAN: {len(hdbscan_ml)} levels")
         print(f"   Multi-Scale HDBSCAN: {len(multiscale_hdbscan_ml)} levels")
-        print(f"   Time-Weighted HDBSCAN: {len(time_weighted_ml)} levels")
-        print(f"   Wyckoff: {len(wyckoff_ml)} levels")
-        print(f"   Persistent Homology (TDA): {len(persistent_homology_ml)} levels")
         print(f"   Neural Network: {len(neural_network_ml)} levels")
         print(f"   DeepSupp: {len(deepsupp_ml)} levels")
-        if len(neural_network_ml) > 0:
-            print(f"   ✓ Neural Network levels found: {[l.get('price') for l in neural_network_ml[:3]]}")
         
-        # Combine all structural density-based levels
-        hdbscan_ml = hdbscan_ml + enhanced_optics_ml + kde_ml + multiscale_hdbscan_ml + time_weighted_ml + wyckoff_ml + persistent_homology_ml + neural_network_ml + deepsupp_ml
-        
-        isolation_forest_ml = [l for l in all_levels_combined if l['category'] == 'Isolation-Forest']
-        peak_valley_ml = [l for l in all_levels_combined if l['category'] == 'Peak-Valley']
-        
-        pivot_classical = [l for l in all_levels_combined if l['category'] == 'Pivot']
-        
-        # DEBUG: Log level counts before building response
-        print(f"Level organization - HDBSCAN: {len(hdbscan_ml)}, Confluence: {len(ml_confluence)}, Event: {len(isolation_forest_ml)}, Interaction: {len(local_interaction_levels)}, Fallback: {len(peak_valley_ml)}")
+        # Combine all structural levels
+        hdbscan_ml = hdbscan_ml + multiscale_hdbscan_ml + neural_network_ml + deepsupp_ml
         
         # VALIDATION: Ensure all structural levels have valid price field
         hdbscan_ml = [l for l in hdbscan_ml if l and isinstance(l.get('price'), (int, float)) and not (np.isnan(l.get('price')) or np.isinf(l.get('price')))]
         print(f"Structural levels after validation: {len(hdbscan_ml)} levels with valid prices")
-        
-        # DEBUG: Log category breakdown of structural levels
-        category_counts = {}
-        for l in hdbscan_ml:
-            cat = l.get('category', 'Unknown')
-            category_counts[cat] = category_counts.get(cat, 0) + 1
-        print(f"📊 Structural level categories: {category_counts}")
-        
-        # VALIDATION: Ensure interaction levels have valid prices
-        local_interaction_levels = [l for l in local_interaction_levels if l and isinstance(l.get('price'), (int, float)) and not (np.isnan(l.get('price')) or np.isinf(l.get('price')))]
-        print(f"Interaction after validation: {len(local_interaction_levels)} levels with valid prices")
 
         levels = {
-            # PRIMARY STRUCTURAL LEVELS (discovered density / memory)
-            'structural': hdbscan_ml,              # HDBSCAN + Agglomerative merged levels
+            # PRIMARY STRUCTURAL LEVELS (HDBSCAN, HDBSCAN MultiScale, Neural Network, DeepSupp)
+            'structural': hdbscan_ml,
 
-            # EVENT / PIVOT LEVELS (behavioral, fast-decay)
-            'event': isolation_forest_ml,          # Stop-runs, gaps, impulse pivots
-
-            # INTERACTION LEVELS (local density, near price, short memory, explicitly non-structural)
-            'interaction': local_interaction_levels,  # Local density modes - play zones, not structure
-
-            # FALLBACK STRUCTURE (only if density is sparse)
-            'fallback': peak_valley_ml,            # Peak / valley geometric structure
-
-            # CLASSICAL REFERENCES (constraints, not ML discovery)
+            # Backward compatibility: Include old fields as empty
+            'event': [],
+            'interaction': [],
+            'fallback': [],
             'classicalStructural': {
-                'pivots': pivot_classical
+                'pivots': []
             },
-            
-            # Backward compatibility: Include old fields
-            'mlConfluence': ml_confluence,  # ML confluence levels
-            'peakValley': peak_valley_ml,   # Peak-Valley levels (fallback)
-            'meanshift': [],  # Removed from production, now validator only
-            'dbscan': [],     # Removed from production
-            'gmm': [],        # Removed from production
-            'kmeans': [],     # Removed from production
-            'volatility': [], # Removed from production
-            'pivots': pivot_classical,  # Also at top level for backward compatibility
-            'fibonacci': [],  # Removed as primary level - now metadata only
-            'gaps': []      # Also at top level for backward compatibility
+            'mlConfluence': ml_confluence,
+            'peakValley': [],
+            'meanshift': [],
+            'dbscan': [],
+            'gmm': [],
+            'kmeans': [],
+            'volatility': [],
+            'pivots': [],
+            'fibonacci': [],
+            'gaps': []
         }
         
         # CRITICAL DEBUG: Log final counts before sending to frontend
-        print(f"🔍 FINAL LEVELS STRUCTURE:")
-        print(f"   structural (HDBSCAN): {len(levels['structural'])}")
-        print(f"   event (Isolation Forest): {len(levels['event'])}")
-        print(f"   fallback (Peak-Valley): {len(levels['fallback'])}")
+        print(f"FINAL LEVELS STRUCTURE:")
+        print(f"   structural: {len(levels['structural'])}")
         print(f"   mlConfluence: {len(levels['mlConfluence'])}")
         if len(levels['structural']) > 0:
-            print(f"   Sample HDBSCAN level: price={levels['structural'][0].get('price')}, category={levels['structural'][0].get('category')}")
+            print(f"   Sample level: price={levels['structural'][0].get('price')}, category={levels['structural'][0].get('category')}")
         
         # CALCULATE MOST PROBABLE PRICE PATH
         print("Calculating most probable price path...")
@@ -7724,6 +7586,6 @@ except Exception as e:
     # Don't crash - let the app start and retry on first request
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+    app.run(host='0.0.0.0', port=5001)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 
