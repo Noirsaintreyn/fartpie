@@ -246,8 +246,22 @@
         <div class="content">
             <div class="form-grid">
                 <div class="form-group">
+                    <label for="source">Data Source</label>
+                    <select id="source" onchange="onSourceChange()">
+                        <option value="yfinance">Yahoo Finance (Live)</option>
+                        <option value="local">Local CSV Data</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="ticker-group">
                     <label for="ticker">Ticker Symbol</label>
                     <input type="text" id="ticker" value="SPY" placeholder="e.g., SPY, AAPL, TSLA">
+                </div>
+
+                <div class="form-group" id="instrument-group" style="display: none;">
+                    <label for="instrument">Instrument</label>
+                    <select id="instrument" onchange="onInstrumentChange()">
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -348,13 +362,107 @@
     <script>
         let currentResults = null;
         let compareResults = {};
+        let localDataMap = {};  // instrument -> [timeframes]
+
+        function getTickerValue() {
+            const source = document.getElementById('source').value;
+            if (source === 'local') {
+                return document.getElementById('instrument').value;
+            }
+            return document.getElementById('ticker').value;
+        }
+
+        function getSourceParam() {
+            return document.getElementById('source').value;
+        }
+
+        async function loadLocalData() {
+            try {
+                const response = await fetch('/api/local-data');
+                const data = await response.json();
+                if (data.success) {
+                    localDataMap = data.data;
+                    populateInstruments();
+                }
+            } catch (e) {
+                console.error('Failed to load local data list:', e);
+            }
+        }
+
+        function populateInstruments() {
+            const select = document.getElementById('instrument');
+            select.innerHTML = '';
+            for (const instrument of Object.keys(localDataMap).sort()) {
+                const opt = document.createElement('option');
+                opt.value = instrument;
+                opt.textContent = instrument;
+                select.appendChild(opt);
+            }
+            if (select.options.length > 0) {
+                onInstrumentChange();
+            }
+        }
+
+        function onInstrumentChange() {
+            const instrument = document.getElementById('instrument').value;
+            const timeframes = localDataMap[instrument] || [];
+            const tfSelect = document.getElementById('timeframe');
+            const currentTf = tfSelect.value;
+
+            // Only filter timeframes when in local mode
+            if (document.getElementById('source').value !== 'local') return;
+
+            const tfLabels = {
+                '1m': '1 Minute', '5m': '5 Minutes', '15m': '15 Minutes',
+                '1h': '1 Hour', '4h': '4 Hours', '1d': 'Daily'
+            };
+            tfSelect.innerHTML = '';
+            for (const tf of timeframes) {
+                const opt = document.createElement('option');
+                opt.value = tf;
+                opt.textContent = tfLabels[tf] || tf;
+                if (tf === currentTf) opt.selected = true;
+                tfSelect.appendChild(opt);
+            }
+        }
+
+        function onSourceChange() {
+            const source = document.getElementById('source').value;
+            const tickerGroup = document.getElementById('ticker-group');
+            const instrumentGroup = document.getElementById('instrument-group');
+            const tfSelect = document.getElementById('timeframe');
+
+            if (source === 'local') {
+                tickerGroup.style.display = 'none';
+                instrumentGroup.style.display = 'flex';
+                onInstrumentChange();
+            } else {
+                tickerGroup.style.display = 'flex';
+                instrumentGroup.style.display = 'none';
+                // Restore all timeframe options
+                const tfLabels = {
+                    '1m': '1 Minute', '5m': '5 Minutes', '15m': '15 Minutes',
+                    '1h': '1 Hour', '4h': '4 Hours', '1d': 'Daily'
+                };
+                const currentTf = tfSelect.value;
+                tfSelect.innerHTML = '';
+                for (const [val, label] of Object.entries(tfLabels)) {
+                    const opt = document.createElement('option');
+                    opt.value = val;
+                    opt.textContent = label;
+                    if (val === currentTf || (val === '1d' && !currentTf)) opt.selected = true;
+                    tfSelect.appendChild(opt);
+                }
+            }
+        }
 
         async function runBacktest() {
-            const ticker = document.getElementById('ticker').value;
+            const ticker = getTickerValue();
             const timeframe = document.getElementById('timeframe').value;
             const method = document.getElementById('method').value;
             const lookback = document.getElementById('lookback').value;
             const testWindow = document.getElementById('test_window').value;
+            const source = getSourceParam();
 
             // Hide previous results and errors
             document.getElementById('results').classList.remove('show');
@@ -365,7 +473,7 @@
             document.getElementById('loading').style.display = 'block';
 
             try {
-                const response = await fetch(`/api/backtest?ticker=${ticker}&timeframe=${timeframe}&method=${method}&lookback=${lookback}&test_window=${testWindow}`);
+                const response = await fetch(`/api/backtest?ticker=${ticker}&timeframe=${timeframe}&method=${method}&lookback=${lookback}&test_window=${testWindow}&source=${source}`);
                 const data = await response.json();
 
                 document.getElementById('loading').style.display = 'none';
@@ -383,10 +491,11 @@
         }
 
         async function compareAllMethods() {
-            const ticker = document.getElementById('ticker').value;
+            const ticker = getTickerValue();
             const timeframe = document.getElementById('timeframe').value;
             const lookback = document.getElementById('lookback').value;
             const testWindow = document.getElementById('test_window').value;
+            const source = getSourceParam();
 
             const methods = ['hdbscan', 'neural_network', 'deepsupp'];
             
@@ -400,7 +509,7 @@
 
             try {
                 for (const method of methods) {
-                    const response = await fetch(`/api/backtest?ticker=${ticker}&timeframe=${timeframe}&method=${method}&lookback=${lookback}&test_window=${testWindow}`);
+                    const response = await fetch(`/api/backtest?ticker=${ticker}&timeframe=${timeframe}&method=${method}&lookback=${lookback}&test_window=${testWindow}&source=${source}`);
                     const data = await response.json();
                     
                     if (data.success) {
@@ -513,6 +622,9 @@
                 }
             }
         });
+
+        // Load available local data on page load
+        loadLocalData();
     </script>
 </body>
 </html>

@@ -247,6 +247,7 @@ import hashlib
 import warnings
 import requests
 import os
+import glob as glob_module
 import pickle
 from arch import arch_model
 warnings.filterwarnings('ignore')
@@ -3764,6 +3765,120 @@ def get_data():
         return jsonify({'success': False, 'error': error_msg}), 400
 
 # NEW ENDPOINT: BACKTEST LEVELS
+# ============================================================================
+# LOCAL CSV DATA LOADING (European-format: semicolon-delimited, comma decimals)
+# ============================================================================
+
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+
+def parse_european_number(value):
+    """Convert European number format (dots for thousands, commas for decimals) to float.
+    Examples: '6.992,75' -> 6992.75, '19,1000' -> 19.1, '2046596' -> 2046596.0
+    """
+    if not isinstance(value, str):
+        return float(value)
+    value = value.strip()
+    if not value:
+        return 0.0
+    # Remove dots (thousands separator), replace comma with period (decimal)
+    value = value.replace('.', '').replace(',', '.')
+    return float(value)
+
+
+def load_local_csv(instrument, timeframe):
+    """Load OHLCV data from local CSV files in the data/ directory.
+    
+    Args:
+        instrument: e.g. 'ES', 'NQ', 'VIX', 'TICK'
+        timeframe: e.g. '1m', '5m', '15m', '1h', '4h', '1d'
+    
+    Returns:
+        pandas DataFrame with columns: Open, High, Low, Close, Volume (indexed by datetime)
+    """
+    tf_folder_map = {
+        '1m': '1Min', '5m': '5Min', '15m': '15Min',
+        '1h': '1H', '4h': '4H', '1d': 'D'
+    }
+    folder_name = tf_folder_map.get(timeframe)
+    if not folder_name:
+        raise ValueError(f"Unsupported timeframe: {timeframe}")
+    
+    instrument_upper = instrument.upper()
+    search_dir = os.path.join(DATA_DIR, instrument_upper, folder_name)
+    
+    if not os.path.isdir(search_dir):
+        raise FileNotFoundError(
+            f"No local data found for {instrument_upper}/{folder_name}. "
+            f"Place CSV files in {search_dir}/"
+        )
+    
+    csv_files = glob_module.glob(os.path.join(search_dir, '*.csv'))
+    if not csv_files:
+        raise FileNotFoundError(f"No CSV files in {search_dir}/")
+    
+    csv_path = csv_files[0]  # Use the first CSV found
+    print(f"Loading local data from: {csv_path}")
+    
+    # Read with semicolon delimiter, skip the metadata header row
+    df = pd.read_csv(csv_path, sep=';', skiprows=1)
+    
+    # Standardize column names
+    df.columns = [c.strip() for c in df.columns]
+    
+    # Parse the Date column
+    df['Date'] = pd.to_datetime(df['Date'], dayfirst=False)
+    df = df.set_index('Date')
+    df = df.sort_index()  # Ensure chronological order
+    
+    # Parse European number format for OHLCV columns
+    for col in ['Open', 'High', 'Low', 'Close', 'Volume']:
+        if col in df.columns:
+            df[col] = df[col].apply(parse_european_number)
+    
+    # Drop non-OHLCV columns (like Symbol)
+    keep_cols = [c for c in ['Open', 'High', 'Low', 'Close', 'Volume'] if c in df.columns]
+    df = df[keep_cols]
+    
+    # Drop rows with NaN
+    df = df.dropna(subset=['Open', 'High', 'Low', 'Close'])
+    
+    print(f"Loaded {len(df)} bars from {csv_path}")
+    return df
+
+
+def get_available_local_data():
+    """Scan the data/ directory and return available instrument/timeframe combos."""
+    tf_folder_map = {
+        '1Min': '1m', '5Min': '5m', '15Min': '15m',
+        '1H': '1h', '4H': '4h', 'D': '1d'
+    }
+    available = {}
+    if not os.path.isdir(DATA_DIR):
+        return available
+    
+    for instrument in sorted(os.listdir(DATA_DIR)):
+        instrument_path = os.path.join(DATA_DIR, instrument)
+        if not os.path.isdir(instrument_path):
+            continue
+        timeframes = []
+        for folder in sorted(os.listdir(instrument_path)):
+            folder_path = os.path.join(instrument_path, folder)
+            if not os.path.isdir(folder_path):
+                continue
+            csv_files = glob_module.glob(os.path.join(folder_path, '*.csv'))
+            if csv_files and folder in tf_folder_map:
+                timeframes.append(tf_folder_map[folder])
+        if timeframes:
+            available[instrument] = timeframes
+    return available
+
+
+@app.route('/api/local-data', methods=['GET'])
+def list_local_data():
+    """Return available local CSV data sources."""
+    return jsonify({'success': True, 'data': get_available_local_data()})
+
+
 @app.route('/api/backtest', methods=['GET'])
 def backtest_levels():
     auth_error = require_auth()
@@ -3775,18 +3890,23 @@ def backtest_levels():
     method = request.args.get('method', 'hdbscan')  # hdbscan, neural_network, deepsupp
     lookback = int(request.args.get('lookback', 200))
     test_window = int(request.args.get('test_window', 20))
+    source = request.args.get('source', 'yfinance')  # 'yfinance' or 'local'
     
     try:
-        print(f"Running backtest for {ticker} {timeframe} - Method: {method}")
+        print(f"Running backtest for {ticker} {timeframe} - Method: {method} - Source: {source}")
         
-        # Get data
-        stock = yf.Ticker(ticker)
-        interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
-        interval = interval_map.get(timeframe, '1d')
-        period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
-        period = period_map.get(timeframe, '1y')
+        # Get data from the selected source
+        if source == 'local':
+            hist = load_local_csv(ticker, timeframe)
+        else:
+            # Original yfinance path
+            stock = yf.Ticker(ticker)
+            interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
+            interval = interval_map.get(timeframe, '1d')
+            period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
+            period = period_map.get(timeframe, '1y')
+            hist = stock.history(period=period, interval=interval)
         
-        hist = stock.history(period=period, interval=interval)
         if len(hist) < lookback + test_window:
             return jsonify({
                 'success': False, 
@@ -7588,6 +7708,6 @@ except Exception as e:
     # Don't crash - let the app start and retry on first request
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+    app.run(host='0.0.0.0', port=5001)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 
