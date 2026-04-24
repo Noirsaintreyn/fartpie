@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request, session, render_template, redirect, url_for
+from functools import wraps
 from flask.json.provider import DefaultJSONProvider
 from flask_cors import CORS
 import yfinance as yf
@@ -12041,6 +12042,33 @@ except Exception as e:
     print(f"⚠ Warning: Database initialization failed on startup: {e}")
     print("⚠ Will retry on first request via ensure_db()")
     # Don't crash - let the app start and retry on first request
+
+# Authentication decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session:
+            return redirect(url_for('login_page'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Main routes
+@app.route('/')
+def index():
+    if 'username' not in session:
+        return redirect(url_for('login_page'))
+    return render_template('index.html')
+
+@app.route('/login')
+def login_page():
+    if 'username' in session:
+        return redirect(url_for('index'))
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout_page():
+    session.clear()
+    return redirect(url_for('login_page'))
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5001) 
