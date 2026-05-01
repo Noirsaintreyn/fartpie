@@ -3711,14 +3711,26 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
     try:
         print(f"Training level detection network for {ticker} at {timeframe}...")
         
-        # Fetch historical data
-        stock = yf.Ticker(ticker)
-        interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
-        interval = interval_map.get(timeframe, '1d')
-        period_map = {'1m': '1mo', '5m': '3mo', '15m': '6mo', '1h': '1y', '4h': '1y', '1d': '2y'}
-        period = period_map.get(timeframe, '1y')
+        # Fetch historical data (combine Google Drive + yfinance for richer training set)
+        hist = None
+        try:
+            from data_loader import load_historical_data
+            hist = load_historical_data(ticker, timeframe=timeframe, combine_with_realtime=True)
+            if hist is not None and len(hist) > 0:
+                print(f"Using combined Google Drive + yfinance data: {len(hist)} bars")
+            else:
+                hist = None
+        except Exception as e:
+            print(f"Google Drive data not available ({e}), using yfinance only")
         
-        hist = stock.history(period=period, interval=interval)
+        if hist is None:
+            stock = yf.Ticker(ticker)
+            interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
+            interval = interval_map.get(timeframe, '1d')
+            period_map = {'1m': '1mo', '5m': '3mo', '15m': '6mo', '1h': '1y', '4h': '1y', '1d': '2y'}
+            period = period_map.get(timeframe, '1y')
+            hist = stock.history(period=period, interval=interval)
+            print(f"Using yfinance data: {len(hist)} bars")
         if len(hist) < lookback * 2:
             return {'success': False, 'error': f'Insufficient data: need at least {lookback * 2} bars'}
         
