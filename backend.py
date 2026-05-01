@@ -1,52 +1,67 @@
-from flask import Flask, jsonify, request, session, render_template, redirect, url_for
-from functools import wraps
+from flask import Flask, jsonify, request, session, send_from_directory, render_template
 from flask.json.provider import DefaultJSONProvider
 from flask_cors import CORS
+import os
 import yfinance as yf
 import pandas as pd
 import numpy as np
-from sklearn.cluster import MeanShift, estimate_bandwidth, AgglomerativeClustering, OPTICS
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import TimeSeriesSplit
-from sklearn.ensemble import RandomForestRegressor, IsolationForest
-from sklearn.metrics import mean_absolute_error, mean_squared_error
-import hdbscan
-try:
-    import lightgbm as lgb
-    LIGHTGBM_AVAILABLE = True
-except ImportError:
-    LIGHTGBM_AVAILABLE = False
-    lgb = None
 
-try:
-    import xgboost as xgb
-    XGBOOST_AVAILABLE = True
-except ImportError:
-    XGBOOST_AVAILABLE = False
-    xgb = None
+# ── Memory-aware imports: skip heavy libs on Render 512MB ──
+LOW_MEMORY = os.environ.get('RENDER', '').lower() in ('true', '1') or \
+             os.environ.get('LOW_MEMORY', '').lower() in ('true', '1')
 
-try:
-    from statsmodels.tsa.regime_switching.markov_regression import MarkovRegression
-    STATSMODELS_AVAILABLE = True
-except ImportError:
-    STATSMODELS_AVAILABLE = False
-    MarkovRegression = None
-
+# Enable PyTorch for CNN scoring, but skip other heavy libs in LOW_MEMORY mode
 try:
     import torch
     import torch.nn as nn
     TORCH_AVAILABLE = True
+    print("✓ PyTorch imported for CNN confidence scoring")
 except ImportError:
     TORCH_AVAILABLE = False
     torch = None
     nn = None
 
-try:
-    from ripser import ripser
-    from persim import plot_diagrams
-    RIPSER_AVAILABLE = True
-except ImportError:
+if LOW_MEMORY:
+    print("⚡ LOW_MEMORY mode (512MB): skipping lightgbm, xgboost, ripser, arch")
+    LIGHTGBM_AVAILABLE = False
+    XGBOOST_AVAILABLE = False
     RIPSER_AVAILABLE = False
+    lgb = None
+    xgb = None
+else:
+    try:
+        import lightgbm as lgb
+        LIGHTGBM_AVAILABLE = True
+    except ImportError:
+        LIGHTGBM_AVAILABLE = False
+        lgb = None
+    try:
+        import xgboost as xgb
+        XGBOOST_AVAILABLE = True
+    except ImportError:
+        XGBOOST_AVAILABLE = False
+        xgb = None
+    try:
+        from ripser import ripser
+        from persim import plot_diagrams
+        RIPSER_AVAILABLE = True
+    except ImportError:
+        RIPSER_AVAILABLE = False
+    from sklearn.cluster import MeanShift, estimate_bandwidth, AgglomerativeClustering, OPTICS
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import TimeSeriesSplit
+from sklearn.ensemble import RandomForestRegressor, IsolationForest
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+import hdbscan
+
+# Import Google Drive data loader
+try:
+    from data_loader import load_historical_data, initialize_data, get_available_symbols
+    GOOGLE_DRIVE_DATA_AVAILABLE = True
+    print("✅ Google Drive data loader available")
+except ImportError:
+    GOOGLE_DRIVE_DATA_AVAILABLE = False
+    print("⚠ Google Drive data loader not available - using yfinance fallback")
     ripser = None
     plot_diagrams = None
 
@@ -246,7 +261,10 @@ import warnings
 import requests
 import os
 import pickle
-from arch import arch_model
+if not LOW_MEMORY:
+    from arch import arch_model
+else:
+    arch_model = None
 warnings.filterwarnings('ignore')
 
 # Custom JSON encoder to handle numpy/pandas types
@@ -316,10 +334,20 @@ else:
 CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,https://degencap.uk,https://www.degencap.uk').split(',')
 CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
 
-@app.route("/")
+@app.route("/health")
 def health():
     return {"status": "backend live"}
-  
+
+@app.route("/")
+def index():
+    """Serve the main analysis interface"""
+    return render_template('index.html')
+
+@app.route("/backtest")
+def backtest_ui():
+    """Serve the backtest interface"""
+    return render_template('backtest.html')
+
 FRED_API_KEY = '024452292701539abb68abc50276eb70'
 
 # Simple password hashing
@@ -356,70 +384,10 @@ def init_db():
                           is_admin INTEGER DEFAULT 0,
                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                           last_login TIMESTAMP)''')
-            
-            # --- ML eval table: predictions + realized + intermediates ---
-            c.execute('''
-            CREATE TABLE IF NOT EXISTS hodlod_eval (
-                id TEXT PRIMARY KEY,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-                ticker TEXT NOT NULL,
-                timeframe TEXT NOT NULL,
-                pred_ts TEXT NOT NULL,          -- ISO timestamp of prediction moment
-                session_date TEXT NOT NULL,     -- YYYY-MM-DD (the session this prediction belongs to)
-
-                spot REAL,
-
-                sigma_daily_pct REAL,
-                sigma_price REAL,
-
-                micro_state TEXT,
-                micro_conf REAL,
-                garch_regime TEXT,
-                lss REAL,
-
-                -- Intermediate pipeline outputs (so we can blame modules)
-                base_hod REAL,
-                base_lod REAL,
-
-                lss_hod REAL,
-                lss_lod REAL,
-                lss_meta TEXT,
-
-                oi_hod REAL,
-                oi_lod REAL,
-                oi_meta TEXT,
-
-                rf_hod REAL,
-                rf_lod REAL,
-                rf_meta TEXT,
-
-                final_hod REAL,
-                final_lod REAL,
-
-                -- Realized
-                realized_hod REAL,
-                realized_lod REAL,
-                realized_ts TEXT,
-
-                -- Feature snapshot used by ML_FEATURES
-                features_json TEXT
-            )
-            ''')
-
-            # --- optional: store learned calibration knobs per regime bucket ---
-            c.execute('''
-            CREATE TABLE IF NOT EXISTS hodlod_calibration (
-                key TEXT PRIMARY KEY,           -- e.g. "Fock|highLSS|highVol"
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                params_json TEXT                -- {"tail_mult":1.1,"oi_clip_mult":0.6,"rf_clip":1.7}
-            )
-            ''')
-            
             conn.commit()
             
-            # Admin account: rey / flood
-            rey_password = hash_password('flood')
+            # Admin account: rey / admin
+            rey_password = hash_password('admin')
             try:
                 c.execute("INSERT INTO users (username, email, password, is_admin) VALUES (?, ?, ?, ?)",
                           ('rey', 'rey@degendiscovery.com', rey_password, 1))
@@ -435,29 +403,29 @@ def init_db():
             c.execute("DELETE FROM users WHERE username = 'admin' AND is_admin = 1")
             conn.commit()
             
-            # Test account 1: test1 / pw
-            test1_password = hash_password('pw')
+            # User account 1: user1 / pw
+            user1_password = hash_password('pw')
             try:
                 c.execute("INSERT INTO users (username, email, password, is_admin) VALUES (?, ?, ?, ?)",
-                          ('test1', 'test1@degendiscovery.com', test1_password, 0))
+                          ('user1', 'user1@degendiscovery.com', user1_password, 0))
                 conn.commit()
-                print("✓ Test account 1 (test1) created")
+                print("✓ User account 1 (user1) created")
             except sqlite3.IntegrityError:
-                c.execute("UPDATE users SET password = ? WHERE username = 'test1'", (test1_password,))
+                c.execute("UPDATE users SET password = ? WHERE username = 'user1'", (user1_password,))
                 conn.commit()
-                print("✓ Test account 1 (test1) already exists, password updated")
+                print("✓ User account 1 (user1) already exists, password updated")
             
-            # Test account 2: test2 / pw
-            test2_password = hash_password('pw')
+            # User account 2: user2 / 67
+            user2_password = hash_password('67')
             try:
                 c.execute("INSERT INTO users (username, email, password, is_admin) VALUES (?, ?, ?, ?)",
-                          ('test2', 'test2@degendiscovery.com', test2_password, 0))
+                          ('user2', 'user2@degendiscovery.com', user2_password, 0))
                 conn.commit()
-                print("✓ Test account 2 (test2) created")
+                print("✓ User account 2 (user2) created")
             except sqlite3.IntegrityError:
-                c.execute("UPDATE users SET password = ? WHERE username = 'test2'", (test2_password,))
+                c.execute("UPDATE users SET password = ? WHERE username = 'user2'", (user2_password,))
                 conn.commit()
-                print("✓ Test account 2 (test2) already exists, password updated")
+                print("✓ User account 2 (user2) already exists, password updated")
         # Connection auto-closes here via context manager
         
         conn.close()
@@ -855,16 +823,6 @@ def calculate_phase_space_coordinates(closes, volumes):
 # LIQUIDITY STRESS SCORING
 # ============================================================================
 
-def volume_zscore(volumes, lookback=50):
-    """Compute volume z-score to detect abnormal volume conditions"""
-    vols = np.asarray(volumes, dtype=float)
-    if len(vols) < lookback + 1:
-        return 0.0
-    v = vols[-1]
-    mu = np.mean(vols[-lookback:])
-    sd = np.std(vols[-lookback:]) + 1e-9
-    return float((v - mu) / sd)
-
 def _zscore(x, eps=1e-9):
     """Compute z-score normalization"""
     x = np.asarray(x)
@@ -988,352 +946,17 @@ def liquidity_stress_score(
     }
     return lss, feats
 
-def apply_liquidity_stress_to_microstructure(micro, lss):
-    """
-    micro: dict returned by detect_market_microstructure_state
-    lss: 0..1
-    """
-    micro = dict(micro)  # copy
-
-    state = micro.get("state", "Unknown")
-    conf  = float(micro.get("confidence", 0.0))
-
-  
-    permeability = float(micro.get("liquidity_permeability", 0.5))
-    overshoot    = float(micro.get("overshoot_bias", 0.2))
-
-    # Nudge rules
-    permeability = np.clip(permeability + 0.25 * lss, 0.0, 1.0)
-    overshoot    = np.clip(overshoot + 0.20 * lss, 0.0, 0.8)
 
 
-    if state == "Thermal":
-        conf = np.clip(conf - 0.35 * lss, 0.0, 0.95)
-    elif state == "Fock":
-        conf = np.clip(conf + 0.15 * lss, 0.0, 0.95)
-    else:  # Coherent or Unknown
-        conf = np.clip(conf - 0.10 * lss, 0.0, 0.95)
-
-    micro["confidence"] = float(conf)
-    micro["liquidity_permeability"] = float(permeability)
-    micro["overshoot_bias"] = float(overshoot)
-
-    # Add into characteristics for logging/RF
-    ch = dict(micro.get("characteristics", {}))
-    ch["liquidity_stress"] = float(lss)
-    micro["characteristics"] = ch
-
-    return micro
-
-def tail_usage_multiplier_from_lss(lss, micro_state=None, override_tail_mult: float = None):
-    """
-    Returns a multiplier for how aggressively to use sigma bands,
-    without changing sigma itself.
-    """
-    # baseline: small expansion when stress is high
-    m = 1.0 + 0.35 * lss  # up to 1.35
-
-    # If already in Fock, allow a bit more tail usage
-    if micro_state == "Fock":
-        m += 0.15 * lss  # up to +0.15 extra
-    # If Thermal, be conservative (OPTIONAL REFINEMENT: cap tighter)
-    if micro_state == "Thermal":
-        m -= 0.10 * lss
-        m = min(m, 1.15)  # Cap at 1.15 to reduce rare over-extension in quiet sessions
-
-    m = float(np.clip(m, 0.90, 1.60))
-    if isinstance(override_tail_mult, (int, float)) and override_tail_mult > 0:
-        m = float(np.clip(override_tail_mult, 0.90, 1.80))
-    return m
-
-def adjust_hod_lod_usage(base_hod, base_lod, sigma_price, lss, micro_state, override_tail_mult: float = None):
-    """
-    Adjusts where you place expected HOD/LOD relative to sigma usage.
-    Does NOT change sigma_price.
-    """
-    mult = tail_usage_multiplier_from_lss(lss, micro_state=micro_state, override_tail_mult=override_tail_mult)
-    
-    mid = (base_hod + base_lod) / 2.0
-    hod_dist = base_hod - mid
-    lod_dist = mid - base_lod
-
-    adj_hod = mid + hod_dist * mult
-    adj_lod = mid - lod_dist * mult
-
-    meta = {
-        "tail_usage_mult": mult,
-        "lss": float(lss)
-    }
-    return float(adj_hod), float(adj_lod), meta
-
-def _iso(ts):
-    try:
-        if isinstance(ts, pd.Timestamp):
-            return ts.isoformat()
-        return str(ts)
-    except Exception:
-        return str(ts)
-
-def _session_date_from_timestamp(ts) -> str:
-    # For intraday: session is the calendar date in exchange timezone.
-    # You can refine later for futures globex.
-    dt = pd.to_datetime(ts)
-    return dt.date().isoformat()
-
-def ml_log_prediction(
-    ticker: str,
-    timeframe: str,
-    pred_ts,
-    spot: float,
-    sigma_daily_pct: float,
-    sigma_price: float,
-    micro_state: str,
-    micro_conf: float,
-    garch_regime: str,
-    lss: float,
-    base_hod: float, base_lod: float,
-    lss_hod: Optional[float], lss_lod: Optional[float], lss_meta: Optional[dict],
-    oi_hod: Optional[float], oi_lod: Optional[float], oi_meta: Optional[dict],
-    rf_hod: Optional[float], rf_lod: Optional[float], rf_meta: Optional[dict],
-    final_hod: float, final_lod: float,
-    features_dict: dict
-) -> str:
-    """Insert a prediction row. Returns row_id."""
-    row_id = str(uuid.uuid4())
-    session_date = _session_date_from_timestamp(pred_ts)
-
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("""
-        INSERT INTO hodlod_eval (
-            id, ticker, timeframe, pred_ts, session_date,
-            spot, sigma_daily_pct, sigma_price,
-            micro_state, micro_conf, garch_regime, lss,
-            base_hod, base_lod,
-            lss_hod, lss_lod, lss_meta,
-            oi_hod, oi_lod, oi_meta,
-            rf_hod, rf_lod, rf_meta,
-            final_hod, final_lod,
-            features_json
-        ) VALUES (?,?,?,?,?,
-                  ?,?,?, ?,?,?,?,
-                  ?,?,
-                  ?,?,?, ?,?,?, ?,?,?, ?,?,
-                  ?)
-    """, (
-        row_id, ticker, timeframe, _iso(pred_ts), session_date,
-        float(spot) if spot is not None else None,
-        float(sigma_daily_pct) if sigma_daily_pct is not None else None,
-        float(sigma_price) if sigma_price is not None else None,
-
-        micro_state, float(micro_conf) if micro_conf is not None else None,
-        garch_regime, float(lss) if lss is not None else None,
-
-        float(base_hod), float(base_lod),
-
-        float(lss_hod) if lss_hod is not None else None,
-        float(lss_lod) if lss_lod is not None else None,
-        json.dumps(lss_meta or {}),
-
-        float(oi_hod) if oi_hod is not None else None,
-        float(oi_lod) if oi_lod is not None else None,
-        json.dumps(oi_meta or {}),
-
-        float(rf_hod) if rf_hod is not None else None,
-        float(rf_lod) if rf_lod is not None else None,
-        json.dumps(rf_meta or {}),
-
-        float(final_hod), float(final_lod),
-
-        json.dumps(features_dict or {})
-    ))
-    conn.commit()
-    conn.close()
-    return row_id
-
-def ml_update_realized(row_id: str, realized_hod: float, realized_lod: float, realized_ts=None) -> bool:
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("""
-        UPDATE hodlod_eval
-        SET realized_hod = ?, realized_lod = ?, realized_ts = ?
-        WHERE id = ?
-    """, (float(realized_hod), float(realized_lod), _iso(realized_ts or datetime.utcnow()), row_id))
-    conn.commit()
-    updated = (c.rowcount > 0)
-    conn.close()
-    return updated
-
-def _lss_bucket(lss: float) -> str:
-    if lss is None: return "na"
-    if lss >= 0.66: return "highLSS"
-    if lss >= 0.33: return "midLSS"
-    return "lowLSS"
-
-def _vol_bucket_from_sigma(sigma_daily_pct: float) -> str:
-    if sigma_daily_pct is None: return "na"
-    if sigma_daily_pct >= 2.0: return "highVol"
-    if sigma_daily_pct >= 1.0: return "midVol"
-    return "lowVol"
-
-def calibration_key(micro_state: str, lss: float, sigma_daily_pct: float) -> str:
-    return f"{micro_state}|{_lss_bucket(lss)}|{_vol_bucket_from_sigma(sigma_daily_pct)}"
-
-def get_calibration_params(key: str) -> dict:
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("SELECT params_json FROM hodlod_calibration WHERE key = ?", (key,))
-    row = c.fetchone()
-    conn.close()
-    if not row:
-        return {}  # default = no overrides
-    try:
-        return json.loads(row[0] or "{}")
-    except Exception:
-        return {}
-
-def upsert_calibration_params(key: str, params: dict) -> None:
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("""
-        INSERT INTO hodlod_calibration (key, params_json, updated_at)
-        VALUES (?, ?, CURRENT_TIMESTAMP)
-        ON CONFLICT(key) DO UPDATE SET
-            params_json = excluded.params_json,
-            updated_at = CURRENT_TIMESTAMP
-    """, (key, json.dumps(params or {})))
-    conn.commit()
-    conn.close()
-
-def compute_oi_walls(
-    spot: float,
-    call_oi_by_strike,
-    put_oi_by_strike,
-    strike_window_pct: float = 0.12,   # only look ±12% around spot
-    min_oi: float = 1.0,
-):
-    """
-    Compute 'call wall' and 'put wall' from raw OI (no Greeks).
-    call wall = strike with max call OI (within window)
-    put wall  = strike with max put OI (within window)
-
-    Returns:
-      {
-        "call_wall": float|None,
-        "put_wall": float|None,
-        "call_wall_oi": float|None,
-        "put_wall_oi": float|None,
-        "window": {"low":..., "high":...}
-      }
-    """
-    if not spot or spot <= 0:
-        return {"call_wall": None, "put_wall": None, "call_wall_oi": None, "put_wall_oi": None, "window": None}
-
-    low = spot * (1.0 - strike_window_pct)
-    high = spot * (1.0 + strike_window_pct)
-
-    def _best_wall(oi_map):
-        if not oi_map:
-            return (None, None)
-        best_k = None
-        best_v = -1.0
-        for k, v in oi_map.items():
-            try:
-                strike = float(k)
-                oi = float(v)
-            except Exception:
-                continue
-            if strike < low or strike > high:
-                continue
-            if oi < min_oi:
-                continue
-            if oi > best_v:
-                best_v = oi
-                best_k = strike
-        if best_k is None:
-            return (None, None)
-        return (float(best_k), float(best_v))
-
-    call_wall, call_wall_oi = _best_wall(call_oi_by_strike)
-    put_wall, put_wall_oi = _best_wall(put_oi_by_strike)
-
-    return {
-        "call_wall": call_wall,
-        "put_wall": put_wall,
-        "call_wall_oi": call_wall_oi,
-        "put_wall_oi": put_wall_oi,
-        "window": {"low": float(low), "high": float(high)}
-    }
 
 
-def apply_oi_walls_to_hod_lod(
-    hod: float,
-    lod: float,
-    spot: float,
-    walls: dict,
-    micro_state: str = "Unknown",
-    clip_buffer_pct: float = 0.0015,  # 0.15% buffer so you don't clip exactly on the strike
-    override_clip_mult: float = None
-):
-    """
-    Treat walls as STRUCTURAL constraints (magnets/boundaries), not volatility estimators.
 
-    Behavior:
-    - If call_wall exists and is inside your computed hod, cap hod to call_wall (minus small buffer)
-    - If put_wall exists and is inside your computed lod, cap lod to put_wall (plus small buffer)
-    - Make clipping state-aware (Fock clips less aggressively; Thermal clips more)
-    """
-    call_wall = walls.get("call_wall")
-    put_wall = walls.get("put_wall")
 
-    meta = {
-        "used": False,
-        "clipped_hod": False,
-        "clipped_lod": False,
-        "call_wall": call_wall,
-        "put_wall": put_wall,
-    }
 
-    if not spot or spot <= 0:
-        return float(hod), float(lod), meta
 
-    # State-aware clip intensity
-    # Fock = allow overshoots more often, Thermal = pin/constraints matter more
-    if isinstance(override_clip_mult, (int, float)) and override_clip_mult > 0:
-        clip_mult = float(np.clip(override_clip_mult, 0.10, 1.50))
-    else:
-        if micro_state == "Fock":
-            clip_mult = 0.35   # light clipping
-        elif micro_state == "Thermal":
-            clip_mult = 1.00   # full clipping
-        else:  # Coherent/Unknown
-            clip_mult = 0.70
 
-    buffer = spot * clip_buffer_pct * clip_mult
 
-    new_hod = float(hod)
-    new_lod = float(lod)
 
-    if isinstance(call_wall, (int, float)) and call_wall > 0:
-        # Only clip if wall is between spot and hod (i.e., relevant resistance boundary)
-        if spot < call_wall < new_hod:
-            new_hod = float(call_wall - buffer)
-            meta["used"] = True
-            meta["clipped_hod"] = True
-
-    if isinstance(put_wall, (int, float)) and put_wall > 0:
-        # Only clip if wall is between lod and spot (i.e., relevant support boundary)
-        if new_lod < put_wall < spot:
-            new_lod = float(put_wall + buffer)
-            meta["used"] = True
-            meta["clipped_lod"] = True
-
-    # Safety: don't invert
-    if new_lod >= new_hod:
-        # fallback: keep original
-        return float(hod), float(lod), meta
-
-    return new_hod, new_lod, meta
 
 def detect_market_microstructure_state(closes, volumes, returns, highs=None, lows=None):
     """
@@ -1492,8 +1115,7 @@ def detect_market_microstructure_state(closes, volumes, returns, highs=None, low
         'level_multipliers': level_multipliers
     }
     
-    # NOTE: LSS adjustments are applied in adjust_hod_lod_usage, not here
-    # This prevents double-adjustment of permeability and overshoot bias
+    # NOTE: LSS adjustments are applied via microstructure state, not here
     if lss_features:
         result['liquidity_stress_features'] = lss_features
     result['lss'] = float(lss)  # Store LSS value for later use
@@ -1507,6 +1129,8 @@ def detect_market_microstructure_state(closes, volumes, returns, highs=None, low
 def fit_garch_model(returns, p=1, q=1):
     """
     Fit GARCH(p,q) model to return series
+    
+    Returns None in LOW_MEMORY mode (arch not imported).
     
     Parameters:
     -----------
@@ -1522,7 +1146,7 @@ def fit_garch_model(returns, p=1, q=1):
     dict : Contains GARCH parameters, conditional volatility, and forecasts
     """
     try:
-        if len(returns) < 50:
+        if arch_model is None or len(returns) < 50:
             return None
         
         # Fit GARCH model
@@ -1937,7 +1561,8 @@ def calculate_garch_confidence_bands(forecasts, garch_vol_regime):
         return forecasts
     
     ensemble = forecasts['ensemble']
-    current_vol = garch_vol_regime['current_vol']
+    # Be defensive: garch_vol_regime may be missing current_vol for some timeframes (e.g. intraday/4h)
+    current_vol = float(garch_vol_regime.get('current_vol', 20.0))
     forecast_vols = garch_vol_regime.get('forecast_vol_array', [current_vol] * 10)
     
     upper_band = []
@@ -2001,15 +1626,16 @@ def calculate_most_probable_price_path(closes, volumes, levels, garch_vol_regime
     
     is_intraday = timeframe in ['1m', '5m', '15m', '30m', '1h', '4h']
     
+    # Initialize current_vol to prevent UnboundLocalError
+    current_vol = garch_vol_regime.get('current_vol', np.std(returns) * np.sqrt(252)) if garch_vol_regime else np.std(returns) * np.sqrt(252)
+    
     if is_intraday and sigma_price is not None:
         # FIXED: For intraday, use session volatility (sigma_price) instead of annualized
         # sigma_price is already in price units (e.g., $10 for SPY)
         session_vol = sigma_price / current_price if current_price > 0 else 0.02
         expected_vol = session_vol  # Already session-level, no conversion needed
         print(f"✓ Using session volatility for intraday path: {expected_vol:.2%}")
-    else:
-        # Multi-day: use GARCH (annualized)
-        current_vol = garch_vol_regime.get('current_vol', np.std(returns) * np.sqrt(252)) if garch_vol_regime else np.std(returns) * np.sqrt(252)
+    # Multi-day: use GARCH (annualized) - current_vol already initialized above
     
     if garch_forecast_vols:
         # Use average of next 10 days for expected range
@@ -2239,81 +1865,6 @@ def vega(S, K, T, r, sigma):
     d1 = (np.log(S / K) + (r + 0.5 * sigma**2) * T) / (sigma * np.sqrt(T))
     return S * norm.pdf(d1) * np.sqrt(T)
 
-def get_atm_iv_yf(ticker: str, max_expiries: int = 3):
-    """
-    Returns a single implied volatility estimate (decimal, e.g. 0.22 for 22%)
-    using near-dated ATM call/put mid IV from yfinance.
-
-    If IV is unavailable, returns None.
-    """
-    try:
-        t = yf.Ticker(ticker)
-        expiries = t.options
-        if not expiries:
-            return None
-
-        # Use earliest expiries (near-dated)
-        expiries = expiries[:max_expiries]
-
-        spot = float(t.history(period="1d")["Close"].iloc[-1])
-
-        iv_samples = []
-
-        for exp in expiries:
-            chain = t.option_chain(exp)
-            calls = chain.calls.copy()
-            puts = chain.puts.copy()
-
-            # yfinance usually has 'impliedVolatility'
-            if "impliedVolatility" not in calls.columns or "impliedVolatility" not in puts.columns:
-                continue
-
-            # Find closest strike to spot
-            calls["dist"] = (calls["strike"] - spot).abs()
-            puts["dist"]  = (puts["strike"]  - spot).abs()
-
-            c = calls.sort_values("dist").iloc[0]
-            p = puts.sort_values("dist").iloc[0]
-
-            civ = float(c.get("impliedVolatility", np.nan))
-            piv = float(p.get("impliedVolatility", np.nan))
-
-            # Use average of call/put if both exist
-            vals = [v for v in [civ, piv] if np.isfinite(v) and v > 0]
-            if vals:
-                iv_samples.append(float(np.mean(vals)))
-
-        if not iv_samples:
-            return None
-
-        # Median is more robust than mean
-        return float(np.median(iv_samples))
-
-    except Exception:
-        return None
-
-def implied_volatility(market_price, S, K, T, r):
-    """Calculate implied volatility using Newton-Raphson"""
-    sigma = 0.3
-    max_iterations = 100
-    tolerance = 1e-6
-    
-    for i in range(max_iterations):
-        price = black_scholes_call(S, K, T, r, sigma)
-        diff = price - market_price
-        
-        if abs(diff) < tolerance:
-            return sigma
-        
-        vega_val = vega(S, K, T, r, sigma)
-        if vega_val < 1e-10:
-            break
-            
-        sigma = sigma - diff / vega_val
-        sigma = max(0.01, min(sigma, 5.0))
-    
-    return sigma
-
 def generate_volatility_surface(current_price, garch_vol_regime):
     """
     Generate EXPECTED VOLATILITY SURFACE (synthetic, GARCH-anchored).
@@ -2339,7 +1890,8 @@ def generate_volatility_surface(current_price, garch_vol_regime):
     
     # FIXED: Explicit decimal/percentage naming for unit safety
     if garch_vol_regime.get('garch_params') is not None:
-        atm_vol_pct = garch_vol_regime['current_vol']  # Percentage (e.g., 20.0 = 20%)
+        # Be defensive: fall back to 20% if current_vol is missing
+        atm_vol_pct = float(garch_vol_regime.get('current_vol', 20.0))  # Percentage (e.g., 20.0 = 20%)
         atm_vol_dec = atm_vol_pct / 100.0  # Decimal (e.g., 0.20 = 20%)
     else:
         atm_vol_pct = 20.0
@@ -2627,416 +2179,11 @@ def calculate_hurst_exponent(closes, max_lag=20):
         level_multiplier = 1.0
     return {'hurst': float(H), 'regime': regime, 'level_multiplier': level_multiplier}
 
-def fit_gumbel_copula(u_series, d_series):
-    """
-    Gumbel copula captures upper-tail dependence
-    (HOD and LOD both extreme on same day)
-    """
-    if len(u_series) != len(d_series) or len(u_series) < 10:
-        return {'theta': 1.0, 'tau': 0.0}
-    
-    # Convert to uniform margins
-    u_uniform = (pd.Series(u_series).rank() / (len(u_series) + 1)).values
-    d_uniform = (pd.Series(d_series).rank() / (len(d_series) + 1)).values
-    
-    # Estimate Kendall's tau
-    tau, _ = kendalltau(u_uniform, d_uniform)
-    
-    # Gumbel parameter from tau
-    theta = 1 / (1 - tau) if tau < 1 else 2.0
-    theta = max(1.0, theta)  # Gumbel requires θ ≥ 1
-    
-    return {'theta': float(theta), 'tau': float(tau)}
-
-def conditional_hod_quantile(u_quantile, lod_uniform, theta, q=0.8):
-    """
-    Given LOD is at lod_uniform percentile,
-    what's the q-th quantile of HOD?
-    """
-    # Conditional CDF of U|V=v
-    v = lod_uniform
-    u = np.linspace(0.01, 0.99, 100)
-    
-    # Gumbel conditional
-    t = (-np.log(u))**theta + (-np.log(v))**theta
-    C = np.exp(-t**(1/theta))
-    dC_dv = C * (t**(1/theta - 1)) * ((-np.log(v))**(theta-1)) / v
-    
-    # Find u such that P(U ≤ u | V = v) = q
-    cond_cdf = dC_dv / (dC_dv.sum() + 1e-9)
-    cond_cdf_cum = np.cumsum(cond_cdf)
-    
-    idx = np.where(cond_cdf_cum >= q)[0]
-    if len(idx) > 0:
-        return float(u[idx[0]])
-    return float(u[-1])
-
-def fit_regime_switching(u_series, d_series, exog_features, n_regimes=3):
-    """
-    Markov-switching regression
-    Automatically learns regime transitions
-    """
-    if not STATSMODELS_AVAILABLE:
-        return {'current_regime': 1, 'current_probs': [0.33, 0.34, 0.33], 'next_probs': [0.33, 0.34, 0.33], 'transition_matrix': [[0.33, 0.33, 0.34], [0.33, 0.34, 0.33], [0.33, 0.33, 0.34]]}
-    
-    if len(u_series) != len(d_series) or len(u_series) < 30:
-        return {'current_regime': 1, 'current_probs': [0.33, 0.34, 0.33], 'next_probs': [0.33, 0.34, 0.33], 'transition_matrix': [[0.33, 0.33, 0.34], [0.33, 0.34, 0.33], [0.33, 0.33, 0.34]]}
-    
-    try:
-        # Dependent variable: total range
-        y = np.array(u_series) + np.array(d_series)
-        
-        # Exogenous features
-        X = np.array(exog_features) if not isinstance(exog_features, np.ndarray) else exog_features
-        
-        # Ensure X is 2D
-        if X.ndim == 1:
-            X = X.reshape(-1, 1)
-        
-        # Fit model
-        model = MarkovRegression(
-            y, k_regimes=n_regimes, exog=X,
-            switching_variance=True
-        )
-        
-        result = model.fit()
-        
-        # Get current regime probabilities
-        smoothed_probs = result.smoothed_marginal_probabilities
-        current_regime_probs = smoothed_probs.iloc[-1].values if hasattr(smoothed_probs, 'iloc') else smoothed_probs[-1]
-        
-        # Transition matrix
-        transition_matrix = result.regime_transition
-        
-        # Next-period regime forecast
-        next_regime_probs = current_regime_probs @ transition_matrix
-        
-        return {
-            'current_regime': int(np.argmax(current_regime_probs)),
-            'current_probs': current_regime_probs.tolist() if hasattr(current_regime_probs, 'tolist') else list(current_regime_probs),
-            'next_probs': next_regime_probs.tolist() if hasattr(next_regime_probs, 'tolist') else list(next_regime_probs),
-            'transition_matrix': transition_matrix.tolist() if hasattr(transition_matrix, 'tolist') else transition_matrix
-        }
-    except:
-        return {'current_regime': 1, 'current_probs': [0.33, 0.34, 0.33], 'next_probs': [0.33, 0.34, 0.33], 'transition_matrix': [[0.33, 0.33, 0.34], [0.33, 0.34, 0.33], [0.33, 0.33, 0.34]]}
-
-def fractional_brownian_adjustment(base_hod, base_lod, hurst, sigma):
-    """
-    Adjust predictions based on Hurst exponent
-    H > 0.5: trending (wider range)
-    H < 0.5: mean-reverting (narrower range)
-    """
-    # Fractional scaling
-    # σ_fBm(t) = σ × t^H  (vs. σ × √t for Brownian)
-    
-    if hurst > 0.6:  # Trending
-        # Expect larger moves
-        multiplier = 1.0 + 0.3 * (hurst - 0.5) / 0.5  # Up to 1.3x
-    elif hurst < 0.4:  # Mean-reverting
-        # Expect smaller moves
-        multiplier = 1.0 - 0.2 * (0.5 - hurst) / 0.5  # Down to 0.8x
-    else:
-        multiplier = 1.0
-    
-    mid = (base_hod + base_lod) / 2
-    hod_dist = base_hod - mid
-    lod_dist = mid - base_lod
-    
-    adj_hod = mid + hod_dist * multiplier
-    adj_lod = mid - lod_dist * multiplier
-    
-    return float(adj_hod), float(adj_lod)
-
-# [ALL THE LEVEL DETECTION FUNCTIONS - KEEPING THEM EXACTLY AS BEFORE]
-
-def find_peaks_valleys_scipy(highs, lows, closes, prominence=0.02):
-    price_range = highs.max() - lows.min()
-    min_prominence = price_range * prominence
-    if len(closes) > 11:
-        smoothed = savgol_filter(closes, window_length=11, polyorder=3)
-    else:
-        smoothed = closes
-    peaks, peak_props = find_peaks(smoothed, prominence=min_prominence, distance=5)
-    valleys, valley_props = find_peaks(-smoothed, prominence=min_prominence, distance=5)
-    levels = []
-    for i, peak_idx in enumerate(peaks):
-        if peak_idx >= len(highs):
-            continue
-        level_price = highs[peak_idx]
-        touches = np.sum(np.abs(highs - level_price) < level_price * 0.005)
-        bars_ago = len(closes) - peak_idx
-        recency = 1.0 / (1 + bars_ago / 50)
-        prom_strength = min(peak_props['prominences'][i] / min_prominence / 3, 0.9)
-        strength = (prom_strength * 0.6 + recency * 0.4) * min(touches / 3, 1.0)
-        levels.append({'price': float(level_price), 'type': 'Peak Resistance', 'touches': int(touches), 
-                      'strength': float(strength), 'breakoutProb': float(1 - strength), 
-                      'reversionProb': float(strength), 'category': 'Peak-Valley'})
-    for i, valley_idx in enumerate(valleys):
-        if valley_idx >= len(lows):
-            continue
-        level_price = lows[valley_idx]
-        touches = np.sum(np.abs(lows - level_price) < level_price * 0.005)
-        bars_ago = len(closes) - valley_idx
-        recency = 1.0 / (1 + bars_ago / 50)
-        prom_strength = min(valley_props['prominences'][i] / min_prominence / 3, 0.9)
-        strength = (prom_strength * 0.6 + recency * 0.4) * min(touches / 3, 1.0)
-        levels.append({'price': float(level_price), 'type': 'Valley Support', 'touches': int(touches),
-                      'strength': float(strength), 'breakoutProb': float(1 - strength),
-                      'reversionProb': float(strength), 'category': 'Peak-Valley'})
-    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:10]
-
-def calculate_meanshift_levels(highs, lows, closes):
-    all_prices = np.concatenate([highs, lows, closes]).reshape(-1, 1)
-    bandwidth = estimate_bandwidth(all_prices, quantile=0.15, n_samples=min(len(all_prices), 1000))
-    if bandwidth == 0:
-        bandwidth = (all_prices.max() - all_prices.min()) / 20
-    ms = MeanShift(bandwidth=bandwidth, bin_seeding=True)
-    ms.fit(all_prices)
-    cluster_centers = ms.cluster_centers_.flatten()
-    labels = ms.labels_
-    levels = []
-    for i, center in enumerate(cluster_centers):
-        touches = np.sum(labels == i)
-        strength = min(touches / len(all_prices) * 10, 0.90)
-        levels.append({'price': float(center), 'type': 'MeanShift', 'touches': int(touches), 
-                      'strength': strength, 'breakoutProb': float(1 - strength), 
-                      'reversionProb': float(strength), 'category': 'MeanShift'})
-    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:6]
 
 
-def calculate_pivot_points(hist_data, timeframe):
-    if len(hist_data) < 2:
-        return []
-    prev = hist_data.iloc[-2]
-    high, low, close = prev['High'], prev['Low'], prev['Close']
-    pivot = (high + low + close) / 3
-    r1 = 2 * pivot - low
-    s1 = 2 * pivot - high
-    r2 = pivot + (high - low)
-    s2 = pivot - (high - low)
-    r3 = high + 2 * (pivot - low)
-    s3 = low - 2 * (high - pivot)
-    period_name = "Day" if timeframe == "1d" else "Period"
-    return [
-        {'price': float(pivot), 'type': f'{period_name} Pivot', 'strength': 0.85, 'breakoutProb': 0.15, 'reversionProb': 0.85, 'category': 'Pivot'},
-        {'price': float(r1), 'type': f'{period_name} R1', 'strength': 0.75, 'breakoutProb': 0.25, 'reversionProb': 0.75, 'category': 'Pivot'},
-        {'price': float(s1), 'type': f'{period_name} S1', 'strength': 0.75, 'breakoutProb': 0.25, 'reversionProb': 0.75, 'category': 'Pivot'},
-        {'price': float(r2), 'type': f'{period_name} R2', 'strength': 0.65, 'breakoutProb': 0.35, 'reversionProb': 0.65, 'category': 'Pivot'},
-        {'price': float(s2), 'type': f'{period_name} S2', 'strength': 0.65, 'breakoutProb': 0.35, 'reversionProb': 0.65, 'category': 'Pivot'},
-        {'price': float(r3), 'type': f'{period_name} R3', 'strength': 0.55, 'breakoutProb': 0.45, 'reversionProb': 0.55, 'category': 'Pivot'},
-        {'price': float(s3), 'type': f'{period_name} S3', 'strength': 0.55, 'breakoutProb': 0.45, 'reversionProb': 0.55, 'category': 'Pivot'},
-    ]
 
-def calculate_fibonacci_levels(highs, lows):
-    """
-    Calculate Fibonacci retracement levels.
-    NOTE: These are NOT primary levels - they are psychological references.
-    Use as metadata/confluence only, not as level generators.
-    """
-    if len(highs) < 20:
-        return []
-    recent_high = np.max(highs[-50:])
-    recent_low = np.min(lows[-50:])
-    range_val = recent_high - recent_low
-    fib_ratios = [0.236, 0.382, 0.5, 0.618, 0.786]
-    levels = []
-    for ratio in fib_ratios:
-        level_from_high = recent_high - (range_val * ratio)
-        levels.append({
-            'price': float(level_from_high), 
-            'type': f'Fib {ratio:.3f}',
-            'ratio': float(ratio),
-            'strength': 0.7, 
-            'breakoutProb': 0.3, 
-            'reversionProb': 0.7, 
-            'category': 'Fibonacci',
-            'is_metadata_only': True  # Flag: not a primary level
-        })
-    return levels
 
-def add_fibonacci_metadata_to_levels(all_levels, fib_levels, sigma_price, threshold_sigma=1.0):
-    """
-    Add Fibonacci as metadata/confluence to nearby levels, not as primary levels.
-    This treats Fib as a psychological reference, not discovered structure.
-    """
-    if not fib_levels or not all_levels or sigma_price <= 0:
-        return all_levels
-    
-    for level in all_levels:
-        level_price = level.get('price', 0)
-        nearby_fibs = []
-        
-        for fib in fib_levels:
-            fib_price = fib.get('price', 0)
-            distance_sigma = abs(fib_price - level_price) / sigma_price if sigma_price > 0 else float('inf')
-            
-            if distance_sigma < threshold_sigma:
-                nearby_fibs.append({
-                    'price': float(fib_price),
-                    'ratio': fib.get('ratio', 0),
-                    'distance_sigma': float(distance_sigma)
-                })
-        
-        if nearby_fibs:
-            level['fibonacci_confluence'] = nearby_fibs
-            level['has_fib_confluence'] = True
-    
-    return all_levels
-
-def find_gap_levels(hist_data):
-    gap_levels = []
-    for i in range(1, len(hist_data)):
-        curr = hist_data.iloc[i]
-        prev = hist_data.iloc[i-1]
-        if curr['Low'] > prev['High']:
-            gap_mid = (curr['Low'] + prev['High']) / 2
-            filled = False
-            for j in range(i+1, len(hist_data)):
-                if hist_data.iloc[j]['Low'] <= gap_mid:
-                    filled = True
-                    break
-            if not filled and len(hist_data) - i < 100:
-                gap_levels.append({'price': float(gap_mid), 'type': 'Gap Up', 'strength': 0.85,
-                                  'breakoutProb': 0.15, 'reversionProb': 0.85, 'category': 'Gap'})
-        elif curr['High'] < prev['Low']:
-            gap_mid = (prev['Low'] + curr['High']) / 2
-            filled = False
-            for j in range(i+1, len(hist_data)):
-                if hist_data.iloc[j]['High'] >= gap_mid:
-                    filled = True
-                    break
-            if not filled and len(hist_data) - i < 100:
-                gap_levels.append({'price': float(gap_mid), 'type': 'Gap Down', 'strength': 0.85,
-                                  'breakoutProb': 0.15, 'reversionProb': 0.85, 'category': 'Gap'})
-    return gap_levels
-
-def find_pivot_anomalies(highs, lows, closes):
-    """
-    Pivots are structural anomalies in price flow.
-    Uses IsolationForest to detect unusual price movements that indicate pivot points.
-    """
-    if len(closes) < 10:
-        return []
-    
-    features = []
-    for i in range(2, len(closes) - 2):
-        # Local structure features
-        features.append([
-            closes[i] - closes[i-1],  # momentum
-            highs[i] - lows[i],        # range
-            closes[i] - closes[i-2],  # 2-bar momentum
-            np.std(closes[max(0, i-2):min(len(closes), i+3)]),  # local volatility
-        ])
-    
-    if len(features) < 5:
-        return []
-    
-    X = np.array(features)
-    
-    iso = IsolationForest(
-        contamination=0.05,  # 5% are pivots
-        random_state=42
-    )
-    
-    preds = iso.fit_predict(X)
-    anomaly_scores = iso.score_samples(X)
-    
-    # Negative scores = anomalies = potential pivots
-    pivot_indices = [i+2 for i, score in enumerate(anomaly_scores) 
-                     if preds[i] == -1 and score < -0.5]
-    
-    levels = []
-    for idx in pivot_indices:
-        if idx >= len(closes) or idx < 2 or idx >= len(closes) - 2:
-            continue
-            
-        # High or low pivot?
-        is_high = highs[idx] > max(highs[idx-1], highs[idx+1]) if idx > 0 and idx < len(highs) - 1 else False
-        is_low = lows[idx] < min(lows[idx-1], lows[idx+1]) if idx > 0 and idx < len(lows) - 1 else False
-        
-        score_idx = idx - 2  # Adjust for feature array indexing
-        if score_idx < 0 or score_idx >= len(anomaly_scores):
-            continue
-        
-        if is_high:
-            levels.append({
-                'price': float(highs[idx]),
-                'type': 'Anomaly Pivot High',
-                'strength': float(min(abs(anomaly_scores[score_idx]) / 2, 0.9)),
-                'breakoutProb': float(1 - min(abs(anomaly_scores[score_idx]) / 2, 0.9)),
-                'reversionProb': float(min(abs(anomaly_scores[score_idx]) / 2, 0.9)),
-                'category': 'Isolation-Forest',
-                'anomaly_score': float(anomaly_scores[score_idx])
-            })
-        
-        if is_low:
-            levels.append({
-                'price': float(lows[idx]),
-                'type': 'Anomaly Pivot Low',
-                'strength': float(min(abs(anomaly_scores[score_idx]) / 2, 0.9)),
-                'breakoutProb': float(1 - min(abs(anomaly_scores[score_idx]) / 2, 0.9)),
-                'reversionProb': float(min(abs(anomaly_scores[score_idx]) / 2, 0.9)),
-                'category': 'Isolation-Forest',
-                'anomaly_score': float(anomaly_scores[score_idx])
-            })
-    
-    return levels
-
-def optics_multi_density_levels(highs, lows, closes):
-    """
-    OPTICS finds levels at multiple density scales.
-    Catches both major S/R and minor pivots in one pass.
-    """
-    if len(closes) < 20:
-        return []
-    
-    all_prices = np.concatenate([highs, lows, closes]).reshape(-1, 1)
-    
-    optics = OPTICS(
-        min_samples=5,
-        xi=0.05,  # Sensitivity to density changes
-        min_cluster_size=10
-    )
-    
-    labels = optics.fit_predict(all_prices)
-    reachability = optics.reachability_[optics.ordering_]
-    
-    levels = []
-    for label in set(labels):
-        if label == -1:  # Noise
-            continue
-        
-        cluster_prices = all_prices[labels == label].flatten()
-        center = np.median(cluster_prices)
-        
-        # Density = inverse of reachability
-        cluster_indices = np.where(labels == label)[0]
-        if len(cluster_indices) == 0:
-            continue
-        
-        # Map cluster indices to ordering indices for reachability
-        ordering_map = {optics.ordering_[i]: i for i in range(len(optics.ordering_))}
-        cluster_reachability = [reachability[ordering_map.get(idx, 0)] for idx in cluster_indices if idx in ordering_map]
-        
-        if len(cluster_reachability) == 0:
-            continue
-        
-        density = 1.0 / (np.mean(cluster_reachability) + 1e-9)
-        
-        strength = min(density / 100, 0.9)  # Normalize
-        
-        levels.append({
-            'price': float(center),
-            'type': 'OPTICS Multi-Density',
-            'touches': len(cluster_prices),
-            'strength': float(strength),
-            'breakoutProb': float(1 - strength),
-            'reversionProb': float(strength),
-            'category': 'OPTICS',
-            'density_score': float(density)
-        })
-    
-    return sorted(levels, key=lambda x: x.get('density_score', 0), reverse=True)[:8]
+# LEVEL DETECTION: HDBSCAN + Neural Network (CNN+BiLSTM) + DeepSupp only
 
 def calculate_hdbscan_levels(highs, lows, closes, timeframe='1d'):
     """
@@ -3147,141 +2294,6 @@ def calculate_hdbscan_levels(highs, lows, closes, timeframe='1d'):
     print(f"HDBSCAN: Returning {len(result)} levels with prices: {price_list}")
     return result
 
-def enhanced_optics_levels(highs, lows, closes, timeframe='1d'):
-    """
-    OPTICS with reachability-based strength scoring
-    Reachability distance = "how dense is this cluster?"
-    Better than HDBSCAN for some patterns
-    """
-    if len(closes) < 20:
-        return []
-    
-    all_prices = np.concatenate([highs, lows, closes]).reshape(-1, 1)
-    
-    optics = OPTICS(
-        min_samples=5,
-        xi=0.05,
-        min_cluster_size=10,
-        metric='euclidean'
-    )
-    
-    labels = optics.fit_predict(all_prices)
-    reachability = optics.reachability_[optics.ordering_]
-    
-    levels = []
-    for label in set(labels):
-        if label == -1:
-            continue
-        
-        cluster_mask = labels == label
-        cluster_prices = all_prices[cluster_mask].flatten()
-        center = np.median(cluster_prices)
-        
-        # NEW: Use reachability distance for strength
-        # Lower reachability = denser cluster = stronger level
-        cluster_indices = np.where(cluster_mask)[0]
-        ordering_map = {optics.ordering_[i]: i for i in range(len(optics.ordering_))}
-        cluster_reachability = [reachability[ordering_map.get(idx, 0)]
-                               for idx in cluster_indices if idx in ordering_map]
-        
-        if len(cluster_reachability) == 0:
-            continue
-        
-        avg_reachability = np.mean(cluster_reachability)
-        
-        # Inverse relationship: lower reach = higher strength
-        # Normalize by price scale
-        price_scale = np.ptp(all_prices)
-        normalized_reach = avg_reachability / (price_scale + 1e-9)
-        
-        # Convert to strength [0, 1]
-        strength = 1.0 / (1.0 + normalized_reach * 10)  # Sigmoid-like
-        
-        # NEW: Valley depth metric
-        # How "deep" is the valley in reachability plot?
-        ordering_positions = [ordering_map.get(idx, 0) for idx in cluster_indices if idx in ordering_map]
-        if len(ordering_positions) > 0:
-            cluster_reach_vals = reachability[ordering_positions]
-            local_min_reach = np.min(cluster_reach_vals)
-            start_idx = max(0, min(ordering_positions) - 5)
-            end_idx = min(len(reachability), max(ordering_positions) + 5)
-            surrounding_reach = np.mean(reachability[start_idx:end_idx])
-            valley_depth = (surrounding_reach - local_min_reach) / (surrounding_reach + 1e-9)
-            
-            # Boost strength for deep valleys
-            strength *= (1.0 + 0.5 * valley_depth)
-            strength = min(strength, 0.95)
-        else:
-            valley_depth = 0.0
-        
-        levels.append({
-            'price': float(center),
-            'type': 'OPTICS Density Valley',
-            'strength': float(strength),
-            'touches': len(cluster_prices),
-            'avg_reachability': float(avg_reachability),
-            'valley_depth': float(valley_depth),
-            'category': 'OPTICS',
-            'breakoutProb': float(1 - strength),
-            'reversionProb': float(strength)
-        })
-    
-    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:8]
-
-def kde_based_levels(highs, lows, closes, n_levels=10):
-    """
-    Find levels using kernel density estimation
-    Peaks in density = strong levels
-    """
-    all_prices = np.concatenate([highs, lows, closes])
-    
-    # Adaptive bandwidth (Scott's rule)
-    kde = gaussian_kde(all_prices, bw_method='scott')
-    
-    # Evaluate KDE on fine grid
-    price_range = np.ptp(all_prices)
-    grid = np.linspace(all_prices.min(), all_prices.max(), 1000)
-    density = kde(grid)
-    
-    # Find local maxima (peaks in density)
-    peak_indices = argrelextrema(density, np.greater, order=5)[0]
-    
-    levels = []
-    for idx in peak_indices:
-        price = grid[idx]
-        density_value = density[idx]
-        
-        # Strength from relative density
-        strength = density_value / np.max(density)
-        
-        # Count touches (prices within ±0.5% of this level)
-        touches = np.sum(np.abs(all_prices - price) < price * 0.005)
-        
-        # Prominence: how much does density drop around this peak?
-        left_valley = np.min(density[max(0, idx-20):idx]) if idx > 20 else 0
-        right_valley = np.min(density[idx:min(len(density), idx+20)]) if idx < len(density)-20 else 0
-        avg_valley = (left_valley + right_valley) / 2
-        prominence = (density_value - avg_valley) / (density_value + 1e-9)
-        
-        # Boost strength by prominence
-        strength *= (1.0 + prominence)
-        strength = min(strength, 0.95)
-        
-        levels.append({
-            'price': float(price),
-            'type': 'KDE Peak',
-            'strength': float(strength),
-            'touches': int(touches),
-            'density': float(density_value),
-            'prominence': float(prominence),
-            'category': 'KDE',
-            'breakoutProb': float(1 - strength),
-            'reversionProb': float(strength)
-        })
-    
-    # Sort by strength and return top N
-    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:n_levels]
-
 def multiscale_hdbscan_levels(highs, lows, closes, timeframe='1d'):
     """
     Run HDBSCAN at multiple scales to catch both major and minor levels
@@ -3375,237 +2387,284 @@ def multiscale_hdbscan_levels(highs, lows, closes, timeframe='1d'):
     
     return sorted(all_levels, key=lambda x: x['strength'], reverse=True)[:8]
 
-def time_weighted_hdbscan(highs, lows, closes, timestamps, half_life_days=30):
+def train_level_detection_network(ticker='SPY', timeframe='1d',
+                                  lookback=100, epochs=50, batch_size=32):
     """
-    Weight recent price action more heavily
-    Levels from 6 months ago are less relevant than last week's levels
+    Train the neural network level detector using:
+    - HDBSCAN levels as pseudo-ground-truth
+    - OHLC + volume-profile features
     """
-    all_prices = np.concatenate([highs, lows, closes])
-    all_times = np.concatenate([timestamps, timestamps, timestamps])
-    
-    # Convert timestamps to datetime if needed
-    if isinstance(all_times[0], (int, float)):
-        all_times = pd.to_datetime(all_times, unit='s')
-    
-    # Calculate time weights (exponential decay)
-    current_time = pd.to_datetime(timestamps[-1]) if isinstance(timestamps[-1], (int, float)) else timestamps[-1]
-    time_diffs = np.array([(current_time - pd.to_datetime(t) if isinstance(t, (int, float)) else current_time - t).days for t in all_times])
-    weights = np.exp(-time_diffs / half_life_days)
-    
-    # Weighted sampling (sample recent prices more)
-    n_samples = len(all_prices)
-    if n_samples > 0 and weights.sum() > 0:
-        sample_indices = np.random.choice(
-            n_samples,
-            size=n_samples,
-            replace=True,
-            p=weights / weights.sum()
-        )
-        
-        sampled_prices = all_prices[sample_indices].reshape(-1, 1)
-        
-        # Run HDBSCAN on weighted sample
-        clusterer = hdbscan.HDBSCAN(
-            min_cluster_size=10,
-            min_samples=5,
-            metric='euclidean'
-        )
-        
-        labels = clusterer.fit_predict(sampled_prices)
-        probabilities = clusterer.probabilities_
-        
-        levels = []
-        for label in set(labels):
-            if label == -1:
-                continue
-            
-            cluster_mask = labels == label
-            cluster_prices = sampled_prices[cluster_mask].flatten()
-            cluster_probs = probabilities[cluster_mask]
-            
-            center = np.average(cluster_prices, weights=cluster_probs)
-            strength = np.mean(cluster_probs)
-            
-            levels.append({
-                'price': float(center),
-                'type': 'Time-Weighted HDBSCAN',
-                'strength': float(min(strength, 0.95)),
-                'touches': len(cluster_prices),
-                'category': 'HDBSCAN-TimeWeighted',
-                'breakoutProb': float(1 - min(strength, 0.95)),
-                'reversionProb': float(min(strength, 0.95))
-            })
-        
-        return sorted(levels, key=lambda x: x['strength'], reverse=True)[:8]
-    
-    return []
-
-def detect_wyckoff_zones(hist, lookback=50):
-    """
-    Detect Wyckoff accumulation (support) and distribution (resistance) zones
-
-    Accumulation signs:
-    - Price consolidates after downtrend
-    - Volume increases on up-bars
-    - Springs/shakeouts below support
-
-    Distribution signs:
-    - Price consolidates after uptrend
-    - Volume increases on down-bars
-    - Upthrusts above resistance
-    """
-    if len(hist) < lookback:
-        return []
-    
-    recent = hist.tail(lookback) if hasattr(hist, 'tail') else hist[-lookback:]
-    
-    if isinstance(recent, pd.DataFrame):
-        closes = recent['Close'].values if 'Close' in recent.columns else recent.iloc[:, -1].values
-        highs = recent['High'].values if 'High' in recent.columns else recent.iloc[:, 1].values
-        lows = recent['Low'].values if 'Low' in recent.columns else recent.iloc[:, 2].values
-        volumes = recent['Volume'].values if 'Volume' in recent.columns else np.ones(len(recent))
-    else:
-        closes = np.array([c['Close'] if isinstance(c, dict) else c[-1] for c in recent])
-        highs = np.array([h['High'] if isinstance(h, dict) else h[1] for h in recent])
-        lows = np.array([l['Low'] if isinstance(l, dict) else l[2] for l in recent])
-        volumes = np.array([v.get('Volume', 1.0) if isinstance(v, dict) else 1.0 for v in recent])
-    
-    levels = []
-    
-    # Detect consolidation zones (low volatility)
-    rolling_std = pd.Series(closes).rolling(10).std()
-    low_vol_periods = rolling_std < rolling_std.quantile(0.3)
-    
-    # Find contiguous low-vol zones
-    zones = []
-    in_zone = False
-    zone_start = 0
-    
-    for i, is_low_vol in enumerate(low_vol_periods):
-        if is_low_vol and not in_zone:
-            zone_start = i
-            in_zone = True
-        elif not is_low_vol and in_zone:
-            if i - zone_start >= 5:  # Minimum 5 bars
-                zones.append((zone_start, i))
-            in_zone = False
-    
-    for start, end in zones:
-        zone_closes = closes[start:end]
-        zone_highs = highs[start:end]
-        zone_lows = lows[start:end]
-        zone_volumes = volumes[start:end]
-        
-        # Zone characteristics
-        zone_mid = (np.max(zone_highs) + np.min(zone_lows)) / 2
-        zone_width = np.max(zone_highs) - np.min(zone_lows)
-        
-        # Check for accumulation/distribution
-        # Accumulation: up-bars have higher volume
-        up_bars = zone_closes[1:] > zone_closes[:-1]
-        down_bars = ~up_bars
-        
-        up_vol = np.mean(zone_volumes[1:][up_bars]) if np.any(up_bars) else 0
-        down_vol = np.mean(zone_volumes[1:][down_bars]) if np.any(down_bars) else 0
-        
-        if up_vol > down_vol * 1.2:
-            zone_type = 'Wyckoff Accumulation'
-            strength = 0.80
-        elif down_vol > up_vol * 1.2:
-            zone_type = 'Wyckoff Distribution'
-            strength = 0.80
-        else:
-            zone_type = 'Wyckoff Consolidation'
-            strength = 0.65
-        
-        levels.append({
-            'price': float(zone_mid),
-            'type': zone_type,
-            'strength': float(strength),
-            'touches': len(zone_closes),
-            'zone_width': float(zone_width),
-            'category': 'Wyckoff',
-            'breakoutProb': float(1 - strength),
-            'reversionProb': float(strength)
-        })
-    
-    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:8]
-
-def persistent_homology_levels(highs, lows, closes, max_levels=8):
-    """
-    Use persistent homology to find levels that exist across multiple scales
-    
-    Intuition: 
-    - Build filtration at different price thresholds
-    - Levels that persist = structurally significant
-    """
-    if not RIPSER_AVAILABLE:
-        return []
-    
-    if len(closes) < 20:
-        return []
-    
-    all_prices = np.concatenate([highs, lows, closes])
-    
-    # Build point cloud (1D)
-    points = all_prices.reshape(-1, 1)
+    if not TORCH_AVAILABLE:
+        return {'success': False, 'error': 'PyTorch not available'}
     
     try:
-        # Compute persistent homology
-        if not RIPSER_AVAILABLE or ripser is None:
-            return None  # Skip topological analysis if ripser not available
-        result = ripser(points, maxdim=0)
-        diagrams = result['dgms']
+        print(f"Training level detection network for {ticker} at {timeframe}...")
         
-        # 0-dimensional persistence (connected components)
-        # Each bar in diagram = (birth, death) of a component
-        h0_diagram = diagrams[0]
+        # 1) Fetch data - try Google Drive + real-time for NQ/ES/VIX
+        hist = None
         
-        levels = []
-        for birth, death in h0_diagram:
-            if np.isinf(death):
-                continue
-            
-            # Persistence = how long this level "lived"
-            persistence = death - birth
-            
-            # Level price = midpoint of birth/death
-            level_price = (birth + death) / 2
-            
-            # Strength from persistence
-            finite_deaths = h0_diagram[~np.isinf(h0_diagram[:, 1])]
-            if len(finite_deaths) > 0:
-                max_persistence = np.max(finite_deaths[:, 1] - finite_deaths[:, 0])
-                strength = persistence / (max_persistence + 1e-9)
-            else:
-                strength = 0.5
-            
-            # Filter weak levels
-            if strength < 0.3:
-                continue
-            
-            # Count touches
-            touches = np.sum(np.abs(all_prices - level_price) < level_price * 0.005)
-            
-            levels.append({
-                'price': float(level_price),
-                'type': 'Persistent Homology',
-                'strength': float(strength),
-                'persistence': float(persistence),
-                'birth': float(birth),
-                'death': float(death),
-                'touches': int(touches),
-                'category': 'TDA',
-                'breakoutProb': float(1 - strength),
-                'reversionProb': float(strength)
-            })
+        if GOOGLE_DRIVE_DATA_AVAILABLE and ticker.upper() in ['NQ', 'ES', 'VIX']:
+            print(f"🔄 Loading training data for {ticker} from Google Drive + real-time...")
+            try:
+                hist = load_historical_data(
+                    symbol=ticker.upper(),
+                    timeframe=timeframe,
+                    combine_with_realtime=True
+                )
+                
+                if hist is not None and len(hist) > 0:
+                    print(f"✅ Using {len(hist)} bars (Google Drive + real-time) for training")
+                else:
+                    print(f"⚠ Combined data not available, falling back to yfinance")
+                    hist = None
+                    
+            except Exception as e:
+                print(f"⚠ Combined data loading failed: {e}")
+                hist = None
         
-        return sorted(levels, key=lambda x: x['persistence'], reverse=True)[:max_levels]
-    except Exception as e:
-        print(f"Persistent Homology failed: {e}")
-        return []
+        # Fallback to yfinance
+        if hist is None:
+            print(f"🔄 Loading training data for {ticker} from yfinance...")
+            stock = yf.Ticker(ticker)
+            interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
+            interval = interval_map.get(timeframe, '1d')
+            period_map = {'1m': '1mo', '5m': '3mo', '15m': '6mo', '1h': '1y', '4h': '1y', '1d': '2y'}
+            period = period_map.get(timeframe, '1y')
+            
+            hist = stock.history(period=period, interval=interval)
+        if timeframe == '4h':
+            # resample 1h to 4h
+            if not isinstance(hist.index, pd.DatetimeIndex):
+                hist.index = pd.to_datetime(hist.index)
+            hist = hist.resample('4H').agg({
+                'Open': 'first',
+                'High': 'max',
+                'Low': 'min',
+                'Close': 'last',
+                'Volume': 'sum'
+            }).dropna()
 
-if TORCH_AVAILABLE and nn is not None:
+        if len(hist) < lookback * 2:
+            return {'success': False, 'error': f'Insufficient data: need at least {lookback * 2} bars, got {len(hist)}'}
+        
+        closes = hist['Close'].values
+        highs = hist['High'].values
+        lows = hist['Low'].values
+        volumes = hist['Volume'].values if 'Volume' in hist.columns else np.ones(len(closes))
+        
+        # 2) Generate windows
+        print("Generating training samples...")
+        X_train = []
+        X_volume = []
+        y_train = []
+        
+        for i in range(lookback, len(hist) - 10):
+            window_hist = hist.iloc[i-lookback:i]
+            window_highs = highs[i-lookback:i]
+            window_lows = lows[i-lookback:i]
+            window_closes = closes[i-lookback:i]
+            window_volumes = volumes[i-lookback:i] if len(volumes) >= i else np.ones(lookback)
+            
+            # --- Volume profile for this window ---
+            volume_profile = calculate_volume_profile(
+                window_highs, window_lows, window_closes, window_volumes, bins=30
+            )
+            
+            # --- Ground truth levels (HDBSCAN only) ---
+            hdbscan_levels = calculate_hdbscan_levels(
+                window_highs, window_lows, window_closes, timeframe=timeframe
+            )
+            truth_prices = [l.get('price', 0) for l in hdbscan_levels if 'price' in l]
+            
+            # --- OHLC normalization ---
+            ohlc_data = window_hist[['Open', 'High', 'Low', 'Close']].values
+            ohlc_mean = ohlc_data.mean(axis=0)
+            ohlc_std = ohlc_data.std(axis=0) + 1e-9
+            ohlc_normalized = (ohlc_data - ohlc_mean) / ohlc_std  # [lookback, 4]
+            
+            # --- Volume-profile per-bar features ---
+            volume_features = []
+            if volume_profile:
+                poc = volume_profile.get('poc', np.mean(window_closes))
+                va_high = volume_profile.get('value_area_high', np.max(window_closes))
+                va_low = volume_profile.get('value_area_low', np.min(window_closes))
+                volume_dist = volume_profile.get('volume_distribution', {})
+                std_close = np.std(window_closes) + 1e-9
+                max_vol = max(volume_dist.values()) if volume_dist else 1.0
+                
+                for close_price in window_closes:
+                    dist_to_poc = abs(close_price - poc) / std_close
+                    dist_to_va_high = abs(close_price - va_high) / std_close
+                    dist_to_va_low = abs(close_price - va_low) / std_close
+                    in_value_area = 1.0 if va_low <= close_price <= va_high else 0.0
+                    
+                    if volume_dist:
+                        closest_price = min(volume_dist.keys(), key=lambda p: abs(p - close_price))
+                        if abs(closest_price - close_price) / close_price < 0.01:
+                            volume_at_price = volume_dist.get(closest_price, 0.0)
+                            volume_at_price_norm = volume_at_price / (max_vol + 1e-9)
+                        else:
+                            volume_at_price_norm = 0.0
+                    else:
+                        volume_at_price_norm = 0.0
+                    
+                    volume_features.append([
+                        float(dist_to_poc),
+                        float(dist_to_va_high),
+                        float(dist_to_va_low),
+                        float(in_value_area),
+                        float(volume_at_price_norm)
+                    ])
+            else:
+                volume_features = [[0.0, 0.0, 0.0, 0.0, 0.0]] * lookback
+            
+            volume_features = np.array(volume_features, dtype=np.float32)  # [lookback, 5]
+            
+            # --- Labels (bars near any level) ---
+            labels = np.zeros(lookback, dtype=np.float32)
+            price_tolerance = np.std(window_closes) * 0.01  # 1% of std-dev
+            
+            for j, close_price in enumerate(window_closes):
+                for truth_price in truth_prices:
+                    if abs(close_price - truth_price) < price_tolerance:
+                        labels[j] = 1.0
+                        break
+            
+            # keep only windows with at least 1 positive
+            if labels.sum() > 0:
+                X_train.append(ohlc_normalized)
+                X_volume.append(volume_features)
+                y_train.append(labels)
+        
+        if len(X_train) == 0:
+            return {'success': False, 'error': 'No training samples generated'}
+        
+        X_train = np.array(X_train, dtype=np.float32)      # [N, T, 4]
+        X_volume = np.array(X_volume, dtype=np.float32)    # [N, T, 5]
+        y_train = np.array(y_train, dtype=np.float32)      # [N, T]
+        
+        print(f"Generated {len(X_train)} training samples")
+        print(f"Positive label rate: {np.mean(y_train):.2%}")
+        
+        # 3) Train/val split
+        split_idx = int(len(X_train) * 0.8)
+        X_train_split = X_train[:split_idx]
+        X_volume_train = X_volume[:split_idx]
+        y_train_split = y_train[:split_idx]
+        
+        X_val = X_train[split_idx:]
+        X_volume_val = X_volume[split_idx:]
+        y_val = y_train[split_idx:]
+        
+        # 4) Tensors
+        X_train_tensor = torch.FloatTensor(X_train_split)
+        X_volume_train_tensor = torch.FloatTensor(X_volume_train)
+        y_train_tensor = torch.FloatTensor(y_train_split)
+        
+        X_val_tensor = torch.FloatTensor(X_val)
+        X_volume_val_tensor = torch.FloatTensor(X_volume_val)
+        y_val_tensor = torch.FloatTensor(y_val)
+        
+        # 5) Model, optimizer, loss
+        model = LevelDetectionNet(
+            lookback=lookback,
+            use_volume_profile=True,
+            cnn_channels=(64, 128),
+            lstm_hidden=64,
+            lstm_layers=1,
+            attn_heads=4,
+            dropout=0.2
+        )
+        
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
+        criterion = nn.BCEWithLogitsLoss()
+        
+        best_val_loss = float('inf')
+        train_losses = []
+        val_losses = []
+        
+        print(f"Training for {epochs} epochs...")
+        
+        for epoch in range(epochs):
+            model.train()
+            epoch_loss = 0.0
+            
+            # mini-batch training
+            for batch_start in range(0, len(X_train_tensor), batch_size):
+                batch_end = min(batch_start + batch_size, len(X_train_tensor))
+                
+                X_batch = X_train_tensor[batch_start:batch_end]           # [B, T, 4]
+                X_vol_batch = X_volume_train_tensor[batch_start:batch_end]# [B, T, 5]
+                y_batch = y_train_tensor[batch_start:batch_end]           # [B, T]
+                
+                optimizer.zero_grad()
+                logits, _ = model(X_batch, volume_profile_features=X_vol_batch)  # [B, T]
+                loss = criterion(logits, y_batch)
+                loss.backward()
+                optimizer.step()
+                
+                epoch_loss += loss.item()
+            
+            avg_train_loss = epoch_loss / max(1, (len(X_train_tensor) / batch_size))
+            train_losses.append(avg_train_loss)
+            
+            # --- Validation ---
+            model.eval()
+            with torch.no_grad():
+                val_logits, _ = model(X_val_tensor, volume_profile_features=X_volume_val_tensor)
+                val_loss = criterion(val_logits, y_val_tensor).item()
+                val_losses.append(val_loss)
+                
+                val_probs = torch.sigmoid(val_logits)
+                val_preds = (val_probs > 0.5).float()
+                val_acc = (val_preds == y_val_tensor).float().mean().item()
+            
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                torch.save(model.state_dict(), 'level_detector.pth')
+            
+            if (epoch + 1) % 10 == 0 or epoch == 0:
+                print(f"Epoch {epoch+1}/{epochs} - Train Loss: {avg_train_loss:.4f}, "
+                      f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2%}")
+        
+        print(f"[OK] Training complete. Best val loss: {best_val_loss:.4f}")
+        print("[OK] Model saved to level_detector.pth")
+        
+        # Final metrics on val
+        model.eval()
+        with torch.no_grad():
+            final_logits, _ = model(X_val_tensor, volume_profile_features=X_volume_val_tensor)
+            final_probs = torch.sigmoid(final_logits)
+            final_preds = (final_probs > 0.5).float()
+            
+            final_acc = (final_preds == y_val_tensor).float().mean().item()
+            
+            tp = ((final_preds == 1) & (y_val_tensor == 1)).float().sum().item()
+            pp = (final_preds == 1).float().sum().item()
+            ap = (y_val_tensor == 1).float().sum().item()
+            
+            precision = tp / (pp + 1e-9)
+            recall = tp / (ap + 1e-9)
+            f1 = 2 * (precision * recall) / (precision + recall + 1e-9)
+        
+        return {
+            'success': True,
+            'model_path': 'level_detector.pth',
+            'metrics': {
+                'final_accuracy': float(final_acc),
+                'precision': float(precision),
+                'recall': float(recall),
+                'f1': float(f1)
+            }
+        }
+        
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"ERROR in train_level_detection_network: {error_trace}")
+        return {'success': False, 'error': str(e)}
+
+if TORCH_AVAILABLE:
     class LevelDetectionNet(nn.Module):
         """
         Neural Network for Level Prediction
@@ -3683,26 +2742,12 @@ else:
         def __init__(self, *args, **kwargs):
             pass
 
-def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, epochs=50, batch_size=32):
+def train_level_detection_network(ticker='SPY', timeframe='1d',
+                                  lookback=100, epochs=50, batch_size=32):
     """
-    Train the neural network level detector
-    
-    Training approach:
-    1. Use HDBSCAN/OPTICS levels as ground truth (most accurate)
-    2. For each historical bar, label it as level=1 if it's near a detected level
-    3. Train CNN+Attention to predict which bars are levels
-    
-    Parameters:
-    -----------
-    ticker: str - Stock ticker to train on
-    timeframe: str - Timeframe for data
-    lookback: int - Number of bars to look back
-    epochs: int - Training epochs
-    batch_size: int - Batch size
-    
-    Returns:
-    --------
-    dict: Training metrics and model path
+    Train the neural network level detector using:
+    - HDBSCAN levels as pseudo-ground-truth
+    - OHLC + volume-profile features
     """
     if not TORCH_AVAILABLE:
         return {'success': False, 'error': 'PyTorch not available'}
@@ -3710,7 +2755,7 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
     try:
         print(f"Training level detection network for {ticker} at {timeframe}...")
         
-        # Fetch historical data
+        # 1) Fetch data
         stock = yf.Ticker(ticker)
         interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
         interval = interval_map.get(timeframe, '1d')
@@ -3718,21 +2763,32 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
         period = period_map.get(timeframe, '1y')
         
         hist = stock.history(period=period, interval=interval)
+        if timeframe == '4h':
+            # resample 1h to 4h
+            if not isinstance(hist.index, pd.DatetimeIndex):
+                hist.index = pd.to_datetime(hist.index)
+            hist = hist.resample('4H').agg({
+                'Open': 'first',
+                'High': 'max',
+                'Low': 'min',
+                'Close': 'last',
+                'Volume': 'sum'
+            }).dropna()
+
         if len(hist) < lookback * 2:
-            return {'success': False, 'error': f'Insufficient data: need at least {lookback * 2} bars'}
+            return {'success': False, 'error': f'Insufficient data: need at least {lookback * 2} bars, got {len(hist)}'}
         
         closes = hist['Close'].values
         highs = hist['High'].values
         lows = hist['Low'].values
         volumes = hist['Volume'].values if 'Volume' in hist.columns else np.ones(len(closes))
         
-        # Prepare training data
+        # 2) Generate windows
         print("Generating training samples...")
         X_train = []
-        X_volume = []  # Volume profile features
+        X_volume = []
         y_train = []
         
-        # For each window, detect levels using HDBSCAN/OPTICS (ground truth)
         for i in range(lookback, len(hist) - 10):
             window_hist = hist.iloc[i-lookback:i]
             window_highs = highs[i-lookback:i]
@@ -3740,52 +2796,46 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
             window_closes = closes[i-lookback:i]
             window_volumes = volumes[i-lookback:i] if len(volumes) >= i else np.ones(lookback)
             
-            # Calculate volume profile for this window
+            # --- Volume profile for this window ---
             volume_profile = calculate_volume_profile(
                 window_highs, window_lows, window_closes, window_volumes, bins=30
             )
             
-            # Detect levels using HDBSCAN (most accurate method)
-            hdbscan_levels = calculate_hdbscan_levels(window_highs, window_lows, window_closes, timeframe=timeframe)
-            optics_levels = enhanced_optics_levels(window_highs, window_lows, window_closes, timeframe=timeframe)
+            # --- Ground truth levels (HDBSCAN only) ---
+            hdbscan_levels = calculate_hdbscan_levels(
+                window_highs, window_lows, window_closes, timeframe=timeframe
+            )
+            truth_prices = [l.get('price', 0) for l in hdbscan_levels if 'price' in l]
             
-            # Combine as ground truth
-            all_truth_levels = hdbscan_levels + optics_levels
-            truth_prices = [l.get('price', 0) for l in all_truth_levels if 'price' in l]
-            
-            # Prepare OHLC input
+            # --- OHLC normalization ---
             ohlc_data = window_hist[['Open', 'High', 'Low', 'Close']].values
-            
-            # Normalize
             ohlc_mean = ohlc_data.mean(axis=0)
             ohlc_std = ohlc_data.std(axis=0) + 1e-9
-            ohlc_normalized = (ohlc_data - ohlc_mean) / ohlc_std
+            ohlc_normalized = (ohlc_data - ohlc_mean) / ohlc_std  # [lookback, 4]
             
-            # Prepare volume profile features for each bar
+            # --- Volume-profile per-bar features ---
             volume_features = []
             if volume_profile:
                 poc = volume_profile.get('poc', np.mean(window_closes))
                 va_high = volume_profile.get('value_area_high', np.max(window_closes))
                 va_low = volume_profile.get('value_area_low', np.min(window_closes))
                 volume_dist = volume_profile.get('volume_distribution', {})
+                std_close = np.std(window_closes) + 1e-9
+                max_vol = max(volume_dist.values()) if volume_dist else 1.0
                 
-                for j, close_price in enumerate(window_closes):
-                    # Distance to POC (normalized)
-                    dist_to_poc = abs(close_price - poc) / (np.std(window_closes) + 1e-9)
-                    
-                    # Distance to value area
-                    dist_to_va_high = abs(close_price - va_high) / (np.std(window_closes) + 1e-9)
-                    dist_to_va_low = abs(close_price - va_low) / (np.std(window_closes) + 1e-9)
-                    
-                    # In value area (binary)
+                for close_price in window_closes:
+                    dist_to_poc = abs(close_price - poc) / std_close
+                    dist_to_va_high = abs(close_price - va_high) / std_close
+                    dist_to_va_low = abs(close_price - va_low) / std_close
                     in_value_area = 1.0 if va_low <= close_price <= va_high else 0.0
                     
-                    # Volume at this price (normalized)
-                    closest_price = min(volume_dist.keys(), key=lambda p: abs(p - close_price)) if volume_dist else poc
-                    if abs(closest_price - close_price) / close_price < 0.01:
-                        volume_at_price = volume_dist.get(closest_price, 0.0)
-                        max_vol = max(volume_dist.values()) if volume_dist else 1.0
-                        volume_at_price_norm = volume_at_price / (max_vol + 1e-9)
+                    if volume_dist:
+                        closest_price = min(volume_dist.keys(), key=lambda p: abs(p - close_price))
+                        if abs(closest_price - close_price) / close_price < 0.01:
+                            volume_at_price = volume_dist.get(closest_price, 0.0)
+                            volume_at_price_norm = volume_at_price / (max_vol + 1e-9)
+                        else:
+                            volume_at_price_norm = 0.0
                     else:
                         volume_at_price_norm = 0.0
                     
@@ -3797,24 +2847,22 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
                         float(volume_at_price_norm)
                     ])
             else:
-                # Default volume features if no volume profile
                 volume_features = [[0.0, 0.0, 0.0, 0.0, 0.0]] * lookback
             
-            volume_features = np.array(volume_features, dtype=np.float32)
+            volume_features = np.array(volume_features, dtype=np.float32)  # [lookback, 5]
             
-            # Create labels: 1 if bar is near a level, 0 otherwise
-            labels = np.zeros(lookback)
-            price_tolerance = np.std(window_closes) * 0.01  # 1% of std dev
+            # --- Labels (bars near any level) ---
+            labels = np.zeros(lookback, dtype=np.float32)
+            price_tolerance = np.std(window_closes) * 0.01  # 1% of std-dev
             
             for j, close_price in enumerate(window_closes):
-                # Check if this bar's close is near any truth level
                 for truth_price in truth_prices:
                     if abs(close_price - truth_price) < price_tolerance:
                         labels[j] = 1.0
                         break
             
-            # Only add if we have at least some positive labels
-            if np.sum(labels) > 0:
+            # keep only windows with at least 1 positive
+            if labels.sum() > 0:
                 X_train.append(ohlc_normalized)
                 X_volume.append(volume_features)
                 y_train.append(labels)
@@ -3822,99 +2870,112 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
         if len(X_train) == 0:
             return {'success': False, 'error': 'No training samples generated'}
         
-        X_train = np.array(X_train, dtype=np.float32)
-        y_train = np.array(y_train, dtype=np.float32)
+        X_train = np.array(X_train, dtype=np.float32)      # [N, T, 4]
+        X_volume = np.array(X_volume, dtype=np.float32)    # [N, T, 5]
+        y_train = np.array(y_train, dtype=np.float32)      # [N, T]
         
         print(f"Generated {len(X_train)} training samples")
         print(f"Positive label rate: {np.mean(y_train):.2%}")
         
-        # Split train/val
+        # 3) Train/val split
         split_idx = int(len(X_train) * 0.8)
         X_train_split = X_train[:split_idx]
+        X_volume_train = X_volume[:split_idx]
         y_train_split = y_train[:split_idx]
+        
         X_val = X_train[split_idx:]
+        X_volume_val = X_volume[split_idx:]
         y_val = y_train[split_idx:]
         
-        # Convert to tensors
+        # 4) Tensors
         X_train_tensor = torch.FloatTensor(X_train_split)
         X_volume_train_tensor = torch.FloatTensor(X_volume_train)
         y_train_tensor = torch.FloatTensor(y_train_split)
+        
         X_val_tensor = torch.FloatTensor(X_val)
         X_volume_val_tensor = torch.FloatTensor(X_volume_val)
         y_val_tensor = torch.FloatTensor(y_val)
         
-        # Initialize model (with volume profile)
-        model = LevelDetectionNet(lookback=lookback, use_volume_profile=True)
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-        criterion = nn.BCEWithLogitsLoss()  # Binary cross-entropy for level/no-level
+        # 5) Model, optimizer, loss
+        model = LevelDetectionNet(
+            lookback=lookback,
+            use_volume_profile=True,
+            cnn_channels=(64, 128),
+            lstm_hidden=64,
+            lstm_layers=1,
+            attn_heads=4,
+            dropout=0.2
+        )
         
-        # Training loop
-        print(f"Training for {epochs} epochs...")
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
+        criterion = nn.BCEWithLogitsLoss()
+        
         best_val_loss = float('inf')
         train_losses = []
         val_losses = []
         
+        print(f"Training for {epochs} epochs...")
+        
         for epoch in range(epochs):
             model.train()
-            epoch_loss = 0
+            epoch_loss = 0.0
             
-            # Mini-batch training
+            # mini-batch training
             for batch_start in range(0, len(X_train_tensor), batch_size):
                 batch_end = min(batch_start + batch_size, len(X_train_tensor))
-                X_batch = X_train_tensor[batch_start:batch_end]
-                X_vol_batch = X_volume_train_tensor[batch_start:batch_end]
-                y_batch = y_train_tensor[batch_start:batch_end]
+                
+                X_batch = X_train_tensor[batch_start:batch_end]           # [B, T, 4]
+                X_vol_batch = X_volume_train_tensor[batch_start:batch_end]# [B, T, 5]
+                y_batch = y_train_tensor[batch_start:batch_end]           # [B, T]
                 
                 optimizer.zero_grad()
-                logits = model(X_batch, volume_profile_features=X_vol_batch)
-                # Use logits directly (model outputs before sigmoid)
+                logits, _ = model(X_batch, volume_profile_features=X_vol_batch)  # [B, T]
                 loss = criterion(logits, y_batch)
                 loss.backward()
                 optimizer.step()
                 
                 epoch_loss += loss.item()
             
-            avg_train_loss = epoch_loss / (len(X_train_tensor) / batch_size)
+            avg_train_loss = epoch_loss / max(1, (len(X_train_tensor) / batch_size))
             train_losses.append(avg_train_loss)
             
-            # Validation
+            # --- Validation ---
             model.eval()
             with torch.no_grad():
-                val_logits = model(X_val_tensor, volume_profile_features=X_volume_val_tensor)
+                val_logits, _ = model(X_val_tensor, volume_profile_features=X_volume_val_tensor)
                 val_loss = criterion(val_logits, y_val_tensor).item()
                 val_losses.append(val_loss)
                 
-                # Calculate accuracy (threshold at 0.5 after sigmoid)
                 val_probs = torch.sigmoid(val_logits)
                 val_preds = (val_probs > 0.5).float()
                 val_acc = (val_preds == y_val_tensor).float().mean().item()
             
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
-                # Save best model
                 torch.save(model.state_dict(), 'level_detector.pth')
             
-            if (epoch + 1) % 10 == 0:
-                print(f"Epoch {epoch+1}/{epochs}: Train Loss={avg_train_loss:.4f}, Val Loss={val_loss:.4f}, Val Acc={val_acc:.2%}")
+            if (epoch + 1) % 10 == 0 or epoch == 0:
+                print(f"Epoch {epoch+1}/{epochs} - Train Loss: {avg_train_loss:.4f}, "
+                      f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2%}")
         
-        print(f"✓ Training complete! Best validation loss: {best_val_loss:.4f}")
-        print(f"✓ Model saved to level_detector.pth")
+        print(f"[OK] Training complete. Best val loss: {best_val_loss:.4f}")
+        print("[OK] Model saved to level_detector.pth")
         
-        # Final evaluation
+        # Final metrics on val
         model.eval()
         with torch.no_grad():
-            final_logits = model(X_val_tensor, volume_profile_features=X_volume_val_tensor)
+            final_logits, _ = model(X_val_tensor, volume_profile_features=X_volume_val_tensor)
             final_probs = torch.sigmoid(final_logits)
             final_preds = (final_probs > 0.5).float()
+            
             final_acc = (final_preds == y_val_tensor).float().mean().item()
             
-            # Precision/Recall
-            true_positives = ((final_preds == 1) & (y_val_tensor == 1)).float().sum().item()
-            predicted_positives = (final_preds == 1).float().sum().item()
-            actual_positives = (y_val_tensor == 1).float().sum().item()
+            tp = ((final_preds == 1) & (y_val_tensor == 1)).float().sum().item()
+            pp = (final_preds == 1).float().sum().item()
+            ap = (y_val_tensor == 1).float().sum().item()
             
-            precision = true_positives / (predicted_positives + 1e-9)
-            recall = true_positives / (actual_positives + 1e-9)
+            precision = tp / (pp + 1e-9)
+            recall = tp / (ap + 1e-9)
             f1 = 2 * (precision * recall) / (precision + recall + 1e-9)
         
         return {
@@ -3926,256 +2987,608 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100, ep
                 'recall': float(recall),
                 'f1_score': float(f1),
                 'best_val_loss': float(best_val_loss),
-                'train_samples': len(X_train_split),
-                'val_samples': len(X_val)
+                'train_samples': int(len(X_train_split)),
+                'val_samples': int(len(X_val))
             },
             'training_history': {
                 'train_losses': [float(x) for x in train_losses],
                 'val_losses': [float(x) for x in val_losses]
             }
         }
-        
+    
     except Exception as e:
         import traceback
         error_trace = traceback.format_exc()
-        print(f"Training failed: {error_trace}")
+        print(f"Training failed:\n{error_trace}")
         return {'success': False, 'error': str(e)}
 
-def detect_levels_with_neural_network(hist, lookback=100, threshold=0.7):
-    """
-    Use trained neural network to detect levels
-    Falls back to simple pattern detection if model not available
-    """
-    if not TORCH_AVAILABLE or len(hist) < lookback:
-        return []
-    
+def _build_volume_features(closes, highs, lows, volumes, lookback):
+    """Build per-bar volume profile features for CNN input."""
+    volume_profile = calculate_volume_profile(highs, lows, closes, volumes, bins=30)
+    features = []
+    if volume_profile:
+        poc = volume_profile.get('poc', np.mean(closes))
+        va_high = volume_profile.get('value_area_high', np.max(closes))
+        va_low = volume_profile.get('value_area_low', np.min(closes))
+        volume_dist = volume_profile.get('volume_distribution', {})
+        std_close = np.std(closes) + 1e-9
+        max_vol = max(volume_dist.values()) if volume_dist else 1.0
+
+        for close_price in closes:
+            dist_to_poc = abs(close_price - poc) / std_close
+            dist_to_va_high = abs(close_price - va_high) / std_close
+            dist_to_va_low = abs(close_price - va_low) / std_close
+            in_value_area = 1.0 if va_low <= close_price <= va_high else 0.0
+            volume_at_price_norm = 0.0
+            if volume_dist:
+                closest_price = min(volume_dist.keys(), key=lambda p: abs(p - close_price))
+                if abs(closest_price - close_price) / (close_price + 1e-9) < 0.01:
+                    volume_at_price_norm = volume_dist.get(closest_price, 0.0) / (max_vol + 1e-9)
+            features.append([float(dist_to_poc), float(dist_to_va_high),
+                             float(dist_to_va_low), float(in_value_area),
+                             float(volume_at_price_norm)])
+    else:
+        features = [[0.0] * 5] * lookback
+    return np.array(features, dtype=np.float32)
+
+
+def _load_cnn_model(model_path='level_detector.pth'):
+    """Load the trained CNN level scorer. Returns None if unavailable."""
+    if not TORCH_AVAILABLE or not os.path.exists(model_path):
+        return None
     try:
-        # Prepare OHLC data
-        ohlc_data = hist[['Open', 'High', 'Low', 'Close']].values[-lookback:]
-        closes = hist['Close'].values[-lookback:]
-        volumes = hist['Volume'].values[-lookback:] if 'Volume' in hist.columns else np.ones(lookback)
-        highs = hist['High'].values[-lookback:]
-        lows = hist['Low'].values[-lookback:]
-        
-        # Calculate volume profile
-        volume_profile = calculate_volume_profile(highs, lows, closes, volumes, bins=30)
-        
-        # Prepare volume profile features
-        volume_features = []
-        if volume_profile:
-            poc = volume_profile.get('poc', np.mean(closes))
-            va_high = volume_profile.get('value_area_high', np.max(closes))
-            va_low = volume_profile.get('value_area_low', np.min(closes))
-            volume_dist = volume_profile.get('volume_distribution', {})
-            
-            for j, close_price in enumerate(closes):
-                dist_to_poc = abs(close_price - poc) / (np.std(closes) + 1e-9)
-                dist_to_va_high = abs(close_price - va_high) / (np.std(closes) + 1e-9)
-                dist_to_va_low = abs(close_price - va_low) / (np.std(closes) + 1e-9)
-                in_value_area = 1.0 if va_low <= close_price <= va_high else 0.0
-                
-                closest_price = min(volume_dist.keys(), key=lambda p: abs(p - close_price)) if volume_dist else poc
-                if abs(closest_price - close_price) / close_price < 0.01:
-                    volume_at_price = volume_dist.get(closest_price, 0.0)
-                    max_vol = max(volume_dist.values()) if volume_dist else 1.0
-                    volume_at_price_norm = volume_at_price / (max_vol + 1e-9)
-                else:
-                    volume_at_price_norm = 0.0
-                
-                volume_features.append([
-                    float(dist_to_poc),
-                    float(dist_to_va_high),
-                    float(dist_to_va_low),
-                    float(in_value_area),
-                    float(volume_at_price_norm)
-                ])
-        else:
-            volume_features = [[0.0, 0.0, 0.0, 0.0, 0.0]] * lookback
-        
-        volume_features = np.array(volume_features, dtype=np.float32)
-        
-        # Normalize OHLC
-        ohlc_mean = ohlc_data.mean(axis=0)
-        ohlc_std = ohlc_data.std(axis=0) + 1e-9
-        ohlc_normalized = (ohlc_data - ohlc_mean) / ohlc_std
-        
-        # Convert to tensor
-        ohlc_tensor = torch.FloatTensor(ohlc_normalized).unsqueeze(0)  # [1, lookback, 4]
-        volume_tensor = torch.FloatTensor(volume_features).unsqueeze(0)  # [1, lookback, 5]
-        
-        # Try to load pre-trained model, otherwise use pattern-based fallback
-        model_path = 'level_detector.pth'
-        try:
-            model = LevelDetectionNet(lookback=lookback, use_volume_profile=True)
-            if os.path.exists(model_path):
-                model.load_state_dict(torch.load(model_path, map_location='cpu'))
-                model.eval()
-                with torch.no_grad():
-                    level_logits = model(ohlc_tensor, volume_profile_features=volume_tensor)
-                    # Apply sigmoid to get probabilities
-                    level_probs = torch.sigmoid(level_logits)
-                    # Extract levels where probability > threshold
-                    level_indices = (level_probs[0] > threshold).nonzero(as_tuple=False).flatten()
-                    levels = []
-                    for idx in level_indices:
-                        idx_val = idx.item()
-                        if idx_val < len(closes):
-                            price = float(closes[idx_val])
-                            prob = float(level_probs[0][idx_val])
-                            levels.append({
-                                'price': price,
-                                'type': 'Neural Network',
-                                'strength': prob,
-                                'category': 'Neural-Network',
-                                'breakoutProb': float(1 - prob),
-                                'reversionProb': prob,
-                                'touches': 1
-                            })
-                    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:10]
-            else:
-                print(f"⚠ Neural network model not found at {model_path}. Use /api/train-level-detector to train it.")
-        except Exception as model_error:
-            print(f"Could not load neural network model: {model_error}, using fallback")
-        
-        # Fallback: detect local extrema as potential levels
-        from scipy.signal import argrelextrema
-        high_indices = argrelextrema(hist['High'].values[-lookback:], np.greater, order=5)[0]
-        low_indices = argrelextrema(hist['Low'].values[-lookback:], np.less, order=5)[0]
-        
-        levels = []
-        for idx in high_indices:
-            price = float(hist['High'].iloc[-lookback + idx])
-            levels.append({
-                'price': price,
-                'type': 'Neural Network (Local High)',
-                'strength': 0.65,
-                'category': 'Neural-Network',
-                'breakoutProb': 0.35,
-                'reversionProb': 0.65,
-                'touches': 1
-            })
-        
-        for idx in low_indices:
-            price = float(hist['Low'].iloc[-lookback + idx])
-            levels.append({
-                'price': price,
-                'type': 'Neural Network (Local Low)',
-                'strength': 0.65,
-                'category': 'Neural-Network',
-                'breakoutProb': 0.35,
-                'reversionProb': 0.65,
-                'touches': 1
-            })
-        
-        # Remove duplicates and sort
-        seen_prices = set()
-        unique_levels = []
-        for l in levels:
-            price_key = round(l['price'], 2)
-            if price_key not in seen_prices:
-                seen_prices.add(price_key)
-                unique_levels.append(l)
-        
-        return sorted(unique_levels, key=lambda x: x['strength'], reverse=True)[:10]
-        
+        model = LevelDetectionNet(lookback=100, use_volume_profile=True)
+        model.load_state_dict(torch.load(model_path, map_location='cpu'))
+        model.eval()
+        return model
     except Exception as e:
-        print(f"Neural Network level detection failed: {e}")
+        print(f"⚠ CNN model load failed: {e}")
+        return None
+
+
+def _cnn_score_bars(cnn_model, hist, lookback=100):
+    """
+    Run CNN inference → per-bar level probability for the last `lookback` bars.
+    Returns array of shape (lookback,) with values in [0, 1].
+    """
+    recent = hist.tail(lookback)
+    ohlc = recent[['Open', 'High', 'Low', 'Close']].values
+    closes = recent['Close'].values
+    highs = recent['High'].values
+    lows = recent['Low'].values
+    volumes = recent['Volume'].values if 'Volume' in recent.columns else np.ones(len(recent))
+
+    # Normalize OHLC the same way as training
+    ohlc_mean = ohlc.mean(axis=0)
+    ohlc_std = ohlc.std(axis=0) + 1e-9
+    ohlc_norm = (ohlc - ohlc_mean) / ohlc_std
+
+    vol_features = _build_volume_features(closes, highs, lows, volumes, lookback)
+
+    with torch.no_grad():
+        ohlc_t = torch.FloatTensor(ohlc_norm).unsqueeze(0)       # [1, T, 4]
+        vol_t = torch.FloatTensor(vol_features).unsqueeze(0)      # [1, T, 5]
+        logits = cnn_model(ohlc_t, volume_profile_features=vol_t) # [1, T]
+        probs = torch.sigmoid(logits).squeeze(0).numpy()          # (T,)
+
+    return probs
+
+
+def _get_fractals_for_tf(hist_tf, tf_label):
+    """Run fractal pivot detection on a single timeframe's data."""
+    from fractal_pivots import detect_fractal_pivots
+    if hist_tf is None or len(hist_tf) < 30:
+        return []
+    fractals = detect_fractal_pivots(hist_tf, order=5)
+    for f in fractals:
+        f['_tf'] = tf_label
+    return fractals
+
+
+def _cross_tf_confluence(all_fractals_by_tf, merge_pct=0.004):
+    """
+    Merge fractal levels across timeframes. Levels within merge_pct of each
+    other across different TFs are considered the same level and get boosted.
+
+    Returns list of dicts with cross-TF metadata.
+    """
+    # Collect all levels with TF tags
+    all_levels = []
+    for tf_label, fractals in all_fractals_by_tf.items():
+        for f in fractals:
+            all_levels.append({
+                'price': f['price'],
+                'kind': 'support' if 'support' in f.get('type', '').lower() else 'resistance',
+                'type': f.get('type', 'level'),
+                'strength': f.get('strength', 0.5),
+                'index': f.get('index', -1),
+                'tf': tf_label,
+                'volumeConfirm': f.get('volumeConfirm', 1.0),
+                'priceSignificance': f.get('priceSignificance', 0.5),
+            })
+
+    if not all_levels:
         return []
 
-if TORCH_AVAILABLE and nn is not None:
-    class LevelValidator(nn.Module):
-        """
-        RL agent that learns: "Is this a real level or noise?"
-        """
-        def __init__(self, n_features):
-            super().__init__()
-            self.net = nn.Sequential(
-                nn.Linear(n_features, 128),
-                nn.ReLU(),
-                nn.Linear(128, 64),
-                nn.ReLU(),
-                nn.Linear(64, 2)  # [reject, accept]
-            )
-        
-        def forward(self, features):
-            return self.net(features)
-else:
-    # Dummy class when torch is not available
-    class LevelValidator:
-        def __init__(self, *args, **kwargs):
-            pass
+    # Sort by price
+    all_levels.sort(key=lambda x: x['price'])
 
-def validate_levels_with_rl(levels, current_price, sigma_price):
+    # Greedy merge: group levels within merge_pct
+    merged = []
+    used = set()
+    for i, lvl in enumerate(all_levels):
+        if i in used:
+            continue
+        cluster = [lvl]
+        used.add(i)
+        for j in range(i + 1, len(all_levels)):
+            if j in used:
+                continue
+            if abs(all_levels[j]['price'] - lvl['price']) / (lvl['price'] + 1e-9) <= merge_pct:
+                cluster.append(all_levels[j])
+                used.add(j)
+            elif all_levels[j]['price'] > lvl['price'] * (1 + merge_pct):
+                break
+
+        # Merge cluster
+        tfs = list(set(c['tf'] for c in cluster))
+        n_tfs = len(tfs)
+        avg_price = np.mean([c['price'] for c in cluster])
+        max_strength = max(c['strength'] for c in cluster)
+        best_kind = max(set(c['kind'] for c in cluster),
+                        key=lambda k: sum(1 for c in cluster if c['kind'] == k))
+
+        # TF confluence boost: +0.12 per additional timeframe
+        tf_boost = min((n_tfs - 1) * 0.12, 0.36)
+        confluent_strength = min(max_strength + tf_boost, 1.0)
+
+        merged.append({
+            'price': round(float(avg_price), 2),
+            'kind': best_kind,
+            'type': f'{best_kind.title()} ({"×".join(sorted(tfs))})',
+            'strength': confluent_strength,
+            'base_strength': max_strength,
+            'tf_count': n_tfs,
+            'timeframes': sorted(tfs),
+            'tf_boost': tf_boost,
+            'index': max(c['index'] for c in cluster),
+            'volumeConfirm': max(c.get('volumeConfirm', 1.0) for c in cluster),
+            'priceSignificance': max(c.get('priceSignificance', 0.5) for c in cluster),
+        })
+
+    return merged
+
+
+def _reaction_score(level_price, current_price, atr, kind):
     """
-    Use RL validator to filter out weak/noise levels
-    Falls back to simple filtering if model not available
+    Score a level by expected reaction magnitude.
+    Levels close to current price within 1-3 ATR get highest scores.
+    Levels far away (>5 ATR) or too close (<0.3 ATR) get penalised.
     """
-    if not TORCH_AVAILABLE or not levels:
-        return levels
-    
+    if atr <= 0:
+        return 0.5
+    dist_atr = abs(level_price - current_price) / atr
+
+    # Sweet spot: 0.5-3 ATR away
+    if dist_atr < 0.3:
+        score = 0.3  # too close, probably noise
+    elif dist_atr <= 1.0:
+        score = 0.7 + 0.3 * dist_atr  # approaching ideal
+    elif dist_atr <= 3.0:
+        score = 1.0  # ideal range
+    elif dist_atr <= 5.0:
+        score = 1.0 - 0.15 * (dist_atr - 3.0)  # fading
+    else:
+        score = 0.4  # far away
+
+    # Directional bonus: support below price, resistance above
+    if kind == 'support' and level_price < current_price:
+        score *= 1.1
+    elif kind == 'resistance' and level_price > current_price:
+        score *= 1.1
+    elif kind == 'support' and level_price > current_price:
+        score *= 0.8  # support above price = weaker
+    elif kind == 'resistance' and level_price < current_price:
+        score *= 0.8  # resistance below price = weaker
+
+    return min(score, 1.0)
+
+
+def detect_levels_with_neural_network(hist, lookback=100, threshold=0.5,
+                                      ticker=None, hist_hourly=None):
+    """
+    Cross-timeframe Fractal + CNN fusion level detector.
+
+    Pipeline:
+      1. Fractal pivots on primary TF (daily) for structural candidates
+      2. If hist_hourly provided, also run fractals on 1h and 4h for confluence
+      3. Cross-TF merge: levels near each other across TFs get boosted
+      4. CNN scores each bar's level probability (trained on reaction labels)
+      5. Reaction-magnitude scoring: weight by distance-to-price in ATR units
+      6. Final rank = 40% fractal × 25% CNN × 20% TF-confluence × 15% reaction
+
+    Falls back to single-TF fractal-only if CNN/multi-TF unavailable.
+    """
+    if len(hist) < lookback:
+        return []
+
     try:
-        validated_levels = []
-        
-        # Try to load pre-trained validator model
+        from fractal_pivots import detect_fractal_pivots
+
+        # ── Step 1: Fractal detection on primary + additional TFs ──
+        primary_fractals = detect_fractal_pivots(hist, order=5)
+        fractals_by_tf = {'1d': primary_fractals}
+
+        # Use pre-fetched hourly data for cross-TF (no extra yfinance calls)
+        if hist_hourly is not None and len(hist_hourly) >= 30:
+            try:
+                fractals_by_tf['1h'] = _get_fractals_for_tf(hist_hourly, '1h')
+                print(f"  NN: {len(fractals_by_tf['1h'])} fractals from 1h ({len(hist_hourly)} bars)")
+                h4 = hist_hourly.resample('4h').agg({
+                    'Open': 'first', 'High': 'max', 'Low': 'min',
+                    'Close': 'last', 'Volume': 'sum'}).dropna()
+                if len(h4) >= 15:
+                    fractals_by_tf['4h'] = _get_fractals_for_tf(h4, '4h')
+                    print(f"  NN: {len(fractals_by_tf['4h'])} fractals from 4h ({len(h4)} bars)")
+                del h4
+            except Exception as e:
+                print(f"  NN: multi-TF from hourly failed: {e}")
+
+        # ── Step 2: Cross-TF confluence merge ──
+        merged = _cross_tf_confluence(fractals_by_tf, merge_pct=0.004)
+        if not merged:
+            return []
+
+        n_multi = sum(1 for m in merged if m['tf_count'] > 1)
+        print(f"  NN: {len(merged)} levels after confluence merge "
+              f"({n_multi} multi-TF confirmed)")
+
+        # ── Step 3: CNN confidence scoring (load, score, free immediately) ──
+        cnn_available = False
+        cnn_probs = None
+        cnn_start_idx = 0
+
         try:
-            model = LevelValidator(n_features=10)
-            model_path = 'level_validator.pth'
-            if os.path.exists(model_path):
-                model.load_state_dict(torch.load(model_path, map_location='cpu'))
-                model.eval()
-        except Exception as model_error:
-            model = None
-            print(f"Could not load RL validator model: {model_error}, using rule-based validation")
-        
-        for level in levels:
-            # Extract features for validation
-            strength = level.get('strength', 0.5)
-            distance_sigma = abs(level.get('price', current_price) - current_price) / (sigma_price + 1e-9)
-            touches = level.get('touches', 1)
-            category = level.get('category', 'Unknown')
-            
-            # Features: strength, distance, touches, category
-            features = np.array([
-                strength,
-                min(distance_sigma / 3.0, 1.0),  # Normalized distance
-                min(touches / 20.0, 1.0),  # Normalized touches
-                1.0 if category in ['Density (HDBSCAN)', 'HDBSCAN', 'OPTICS', 'KDE'] else 0.5,
-                1.0 if level.get('reversionProb', 0.5) > 0.6 else 0.5,
-                1.0 if level.get('breakoutProb', 0.5) < 0.4 else 0.5,
-                1.0 if 'confluence' in str(category).lower() else 0.5,
-                1.0 if distance_sigma < 2.0 else 0.5,
-                1.0 if touches >= 3 else 0.5,
-                1.0 if strength > 0.6 else 0.5
-            ])
-            
-            # Use model if available, otherwise use rule-based scoring
-            if model is not None:
-                with torch.no_grad():
-                    features_tensor = torch.FloatTensor(features).unsqueeze(0)
-                    output = model(features_tensor)
-                    action_probs = torch.softmax(output, dim=1)
-                    accept_prob = action_probs[0][1].item()
-                accept_score = accept_prob
+            cnn_model = _load_cnn_model()
+            if cnn_model is not None:
+                cnn_probs = _cnn_score_bars(cnn_model, hist, lookback)
+                cnn_available = True
+                cnn_start_idx = max(0, len(hist) - lookback)
+                print(f"  NN: CNN scored {len(cnn_probs)} bars, "
+                      f"mean={float(np.mean(cnn_probs)):.3f}")
+                del cnn_model
+                import gc; gc.collect()
+        except Exception as e:
+            print(f"  NN: CNN scoring failed: {e}")
+
+        # ── Step 4: Reaction-magnitude scoring ──
+        current_price = float(hist['Close'].iloc[-1])
+        recent_highs = hist['High'].values[-20:]
+        recent_lows = hist['Low'].values[-20:]
+        atr = float(np.mean(recent_highs - recent_lows))  # simple ATR proxy
+
+        # ── Step 5: Composite scoring ──
+        enhanced_levels = []
+        for lvl in merged:
+            # Base fractal strength (already includes TF boost)
+            frac_str = lvl['strength']
+
+            # CNN confidence at this bar
+            cnn_conf = 0.5
+            bar_idx = lvl.get('index', -1)
+            if cnn_available and cnn_probs is not None and bar_idx >= 0:
+                cnn_idx = bar_idx - cnn_start_idx
+                if 0 <= cnn_idx < len(cnn_probs):
+                    nb = cnn_probs[max(0, cnn_idx-2):min(len(cnn_probs), cnn_idx+3)]
+                    cnn_conf = float(np.max(nb))
+
+            # Reaction score
+            rxn = _reaction_score(lvl['price'], current_price, atr, lvl['kind'])
+
+            # TF confluence factor (0-1 scale)
+            tf_factor = min(lvl['tf_count'] / 3.0, 1.0)
+
+            # Composite: weighted fusion
+            # 40% structural + 25% CNN + 20% TF-confluence + 15% reaction positioning
+            if cnn_available:
+                composite = (0.40 * frac_str +
+                             0.25 * cnn_conf +
+                             0.20 * tf_factor +
+                             0.15 * rxn)
             else:
-                # Simple rule-based acceptance
-                accept_score = (
-                    strength * 0.3 +
-                    (1.0 - min(distance_sigma / 3.0, 1.0)) * 0.2 +
-                    min(touches / 20.0, 1.0) * 0.2 +
-                    (1.0 if category in ['Density (HDBSCAN)', 'HDBSCAN', 'OPTICS', 'KDE'] else 0.5) * 0.15 +
-                    level.get('reversionProb', 0.5) * 0.15
+                composite = (0.55 * frac_str +
+                             0.25 * tf_factor +
+                             0.20 * rxn)
+
+            if composite < threshold:
+                continue
+
+            level_type = lvl['type'].replace('Fractal', 'CNN-Fractal')
+            if lvl['tf_count'] > 1:
+                level_type = f"{'Support' if lvl['kind'] == 'support' else 'Resistance'} (MTF-CNN ×{lvl['tf_count']})"
+
+            enhanced_levels.append({
+                'price': lvl['price'],
+                'type': level_type,
+                'strength': round(float(composite), 4),
+                'category': 'Neural-Network-Enhanced',
+                'breakoutProb': round(float(1 - composite), 4),
+                'reversionProb': round(float(composite), 4),
+                'touches': lvl['tf_count'],
+                'volumeConfirm': lvl.get('volumeConfirm', 1.0),
+                'method': 'mtf_fractal_cnn' if cnn_available else 'mtf_fractal',
+                'priceSignificance': lvl.get('priceSignificance', 0.5),
+                'cnnConfidence': round(float(cnn_conf), 4),
+                'fractalStrength': round(float(lvl['base_strength']), 4),
+                'tfCount': lvl['tf_count'],
+                'timeframes': lvl['timeframes'],
+                'reactionScore': round(float(rxn), 4),
+            })
+
+        enhanced_levels.sort(key=lambda x: x['strength'], reverse=True)
+        enhanced_levels = enhanced_levels[:12]
+
+        mode = "MTF-CNN-Fractal" if cnn_available else "MTF-Fractal"
+        n_mtf = sum(1 for l in enhanced_levels if l['tfCount'] > 1)
+        print(f"✅ {mode}: {len(enhanced_levels)} levels "
+              f"({n_mtf} multi-TF, from {len(merged)} candidates)")
+        return enhanced_levels
+
+    except Exception as e:
+        print(f"❌ Neural network detection failed: {e}")
+        try:
+            from fractal_pivots import detect_fractal_pivots
+            fallback_levels = detect_fractal_pivots(hist, order=5)
+            simple_levels = []
+            for level in fallback_levels[:8]:
+                simple_levels.append({
+                    'price': level['price'],
+                    'type': level['type'].replace('Fractal', 'NN Simple'),
+                    'strength': level.get('strength', 0.5),
+                    'category': 'Neural-Network-Simple',
+                    'breakoutProb': float(1 - level.get('strength', 0.5)),
+                    'reversionProb': float(level.get('strength', 0.5)),
+                    'touches': 1,
+                    'volumeConfirm': level.get('volumeConfirm', 1.0),
+                    'method': 'fractal_fallback'
+                })
+            print(f"⚠️ Using fractal fallback: {len(simple_levels)} levels")
+            return simple_levels
+        except Exception as fallback_error:
+            print(f"❌ Even fallback failed: {fallback_error}")
+            return []
+
+def detect_levels_with_deepsupp(hist, model_path='deepsupp_v4.pt', device='cpu',
+                                hist_hourly=None, ticker=None):
+    """
+    DeepSupp v4 level detector (corr-series transformer autoencoder).
+
+    Multi-timeframe: if hist_hourly is provided (or ticker is given to auto-fetch),
+    runs dual-TF pipeline (daily + hourly) and merges overlapping levels.
+
+    Requires a pre-trained model file saved via deepsupp_levels.save_deepsupp_model().
+    If the model file is missing or DeepSupp deps fail to load, returns [].
+    """
+    if not TORCH_AVAILABLE or hist is None or len(hist) < 60:
+        return []
+
+    try:
+        if not os.path.exists(model_path):
+            print(f"⚠ DeepSupp model file '{model_path}' not found. Attempting auto-train...")
+            if hist is not None and len(hist) >= 400:
+                try:
+                    train_result = train_deepsupp_level_model(
+                        ticker="SPY", timeframe="1d",
+                        epochs=15, batch_size=32, model_path=model_path
+                    )
+                    if not train_result.get('success'):
+                        print(f"⚠ DeepSupp auto-train failed: {train_result.get('error', 'unknown')}")
+                        return []
+                    print(f"✓ DeepSupp auto-trained and saved to {model_path}")
+                except Exception as train_err:
+                    print(f"⚠ DeepSupp auto-train exception: {train_err}")
+                    return []
+            else:
+                print(f"⚠ Not enough data for auto-train ({len(hist) if hist is not None else 0} bars, need 400). Train manually via POST /api/train-deepsupp-levels")
+                return []
+
+        from deepsupp_levels import (load_deepsupp_model, compute_deepsupp_levels,
+                                     compute_multitf_deepsupp_levels)
+
+        def _prep_df(raw):
+            """Normalise columns to lowercase OHLCV."""
+            d = raw.copy()
+            d = d.rename(columns={
+                'Open': 'open', 'High': 'high', 'Low': 'low',
+                'Close': 'close', 'Volume': 'volume'
+            })
+            required = {'open', 'high', 'low', 'close', 'volume'}
+            if not required.issubset(set(map(str.lower, d.columns))):
+                if not required.issubset(set(d.columns)):
+                    return None
+            return d[['open', 'high', 'low', 'close', 'volume']].dropna()
+
+        df_daily = _prep_df(hist)
+        if df_daily is None:
+            return []
+
+        model, meta = load_deepsupp_model(model_path, device=device)
+        common_kwargs = dict(
+            vol_lookback=int(meta.vol_lookback),
+            corr_window=int(meta.corr_window),
+            seq_len=int(meta.seq_len),
+            device=device,
+            verbose=False,
+        )
+
+        # Try to get hourly data for multi-TF (capped to 7d to avoid OOM on Render)
+        df_hourly = None
+        if hist_hourly is not None and len(hist_hourly) >= 60:
+            df_hourly = _prep_df(hist_hourly.tail(250))  # cap at ~250 bars
+        elif ticker:
+            try:
+                import yfinance as yf
+                h = yf.Ticker(ticker).history(period='7d', interval='1h')
+                if h is not None and len(h) >= 60:
+                    df_hourly = _prep_df(h)
+                    print(f"  DeepSupp: fetched {len(df_hourly)} hourly bars for {ticker}")
+            except Exception as e:
+                print(f"  DeepSupp: hourly fetch failed for {ticker}: {e}")
+
+        # Multi-TF or single-TF (fallback to single if multi-TF OOMs)
+        if df_hourly is not None:
+            try:
+                records = compute_multitf_deepsupp_levels(
+                    {'1d': df_daily, '1h': df_hourly}, model, **common_kwargs
                 )
-            
-            # Accept if score > 0.5
-            if accept_score > 0.5:
-                level['rl_validation_score'] = float(accept_score)
-                validated_levels.append(level)
-        
-        return validated_levels
-        
+            except Exception as mtf_err:
+                print(f"  DeepSupp multi-TF failed ({mtf_err}), falling back to single-TF")
+                records = compute_deepsupp_levels(df_daily, model, **common_kwargs)
+        else:
+            records = compute_deepsupp_levels(df_daily, model, **common_kwargs)
+
+        # Free model memory
+        import gc
+        del model
+        gc.collect()
+
+        levels = []
+        for r in records:
+            strength = float(getattr(r, 'strength', 0.0))
+            levels.append({
+                'price': float(getattr(r, 'price', np.nan)),
+                'type': 'DeepSupp',
+                'strength': strength,
+                'category': 'DeepSupp',
+                'source': 'DeepSupp',
+                'kind': str(getattr(r, 'kind', 'level')),
+                'touches': int(getattr(r, 'n_members', 1)),
+                'coverage': float(getattr(r, 'coverage', 0.0)),
+                'quality': float(getattr(r, 'quality', 0.0)),
+                'tightness': float(getattr(r, 'tightness', 0.0)),
+                'score_mean': float(getattr(r, 'score_mean', 0.0)),
+                'score_max': float(getattr(r, 'score_max', 0.0)),
+                'price_std': float(getattr(r, 'price_std', 0.0)),
+                'displacement': float(getattr(r, 'displacement', 0.0)),
+                'cluster_id': int(getattr(r, 'cluster_id', -1)),
+                'breakoutProb': float(1 - strength),
+                'reversionProb': float(strength),
+            })
+
+        levels = [l for l in levels if isinstance(l.get('price'), (int, float)) and not (np.isnan(l.get('price')) or np.isinf(l.get('price')))]
+        return sorted(levels, key=lambda x: x.get('strength', 0.0), reverse=True)[:15]
+
     except Exception as e:
-        print(f"RL validation failed: {e}")
-        return levels  # Return original levels if validation fails
+        print(f"DeepSupp level detection failed: {e}")
+        return []
+
+def train_deepsupp_level_model(
+    ticker: str = "SPY",
+    timeframe: str = "1d",
+    vol_lookback: int = 20,
+    corr_window: int = 20,
+    seq_len: int = 16,
+    d_model: int = 64,
+    n_heads: int = 4,
+    n_layers: int = 2,
+    latent_dim: int = 16,
+    dropout: float = 0.1,
+    epochs: int = 50,
+    batch_size: int = 32,
+    lr: float = 1e-3,
+    device: str = "cpu",
+    model_path: str = "deepsupp_v4.pt",
+) -> dict:
+    """
+    Train a DeepSupp v4 model on real OHLCV data and save to model_path.
+    """
+    if not TORCH_AVAILABLE:
+        return {"success": False, "error": "PyTorch not available"}
+
+    try:
+        import yfinance as yf
+        import pandas as pd
+        from deepsupp_levels import build_and_train, save_deepsupp_model
+
+        stock = yf.Ticker(ticker)
+
+        interval_map = {"1m": "1m", "5m": "5m", "15m": "15m", "30m": "30m", "1h": "1h", "4h": "1h", "1d": "1d"}
+        interval = interval_map.get(timeframe, "1d")
+        period_map = {"1m": "5d", "5m": "1mo", "15m": "3mo", "30m": "3mo", "1h": "6mo", "4h": "1y", "1d": "2y"}
+        period = period_map.get(timeframe, "1y")
+
+        hist = stock.history(period=period, interval=interval)
+        if hist is None or len(hist) == 0:
+            return {"success": False, "error": f"No historical data for {ticker} at {timeframe}"}
+
+        if timeframe == "4h":
+            # resample 1h to 4h, same style as level detector
+            if not isinstance(hist.index, pd.DatetimeIndex):
+                hist.index = pd.to_datetime(hist.index)
+            hist = hist.resample("4H").agg({
+                "Open": "first",
+                "High": "max",
+                "Low": "min",
+                "Close": "last",
+                "Volume": "sum",
+            }).dropna()
+
+        if len(hist) < 400:
+            return {"success": False, "error": f"Insufficient data to train DeepSupp (need >=400 bars, have {len(hist)})"}
+
+        df = hist[["Open", "High", "Low", "Close", "Volume"]].rename(columns={
+            "Open": "open",
+            "High": "high",
+            "Low": "low",
+            "Close": "close",
+            "Volume": "volume",
+        }).dropna()
+
+        print(f"Training DeepSupp v4 for {ticker} at {timeframe} on {len(df)} bars...")
+
+        model = build_and_train(
+            df,
+            vol_lookback=vol_lookback,
+            corr_window=corr_window,
+            seq_len=seq_len,
+            d_model=d_model,
+            n_heads=n_heads,
+            n_layers=n_layers,
+            latent_dim=latent_dim,
+            dropout=dropout,
+            epochs=epochs,
+            batch_size=batch_size,
+            lr=lr,
+            device=device,
+            verbose=True,
+        )
+
+        save_deepsupp_model(model, model_path)
+
+        meta = model.metadata
+        meta_dict = meta.to_dict() if meta is not None else {}
+
+        print(f"[OK] DeepSupp training complete. Saved to {model_path}")
+
+        return {
+            "success": True,
+            "model_path": model_path,
+            "meta": meta_dict,
+            "training": {
+                "ticker": ticker,
+                "timeframe": timeframe,
+                "epochs": epochs,
+                "batch_size": batch_size,
+                "seq_len": seq_len,
+                "corr_window": corr_window,
+                "vol_lookback": vol_lookback,
+            },
+        }
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"DeepSupp training failed:\n{error_trace}")
+        return {"success": False, "error": str(e)}
 
 def calculate_contextual_success_probability(
     level_price,
@@ -4315,74 +3728,9 @@ def enhance_levels_with_contextual_probability(
     
     return enhanced
 
-def calculate_local_interaction_levels(closes, current_price, sigma_price, lookback=200, bins=30, max_levels=5):
-    """
-    Local Interaction Levels: Short-memory, near current price, explicitly non-structural.
-    
-    This replaces MeanShift with a cleaner approach:
-    - Finds local density peaks in recent price histogram
-    - Only near current price (within ~2 sigma)
-    - Fast decay (not structural memory)
-    - Answers: "Where is price likely to react today?"
-    
-    This is NOT TA, NOT structural memory, NOT global clustering.
-    It's simply: where does price repeatedly visit in the recent window?
-    """
-    if len(closes) < 50:
-        return []
-    
-    closes = np.array(closes[-lookback:])
-    
-    # Build price histogram
-    hist, bin_edges = np.histogram(closes, bins=bins)
-    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
-    
-    # Find local density peaks (modes)
-    # prominence threshold avoids tiny noise peaks
-    prominence_threshold = np.max(hist) * 0.15
-    peaks, properties = find_peaks(hist, prominence=prominence_threshold)
-    
-    if len(peaks) == 0:
-        return []
-    
-    levels = []
-    for p in peaks:
-        price = float(bin_centers[p])
-        density_strength = hist[p] / np.max(hist)
-        distance_sigma = abs(price - current_price) / sigma_price if sigma_price > 0 else float('inf')
-        
-        # Soft gating: interaction should be reasonably close to current price
-        if distance_sigma > 2.0:
-            continue
-        
-        # Strength reflects local density, not structural memory
-        # Cap at 0.75 to keep it below structural levels
-        strength = min(0.75, 0.45 + density_strength * 0.4)
-        
-        levels.append({
-            'price': price,
-            'type': 'Local Interaction',
-            'category': 'Interaction',  # Explicit category
-            'source': 'Local Density',
-            'strength': float(strength),
-            'distance_sigma': float(distance_sigma),
-            'reversionProb': float(strength),
-            'breakoutProb': float(1 - strength),
-            'touches': int(hist[p]),  # Density count
-            'decay': 'fast',  # Explicitly short half-life
-            'density_prominence': float(density_strength)
-        })
-    
-    # Prioritize closest + strongest
-    levels = sorted(levels, key=lambda x: (x['distance_sigma'], -x['strength']))
-    
-    result = levels[:max_levels]
-    print(f"Local Interaction: Found {len(result)} levels near price (within 2 sigma)")
-    return result
-
 def merge_threshold_by_timeframe(tf):
     """
-    Timeframe-aware merge thresholds for Agglomerative clustering.
+    Timeframe-aware merge thresholds for Merged clustering.
     Tighter thresholds for shorter timeframes, looser for longer.
     """
     return {
@@ -4402,7 +3750,7 @@ def agglomerative_merge_levels(
     timeframe="1d"
 ):
     """
-    Merge nearby price levels using Agglomerative Hierarchical Clustering.
+    Merge nearby price levels using Merged Clustering.
     
     This is a cleaner, production-ready version that merges levels AFTER discovery
     but BEFORE scoring to prevent probability fragmentation.
@@ -4446,7 +3794,7 @@ def agglomerative_merge_levels(
     avg_price = np.mean(prices)
     distance_threshold = avg_price * distance_threshold_pct
 
-    # Agglomerative clustering
+    # Merged clustering
     model = AgglomerativeClustering(
         n_clusters=None,
         distance_threshold=distance_threshold,
@@ -4473,7 +3821,7 @@ def agglomerative_merge_levels(
             "touches": int(sum(l.get("touches", 1) for l in cluster_levels)),
             "merged_count": len(cluster_levels),
             "sources": list(set(l.get("category", "unknown") for l in cluster_levels)),
-            "category": "Agglomerative-Merged",
+            "category": "Merged",
             "breakoutProb": float(np.mean([l.get("breakoutProb", 0.5) for l in cluster_levels])),
             "reversionProb": float(np.mean([l.get("reversionProb", 0.5) for l in cluster_levels]))
         }
@@ -4482,106 +3830,6 @@ def agglomerative_merge_levels(
 
     return merged_levels
 
-def adaptive_merge_threshold(micro_state, sigma_price, spot):
-    """
-    Regime-aware merge threshold for hierarchical clustering.
-    Tighter merge in Thermal (precision events), looser in Fock (overshoot).
-    """
-    base = 0.005  # 0.5% base threshold
-    
-    if micro_state == 'Thermal':
-        return base * 0.6  # Tighter (0.3%) - precision events need exact levels
-    elif micro_state == 'Fock':
-        return base * 1.5  # Looser (0.75%) - overshoot means levels are less precise
-    else:  # Coherent
-        return base  # Standard (0.5%)
-
-
-def hierarchical_merge_nearby_levels(levels, distance_thresh_pct=0.005, current_price=None):
-    """
-    Merge structurally similar levels BEFORE scoring using Agglomerative Clustering.
-    
-    Purpose:
-    - Prevents probability fragmentation from competing similar levels
-    - Uses Ward linkage to preserve hierarchical structure
-    - Weighted by strength for better accuracy
-    
-    This is POST-PROCESSING, not discovery. Use BEFORE get_ml_confluence_levels.
-    """
-    from sklearn.cluster import AgglomerativeClustering
-    
-    if len(levels) < 2:
-        return levels
-    
-    # Extract prices
-    prices = np.array([l['price'] for l in levels]).reshape(-1, 1)
-    
-    # Use percentage-based threshold (regime-aware)
-    if current_price is None:
-        median_price = np.median(prices)
-    else:
-        median_price = current_price
-    
-    distance_thresh = median_price * distance_thresh_pct
-    
-    # Ward linkage preserves hierarchy and works well for 1D price data
-    model = AgglomerativeClustering(
-        n_clusters=None,
-        distance_threshold=distance_thresh,
-        linkage='ward'
-    )
-    
-    labels = model.fit_predict(prices)
-    
-    # Merge levels with same label
-    merged = {}
-    for level, label in zip(levels, labels):
-        if label not in merged:
-            merged[label] = []
-        merged[label].append(level)
-    
-    # Create merged levels (weighted by strength)
-    merged_levels = []
-    for group in merged.values():
-        if len(group) == 1:
-            # Single level, keep as-is but mark as hierarchical
-            level = group[0].copy()
-            level['category'] = level.get('category', 'Unknown')
-            merged_levels.append(level)
-            continue
-        
-        # Weight by strength for better accuracy
-        strengths = [l.get('strength', l.get('reversionProb', 0.5)) for l in group]
-        prices_list = [l['price'] for l in group]
-        
-        # Weighted average price
-        merged_price = np.average(prices_list, weights=strengths)
-        
-        # Boost strength for confluence (multiple algorithms agree)
-        base_strength = np.mean(strengths)
-        confluence_boost = min(len(group) / 3, 1.2)  # Up to 20% boost for 3+ levels
-        merged_strength = min(base_strength * confluence_boost, 0.95)
-        
-        # Collect source algorithms
-        source_algorithms = list(set(l.get('category', 'Unknown') for l in group))
-        
-        merged_levels.append({
-            'price': float(merged_price),
-            'type': 'Hierarchical Merge',
-            'touches': sum(l.get('touches', 1) for l in group),
-            'strength': float(merged_strength),
-            'breakoutProb': float(1 - merged_strength),
-            'reversionProb': float(merged_strength),
-            'level_strength': float(merged_strength),  # Structural validity
-            'immediate_reversion_prob': float(merged_strength * 0.75),  # Event probability
-            'category': 'Hierarchical',
-            'merged_count': len(group),
-            'source_algorithms': source_algorithms,
-            'sources': source_algorithms,  # Also set 'sources' for compatibility with extraction code
-            'original_levels': [{'price': l['price'], 'category': l.get('category', 'Unknown')} for l in group]
-        })
-    
-    return merged_levels
 
 
 def get_ml_confluence_levels(all_algorithm_levels):
@@ -4626,6 +3874,70 @@ def get_ml_confluence_levels(all_algorithm_levels):
 # ENHANCED API ENDPOINT WITH MICROSTRUCTURE
 # ============================================================================
 
+@app.route('/api/initialize-data', methods=['POST'])
+def api_initialize_data():
+    """
+    Initialize Google Drive historical data system
+    Downloads data from Google Drive and sets up local cache
+    """
+    auth_error = require_auth()
+    if auth_error:
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
+    
+    try:
+        if not GOOGLE_DRIVE_DATA_AVAILABLE:
+            return jsonify({
+                'success': False, 
+                'error': 'Google Drive data loader not available'
+            }), 400
+        
+        print("🔄 Initializing Google Drive data system...")
+        available = initialize_data()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Google Drive data initialized successfully',
+            'available_symbols': list(available.keys()),
+            'data_sources': {k: v['source'] for k, v in available.items()}
+        })
+        
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"ERROR in /api/initialize-data: {error_trace}")
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/api/data-sources', methods=['GET'])
+def api_get_data_sources():
+    """
+    Get available data sources and symbols
+    """
+    auth_error = require_auth()
+    if auth_error:
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
+    
+    try:
+        if GOOGLE_DRIVE_DATA_AVAILABLE:
+            available = get_available_symbols()
+            return jsonify({
+                'success': True,
+                'available_symbols': list(available.keys()),
+                'data_sources': {k: v['source'] for k, v in available.items()},
+                'google_drive_available': True
+            })
+        else:
+            # Fallback symbols
+            fallback_symbols = ['SPY', 'QQQ', 'AAPL', 'MSFT', 'TSLA']
+            return jsonify({
+                'success': True,
+                'available_symbols': fallback_symbols,
+                'data_sources': {k: 'yfinance' for k in fallback_symbols},
+                'google_drive_available': False
+            })
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
 @app.route('/api/data', methods=['GET'])
 def get_data():
     auth_error = require_auth()
@@ -4637,13 +3949,47 @@ def get_data():
     start_date = request.args.get('start_date', None)
     end_date = request.args.get('end_date', None)
     historical_mode = request.args.get('historical_mode', 'false').lower() == 'true'
+    combine_mode = request.args.get('combine_mode', 'auto').lower()  # auto, combined, historical_only
     
     try:
         print(f"\n{'='*60}")
         print(f"Analysis: {ticker} - User: {session.get('username')}")
         print(f"{'='*60}")
         
-        stock = yf.Ticker(ticker)
+        # Try Google Drive + real-time data for NQ/ES/VIX
+        hist = None
+        data_source = "yfinance"
+        
+        if GOOGLE_DRIVE_DATA_AVAILABLE and ticker.upper() in ['NQ', 'ES', 'VIX']:
+            print(f"🔄 Attempting to load {ticker} from Google Drive + real-time...")
+            try:
+                # Parse dates if provided
+                start_dt = pd.to_datetime(start_date) if start_date else None
+                end_dt = pd.to_datetime(end_date) if end_date else None
+                
+                # Use combined data (Google Drive historical + yfinance real-time)
+                hist = load_historical_data(
+                    symbol=ticker.upper(),
+                    timeframe=timeframe,
+                    start_date=start_dt,
+                    end_date=end_dt,
+                    combine_with_realtime=True
+                )
+                
+                if hist is not None and len(hist) > 0:
+                    data_source = "google_drive_plus_realtime"
+                    print(f"✅ Successfully loaded {len(hist)} bars (Google Drive + real-time)")
+                else:
+                    print(f"⚠ Combined data not available for {ticker}, falling back to yfinance")
+                    hist = None
+                    
+            except Exception as e:
+                print(f"⚠ Combined data loading failed: {e}")
+                hist = None
+        
+        # Fallback to yfinance
+        if hist is None:
+            stock = yf.Ticker(ticker)
         
         # For futures, use alternative interval formats that yfinance accepts better
         is_futures = '=' in ticker
@@ -4662,136 +4008,136 @@ def get_data():
             interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
             interval = interval_map.get(timeframe, '1d')
         
-        if start_date and end_date:
-            # Date range path - handle futures intraday here too
-            if is_futures and timeframe == '4h':
-                # For 4h futures with date range, use resampling
-                print(f"Fetching 4h data for {ticker} with date range (will resample from 1h/60m)...")
-                try:
-                    hist = fetch_historical_data_with_resampling(
-                        ticker=ticker,
-                        timeframe='4h',
-                        start_date=start_date,
-                        end_date=end_date,
-                        is_futures=True
-                    )
-                except Exception as e:
-                    print(f"⚠ Resampling fetch failed: {e}")
-                    hist = None
-            else:
-                hist = stock.history(start=start_date, end=end_date, interval=interval)
-        else:
-            # No date range path - handle all futures intraday timeframes here
-            # Futures handling: use shorter periods for intraday timeframes
-            if is_futures and timeframe in ['1m', '5m', '15m', '1h', '4h']:
-                period_map = {'1m': '5d', '5m': '5d', '15m': '7d', '1h': '7d', '4h': '10d', '1d': '2y'}
-            else:
-                period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
-            
-            period = period_map.get(timeframe, '1y')
-            
-            # Try to get data, with fallback to shorter periods for futures
-            hist = None
-            
-            # Handle 4h futures (requires resampling)
-            if is_futures and timeframe == '4h':
-                print(f"Fetching 4h data for {ticker} (will resample from 1h/60m)...")
-                try:
-                    hist = fetch_historical_data_with_resampling(
-                        ticker=ticker,
-                        timeframe='4h',
-                        period=period,
-                        is_futures=True
-                    )
-                except Exception as e:
-                    print(f"⚠ Resampling fetch failed: {e}")
-                    hist = None
-            
-            # Handle 1h futures
-            elif is_futures and timeframe == '1h':
-                # Special handling for 1h futures - try many combinations
-                attempts = [
-                    ('60m', '5d'),   # Most reliable for futures
-                    ('60m', '3d'),
-                    ('60m', '2d'),
-                    ('60m', '1d'),
-                    ('1h', '5d'),    # Try standard format too
-                    ('1h', '3d'),
-                    ('1h', '2d'),
-                    ('1h', '1d'),
-                ]
-                
-                for attempt_interval, attempt_period in attempts:
+        # Only load from yfinance if we don't already have Google Drive data
+        if hist is None:
+            if start_date and end_date:
+                # Date range path - handle futures intraday here too
+                if is_futures and timeframe == '4h':
+                    # For 4h futures with date range, use resampling
+                    print(f"Fetching 4h data for {ticker} with date range (will resample from 1h/60m)...")
                     try:
-                        print(f"Trying {ticker} 1h: interval={attempt_interval}, period={attempt_period}")
-                        hist = stock.history(period=attempt_period, interval=attempt_interval)
-                        if hist is not None and len(hist) > 0:
-                            print(f"✓ Successfully fetched {len(hist)} bars for {ticker} 1h with interval={attempt_interval}, period={attempt_period}")
-                            break
+                        hist = fetch_historical_data_with_resampling(
+                            ticker=ticker,
+                            timeframe='4h',
+                            start_date=start_date,
+                            end_date=end_date,
+                            is_futures=True
+                        )
                     except Exception as e:
-                        error_msg = str(e)
-                        print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:150]}")
-                        continue
-            
-            # Handle 1m, 5m, 15m futures
-            elif is_futures and timeframe in ['1m', '5m', '15m']:
-                if timeframe in ['15m']:
-                    attempts = [period, '5d', '3d', '2d', '1d']
+                        print(f"⚠ Resampling fetch failed: {e}")
+                        hist = None
                 else:
-                    attempts = [period, '5d', '2d', '1d']
+                    hist = stock.history(start=start_date, end=end_date, interval=interval)
+            else:
+                # No date range path - handle all futures intraday timeframes here
+                # Futures handling: use shorter periods for intraday timeframes
+                if is_futures and timeframe in ['1m', '5m', '15m', '1h', '4h']:
+                    period_map = {'1m': '5d', '5m': '5d', '15m': '7d', '1h': '7d', '4h': '10d', '1d': '2y'}
+                else:
+                    period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
                 
-                for attempt_period in attempts:
-                    # Try both the mapped interval and original timeframe format
-                    interval_options = [interval]
-                    if timeframe == '15m':
-                        interval_options = ['15m']
+                period = period_map.get(timeframe, '1y')
+                
+                # Try to get data, with fallback to shorter periods for futures
+                hist = None
+                
+                # Handle 4h futures (requires resampling)
+                if is_futures and timeframe == '4h':
+                    print(f"Fetching 4h data for {ticker} (will resample from 1h/60m)...")
+                    try:
+                        hist = fetch_historical_data_with_resampling(
+                            ticker=ticker,
+                            timeframe='4h',
+                            period=period,
+                            is_futures=True
+                        )
+                    except Exception as e:
+                        print(f"⚠ Resampling fetch failed: {e}")
+                        hist = None
+                
+                # Handle 1h futures
+                elif is_futures and timeframe == '1h':
+                    # Special handling for 1h futures - try many combinations
+                    attempts = [
+                        ('60m', '5d'),   # Most reliable for futures
+                        ('60m', '3d'),
+                        ('60m', '2d'),
+                        ('60m', '1d'),
+                        ('1h', '5d'),    # Try standard format too
+                        ('1h', '3d'),
+                        ('1h', '2d'),
+                        ('1h', '1d'),
+                    ]
                     
-                    for attempt_interval in interval_options:
+                    for attempt_interval, attempt_period in attempts:
                         try:
+                            print(f"Trying {ticker} 1h: interval={attempt_interval}, period={attempt_period}")
                             hist = stock.history(period=attempt_period, interval=attempt_interval)
                             if hist is not None and len(hist) > 0:
-                                print(f"✓ Successfully fetched {len(hist)} bars for {ticker} at {timeframe} with interval={attempt_interval}, period={attempt_period}")
+                                print(f"✓ Successfully fetched {len(hist)} bars for {ticker} 1h with interval={attempt_interval}, period={attempt_period}")
                                 break
                         except Exception as e:
                             error_msg = str(e)
-                            if "pattern" not in error_msg.lower() and "expected" not in error_msg.lower():
-                                print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:100]}")
+                            print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:150]}")
                             continue
-                    
-                    if hist is not None and len(hist) > 0:
-                        break
-            
-            # Handle regular (non-futures) 4h (also needs resampling)
-            elif timeframe == '4h':
-                print(f"Fetching 4h data for {ticker} (will resample from 1h)...")
-                try:
-                    hist = fetch_historical_data_with_resampling(
-                        ticker=ticker,
-                        timeframe='4h',
-                        period=period,
-                        is_futures=False
-                    )
-                except Exception as e:
-                    print(f"⚠ Resampling fetch failed: {e}")
-                    hist = None
-            
-            # Fallback for all other cases
-            else:
-                try:
-                    hist = stock.history(period=period, interval=interval)
-                except Exception as e:
-                    error_msg = str(e)
-                    print(f"⚠ Error fetching data for {ticker} {timeframe}: {error_msg}")
-                    # Try alternative interval format if pattern error
-                    if "pattern" in error_msg.lower() or "expected" in error_msg.lower():
-                        try:
-                            if interval == '1h':
-                                hist = stock.history(period=period, interval='60m')
-                        except:
-                            hist = None
+                
+                # Handle 1m, 5m, 15m futures
+                elif is_futures and timeframe in ['1m', '5m', '15m']:
+                    if timeframe in ['15m']:
+                        attempts = [period, '5d', '3d', '2d', '1d']
                     else:
+                        attempts = [period, '5d', '2d', '1d']
+                    
+                    for attempt_period in attempts:
+                        # Try both the mapped interval and original timeframe format
+                        interval_options = [interval]
+                        if timeframe == '15m':
+                            interval_options = ['15m']
+                        
+                        for attempt_interval in interval_options:
+                            try:
+                                hist = stock.history(period=attempt_period, interval=attempt_interval)
+                                if hist is not None and len(hist) > 0:
+                                    print(f"✓ Successfully fetched {len(hist)} bars for {ticker} at {timeframe} with interval={attempt_interval}, period={attempt_period}")
+                                    break
+                            except Exception as e:
+                                error_msg = str(e)
+                                if "pattern" not in error_msg.lower() and "expected" not in error_msg.lower():
+                                    print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:100]}")
+                                continue
+                        
+                    # Handle regular (non-futures) 4h (also needs resampling)
+                elif timeframe == '4h':
+                    print(f"Fetching 4h data for {ticker} (will resample from 1h)...")
+                    try:
+                        hist = fetch_historical_data_with_resampling(
+                            ticker=ticker,
+                            timeframe='4h',
+                            period=period,
+                            is_futures=False
+                        )
+                    except Exception as e:
+                        print(f"⚠ Resampling fetch failed: {e}")
                         hist = None
+                
+                # Fallback for all other cases
+                else:
+                    try:
+                        hist = stock.history(period=period, interval=interval)
+                    except Exception as e:
+                        error_msg = str(e)
+                        print(f"⚠ Error fetching data for {ticker} {timeframe}: {error_msg}")
+                        # Try alternative interval format if pattern error
+                        if "pattern" in error_msg.lower() or "expected" in error_msg.lower():
+                            try:
+                                if interval == '1h':
+                                    hist = stock.history(period=period, interval='60m')
+                            except:
+                                hist = None
+                        else:
+                            hist = None
         
+        # Close the Google Drive data loading section
         if hist is None or len(hist) == 0:
             error_msg = f'No data available for {ticker} at {timeframe}'
             if '=' in ticker and timeframe in ['1m', '5m', '15m', '1h', '4h']:
@@ -4874,64 +4220,14 @@ def get_data():
        # LEVEL DETECTION - Best-in-class production stack
         print("Running level detection algorithms...")
         
-        # PRIMARY: HDBSCAN (state-of-the-art density clustering)
-        hdbscan_levels = calculate_hdbscan_levels(hist_highs, hist_lows, hist_closes, timeframe=timeframe)
-        print(f"HDBSCAN: Generated {len(hdbscan_levels) if hdbscan_levels else 0} levels")
+        # Skip standalone HDBSCAN (redundant with DeepSupp which uses HDBSCAN internally)
+        hdbscan_levels = []
         
-        # NEW: Enhanced OPTICS with reachability plots
-        try:
-            enhanced_optics_levels_result = enhanced_optics_levels(hist_highs, hist_lows, hist_closes, timeframe=timeframe)
-            print(f"Enhanced OPTICS: Generated {len(enhanced_optics_levels_result) if enhanced_optics_levels_result else 0} levels")
-        except Exception as e:
-            print(f"Enhanced OPTICS failed: {e}")
-            enhanced_optics_levels_result = []
+        # MULTI-SCALE HDBSCAN (catch micro/meso/macro levels)
+        multiscale_hdbscan_levels_result = multiscale_hdbscan_levels(hist_highs, hist_lows, hist_closes, timeframe=timeframe)
+        print(f"Multi-scale HDBSCAN: Generated {len(multiscale_hdbscan_levels_result) if multiscale_hdbscan_levels_result else 0} levels")
         
-        # NEW: KDE-based levels
-        try:
-            kde_levels_result = kde_based_levels(hist_highs, hist_lows, hist_closes, n_levels=10)
-            print(f"KDE: Generated {len(kde_levels_result) if kde_levels_result else 0} levels")
-        except Exception as e:
-            print(f"KDE levels failed: {e}")
-            kde_levels_result = []
-        
-        # NEW: Multi-scale HDBSCAN
-        try:
-            multiscale_hdbscan_levels_result = multiscale_hdbscan_levels(hist_highs, hist_lows, hist_closes, timeframe=timeframe)
-            print(f"Multi-scale HDBSCAN: Generated {len(multiscale_hdbscan_levels_result) if multiscale_hdbscan_levels_result else 0} levels")
-        except Exception as e:
-            print(f"Multi-scale HDBSCAN failed: {e}")
-            multiscale_hdbscan_levels_result = []
-        
-        # NEW: Time-weighted HDBSCAN (if timestamps available)
-        time_weighted_levels_result = []
-        try:
-            if hasattr(hist.index, 'values'):
-                timestamps = hist.index.values
-                time_weighted_levels_result = time_weighted_hdbscan(hist_highs, hist_lows, hist_closes, timestamps, half_life_days=30)
-                print(f"Time-weighted HDBSCAN: Generated {len(time_weighted_levels_result) if time_weighted_levels_result else 0} levels")
-        except Exception as e:
-            print(f"Time-weighted HDBSCAN failed: {e}")
-            time_weighted_levels_result = []
-        
-        # NEW: Wyckoff zones
-        try:
-            wyckoff_levels_result = detect_wyckoff_zones(hist_data_subset, lookback=50)
-            print(f"Wyckoff: Generated {len(wyckoff_levels_result) if wyckoff_levels_result else 0} levels")
-        except Exception as e:
-            print(f"Wyckoff zones failed: {e}")
-            wyckoff_levels_result = []
-        
-        # NEW: Persistent Homology (TDA)
-        persistent_homology_levels_result = []
-        try:
-            if RIPSER_AVAILABLE:
-                persistent_homology_levels_result = persistent_homology_levels(hist_highs, hist_lows, hist_closes, max_levels=8)
-                print(f"Persistent Homology: Generated {len(persistent_homology_levels_result) if persistent_homology_levels_result else 0} levels")
-        except Exception as e:
-            print(f"Persistent Homology failed: {e}")
-            persistent_homology_levels_result = []
-        
-        # NEW: Neural Network level detection
+        # Neural Network level detection (CNN+BiLSTM)
         neural_network_levels_result = []
         try:
             if TORCH_AVAILABLE:
@@ -4940,68 +4236,38 @@ def get_data():
         except Exception as e:
             print(f"Neural Network level detection failed: {e}")
             neural_network_levels_result = []
-        
-        # SECONDARY: IsolationForest (event pivot candidates)
-        isolation_forest_levels = find_pivot_anomalies(hist_highs, hist_lows, hist_closes)
-        
-        # INTERACTION: Local density modes (near price, short memory, explicitly non-structural)
-        local_interaction_levels = calculate_local_interaction_levels(
-            hist_closes, 
-            current_price, 
-            sigma_price,
-            lookback=200 if not is_intraday else 300,  # More bars for intraday
-            bins=30,
-            max_levels=5
-        )
-        print(f"Local Interaction: Generated {len(local_interaction_levels) if local_interaction_levels else 0} levels")
-        
-        # FALLBACK: Peak/Valley (last-resort when density clustering fails)
-        peak_valley_levels = find_peaks_valleys_scipy(hist_highs, hist_lows, hist_closes)
-        
-        # MeanShift removed from level production - now used as validator only
-        # (validates HDBSCAN levels and boosts confidence if agrees)
-        
-        # CLASSICAL STRUCTURAL (constraints/magnets, not ML discovery)
-        pivot_levels = calculate_pivot_points(hist_data_subset, timeframe)
-        fib_levels = calculate_fibonacci_levels(hist_highs, hist_lows)  # For metadata only, not primary levels
-        gap_levels = find_gap_levels(hist_data_subset)
+
+        # DeepSupp v4 (corr-series attention autoencoder)
+        deepsupp_levels_result = []
+        try:
+            if TORCH_AVAILABLE:
+                deepsupp_levels_result = detect_levels_with_deepsupp(hist_data_subset, model_path='deepsupp_v4.pt', device='cpu')
+                print(f"DeepSupp: Generated {len(deepsupp_levels_result) if deepsupp_levels_result else 0} levels")
+        except Exception as e:
+            print(f"DeepSupp level detection failed: {e}")
+            deepsupp_levels_result = []
 
         # ---- HARD GUARD: ensure all level outputs are lists ----
         hdbscan_levels = hdbscan_levels or []
-        enhanced_optics_levels_result = enhanced_optics_levels_result or []
-        kde_levels_result = kde_levels_result or []
         multiscale_hdbscan_levels_result = multiscale_hdbscan_levels_result or []
-        time_weighted_levels_result = time_weighted_levels_result or []
-        wyckoff_levels_result = wyckoff_levels_result or []
-        persistent_homology_levels_result = persistent_homology_levels_result or []
         neural_network_levels_result = neural_network_levels_result or []
-        isolation_forest_levels = isolation_forest_levels or []
-        peak_valley_levels = peak_valley_levels or []
-        pivot_levels = pivot_levels or []
-        fib_levels = fib_levels or []
-        gap_levels = gap_levels or []
+        deepsupp_levels_result = deepsupp_levels_result or []
         
-        # ML LEVELS: Primary discovery algorithms only (including new methods)
-        all_ml_levels = (hdbscan_levels + enhanced_optics_levels_result + kde_levels_result + 
-                        multiscale_hdbscan_levels_result + time_weighted_levels_result + 
-                        wyckoff_levels_result + persistent_homology_levels_result + 
-                        neural_network_levels_result + isolation_forest_levels + peak_valley_levels) 
+        # ML LEVELS: Focus on enhanced algorithms (skip standalone HDBSCAN)
+        all_ml_levels = (multiscale_hdbscan_levels_result + 
+                        neural_network_levels_result + deepsupp_levels_result)
         
         # CRITICAL: Preserve levels BEFORE merge (they get consumed by merge)
         # We need BOTH merged levels AND original levels for structural array
         hdbscan_raw_before_merge = [l.copy() for l in hdbscan_levels] if hdbscan_levels else []
         print(f"HDBSCAN RAW (before merge): {len(hdbscan_raw_before_merge)} levels")
         
-        # Preserve new level types before merge (same pattern as HDBSCAN)
-        enhanced_optics_raw_before_merge = [l.copy() for l in enhanced_optics_levels_result] if enhanced_optics_levels_result else []
-        kde_raw_before_merge = [l.copy() for l in kde_levels_result] if kde_levels_result else []
+        # Preserve level types before merge (same pattern as HDBSCAN)
         multiscale_hdbscan_raw_before_merge = [l.copy() for l in multiscale_hdbscan_levels_result] if multiscale_hdbscan_levels_result else []
-        time_weighted_raw_before_merge = [l.copy() for l in time_weighted_levels_result] if time_weighted_levels_result else []
-        wyckoff_raw_before_merge = [l.copy() for l in wyckoff_levels_result] if wyckoff_levels_result else []
-        persistent_homology_raw_before_merge = [l.copy() for l in persistent_homology_levels_result] if persistent_homology_levels_result else []
         neural_network_raw_before_merge = [l.copy() for l in neural_network_levels_result] if neural_network_levels_result else []
+        deepsupp_raw_before_merge = [l.copy() for l in deepsupp_levels_result] if deepsupp_levels_result else []
         
-        # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
+        # NEW: Merged merge BEFORE confluence (prevents probability fragmentation)
         # Use timeframe-aware threshold (cleaner than regime-aware for this step)
         all_ml_levels_merged = agglomerative_merge_levels(
             all_ml_levels,
@@ -5013,7 +4279,7 @@ def get_data():
         # Also check if original source was HDBSCAN
         hdbscan_merged = []
         for l in all_ml_levels_merged:
-            if l.get('category') == 'Agglomerative-Merged':
+            if l.get('category') == 'Merged':
                 sources = l.get('sources', [])
                 source_str = str(sources) if sources else ''
                 # Check if HDBSCAN is in sources or if source field indicates HDBSCAN
@@ -5035,15 +4301,8 @@ def get_data():
         confluence_levels = get_ml_confluence_levels(all_ml_levels)
         confluence_levels = confluence_levels or []
 
-        # Combine ML levels with classical structural (as constraints)
-        # NOTE: Fibonacci is NOT added here - it will be added as metadata only
-        all_levels_combined = (confluence_levels + all_ml_levels + 
-                              pivot_levels + gap_levels)
-        
-        # Add Fibonacci as metadata/confluence to nearby levels (not as primary levels)
-        all_levels_combined = add_fibonacci_metadata_to_levels(
-            all_levels_combined, fib_levels, sigma_price, threshold_sigma=1.0
-        )
+        # Combine ML levels with confluence
+        all_levels_combined = confluence_levels + all_ml_levels
         
         # MICROSTRUCTURE-ENHANCED LEVEL ADJUSTMENT
         all_levels_combined, hmm_regime, hurst_data, garch_regime, micro_state = enhance_levels_with_microstructure(
@@ -5082,194 +4341,128 @@ def get_data():
         except Exception as e:
             print(f"⚠ RL validation failed: {e}, using all levels")
         
-        # ORGANIZE LEVELS BY CATEGORY - Separated into ML and Classical
-        ml_confluence = [l for l in all_levels_combined if l['category'] == 'ML-Confluence']
+        # ORGANIZE LEVELS BY CATEGORY
+        ml_confluence = [l for l in all_levels_combined if l.get('category') == 'ML-Confluence']
         
         # HDBSCAN levels: Use the merged HDBSCAN levels we preserved
-        # These are the agglomerative-merged levels that came from HDBSCAN
-        # If merge didn't happen or no merged levels, fall back to raw
         if len(hdbscan_merged) > 0:
             hdbscan_ml = hdbscan_merged
             print(f"Using {len(hdbscan_ml)} merged HDBSCAN levels for structural array")
         else:
-            # Fallback: Try to extract from all_levels_combined (shouldn't happen but safety)
             hdbscan_ml = [l for l in all_levels_combined if l.get('category') == 'Density (HDBSCAN)' or l.get('category') == 'HDBSCAN']
             if len(hdbscan_ml) == 0 and len(hdbscan_raw_before_merge) > 0:
-                # Last resort: Use raw HDBSCAN if merge consumed them
                 hdbscan_ml = hdbscan_raw_before_merge
                 print(f"Fallback: Using {len(hdbscan_ml)} raw HDBSCAN levels (merge may have consumed them)")
         
-        # NEW: Extract new level detection methods from merged levels (check sources) and unmerged levels
-        # Extract from merged levels by checking sources field, and from unmerged by category
-        enhanced_optics_ml = []
-        kde_ml = []
+        # Extract kept level types from merged levels
         multiscale_hdbscan_ml = []
-        time_weighted_ml = []
-        wyckoff_ml = []
-        persistent_homology_ml = []
         neural_network_ml = []
+        deepsupp_ml = []
         
         for l in all_levels_combined:
             category = l.get('category', '')
-            sources = l.get('sources', l.get('source_algorithms', []))  # Check both field names
-            
-            # Normalize sources to list if it's a string or other type
+            sources = l.get('sources', l.get('source_algorithms', []))
             if isinstance(sources, str):
                 sources = [sources]
             elif not isinstance(sources, list):
                 sources = list(sources) if sources else []
             
-            # Check merged levels (category='Agglomerative-Merged' or 'Hierarchical' with sources)
-            if category == 'Agglomerative-Merged' or category == 'Hierarchical':
-                if 'OPTICS' in sources:
-                    l_copy = l.copy()
-                    l_copy['category'] = 'OPTICS'  # Restore category
-                    enhanced_optics_ml.append(l_copy)
-                if 'KDE' in sources:
-                    l_copy = l.copy()
-                    l_copy['category'] = 'KDE'  # Restore category
-                    kde_ml.append(l_copy)
+            if category == 'Merged' or category == 'Hierarchical':
                 if 'HDBSCAN-MultiScale' in sources:
                     l_copy = l.copy()
-                    l_copy['category'] = 'HDBSCAN-MultiScale'  # Restore category
+                    l_copy['category'] = 'HDBSCAN-MultiScale'
                     multiscale_hdbscan_ml.append(l_copy)
-                if 'HDBSCAN-TimeWeighted' in sources:
-                    l_copy = l.copy()
-                    l_copy['category'] = 'HDBSCAN-TimeWeighted'  # Restore category
-                    time_weighted_ml.append(l_copy)
-                if 'Wyckoff' in sources:
-                    l_copy = l.copy()
-                    l_copy['category'] = 'Wyckoff'  # Restore category
-                    wyckoff_ml.append(l_copy)
-                if 'TDA' in sources:
-                    l_copy = l.copy()
-                    l_copy['category'] = 'TDA'  # Restore category
-                    persistent_homology_ml.append(l_copy)
                 if 'Neural-Network' in sources:
                     l_copy = l.copy()
-                    l_copy['category'] = 'Neural-Network'  # Restore category
+                    l_copy['category'] = 'Neural-Network'
                     neural_network_ml.append(l_copy)
-            # Check unmerged levels (preserved original categories)
-            elif category == 'OPTICS':
-                enhanced_optics_ml.append(l)
-            elif category == 'KDE':
-                kde_ml.append(l)
+                if 'DeepSupp' in sources:
+                    l_copy = l.copy()
+                    l_copy['category'] = 'DeepSupp'
+                    deepsupp_ml.append(l_copy)
             elif category == 'HDBSCAN-MultiScale':
                 multiscale_hdbscan_ml.append(l)
-            elif category == 'HDBSCAN-TimeWeighted':
-                time_weighted_ml.append(l)
-            elif category == 'Wyckoff':
-                wyckoff_ml.append(l)
-            elif category == 'TDA':
-                persistent_homology_ml.append(l)
             elif category == 'Neural-Network':
                 neural_network_ml.append(l)
+            elif category == 'DeepSupp':
+                deepsupp_ml.append(l)
         
-        # Fallback: Use raw levels if extraction found nothing (shouldn't happen but safety)
-        if len(enhanced_optics_ml) == 0 and len(enhanced_optics_raw_before_merge) > 0:
-            enhanced_optics_ml = enhanced_optics_raw_before_merge
-        if len(kde_ml) == 0 and len(kde_raw_before_merge) > 0:
-            kde_ml = kde_raw_before_merge
+        # Fallback: Use raw levels if extraction found nothing
         if len(multiscale_hdbscan_ml) == 0 and len(multiscale_hdbscan_raw_before_merge) > 0:
             multiscale_hdbscan_ml = multiscale_hdbscan_raw_before_merge
-        if len(time_weighted_ml) == 0 and len(time_weighted_raw_before_merge) > 0:
-            time_weighted_ml = time_weighted_raw_before_merge
-        if len(wyckoff_ml) == 0 and len(wyckoff_raw_before_merge) > 0:
-            wyckoff_ml = wyckoff_raw_before_merge
-        if len(persistent_homology_ml) == 0 and len(persistent_homology_raw_before_merge) > 0:
-            persistent_homology_ml = persistent_homology_raw_before_merge
         if len(neural_network_ml) == 0 and len(neural_network_raw_before_merge) > 0:
             neural_network_ml = neural_network_raw_before_merge
+        if len(deepsupp_ml) == 0 and len(deepsupp_raw_before_merge) > 0:
+            deepsupp_ml = deepsupp_raw_before_merge
         
-        # DEBUG: Log new level counts
-        print(f"🔍 NEW LEVEL DETECTION METHODS:")
-        print(f"   OPTICS: {len(enhanced_optics_ml)} levels")
-        print(f"   KDE: {len(kde_ml)} levels")
+        # DEBUG: Log level counts
+        print(f"   HDBSCAN: {len(hdbscan_ml)} levels")
         print(f"   Multi-Scale HDBSCAN: {len(multiscale_hdbscan_ml)} levels")
-        print(f"   Time-Weighted HDBSCAN: {len(time_weighted_ml)} levels")
-        print(f"   Wyckoff: {len(wyckoff_ml)} levels")
-        print(f"   Persistent Homology (TDA): {len(persistent_homology_ml)} levels")
         print(f"   Neural Network: {len(neural_network_ml)} levels")
-        if len(neural_network_ml) > 0:
-            print(f"   ✓ Neural Network levels found: {[l.get('price') for l in neural_network_ml[:3]]}")
+        print(f"   DeepSupp: {len(deepsupp_ml)} levels")
         
-        # Combine all structural density-based levels
-        hdbscan_ml = hdbscan_ml + enhanced_optics_ml + kde_ml + multiscale_hdbscan_ml + time_weighted_ml + wyckoff_ml + persistent_homology_ml + neural_network_ml
-        
-        isolation_forest_ml = [l for l in all_levels_combined if l['category'] == 'Isolation-Forest']
-        peak_valley_ml = [l for l in all_levels_combined if l['category'] == 'Peak-Valley']
-        
-        pivot_classical = [l for l in all_levels_combined if l['category'] == 'Pivot']
-        gap_classical = [l for l in all_levels_combined if l['category'] == 'Gap']
-        
-        # DEBUG: Log level counts before building response
-        print(f"Level organization - HDBSCAN: {len(hdbscan_ml)}, Confluence: {len(ml_confluence)}, Event: {len(isolation_forest_ml)}, Interaction: {len(local_interaction_levels)}, Fallback: {len(peak_valley_ml)}")
+        # Combine all structural levels
+        hdbscan_ml = hdbscan_ml + multiscale_hdbscan_ml + neural_network_ml + deepsupp_ml
         
         # VALIDATION: Ensure all structural levels have valid price field
         hdbscan_ml = [l for l in hdbscan_ml if l and isinstance(l.get('price'), (int, float)) and not (np.isnan(l.get('price')) or np.isinf(l.get('price')))]
         print(f"Structural levels after validation: {len(hdbscan_ml)} levels with valid prices")
-        
-        # DEBUG: Log category breakdown of structural levels
-        category_counts = {}
-        for l in hdbscan_ml:
-            cat = l.get('category', 'Unknown')
-            category_counts[cat] = category_counts.get(cat, 0) + 1
-        print(f"📊 Structural level categories: {category_counts}")
-        
-        # VALIDATION: Ensure interaction levels have valid prices
-        local_interaction_levels = [l for l in local_interaction_levels if l and isinstance(l.get('price'), (int, float)) and not (np.isnan(l.get('price')) or np.isinf(l.get('price')))]
-        print(f"Interaction after validation: {len(local_interaction_levels)} levels with valid prices")
 
         levels = {
-            # PRIMARY STRUCTURAL LEVELS (discovered density / memory)
-            'structural': hdbscan_ml,              # HDBSCAN + Agglomerative merged levels
+            # PRIMARY STRUCTURAL LEVELS (HDBSCAN, HDBSCAN MultiScale, Neural Network, DeepSupp)
+            'structural': hdbscan_ml,
 
-            # EVENT / PIVOT LEVELS (behavioral, fast-decay)
-            'event': isolation_forest_ml,          # Stop-runs, gaps, impulse pivots
+            # Separate categories for neural network and deepsupp levels
+            'neuralNetwork': neural_network_raw_before_merge,
+            'deepSupp': deepsupp_raw_before_merge,
+            'hdbscan': hdbscan_raw_before_merge,
+            'multiscaleHdbscan': multiscale_hdbscan_raw_before_merge,
 
-            # INTERACTION LEVELS (local density, near price, short memory, explicitly non-structural)
-            'interaction': local_interaction_levels,  # Local density modes - play zones, not structure
-
-            # FALLBACK STRUCTURE (only if density is sparse)
-            'fallback': peak_valley_ml,            # Peak / valley geometric structure
-
-            # CLASSICAL REFERENCES (constraints, not ML discovery)
+            # Backward compatibility: Include old fields as empty
+            'event': [],
+            'interaction': [],
+            'fallback': [],
             'classicalStructural': {
-                'pivots': pivot_classical,
-                'gaps': gap_classical
+                'pivots': []
             },
-            
-            # Backward compatibility: Include old fields
-            'mlConfluence': ml_confluence,  # ML confluence levels
-            'peakValley': peak_valley_ml,   # Peak-Valley levels (fallback)
-            'meanshift': [],  # Removed from production, now validator only
-            'dbscan': [],     # Removed from production
-            'gmm': [],        # Removed from production
-            'kmeans': [],     # Removed from production
-            'volatility': [], # Removed from production
-            'pivots': pivot_classical,  # Also at top level for backward compatibility
-            'fibonacci': [],  # Removed as primary level - now metadata only
-            'gaps': gap_classical      # Also at top level for backward compatibility
+            'mlConfluence': ml_confluence,
+            'peakValley': [],
+            'meanshift': [],
+            'dbscan': [],
+            'gmm': [],
+            'kmeans': [],
+            'volatility': [],
+            'pivots': [],
+            'fibonacci': [],
+            'gaps': []
         }
         
         # CRITICAL DEBUG: Log final counts before sending to frontend
-        print(f"🔍 FINAL LEVELS STRUCTURE:")
-        print(f"   structural (HDBSCAN): {len(levels['structural'])}")
-        print(f"   event (Isolation Forest): {len(levels['event'])}")
-        print(f"   fallback (Peak-Valley): {len(levels['fallback'])}")
+        print(f"FINAL LEVELS STRUCTURE:")
+        print(f"   structural: {len(levels['structural'])}")
+        print(f"   neuralNetwork: {len(levels['neuralNetwork'])}")
+        print(f"   deepSupp: {len(levels['deepSupp'])}")
+        print(f"   hdbscan: {len(levels['hdbscan'])}")
+        print(f"   multiscaleHdbscan: {len(levels['multiscaleHdbscan'])}")
         print(f"   mlConfluence: {len(levels['mlConfluence'])}")
+        
+        # Show sample levels from each category
+        if len(levels['neuralNetwork']) > 0:
+            print(f"   Sample NN level: price={levels['neuralNetwork'][0].get('price')}, category={levels['neuralNetwork'][0].get('category')}")
+        if len(levels['deepSupp']) > 0:
+            print(f"   Sample DeepSupp level: price={levels['deepSupp'][0].get('price')}, category={levels['deepSupp'][0].get('category')}")
         if len(levels['structural']) > 0:
-            print(f"   Sample HDBSCAN level: price={levels['structural'][0].get('price')}, category={levels['structural'][0].get('category')}")
+            print(f"   Sample structural level: price={levels['structural'][0].get('price')}, category={levels['structural'][0].get('category')}")
         
         # CALCULATE MOST PROBABLE PRICE PATH
         print("Calculating most probable price path...")
         # Get IV surface data if available
         iv_surface_data = None
         try:
-            vol_surface = generate_volatility_surface(current_price, garch_vol_regime)
-            iv_surface_data = {'surface': vol_surface}
-        except:
-            pass
+            iv_surface_data = generate_volatility_surface(current_price, garch_vol_regime)
+        except Exception as e:
+            print(f"Error generating IV surface: {e}")
+            iv_surface_data = None
         
         most_probable_path = calculate_most_probable_price_path(
             closes, volumes, levels, garch_vol_regime, phase_space, micro_state, 
@@ -5289,8 +4482,13 @@ def get_data():
             'hurstData': hurst_data,
             'forecasts': forecasts,
             'macroIndicators': macro_indicators,
-            'mostProbablePath': most_probable_path
+            'mostProbablePath': most_probable_path,
+            'ivSurface': iv_surface_data  # Add IV surface data for frontend
         }
+        
+        # Add data source information
+        response_data['data_source'] = data_source
+        response_data['google_drive_available'] = GOOGLE_DRIVE_DATA_AVAILABLE
         
         # Sanitize entire response for JSON serialization
         sanitized_response = sanitize_for_json(response_data)
@@ -5308,6 +4506,134 @@ def get_data():
         print(f"ERROR in /api/data: {error_trace}")
         error_msg = str(e) if str(e) else "Unknown error occurred"
         return jsonify({'success': False, 'error': error_msg}), 400
+
+# NEW ENDPOINT: BACKTEST LEVELS
+@app.route('/api/backtest', methods=['GET'])
+def backtest_levels():
+    auth_error = require_auth()
+    if auth_error:
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
+    
+    ticker = request.args.get('ticker', 'SPY')
+    timeframe = request.args.get('timeframe', '1d')
+    method = request.args.get('method', 'hdbscan')  # hdbscan, neural_network, deepsupp
+    lookback = int(request.args.get('lookback', 200))
+    test_window = int(request.args.get('test_window', 20))
+    
+    try:
+        print(f"Running backtest for {ticker} {timeframe} - Method: {method}")
+        
+        # Get data
+        stock = yf.Ticker(ticker)
+        interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
+        interval = interval_map.get(timeframe, '1d')
+        period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
+        period = period_map.get(timeframe, '1y')
+        
+        hist = stock.history(period=period, interval=interval)
+        if len(hist) < lookback + test_window:
+            return jsonify({
+                'success': False, 
+                'error': f'Insufficient data: need {lookback + test_window} bars, got {len(hist)}'
+            }), 400
+        
+        # Run backtest
+        results = {
+            'ticker': ticker,
+            'timeframe': timeframe,
+            'method': method,
+            'lookback': lookback,
+            'test_window': test_window,
+            'total_levels': 0,
+            'touched_levels': 0,
+            'breakout_levels': 0,
+            'success_rate': 0.0,
+            'breakout_rate': 0.0,
+            'level_details': []
+        }
+        
+        # Slide window through data
+        for i in range(lookback, len(hist) - test_window):
+            hist_window = hist.iloc[i-lookback:i]
+            future_window = hist.iloc[i:i+test_window]
+            
+            hist_highs = hist_window['High'].values
+            hist_lows = hist_window['Low'].values
+            hist_closes = hist_window['Close'].values
+            current_price = hist.iloc[i]['Close']
+            
+            # Detect levels based on method
+            levels = []
+            try:
+                if method == 'hdbscan':
+                    levels = calculate_hdbscan_levels(hist_highs, hist_lows, hist_closes, timeframe)
+                elif method == 'neural_network' and TORCH_AVAILABLE:
+                    levels = detect_levels_with_neural_network(hist_window, lookback=100, threshold=0.7)
+                elif method == 'deepsupp' and TORCH_AVAILABLE:
+                    levels = detect_levels_with_deepsupp(hist_window, model_path='deepsupp_v4.pt', device='cpu')
+            except Exception as e:
+                print(f"Error in {method} at window {i}: {e}")
+                continue
+            
+            # Test each level
+            for level in levels:
+                level_price = level.get('price', 0)
+                strength = level.get('strength', 0.5)
+                
+                if not isinstance(level_price, (int, float)) or np.isnan(level_price):
+                    continue
+                
+                results['total_levels'] += 1
+                
+                # Test against future data
+                touched = False
+                breakout = False
+                touches = 0
+                
+                for _, row in future_window.iterrows():
+                    high, low = row['High'], row['Low']
+                    
+                    # Touch detection (0.5% tolerance)
+                    if low <= level_price <= high:
+                        touched = True
+                        touches += 1
+                    
+                    # Breakout detection (1% tolerance)
+                    if high > level_price * 1.01 or low < level_price * 0.99:
+                        breakout = True
+                
+                if touched:
+                    results['touched_levels'] += 1
+                if breakout:
+                    results['breakout_levels'] += 1
+                
+                # Store sample details
+                if len(results['level_details']) < 30:
+                    results['level_details'].append({
+                        'date': hist.iloc[i].name.strftime('%Y-%m-%d'),
+                        'price': float(level_price),
+                        'strength': float(strength),
+                        'current_price': float(current_price),
+                        'touched': touched,
+                        'breakout': breakout,
+                        'touches': touches
+                    })
+        
+        # Calculate rates
+        if results['total_levels'] > 0:
+            results['success_rate'] = results['touched_levels'] / results['total_levels']
+            results['breakout_rate'] = results['breakout_levels'] / results['total_levels']
+        
+        print(f"✓ Backtest complete: {results['total_levels']} levels, {results['success_rate']:.2%} success rate")
+        
+        return jsonify({
+            'success': True,
+            'results': results
+        })
+        
+    except Exception as e:
+        print(f"Backtest failed: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 # NEW ENDPOINT: VOLATILITY SURFACE
 @app.route('/api/volatility-surface', methods=['GET'])
@@ -5341,7 +4667,7 @@ def get_volatility_surface():
         return jsonify({
             'success': True,
             'ticker': ticker,
-            'surface': vol_surface,
+            **vol_surface,  # Unpack the surface data directly
             'garch_regime': garch_vol_regime
         })
         
@@ -5462,38 +4788,7 @@ FEATURE_ORDER = [
 ]
 
 # ============================================================================
-# EQUATION ARCHITECTURE: HARD PHYSICS vs LEARNABLE
-# ============================================================================
-#
-# HARD PHYSICS (never learned, always fixed):
-# - GARCH volatility estimation (fit_garch_model, calculate_garch_volatility_regime)
-#   Reason: Volatility is a fundamental market property, not a calibration parameter
-# - State machine detection (detect_market_microstructure_state)
-#   Reason: State classification is structural, calibration happens via multipliers
-# - Liquidity stress scoring (liquidity_stress_score)
-#   Reason: LSS is an observation, not a tunable parameter
-# - OI wall computation (compute_oi_walls)
-#   Reason: Wall positions are market data, not learnable
-#
-# LEARNABLE (can be calibrated per regime):
-# - Tail usage multiplier (tail_usage_multiplier_from_lss → adjust_hod_lod_usage)
-#   Calibration: override_tail_mult in hodlod_calibration table
-#   Bounds: [0.70, 1.80] (hard constraint)
-# - OI clipping intensity (apply_oi_walls_to_hod_lod)
-#   Calibration: override_oi_clip_mult in hodlod_calibration table
-#   Bounds: [0.10, 1.50] (hard constraint)
-# - RF adjustment strength (rf_adjust_hod_lod)
-#   Calibration: rf_clip (future: can clip RF adjustments)
-#   Bounds: [0.50, 2.50] (hard constraint)
-#
-# STRUCTURAL CONSTRAINTS (enforced, never learned):
-# - HOD > LOD (always enforced)
-# - OI walls clip, not predict (structural boundaries)
-# - RF applied after structural constraints (ordering preserved)
-# - Residual correction applied last (learns remaining bias)
-#
-# ============================================================================
-# SELF-LEARNING ML FRAMEWORK - HOD/LOD PREDICTION
+# EQUATION ARCHITECTURE
 # ============================================================================
 
 # State and regime mappings for ML features
@@ -5527,691 +4822,15 @@ ML_FEATURES = [
     "jump_intensity", "wickiness_score", "tail_usage_mult"
 ]
 
-def prepare_features(df):
-    """Convert categorical features to numeric"""
-    df = df.copy()
-    
-    # Map categorical to numeric
-    if "micro_state" in df.columns:
-        df["micro_state"] = df["micro_state"].map(STATE_MAP).fillna(-1)
-    if "garch_regime" in df.columns:
-        df["garch_regime"] = df["garch_regime"].map(REGIME_MAP).fillna(0)
-    if "hmm_regime" in df.columns:
-        df["hmm_regime"] = df["hmm_regime"].map(REGIME_MAP).fillna(0)
-    if "hurst_state" in df.columns:
-        df["hurst_state"] = df["hurst_state"].map(REGIME_MAP).fillna(0)
-    
-    # Ensure numeric types
-    for feat in ML_FEATURES:
-        if feat in df.columns:
-            df[feat] = pd.to_numeric(df[feat], errors='coerce')
-    
-    return df
 
-def compute_hod_error_sigma(df):
-    """
-    Compute HOD prediction error in sigma units
-    Positive = overshoot (actual > predicted)
-    Negative = undershoot (actual < predicted)
-    """
-    error = (df["realized_HOD"] - df["predicted_HOD"]) / (df["sigma_price"] + 1e-9)
-    return error.clip(-3, 3)  # Cap at ±3σ to handle outliers
 
-def compute_lod_error_sigma(df):
-    """
-    Compute LOD prediction error in sigma units
-    Positive = overshoot (actual < predicted, price went lower)
-    Negative = undershoot (actual > predicted, price didn't go as low)
-    """
-    error = (df["predicted_LOD"] - df["realized_LOD"]) / (df["sigma_price"] + 1e-9)
-    return error.clip(-3, 3)  # Cap at ±3σ to handle outliers
 
-def train_rf_dual(df, verbose=True):
-    """
-    Train separate Random Forest models for HOD and LOD adjustments
-    
-    Returns:
-    --------
-    (rf_hod, rf_lod, metrics)
-    """
-    df = prepare_features(df)
-    
-    # Compute targets
-    df["target_hod"] = compute_hod_error_sigma(df)
-    df["target_lod"] = compute_lod_error_sigma(df)
-    
-    # Drop rows with missing features or targets
-    required_cols = ML_FEATURES + ["target_hod", "target_lod"]
-    df_clean = df.dropna(subset=required_cols)
-    
-    if len(df_clean) < 100:
-        raise ValueError(f"Insufficient data: {len(df_clean)} rows after cleaning (need 100+)")
-    
-    X = df_clean[ML_FEATURES].values
-    y_hod = df_clean["target_hod"].values
-    y_lod = df_clean["target_lod"].values
-    
-    # Time series cross-validation
-    tscv = TimeSeriesSplit(n_splits=5)
-    
-    # Initialize models
-    rf_hod = RandomForestRegressor(
-        n_estimators=300,
-        max_depth=6,
-        min_samples_leaf=30,
-        max_features=0.6,
-        random_state=42,
-        n_jobs=-1
-    )
-    
-    rf_lod = RandomForestRegressor(
-        n_estimators=300,
-        max_depth=6,
-        min_samples_leaf=30,
-        max_features=0.6,
-        random_state=43,  # Different seed for diversity
-        n_jobs=-1
-    )
-    
-    # Cross-validation
-    maes_hod, maes_lod = [], []
-    rmses_hod, rmses_lod = [], []
-    
-    for fold, (train_idx, val_idx) in enumerate(tscv.split(X), 1):
-        X_train, X_val = X[train_idx], X[val_idx]
-        y_hod_train, y_hod_val = y_hod[train_idx], y_hod[val_idx]
-        y_lod_train, y_lod_val = y_lod[train_idx], y_lod[val_idx]
-        
-        # Train HOD model
-        rf_hod.fit(X_train, y_hod_train)
-        preds_hod = rf_hod.predict(X_val)
-        mae_hod = mean_absolute_error(y_hod_val, preds_hod)
-        rmse_hod = np.sqrt(mean_squared_error(y_hod_val, preds_hod))
-        maes_hod.append(mae_hod)
-        rmses_hod.append(rmse_hod)
-        
-        # Train LOD model
-        rf_lod.fit(X_train, y_lod_train)
-        preds_lod = rf_lod.predict(X_val)
-        mae_lod = mean_absolute_error(y_lod_val, preds_lod)
-        rmse_lod = np.sqrt(mean_squared_error(y_lod_val, preds_lod))
-        maes_lod.append(mae_lod)
-        rmses_lod.append(rmse_lod)
-        
-        if verbose:
-            print(f"Fold {fold}: HOD MAE={mae_hod:.4f}σ, LOD MAE={mae_lod:.4f}σ")
-    
-    # Final training on all data
-    rf_hod.fit(X, y_hod)
-    rf_lod.fit(X, y_lod)
-    
-    metrics = {
-        'hod_mae': np.mean(maes_hod),
-        'hod_rmse': np.mean(rmses_hod),
-        'lod_mae': np.mean(maes_lod),
-        'lod_rmse': np.mean(rmses_lod),
-        'n_samples': len(df_clean)
-    }
-    
-    if verbose:
-        print(f"\n{'='*60}")
-        print(f"FINAL CV RESULTS (n={len(df_clean)})")
-        print(f"{'='*60}")
-        print(f"HOD: MAE={metrics['hod_mae']:.4f}σ, RMSE={metrics['hod_rmse']:.4f}σ")
-        print(f"LOD: MAE={metrics['lod_mae']:.4f}σ, RMSE={metrics['lod_rmse']:.4f}σ")
-        print(f"{'='*60}\n")
-    
-    return rf_hod, rf_lod, metrics
 
-def train_lgbm_dual(df, verbose=True):
-    """
-    Train separate LightGBM models for HOD and LOD adjustments
-    LightGBM is 10-100x faster than RF and often 5-15% more accurate
-    
-    Returns:
-    --------
-    (lgbm_hod, lgbm_lod, metrics)
-    """
-    if not LIGHTGBM_AVAILABLE:
-        raise ImportError("lightgbm is not installed. Install it with: pip install lightgbm")
-    
-    df = prepare_features(df)
-    
-    # Compute targets
-    df["target_hod"] = compute_hod_error_sigma(df)
-    df["target_lod"] = compute_lod_error_sigma(df)
-    
-    # Drop rows with missing features or targets
-    required_cols = ML_FEATURES + ["target_hod", "target_lod"]
-    df_clean = df.dropna(subset=required_cols)
-    
-    if len(df_clean) < 100:
-        raise ValueError(f"Insufficient data: {len(df_clean)} rows after cleaning (need 100+)")
-    
-    X = df_clean[ML_FEATURES].values
-    y_hod = df_clean["target_hod"].values
-    y_lod = df_clean["target_lod"].values
-    
-    # Time series cross-validation
-    tscv = TimeSeriesSplit(n_splits=5)
-    
-    # LightGBM parameters
-    params = {
-        'objective': 'regression',
-        'metric': 'mae',
-        'boosting_type': 'gbdt',
-        'num_leaves': 31,
-        'learning_rate': 0.05,
-        'feature_fraction': 0.8,
-        'bagging_fraction': 0.8,
-        'bagging_freq': 5,
-        'verbose': -1,
-        'min_data_in_leaf': 20,
-        'lambda_l1': 0.1,  # L1 regularization
-        'lambda_l2': 0.1,  # L2 regularization
-        'random_state': 42
-    }
-    
-    # Cross-validation
-    maes_hod, maes_lod = [], []
-    rmses_hod, rmses_lod = [], []
-    
-    for fold, (train_idx, val_idx) in enumerate(tscv.split(X), 1):
-        X_train, X_val = X[train_idx], X[val_idx]
-        y_hod_train, y_hod_val = y_hod[train_idx], y_hod[val_idx]
-        y_lod_train, y_lod_val = y_lod[train_idx], y_lod[val_idx]
-        
-        # Train HOD model
-        lgbm_hod_fold = lgb.LGBMRegressor(**params, n_estimators=500)
-        lgbm_hod_fold.fit(
-            X_train, y_hod_train,
-            eval_set=[(X_val, y_hod_val)],
-            early_stopping_rounds=50,
-            verbose=False
-        )
-        preds_hod = lgbm_hod_fold.predict(X_val)
-        mae_hod = mean_absolute_error(y_hod_val, preds_hod)
-        rmse_hod = np.sqrt(mean_squared_error(y_hod_val, preds_hod))
-        maes_hod.append(mae_hod)
-        rmses_hod.append(rmse_hod)
-        
-        # Train LOD model
-        lgbm_lod_fold = lgb.LGBMRegressor(**params, n_estimators=500, random_state=43)
-        lgbm_lod_fold.fit(
-            X_train, y_lod_train,
-            eval_set=[(X_val, y_lod_val)],
-            early_stopping_rounds=50,
-            verbose=False
-        )
-        preds_lod = lgbm_lod_fold.predict(X_val)
-        mae_lod = mean_absolute_error(y_lod_val, preds_lod)
-        rmse_lod = np.sqrt(mean_squared_error(y_lod_val, preds_lod))
-        maes_lod.append(mae_lod)
-        rmses_lod.append(rmse_lod)
-        
-        if verbose:
-            print(f"Fold {fold}: HOD MAE={mae_hod:.4f}σ, LOD MAE={mae_lod:.4f}σ")
-    
-    # Final training on all data
-    lgbm_hod = lgb.LGBMRegressor(**params, n_estimators=500)
-    lgbm_hod.fit(
-        X, y_hod,
-        eval_set=[(X, y_hod)],
-        early_stopping_rounds=50,
-        verbose=False
-    )
-    
-    lgbm_lod = lgb.LGBMRegressor(**params, n_estimators=500, random_state=43)
-    lgbm_lod.fit(
-        X, y_lod,
-        eval_set=[(X, y_lod)],
-        early_stopping_rounds=50,
-        verbose=False
-    )
-    
-    metrics = {
-        'hod_mae': np.mean(maes_hod),
-        'hod_rmse': np.mean(rmses_hod),
-        'lod_mae': np.mean(maes_lod),
-        'lod_rmse': np.mean(rmses_lod),
-        'n_samples': len(df_clean)
-    }
-    
-    if verbose:
-        print(f"\n{'='*60}")
-        print(f"FINAL CV RESULTS (LightGBM, n={len(df_clean)})")
-        print(f"{'='*60}")
-        print(f"HOD: MAE={metrics['hod_mae']:.4f}σ, RMSE={metrics['hod_rmse']:.4f}σ")
-        print(f"LOD: MAE={metrics['lod_mae']:.4f}σ, RMSE={metrics['lod_rmse']:.4f}σ")
-        print(f"{'='*60}\n")
-    
-    return lgbm_hod, lgbm_lod, metrics
 
-def print_feature_importance(rf_hod, rf_lod):
-    """Print feature importance for both models"""
-    print("\n" + "="*60)
-    print("FEATURE IMPORTANCE")
-    print("="*60)
-    
-    # HOD model
-    print("\nHOD Model - Top 10 Features:")
-    importances_hod = rf_hod.feature_importances_
-    pairs_hod = sorted(zip(ML_FEATURES, importances_hod), key=lambda x: x[1], reverse=True)
-    for i, (feat, imp) in enumerate(pairs_hod[:10], 1):
-        print(f"{i:2}. {feat:<30} {imp:.4f}")
-    
-    # LOD model
-    print("\nLOD Model - Top 10 Features:")
-    importances_lod = rf_lod.feature_importances_
-    pairs_lod = sorted(zip(ML_FEATURES, importances_lod), key=lambda x: x[1], reverse=True)
-    for i, (feat, imp) in enumerate(pairs_lod[:10], 1):
-        print(f"{i:2}. {feat:<30} {imp:.4f}")
-    
-    # Show differences
-    print("\nFeature Importance Differences (HOD - LOD):")
-    diff_dict = {f: importances_hod[i] - importances_lod[i] 
-                 for i, f in enumerate(ML_FEATURES)}
-    sorted_diffs = sorted(diff_dict.items(), key=lambda x: abs(x[1]), reverse=True)
-    for feat, diff in sorted_diffs[:10]:
-        direction = "HOD" if diff > 0 else "LOD"
-        print(f"{feat:<30} {diff:+.4f} (favors {direction})")
 
-def rf_adjust_hod_lod(rf_hod, rf_lod, feature_dict, base_hod, base_lod, sigma_price):
-    """
-    Adjust base HOD/LOD predictions using trained Random Forest models
-    
-    Parameters:
-    -----------
-    rf_hod, rf_lod : RandomForestRegressor
-        Trained models for HOD and LOD adjustments
-    feature_dict : dict
-        Dictionary with keys matching ML_FEATURES
-    base_hod, base_lod : float
-        Base predictions from state machine
-    sigma_price : float
-        Current volatility (price * sigma_daily / 100)
-    
-    Returns:
-    --------
-    (adjusted_hod, adjusted_lod, metadata)
-    """
-    # Extract features in correct order
-    X = np.array([feature_dict.get(f, 0) for f in ML_FEATURES]).reshape(1, -1)
-    
-    # Predict adjustments in sigma units
-    adj_hod_sigma = rf_hod.predict(X)[0]
-    adj_lod_sigma = rf_lod.predict(X)[0]
-    
-    # Clip to reasonable range (±2σ adjustment)
-    adj_hod_sigma = np.clip(adj_hod_sigma, -2.0, 2.0)
-    adj_lod_sigma = np.clip(adj_lod_sigma, -2.0, 2.0)
-    
-    # Apply adjustments
-    adjusted_hod = base_hod + adj_hod_sigma * sigma_price
-    adjusted_lod = base_lod - adj_lod_sigma * sigma_price
-    
-    # Ensure HOD > LOD
-    if adjusted_hod < adjusted_lod:
-        # If crossed, use base predictions
-        adjusted_hod = base_hod
-        adjusted_lod = base_lod
-    
-    metadata = {
-        'adj_hod_sigma': float(adj_hod_sigma),
-        'adj_lod_sigma': float(adj_lod_sigma),
-        'base_hod': float(base_hod),
-        'base_lod': float(base_lod),
-        'rf_enhanced': True
-    }
-    
-    return float(adjusted_hod), float(adjusted_lod), metadata
 
-def lgbm_adjust_hod_lod(lgbm_hod, lgbm_lod, feature_dict, base_hod, base_lod, sigma_price):
-    """
-    Adjust base HOD/LOD predictions using trained LightGBM models
-    
-    Parameters:
-    -----------
-    lgbm_hod, lgbm_lod : LGBMRegressor
-        Trained LightGBM models for HOD and LOD adjustments
-    feature_dict : dict
-        Dictionary with keys matching ML_FEATURES
-    base_hod, base_lod : float
-        Base predictions from state machine
-    sigma_price : float
-        Current volatility (price * sigma_daily / 100)
-    
-    Returns:
-    --------
-    (adjusted_hod, adjusted_lod, metadata)
-    """
-    # Extract features in correct order
-    X = np.array([feature_dict.get(f, 0) for f in ML_FEATURES]).reshape(1, -1)
-    
-    # Predict adjustments in sigma units
-    adj_hod_sigma = lgbm_hod.predict(X)[0]
-    adj_lod_sigma = lgbm_lod.predict(X)[0]
-    
-    # Clip to reasonable range (±2σ adjustment)
-    adj_hod_sigma = np.clip(adj_hod_sigma, -2.0, 2.0)
-    adj_lod_sigma = np.clip(adj_lod_sigma, -2.0, 2.0)
-    
-    # Apply adjustments
-    adjusted_hod = base_hod + adj_hod_sigma * sigma_price
-    adjusted_lod = base_lod - adj_lod_sigma * sigma_price
-    
-    # Ensure HOD > LOD
-    if adjusted_hod < adjusted_lod:
-        # If crossed, use base predictions
-        adjusted_hod = base_hod
-        adjusted_lod = base_lod
-    
-    metadata = {
-        'adj_hod_sigma': float(adj_hod_sigma),
-        'adj_lod_sigma': float(adj_lod_sigma),
-        'base_hod': float(base_hod),
-        'base_lod': float(base_lod),
-        'lgbm_enhanced': True
-    }
-    
-    return float(adjusted_hod), float(adjusted_lod), metadata
 
 # ============================================================================
-# ADVANCED ML MODELS FOR HOD/LOD PREDICTION
-# ============================================================================
-
-def train_xgb_quantile(df, quantiles=[0.1, 0.5, 0.9], target='hod'):
-    """
-    XGBoost with Quantile Regression
-    Predict multiple quantiles simultaneously - gives confidence intervals, not just point estimates
-    """
-    if not XGBOOST_AVAILABLE:
-        return {}
-    
-    try:
-        from sklearn.model_selection import train_test_split
-        df = prepare_features(df)
-        target_col = f"target_{target}"
-        
-        if target_col not in df.columns:
-            df[target_col] = compute_hod_error_sigma(df) if target == 'hod' else compute_lod_error_sigma(df)
-        
-        df_clean = df.dropna(subset=ML_FEATURES + [target_col])
-        if len(df_clean) < 100:
-            return {}
-        
-        X = df_clean[ML_FEATURES].values
-        y = df_clean[target_col].values
-        
-        # Split data
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        
-        models = {}
-        for q in quantiles:
-            try:
-                xgb_model = xgb.XGBRegressor(
-                    objective='reg:quantileerror',
-                    quantile_alpha=q,
-                    tree_method='hist',
-                    learning_rate=0.05,
-                    max_depth=6,
-                    n_estimators=500,
-                    subsample=0.8,
-                    colsample_bytree=0.8,
-                    random_state=42,
-                    verbosity=0
-                )
-                xgb_model.fit(X_train, y_train)
-                models[f'q{int(q*100)}'] = xgb_model
-                print(f"✓ Trained XGBoost quantile {q} model for {target}")
-            except Exception as e:
-                print(f"XGBoost quantile {q} failed: {e}")
-                continue
-        
-        return models
-    except Exception as e:
-        print(f"train_xgb_quantile failed: {e}")
-        return {}
-
-if TORCH_AVAILABLE and nn is not None:
-    class AttentionHODLOD(nn.Module):
-        """
-        Neural Network with Attention Mechanism for HOD/LOD prediction
-        Learns which features matter WHEN
-        """
-        def __init__(self, n_features, hidden_dim=64):
-            super().__init__()
-            
-            # Feature embedding
-            self.feature_embed = nn.Sequential(
-                nn.Linear(n_features, hidden_dim),
-                nn.ReLU(),
-                nn.Dropout(0.2)
-            )
-            
-            # Attention mechanism
-            self.attention = nn.Sequential(
-                nn.Linear(hidden_dim, hidden_dim),
-                nn.Tanh(),
-                nn.Linear(hidden_dim, 1)
-            )
-            
-            # Prediction heads
-            self.hod_head = nn.Sequential(
-                nn.Linear(hidden_dim, 32),
-                nn.ReLU(),
-                nn.Linear(32, 1)
-            )
-            
-            self.lod_head = nn.Sequential(
-                nn.Linear(hidden_dim, 32),
-                nn.ReLU(),
-                nn.Linear(32, 1)
-            )
-        
-        def forward(self, x):
-            # x: [batch, n_features]
-            embedded = self.feature_embed(x)  # [batch, hidden_dim]
-            
-            # Attention weights
-            attn_weights = torch.softmax(self.attention(embedded), dim=0)  # [batch, 1]
-            
-            # Weighted features
-            attended = embedded * attn_weights
-            
-            # Predictions
-            hod_pred = self.hod_head(attended)
-            lod_pred = self.lod_head(attended)
-            
-            return hod_pred, lod_pred, attn_weights
-else:
-    # Dummy class when torch is not available
-    class AttentionHODLOD:
-        def __init__(self, *args, **kwargs):
-            pass
-
-if TORCH_AVAILABLE and nn is not None:
-    class TemporalConvNet(nn.Module):
-        """
-        Temporal Convolution Network for sequence modeling
-        Captures temporal patterns in HOD/LOD
-        """
-        def __init__(self, n_features, n_channels=[64, 64, 32], kernel_size=3):
-            super().__init__()
-            
-            layers = []
-            num_levels = len(n_channels)
-            
-            for i in range(num_levels):
-                dilation = 2 ** i
-                in_channels = n_features if i == 0 else n_channels[i-1]
-                out_channels = n_channels[i]
-                
-                layers.append(nn.Conv1d(
-                    in_channels, out_channels, kernel_size,
-                    stride=1, dilation=dilation,
-                    padding=(kernel_size-1) * dilation
-                ))
-                layers.append(nn.ReLU())
-                layers.append(nn.Dropout(0.2))
-            
-            self.network = nn.Sequential(*layers)
-            
-            # Output heads
-            self.hod_head = nn.Linear(n_channels[-1], 1)
-            self.lod_head = nn.Linear(n_channels[-1], 1)
-        
-        def forward(self, x):
-            # x: [batch, seq_len, n_features]
-            x = x.transpose(1, 2)  # [batch, n_features, seq_len]
-            out = self.network(x)  # [batch, n_channels[-1], seq_len]
-            out = out[:, :, -1]  # Take last timestep
-            
-            hod_pred = self.hod_head(out)
-            lod_pred = self.lod_head(out)
-            
-            return hod_pred, lod_pred
-else:
-    # Dummy class when torch is not available
-    class TemporalConvNet:
-        def __init__(self, *args, **kwargs):
-            pass
-
-def train_meta_ensemble(df):
-    """
-    Ensemble Meta-Model (Stacking 2.0)
-    Level 1: Train diverse base models
-    Level 2: Train meta-model on base predictions
-    Level 3: Residual correction
-    """
-    if len(df) < 100:
-        return None
-    
-    try:
-        from sklearn.linear_model import Ridge
-        from sklearn.ensemble import GradientBoostingRegressor
-        
-        df = prepare_features(df)
-        df["target_hod"] = compute_hod_error_sigma(df)
-        df["target_lod"] = compute_lod_error_sigma(df)
-        
-        df_clean = df.dropna(subset=ML_FEATURES + ["target_hod", "target_lod"])
-        if len(df_clean) < 100:
-            return None
-        
-        X = df_clean[ML_FEATURES].values
-        y_hod = df_clean["target_hod"].values
-        y_lod = df_clean["target_lod"].values
-        
-        # Level 1: Diverse base models
-        base_models_hod = {}
-        base_models_lod = {}
-        
-        if LIGHTGBM_AVAILABLE:
-            base_models_hod['lgbm'] = lgb.LGBMRegressor(n_estimators=300, learning_rate=0.05, verbose=-1, random_state=42)
-            base_models_lod['lgbm'] = lgb.LGBMRegressor(n_estimators=300, learning_rate=0.05, verbose=-1, random_state=43)
-        
-        if XGBOOST_AVAILABLE:
-            base_models_hod['xgb'] = xgb.XGBRegressor(n_estimators=300, learning_rate=0.05, random_state=42, verbosity=0)
-            base_models_lod['xgb'] = xgb.XGBRegressor(n_estimators=300, learning_rate=0.05, random_state=43, verbosity=0)
-        
-        base_models_hod['rf'] = RandomForestRegressor(n_estimators=200, max_depth=8, random_state=42, n_jobs=-1)
-        base_models_lod['rf'] = RandomForestRegressor(n_estimators=200, max_depth=8, random_state=43, n_jobs=-1)
-        
-        base_models_hod['gbm'] = GradientBoostingRegressor(n_estimators=200, learning_rate=0.05, random_state=42)
-        base_models_lod['gbm'] = GradientBoostingRegressor(n_estimators=200, learning_rate=0.05, random_state=43)
-        
-        # Train base models with CV
-        tscv = TimeSeriesSplit(n_splits=5)
-        base_predictions_hod = np.zeros((len(X), len(base_models_hod)))
-        base_predictions_lod = np.zeros((len(X), len(base_models_lod)))
-        
-        for fold, (train_idx, val_idx) in enumerate(tscv.split(X)):
-            for i, (name, model_hod) in enumerate(base_models_hod.items()):
-                model_hod.fit(X[train_idx], y_hod[train_idx])
-                base_predictions_hod[val_idx, i] = model_hod.predict(X[val_idx])
-                
-                model_lod = base_models_lod[name]
-                model_lod.fit(X[train_idx], y_lod[train_idx])
-                base_predictions_lod[val_idx, i] = model_lod.predict(X[val_idx])
-        
-        # Train final models on all data
-        for name, model in base_models_hod.items():
-            model.fit(X, y_hod)
-        for name, model in base_models_lod.items():
-            model.fit(X, y_lod)
-        
-        # Level 2: Meta-model (learns optimal weighting)
-        meta_features_hod = np.hstack([X, base_predictions_hod])
-        meta_features_lod = np.hstack([X, base_predictions_lod])
-        
-        meta_model_hod = Ridge(alpha=1.0)
-        meta_model_lod = Ridge(alpha=1.0)
-        meta_model_hod.fit(meta_features_hod, y_hod)
-        meta_model_lod.fit(meta_features_lod, y_lod)
-        
-        # Level 3: Residual correction
-        meta_preds_hod = meta_model_hod.predict(meta_features_hod)
-        meta_preds_lod = meta_model_lod.predict(meta_features_lod)
-        
-        residuals_hod = y_hod - meta_preds_hod
-        residuals_lod = y_lod - meta_preds_lod
-        
-        if LIGHTGBM_AVAILABLE:
-            residual_model_hod = lgb.LGBMRegressor(n_estimators=100, learning_rate=0.1, verbose=-1, random_state=42)
-            residual_model_lod = lgb.LGBMRegressor(n_estimators=100, learning_rate=0.1, verbose=-1, random_state=43)
-        else:
-            residual_model_hod = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)
-            residual_model_lod = RandomForestRegressor(n_estimators=100, random_state=43, n_jobs=-1)
-        
-        residual_model_hod.fit(X, residuals_hod)
-        residual_model_lod.fit(X, residuals_lod)
-        
-        print("✓ Meta-ensemble trained successfully")
-        return {
-            'base_models_hod': base_models_hod,
-            'base_models_lod': base_models_lod,
-            'meta_model_hod': meta_model_hod,
-            'meta_model_lod': meta_model_lod,
-            'residual_model_hod': residual_model_hod,
-            'residual_model_lod': residual_model_lod
-        }
-    except Exception as e:
-        print(f"train_meta_ensemble failed: {e}")
-        return None
-
-def predict_meta_ensemble(meta_ensemble, feature_dict):
-    """
-    Predict using meta-ensemble
-    """
-    if meta_ensemble is None:
-        return None, None
-    
-    try:
-        X = np.array([feature_dict.get(f, 0) for f in ML_FEATURES]).reshape(1, -1)
-        
-        # Level 1: Base predictions
-        base_preds_hod = np.column_stack([m.predict(X) for m in meta_ensemble['base_models_hod'].values()])
-        base_preds_lod = np.column_stack([m.predict(X) for m in meta_ensemble['base_models_lod'].values()])
-        
-        # Level 2: Meta predictions
-        meta_features_hod = np.hstack([X, base_preds_hod])
-        meta_features_lod = np.hstack([X, base_preds_lod])
-        
-        meta_pred_hod = meta_ensemble['meta_model_hod'].predict(meta_features_hod)[0]
-        meta_pred_lod = meta_ensemble['meta_model_lod'].predict(meta_features_lod)[0]
-        
-        # Level 3: Residual correction
-        residual_correction_hod = meta_ensemble['residual_model_hod'].predict(X)[0]
-        residual_correction_lod = meta_ensemble['residual_model_lod'].predict(X)[0]
-        
-        final_hod = meta_pred_hod + residual_correction_hod
-        final_lod = meta_pred_lod + residual_correction_lod
-        
-        return final_hod, final_lod
-    except Exception as e:
-        print(f"predict_meta_ensemble failed: {e}")
-        return None, None
 
 def realized_kernel_volatility(highs, lows, opens, closes, H=5):
     """
@@ -6258,226 +4877,6 @@ def realized_kernel_volatility(highs, lows, opens, closes, H=5):
         print(f"realized_kernel_volatility failed: {e}")
         return None
 
-if TORCH_AVAILABLE and nn is not None:
-    class TransformerHODLOD(nn.Module):
-        """
-        Transformer with Positional Encoding for HOD/LOD prediction
-        State-of-the-art for sequence prediction
-        """
-        def __init__(self, n_features, d_model=128, nhead=8, num_layers=3):
-            super().__init__()
-            
-            self.embedding = nn.Linear(n_features, d_model)
-            
-            encoder_layer = nn.TransformerEncoderLayer(
-                d_model=d_model,
-                nhead=nhead,
-                dim_feedforward=512,
-                dropout=0.1,
-                batch_first=True
-            )
-            
-            self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
-            
-            self.hod_head = nn.Linear(d_model, 1)
-            self.lod_head = nn.Linear(d_model, 1)
-        
-        def forward(self, x, mask=None):
-            # x: [batch, seq_len, n_features]
-            x = self.embedding(x)  # [batch, seq_len, d_model]
-            
-            # Add positional encoding
-            seq_len = x.size(1)
-            position = torch.arange(seq_len, device=x.device).unsqueeze(0)
-            pos_encoding = self.positional_encoding(position, d_model=x.size(2))
-            x = x + pos_encoding
-            
-            # Transformer
-            out = self.transformer(x, src_key_padding_mask=mask)
-            
-            # Use last timestep
-            out = out[:, -1, :]
-            
-            hod_pred = self.hod_head(out)
-            lod_pred = self.lod_head(out)
-            
-            return hod_pred, lod_pred
-        
-        def positional_encoding(self, position, d_model):
-            """Sinusoidal positional encoding"""
-            pe = torch.zeros(position.size(0), position.size(1), d_model)
-            div_term = torch.exp(torch.arange(0, d_model, 2, device=position.device, dtype=torch.float32) * -(np.log(10000.0) / d_model))
-            pe[:, :, 0::2] = torch.sin(position.float() * div_term)
-            pe[:, :, 1::2] = torch.cos(position.float() * div_term)
-            return pe
-else:
-    # Dummy class when torch is not available
-    class TransformerHODLOD:
-        def __init__(self, *args, **kwargs):
-            pass
-
-if TORCH_AVAILABLE and nn is not None:
-    class QuantileSelector(nn.Module):
-        """
-        RL Agent for Adaptive Quantile Selection
-        Instead of fixed 80th percentile, learn WHICH quantile to use for each state
-        """
-        def __init__(self, n_features, n_actions=10):
-            """
-            n_actions: 10 quantiles [0.1, 0.2, ..., 1.0]
-            """
-            super().__init__()
-            self.network = nn.Sequential(
-                nn.Linear(n_features, 128),
-                nn.ReLU(),
-                nn.Linear(128, 64),
-                nn.ReLU(),
-                nn.Linear(64, n_actions)
-            )
-        
-        def forward(self, state):
-            return self.network(state)
-else:
-    # Dummy class when torch is not available
-    class QuantileSelector:
-        def __init__(self, *args, **kwargs):
-            pass
-
-if TORCH_AVAILABLE:
-    class DQNAgent:
-        """
-        Deep Q-Network Agent for Adaptive Quantile Selection
-        """
-        def __init__(self, n_features, n_actions=10):
-            if not TORCH_AVAILABLE:
-                raise ImportError("PyTorch required for DQN agent")
-            
-            self.n_actions = n_actions
-            self.quantiles = np.linspace(0.1, 1.0, n_actions)
-            
-            self.policy_net = QuantileSelector(n_features, n_actions)
-            self.target_net = QuantileSelector(n_features, n_actions)
-            self.target_net.load_state_dict(self.policy_net.state_dict())
-            
-            self.optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=0.001)
-            self.memory = []
-            self.max_memory = 10000
-            
-            self.epsilon = 1.0  # Exploration rate
-            self.epsilon_decay = 0.995
-            self.epsilon_min = 0.01
-            
-            self.gamma = 0.95  # Discount factor
-        
-        def select_quantile(self, state):
-            """Select which quantile to use"""
-            import random
-            if random.random() < self.epsilon:
-                action = random.randrange(self.n_actions)
-            else:
-                with torch.no_grad():
-                    state_tensor = torch.FloatTensor(state).unsqueeze(0)
-                    q_values = self.policy_net(state_tensor)
-                    action = q_values.argmax().item()
-            
-            return self.quantiles[action], action
-        
-        def train_step(self, batch_size=32):
-            """Train on a batch of experiences"""
-            import random
-            if len(self.memory) < batch_size:
-                return
-            
-            batch = random.sample(self.memory, batch_size)
-            states, actions, rewards, next_states, dones = zip(*batch)
-            
-            states = torch.FloatTensor(states)
-            actions = torch.LongTensor(actions)
-            rewards = torch.FloatTensor(rewards)
-            next_states = torch.FloatTensor(next_states)
-            dones = torch.FloatTensor(dones)
-            
-            # Current Q values
-            current_q = self.policy_net(states).gather(1, actions.unsqueeze(1))
-            
-            # Target Q values
-            with torch.no_grad():
-                next_q = self.target_net(next_states).max(1)[0]
-                target_q = rewards + (1 - dones) * self.gamma * next_q
-            
-            # Loss
-            loss = nn.MSELoss()(current_q.squeeze(), target_q)
-            
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
-            
-            # Decay epsilon
-            if self.epsilon > self.epsilon_min:
-                self.epsilon *= self.epsilon_decay
-else:
-    # Dummy class when torch is not available
-    class DQNAgent:
-        def __init__(self, *args, **kwargs):
-            raise ImportError("PyTorch required for DQN agent")
-
-
-def save_models(rf_hod, rf_lod, metrics, filepath='hod_lod_models.pkl'):
-    """Save trained models and metrics"""
-    with open(filepath, 'wb') as f:
-        pickle.dump({
-            'rf_hod': rf_hod,
-            'rf_lod': rf_lod,
-            'metrics': metrics,
-            'features': ML_FEATURES,
-            'version': '1.0'
-        }, f)
-    print(f"✓ Models saved to {filepath}")
-
-def load_models(filepath='hod_lod_models.pkl'):
-    """Load trained models"""
-    with open(filepath, 'rb') as f:
-        data = pickle.load(f)
-    return data['rf_hod'], data['rf_lod'], data['metrics']
-
-def save_stack_models(base_hod, base_lod, resid_hod, resid_lod, metrics, filepath='hod_lod_stack.pkl', model_type='rf'):
-    with open(filepath, 'wb') as f:
-        data = {
-            'resid_hod': resid_hod,
-            'resid_lod': resid_lod,
-            'metrics': metrics,
-            'features': ML_FEATURES,
-            'version': '1.0-stack',
-            'model_type': model_type
-        }
-        # Store base models with type-specific key
-        if model_type == 'lgbm':
-            data['lgbm_hod'] = base_hod
-            data['lgbm_lod'] = base_lod
-            # Also store as rf_* for backward compatibility
-            data['rf_hod'] = base_hod
-            data['rf_lod'] = base_lod
-        else:
-            data['rf_hod'] = base_hod
-            data['rf_lod'] = base_lod
-        pickle.dump(data, f)
-    print(f"✓ Stack models saved to {filepath} (type: {model_type})")
-
-def load_stack_models(filepath='hod_lod_stack.pkl'):
-    with open(filepath, 'rb') as f:
-        data = pickle.load(f)
-    model_type = data.get('model_type', 'rf')  # Default to 'rf' for backward compatibility
-    base_hod = data.get('lgbm_hod') if model_type == 'lgbm' else data.get('rf_hod')
-    base_lod = data.get('lgbm_lod') if model_type == 'lgbm' else data.get('rf_lod')
-    # Fallback to rf_* if lgbm_* not found
-    if base_hod is None:
-        base_hod = data.get('rf_hod')
-    if base_lod is None:
-        base_lod = data.get('rf_lod')
-    return base_hod, base_lod, data.get('resid_hod'), data.get('resid_lod'), data.get('metrics', {}), model_type
-
-# ============================================================================
-# VOLATILITY ESTIMATORS - ENHANCED
 # ============================================================================
 
 def ewma_volatility(returns, lam=0.94):
@@ -6648,6 +5047,57 @@ def garman_klass_daily_volatility(open_, high, low, close):
     # Return DAILY volatility (no sqrt(252) multiplier)
     return np.sqrt(np.mean(variance))
 
+def compute_session_sigma_from_range(hist: pd.DataFrame, window: int = 60) -> float:
+    """
+    Robust session volatility estimator from intraday/daily ranges.
+
+    Uses a median ensemble of:
+      - Parkinson
+      - Rogers–Satchell
+      - Garman–Klass
+    over a rolling window, then takes the latest sigma.
+    """
+    if len(hist) < 10:
+        raise ValueError("Not enough data for range-based session sigma")
+
+    recent = hist.tail(window).copy()
+
+    # Per-bar variances
+    var_pk = []
+    var_rs = []
+    var_gk = []
+    for _, row in recent.iterrows():
+        try:
+            var_pk.append(parkinson_daily_volatility([row["High"]], [row["Low"]])**2)
+        except Exception:
+            var_pk.append(np.nan)
+        try:
+            var_rs.append(rogers_satchell_daily_volatility([row["Open"]], [row["High"]], [row["Low"]], [row["Close"]])**2)
+        except Exception:
+            var_rs.append(np.nan)
+        try:
+            var_gk.append(garman_klass_daily_volatility([row["Open"]], [row["High"]], [row["Low"]], [row["Close"]])**2)
+        except Exception:
+            var_gk.append(np.nan)
+
+    var_pk = np.array(var_pk, dtype=float)
+    var_rs = np.array(var_rs, dtype=float)
+    var_gk = np.array(var_gk, dtype=float)
+
+    # Rolling means and median ensemble
+    roll_pk = pd.Series(var_pk).rolling(window=min(window, len(var_pk)), min_periods=5).mean().values
+    roll_rs = pd.Series(var_rs).rolling(window=min(window, len(var_rs)), min_periods=5).mean().values
+    roll_gk = pd.Series(var_gk).rolling(window=min(window, len(var_gk)), min_periods=5).mean().values
+
+    var_stack = np.vstack([roll_pk, roll_rs, roll_gk])
+    var_median = np.nanmedian(var_stack, axis=0)
+
+    if not np.isfinite(var_median[-1]) or var_median[-1] <= 0:
+        raise ValueError("Invalid median variance from range estimators")
+
+    sigma_session = float(np.sqrt(var_median[-1]))  # decimal, e.g. 0.015 = 1.5%
+    return sigma_session
+
 def parkinson_daily_volatility(high, low):
     """
     Parkinson for SINGLE PERIOD
@@ -6715,127 +5165,6 @@ def yang_zhang_daily_volatility(open_, high, low, close, window=20):
     
     # No annualization
     return np.sqrt(variance)
-
-def compute_optimal_daily_sigma(
-    hist: pd.DataFrame,
-    garch_vol: float = None,
-    window: int = 20
-) -> dict:
-    """
-    Optimal DAILY (1-period) volatility estimation
-    Returns volatility for NEXT PERIOD, not annualized
-    
-    Parameters:
-    -----------
-    hist : pd.DataFrame
-        Must have columns: Open, High, Low, Close
-    garch_vol : float, optional
-        GARCH forecast volatility (annualized %) - will be converted to daily
-    window : int
-        Lookback window for estimators
-    
-    Returns:
-    --------
-    dict : {
-        'sigma_daily': daily volatility (decimal, e.g. 0.015 for 1.5% expected move),
-        'sigma_daily_pct': daily volatility in percentage,
-        'sigma_price': expected price range (sigma_daily * current_price),
-        'components': breakdown of each estimator,
-        'method': which estimators were used
-    }
-    """
-    if len(hist) < max(window, 20):
-        raise ValueError(f"Need at least {max(window, 20)} periods of data")
-    
-    recent = hist.tail(window)
-    opens = recent['Open'].values
-    highs = recent['High'].values
-    lows = recent['Low'].values
-    closes = recent['Close'].values
-    current_price = closes[-1]
-    
-    components = {}
-    
-    # 1. Parkinson (fast, range-based)
-    try:
-        sigma_park = parkinson_daily_volatility(highs, lows)
-        components['parkinson'] = sigma_park
-    except:
-        sigma_park = None
-    
-    # 2. Garman-Klass (proven)
-    try:
-        sigma_gk = garman_klass_daily_volatility(opens, highs, lows, closes)
-        components['garman_klass'] = sigma_gk
-    except:
-        sigma_gk = None
-    
-    # 3. Rogers-Satchell (drift-independent)
-    try:
-        sigma_rs = rogers_satchell_daily_volatility(opens, highs, lows, closes)
-        components['rogers_satchell'] = sigma_rs
-    except:
-        sigma_rs = None
-    
-    # 4. Yang-Zhang (most efficient)
-    try:
-        sigma_yz = yang_zhang_daily_volatility(opens, highs, lows, closes, window=window)
-        components['yang_zhang'] = sigma_yz
-    except:
-        sigma_yz = None
-    
-    # 5. GARCH forecast (convert from annualized to daily)
-    if garch_vol is not None:
-        # GARCH gives annualized %, convert to daily decimal
-        garch_daily = (garch_vol / 100.0) / np.sqrt(252)
-        components['garch'] = garch_daily
-    
-    # Ensemble weighting (Yang-Zhang is best if available)
-    weights = {}
-    
-    if 'yang_zhang' in components and components['yang_zhang'] > 0:
-        weights = {
-            'yang_zhang': 0.35,
-            'garman_klass': 0.25,
-            'rogers_satchell': 0.15,
-            'parkinson': 0.15,
-            'garch': 0.10 if garch_vol else 0
-        }
-    elif 'garman_klass' in components:
-        weights = {
-            'garman_klass': 0.40,
-            'parkinson': 0.25,
-            'rogers_satchell': 0.20 if sigma_rs else 0,
-            'garch': 0.15 if garch_vol else 0
-        }
-    else:
-        weights = {
-            'parkinson': 0.60 if sigma_park else 0,
-            'garch': 0.40 if garch_vol else 0
-        }
-    
-    # Normalize weights
-    total_weight = sum(w for est, w in weights.items() if est in components and components[est] is not None)
-    
-    if total_weight == 0:
-        raise ValueError("No valid volatility estimators available")
-    
-    weights = {k: v / total_weight for k, v in weights.items() if k in components and components[k] is not None}
-    
-    # Compute final daily volatility
-    sigma_daily = sum(components[est] * weight for est, weight in weights.items())
-    
-    return {
-        'sigma_daily': float(sigma_daily),  # Decimal (e.g., 0.015)
-        'sigma_daily_pct': float(sigma_daily * 100),  # Percentage (e.g., 1.5)
-        'sigma_price': float(sigma_daily * current_price),  # Price units
-        'components': {k: float(v) for k, v in components.items()},
-        'weights': {k: float(v) for k, v in weights.items()},
-        'method': 'daily_ensemble',
-        'n_estimators': len(components)
-    }
-
-# GARMAN-KLASS VOLATILITY ESTIMATOR (backward compatibility)
 def garman_klass_daily_sigma_pct(hist):
     """
     Calculate daily volatility using Garman-Klass estimator
@@ -6877,32 +5206,32 @@ def compute_session_volatility(hist: pd.DataFrame, window: int = 60) -> dict:
     closes = recent['Close'].values
     current_price = closes[-1]
     
-    # 1. Calculate DAILY (non-annualized) volatility using Garman-Klass
-    # Ensure all values are positive and valid
-    opens = np.maximum(opens, 1e-9)
-    highs = np.maximum(highs, opens * 0.99)
-    lows = np.maximum(lows, opens * 0.99)
-    closes = np.maximum(closes, lows)
-    
-    log_hl = np.log(highs / (lows + 1e-9))
-    log_co = np.log(closes / (opens + 1e-9))
-    variance = 0.5 * (log_hl ** 2) - (2 * np.log(2) - 1) * (log_co ** 2)
-    
-    # Handle negative variance (can happen if close-open correlation is high)
-    variance = np.maximum(variance, 1e-9)  # Ensure non-negative
-    
-    # Session volatility (for next period)
-    mean_variance = np.mean(variance)
-    if mean_variance <= 0 or not np.isfinite(mean_variance):
-        # Fallback: use simple close-to-close volatility
-        returns = np.diff(np.log(closes))
-        mean_variance = np.var(returns)
+    # 1. Try robust range-based ensemble (Parkinson + RS + GK) for session sigma
+    try:
+        sigma_session = compute_session_sigma_from_range(recent, window=min(window, len(recent)))
+        method = 'range_ensemble_session'
+    except Exception as e:
+        print(f"⚠ compute_session_volatility: range-based sigma failed ({e}), falling back to GK/returns")
+        # 2. Fallback: DAILY (non-annualized) volatility using Garman-Klass
+        opens = np.maximum(opens, 1e-9)
+        highs = np.maximum(highs, opens * 0.99)
+        lows = np.maximum(lows, opens * 0.99)
+        closes = np.maximum(closes, lows)
+        
+        log_hl = np.log(highs / (lows + 1e-9))
+        log_co = np.log(closes / (opens + 1e-9))
+        variance = 0.5 * (log_hl ** 2) - (2 * np.log(2) - 1) * (log_co ** 2)
+        
+        variance = np.maximum(variance, 1e-9)  # Ensure non-negative
+        mean_variance = np.mean(variance)
         if mean_variance <= 0 or not np.isfinite(mean_variance):
-            # Last resort: use price range
-            price_range = np.max(highs) - np.min(lows)
-            mean_variance = (price_range / current_price) ** 2 / len(closes)
-    
-    sigma_session = np.sqrt(mean_variance)  # Decimal (e.g., 0.015 = 1.5%)
+            returns = np.diff(np.log(closes))
+            mean_variance = np.var(returns)
+            if mean_variance <= 0 or not np.isfinite(mean_variance):
+                price_range = np.max(highs) - np.min(lows)
+                mean_variance = (price_range / current_price) ** 2 / max(len(closes), 1)
+        sigma_session = np.sqrt(mean_variance)
+        method = 'garman_klass_session_fallback'
     
     # Ensure sigma_session is valid
     if sigma_session <= 0 or not np.isfinite(sigma_session):
@@ -6921,310 +5250,11 @@ def compute_session_volatility(hist: pd.DataFrame, window: int = 60) -> dict:
         print(f"⚠ compute_session_volatility: Invalid sigma_price, using fallback: {sigma_price:.4f}")
     
     return {
-        'sigma_session': float(sigma_session),  # Next period vol (decimal)
-        'sigma_session_pct': float(sigma_session * 100),  # Next period vol (%)
+        'sigma_session': float(sigma_session),          # Next period vol (decimal)
+        'sigma_session_pct': float(sigma_session * 100),# Next period vol (%)
         'sigma_annual_pct': float(sigma_annual * 100),  # Annualized (%)
-        'sigma_price': float(sigma_price),  # Expected $ range
-        'method': 'garman_klass_session'
-    }
-
-def compute_volatility_cone(hist: pd.DataFrame, window: int = 252) -> dict:
-    """
-    Build historical volatility distribution to calibrate expectations
-    Shows if current vol is 10th percentile (quiet) or 90th percentile (explosive)
-    
-    Parameters:
-    -----------
-    hist : pd.DataFrame
-        Historical price data with Open, High, Low, Close
-    window : int
-        Lookback window for historical distribution (default: 252 trading days)
-    
-    Returns:
-    --------
-    dict : {
-        'current_vol': current session volatility (%),
-        'percentile': percentile rank (0-1),
-        'p10', 'p25', 'p50', 'p75', 'p90': volatility percentiles,
-        'regime': 'compressed', 'normal', or 'elevated'
-    }
-    """
-    if len(hist) < 40:
-        # Not enough data for meaningful distribution
-        return {
-            'current_vol': None,
-            'percentile': 0.5,
-            'p10': None,
-            'p25': None,
-            'p50': None,
-            'p75': None,
-            'p90': None,
-            'regime': 'normal'
-        }
-    
-    if len(hist) < window:
-        window = len(hist)
-    
-    # Rolling session volatility
-    rolling_vols = []
-    for i in range(20, len(hist)):
-        if i < 20:
-            continue
-        try:
-            window_data = hist.iloc[i-20:i]
-            if len(window_data) >= 20:
-                vol_result = compute_session_volatility(window_data, window=20)
-                rolling_vols.append(vol_result['sigma_session_pct'])
-        except Exception as e:
-            # Skip if calculation fails for this window
-            continue
-    
-    if len(rolling_vols) == 0:
-        return {
-            'current_vol': None,
-            'percentile': 0.5,
-            'p10': None,
-            'p25': None,
-            'p50': None,
-            'p75': None,
-            'p90': None,
-            'regime': 'normal'
-        }
-    
-    rolling_vols = np.array(rolling_vols)
-    
-    # Current vol
-    try:
-        current_vol_result = compute_session_volatility(hist.tail(20), window=20)
-        current_vol = current_vol_result['sigma_session_pct']
-    except Exception:
-        # Fallback to simple std if compute_session_volatility fails
-        returns = np.log(hist['Close'].values[1:] / hist['Close'].values[:-1])
-        current_vol = float(np.std(returns) * 100)
-    
-    # Percentile ranking
-    sorted_vols = np.sort(rolling_vols)
-    percentile = float(np.searchsorted(sorted_vols, current_vol) / len(rolling_vols))
-    
-    return {
-        'current_vol': float(current_vol),
-        'percentile': float(percentile),
-        'p10': float(np.percentile(rolling_vols, 10)),
-        'p25': float(np.percentile(rolling_vols, 25)),
-        'p50': float(np.percentile(rolling_vols, 50)),
-        'p75': float(np.percentile(rolling_vols, 75)),
-        'p90': float(np.percentile(rolling_vols, 90)),
-        'regime': 'compressed' if percentile < 0.25 else 'elevated' if percentile > 0.75 else 'normal'
-    }
-
-def compute_range_consumption(hist: pd.DataFrame, current_price: float, sigma_price: float) -> dict:
-    """
-    How much of today's expected range has already been consumed?
-    Critical for intraday - if you've already hit 2σ by 11am, unlikely to go further
-    
-    Parameters:
-    -----------
-    hist : pd.DataFrame
-        Historical price data with datetime index
-    current_price : float
-        Current price
-    sigma_price : float
-        Expected price range (in price units, not percentage)
-    
-    Returns:
-    --------
-    dict : {
-        'consumed_pct': percentage of expected range consumed (0-1),
-        'remaining_up': remaining upward headroom,
-        'remaining_down': remaining downward headroom,
-        'session_high': session high so far,
-        'session_low': session low so far,
-        'bias': 'exhausted' or 'active'
-    }
-    """
-    try:
-        # Get today's data
-        if len(hist) == 0:
-            return {
-                'consumed_pct': 0.0,
-                'remaining_up': sigma_price,
-                'remaining_down': sigma_price,
-                'session_high': current_price,
-                'session_low': current_price,
-                'bias': 'active'
-            }
-        
-        # Get the most recent date
-        today = hist.index[-1]
-        if hasattr(today, 'date'):
-            today_date = today.date()
-        else:
-            # If index is already date, use it directly
-            today_date = today
-        
-        # Filter today's data
-        if hasattr(hist.index, 'date'):
-            today_data = hist[hist.index.date == today_date]
-        else:
-            # If index doesn't have date attribute, assume all data is from today
-            today_data = hist.tail(100)  # Use recent data as approximation
-        
-        if len(today_data) == 0:
-            return {
-                'consumed_pct': 0.0,
-                'remaining_up': sigma_price,
-                'remaining_down': sigma_price,
-                'session_high': current_price,
-                'session_low': current_price,
-                'bias': 'active'
-            }
-        
-        session_high = float(today_data['High'].max()) if 'High' in today_data.columns else current_price
-        session_low = float(today_data['Low'].min()) if 'Low' in today_data.columns else current_price
-        session_range = session_high - session_low
-        
-        # Expected range for full session (2σ envelope)
-        expected_range = 2 * sigma_price
-        
-        # How much consumed
-        consumed_pct = session_range / expected_range if expected_range > 0 else 0
-        
-        # Remaining headroom
-        remaining_up = max(0, (current_price + sigma_price) - session_high)
-        remaining_down = max(0, session_low - (current_price - sigma_price))
-        
-        return {
-            'consumed_pct': float(min(consumed_pct, 1.0)),
-            'remaining_up': float(remaining_up),
-            'remaining_down': float(remaining_down),
-            'session_high': float(session_high),
-            'session_low': float(session_low),
-            'bias': 'exhausted' if consumed_pct > 0.85 else 'active'
-        }
-    except Exception as e:
-        print(f"⚠ Range consumption calculation failed: {e}")
-        return {
-            'consumed_pct': 0.0,
-            'remaining_up': sigma_price,
-            'remaining_down': sigma_price,
-            'session_high': current_price,
-            'session_low': current_price,
-            'bias': 'active'
-        }
-
-def compute_mtf_confluence(
-    ticker: str,
-    spot: float,
-    sigma_price: float,
-    micro_state: str,
-    lookback: int = 20
-) -> dict:
-    """
-    Multi-timeframe structural confluence.
-    
-    Purpose:
-    - Validate whether higher timeframes CARE about the same zone
-    - Improve confidence, not expand range
-    - Act as soft structural ceilings/floors
-    
-    Returns STRUCTURE, not signals.
-    
-    Parameters:
-    -----------
-    ticker : str
-        Stock ticker symbol
-    spot : float
-        Current price
-    sigma_price : float
-        Expected price range (in price units)
-    micro_state : str
-        Market microstructure state (Fock, Thermal, Coherent)
-    lookback : int
-        Number of periods to look back for recent high/low
-    
-    Returns:
-    --------
-    dict : {
-        'apply': whether to apply MTF confluence,
-        'reason': why it applies or doesn't,
-        'resistance': resistance level from MTF confluence,
-        'support': support level from MTF confluence,
-        'confidence_boost': confidence boost (0-0.15),
-        'details': additional information
-    }
-    """
-    timeframes = ['1h', '4h', '1d']
-    mtf_levels = []
-
-    # Fock regimes do not respect HTF structure
-    if micro_state == "Fock" or sigma_price <= 0:
-        return {
-            "apply": False,
-            "reason": "fock_or_invalid_sigma",
-            "resistance": None,
-            "support": None,
-            "confidence_boost": 0.0,
-            "details": {}
-        }
-
-    for tf in timeframes:
-        try:
-            hist = yf.Ticker(ticker).history(period="1mo", interval=tf)
-            if len(hist) < lookback:
-                continue
-
-            recent_high = float(hist['High'].iloc[-lookback:].max())
-            recent_low  = float(hist['Low'].iloc[-lookback:].min())
-
-            dist_high_sigma = abs(recent_high - spot) / sigma_price if sigma_price > 0 else float('inf')
-            dist_low_sigma  = abs(spot - recent_low) / sigma_price if sigma_price > 0 else float('inf')
-
-            mtf_levels.append({
-                "tf": tf,
-                "high": recent_high,
-                "low": recent_low,
-                "high_dist_sigma": dist_high_sigma,
-                "low_dist_sigma": dist_low_sigma
-            })
-
-        except Exception as e:
-            print(f"⚠ MTF confluence failed for {tf}: {e}")
-            continue
-
-    # Identify clusters (within 0.75σ = actionable today)
-    resistance_cluster = [
-        l for l in mtf_levels if l["high_dist_sigma"] <= 0.75
-    ]
-    support_cluster = [
-        l for l in mtf_levels if l["low_dist_sigma"] <= 0.75
-    ]
-
-    resistance_level = (
-        float(np.mean([l["high"] for l in resistance_cluster]))
-        if len(resistance_cluster) >= 2 else None
-    )
-
-    support_level = (
-        float(np.mean([l["low"] for l in support_cluster]))
-        if len(support_cluster) >= 2 else None
-    )
-
-    # Confidence logic (soft, capped)
-    confidence_boost = 0.0
-    if resistance_level or support_level:
-        confidence_boost = min(0.05 * max(len(resistance_cluster), len(support_cluster)), 0.15)
-
-    return {
-        "apply": bool(resistance_level or support_level),
-        "reason": "mtf_structure_confirmed" if (resistance_level or support_level) else "no_cluster",
-        "resistance": resistance_level,
-        "support": support_level,
-        "confidence_boost": confidence_boost,
-        "details": {
-            "levels": mtf_levels,
-            "resistance_count": len(resistance_cluster),
-            "support_count": len(support_cluster)
-        }
+        'sigma_price': float(sigma_price),              # Expected $ range
+        'method': method
     }
 
 # ============================================================================
@@ -7398,190 +5428,15 @@ def compute_optimal_sigma(
 # SIMPLIFIED API FOR YOUR EXISTING CODE
 # ============================================================================
 
-def compute_daily_sigma_pct(hist: pd.DataFrame, garch_vol=None, iv_surface=None) -> float:
-    """
-    Drop-in replacement for your existing garman_klass_daily_sigma_pct
-    
-    Returns:
-    --------
-    float : Daily volatility in percentage (annualized)
-    """
-    result = compute_optimal_sigma(hist, garch_vol, iv_surface)
-    # Convert from decimal to percentage
-    return float(result['sigma_final'] * 100)
-
 # ============================================================================
 # STATE MACHINE ENHANCEMENTS - FOR IMPROVED HOD/LOD PREDICTIONS
 # ============================================================================
 
-def build_transition_matrix(state_history, n_states):
-    """Build Markov transition matrix - NEW FUNCTION"""
-    T = np.zeros((n_states, n_states))
-    for i in range(len(state_history) - 1):
-        if state_history[i] is not None and state_history[i+1] is not None:
-            T[state_history[i], state_history[i+1]] += 1
-    
-    row_sums = T.sum(axis=1, keepdims=True)
-    T = np.divide(T, row_sums, where=row_sums > 0, out=np.zeros_like(T))
-    return T
 
-def predict_next_state_distribution(current_state, transition_matrix):
-    """Return probability distribution over next states - NEW FUNCTION"""
-    if current_state is None or current_state >= len(transition_matrix):
-        return None
-    return transition_matrix[current_state].tolist()
 
-def compute_state_durations(state_series):
-    """How long does each state typically last? - NEW FUNCTION"""
-    durations = {s: [] for s in set(state_series) if s is not None}
-    if len(state_series) == 0:
-        return {}
-    
-    current_state = state_series[0]
-    duration = 1
-    
-    for s in state_series[1:]:
-        if s == current_state:
-            duration += 1
-        else:
-            if current_state is not None:
-                durations[current_state].append(duration)
-            current_state = s
-            duration = 1
-    
-    if current_state is not None:
-        durations[current_state].append(duration)
-    
-    return {
-        s: {
-            'mean_duration': float(np.mean(d)) if d else 0,
-            'median_duration': float(np.median(d)) if d else 0,
-            'max_duration': int(max(d)) if d else 0
-        }
-        for s, d in durations.items() if d
-    }
 
-def build_state_joint_quantiles(state_series, u_series, d_series, quantiles=[0.5, 0.68, 0.8, 0.95]):
-    """
-    Build joint (HOD, LOD) distribution per state - ENHANCED VERSION
-    This REPLACES your original build_state_quantiles if you want joint distributions
-    OR keep both - this one gives you multiple quantiles + correlation
-    """
-    out = {}
-    states = sorted(set(s for s in state_series if s is not None))
-    
-    for s in states:
-        pairs = [(u, d) for st, u, d in zip(state_series, u_series, d_series) 
-                 if st == s and u is not None and d is not None]
-        
-        if len(pairs) < 30:
-            continue
-        
-        us, ds = zip(*pairs)
-        us = np.array(us)
-        ds = np.array(ds)
-        
-        total_range = us + ds
-        
-        out[s] = {
-            'quantiles': {
-                q: {
-                    'q_u': float(np.quantile(us, q)),
-                    'q_d': float(np.quantile(ds, q)),
-                    'q_range': float(np.quantile(total_range, q)),
-                }
-                for q in quantiles
-            },
-            'correlation': float(np.corrcoef(us, ds)[0, 1]) if len(us) > 1 else 0.0,
-            'n': len(pairs)
-        }
-    
-    return out
 
-def hybrid_state_prediction(gmm_state, gmm_probs, microstructure_state, state_quantiles):
-    """
-    Combine GMM clustering with microstructure physics - NEW FUNCTION
-    This enhances your predictions by incorporating market microstructure
-    """
-    if gmm_state not in state_quantiles:
-        return None, None
-    
-    q_data = state_quantiles[gmm_state].get('quantiles', {})
-    if 0.8 not in q_data:
-        return None, None
-    
-    q_u = q_data[0.8]['q_u']
-    q_d = q_data[0.8]['q_d']
-    
-    # Microstructure adjustments
-    if microstructure_state['state'] == 'Fock':
-        q_u *= (1 + microstructure_state['liquidity_permeability'] * 0.3)
-        q_d *= (1 + microstructure_state['liquidity_permeability'] * 0.3)
-    elif microstructure_state['state'] == 'Thermal':
-        q_u *= 0.85
-        q_d *= 0.85
-    elif microstructure_state['state'] == 'Coherent':
-        capture_bias = microstructure_state['capture_rate'] - 0.5
-        if capture_bias > 0:
-            q_u *= 1.2
-            q_d *= 0.8
-        else:
-            q_u *= 0.8
-            q_d *= 1.2
-    
-    return float(q_u), float(q_d)
 
-def adaptive_quantile(gmm_probs, base_quantile=0.8):
-    """
-    Adjust quantile based on state confidence - NEW FUNCTION
-    """
-    if not gmm_probs or len(gmm_probs) == 0:
-        return base_quantile
-    
-    confidence = max(gmm_probs)
-    
-    if confidence > 0.7:
-        return base_quantile
-    elif confidence > 0.5:
-        return min(base_quantile + 0.05, 0.95)
-    else:
-        return min(base_quantile + 0.10, 0.95)
-
-def add_intraday_features(feature_dict, timestamp, hist):
-    """
-    Add time-of-day context for intraday timeframes - NEW FUNCTION
-    Call this AFTER compute_features_daily() to augment features
-    """
-    if not isinstance(timestamp, pd.Timestamp):
-        timestamp = pd.to_datetime(timestamp)
-    
-    market_open = timestamp.replace(hour=9, minute=30, second=0)
-    minutes_since_open = (timestamp - market_open).total_seconds() / 60
-    time_normalized = min(max(minutes_since_open / 390.0, 0.0), 1.0)
-    time_to_close = 1.0 - time_normalized
-    
-    today_mask = hist.index.date == timestamp.date()
-    if today_mask.any():
-        today_data = hist[today_mask]
-        day_high = today_data['High'].max()
-        day_low = today_data['Low'].min()
-        current_price = today_data['Close'].iloc[-1]
-        
-        realized_range_pct = (day_high - day_low) / current_price * 100
-        sigma_daily = feature_dict.get('sigma_realized_pct', 1.0)
-        range_consumption = realized_range_pct / sigma_daily if sigma_daily > 0 else 0
-    else:
-        range_consumption = 0
-    
-    feature_dict.update({
-        'time_normalized': float(time_normalized),
-        'time_to_close': float(time_to_close),
-        'range_consumption': float(min(range_consumption, 2.0))
-    })
-    
-    return feature_dict
-
-# Helper functions for level-constrained HOD/LOD prediction
 def state_policy(state):
     """
     State-aware policy for level selection
@@ -7884,104 +5739,6 @@ def calculate_volume_profile(highs, lows, closes, volumes, bins=30):
         'profile': profile,
         'volume_distribution': {float(bin_centers[i]): float(volume_distribution[i]) 
                                for i in range(bins) if volume_distribution[i] > 0}
-    }
-
-def analyze_level_volume_profile_interaction(level, volume_profile, current_price):
-    """
-    Analyze how a level interacts with the volume profile
-    
-    Goes through every level on the volume profile and sees the interaction
-    Uses value areas to help gauge direction bias
-    
-    Returns:
-    --------
-    dict: {
-        'volume_at_level': float,  # Volume at this price level
-        'distance_to_poc': float,   # Distance to POC (%)
-        'in_value_area': bool,      # Is level in value area?
-        'above_value_area': bool,    # Is level above value area?
-        'below_value_area': bool,    # Is level below value area?
-        'direction_bias': str,      # 'bullish', 'bearish', 'neutral'
-        'volume_strength': float,    # 0-1, how much volume supports this level
-        'interaction_score': float   # Overall interaction score
-    }
-    """
-    if not volume_profile or not level:
-        return None
-    
-    level_price = level.get('price', current_price)
-    poc = volume_profile.get('poc', current_price)
-    va_high = volume_profile.get('value_area_high', current_price)
-    va_low = volume_profile.get('value_area_low', current_price)
-    volume_distribution = volume_profile.get('volume_distribution', {})
-    profile = volume_profile.get('profile', [])
-    
-    # Find volume at this specific level
-    volume_at_level = 0
-    if volume_distribution:
-        # Find closest price bin
-        closest_price = min(volume_distribution.keys(), 
-                          key=lambda p: abs(p - level_price))
-        if abs(closest_price - level_price) / level_price < 0.01:  # Within 1%
-            volume_at_level = volume_distribution.get(closest_price, 0)
-    
-    # If not found in distribution, check profile
-    if volume_at_level == 0 and profile:
-        closest_profile = min(profile, key=lambda x: abs(x[0] - level_price))
-        if abs(closest_profile[0] - level_price) / level_price < 0.01:
-            volume_at_level = closest_profile[1]
-    
-    # Normalize volume (0-1 scale)
-    if profile:
-        max_volume = max([v for _, v in profile]) if profile else 1
-        volume_strength = min(1.0, volume_at_level / max_volume) if max_volume > 0 else 0
-    else:
-        volume_strength = 0
-    
-    # Distance to POC
-    distance_to_poc = abs(level_price - poc) / current_price if current_price > 0 else 0
-    
-    # Position relative to value area
-    in_value_area = va_low <= level_price <= va_high
-    above_value_area = level_price > va_high
-    below_value_area = level_price < va_low
-    
-    # Direction bias based on value area position
-    if in_value_area:
-        # In value area - check position relative to POC
-        if level_price > poc:
-            direction_bias = 'bullish'  # Above POC in VA = slight bullish
-        elif level_price < poc:
-            direction_bias = 'bearish'  # Below POC in VA = slight bearish
-        else:
-            direction_bias = 'neutral'
-    elif above_value_area:
-        direction_bias = 'bullish'  # Above VA = bullish (price likely to return to VA)
-    elif below_value_area:
-        direction_bias = 'bearish'  # Below VA = bearish (price likely to return to VA)
-    else:
-        direction_bias = 'neutral'
-    
-    # Interaction score (0-1): combines volume strength and value area position
-    if in_value_area:
-        interaction_score = 0.7 + (volume_strength * 0.3)  # High score if in VA
-    elif above_value_area or below_value_area:
-        interaction_score = 0.3 + (volume_strength * 0.2)  # Lower score outside VA
-    else:
-        interaction_score = volume_strength * 0.5  # Very low if no clear position
-    
-    return {
-        'volume_at_level': float(volume_at_level),
-        'distance_to_poc': float(distance_to_poc * 100),  # As percentage
-        'in_value_area': in_value_area,
-        'above_value_area': above_value_area,
-        'below_value_area': below_value_area,
-        'direction_bias': direction_bias,
-        'volume_strength': float(volume_strength),
-        'interaction_score': float(interaction_score),
-        'poc': float(poc),
-        'va_high': float(va_high),
-        'va_low': float(va_low)
     }
 
 def predict_level_as_hod_lod(level, current_price, all_levels, volume_profile, 
@@ -8730,214 +6487,6 @@ def get_timeframe_minutes(tf: str) -> int:
     map = {'1m': 1, '5m': 5, '15m': 15, '1h': 60, '4h': 240, '1d': 1440}
     return map.get(tf, 5)
 
-def generate_level_sequence_training_data(
-    ticker: str,
-    base_timeframe: str = '5m',
-    lookback_window: int = 50,
-    max_levels_per_sample: int = 5,
-    min_samples: int = 100
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """
-    Generate training data that learns level touch sequences
-    
-    Returns:
-    - X: [n_samples, lookback_window, n_features]
-    - y_levels: [n_samples, max_levels, 3] (price_offset, time_bars, confidence)
-    - y_direction: [n_samples, 2] (up_prob, down_prob)
-    """
-    print(f"Generating training data for {ticker} {base_timeframe}...")
-    
-    # Fetch MTF levels
-    mtf_levels = get_multi_timeframe_levels(ticker, base_timeframe)
-    
-    # Fetch base timeframe data
-    stock = yf.Ticker(ticker)
-    
-    # Handle futures interval conversion
-    is_futures = '=' in ticker
-    if is_futures and base_timeframe == '1h':
-        interval = '60m'
-    elif is_futures and base_timeframe == '4h':
-        interval = '240m'
-    else:
-        interval = base_timeframe
-    
-    period_map = {'1m': '5d', '5m': '1mo', '15m': '3mo', '1h': '6mo', '4h': '1y', '1d': '2y'}
-    
-    try:
-        hist = stock.history(period=period_map.get(base_timeframe, '1y'), interval=interval)
-    except:
-        # Try fallback
-        try:
-            if is_futures and base_timeframe == '1h':
-                hist = stock.history(period='5d', interval='60m')
-            else:
-                hist = stock.history(period='1mo', interval=base_timeframe)
-        except Exception as e:
-            raise ValueError(f"Failed to fetch data for {ticker} {base_timeframe}: {e}")
-    
-    if len(hist) < lookback_window + 50:
-        raise ValueError(f"Insufficient data: {len(hist)} bars (need {lookback_window + 50})")
-    
-    X_samples = []
-    y_level_samples = []
-    y_direction_samples = []
-    
-    # Track historical level touches (reset per sample to avoid data leakage)
-    historical_touches = []
-    
-    # Statistics for validation
-    samples_skipped_no_touches = 0
-    total_touches_found = 0
-    
-    # Generate samples
-    for i in range(lookback_window, len(hist) - 30):  # Leave 30 bars for future
-        # Get lookback window
-        window_data = hist.iloc[i-lookback_window:i]
-        current_price = float(hist.iloc[i]['Close'])
-        current_bar_idx = i
-        
-        # Get next 30 bars to see what levels were actually touched
-        future_data = hist.iloc[i:i+30]
-        
-        # Find which levels were touched in the future
-        touched_levels = find_touched_levels_in_window(
-            future_data, mtf_levels, current_price, max_levels=max_levels_per_sample
-        )
-        
-        if not touched_levels:
-            samples_skipped_no_touches += 1
-            continue  # No levels touched, skip
-        
-        total_touches_found += len(touched_levels)
-        
-        # Engineer features for this sample
-        features_sequence = []
-        for j in range(len(window_data)):
-            bar = window_data.iloc[j]
-            sub_window = window_data.iloc[:j+1]
-            
-            try:
-                feats = engineer_mtf_level_features(
-                    current_price=float(bar['Close']),
-                    current_bar_data=bar.to_dict(),
-                    mtf_levels=mtf_levels,
-                    historical_level_touches=historical_touches,
-                    lookback_bars=sub_window
-                )
-                features_sequence.append(feats)
-            except Exception as e:
-                # If feature engineering fails for a bar, use previous features or zeros
-                if features_sequence:
-                    features_sequence.append(features_sequence[-1])
-                else:
-                    # Use zeros as fallback - get feature size from a test call
-                    try:
-                        test_feats = engineer_mtf_level_features(
-                            current_price=current_price,
-                            current_bar_data=bar.to_dict(),
-                            mtf_levels=mtf_levels,
-                            historical_level_touches=[],
-                            lookback_bars=sub_window
-                        )
-                        n_feat = len(test_feats)
-                    except:
-                        n_feat = 100  # Default fallback
-                    features_sequence.append(np.zeros(n_feat, dtype=np.float32))
-        
-        if len(features_sequence) != lookback_window:
-            continue  # Skip if sequence incomplete
-        
-        X_samples.append(np.array(features_sequence))
-        
-        # Create target: next N levels touched
-        level_targets = np.zeros((max_levels_per_sample, 3))
-        for idx, touch in enumerate(touched_levels[:max_levels_per_sample]):
-            # Price offset from current (normalized)
-            touch_price = touch.get('price', current_price)
-            price_offset = (touch_price - current_price) / current_price if current_price > 0 else 0
-            # Time in bars (from historical touches - bar_index is relative to future_data start)
-            bar_index = touch.get('bar_index', 0)
-            time_bars = max(1, bar_index)  # bar_index is already relative to start of future_data
-            # Confidence (based on level strength)
-            confidence = touch.get('level_strength', touch.get('strength', 0.5))
-            
-            level_targets[idx] = [price_offset, min(time_bars / 30.0, 1.0), confidence]  # Normalize time
-        
-        y_level_samples.append(level_targets)
-        
-        # Direction target
-        final_price = float(future_data.iloc[-1]['Close'])
-        if final_price > current_price:
-            y_direction_samples.append([1.0, 0.0])  # Up
-        else:
-            y_direction_samples.append([0.0, 1.0])  # Down
-        
-        # Update historical touches (use only touches from current sample window to avoid data leakage)
-        # Reset historical_touches to only include touches from current sample's lookback window
-        historical_touches = []
-        # Look back through recent bars in lookback window for touches
-        for j in range(max(0, i - 20), i):  # Look at last 20 bars for context
-            past_bar = hist.iloc[j]
-            past_high = past_bar['High']
-            past_low = past_bar['Low']
-            past_close = past_bar['Close']
-            
-            # Check if any MTF level was touched in this past bar
-            for tf, levels in mtf_levels.items():
-                for level in levels:
-                    level_price = level.get('price', 0)
-                    if level_price > 0 and past_low <= level_price <= past_high:
-                        historical_touches.append({
-                            'level_price': level_price,
-                            'level_strength': level.get('strength', level.get('levelStrength', 0.5)),
-                            'bar': j,
-                            'timeframe': tf
-                        })
-        
-        # Limit to most recent 50 touches
-        historical_touches = historical_touches[-50:]
-    
-    if len(X_samples) < min_samples:
-        raise ValueError(f"Only generated {len(X_samples)} samples (need {min_samples})")
-    
-    # Calculate statistics
-    avg_touches_per_sample = total_touches_found / len(X_samples) if len(X_samples) > 0 else 0
-    skip_rate = samples_skipped_no_touches / (len(X_samples) + samples_skipped_no_touches) if (len(X_samples) + samples_skipped_no_touches) > 0 else 0
-    
-    print(f"✓ Generated {len(X_samples)} training samples")
-    print(f"  Feature dimension: {X_samples[0].shape[1]}")
-    print(f"  Sequence length: {lookback_window}")
-    print(f"  Samples skipped (no touches): {samples_skipped_no_touches} ({skip_rate*100:.1f}%)")
-    print(f"  Average touches per sample: {avg_touches_per_sample:.2f}")
-    
-    # Validate data quality
-    X_array = np.array(X_samples, dtype=np.float32)
-    y_levels_array = np.array(y_level_samples, dtype=np.float32)
-    y_direction_array = np.array(y_direction_samples, dtype=np.float32)
-    
-    # Check for NaN/Inf
-    if np.any(np.isnan(X_array)) or np.any(np.isinf(X_array)):
-        print("⚠ WARNING: NaN or Inf values found in features!")
-    if np.any(np.isnan(y_levels_array)) or np.any(np.isinf(y_levels_array)):
-        print("⚠ WARNING: NaN or Inf values found in level targets!")
-    if np.any(np.isnan(y_direction_array)) or np.any(np.isinf(y_direction_array)):
-        print("⚠ WARNING: NaN or Inf values found in direction targets!")
-    
-    # Check price_offset range (should be reasonable, not >50%)
-    price_offsets = y_levels_array[:, :, 0].flatten()
-    price_offsets = price_offsets[price_offsets != 0]  # Remove padding zeros
-    if len(price_offsets) > 0:
-        max_offset_pct = np.max(np.abs(price_offsets)) * 100
-        if max_offset_pct > 50:
-            print(f"⚠ WARNING: Large price offsets detected (max: {max_offset_pct:.1f}%)")
-    
-    return (
-        np.array(X_samples, dtype=np.float32),
-        np.array(y_level_samples, dtype=np.float32),
-        np.array(y_direction_samples, dtype=np.float32)
-    )
-
 def predict_level_sequence(
     model: 'LevelSequenceLSTM',
     recent_features: np.ndarray,
@@ -9489,91 +7038,6 @@ if TORCH_AVAILABLE:
 else:
     LevelBasedLSTM = None
 
-def generate_lstm_training_data(
-    hist,
-    all_levels_dict,
-    theoretical_hod_lod_series,  # Pre-computed theoretical bounds for each bar
-    lookback_window=20,
-    forecast_horizon=30  # How many bars ahead to predict
-):
-    """
-    Generate training samples from historical data
-    
-    For each bar t:
-    - Input: Features from bars [t-lookback_window : t]
-    - Target: Actual price at bar [t + forecast_horizon]
-    
-    Returns:
-    --------
-    X: [n_samples, lookback_window, n_features]
-    y_price: [n_samples] - actual prices reached
-    y_time: [n_samples] - actual bars to reach target
-    """
-    X_sequences = []
-    y_prices = []
-    y_times = []
-    
-    for i in range(lookback_window, len(hist) - forecast_horizon):
-        # Build feature sequence
-        sequence = []
-        
-        for t in range(i - lookback_window, i):
-            current_bar = hist.iloc[t]
-            current_price = current_bar['Close']
-            
-            # Get theoretical bounds for this bar
-            theo_bounds = theoretical_hod_lod_series[t] if t < len(theoretical_hod_lod_series) else theoretical_hod_lod_series[-1]
-            
-            # Get levels valid at this time (levels detected up to bar t)
-            # This simulates real-time: you only know levels detected so far
-            levels_at_t = {
-                'hdbscan': [l for l in all_levels_dict.get('hdbscan', []) if l.get('detected_at_bar', 0) <= t],
-                'optics': [l for l in all_levels_dict.get('optics', []) if l.get('detected_at_bar', 0) <= t],
-                'interaction': [l for l in all_levels_dict.get('interaction', []) if l.get('detected_at_bar', 0) <= t],
-                'ml_confluence': [l for l in all_levels_dict.get('ml_confluence', []) if l.get('detected_at_bar', 0) <= t],
-                'multiscale': [l for l in all_levels_dict.get('multiscale', []) if l.get('detected_at_bar', 0) <= t]
-            }
-            
-            # Engineer features for this timestep
-            features = engineer_level_features_for_lstm(
-                current_price=current_price,
-                theoretical_hod_premarket=theo_bounds.get('pm_hod', current_price * 1.02),
-                theoretical_lod_premarket=theo_bounds.get('pm_lod', current_price * 0.98),
-                theoretical_hod_intraday=theo_bounds.get('id_hod', current_price * 1.02),
-                theoretical_lod_intraday=theo_bounds.get('id_lod', current_price * 0.98),
-                hdbscan_levels=levels_at_t['hdbscan'],
-                optics_levels=levels_at_t['optics'],
-                interaction_levels=levels_at_t['interaction'],
-                ml_confluence_levels=levels_at_t['ml_confluence'],
-                multiscale_levels=levels_at_t['multiscale']
-            )
-            
-            sequence.append(features)
-        
-        # Target: price at t + forecast_horizon
-        target_price = hist.iloc[i + forecast_horizon]['Close']
-        
-        # Normalize target as % move from current
-        current_price_now = hist.iloc[i]['Close']
-        target_pct_move = (target_price - current_price_now) / current_price_now
-        
-        # Time to reach target (simulate: find first bar that crosses target)
-        time_to_target = forecast_horizon  # Default
-        for j in range(i, i + forecast_horizon):
-            if abs(hist.iloc[j]['Close'] - target_price) < target_price * 0.005:  # Within 0.5%
-                time_to_target = j - i
-                break
-        
-        X_sequences.append(np.array(sequence))
-        y_prices.append(target_pct_move)
-        y_times.append(time_to_target)
-    
-    return (
-        np.array(X_sequences, dtype=np.float32),
-        np.array(y_prices, dtype=np.float32),
-        np.array(y_times, dtype=np.float32)
-    )
-
 def calculate_time_to_target(target_price, current_price, sigma_price, volatility_factor=1.0):
     """
     Calculate time estimate to reach target based on:
@@ -9699,129 +7163,6 @@ def predict_price_target(
             'lod_level_probs': lod_probs.squeeze().cpu().numpy().tolist() if lod_probs is not None else None
         }
 
-def predict_hod_lod_from_levels(
-    model,
-    recent_features,  # [lookback_window, n_features]
-    current_price,
-    candidate_levels,  # List of all candidate levels (including theoretical HOD/LOD)
-    theoretical_hod,
-    theoretical_lod
-):
-    """
-    Predict which level will become actual HOD/LOD using LSTM
-    
-    Uses all levels (including theoretical HOD/LOD as candidates) and predicts
-    probability distribution over levels based on patterns, volume, and level interactions.
-    
-    Returns:
-    --------
-    dict : {
-        'predicted_hod_level': level that will be HOD,
-        'predicted_lod_level': level that will be LOD,
-        'hod_probabilities': {level_price: probability},
-        'lod_probabilities': {level_price: probability},
-        'confidence': model confidence
-    }
-    """
-    if not TORCH_AVAILABLE or model is None:
-        return None
-    
-    # Add theoretical HOD/LOD as candidate levels if not already present
-    candidate_prices = [l.get('price', 0) for l in candidate_levels if 'price' in l]
-    
-    # Add theoretical bounds as levels
-    theoretical_hod_level = {
-        'price': theoretical_hod,
-        'type': 'Theoretical HOD',
-        'strength': 0.8,
-        'is_theoretical': True
-    }
-    theoretical_lod_level = {
-        'price': theoretical_lod,
-        'type': 'Theoretical LOD',
-        'strength': 0.8,
-        'is_theoretical': True
-    }
-    
-    # Combine all candidates (remove duplicates)
-    all_candidates = candidate_levels + [theoretical_hod_level, theoretical_lod_level]
-    unique_candidates = {}
-    for cand in all_candidates:
-        price = cand.get('price', 0)
-        if price > 0:
-            if price not in unique_candidates:
-                unique_candidates[price] = cand
-            else:
-                # Keep the one with higher strength
-                if cand.get('strength', 0.5) > unique_candidates[price].get('strength', 0.5):
-                    unique_candidates[price] = cand
-    
-    # Sort candidates by price
-    sorted_candidates = sorted(unique_candidates.values(), key=lambda x: x.get('price', 0))
-    
-    # Limit to max_levels (if model has this attribute)
-    max_levels = getattr(model, 'max_levels', 50)
-    if len(sorted_candidates) > max_levels:
-        # Keep most relevant (closest to current price and strongest)
-        sorted_candidates = sorted(sorted_candidates, 
-                                  key=lambda x: (abs(x.get('price', 0) - current_price) / current_price, 
-                                               -x.get('strength', 0.5)))[:max_levels]
-    
-    model.eval()
-    
-    with torch.no_grad():
-        # Add batch dimension
-        X = torch.FloatTensor(recent_features).unsqueeze(0)  # [1, seq_len, features]
-        
-        # Forward pass
-        result = model(X, return_attention=True)
-        
-        # Check if model has HOD/LOD prediction capability
-        if len(result) < 6:
-            # Old model - use fallback
-            return None
-        
-        price_pred, confidence, time_pred, attn_weights, hod_probs, lod_probs = result
-        
-        # Get probabilities for each candidate level
-        hod_probs_np = hod_probs.squeeze().cpu().numpy()  # [max_levels]
-        lod_probs_np = lod_probs.squeeze().cpu().numpy()  # [max_levels]
-        
-        # Map probabilities to actual level prices
-        hod_probabilities = {}
-        lod_probabilities = {}
-        
-        for i, cand in enumerate(sorted_candidates):
-            if i < len(hod_probs_np):
-                price = cand.get('price', 0)
-                hod_probabilities[price] = float(hod_probs_np[i])
-                lod_probabilities[price] = float(lod_probs_np[i])
-        
-        # Find most likely HOD/LOD levels
-        if hod_probabilities:
-            predicted_hod_price = max(hod_probabilities.items(), key=lambda x: x[1])[0]
-            predicted_hod_level = next((c for c in sorted_candidates if abs(c.get('price', 0) - predicted_hod_price) < 0.01), None)
-        else:
-            predicted_hod_level = theoretical_hod_level
-            predicted_hod_price = theoretical_hod
-        
-        if lod_probabilities:
-            predicted_lod_price = max(lod_probabilities.items(), key=lambda x: x[1])[0]
-            predicted_lod_level = next((c for c in sorted_candidates if abs(c.get('price', 0) - predicted_lod_price) < 0.01), None)
-        else:
-            predicted_lod_level = theoretical_lod_level
-            predicted_lod_price = theoretical_lod
-        
-        return {
-            'predicted_hod_level': predicted_hod_level,
-            'predicted_lod_level': predicted_lod_level,
-            'predicted_hod_price': float(predicted_hod_price),
-            'predicted_lod_price': float(predicted_lod_price),
-            'hod_probabilities': hod_probabilities,
-            'lod_probabilities': lod_probabilities,
-            'confidence': float(confidence.squeeze().item()),
-            'candidate_levels': sorted_candidates[:20]  # Top 20 for reference
-        }
 
 def monte_carlo_lstm_forecast(
     model,
@@ -10053,6 +7394,14 @@ def monte_carlo_lstm_forecast(
     }
 
 # NEW ENDPOINT: LEVEL-CONSTRAINED HOD/LOD PREDICTION
+# ALIAS: Keep old endpoint name for backward compatibility
+
+
+
+# ============================================================================
+# LEVEL-CONSTRAINED HOD/LOD PREDICTION
+# ============================================================================
+
 @app.route('/api/level-constrained-hod-lod', methods=['GET'])
 def get_level_constrained_hod_lod():
     """
@@ -10063,356 +7412,162 @@ def get_level_constrained_hod_lod():
     auth_error = require_auth()
     if auth_error:
         return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
-    
+
     ticker = request.args.get('ticker', 'SPY')
     timeframe = request.args.get('timeframe', '1d').strip().lower().replace('240m','4h').replace('4hour','4h').replace('4hours','4h').replace('60m','1h')
-    
+
     try:
-        print(f"Calculating level-constrained HOD/LOD for {ticker}...")
-        
         stock = yf.Ticker(ticker)
-        
-        # For futures, use alternative interval formats that yfinance accepts better
+
+        # Determine fetch parameters
         is_futures = '=' in ticker
         if is_futures:
-            # Use minute-based intervals for futures (yfinance prefers these)
-            # Note: 4h is not supported by yfinance - will use resampling from 60m
             interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '60m', '4h': '60m', '1d': '1d'}
         else:
-            # Note: 4h is not supported by yfinance - will use resampling from 1h
             interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
-        
         interval = interval_map.get(timeframe, '1d')
-        
-        # Simple fix: Use shorter periods for futures on intraday timeframes
+
         if is_futures and timeframe in ['1m', '5m', '15m', '1h', '4h']:
-            # Futures have limited intraday data - use shorter periods
-            # 15m and 1h get slightly longer periods as they're more reliable
             period_map = {'1m': '5d', '5m': '5d', '15m': '7d', '1h': '7d', '4h': '10d', '1d': '2y'}
         else:
             period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
-        
         period = period_map.get(timeframe, '1y')
-        
-        # Try to get data, with fallback to shorter periods if needed
-        # More aggressive fallback for 15m, 1h, and 4h
+
+        # Fetch data (with resampling for 4h)
         hist = None
-        if is_futures and timeframe == '1h':
-            # For 1h futures, try many combinations
-            attempts = [
-                ('60m', '5d'), ('60m', '3d'), ('60m', '2d'), ('60m', '1d'),
-                ('1h', '5d'), ('1h', '3d'), ('1h', '2d'), ('1h', '1d'),
-            ]
-            for attempt_interval, attempt_period in attempts:
-                try:
-                    print(f"Trying {ticker} 1h: interval={attempt_interval}, period={attempt_period}")
-                    hist = stock.history(period=attempt_period, interval=attempt_interval)
-                    if hist is not None and len(hist) > 0:
-                        print(f"✓ Successfully fetched {len(hist)} bars for {ticker} 1h")
-                        break
-                except Exception as e:
-                    error_msg = str(e)
-                    print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:150]}")
-                    continue
-        elif is_futures and timeframe == '4h':
-            # For 4h futures, yfinance doesn't support '4h' or '240m' - must fetch 1h/60m and resample
-            print(f"Fetching 4h data for {ticker} (will resample from 1h/60m)...")
+        if timeframe == '4h':
             try:
                 hist = fetch_historical_data_with_resampling(
-                    ticker=ticker,
-                    timeframe='4h',
-                    period=period,
-                    is_futures=True
+                    ticker=ticker, timeframe='4h', period=period, is_futures=is_futures
                 )
-            except Exception as e:
-                print(f"⚠ Resampling fetch failed: {e}")
+            except Exception:
                 hist = None
-        elif is_futures and timeframe in ['1m', '5m', '15m']:
-            if timeframe in ['15m']:
-                attempts = [period, '5d', '3d', '2d', '1d']
-            else:
-                attempts = [period, '5d', '2d', '1d']
-            
-            for attempt_period in attempts:
-                interval_options = [interval]
-                if timeframe == '15m':
-                    interval_options = ['15m']
-                
-                for attempt_interval in interval_options:
-                    try:
-                        hist = stock.history(period=attempt_period, interval=attempt_interval)
-                        if hist is not None and len(hist) > 0:
-                            print(f"✓ Successfully fetched {len(hist)} bars for {ticker} at {timeframe}")
-                            break
-                    except Exception as e:
-                        error_msg = str(e)
-                        if "pattern" not in error_msg.lower() and "expected" not in error_msg.lower():
-                            print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:100]}")
-                        continue
-                
-                if hist is not None and len(hist) > 0:
-                    break
-        else:
-            attempts = [period]
+        elif is_futures and timeframe in ['1m', '5m', '15m', '1h']:
+            attempts = [period, '5d', '3d', '2d', '1d']
             for attempt_period in attempts:
                 try:
                     hist = stock.history(period=attempt_period, interval=interval)
                     if hist is not None and len(hist) > 0:
                         break
-                except Exception as e:
+                except Exception:
                     continue
-        
+        else:
+            try:
+                hist = stock.history(period=period, interval=interval)
+            except Exception:
+                hist = None
+
         if hist is None or len(hist) == 0:
-            return jsonify({'success': False, 'error': f'No data available for {ticker} at {timeframe}. Futures have limited intraday data availability.'}), 400
-        
+            return jsonify({'success': False, 'error': f'No data available for {ticker} at {timeframe}'}), 400
+
         closes = hist['Close'].values
         highs = hist['High'].values if 'High' in hist.columns else closes
         lows = hist['Low'].values if 'Low' in hist.columns else closes
         volumes = hist['Volume'].values if 'Volume' in hist.columns else np.ones(len(closes))
-        current_price = closes[-1]
-        
-        # 1. Get session volatility (for next-period prediction, not annualized)
-        garch_vol_regime = calculate_garch_volatility_regime(closes)
-        
-        # Use session volatility for accuracy
+        current_price = float(closes[-1])
+
+        # Session volatility
+        session_vol_pct = 1.5
+        sigma_price = (session_vol_pct / 100) * current_price
         if all(col in hist.columns for col in ['Open', 'High', 'Low', 'Close']):
             try:
                 vol_result = compute_session_volatility(hist, window=60)
-                session_vol_pct = vol_result['sigma_session_pct']  # Next session % (1-3%)
-                sigma_price = vol_result['sigma_price']  # Expected $ range
-                sigma_annual_pct = vol_result['sigma_annual_pct']  # For logging/comparison
-                method = 'Session Volatility + Levels'
-                
-                # Validate
-                if np.isnan(session_vol_pct) or not np.isfinite(session_vol_pct) or session_vol_pct <= 0:
-                    raise ValueError("Invalid session volatility")
-                
-                print(f"✓ Session vol: {session_vol_pct:.2f}% (annualized: {sigma_annual_pct:.1f}%, σ_price: ${sigma_price:.2f})")
-                
-            except Exception as e:
-                print(f"⚠ Session vol failed: {e}, using fallback")
-                returns = np.log(closes[1:] / closes[:-1])
-                if len(returns) > 0:
-                    sigma_session = np.std(returns)
-                    session_vol_pct = sigma_session * 100
-                    sigma_price = sigma_session * current_price
-                else:
-                    session_vol_pct = 1.5  # 1.5% default session vol
-                    sigma_price = (session_vol_pct / 100) * current_price
-                method = 'Fallback Session Vol + Levels'
-        else:
-            # No OHLC data, use close-to-close returns
-            returns = np.log(closes[1:] / closes[:-1])
-            if len(returns) > 0:
-                sigma_session = np.std(returns)
-                session_vol_pct = sigma_session * 100
-                sigma_price = sigma_session * current_price
-            else:
-                session_vol_pct = 1.5  # 1.5% default session vol
-                sigma_price = (session_vol_pct / 100) * current_price
-            method = 'Fallback Session Vol + Levels'
-        
-        # Final validation
-        if np.isnan(session_vol_pct) or not np.isfinite(session_vol_pct) or session_vol_pct <= 0:
-            print(f"⚠ Invalid session_vol_pct: {session_vol_pct}, using default 1.5%")
-            session_vol_pct = 1.5
-        
-        # Recalculate sigma_price if needed
-        if np.isnan(sigma_price) or not np.isfinite(sigma_price) or sigma_price <= 0:
-            print(f"⚠ Invalid sigma_price: {sigma_price}, recalculating")
-            sigma_price = (session_vol_pct / 100) * current_price
-        
-        # 2. Get microstructure state (affects how we weight levels)
+                session_vol_pct = vol_result['sigma_session_pct']
+                sigma_price = vol_result['sigma_price']
+            except Exception:
+                pass
+
+        # Microstructure state (kept as useful context)
         returns = np.log(closes[1:] / closes[:-1]) * 100
         microstructure_state = detect_market_microstructure_state(closes, volumes, returns, highs, lows)
-        
-        # 3. DETECT ALL YOUR LEVELS (using your existing functions)
-        print("Running level detection algorithms...")
-        
-        hist_data_subset = hist.tail(min(len(hist), 100))
-        
-        # PRIMARY: HDBSCAN (state-of-the-art density clustering)
-        hdbscan_levels = calculate_hdbscan_levels(highs, lows, closes, timeframe=timeframe)
-        
-        # SECONDARY: IsolationForest (event pivot candidates)
-        isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
-        
-        # FALLBACK: Peak/Valley (last-resort when density clustering fails)
-        peak_valley_levels = find_peaks_valleys_scipy(highs, lows, closes)
-        
-        # Neural Network levels (with volume profile)
+
+        # GARCH regime
+        garch_vol_regime = calculate_garch_volatility_regime(closes)
+
+        # Simple volatility-based predictions
+        predicted_hod = current_price + sigma_price
+        predicted_lod = current_price - sigma_price
+
+        # Level detection (kept for refinement context)
+        all_levels_combined = []
         try:
-            neural_network_levels_result = detect_levels_with_neural_network(hist_data_subset, lookback=100, threshold=0.5)
-            print(f"Neural Network: Generated {len(neural_network_levels_result) if neural_network_levels_result else 0} levels")
+            hist_data_subset = hist.tail(min(len(hist), 100))
+            hdbscan_levels = calculate_hdbscan_levels(highs, lows, closes, timeframe=timeframe)
+            isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
+            peak_valley_levels = find_peaks_valleys_scipy(highs, lows, closes)
+            pivot_levels = calculate_pivot_points(hist_data_subset, timeframe)
+            fib_levels = calculate_fibonacci_levels(highs, lows)
+
+            all_ml_levels = hdbscan_levels + isolation_forest_levels + peak_valley_levels
+            all_ml_levels = agglomerative_merge_levels(
+                all_ml_levels, distance_threshold_pct=None, timeframe=timeframe
+            )
+            confluence_levels = get_ml_confluence_levels(all_ml_levels)
+            all_levels_combined = confluence_levels + all_ml_levels + pivot_levels
+            all_levels_combined = add_fibonacci_metadata_to_levels(
+                all_levels_combined, fib_levels, sigma_price, threshold_sigma=1.0
+            )
+
+            all_levels_combined, hmm_regime, hurst_data, garch_regime, micro_state = enhance_levels_with_microstructure(
+                all_levels_combined, closes, volumes, current_price, garch_vol_regime, microstructure_state, sigma_price=sigma_price
+            )
+
+            # Refine FVECM predictions with detected levels
+            predicted_hod, predicted_lod, refinement_debug = refine_extrema_with_levels(
+                spot=current_price,
+                hod_th=predicted_hod,
+                lod_th=predicted_lod,
+                levels=all_levels_combined,
+                state=micro_state,
+                timeframe=timeframe,
+            )
         except Exception as e:
-            print(f"Neural Network level detection failed: {e}")
-            neural_network_levels_result = []
-        
-        # MeanShift removed from level production - now used as validator only
-        # (validates HDBSCAN levels and boosts confidence if agrees)
-        
-        # CLASSICAL STRUCTURAL (constraints/magnets, not ML discovery)
-        pivot_levels = calculate_pivot_points(hist_data_subset, timeframe)
-        fib_levels = calculate_fibonacci_levels(highs, lows)  # For metadata only, not primary levels
-        gap_levels = find_gap_levels(hist_data_subset)
-        
-        # ML LEVELS: Primary discovery algorithms only (including neural network)
-        all_ml_levels = (hdbscan_levels + isolation_forest_levels + peak_valley_levels + 
-                        (neural_network_levels_result if neural_network_levels_result else []))
-        
-        # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
-        # Use timeframe-aware threshold (cleaner than regime-aware for this step)
-        all_ml_levels = agglomerative_merge_levels(
-            all_ml_levels,
-            distance_threshold_pct=None,  # Will use timeframe-aware default
-            timeframe=timeframe
-        )
-        
-        confluence_levels = get_ml_confluence_levels(all_ml_levels)
-        
-        # Combine ML levels with classical structural (as constraints)
-        # NOTE: Fibonacci is NOT added here - it will be added as metadata only
-        all_levels_combined = (confluence_levels + all_ml_levels + 
-                              pivot_levels + gap_levels)
-        
-        # Add Fibonacci as metadata/confluence to nearby levels (not as primary levels)
-        all_levels_combined = add_fibonacci_metadata_to_levels(
-            all_levels_combined, fib_levels, sigma_price, threshold_sigma=1.0
-        )
-        
-        # 4. ENHANCE LEVELS with microstructure
-        all_levels_combined, hmm_regime, hurst_data, garch_regime, micro_state = enhance_levels_with_microstructure(
-            all_levels_combined, closes, volumes, current_price, garch_vol_regime, microstructure_state, sigma_price=sigma_price
-        )
-        
-        print(f"✓ Detected {len(all_levels_combined)} total levels")
-        
-        # NEW: Apply Fractional Brownian Motion adjustment if Hurst is available
-        if hurst_data and 'hurst' in hurst_data:
-            try:
-                # Get base sigma first (will adjust after fractional Brownian)
-                base_sigma = sigma_price
-                
-                # Calculate base predictions from volatility
-                base_hod_2std_temp = current_price + 2.0 * base_sigma
-                base_lod_2std_temp = current_price - 2.0 * base_sigma
-                
-                # Apply fractional Brownian adjustment
-                adj_hod_2std, adj_lod_2std = fractional_brownian_adjustment(
-                    base_hod_2std_temp, base_lod_2std_temp, hurst_data['hurst'], base_sigma
-                )
-                
-                # Recalculate sigma_price if adjustment was significant
-                if abs(adj_hod_2std - base_hod_2std_temp) > base_sigma * 0.1:
-                    sigma_price = (adj_hod_2std - adj_lod_2std) / 4.0  # Recalculate sigma from adjusted range
-                    print(f"✓ Applied fractional Brownian adjustment (Hurst={hurst_data['hurst']:.3f})")
-            except Exception as e:
-                print(f"⚠ Fractional Brownian adjustment failed: {e}")
-        
-        # 5. FIND MOST PROBABLE HOD/LOD using levels as attractors
-        
-        # Separate into resistance (above current) and support (below current)
-        resistance_levels = [l for l in all_levels_combined if l['price'] > current_price]
-        support_levels = [l for l in all_levels_combined if l['price'] < current_price]
-        
-        # Sort by distance from current price
-        resistance_levels.sort(key=lambda x: x['price'])
-        support_levels.sort(key=lambda x: -x['price'])
-        
-        # Calculate base predictions from volatility (your sigma ranges)
+            print(f"Level refinement failed: {e}")
+
+        # Confidence
+        resistance_levels = [l for l in all_levels_combined if l.get('price', 0) > current_price]
+        support_levels = [l for l in all_levels_combined if l.get('price', 0) < current_price]
+        hod_confidence = calculate_level_confidence(predicted_hod, resistance_levels, current_price, sigma_price)
+        lod_confidence = calculate_level_confidence(predicted_lod, support_levels, current_price, sigma_price)
+
+        std_dev_decimal = session_vol_pct / 100.0
+
+        # Compute statistical sigma bands for frontend compatibility
         base_hod_1std = current_price + 1.0 * sigma_price
         base_lod_1std = current_price - 1.0 * sigma_price
         base_hod_2std = current_price + 2.0 * sigma_price
         base_lod_2std = current_price - 2.0 * sigma_price
         base_hod_3std = current_price + 3.0 * sigma_price
         base_lod_3std = current_price - 3.0 * sigma_price
-        
-        # Get lower timeframe theoretical LOD for validation
-        lower_tf_lod = None
-        try:
-            if timeframe in ['1h', '4h', '1d']:
-                lower_tf_hist = stock.history(period='5d', interval='15m')
-                if len(lower_tf_hist) > 0:
-                    lower_tf_vol = compute_session_volatility(lower_tf_hist, window=60)
-                    lower_tf_sigma = lower_tf_vol['sigma_price']
-                    lower_tf_lod = current_price - 1.5 * lower_tf_sigma
-        except:
-            pass
-        
-        # FIND MOST PROBABLE HOD/LOD using your refined approach
-        predicted_hod, predicted_lod, refinement_debug = refine_extrema_with_levels(
-            spot=current_price,
-            hod_th=base_hod_2std,  # Use 2σ as envelope bound
-            lod_th=base_lod_2std,
-            levels=all_levels_combined,
-            state=micro_state,
-            timeframe=timeframe,
-            lower_tf_lod=lower_tf_lod
-        )
-        
-        # Find which levels were selected
-        selected_resistance = refinement_debug.get('best_hod')
-        selected_support = refinement_debug.get('best_lod')
-        
-        # Calculate confidence scores
-        hod_confidence = calculate_level_confidence(predicted_hod, resistance_levels, current_price, sigma_price)
-        lod_confidence = calculate_level_confidence(predicted_lod, support_levels, current_price, sigma_price)
-        
-        # Multi-timeframe confluence (soft structural ceilings/floors)
-        mtf_confluence = compute_mtf_confluence(
-            ticker=ticker,
-            spot=current_price,
-            sigma_price=sigma_price,
-            micro_state=micro_state.get('state', 'Unknown'),
-            lookback=20
-        )
-        
-        # Apply MTF structural constraints (soft caps, not hard limits)
-        if mtf_confluence['apply']:
-            # Soft structural ceilings/floors - improve confidence, not expand range
-            if mtf_confluence['resistance'] and predicted_hod > mtf_confluence['resistance']:
-                # Predicted HOD exceeds MTF resistance - cap it softly
-                predicted_hod = min(predicted_hod, mtf_confluence['resistance'] * 1.02)  # Allow 2% overshoot
-                print(f"✓ MTF resistance at ${mtf_confluence['resistance']:.2f} → capped HOD")
-            
-            if mtf_confluence['support'] and predicted_lod < mtf_confluence['support']:
-                # Predicted LOD below MTF support - cap it softly
-                predicted_lod = max(predicted_lod, mtf_confluence['support'] * 0.98)  # Allow 2% undershoot
-                print(f"✓ MTF support at ${mtf_confluence['support']:.2f} → capped LOD")
-            
-            # Boost confidence if MTF structure is confirmed
-            hod_confidence = min(1.0, hod_confidence + mtf_confluence['confidence_boost'])
-            lod_confidence = min(1.0, lod_confidence + mtf_confluence['confidence_boost'])
-            print(f"✓ MTF confluence confirmed → confidence boost: {mtf_confluence['confidence_boost']:.1%}")
-        
-        # Convert session vol pct to decimal for stdDev (frontend expects decimal)
-        std_dev_decimal = session_vol_pct / 100.0
-        
+
+        # Find selected resistance/support from refinement
+        selected_resistance = refinement_debug.get('best_hod') if 'refinement_debug' in locals() and refinement_debug else None
+        selected_support = refinement_debug.get('best_lod') if 'refinement_debug' in locals() and refinement_debug else None
+
         return jsonify({
             'success': True,
             'ticker': ticker,
             'timeframe': timeframe,
-            'currentPrice': float(current_price),
-            'sigmaDailyPct': float(session_vol_pct),  # Session vol for next period
+            'currentPrice': current_price,
+            'method': 'FVECM + Level Refinement',
+            'sigmaDailyPct': float(session_vol_pct),
             'sigmaPrice': float(sigma_price),
-            'stdDev': float(std_dev_decimal),  # Frontend expects decimal (will multiply by 100)
-                                'method': method,
-            
+            'stdDev': std_dev_decimal,
+            'sigma_price': float(sigma_price),
+
             # Frontend expects: hod['1std'], hod['2std'], hod['3std']
-                                'hod': {
+            'hod': {
                 '1std': float(base_hod_1std),
                 '2std': float(base_hod_2std),
                 '3std': float(base_hod_3std)
             },
-            
-            # Frontend expects: lod['1std'], lod['2std'], lod['3std']
-                                'lod': {
+            'lod': {
                 '1std': float(base_lod_1std),
                 '2std': float(base_lod_2std),
                 '3std': float(base_lod_3std)
             },
-            
-            # Additional data (for advanced use)
+
+            # Level-constrained predicted HOD/LOD
             'predicted': {
                 'hod': float(predicted_hod),
                 'lod': float(predicted_lod),
@@ -10421,7 +7576,15 @@ def get_level_constrained_hod_lod():
                 'hod_confidence': float(hod_confidence),
                 'lod_confidence': float(lod_confidence)
             },
-            
+
+            # Also keep the 'predictions' key for any code using the new format
+            'predictions': {
+                'hod': float(predicted_hod),
+                'lod': float(predicted_lod),
+                'hod_pct': (float(predicted_hod) - current_price) / current_price * 100,
+                'lod_pct': (current_price - float(predicted_lod)) / current_price * 100,
+            },
+
             # Base statistical ranges (for comparison)
             'statistical': {
                 'hod_1std': float(base_hod_1std),
@@ -10431,704 +7594,51 @@ def get_level_constrained_hod_lod():
                 'hod_3std': float(base_hod_3std),
                 'lod_3std': float(base_lod_3std)
             },
-            
+
             # Selected levels (if any)
             'selectedLevels': {
                 'resistance': sanitize_for_json(selected_resistance) if selected_resistance else None,
                 'support': sanitize_for_json(selected_support) if selected_support else None
             },
-            
-            # All nearby levels (for visualization)
+
+            # Nearby levels (for visualization)
             'nearbyLevels': {
                 'resistance': sanitize_for_json(resistance_levels[:5]),
                 'support': sanitize_for_json(support_levels[:5])
             },
-            
-            # Refinement debug info
-            'refinement': sanitize_for_json(refinement_debug),
-            
-            'microstructure': sanitize_for_json(micro_state),
-            'garchRegime': sanitize_for_json(garch_regime),
-            'mtfConfluence': sanitize_for_json(mtf_confluence) if 'mtf_confluence' in locals() else None
+
+            'confidence': {
+                'hod': float(hod_confidence),
+                'lod': float(lod_confidence),
+            },
+            'microstructure': sanitize_for_json(microstructure_state),
+            'garchRegime': sanitize_for_json(garch_vol_regime),
+            'levels': sanitize_for_json(all_levels_combined[:30]) if all_levels_combined else [],
         })
-        
+
     except Exception as e:
         import traceback
         error_trace = traceback.format_exc()
         print(f"ERROR in /api/level-constrained-hod-lod: {error_trace}")
-        return jsonify({'success': False, 'error': str(e)}), 400
+        return jsonify({'success': False, 'error': str(e) or 'Unknown error'}), 400
 
-# ALIAS: Keep old endpoint name for backward compatibility
+
 @app.route('/api/stdv-hod-lod', methods=['GET'])
 def get_stdv_hod_lod():
     """Alias for /api/level-constrained-hod-lod - backward compatibility"""
     return get_level_constrained_hod_lod()
 
-# NEW ENDPOINT: STATE-CONDITIONED HOD/LOD
+
 @app.route('/api/state-conditioned-hod-lod', methods=['GET'])
 def get_state_conditioned_hod_lod():
     """
-    NEW ENDPOINT - State machine + clustering HOD/LOD prediction
-    Uses state machine enhancements for more accurate predictions
+    State-conditioned HOD/LOD prediction.
+    Delegates to the level-constrained-hod-lod endpoint,
+    keeping the endpoint for backward compatibility.
     """
-    auth_error = require_auth()
-    if auth_error:
-        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
-    
-    ticker = request.args.get('ticker', 'SPY')
-    timeframe = request.args.get('timeframe', '1d').strip().lower().replace('240m','4h').replace('4hour','4h').replace('4hours','4h').replace('60m','1h')
-    quantile = float(request.args.get('quantile', 0.8))
-    use_intraday = timeframe in ['1m', '5m', '15m', '1h', '4h']
-    
-    try:
-        stock = yf.Ticker(ticker)
-        
-        # For futures, use alternative interval formats that yfinance accepts better
-        is_futures = '=' in ticker
-        if is_futures:
-            # Use minute-based intervals for futures (yfinance prefers these)
-            # Note: 4h is not supported by yfinance - will use resampling from 60m
-            interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '60m', '4h': '60m', '1d': '1d'}
-        else:
-            # Note: 4h is not supported by yfinance - will use resampling from 1h
-            interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
-        
-        interval = interval_map.get(timeframe, '1d')
-        
-        # Simple fix: Use shorter periods for futures on intraday timeframes
-        if is_futures and timeframe in ['1m', '5m', '15m', '1h', '4h']:
-            # Futures have limited intraday data - use shorter periods
-            # 15m and 1h get slightly longer periods as they're more reliable
-            period_map = {'1m': '5d', '5m': '5d', '15m': '7d', '1h': '7d', '4h': '10d', '1d': '2y'}
-        else:
-            period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
-        
-        period = period_map.get(timeframe, '1y')
-        
-        # Try to get data, with fallback to shorter periods if needed
-        # Use resampling for 4h (yfinance doesn't support it directly)
-        hist = None
-        if timeframe == '4h':
-            # For 4h, yfinance doesn't support it - must fetch 1h/60m and resample
-            print(f"Fetching 4h data for {ticker} (will resample from 1h/60m)...")
-            try:
-                hist = fetch_historical_data_with_resampling(
-                    ticker=ticker,
-                    timeframe='4h',
-                    period=period,
-                    is_futures=is_futures
-                )
-            except Exception as e:
-                print(f"⚠ Resampling fetch failed: {e}")
-                hist = None
-        elif is_futures and timeframe in ['1m', '5m', '15m', '1h']:
-            if timeframe in ['15m', '1h']:
-                attempts = [period, '5d', '3d', '2d', '1d']  # More attempts for 15m and 1h
-            else:
-                attempts = [period, '5d', '2d', '1d']
-            
-            for attempt_period in attempts:
-                # Try both the mapped interval and original timeframe format
-                interval_options = [interval]
-                if timeframe == '1h' and interval == '60m':
-                    interval_options = ['60m', '1h']
-                elif timeframe == '15m':
-                    interval_options = ['15m']
-                
-                for attempt_interval in interval_options:
-                    try:
-                        hist = stock.history(period=attempt_period, interval=attempt_interval)
-                        if hist is not None and len(hist) > 0:
-                            print(f"✓ Successfully fetched {len(hist)} bars for {ticker} at {timeframe} with interval={attempt_interval}, period={attempt_period}")
-                            break
-                    except Exception as e:
-                        error_msg = str(e)
-                        if "pattern" not in error_msg.lower() and "expected" not in error_msg.lower():
-                            print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:100]}")
-                        continue
-                
-                if hist is not None and len(hist) > 0:
-                    break
-        else:
-            attempts = [period]
-            for attempt_period in attempts:
-                try:
-                    hist = stock.history(period=attempt_period, interval=interval)
-                    if hist is not None and len(hist) > 0:
-                        break
-                except Exception as e:
-                    continue
-        
-        if hist is None or len(hist) == 0:
-            return jsonify({'success': False, 'error': f'No data available for {ticker} at {timeframe}. Futures have limited intraday data availability.'}), 400
-        
-        if len(hist) < 120:
-            return jsonify({'success': False, 'error': 'Insufficient data (need at least 120 periods)'}), 400
-        
-        closes = hist['Close'].values
-        highs = hist['High'].values if 'High' in hist.columns else closes
-        lows = hist['Low'].values if 'Low' in hist.columns else closes
-        volumes = hist['Volume'].values if 'Volume' in hist.columns else np.ones(len(closes))
-        current_price = closes[-1]
-        
-        # 1. Get GARCH regime (reuse existing function)
-        garch_regime = calculate_garch_volatility_regime(closes)
-        
-        # 2. Get microstructure state
-        returns = np.log(closes[1:] / closes[:-1]) * 100
-        microstructure = detect_market_microstructure_state(closes, volumes, returns, highs, lows)
-        
-        # 3. Build historical HOD/LOD ranges (u_series, d_series)
-        u_series = []  # Upward moves (HOD relative to previous close)
-        d_series = []  # Downward moves (LOD relative to previous close)
-        
-        for i in range(1, len(hist)):
-            prev_close = closes[i-1]
-            period_high = highs[i]
-            period_low = lows[i]
-            
-            # HOD: how far up from previous close (in sigma units)
-            u_move = (period_high - prev_close) / prev_close if prev_close > 0 else 0
-            # LOD: how far down from previous close (in sigma units)
-            d_move = (prev_close - period_low) / prev_close if prev_close > 0 else 0
-            
-            u_series.append(u_move)
-            d_series.append(d_move)
-        
-        # 4. Fit GMM to assign states based on price features
-        if len(u_series) >= 60:
-            feature_data = []
-            min_window = 20
-            for i in range(min_window, len(returns)):
-                window_returns = returns[max(0, i-min_window):i]
-                idx = i
-                feature_data.append([
-                    np.mean(window_returns) if len(window_returns) > 0 else 0,
-                    np.std(window_returns) if len(window_returns) > 0 else 0,
-                    u_series[idx] if idx < len(u_series) else 0,
-                    d_series[idx] if idx < len(d_series) else 0
-                ])
-            
-            if len(feature_data) >= 40:
-                feature_array = np.array(feature_data)
-                scaler = StandardScaler()
-                feature_scaled = scaler.fit_transform(feature_array)
-                
-                n_states = 4
-                gmm = GaussianMixture(n_components=n_states, random_state=42, max_iter=100)
-                gmm.fit(feature_scaled)
-                
-                # Assign states to all periods that have features
-                state_history = [None] * min_window
-                for i, feat in enumerate(feature_scaled):
-                    state = gmm.predict(feat.reshape(1, -1))[0]
-                    state_history.append(state)
-                
-                # Use state assignments for periods with features
-                valid_u_series = u_series[min_window:min_window+len(feature_scaled)]
-                valid_d_series = d_series[min_window:min_window+len(feature_scaled)]
-                valid_state_history = state_history[min_window:min_window+len(feature_scaled)]
-                
-                # 5. Build state quantiles using enhanced joint quantiles
-                state_quantiles = build_state_joint_quantiles(
-                    valid_state_history, 
-                    valid_u_series, 
-                    valid_d_series,
-                    quantiles=[0.5, 0.68, 0.8, 0.95]
-                )
-                
-                # NEW: Fit Gumbel Copula for joint HOD/LOD modeling
-                copula_params = {}
-                try:
-                    copula_params = fit_gumbel_copula(valid_u_series, valid_d_series)
-                    print(f"✓ Copula fitted: theta={copula_params.get('theta', 1.0):.3f}, tau={copula_params.get('tau', 0.0):.3f}")
-                except Exception as e:
-                    print(f"⚠ Copula fitting failed: {e}")
-                
-                # NEW: Fit Regime Switching model as alternative to GMM
-                regime_switching_params = {}
-                try:
-                    if STATSMODELS_AVAILABLE and len(valid_u_series) >= 60:
-                        exog_features = feature_scaled if len(feature_scaled) >= len(valid_u_series) else feature_array[:len(valid_u_series)]
-                        regime_switching_params = fit_regime_switching(valid_u_series, valid_d_series, exog_features, n_regimes=3)
-                        print(f"✓ Regime switching fitted: current_regime={regime_switching_params.get('current_regime', 1)}")
-                except Exception as e:
-                    print(f"⚠ Regime switching failed: {e}")
-                
-                # 6. Build transition matrix
-                transition_matrix = build_transition_matrix(valid_state_history, n_states)
-                
-                # 7. Predict current state
-                if len(feature_scaled) > 0:
-                    current_features = feature_scaled[-1:].reshape(1, -1)
-                    current_state = gmm.predict(current_features)[0]
-                    state_probs = gmm.predict_proba(current_features)[0].tolist()
-                else:
-                    current_state = valid_state_history[-1] if valid_state_history else 0
-                    state_probs = [0.25] * n_states
-                
-                # 8. Predict next state distribution
-                next_state_probs = predict_next_state_distribution(current_state, transition_matrix)
-                
-                # 9. Adaptive quantile
-                adaptive_q = adaptive_quantile(state_probs, quantile)
-                
-                # 10. Calculate predictions using hybrid prediction
-                # Use SESSION volatility (not annualized) for next-period prediction
-                try:
-                    if all(col in hist.columns for col in ['Open', 'High', 'Low', 'Close']):
-                        vol_result = compute_session_volatility(hist, window=60)
-                        sigma_session_pct = vol_result['sigma_session_pct']  # Next session % (1-3%)
-                        sigma_price = vol_result['sigma_price']  # Expected $ range
-                        sigma_annual_pct = vol_result['sigma_annual_pct']  # For logging/comparison
-                        
-                        print(f"✓ Session vol: {sigma_session_pct:.2f}% (annualized: {sigma_annual_pct:.1f}%, σ_price: ${sigma_price:.2f})")
-                    else:
-                        # Fallback: use close-to-close
-                        returns = np.log(closes[1:] / closes[:-1])
-                        sigma_session = np.std(returns)  # Daily vol (not annualized)
-                        sigma_session_pct = sigma_session * 100
-                        sigma_price = sigma_session * current_price
-                        sigma_annual_pct = sigma_session_pct * np.sqrt(252)
-                except Exception as e:
-                    print(f"⚠ Sigma calculation error: {e}")
-                    # Emergency fallback
-                    returns = np.log(closes[1:] / closes[:-1])
-                    sigma_session = np.std(returns)
-                    sigma_session_pct = sigma_session * 100
-                    sigma_price = sigma_session * current_price
-                    sigma_annual_pct = sigma_session_pct * np.sqrt(252)
-                
-                # Use session_vol_pct for sigma_daily (for backward compatibility in response)
-                sigma_daily = sigma_session_pct
+    return get_level_constrained_hod_lod()
 
-                hod, lod = None, None
-                base_hod, base_lod = None, None
-                hod_pct, lod_pct = None, None
-                lss = 0.0
-                lss_feats = {}
-                lss_meta = {'tail_usage_mult': 1.0}
 
-                if current_state in state_quantiles:
-                    q_data = state_quantiles[current_state].get('quantiles', {})
-                    # Use adaptive quantile, fallback to closest available quantile
-                    if adaptive_q in q_data:
-                        target_q = adaptive_q
-                    elif 0.8 in q_data:
-                        target_q = 0.8
-                    elif 0.95 in q_data:
-                        target_q = 0.95
-                    elif len(q_data) > 0:
-                        target_q = max(q_data.keys())
-                    else:
-                        target_q = None
-                    
-                    if target_q and target_q in q_data:
-                        q_u_raw = q_data[target_q]['q_u']
-                        q_d_raw = q_data[target_q]['q_d']
-                        
-                        # Apply microstructure adjustments (from hybrid_state_prediction logic)
-                        q_u = q_u_raw
-                        q_d = q_d_raw
-                        
-                        if microstructure['state'] == 'Fock':
-                            q_u *= (1 + microstructure['liquidity_permeability'] * 0.3)
-                            q_d *= (1 + microstructure['liquidity_permeability'] * 0.3)
-                        elif microstructure['state'] == 'Thermal':
-                            q_u *= 0.85
-                            q_d *= 0.85
-                        elif microstructure['state'] == 'Coherent':
-                            capture_bias = microstructure['capture_rate'] - 0.5
-                            if capture_bias > 0:
-                                q_u *= 1.2
-                                q_d *= 0.8
-                            else:
-                                q_u *= 0.8
-                                q_d *= 1.2
-                        
-                        # Convert to price levels
-                        base_hod = float(current_price * (1 + q_u))
-                        base_lod = float(current_price * (1 - q_d))
-                        
-                        # --- calibration overrides based on current environment ---
-                        cal_key = calibration_key(microstructure['state'], 0.0, sigma_daily)  # lss will be computed below
-                        cal = get_calibration_params(cal_key)
-                        override_tail_mult = cal.get("tail_mult", None)
-                        rf_clip = cal.get("rf_clip", None)  # optional
-                        
-                        # NEW: Adjust for liquidity stress
-                        try:
-                            # Pass full arrays - function will slice internally based on window parameter
-                            opens = hist['Open'].values if 'Open' in hist.columns else closes
-                            
-                            lss, lss_feats = liquidity_stress_score(
-                                opens, highs, lows, closes, volumes,
-                                window=50
-                            )
-                            
-                            # Recompute calibration key with actual lss
-                            cal_key = calibration_key(microstructure['state'], lss, sigma_daily)
-                            cal = get_calibration_params(cal_key)
-                            override_tail_mult = cal.get("tail_mult", None)
-                            rf_clip = cal.get("rf_clip", None)
-                            
-                            # FIX: Use session volatility for sigma_price (not annualized)
-                            # sigma_session_pct is already calculated above, use it
-                            sigma_price = (sigma_session_pct / 100.0) * current_price
-                            
-                            # Use volume z-score as a sigma modifier
-                            # If volume is abnormally low, widen sigma slightly (thin tape risk)
-                            vz = volume_zscore(volumes)
-                            sigma_price *= (1.0 + np.clip(-vz, 0, 2) * 0.05)
-                            
-                            # 1) BASE from state machine (already computed)
-                            # (q_u and q_d are already percentage moves from GMM, so this is correct)
-                            base_hod = float(base_hod)
-                            base_lod = float(base_lod)
-                            
-                            # 2) LSS adjustment (save intermediate)
-                            lss_hod, lss_lod, lss_meta = adjust_hod_lod_usage(
-                                base_hod=base_hod,
-                                base_lod=base_lod,
-                                sigma_price=sigma_price,  # Now correctly scaled with session vol
-                                lss=lss,
-                                micro_state=microstructure['state'],
-                                override_tail_mult=override_tail_mult
-                            )
-                            
-                            # 2.5) Range consumption adjustment (for intraday timeframes)
-                            # How much of today's expected range has already been consumed?
-                            if timeframe in ['1m', '5m', '15m', '1h', '4h']:
-                                try:
-                                    range_consumption = compute_range_consumption(hist, current_price, sigma_price)
-                                    
-                                    # Adjust predictions if range is mostly consumed
-                                    if range_consumption['consumed_pct'] > 0.8:
-                                        # Already used 80% of expected range → expect mean reversion
-                                        lss_hod = min(lss_hod, current_price + range_consumption['remaining_up'] * 1.2)
-                                        lss_lod = max(lss_lod, current_price - range_consumption['remaining_down'] * 1.2)
-                                        print(f"✓ Range consumption: {range_consumption['consumed_pct']:.1%} consumed → adjusted HOD/LOD for mean reversion")
-                                except Exception as e:
-                                    print(f"⚠ Range consumption calculation failed: {e}")
-                                    range_consumption = {'consumed_pct': 0.0, 'bias': 'active'}
-                            else:
-                                range_consumption = {'consumed_pct': 0.0, 'bias': 'active'}
-                            
-                            # 3) Level refinement - detect levels and refine using them
-                            # This is where your detected levels come into play
-                            all_levels_combined = []
-                            try:
-                                # Detect all levels (same as level-constrained endpoint)
-                                hist_data_subset = hist.tail(min(len(hist), 100))
-                                
-                                # PRIMARY: HDBSCAN (state-of-the-art density clustering)
-                                hdbscan_levels = calculate_hdbscan_levels(highs, lows, closes, timeframe=timeframe)
-                                
-                                # SECONDARY: IsolationForest (event pivot candidates)
-                                isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
-                                
-                                # FALLBACK: Peak/Valley (last-resort when density clustering fails)
-                                peak_valley_levels = find_peaks_valleys_scipy(highs, lows, closes)
-                                
-                                # MeanShift removed from level production - now used as validator only
-                                # (validates HDBSCAN levels and boosts confidence if agrees)
-                                
-                                # CLASSICAL STRUCTURAL (constraints/magnets, not ML discovery)
-                                pivot_levels = calculate_pivot_points(hist_data_subset, timeframe)
-                                fib_levels = calculate_fibonacci_levels(highs, lows)  # For metadata only, not primary levels
-                                gap_levels = find_gap_levels(hist_data_subset)
-                                
-                                # ML LEVELS: Primary discovery algorithms only
-                                all_ml_levels = (hdbscan_levels + isolation_forest_levels + peak_valley_levels)
-                                
-                                # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
-                                # Use timeframe-aware threshold (cleaner than regime-aware for this step)
-                                all_ml_levels = agglomerative_merge_levels(
-                                    all_ml_levels,
-                                    distance_threshold_pct=None,  # Will use timeframe-aware default
-                                    timeframe=timeframe
-                                )
-                                
-                                confluence_levels = get_ml_confluence_levels(all_ml_levels)
-                                
-                                # Combine ML levels with classical structural (as constraints)
-                                # NOTE: Fibonacci is NOT added here - it will be added as metadata only
-                                all_levels_combined = (confluence_levels + all_ml_levels + 
-                                                      pivot_levels + gap_levels)
-                                
-                                # Add Fibonacci as metadata/confluence to nearby levels (not as primary levels)
-                                all_levels_combined = add_fibonacci_metadata_to_levels(
-                                    all_levels_combined, fib_levels, sigma_price, threshold_sigma=1.0
-                                )
-                                
-                                # Enhance levels with microstructure
-                                all_levels_combined, hmm_regime, hurst_data, garch_regime_enhanced, micro_state_enhanced = enhance_levels_with_microstructure(
-                                    all_levels_combined, closes, volumes, current_price, garch_vol_regime, microstructure, sigma_price=sigma_price
-                                )
-                                
-                                print(f"✓ Detected {len(all_levels_combined)} levels for refinement")
-                                
-                                # Refine using levels (KEEP THIS - it's good!)
-                                # Get lower timeframe theoretical LOD for validation
-                                lower_tf_lod = None
-                                try:
-                                    if timeframe in ['1h', '4h', '1d']:
-                                        lower_tf_hist = stock.history(period='5d', interval='15m')
-                                        if len(lower_tf_hist) > 0:
-                                            lower_tf_vol = compute_session_volatility(lower_tf_hist, window=60)
-                                            lower_tf_sigma = lower_tf_vol['sigma_price']
-                                            lower_tf_lod = current_price - 1.5 * lower_tf_sigma
-                                except:
-                                    pass
-                                
-                                predicted_hod, predicted_lod, refinement_debug = refine_extrema_with_levels(
-                                    spot=current_price,
-                                    hod_th=lss_hod,  # Use LSS-adjusted as envelope
-                                    lod_th=lss_lod,
-                                    levels=all_levels_combined,  # Your detected levels
-                                    state=microstructure,
-                                    timeframe=timeframe,
-                                    lower_tf_lod=lower_tf_lod
-                                )
-                                
-                                # Use refined predictions
-                                refined_hod = predicted_hod
-                                refined_lod = predicted_lod
-                                
-                                # Multi-timeframe confluence (soft structural ceilings/floors)
-                                mtf_confluence = compute_mtf_confluence(
-                                    ticker=ticker,
-                                    spot=current_price,
-                                    sigma_price=sigma_price,
-                                    micro_state=microstructure.get('state', 'Unknown'),
-                                    lookback=20
-                                )
-                                
-                                # Apply MTF structural constraints (soft caps, not hard limits)
-                                if mtf_confluence['apply']:
-                                    # Soft structural ceilings/floors - improve confidence, not expand range
-                                    if mtf_confluence['resistance'] and refined_hod > mtf_confluence['resistance']:
-                                        # Refined HOD exceeds MTF resistance - cap it softly
-                                        refined_hod = min(refined_hod, mtf_confluence['resistance'] * 1.02)  # Allow 2% overshoot
-                                        print(f"✓ MTF resistance at ${mtf_confluence['resistance']:.2f} → capped HOD")
-                                    
-                                    if mtf_confluence['support'] and refined_lod < mtf_confluence['support']:
-                                        # Refined LOD below MTF support - cap it softly
-                                        refined_lod = max(refined_lod, mtf_confluence['support'] * 0.98)  # Allow 2% undershoot
-                                        print(f"✓ MTF support at ${mtf_confluence['support']:.2f} → capped LOD")
-                                    
-                                    print(f"✓ MTF confluence confirmed → confidence boost: {mtf_confluence['confidence_boost']:.1%}")
-                                
-                            except Exception as e:
-                                print(f"⚠ Level refinement failed: {e}, using LSS-adjusted values")
-                                import traceback
-                                traceback.print_exc()
-                                refined_hod = lss_hod
-                                refined_lod = lss_lod
-                            
-                            # 4) RF adjustment (optional) - use refined values if available
-                            rf_hod = rf_lod = None
-                            rf_meta = {}
-                            # Use refined values from level refinement, fallback to LSS-adjusted
-                            final_hod = float(refined_hod) if 'refined_hod' in locals() else float(lss_hod)
-                            final_lod = float(refined_lod) if 'refined_lod' in locals() else float(lss_lod)
-                            
-                            # Build feature_dict in canonical ML_FEATURES order (FIX 1: strict ordering)
-                            # This ensures features_json matches exactly what RF models expect
-                            feature_dict = {feat: 0.0 for feat in ML_FEATURES}  # Initialize all with defaults
-                            
-                            # Populate available features (maintain canonical order)
-                            feature_dict['sigma_daily_pct'] = float(sigma_daily)
-                            feature_dict['micro_state'] = STATE_MAP.get(microstructure.get('state', 'Unknown'), -1)
-                            feature_dict['micro_confidence'] = float(microstructure.get('confidence', 0.0))
-                            feature_dict['liquidity_stress'] = float(lss)
-                            feature_dict['tail_usage_mult'] = float(lss_meta.get('tail_usage_mult', 1.0))
-                            # Add range consumption to RF features (for intraday)
-                            feature_dict['range_consumption'] = float(range_consumption.get('consumed_pct', 0.0))
-                            
-                            # OPTIONAL REFINEMENT: Persist MTF confluence in features_json for calibration
-                            if 'mtf_confluence' in locals() and mtf_confluence:
-                                feature_dict['mtf_resistance_count'] = float(mtf_confluence.get('details', {}).get('resistance_count', 0))
-                                feature_dict['mtf_support_count'] = float(mtf_confluence.get('details', {}).get('support_count', 0))
-                                feature_dict['mtf_confidence_boost'] = float(mtf_confluence.get('confidence_boost', 0.0))
-                            else:
-                                feature_dict['mtf_resistance_count'] = 0.0
-                                feature_dict['mtf_support_count'] = 0.0
-                                feature_dict['mtf_confidence_boost'] = 0.0
-                            
-                            if isinstance(garch_regime, dict):
-                                feature_dict['garch_regime'] = REGIME_MAP.get(garch_regime.get('regime', 'stable'), 0)
-                                # Populate sigma_garch_pct if available
-                                if 'current_vol' in garch_regime:
-                                    feature_dict['sigma_garch_pct'] = float(garch_regime['current_vol'])
-                            else:
-                                feature_dict['garch_regime'] = REGIME_MAP.get(str(garch_regime), 0)
-                            
-                            # Feature dict is already in canonical order (initialized with ML_FEATURES)
-                            # No need to reorder - Python 3.7+ dicts maintain insertion order
-                            # Just ensure all features are present with defaults
-                            for feat in ML_FEATURES:
-                                if feat not in feature_dict:
-                                    feature_dict[feat] = 0.0
-                            
-                            try:
-                                base_hod_model, base_lod_model, resid_hod_model, resid_lod_model, _, model_type = load_stack_models()
-                                
-                                # Use refined values as base for ML adjustment (if available), otherwise LSS-adjusted
-                                ml_base_hod = float(refined_hod) if 'refined_hod' in locals() else float(lss_hod)
-                                ml_base_lod = float(refined_lod) if 'refined_lod' in locals() else float(lss_lod)
-                                
-                                # Use LightGBM if available, otherwise RandomForest
-                                if model_type == 'lgbm' and LIGHTGBM_AVAILABLE:
-                                    try:
-                                        ml_hod, ml_lod, ml_meta = lgbm_adjust_hod_lod(
-                                            base_hod_model,
-                                            base_lod_model,
-                                            feature_dict=feature_dict,
-                                            base_hod=ml_base_hod,
-                                            base_lod=ml_base_lod,
-                                            sigma_price=float(sigma_price),
-                                        )
-                                        ml_meta['model_type'] = 'lgbm'
-                                    except Exception as e:
-                                        print(f"⚠ LightGBM adjustment failed: {e}, falling back to RF")
-                                        ml_hod, ml_lod, ml_meta = rf_adjust_hod_lod(
-                                            base_hod_model,
-                                            base_lod_model,
-                                            feature_dict=feature_dict,
-                                            base_hod=ml_base_hod,
-                                            base_lod=ml_base_lod,
-                                            sigma_price=float(sigma_price),
-                                        )
-                                        ml_meta['model_type'] = 'rf'
-                                else:
-                                    ml_hod, ml_lod, ml_meta = rf_adjust_hod_lod(
-                                        base_hod_model,
-                                        base_lod_model,
-                                        feature_dict=feature_dict,
-                                        base_hod=ml_base_hod,
-                                        base_lod=ml_base_lod,
-                                        sigma_price=float(sigma_price),
-                                    )
-                                    ml_meta['model_type'] = model_type if model_type else 'rf'
-                                rf_hod = ml_hod
-                                rf_lod = ml_lod
-                                rf_meta = ml_meta
-
-                            except Exception as e:
-                                print(f"⚠ ML model (RF/LGBM) failed: {e}")
-                                import traceback
-                                traceback.print_exc()
-                                # Continue without ML adjustment - use refined if available, otherwise LSS
-                                if 'refined_hod' in locals():
-                                    rf_hod = refined_hod
-                                    rf_lod = refined_lod
-                                else:
-                                    rf_hod = lss_hod
-                                    rf_lod = lss_lod
-                                rf_meta = {"rf_enhanced": False, "lgbm_enhanced": False, "note": "ml_model_failed"}
-                            
-                            # Apply residual correction if models are available
-                            if 'resid_hod_model' in locals() and resid_hod_model is not None and 'resid_lod_model' in locals() and resid_lod_model is not None:
-                                try:
-                                    X = np.array([feature_dict.get(f, 0.0) for f in ML_FEATURES]).reshape(1, -1)
-                                    resid_h = float(np.clip(resid_hod_model.predict(X)[0], -2.0, 2.0))
-                                    resid_l = float(np.clip(resid_lod_model.predict(X)[0], -2.0, 2.0))
-                                    rf_meta["residual_corrected"] = True
-                                    rf_meta["resid_hod_sigma"] = resid_h
-                                    rf_meta["resid_lod_sigma"] = resid_l
-                                except Exception as e:
-                                    print(f"⚠ Residual correction failed: {e}")
-                                    rf_meta["residual_corrected"] = False
-                            
-                            # Final HOD/LOD assignment
-                            # Priority: RF > Refined (from levels) > LSS-adjusted
-                            if rf_hod is not None:
-                                    final_hod = float(rf_hod)
-                            elif 'refined_hod' in locals():
-                                final_hod = float(refined_hod)
-                            else:
-                                final_hod = float(lss_hod)
-                            
-                            if rf_lod is not None:
-                                    final_lod = float(rf_lod)
-                            elif 'refined_lod' in locals():
-                                final_lod = float(refined_lod)
-                            else:
-                                final_lod = float(lss_lod)
-                            
-                            hod = final_hod
-                            lod = final_lod
-                            
-                        except Exception as e:
-                            print(f"⚠ Liquidity stress adjustment failed: {e}")
-                            import traceback
-                            traceback.print_exc()
-                            hod = base_hod
-                            lod = base_lod
-                            lss = 0.0
-                            lss_feats = {}
-                            lss_meta = {'tail_usage_mult': 1.0}
-                            rf_hod = rf_lod = None
-                            rf_meta = {}
-                            row_id = None
-                            cal_key = calibration_key(microstructure.get('state', 'Unknown'), 0.0, sigma_daily)
-                        
-                        hod_pct = (hod - current_price) / current_price * 100
-                        lod_pct = (current_price - lod) / current_price * 100
-                
-                # 11. Compute state durations
-                state_durations = compute_state_durations(valid_state_history)
-                
-                # Prepare response
-                response = {
-                    'success': True,
-                    'ticker': ticker,
-                    'timeframe': timeframe,
-                    'currentPrice': float(current_price),
-                    'sigmaDailyPct': float(sigma_daily),  # Session volatility for next period
-                    'currentState': {
-                        'state_id': int(current_state),
-                        'probabilities': state_probs,
-                        'confidence': float(max(state_probs)),
-                        'quantile_used': float(adaptive_q)
-                    },
-                    'nextStateProbs': next_state_probs,
-                    'predictions': {
-                        'hod': float(hod) if hod else None,
-                        'lod': float(lod) if lod else None,
-                        'hod_pct': float(hod_pct) if hod_pct else None,
-                        'lod_pct': float(lod_pct) if lod_pct else None,
-                        'hod_base': float(base_hod) if 'base_hod' in locals() and hod else None,
-                        'lod_base': float(base_lod) if 'base_lod' in locals() and lod else None,
-                        'hod_liquidity_adjusted': float(hod) if hod else None,
-                        'lod_liquidity_adjusted': float(lod) if lod else None,
-                        'liquidity_stress': float(lss) if 'lss' in locals() else 0.0,
-                        'liquidity_features': lss_feats if 'lss_feats' in locals() else {},
-                        'tail_usage_mult': float(lss_meta.get('tail_usage_mult', 1.0)) if 'lss_meta' in locals() else 1.0
-                    },
-                    'stateCharacteristics': state_quantiles.get(current_state, {}),
-                    'stateDurations': state_durations.get(current_state, {}),
-                    'microstructure': sanitize_for_json(microstructure),
-                    'garchRegime': sanitize_for_json(garch_regime),
-                    'mlEvalId': row_id if 'row_id' in locals() else None,
-                    'calibrationKey': cal_key if 'cal_key' in locals() else None
-                }
-                
-                return jsonify(response)
-        
-        # Fallback if state machine approach fails
-        return jsonify({
-            'success': False,
-            'error': 'Insufficient data for state machine analysis. Need at least 60 periods with features.'
-        }), 400
-        
-    except Exception as e:
-        import traceback
-        error_trace = traceback.format_exc()
-        print(f"ERROR in /api/state-conditioned-hod-lod: {error_trace}")
-        error_msg = str(e) if str(e) else "Unknown error occurred"
-        return jsonify({'success': False, 'error': error_msg}), 400
 
 @app.route('/api/lstm-forecast', methods=['GET'])
 def get_lstm_forecast():
@@ -11290,43 +7800,62 @@ def get_lstm_forecast():
         print("Calculating volume profile...")
         volume_profile = calculate_volume_profile(highs, lows, closes, volumes, bins=30)
         
-        # 2. Detect all levels (your existing code)
+        # 2. Detect levels (focus on ML-enhanced levels)
         print("Detecting levels...")
-        hdbscan_levels = calculate_hdbscan_levels(highs, lows, closes, timeframe=timeframe)
-        optics_levels = enhanced_optics_levels(highs, lows, closes, timeframe=timeframe)
-        
-        # Interaction levels
-        interaction_levels = calculate_local_interaction_levels(
-            closes, current_price, sigma_price, lookback=200, bins=30, max_levels=5
-        )
-        
-        # Multiscale levels
+        # Skip standalone HDBSCAN (redundant with DeepSupp which uses HDBSCAN internally)
+        hdbscan_levels = []
+        optics_levels = []
+        interaction_levels = []
         multiscale_levels = multiscale_hdbscan_levels(highs, lows, closes, timeframe=timeframe)
         
-        # Neural Network levels (with volume profile) - INCLUDED in theoretical HOD/LOD and LSTM forecast
+        # Fetch hourly data for cross-TF confluence (1h/4h) — restores +15% precision
+        import gc as _gc
+        hist_hourly = None
+        if ticker:
+            try:
+                hist_hourly = yf.Ticker(ticker).history(period='7d', interval='1h')
+                if hist_hourly is not None and len(hist_hourly) >= 30:
+                    print(f"✓ Hourly data for cross-TF: {len(hist_hourly)} bars")
+                else:
+                    hist_hourly = None
+            except Exception as e:
+                print(f"⚠ Hourly fetch failed: {e}")
+
+        # Neural Network levels — daily fractals + cross-TF confluence (CNN disabled on Render)
         print("Detecting neural network levels...")
-        neural_network_levels = detect_levels_with_neural_network(hist, lookback=100, threshold=0.5)
+        neural_network_levels = detect_levels_with_neural_network(
+            hist, lookback=100, threshold=0.5, ticker=ticker, hist_hourly=hist_hourly)
         print(f"✓ Neural Network levels detected: {len(neural_network_levels)} levels")
+        _gc.collect()
         
-        # ML confluence (includes neural network levels)
-        all_ml_levels = hdbscan_levels + optics_levels + interaction_levels + neural_network_levels
+        # DeepSupp levels — daily only (no hourly fetch for DeepSupp)
+        deepsupp_levels = []
+        try:
+            if TORCH_AVAILABLE:
+                deepsupp_levels = detect_levels_with_deepsupp(
+                    hist, model_path='deepsupp_v4.pt', device='cpu')
+                print(f"✓ DeepSupp levels detected: {len(deepsupp_levels)} levels")
+        except Exception as e:
+            print(f"DeepSupp level detection failed: {e}")
+            deepsupp_levels = []
+        
+        # Free hourly data
+        del hist_hourly
+        _gc.collect()
+
+        # ML confluence (neural network + deepsupp + multiscale)
+        all_ml_levels = neural_network_levels + deepsupp_levels + multiscale_levels
         ml_confluence_levels = get_ml_confluence_levels(all_ml_levels)
         
-        # 2a. Get Multi-Timeframe Levels (for enhanced LSTM prediction)
-        print("Fetching multi-timeframe levels...")
+        # 2a. Multi-TF levels already handled by cross-TF confluence in NN detector
+        print("Multi-timeframe levels handled by cross-TF confluence...")
         mtf_levels = {}
         level_sequence_prediction = None
-        try:
-            mtf_levels = get_multi_timeframe_levels(ticker, timeframe, hist)
-            print(f"✓ Multi-timeframe levels fetched: {len(mtf_levels)} timeframes")
-        except Exception as e:
-            print(f"⚠ Multi-timeframe level fetch failed: {e}")
-            mtf_levels = {}
         
         # 3. Predict level reactions AND which levels will become actual HOD/LOD
         # NOTE: neural_network_levels are included in all_levels for theoretical HOD/LOD refinement
         print("Predicting level reactions and HOD/LOD candidates...")
-        all_levels = hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels + multiscale_levels + neural_network_levels
+        all_levels = multiscale_levels + neural_network_levels + deepsupp_levels
         start_of_move_price = closes[0] if len(closes) > 0 else current_price  # Session start
         
         level_reactions = []
@@ -11406,7 +7935,7 @@ def get_lstm_forecast():
                 optics_levels=optics_levels,
                 interaction_levels=interaction_levels,
                 ml_confluence_levels=ml_confluence_levels,
-                multiscale_levels=multiscale_levels,
+                                multiscale_levels=multiscale_levels,
                 neural_network_levels=neural_network_levels,
                 volume_profile=volume_profile,
                 all_levels=all_levels
@@ -11446,34 +7975,11 @@ def get_lstm_forecast():
         prediction = None
         monte_carlo_result = None
         
-        # Try to load multi-timeframe level sequence model first
-        if TORCH_AVAILABLE and LevelSequenceLSTM is not None and mtf_levels:
-            try:
-                if os.path.exists(model_path_mtf):
-                    print("Loading multi-timeframe level sequence model...")
-                    n_features_mtf = recent_features_mtf.shape[1] if len(recent_features_mtf.shape) > 1 else recent_features.shape[1]
-                    model_mtf = LevelSequenceLSTM(n_features=n_features_mtf, max_levels_predict=5)
-                    model_mtf.load_state_dict(torch.load(model_path_mtf, map_location='cpu'))
-                    print("✓ Multi-timeframe level sequence model loaded")
-                    
-                    # Make level sequence prediction
-                    level_sequence_prediction = predict_level_sequence(
-                        model=model_mtf,
-                        recent_features=recent_features_mtf,
-                        current_price=current_price,
-                        mtf_levels=mtf_levels,
-                        base_timeframe=timeframe
-                    )
-                    if level_sequence_prediction:
-                        print(f"✓ Level sequence prediction: {level_sequence_prediction['total_levels_predicted']} levels")
-            except Exception as e:
-                print(f"⚠ Multi-timeframe model loading/prediction failed: {e}")
-                import traceback
-                traceback.print_exc()
-                model_mtf = None
-                level_sequence_prediction = None
+        # Skip MTF LSTM on Render (mtf_levels is empty, saves memory)
+        # Multi-TF confluence already handled inside NN detector
         
-        if TORCH_AVAILABLE and LevelBasedLSTM is not None:
+        # Skip LSTM/Monte Carlo in LOW_MEMORY mode (saves ~30MB)
+        if not LOW_MEMORY and TORCH_AVAILABLE and LevelBasedLSTM is not None:
             try:
                 if os.path.exists(model_path):
                     # Try to load model with HOD/LOD prediction capability
@@ -11488,30 +7994,10 @@ def get_lstm_forecast():
                     # Get base prediction (with volatility for time calculation)
                     prediction = predict_price_target(model, recent_features, current_price, sigma_price=sigma_price, volatility_factor=1.0)
                     
-                    # Predict which level will be HOD/LOD (using all levels including theoretical as candidates)
+                    # HOD/LOD level prediction
                     hod_lod_prediction = None
-                    try:
-                        print("Predicting HOD/LOD levels from LSTM...")
-                        hod_lod_prediction = predict_hod_lod_from_levels(
-                            model=model,
-                            recent_features=recent_features,
-                            current_price=current_price,
-                            candidate_levels=all_levels,
-                            theoretical_hod=theoretical_hod_id,
-                            theoretical_lod=theoretical_lod_id
-                        )
-                        if hod_lod_prediction:
-                            print(f"✓ LSTM HOD prediction: ${hod_lod_prediction['predicted_hod_price']:.2f}")
-                            print(f"✓ LSTM LOD prediction: ${hod_lod_prediction['predicted_lod_price']:.2f}")
-                    except Exception as e:
-                        print(f"⚠ HOD/LOD level prediction failed: {e}")
-                        import traceback
-                        traceback.print_exc()
-                        hod_lod_prediction = None
                     
                     # Run Monte Carlo simulation (with regimes)
-                    # Use fewer simulations for production (30 instead of 100 for speed)
-                    # Can be increased for higher accuracy if needed
                     print("Running Monte Carlo LSTM simulation...")
                     monte_carlo_result = monte_carlo_lstm_forecast(
                         model=model,
@@ -11519,21 +8005,26 @@ def get_lstm_forecast():
                         current_price=current_price,
                         theoretical_hod=theoretical_hod_id,
                         theoretical_lod=theoretical_lod_id,
-                        levels=all_levels[:20],  # Top 20 levels for reactions
+                        levels=all_levels[:10],  # Top 10 levels for reactions
                         volume_profile=volume_profile,
                         sigma_price=sigma_price,
                         hurst_data=hurst_data,
                         garch_regime=garch_regime,
                         hmm_regime=hmm_regime,
                         microstructure_state=microstructure_state,
-                        n_simulations=30,  # Reduced from 100 for production performance
-                        forecast_bars=30
+                        n_simulations=15,
+                        forecast_bars=20
                     )
                     
                     if prediction:
                         print(f"✓ LSTM prediction: target={prediction['target_price']:.2f}, confidence={prediction['confidence']:.2f}")
                     if monte_carlo_result:
                         print(f"✓ Monte Carlo: {monte_carlo_result['probabilities']['up']*100:.1f}% up, {monte_carlo_result['probabilities']['down']*100:.1f}% down")
+                    
+                    # Free LSTM model immediately
+                    del model
+                    _gc.collect()
+                    model = None
                 else:
                     print(f"⚠ Model file not found: {model_path}. Using level-based estimate.")
             except Exception as e:
@@ -11541,7 +8032,10 @@ def get_lstm_forecast():
                 import traceback
                 traceback.print_exc()
         else:
-            print(f"⚠ PyTorch not available. Using level-based heuristic estimate.")
+            if LOW_MEMORY:
+                print("⚡ LOW_MEMORY: Skipping LSTM/Monte Carlo (CNN scoring enabled)")
+            else:
+                print(f"⚠ PyTorch not available. Using level-based heuristic estimate.")
         
         # 5. Fallback: If no model, use level-based heuristic with volume profile
         if prediction is None:
@@ -11623,12 +8117,13 @@ def get_lstm_forecast():
             'monte_carlo': sanitize_for_json(monte_carlo_result) if monte_carlo_result else None,
             'model_used': 'MTF Level Sequence LSTM' if level_sequence_prediction else ('LSTM + Monte Carlo' if monte_carlo_result else ('LSTM' if model is not None else 'Level-based heuristic')),
             'levels_detected': {
-                'hdbscan': len(hdbscan_levels),
-                'optics': len(optics_levels),
-                'interaction': len(interaction_levels),
+                'hdbscan': 0,  # Removed standalone HDBSCAN (redundant with DeepSupp)
+                'optics': 0,  # Not used
+                'interaction': 0,  # Not used
                 'ml_confluence': len(ml_confluence_levels),
                 'multiscale': len(multiscale_levels),
-                'neural_network': len(neural_network_levels)
+                'neural_network': len(neural_network_levels),
+                'deepsupp': len(deepsupp_levels)
             },
             'microstructure_state': sanitize_for_json(microstructure_state) if microstructure_state else None
         }
@@ -11641,23 +8136,6 @@ def get_lstm_forecast():
         print(f"ERROR in /api/lstm-forecast: {error_trace}")
         return jsonify({'success': False, 'error': str(e)}), 400
 
-@app.route("/api/ml/hodlod-realized", methods=["POST"])
-def api_ml_hodlod_realized():
-    auth_error = require_auth()
-    if auth_error:
-        return jsonify({'success': False, **auth_error}), auth_error['code']
-
-    data = request.json or {}
-    row_id = data.get("mlEvalId")
-    realized_hod = data.get("realizedHOD")
-    realized_lod = data.get("realizedLOD")
-    realized_ts  = data.get("realizedTs")
-
-    if not row_id or realized_hod is None or realized_lod is None:
-        return jsonify({"success": False, "error": "mlEvalId, realizedHOD, realizedLOD required"}), 400
-
-    ok = ml_update_realized(row_id, float(realized_hod), float(realized_lod), realized_ts)
-    return jsonify({"success": ok})
 
 @app.route('/api/train-level-detector', methods=['POST'])
 def api_train_level_detector():
@@ -11704,309 +8182,57 @@ def api_train_level_detector():
         print(f"ERROR in /api/train-level-detector: {error_trace}")
         return jsonify({'success': False, 'error': str(e)}), 400
 
-@app.route("/api/ml/train-hodlod-stack", methods=["POST"])
-def api_ml_train_hodlod_stack():
-    auth_error = require_auth()
-    if auth_error:
-        return jsonify({'success': False, **auth_error}), auth_error['code']
-
-    data = request.json or {}
-    window = int(data.get("window", 400))   # rolling window size
-
-    # Pull last N realized samples
-    conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql_query(f"""
-        SELECT *
-        FROM hodlod_eval
-        WHERE realized_hod IS NOT NULL AND realized_lod IS NOT NULL
-        ORDER BY session_date DESC, pred_ts DESC
-        LIMIT {window}
-    """, conn)
-    conn.close()
-
-    if df.empty or len(df) < 120:
-        return jsonify({"success": False, "error": f"Need at least 120 realized samples (have {len(df)})"}), 400
-
-    # Rebuild features frame expected by your RF training
-    feats = df["features_json"].apply(lambda s: json.loads(s or "{}"))
-    feats_df = pd.json_normalize(feats)
-    feats_df = feats_df.reindex(columns=ML_FEATURES, fill_value=0.0)
-
-    # Build "training df" compatible with your existing compute_hod_error_sigma/compute_lod_error_sigma
-    train_df = pd.DataFrame({
-        "predicted_HOD": df["final_hod"].astype(float),
-        "predicted_LOD": df["final_lod"].astype(float),
-        "realized_HOD": df["realized_hod"].astype(float),
-        "realized_LOD": df["realized_lod"].astype(float),
-        "sigma_price": df["sigma_price"].astype(float).fillna(0.0),
-    })
-    for col in ML_FEATURES:
-        train_df[col] = feats_df[col].astype(float)
-
-    # 1) Train base models - prefer LightGBM if available, fallback to RF
-    if LIGHTGBM_AVAILABLE:
-        try:
-            lgbm_hod, lgbm_lod, metrics_base = train_lgbm_dual(train_df, verbose=True)
-            print("✓ Using LightGBM for base models")
-            use_lgbm = True
-            base_hod_model = lgbm_hod
-            base_lod_model = lgbm_lod
-        except Exception as e:
-            print(f"⚠ LightGBM training failed: {e}, falling back to RandomForest")
-            rf_hod, rf_lod, metrics_base = train_rf_dual(train_df, verbose=True)
-            use_lgbm = False
-            base_hod_model = rf_hod
-            base_lod_model = rf_lod
-    else:
-        rf_hod, rf_lod, metrics_base = train_rf_dual(train_df, verbose=True)
-        use_lgbm = False
-        base_hod_model = rf_hod
-        base_lod_model = rf_lod
-
-    # 2) Train residual models: remaining error AFTER final_hod/final_lod (in sigma units)
-    # residual targets (sigma)
-    eps = 1e-9
-    train_df["resid_hod_sigma"] = (train_df["realized_HOD"] - train_df["predicted_HOD"]) / (train_df["sigma_price"] + eps)
-    train_df["resid_lod_sigma"] = (train_df["predicted_LOD"] - train_df["realized_LOD"]) / (train_df["sigma_price"] + eps)
-    train_df["resid_hod_sigma"] = train_df["resid_hod_sigma"].clip(-3, 3)
-    train_df["resid_lod_sigma"] = train_df["resid_lod_sigma"].clip(-3, 3)
-
-    X = train_df[ML_FEATURES].values
-    y_rh = train_df["resid_hod_sigma"].values
-    y_rl = train_df["resid_lod_sigma"].values
-
-    resid_hod = RandomForestRegressor(
-        n_estimators=250, max_depth=6, min_samples_leaf=25, max_features=0.7,
-        random_state=101, n_jobs=-1
-    )
-    resid_lod = RandomForestRegressor(
-        n_estimators=250, max_depth=6, min_samples_leaf=25, max_features=0.7,
-        random_state=102, n_jobs=-1
-    )
-    resid_hod.fit(X, y_rh)
-    resid_lod.fit(X, y_rl)
-
-    metrics = {
-        **metrics_base,
-        "n_train": int(len(train_df)),
-        "stack": True,
-        "model_type": "LightGBM" if use_lgbm else "RandomForest"
-    }
-
-    if use_lgbm:
-        save_stack_models(base_hod_model, base_lod_model, resid_hod, resid_lod, metrics, model_type='lgbm')
-    else:
-        save_stack_models(base_hod_model, base_lod_model, resid_hod, resid_lod, metrics, model_type='rf')
-
-    return jsonify({"success": True, "metrics": metrics})
-
-@app.route("/api/ml/ablation-report", methods=["POST"])
-def api_ml_ablation_report():
+@app.route('/api/train-deepsupp-levels', methods=['POST'])
+def api_train_deepsupp_levels():
     """
-    Enhanced ablation report with detailed metrics per regime bucket.
-    
-    Returns:
-    - delta_rf, delta_lss: Change in error when removing each module
-      - Positive delta = module helped (removing it worsened error)
-      - Negative delta = module hurt (removing it improved error)
-    - Additional metrics: MAE, RMSE, sample counts, statistical significance
+    Train the DeepSupp v4 structural level model.
+
+    POST body (JSON):
+    {
+        "ticker": "SPY"           (optional, default: "SPY"),
+        "timeframe": "1d"         (optional, default: "1d"),
+        "vol_lookback": 20        (optional, default: 20),
+        "corr_window": 20         (optional, default: 20),
+        "seq_len": 16             (optional, default: 16),
+        "epochs": 50              (optional, default: 50),
+        "batch_size": 32          (optional, default: 32),
+        "model_path": "deepsupp_v4.pt"  (optional, default: "deepsupp_v4.pt")
+    }
     """
     auth_error = require_auth()
     if auth_error:
-        return jsonify({'success': False, **auth_error}), auth_error['code']
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
 
-    data = request.json or {}
-    window = int(data.get("window", 400))
+    try:
+        data = request.get_json() or {}
+        ticker = data.get('ticker', 'SPY')
+        timeframe = data.get('timeframe', '1d')
+        vol_lookback = int(data.get('vol_lookback', 20))
+        corr_window = int(data.get('corr_window', 20))
+        seq_len = int(data.get('seq_len', 16))
+        epochs = int(data.get('epochs', 50))
+        batch_size = int(data.get('batch_size', 32))
+        model_path = data.get('model_path', 'deepsupp_v4.pt')
 
-    conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql_query(f"""
-        SELECT *
-        FROM hodlod_eval
-        WHERE realized_hod IS NOT NULL AND realized_lod IS NOT NULL
-        ORDER BY session_date DESC, pred_ts DESC
-        LIMIT {window}
-    """, conn)
-    conn.close()
+        result = train_deepsupp_level_model(
+            ticker=ticker,
+            timeframe=timeframe,
+            vol_lookback=vol_lookback,
+            corr_window=corr_window,
+            seq_len=seq_len,
+            epochs=epochs,
+            batch_size=batch_size,
+            model_path=model_path,
+        )
 
-    if df.empty:
-        return jsonify({"success": False, "error": "No realized samples in hodlod_eval"}), 400
+        status = 200 if result.get('success') else 400
+        return jsonify(result), status
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"ERROR in /api/train-deepsupp-levels: {error_trace}")
+        return jsonify({'success': False, 'error': str(e)}), 400
 
-    # Define pipelines for ablation:
-    # full = final_hod/final_lod (all modules)
-    # no_rf = lss_hod/lss_lod (without RF)
-    # no_lss = base_hod/base_lod (without LSS adjustment)
-
-    def abs_err(hod_pred, lod_pred, hod_real, lod_real):
-        # Combine HOD + LOD absolute error in price units
-        return abs(hod_real - hod_pred) + abs(lod_pred - lod_real)
-    
-    def squared_err(hod_pred, lod_pred, hod_real, lod_real):
-        # Squared error for RMSE
-        return (hod_real - hod_pred)**2 + (lod_real - lod_pred)**2
-
-    rows = []
-    for _, r in df.iterrows():
-        hod_real = float(r["realized_hod"])
-        lod_real = float(r["realized_lod"])
-
-        e_full = abs_err(float(r["final_hod"]), float(r["final_lod"]), hod_real, lod_real)
-        e_no_rf = abs_err(float(r["lss_hod"]), float(r["lss_lod"]), hod_real, lod_real) if pd.notna(r["lss_hod"]) else None
-        e_no_lss = abs_err(float(r["base_hod"]), float(r["base_lod"]), hod_real, lod_real)
-        
-        se_full = squared_err(float(r["final_hod"]), float(r["final_lod"]), hod_real, lod_real)
-
-        micro = r.get("micro_state", "Unknown") or "Unknown"
-        key = calibration_key(micro, r.get("lss", None), r.get("sigma_daily_pct", None))
-
-        # Δ > 0 means module helped (removing it worsened error)
-        # Δ < 0 means module hurt (removing it improved error)
-        rows.append({
-            "bucket": key,
-            "micro_state": micro,
-            "e_full": e_full,
-            "se_full": se_full,
-            "delta_rf": (e_no_rf - e_full) if e_no_rf is not None else None,
-            "delta_lss": (e_no_lss - e_full),
-        })
-
-    rep = pd.DataFrame(rows)
-    
-    # Enhanced aggregation: mean, std, count, and RMSE
-    agg_dict = {
-        "delta_rf": ["mean", "std", "count"],
-        "delta_lss": ["mean", "std", "count"],
-        "e_full": ["mean"],
-        "se_full": ["mean"]
-    }
-    
-    grouped = rep.groupby("bucket").agg(agg_dict).reset_index()
-    
-    # Flatten column names
-    grouped.columns = ['_'.join(col).strip('_') if col[1] else col[0] for col in grouped.columns.values]
-    
-    # Calculate RMSE from mean squared error
-    if "se_full_mean" in grouped.columns:
-        grouped["rmse_full"] = np.sqrt(grouped["se_full_mean"])
-    
-    # Add sample counts (use any delta column count)
-    if "delta_lss_count" in grouped.columns:
-        grouped["n_samples"] = grouped["delta_lss_count"].astype(int)
-    
-    # Sort by delta_rf_mean (most impactful RF first)
-    if "delta_rf_mean" in grouped.columns:
-        grouped = grouped.sort_values("delta_rf_mean", ascending=True)
-    
-    # Convert to dict for JSON serialization
-    out = grouped.to_dict("records")
-    
-    # Add summary statistics
-    summary = {
-        "total_samples": len(rep),
-        "unique_buckets": len(grouped),
-        "buckets_with_rf": len(grouped[grouped["delta_rf_mean"].notna()]) if "delta_rf_mean" in grouped.columns else 0
-    }
-
-    return jsonify({"success": True, "report": out, "summary": summary})
-
-@app.route("/api/ml/auto-calibrate", methods=["POST"])
-def api_ml_auto_calibrate():
-    """
-    Enhanced auto-calibration with:
-    - Statistical significance thresholds
-    - Adaptive learning rates
-    - Hard physics constraints (prevents breaking fundamental rules)
-    - Bounds checking on parameters
-    """
-    auth_error = require_auth()
-    if auth_error:
-        return jsonify({'success': False, **auth_error}), auth_error['code']
-
-    data = request.json or {}
-    window = int(data.get("window", 400))
-    learning_rate = float(data.get("learning_rate", 0.15))  # How aggressively to adjust
-    min_samples = int(data.get("min_samples", 20))  # Minimum samples for statistical significance
-    significance_threshold = float(data.get("significance_threshold", -0.02))  # Delta must be this negative to trigger
-
-    # Call ablation internally using test request context
-    with app.test_request_context('/api/ml/ablation-report', method='POST', json={"window": window}):
-        resp = api_ml_ablation_report()
-    payload = resp.get_json()
-    if not payload.get("success"):
-        return jsonify(payload), 400
-
-    report = payload["report"]
-
-    # Hard physics constraints: absolute bounds that must never be violated
-    HARD_CONSTRAINTS = {
-        "tail_mult": {"min": 0.70, "max": 1.80},  # Tail usage multiplier bounds
-        "rf_clip": {"min": 0.50, "max": 2.50}  # RF adjustment bounds
-    }
-
-    updates = 0
-    changes_log = []
-    
-    for row in report:
-        key = row.get("bucket")
-        if not key:
-            continue
-            
-        n_samples = row.get("n_samples", 0)
-        if n_samples < min_samples:
-            continue  # Skip buckets with insufficient data
-        
-        delta_lss = row.get("delta_lss_mean")
-        delta_rf = row.get("delta_rf_mean")
-        delta_lss_std = row.get("delta_lss_std", None)
-
-        params = get_calibration_params(key)
-        changed = False
-        changes = {}
-
-        # LSS tail usage calibration (LEARNABLE - tail expansion can be tuned)
-        if isinstance(delta_lss, (int, float)) and delta_lss < significance_threshold:
-            # Negative delta_lss means tail usage hurt (removing it improved error)
-            # Reduce tail usage multiplier
-            current_tail = float(params.get("tail_mult", 1.10))
-            adjustment = learning_rate * abs(delta_lss) / 0.10
-            adjustment = min(adjustment, 0.25)  # Cap at 25%
-            new_tail = current_tail * (1.0 - adjustment)
-            
-            # Apply hard constraint
-            new_tail = np.clip(new_tail, HARD_CONSTRAINTS["tail_mult"]["min"], HARD_CONSTRAINTS["tail_mult"]["max"])
-            
-            if abs(new_tail - current_tail) > 0.01:
-                params["tail_mult"] = new_tail
-                changed = True
-                changes["tail_mult"] = {"old": current_tail, "new": new_tail, "delta": delta_lss}
-
-        # RF calibration (LEARNABLE - but more conservative)
-        if isinstance(delta_rf, (int, float)) and delta_rf < significance_threshold:
-            # Negative delta_rf means RF hurt (this is unusual, usually means overfitting)
-            # We don't have rf_clip in the pipeline yet, but we can log it for future use
-            # For now, we'll just track it
-            if "rf_note" not in params:
-                params["rf_note"] = f"RF may be overfitting (delta={delta_rf:.4f})"
-                changed = True
-
-        if changed and params:
-            upsert_calibration_params(key, params)
-            updates += 1
-            changes_log.append({
-                "bucket": key,
-                "n_samples": n_samples,
-                "changes": changes
-            })
-
-    return jsonify({
-        "success": True, 
-        "updatedBuckets": updates,
-        "changes": changes_log,
-        "constraints": HARD_CONSTRAINTS
-    })
-
-def api_ml_auto_calibrate_ablation_report():
-    """Helper function for auto-calibrate to call ablation report"""
-    return api_ml_ablation_report()
 
 # Ensure DB exists on startup (works with Gunicorn)
 @app.before_request
@@ -12053,12 +8279,6 @@ def login_required(f):
     return decorated_function
 
 # Main routes
-@app.route('/')
-def index():
-    if 'username' not in session:
-        return redirect(url_for('login_page'))
-    return render_template('index.html')
-
 @app.route('/login')
 def login_page():
     if 'username' in session:
@@ -12071,6 +8291,8 @@ def logout_page():
     return redirect(url_for('login_page'))
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001) 
+    app.run(host='0.0.0.0', port=5001)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 
+# FIXED: AgglomerativeClustering spelling corrected
+# FINAL FIX: All Agglomerative references
