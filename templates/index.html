@@ -363,7 +363,7 @@
     <div class="container">
         <div class="header">
             <h1>Level Detection Analysis</h1>
-            <p>Advanced level detection with Neural Networks, DeepSupp, and HDBSCAN</p>
+            <p>Advanced level detection with Neural Networks and HDBSCAN</p>
         </div>
 
         <div class="content">
@@ -445,7 +445,6 @@
                         <select id="backtest_method">
                             <option value="hdbscan">HDBSCAN</option>
                             <option value="neural_network">Neural Network</option>
-                            <option value="deepsupp">DeepSupp</option>
                             <option value="all">All Methods</option>
                         </select>
                     </div>
@@ -530,14 +529,6 @@
             if (levels.neuralNetwork && levels.neuralNetwork.length > 0) {
                 html += '<h3>Neural Network Levels</h3>';
                 levels.neuralNetwork.forEach(level => {
-                    html += createLevelCard(level);
-                });
-            }
-
-            // Display deepsupp levels
-            if (levels.deepSupp && levels.deepSupp.length > 0) {
-                html += '<h3>DeepSupp Levels</h3>';
-                levels.deepSupp.forEach(level => {
                     html += createLevelCard(level);
                 });
             }
