@@ -751,7 +751,15 @@ def sanitize_for_json(obj):
         return int(obj)
     # Handle numpy floats
     elif isinstance(obj, (np.floating, np.float64, np.float32, np.float16)):
-        return float(obj)
+        val = float(obj)
+        if np.isnan(val) or np.isinf(val):
+            return None
+        return val
+    # Handle native Python float with inf/nan
+    elif isinstance(obj, float):
+        if np.isnan(obj) or np.isinf(obj):
+            return None
+        return obj
     # Handle numpy arrays
     elif isinstance(obj, np.ndarray):
         return [sanitize_for_json(item) for item in obj.tolist()]
