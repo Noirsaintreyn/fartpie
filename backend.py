@@ -11642,7 +11642,14 @@ def get_lstm_forecast():
                 'hod_premarket': float(theoretical_hod_pm),
                 'lod_premarket': float(theoretical_lod_pm),
                 'hod_intraday': float(theoretical_hod_id),
-                'lod_intraday': float(theoretical_lod_id)
+                'lod_intraday': float(theoretical_lod_id),
+                'hod_1std': float(current_price + sigma_price),
+                'hod_2std': float(current_price + 2 * sigma_price),
+                'hod_3std': float(current_price + 3 * sigma_price),
+                'lod_1std': float(current_price - sigma_price),
+                'lod_2std': float(current_price - 2 * sigma_price),
+                'lod_3std': float(current_price - 3 * sigma_price),
+                'sigma_price': float(sigma_price)
             },
             'volume_profile': sanitize_for_json(volume_profile) if volume_profile else None,
             'level_reactions': sanitize_for_json(level_reactions[:10]) if level_reactions else [],  # Top 10 closest
@@ -11659,6 +11666,7 @@ def get_lstm_forecast():
                 'multiscale': len(multiscale_levels),
                 'neural_network': len(neural_network_levels)
             },
+            'all_levels': sanitize_for_json(sorted(all_levels, key=lambda x: abs(x.get('price', 0) - current_price))[:50]),
             'microstructure_state': sanitize_for_json(microstructure_state) if microstructure_state else None
         }
         
