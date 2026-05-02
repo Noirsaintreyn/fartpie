@@ -11148,10 +11148,8 @@ def get_lstm_forecast():
     """
     "Where is price going today?" - LSTM-based answer using level features
     """
-    auth_error = require_auth()
-    if auth_error:
-        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
-    
+    # No auth required - public market data endpoint for cross-origin frontend (degencap.uk)
+
     ticker = request.args.get('ticker', 'SPY')
     timeframe = request.args.get('timeframe', '5m').strip().lower().replace('240m','4h').replace('4hour','4h').replace('4hours','4h').replace('60m','1h')
     lookback_window = int(request.args.get('lookback', 20))
