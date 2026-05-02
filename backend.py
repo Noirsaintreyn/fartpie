@@ -8343,10 +8343,6 @@ def predict_level_reaction(level, current_price, start_of_move_price, sigma_pric
         'confidence': float(confidence),
         'level_price': float(level_price),
         'distance_pct': float(distance_to_level * 100),
-        'volume_context': {
-            'in_value_area': is_in_value_area,
-            'volume_at_level': volume_at_level
-        },
         'factors': factors
     }
 
