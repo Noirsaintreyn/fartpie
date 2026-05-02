@@ -8148,6 +8148,15 @@ def predict_level_reaction(level, current_price, start_of_move_price, sigma_pric
     level_strength = level.get('strength', level.get('levelStrength', 0.5))
     confluence_count = level.get('confluence_count', 1)
     
+    # ===== VOLUME PROFILE CONTEXT =====
+    vol_interaction = analyze_level_volume_profile_interaction(level, volume_profile, current_price)
+    if vol_interaction:
+        is_in_value_area = vol_interaction['in_value_area']
+        volume_at_level = vol_interaction['volume_at_level']
+    else:
+        is_in_value_area = False
+        volume_at_level = 0.0
+    
     # ===== HURST EXPONENT ANALYSIS =====
     hurst = hurst_data.get('hurst', 0.5) if hurst_data else 0.5
     hurst_regime = hurst_data.get('regime', 'Random Walk') if hurst_data else 'Random Walk'
