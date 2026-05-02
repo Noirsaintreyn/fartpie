@@ -6050,6 +6050,28 @@ def predict_level_reaction(level, current_price, start_of_move_price, sigma_pric
     
     confidence = min(0.95, base_confidence * factor_agreement)
     
+    # ===== VOLUME PROFILE ANALYSIS =====
+    # Calculate volume context for the level
+    is_in_value_area = False
+    volume_at_level = 0.0
+    
+    if volume_profile:
+        va_high = volume_profile.get('value_area_high')
+        va_low = volume_profile.get('value_area_low')
+        poc = volume_profile.get('poc')
+        volume_distribution = volume_profile.get('volume_distribution', {})
+        
+        # Check if level is within value area
+        if va_high is not None and va_low is not None:
+            is_in_value_area = va_low <= level_price <= va_high
+        
+        # Get volume at the level price (find closest price bin)
+        if volume_distribution:
+            # Find the price bin closest to the level price
+            closest_price = min(volume_distribution.keys(), 
+                              key=lambda x: abs(x - level_price)) if volume_distribution else level_price
+            volume_at_level = volume_distribution.get(closest_price, 0.0)
+    
     # Build factors breakdown
     factors = {
         'hurst': {
