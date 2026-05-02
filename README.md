@@ -1,6 +1,6 @@
 FartPie – Level Engines Overview
 
-This repo powers the multi-engine support / resistance detection used by FartPie.
+This repo powers the multi-engine support / resistance detection used by FartPie (degencap.uk).
 
 The key “modern” engine is:
 
