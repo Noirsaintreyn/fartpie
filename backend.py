@@ -316,7 +316,7 @@ else:
 CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,https://degencap.uk,https://www.degencap.uk').split(',')
 CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
 
-@app.route("/")
+@app.route("/api/health")
 def health():
     return {"status": "backend live"}
   
