@@ -12107,6 +12107,52 @@ def logout_page():
     session.clear()
     return redirect(url_for('login_page'))
 
+@app.route('/api/backtest-data', methods=['GET'])
+def backtest_data():
+    """Fetch OHLCV data from yfinance for the backtest analyzer."""
+    try:
+        ticker = request.args.get('ticker', 'SPY')
+        period = request.args.get('period', '1y')
+        interval = request.args.get('interval', '1d')
+
+        df = yf.download(ticker, period=period, interval=interval, progress=False)
+        if df.empty:
+            return jsonify({'error': f'No data found for {ticker}'}), 404
+
+        # Handle MultiIndex columns from yfinance
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
+
+        data = []
+        for i, (idx, row) in enumerate(df.iterrows()):
+            o = float(row['Open'])
+            h = float(row['High'])
+            l = float(row['Low'])
+            c = float(row['Close'])
+            v = float(row['Volume'])
+            if any(np.isnan(x) or np.isinf(x) for x in [o, h, l, c, v]):
+                continue
+            data.append({
+                'i': i,
+                'date': idx.strftime('%Y-%m-%d'),
+                'open': o,
+                'high': h,
+                'low': l,
+                'close': c,
+                'volume': v
+            })
+
+        return jsonify({
+            'data': data,
+            'ticker': ticker,
+            'period': period,
+            'interval': interval,
+            'count': len(data)
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5001) 
 
