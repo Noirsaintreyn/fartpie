@@ -11611,7 +11611,7 @@ def get_lstm_forecast():
         
         # 6. Find which level the model is targeting
         target_price = prediction['target_price']
-        all_levels = hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels + neural_network_levels
+        all_levels = hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels + multiscale_levels + neural_network_levels
         
         # Find closest level to predicted target
         closest_level = None
