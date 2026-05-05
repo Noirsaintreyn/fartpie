@@ -12153,6 +12153,121 @@ def backtest_data():
         return jsonify({'error': str(e)}), 500
 
 
+@app.route('/api/backtest-levels', methods=['GET'])
+def backtest_levels():
+    """Run a specific level detection method on historical data with train/test split.
+    
+    Returns detected levels (from training portion) and full OHLCV data
+    so the frontend can simulate trades on the test portion without data leakage.
+    """
+    try:
+        ticker = request.args.get('ticker', 'SPY')
+        period = request.args.get('period', '1y')
+        interval = request.args.get('interval', '1d')
+        method = request.args.get('method', 'hdbscan')
+        train_pct = float(request.args.get('train_pct', '0.7'))
+
+        df = yf.download(ticker, period=period, interval=interval, progress=False)
+        if df.empty:
+            return jsonify({'error': f'No data found for {ticker}'}), 404
+
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
+
+        # Build OHLCV list
+        ohlcv = []
+        for i, (idx, row) in enumerate(df.iterrows()):
+            o, h, l, c, v = float(row['Open']), float(row['High']), float(row['Low']), float(row['Close']), float(row['Volume'])
+            if any(np.isnan(x) or np.isinf(x) for x in [o, h, l, c, v]):
+                continue
+            ohlcv.append({'i': i, 'date': idx.strftime('%Y-%m-%d'), 'open': o, 'high': h, 'low': l, 'close': c, 'volume': v})
+
+        if len(ohlcv) < 30:
+            return jsonify({'error': f'Insufficient data: only {len(ohlcv)} bars'}), 400
+
+        # Train/test split
+        split_idx = int(len(ohlcv) * train_pct)
+        train_bars = ohlcv[:split_idx]
+
+        train_highs = np.array([b['high'] for b in train_bars])
+        train_lows = np.array([b['low'] for b in train_bars])
+        train_closes = np.array([b['close'] for b in train_bars])
+
+        # Run the requested detection method on training data only
+        levels = []
+        method_name = method.lower()
+
+        if method_name == 'hdbscan':
+            levels = calculate_hdbscan_levels(train_highs, train_lows, train_closes, timeframe=interval) or []
+        elif method_name == 'optics':
+            levels = enhanced_optics_levels(train_highs, train_lows, train_closes, timeframe=interval) or []
+        elif method_name == 'kde':
+            levels = kde_based_levels(train_highs, train_lows, train_closes, n_levels=10) or []
+        elif method_name == 'multiscale':
+            levels = multiscale_hdbscan_levels(train_highs, train_lows, train_closes, timeframe=interval) or []
+        elif method_name == 'neural_network':
+            if TORCH_AVAILABLE:
+                train_df = df.iloc[:split_idx]
+                levels = detect_levels_with_neural_network(train_df, lookback=100, threshold=0.7) or []
+            else:
+                levels = []
+        elif method_name == 'wyckoff':
+            train_df = df.iloc[:split_idx]
+            levels = detect_wyckoff_zones(train_df, lookback=50) or []
+        elif method_name == 'pivot':
+            train_df = df.iloc[:split_idx]
+            levels = calculate_pivot_points(train_df, interval) or []
+        elif method_name == 'gap':
+            train_df = df.iloc[:split_idx]
+            levels = find_gap_levels(train_df) or []
+        elif method_name == 'interaction':
+            current_price = float(train_closes[-1])
+            sigma_price = float(np.std(train_closes))
+            levels = calculate_local_interaction_levels(train_closes, current_price, sigma_price, lookback=200, bins=30, max_levels=5) or []
+        elif method_name == 'ml_confluence':
+            # Run multiple methods then merge
+            h_levels = calculate_hdbscan_levels(train_highs, train_lows, train_closes, timeframe=interval) or []
+            o_levels = enhanced_optics_levels(train_highs, train_lows, train_closes, timeframe=interval) or []
+            k_levels = kde_based_levels(train_highs, train_lows, train_closes, n_levels=10) or []
+            m_levels = multiscale_hdbscan_levels(train_highs, train_lows, train_closes, timeframe=interval) or []
+            all_algo = h_levels + o_levels + k_levels + m_levels
+            levels = get_ml_confluence_levels(all_algo) or []
+        else:
+            return jsonify({'error': f'Unknown method: {method}. Available: hdbscan, optics, kde, multiscale, neural_network, wyckoff, pivot, gap, interaction, ml_confluence'}), 400
+
+        # Serialize levels
+        serialized_levels = []
+        for lv in levels:
+            price = lv.get('price')
+            if price is None:
+                continue
+            price = float(price)
+            if np.isnan(price) or np.isinf(price):
+                continue
+            serialized_levels.append({
+                'price': price,
+                'type': lv.get('type', lv.get('category', method)),
+                'strength': float(lv.get('strength', 0)) if lv.get('strength') is not None else None,
+            })
+
+        return jsonify({
+            'data': ohlcv,
+            'levels': serialized_levels,
+            'split_idx': split_idx,
+            'method': method,
+            'ticker': ticker,
+            'period': period,
+            'interval': interval,
+            'train_bars': split_idx,
+            'test_bars': len(ohlcv) - split_idx,
+            'count': len(ohlcv)
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5001) 
 
