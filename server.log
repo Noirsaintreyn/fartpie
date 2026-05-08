@@ -1,0 +1,23 @@
+/Users/rey/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+✓ PyTorch imported for CNN confidence scoring
+✅ Google Drive data loader available
+✓ Admin account (rey) already exists, password updated
+✓ User account 1 (user1) already exists, password updated
+✓ User account 2 (user2) already exists, password updated
+✓ Database initialized at: users.db
+ * Serving Flask app 'backend'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.0.0.102:5001
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [01/May/2026 17:54:32] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [01/May/2026 17:56:32] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [01/May/2026 17:57:19] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [01/May/2026 17:59:24] "GET /api/volatility-surface?ticker=SPY HTTP/1.1" 200 -
+127.0.0.1 - - [01/May/2026 18:01:16] "GET /api/data?ticker=SPY&timeframe=1d HTTP/1.1" 200 -
+127.0.0.1 - - [01/May/2026 18:06:31] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [01/May/2026 18:07:52] "GET /api/volatility-surface?ticker=SPY HTTP/1.1" 200 -
+127.0.0.1 - - [01/May/2026 18:08:01] "GET /api/data?ticker=SPY&timeframe=1d HTTP/1.1" 200 -

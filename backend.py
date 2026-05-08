@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, session, send_from_directory, render_template
 from flask.json.provider import DefaultJSONProvider
 from flask_cors import CORS
+from functools import wraps
 import os
 import yfinance as yf
 import pandas as pd
@@ -334,16 +335,27 @@ else:
 CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,https://degencap.uk,https://www.degencap.uk').split(',')
 CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
 
+# Authentication decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session:
+            return redirect(url_for('login_page'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route("/health")
 def health():
     return {"status": "backend live"}
 
 @app.route("/")
+@login_required
 def index():
     """Serve the main analysis interface"""
     return render_template('index.html')
 
 @app.route("/backtest")
+@login_required
 def backtest_ui():
     """Serve the backtest interface"""
     return render_template('backtest.html')
@@ -8291,14 +8303,6 @@ except Exception as e:
     print("⚠ Will retry on first request via ensure_db()")
     # Don't crash - let the app start and retry on first request
 
-# Authentication decorator
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'username' not in session:
-            return redirect(url_for('login_page'))
-        return f(*args, **kwargs)
-    return decorated_function
 
 # Main routes
 @app.route('/login')
