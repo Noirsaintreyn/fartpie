@@ -5620,6 +5620,10 @@ def get_nhp_signals():
     Standalone endpoint for Neural Hawkes Process intensity + signals.
     Query params: ticker, timeframe (default SPY / 1d)
     No auth required - public market data endpoint for cross-origin frontend (degencap.uk)
+
+    Uses Google Drive historical data + yfinance real-time when available
+    (for NQ, ES, VIX) to get a larger dataset for better accuracy testing.
+    Falls back to yfinance-only for other tickers.
     """
 
     if not (TORCH_AVAILABLE and NHP_AVAILABLE):
@@ -5629,7 +5633,29 @@ def get_nhp_signals():
     timeframe = request.args.get('timeframe', '1d').strip().lower()
 
     try:
-        hist = fetch_historical_data_with_resampling(ticker, timeframe)
+        hist = None
+        data_source = 'yfinance'
+
+        # Try Google Drive + yfinance combined data first
+        try:
+            from data_loader import load_historical_data, SYMBOL_MAPPING
+            symbol_upper = ticker.upper().replace('=F', '')
+            if symbol_upper in SYMBOL_MAPPING or ticker.upper() in SYMBOL_MAPPING:
+                lookup = symbol_upper if symbol_upper in SYMBOL_MAPPING else ticker.upper()
+                hist = load_historical_data(lookup, timeframe=timeframe,
+                                            combine_with_realtime=True)
+                if hist is not None and len(hist) > 0:
+                    data_source = 'google_drive+yfinance'
+                    print(f"NHP: Using combined Google Drive + yfinance data for {ticker}: {len(hist)} bars")
+                else:
+                    hist = None
+        except Exception as e:
+            print(f"NHP: Google Drive data not available ({e}), using yfinance only")
+
+        # Fallback to yfinance
+        if hist is None:
+            hist = fetch_historical_data_with_resampling(ticker, timeframe)
+
         if hist is None or len(hist) < 10:
             return jsonify({'success': False, 'error': f'Not enough data for {ticker} @ {timeframe}'}), 400
 
@@ -5642,6 +5668,7 @@ def get_nhp_signals():
             'ticker': ticker,
             'timeframe': timeframe,
             'bars': len(hist),
+            'data_source': data_source,
             **result,
         })
 
@@ -12610,6 +12637,12 @@ def backtest_levels():
 
 
 if __name__ == "__main__":
+    # Initialize Google Drive historical data on startup
+    try:
+        from data_loader import initialize_data
+        initialize_data()
+    except Exception as e:
+        print(f"Data initialization skipped: {e}")
     app.run(host='0.0.0.0', port=5001) 
 
 
