@@ -447,7 +447,7 @@
         }
         .nhp-intensity-chart {
             width: 100%;
-            height: 120px;
+            height: 160px;
             position: relative;
             margin: 16px 0;
             border: 1px solid rgba(201, 162, 39, 0.12);
@@ -495,7 +495,7 @@
         }
         .nhp-summary-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 1px;
             background: rgba(201, 162, 39, 0.08);
             border-radius: 2px;
@@ -764,11 +764,14 @@
         }
 
         function renderNhpSection(nhp) {
-            if (!nhp || !nhp.signals) return '';
+            if (!nhp) return '';
 
             const summary = nhp.summary || {};
             const signals = nhp.signals || [];
-            const lastSignals = signals.slice(-8);
+            const trained = nhp.model_trained;
+            const lastSignals = signals.slice(-10);
+            const statusColor = trained ? '#6fcf97' : '#c9a227';
+            const statusText = trained ? 'Trained' : 'Price-Driven';
 
             const signalRows = lastSignals.map(s => {
                 const cls = s.signal === 'ENTER' ? 'enter' : s.signal === 'EXIT' ? 'exit' : 'hold';
@@ -781,10 +784,16 @@
             }).join('');
 
             return `
-                <div class="nhp-section">
-                    <div class="section-header">Neural Hawkes Process &mdash; Intensity Signals</div>
+                <div class="nhp-section" style="border:1px solid rgba(201,162,39,0.2);margin-top:32px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(201,162,39,0.12);">
+                        <div>
+                            <span style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:#fff;">Neural Hawkes Process</span>
+                            <span style="font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:${statusColor};border:1px solid ${statusColor}33;padding:3px 8px;margin-left:12px;">${statusText}</span>
+                        </div>
+                        <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(201,162,39,0.5);">${nhp.bars || '?'} bars</span>
+                    </div>
 
-                    <div class="nhp-intensity-chart">
+                    <div class="nhp-intensity-chart" style="height:160px;">
                         <canvas id="nhpCanvas"></canvas>
                     </div>
 
@@ -794,12 +803,24 @@
                             <div class="metric-value">${summary.mean_intensity?.toFixed(3) || '?'}</div>
                         </div>
                         <div class="metric">
+                            <div class="metric-label">Max \u03bb</div>
+                            <div class="metric-value">${summary.max_intensity?.toFixed(3) || '?'}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Std \u03bb</div>
+                            <div class="metric-value">${summary.std_intensity?.toFixed(3) || '?'}</div>
+                        </div>
+                        <div class="metric">
                             <div class="metric-label">Enter</div>
                             <div class="metric-value" style="color:#6fcf97">${summary.n_enter_signals ?? 0}</div>
                         </div>
                         <div class="metric">
                             <div class="metric-label">Exit</div>
                             <div class="metric-value" style="color:#eb5757">${summary.n_exit_signals ?? 0}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Total</div>
+                            <div class="metric-value">${summary.n_total_signals ?? 0}</div>
                         </div>
                     </div>
 
@@ -808,7 +829,7 @@
                             <div class="level-list-header">Recent Signals (last ${lastSignals.length})</div>
                             ${signalRows}
                         </div>
-                    ` : '<p class="nhp-stat" style="margin-top:12px">No signals in current window</p>'}
+                    ` : ''}
                 </div>`;
         }
 
@@ -831,23 +852,15 @@
             const minV = Math.min(...vals);
             const range = maxV - minV || 1;
 
-            // Draw intensity line
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.lineWidth = 1;
+            // Fill area under curve with gold gradient
+            const grad = ctx.createLinearGradient(0, 0, 0, H);
+            grad.addColorStop(0, 'rgba(201, 162, 39, 0.15)');
+            grad.addColorStop(1, 'rgba(201, 162, 39, 0.01)');
+            ctx.fillStyle = grad;
             ctx.beginPath();
             for (let i = 0; i < n; i++) {
                 const x = (i / (n - 1)) * W;
-                const y = H - ((vals[i] - minV) / range) * (H - 8) - 4;
-                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-
-            // Fill area under curve
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
-            ctx.beginPath();
-            for (let i = 0; i < n; i++) {
-                const x = (i / (n - 1)) * W;
-                const y = H - ((vals[i] - minV) / range) * (H - 8) - 4;
+                const y = H - ((vals[i] - minV) / range) * (H - 16) - 8;
                 i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
             }
             ctx.lineTo(W, H);
@@ -855,21 +868,36 @@
             ctx.closePath();
             ctx.fill();
 
-            // Draw signal markers
-            const times = nhp.intensity_times || [];
-            const tMax = times.length > 0 ? times[times.length - 1] : 1;
+            // Draw intensity line
+            ctx.strokeStyle = 'rgba(201, 162, 39, 0.7)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            for (let i = 0; i < n; i++) {
+                const x = (i / (n - 1)) * W;
+                const y = H - ((vals[i] - minV) / range) * (H - 16) - 8;
+                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Draw signal markers using bar_index for position
             (nhp.signals || []).forEach(s => {
-                const xPct = tMax > 0 ? s.time / tMax : 0;
-                const x = xPct * W;
-                const color = s.signal === 'ENTER' ? '#6fcf97' : s.signal === 'EXIT' ? '#eb5757' : 'rgba(255,255,255,0.2)';
+                const barIdx = s.bar_index || 0;
+                const x = n > 1 ? (barIdx / (n - 1)) * W : W / 2;
+                const color = s.signal === 'ENTER' ? '#6fcf97' : s.signal === 'EXIT' ? '#eb5757' : 'rgba(201,162,39,0.3)';
                 ctx.strokeStyle = color;
                 ctx.lineWidth = 1;
-                ctx.setLineDash([2, 2]);
+                ctx.setLineDash([3, 3]);
                 ctx.beginPath();
                 ctx.moveTo(x, 0);
                 ctx.lineTo(x, H);
                 ctx.stroke();
                 ctx.setLineDash([]);
+
+                // Draw signal label at top
+                ctx.fillStyle = color;
+                ctx.font = '9px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(s.signal === 'HOLD' ? '' : s.signal, x, 10);
             });
         }
 
