@@ -11616,8 +11616,10 @@ def get_lstm_forecast():
                 print(f"⚠ Error fetching data for {ticker} {timeframe}: {error_msg}")
                 hist = None
         
-        if len(hist) < lookback_window + 10:
-            return jsonify({'success': False, 'error': f'Insufficient data. Need at least {lookback_window + 10} bars.'}), 400
+        if hist is None or len(hist) < lookback_window + 10:
+            needed = lookback_window + 10
+            got = 0 if hist is None else len(hist)
+            return jsonify({'success': False, 'error': f'Insufficient data for {ticker} @ {timeframe}. Need at least {needed} bars, got {got}.'}), 400
         
         closes = hist['Close'].values
         highs = hist['High'].values if 'High' in hist.columns else closes
