@@ -326,6 +326,17 @@ else:
 CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,https://degencap.uk,https://www.degencap.uk').split(',')
 CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
 
+# Initialize Google Drive historical data on module load (works under gunicorn)
+import threading
+def _init_google_drive_data():
+    try:
+        from data_loader import initialize_data
+        initialize_data()
+    except Exception as e:
+        print(f"Google Drive data initialization skipped: {e}")
+
+threading.Thread(target=_init_google_drive_data, daemon=True).start()
+
 @app.route("/api/health")
 def health():
     return {"status": "backend live"}
@@ -5652,9 +5663,13 @@ def get_nhp_signals():
         except Exception as e:
             print(f"NHP: Google Drive data not available ({e}), using yfinance only")
 
-        # Fallback to yfinance
+        # Fallback to yfinance — request maximum available data for accuracy testing
         if hist is None:
-            hist = fetch_historical_data_with_resampling(ticker, timeframe)
+            max_period = {
+                '1m': '7d', '5m': '60d', '15m': '60d',
+                '1h': '2y', '4h': '2y', '1d': 'max', '1wk': 'max',
+            }.get(timeframe, '2y')
+            hist = fetch_historical_data_with_resampling(ticker, timeframe, period=max_period)
 
         if hist is None or len(hist) < 10:
             return jsonify({'success': False, 'error': f'Not enough data for {ticker} @ {timeframe}'}), 400
@@ -12637,12 +12652,6 @@ def backtest_levels():
 
 
 if __name__ == "__main__":
-    # Initialize Google Drive historical data on startup
-    try:
-        from data_loader import initialize_data
-        initialize_data()
-    except Exception as e:
-        print(f"Data initialization skipped: {e}")
-    app.run(host='0.0.0.0', port=5001) 
+    app.run(host='0.0.0.0', port=5001)
 
 
