@@ -42,6 +42,16 @@ except ImportError:
     nn = None
 
 try:
+    from nhp_model import NeuralHawkesProcess, NHPConfig
+    from nhp_data import ohlc_to_event_sequences, ohlc_inter_arrival_times
+    from nhp_policy import RegimeAwarePolicy, PolicyConfig, Signal
+    NHP_AVAILABLE = True
+except ImportError:
+    NHP_AVAILABLE = False
+    NeuralHawkesProcess = None
+    NHPConfig = None
+
+try:
     from ripser import ripser
     from persim import plot_diagrams
     RIPSER_AVAILABLE = True
@@ -4117,6 +4127,191 @@ def detect_levels_with_neural_network(hist, lookback=100, threshold=0.7):
         print(f"Neural Network level detection failed: {e}")
         return []
 
+
+# ── Neural Hawkes Process (NHP) integration ──────────────────────────────────
+
+def run_nhp_on_ohlc(hist, checkpoint_path='nhp_best.pt', dt_grid=0.25):
+    """
+    Run Neural Hawkes Process intensity inference on OHLC data.
+
+    Converts OHLC bars → event inter-arrival times, runs the NHP forward
+    pass, then applies the regime-aware policy to produce entry/exit signals.
+
+    Args:
+        hist: DataFrame with OHLC columns and DatetimeIndex
+        checkpoint_path: path to a trained NHP checkpoint (optional)
+        dt_grid: time-grid spacing for intensity interpolation (seconds)
+
+    Returns:
+        dict with keys:
+          intensity_times  – list of float (normalized time axis)
+          intensity_values – list of float (lambda(t) values)
+          signals          – list of dicts {step, time, signal, lambda_t, baseline, confidence}
+          summary          – dict of aggregate statistics
+        or None on failure
+    """
+    if not (TORCH_AVAILABLE and NHP_AVAILABLE):
+        return None
+
+    try:
+        dts = ohlc_inter_arrival_times(hist)
+        if len(dts) < 5:
+            return None
+
+        # Normalize inter-arrival times to prevent numerical issues
+        # Scale so median dt = 1.0
+        dts_arr = np.array(dts, dtype=np.float64)
+        median_dt = np.median(dts_arr)
+        if median_dt > 0:
+            scale = median_dt
+        else:
+            scale = np.mean(dts_arr) if np.mean(dts_arr) > 0 else 1.0
+        dts_scaled = (dts_arr / scale).tolist()
+
+        device = torch.device('cpu')
+
+        # Load or create model
+        cfg = NHPConfig(embed_dim=16, hidden_dim=32, num_heads=2)
+        model = NeuralHawkesProcess(cfg)
+
+        if os.path.exists(checkpoint_path):
+            try:
+                ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
+                model.load_state_dict(ckpt['model_state'])
+                print(f"NHP: Loaded checkpoint from {checkpoint_path}")
+            except Exception as e:
+                print(f"NHP: Could not load checkpoint ({e}), using untrained model")
+        else:
+            print("NHP: No checkpoint found, using untrained model (random init)")
+
+        model.eval()
+        model = model.to(device)
+
+        # Forward pass — single sequence
+        dts_t = torch.tensor(dts_scaled, dtype=torch.float32).unsqueeze(0).to(device)
+        types_t = torch.ones(1, len(dts_scaled), dtype=torch.long).to(device)
+
+        with torch.no_grad():
+            hiddens, cells = model.forward_sequence(types_t, dts_t)
+
+        # Build intensity on a grid over the sequence time span
+        cum_times = np.concatenate([[0.0], np.cumsum(dts_scaled)])
+        T = cum_times[-1]
+        grid_step = max(dt_grid, T / 2000.0)  # cap at 2000 grid points
+        grid_times = np.arange(0, T + grid_step, grid_step)
+
+        lam_grid = []
+        with torch.no_grad():
+            for t in grid_times:
+                past_idx = int(np.searchsorted(cum_times, t, side='right')) - 1
+                past_idx = max(0, min(past_idx, len(dts_scaled) - 1))
+                dt_from_last = max(t - cum_times[past_idx], 0.0)
+
+                h_past = hiddens[:, :past_idx + 1]
+                c_past = cells[:, :past_idx + 1]
+                dt_padded = torch.zeros(1, past_idx + 1, device=device)
+                dt_padded[0, past_idx] = dt_from_last
+                len_t = torch.tensor([past_idx + 1], dtype=torch.long, device=device)
+                lam = model.intensity_at(h_past, c_past, dt_padded, len_t)
+                lam_grid.append(float(lam[0, past_idx].item()))
+
+        lam_arr = np.array(lam_grid)
+
+        # Apply regime-aware policy
+        policy = RegimeAwarePolicy(PolicyConfig(
+            entry_mult=1.4, exit_mult=2.6,
+            hysteresis=0.05, cooldown_steps=4,
+        ))
+        signals = policy.apply(lam_arr, grid_times)
+
+        signal_list = []
+        for s in signals:
+            label_map = {Signal.ENTER: 'ENTER', Signal.EXIT: 'EXIT', Signal.HOLD: 'HOLD'}
+            signal_list.append({
+                'step': s.step,
+                'time': float(s.time),
+                'signal': label_map.get(s.signal, 'HOLD'),
+                'lambda_t': float(s.lambda_t),
+                'baseline': float(s.baseline),
+                'confidence': float(s.confidence),
+            })
+
+        # Map grid times back to bar indices for the frontend
+        bar_times = cum_times[1:]  # one per bar
+        signal_bar_indices = []
+        for s in signal_list:
+            bar_idx = int(np.searchsorted(bar_times, s['time'], side='right'))
+            bar_idx = min(bar_idx, len(bar_times) - 1)
+            s['bar_index'] = bar_idx
+
+        # Summary statistics
+        mean_lam = float(np.mean(lam_arr))
+        std_lam = float(np.std(lam_arr))
+        max_lam = float(np.max(lam_arr))
+        n_enter = sum(1 for s in signal_list if s['signal'] == 'ENTER')
+        n_exit = sum(1 for s in signal_list if s['signal'] == 'EXIT')
+
+        return {
+            'intensity_times': grid_times.tolist(),
+            'intensity_values': lam_arr.tolist(),
+            'signals': signal_list,
+            'summary': {
+                'mean_intensity': mean_lam,
+                'std_intensity': std_lam,
+                'max_intensity': max_lam,
+                'n_enter_signals': n_enter,
+                'n_exit_signals': n_exit,
+                'n_total_signals': len(signal_list),
+                'time_scale': float(scale),
+            },
+        }
+
+    except Exception as e:
+        import traceback
+        print(f"NHP inference failed: {traceback.format_exc()}")
+        return None
+
+
+def run_nhp_training_on_ohlc(hist, epochs=30, checkpoint_path='nhp_best.pt'):
+    """
+    Train the NHP model on OHLC data and save a checkpoint.
+    """
+    if not (TORCH_AVAILABLE and NHP_AVAILABLE):
+        return {'success': False, 'error': 'PyTorch or NHP modules not available'}
+
+    try:
+        from nhp_data import ohlc_to_event_sequences, make_loaders
+        from nhp_train import train as nhp_train_fn
+
+        sequences, _ = ohlc_to_event_sequences(hist)
+        if len(sequences) < 3:
+            return {'success': False, 'error': 'Not enough data to train (need at least 3 sequences)'}
+
+        loaders = make_loaders(sequences, batch_size=min(32, len(sequences)))
+        train_l, val_l, _ = loaders
+
+        device = torch.device('cpu')
+        cfg = NHPConfig(embed_dim=16, hidden_dim=32, num_heads=2)
+        model = NeuralHawkesProcess(cfg)
+
+        history = nhp_train_fn(
+            model, train_l, val_l,
+            epochs=epochs, lr=1e-3, weight_decay=1e-4,
+            checkpoint_path=checkpoint_path, device=device, patience=8,
+        )
+
+        return {
+            'success': True,
+            'epochs_trained': len(history['train_ll']),
+            'best_val_ll': float(max(history['val_ll'])),
+            'checkpoint': checkpoint_path,
+        }
+
+    except Exception as e:
+        import traceback
+        return {'success': False, 'error': str(e), 'trace': traceback.format_exc()}
+
+
 if TORCH_AVAILABLE and nn is not None:
     class LevelValidator(nn.Module):
         """
@@ -5311,6 +5506,17 @@ def get_data():
             forecast_periods=30, iv_surface_data=iv_surface_data, timeframe=timeframe, sigma_price=sigma_price
         )
         
+        # NHP (Neural Hawkes Process) intensity signals
+        nhp_result = None
+        try:
+            if NHP_AVAILABLE and TORCH_AVAILABLE:
+                nhp_result = run_nhp_on_ohlc(hist_data_subset)
+                if nhp_result:
+                    print(f"NHP: {nhp_result['summary']['n_total_signals']} signals, "
+                          f"mean intensity={nhp_result['summary']['mean_intensity']:.4f}")
+        except Exception as e:
+            print(f"NHP analysis failed: {e}")
+
         # Build response data
         response_data = {
             'success': True,
@@ -5324,7 +5530,8 @@ def get_data():
             'hurstData': hurst_data,
             'forecasts': forecasts,
             'macroIndicators': macro_indicators,
-            'mostProbablePath': most_probable_path
+            'mostProbablePath': most_probable_path,
+            'nhpSignals': nhp_result
         }
         
         # Sanitize entire response for JSON serialization
@@ -5343,6 +5550,79 @@ def get_data():
         print(f"ERROR in /api/data: {error_trace}")
         error_msg = str(e) if str(e) else "Unknown error occurred"
         return jsonify({'success': False, 'error': error_msg}), 400
+
+# ── NHP ENDPOINTS ─────────────────────────────────────────────────────────────
+
+@app.route('/api/nhp-signals', methods=['GET'])
+def get_nhp_signals():
+    """
+    Standalone endpoint for Neural Hawkes Process intensity + signals.
+    Query params: ticker, timeframe (default SPY / 1d)
+    """
+    auth_error = require_auth()
+    if auth_error:
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
+
+    if not (TORCH_AVAILABLE and NHP_AVAILABLE):
+        return jsonify({'success': False, 'error': 'NHP modules not available (requires PyTorch)'}), 400
+
+    ticker = request.args.get('ticker', 'SPY')
+    timeframe = request.args.get('timeframe', '1d').strip().lower()
+
+    try:
+        hist = fetch_historical_data_with_resampling(ticker, timeframe)
+        if hist is None or len(hist) < 10:
+            return jsonify({'success': False, 'error': f'Not enough data for {ticker} @ {timeframe}'}), 400
+
+        result = run_nhp_on_ohlc(hist)
+        if result is None:
+            return jsonify({'success': False, 'error': 'NHP inference failed'}), 500
+
+        return jsonify({
+            'success': True,
+            'ticker': ticker,
+            'timeframe': timeframe,
+            'bars': len(hist),
+            **result,
+        })
+
+    except Exception as e:
+        import traceback
+        print(f"ERROR in /api/nhp-signals: {traceback.format_exc()}")
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+
+@app.route('/api/nhp-train', methods=['POST'])
+def train_nhp():
+    """
+    Train the NHP model on OHLC data for a given ticker / timeframe.
+    Body JSON: {ticker, timeframe, epochs}
+    """
+    auth_error = require_auth()
+    if auth_error:
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
+
+    if not (TORCH_AVAILABLE and NHP_AVAILABLE):
+        return jsonify({'success': False, 'error': 'NHP modules not available (requires PyTorch)'}), 400
+
+    data = request.get_json(silent=True) or {}
+    ticker = data.get('ticker', 'SPY')
+    timeframe = data.get('timeframe', '1d')
+    epochs = int(data.get('epochs', 30))
+
+    try:
+        hist = fetch_historical_data_with_resampling(ticker, timeframe)
+        if hist is None or len(hist) < 20:
+            return jsonify({'success': False, 'error': f'Not enough data for {ticker} @ {timeframe}'}), 400
+
+        result = run_nhp_training_on_ohlc(hist, epochs=epochs)
+        return jsonify({**result, 'ticker': ticker, 'timeframe': timeframe})
+
+    except Exception as e:
+        import traceback
+        print(f"ERROR in /api/nhp-train: {traceback.format_exc()}")
+        return jsonify({'success': False, 'error': str(e)}), 400
+
 
 # NEW ENDPOINT: VOLATILITY SURFACE
 @app.route('/api/volatility-surface', methods=['GET'])

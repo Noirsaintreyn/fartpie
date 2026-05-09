@@ -438,6 +438,71 @@
         .level-row-distance.pos { color: #6fcf97; }
         .level-row-distance.neg { color: #eb5757; }
 
+        /* NHP Signals */
+        .nhp-section {
+            margin: 24px 0;
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .nhp-intensity-chart {
+            width: 100%;
+            height: 120px;
+            position: relative;
+            margin: 16px 0;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .nhp-intensity-chart canvas {
+            width: 100%;
+            height: 100%;
+        }
+        .nhp-signals-list {
+            margin-top: 12px;
+        }
+        .nhp-signal-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 0.8rem;
+        }
+        .nhp-signal-row:last-child { border-bottom: none; }
+        .nhp-signal-tag {
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            padding: 3px 10px;
+            border-radius: 1px;
+        }
+        .nhp-signal-tag.enter {
+            color: #6fcf97;
+            border: 1px solid rgba(111, 207, 151, 0.2);
+        }
+        .nhp-signal-tag.exit {
+            color: #eb5757;
+            border: 1px solid rgba(235, 87, 87, 0.2);
+        }
+        .nhp-signal-tag.hold {
+            color: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .nhp-stat {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.45);
+        }
+        .nhp-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
         /* Error */
         .forecast-error {
             padding: 32px;
@@ -526,7 +591,7 @@
             return h > 0 ? `${d}d ${h}h` : `${d} days`;
         }
 
-        function renderForecast(data) {
+        function renderForecast(data, nhpData) {
             if (!data.success) {
                 container.innerHTML = `
                     <div class="forecast-error">
@@ -680,7 +745,124 @@
                             </div>
                         ` : ''}
                     </div>
+
+                    ${nhpData && nhpData.success ? renderNhpSection(nhpData) : ''}
                 </div>`;
+
+            // Draw NHP intensity chart after DOM is updated
+            if (nhpData && nhpData.success) {
+                requestAnimationFrame(() => drawNhpChart(nhpData));
+            }
+        }
+
+        function renderNhpSection(nhp) {
+            if (!nhp || !nhp.signals) return '';
+
+            const summary = nhp.summary || {};
+            const signals = nhp.signals || [];
+            const lastSignals = signals.slice(-8);
+
+            const signalRows = lastSignals.map(s => {
+                const cls = s.signal === 'ENTER' ? 'enter' : s.signal === 'EXIT' ? 'exit' : 'hold';
+                return `<div class="nhp-signal-row">
+                    <span class="nhp-signal-tag ${cls}">${s.signal}</span>
+                    <span class="nhp-stat">bar ${s.bar_index}</span>
+                    <span class="nhp-stat">\u03bb=${s.lambda_t.toFixed(3)}</span>
+                    <span class="nhp-stat">${(s.confidence * 100).toFixed(0)}%</span>
+                </div>`;
+            }).join('');
+
+            return `
+                <div class="nhp-section">
+                    <div class="section-header">Neural Hawkes Process &mdash; Intensity Signals</div>
+
+                    <div class="nhp-intensity-chart">
+                        <canvas id="nhpCanvas"></canvas>
+                    </div>
+
+                    <div class="nhp-summary-grid">
+                        <div class="metric">
+                            <div class="metric-label">Mean \u03bb</div>
+                            <div class="metric-value">${summary.mean_intensity?.toFixed(3) || '?'}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Enter</div>
+                            <div class="metric-value" style="color:#6fcf97">${summary.n_enter_signals ?? 0}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Exit</div>
+                            <div class="metric-value" style="color:#eb5757">${summary.n_exit_signals ?? 0}</div>
+                        </div>
+                    </div>
+
+                    ${lastSignals.length > 0 ? `
+                        <div class="nhp-signals-list">
+                            <div class="level-list-header">Recent Signals (last ${lastSignals.length})</div>
+                            ${signalRows}
+                        </div>
+                    ` : '<p class="nhp-stat" style="margin-top:12px">No signals in current window</p>'}
+                </div>`;
+        }
+
+        function drawNhpChart(nhp) {
+            const canvas = document.getElementById('nhpCanvas');
+            if (!canvas || !nhp || !nhp.intensity_values) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            const W = rect.width, H = rect.height;
+
+            const vals = nhp.intensity_values;
+            const n = vals.length;
+            if (n < 2) return;
+
+            const maxV = Math.max(...vals) || 1;
+            const minV = Math.min(...vals);
+            const range = maxV - minV || 1;
+
+            // Draw intensity line
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let i = 0; i < n; i++) {
+                const x = (i / (n - 1)) * W;
+                const y = H - ((vals[i] - minV) / range) * (H - 8) - 4;
+                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Fill area under curve
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.beginPath();
+            for (let i = 0; i < n; i++) {
+                const x = (i / (n - 1)) * W;
+                const y = H - ((vals[i] - minV) / range) * (H - 8) - 4;
+                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.lineTo(W, H);
+            ctx.lineTo(0, H);
+            ctx.closePath();
+            ctx.fill();
+
+            // Draw signal markers
+            const times = nhp.intensity_times || [];
+            const tMax = times.length > 0 ? times[times.length - 1] : 1;
+            (nhp.signals || []).forEach(s => {
+                const xPct = tMax > 0 ? s.time / tMax : 0;
+                const x = xPct * W;
+                const color = s.signal === 'ENTER' ? '#6fcf97' : s.signal === 'EXIT' ? '#eb5757' : 'rgba(255,255,255,0.2)';
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1;
+                ctx.setLineDash([2, 2]);
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, H);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            });
         }
 
         btn.addEventListener('click', async () => {
@@ -693,18 +875,33 @@
             container.innerHTML = `<div class="loading"><div class="spinner"></div><p>Analyzing...</p></div>`;
 
             try {
-                const url = new URL('/api/lstm-forecast', window.location.origin);
-                url.searchParams.set('ticker', ticker);
-                url.searchParams.set('timeframe', timeframe);
-                url.searchParams.set('lookback', '20');
+                // Fetch LSTM forecast and NHP signals in parallel
+                const forecastUrl = new URL('/api/lstm-forecast', window.location.origin);
+                forecastUrl.searchParams.set('ticker', ticker);
+                forecastUrl.searchParams.set('timeframe', timeframe);
+                forecastUrl.searchParams.set('lookback', '20');
 
-                const resp = await fetch(url.toString(), { credentials: 'include' });
-                if (!resp.ok) {
-                    const err = await resp.json();
-                    throw new Error(err.error || `HTTP ${resp.status}`);
+                const nhpUrl = new URL('/api/nhp-signals', window.location.origin);
+                nhpUrl.searchParams.set('ticker', ticker);
+                nhpUrl.searchParams.set('timeframe', timeframe);
+
+                const [forecastResp, nhpResp] = await Promise.all([
+                    fetch(forecastUrl.toString(), { credentials: 'include' }),
+                    fetch(nhpUrl.toString(), { credentials: 'include' }).catch(() => null),
+                ]);
+
+                if (!forecastResp.ok) {
+                    const err = await forecastResp.json();
+                    throw new Error(err.error || `HTTP ${forecastResp.status}`);
                 }
-                const data = await resp.json();
-                renderForecast(data);
+
+                const data = await forecastResp.json();
+                let nhpData = null;
+                if (nhpResp && nhpResp.ok) {
+                    try { nhpData = await nhpResp.json(); } catch(e) {}
+                }
+
+                renderForecast(data, nhpData);
             } catch (err) {
                 container.innerHTML = `<div class="forecast-error"><h3>Error</h3><p>${err.message}</p></div>`;
             } finally {
