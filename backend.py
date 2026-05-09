@@ -4297,11 +4297,23 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_best.pt'):
         n_enter = sum(1 for s in signal_list if s['signal'] == 'ENTER')
         n_exit = sum(1 for s in signal_list if s['signal'] == 'EXIT')
 
+        # Extract OHLC prices aligned with intensity bars (bar 1..n)
+        closes = hist['Close'].values[1:].tolist()
+        opens = hist['Open'].values[1:].tolist()
+        highs = hist['High'].values[1:].tolist()
+        lows = hist['Low'].values[1:].tolist()
+
         return {
             'success': True,
             'bars': n_bars,
             'intensity_times': bar_times.tolist(),
             'intensity_values': blended_scaled.tolist(),
+            'ohlc': {
+                'open': [float(v) for v in opens],
+                'high': [float(v) for v in highs],
+                'low': [float(v) for v in lows],
+                'close': [float(v) for v in closes],
+            },
             'signals': signal_list,
             'model_trained': has_checkpoint,
             'summary': {
