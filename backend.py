@@ -326,6 +326,17 @@ else:
 CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,https://degencap.uk,https://www.degencap.uk').split(',')
 CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
 
+# Initialize Google Drive historical data on module load (works under gunicorn)
+import threading
+def _init_google_drive_data():
+    try:
+        from data_loader import initialize_data
+        initialize_data()
+    except Exception as e:
+        print(f"Google Drive data initialization skipped: {e}")
+
+threading.Thread(target=_init_google_drive_data, daemon=True).start()
+
 @app.route("/api/health")
 def health():
     return {"status": "backend live"}
@@ -12641,12 +12652,6 @@ def backtest_levels():
 
 
 if __name__ == "__main__":
-    # Initialize Google Drive historical data on startup
-    try:
-        from data_loader import initialize_data
-        initialize_data()
-    except Exception as e:
-        print(f"Data initialization skipped: {e}")
-    app.run(host='0.0.0.0', port=5001) 
+    app.run(host='0.0.0.0', port=5001)
 
 
