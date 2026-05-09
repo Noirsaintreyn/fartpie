@@ -5607,10 +5607,8 @@ def get_nhp_signals():
     """
     Standalone endpoint for Neural Hawkes Process intensity + signals.
     Query params: ticker, timeframe (default SPY / 1d)
+    No auth required - public market data endpoint for cross-origin frontend (degencap.uk)
     """
-    auth_error = require_auth()
-    if auth_error:
-        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
 
     if not (TORCH_AVAILABLE and NHP_AVAILABLE):
         return jsonify({'success': False, 'error': 'NHP modules not available (requires PyTorch)'}), 400
