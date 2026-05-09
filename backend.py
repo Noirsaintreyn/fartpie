@@ -4130,103 +4130,156 @@ def detect_levels_with_neural_network(hist, lookback=100, threshold=0.7):
 
 # ── Neural Hawkes Process (NHP) integration ──────────────────────────────────
 
-def run_nhp_on_ohlc(hist, checkpoint_path='nhp_best.pt', dt_grid=0.25):
+def _compute_price_activity(hist):
+    """
+    Derive a price-based activity signal from OHLC data.
+    Combines absolute returns, volume spikes, and bar range
+    into a single per-bar activity score normalized to [0, 1].
+    """
+    import pandas as pd
+
+    closes = hist['Close'].values.astype(np.float64)
+    highs = hist['High'].values.astype(np.float64)
+    lows = hist['Low'].values.astype(np.float64)
+    volumes = hist['Volume'].values.astype(np.float64) if 'Volume' in hist.columns else np.ones(len(hist))
+
+    n = len(closes)
+
+    # Absolute returns normalized by rolling std
+    returns = np.abs(np.diff(closes, prepend=closes[0]) / (closes + 1e-12))
+    roll_std = pd.Series(returns).rolling(20, min_periods=2).std().fillna(returns.std()).values
+    ret_z = returns / (roll_std + 1e-12)
+
+    # Volume relative to rolling mean
+    roll_vol = pd.Series(volumes).rolling(20, min_periods=2).mean().fillna(volumes.mean()).values
+    vol_z = volumes / (roll_vol + 1e-12)
+
+    # Range relative to ATR
+    ranges = highs - lows
+    atr = pd.Series(ranges).rolling(14, min_periods=2).mean().fillna(ranges.mean()).values
+    range_z = ranges / (atr + 1e-12)
+
+    # Composite activity: weighted sum
+    activity = 0.4 * ret_z + 0.35 * vol_z + 0.25 * range_z
+
+    # Normalize to [0, 1]
+    a_min, a_max = activity.min(), activity.max()
+    if a_max > a_min:
+        activity = (activity - a_min) / (a_max - a_min)
+    else:
+        activity = np.full(n, 0.5)
+
+    return activity
+
+
+def run_nhp_on_ohlc(hist, checkpoint_path='nhp_best.pt'):
     """
     Run Neural Hawkes Process intensity inference on OHLC data.
 
-    Converts OHLC bars → event inter-arrival times, runs the NHP forward
-    pass, then applies the regime-aware policy to produce entry/exit signals.
-
-    Args:
-        hist: DataFrame with OHLC columns and DatetimeIndex
-        checkpoint_path: path to a trained NHP checkpoint (optional)
-        dt_grid: time-grid spacing for intensity interpolation (seconds)
+    Produces a per-bar intensity signal by combining the NHP model's
+    learned intensity with price-derived activity features. This ensures
+    the output is informative even with an untrained (random-init) model.
 
     Returns:
-        dict with keys:
-          intensity_times  – list of float (normalized time axis)
-          intensity_values – list of float (lambda(t) values)
-          signals          – list of dicts {step, time, signal, lambda_t, baseline, confidence}
-          summary          – dict of aggregate statistics
-        or None on failure
+        dict with intensity_times, intensity_values, signals, summary
+        or None on failure.
     """
     if not (TORCH_AVAILABLE and NHP_AVAILABLE):
         return None
 
     try:
+        import pandas as pd
+
         dts = ohlc_inter_arrival_times(hist)
         if len(dts) < 5:
             return None
 
-        # Normalize inter-arrival times to prevent numerical issues
-        # Scale so median dt = 1.0
+        n_bars = len(dts)
+
+        # Scale inter-arrival times so median = 1.0
         dts_arr = np.array(dts, dtype=np.float64)
         median_dt = np.median(dts_arr)
-        if median_dt > 0:
-            scale = median_dt
-        else:
-            scale = np.mean(dts_arr) if np.mean(dts_arr) > 0 else 1.0
+        scale = median_dt if median_dt > 0 else (np.mean(dts_arr) if np.mean(dts_arr) > 0 else 1.0)
         dts_scaled = (dts_arr / scale).tolist()
 
+        has_checkpoint = os.path.exists(checkpoint_path)
         device = torch.device('cpu')
 
         # Load or create model
         cfg = NHPConfig(embed_dim=16, hidden_dim=32, num_heads=2)
         model = NeuralHawkesProcess(cfg)
 
-        if os.path.exists(checkpoint_path):
+        if has_checkpoint:
             try:
                 ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
                 model.load_state_dict(ckpt['model_state'])
                 print(f"NHP: Loaded checkpoint from {checkpoint_path}")
             except Exception as e:
                 print(f"NHP: Could not load checkpoint ({e}), using untrained model")
+                has_checkpoint = False
         else:
-            print("NHP: No checkpoint found, using untrained model (random init)")
+            print("NHP: No checkpoint found, using untrained model + price activity")
 
         model.eval()
         model = model.to(device)
 
-        # Forward pass — single sequence
+        # Forward pass — compute model intensity at each bar
         dts_t = torch.tensor(dts_scaled, dtype=torch.float32).unsqueeze(0).to(device)
-        types_t = torch.ones(1, len(dts_scaled), dtype=torch.long).to(device)
+        types_t = torch.ones(1, n_bars, dtype=torch.long).to(device)
 
         with torch.no_grad():
             hiddens, cells = model.forward_sequence(types_t, dts_t)
 
-        # Build intensity on a grid over the sequence time span
-        cum_times = np.concatenate([[0.0], np.cumsum(dts_scaled)])
-        T = cum_times[-1]
-        grid_step = max(dt_grid, T / 2000.0)  # cap at 2000 grid points
-        grid_times = np.arange(0, T + grid_step, grid_step)
+            # Compute intensity at each event time (dt=0 from itself)
+            zero_dts = torch.zeros_like(dts_t)
+            seq_len = torch.tensor([n_bars], dtype=torch.long, device=device)
+            model_lam = model.intensity_at(hiddens, cells, zero_dts, seq_len)
+            model_lam = model_lam[0].cpu().numpy()  # (n_bars,)
 
-        lam_grid = []
-        with torch.no_grad():
-            for t in grid_times:
-                past_idx = int(np.searchsorted(cum_times, t, side='right')) - 1
-                past_idx = max(0, min(past_idx, len(dts_scaled) - 1))
-                dt_from_last = max(t - cum_times[past_idx], 0.0)
+        # Compute price-derived activity
+        price_activity = _compute_price_activity(hist)
+        # Price activity aligns with bars; dts has n_bars values (bar 1..n)
+        # price_activity has n_bars+1 values (bar 0..n); use [1:] to align
+        if len(price_activity) == n_bars + 1:
+            price_activity = price_activity[1:]
+        elif len(price_activity) > n_bars:
+            price_activity = price_activity[-n_bars:]
 
-                h_past = hiddens[:, :past_idx + 1]
-                c_past = cells[:, :past_idx + 1]
-                dt_padded = torch.zeros(1, past_idx + 1, device=device)
-                dt_padded[0, past_idx] = dt_from_last
-                len_t = torch.tensor([past_idx + 1], dtype=torch.long, device=device)
-                lam = model.intensity_at(h_past, c_past, dt_padded, len_t)
-                lam_grid.append(float(lam[0, past_idx].item()))
+        # Blend: if model is trained, lean on model; otherwise lean on price
+        if has_checkpoint:
+            blend_weight = 0.7  # model-heavy
+        else:
+            blend_weight = 0.2  # price-heavy
 
-        lam_arr = np.array(lam_grid)
+        # Normalize model intensity to [0, 1] range for blending
+        m_min, m_max = model_lam.min(), model_lam.max()
+        if m_max > m_min:
+            model_norm = (model_lam - m_min) / (m_max - m_min)
+        else:
+            model_norm = np.full(n_bars, 0.5)
 
-        # Apply regime-aware policy
+        blended = blend_weight * model_norm + (1 - blend_weight) * price_activity
+
+        # Scale blended intensity to a meaningful range (0.1 to 2.0)
+        blended_scaled = 0.1 + blended * 1.9
+
+        # Build per-bar time axis (cumulative time in scaled units)
+        bar_times = np.concatenate([[0.0], np.cumsum(dts_scaled)])
+        bar_times = bar_times[1:]  # one per bar
+
+        # Apply regime-aware policy with appropriate thresholds
         policy = RegimeAwarePolicy(PolicyConfig(
-            entry_mult=1.4, exit_mult=2.6,
-            hysteresis=0.05, cooldown_steps=4,
+            entry_mult=1.3,
+            exit_mult=1.8,
+            hysteresis=0.03,
+            cooldown_steps=3,
+            vol_window=min(15, max(5, n_bars // 4)),
         ))
-        signals = policy.apply(lam_arr, grid_times)
+        signals = policy.apply(blended_scaled, bar_times)
 
         signal_list = []
+        label_map = {Signal.ENTER: 'ENTER', Signal.EXIT: 'EXIT', Signal.HOLD: 'HOLD'}
         for s in signals:
-            label_map = {Signal.ENTER: 'ENTER', Signal.EXIT: 'EXIT', Signal.HOLD: 'HOLD'}
             signal_list.append({
                 'step': s.step,
                 'time': float(s.time),
@@ -4234,27 +4287,23 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_best.pt', dt_grid=0.25):
                 'lambda_t': float(s.lambda_t),
                 'baseline': float(s.baseline),
                 'confidence': float(s.confidence),
+                'bar_index': s.step,
             })
 
-        # Map grid times back to bar indices for the frontend
-        bar_times = cum_times[1:]  # one per bar
-        signal_bar_indices = []
-        for s in signal_list:
-            bar_idx = int(np.searchsorted(bar_times, s['time'], side='right'))
-            bar_idx = min(bar_idx, len(bar_times) - 1)
-            s['bar_index'] = bar_idx
-
         # Summary statistics
-        mean_lam = float(np.mean(lam_arr))
-        std_lam = float(np.std(lam_arr))
-        max_lam = float(np.max(lam_arr))
+        mean_lam = float(np.mean(blended_scaled))
+        std_lam = float(np.std(blended_scaled))
+        max_lam = float(np.max(blended_scaled))
         n_enter = sum(1 for s in signal_list if s['signal'] == 'ENTER')
         n_exit = sum(1 for s in signal_list if s['signal'] == 'EXIT')
 
         return {
-            'intensity_times': grid_times.tolist(),
-            'intensity_values': lam_arr.tolist(),
+            'success': True,
+            'bars': n_bars,
+            'intensity_times': bar_times.tolist(),
+            'intensity_values': blended_scaled.tolist(),
             'signals': signal_list,
+            'model_trained': has_checkpoint,
             'summary': {
                 'mean_intensity': mean_lam,
                 'std_intensity': std_lam,
