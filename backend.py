@@ -43,8 +43,10 @@ except ImportError:
 
 try:
     from nhp_model import NeuralHawkesProcess, NHPConfig
+    from nhp_model_v2 import StateDependentNHP, NHPv2Config
     from nhp_data import ohlc_to_event_sequences, ohlc_inter_arrival_times
     from nhp_policy import RegimeAwarePolicy, PolicyConfig, Signal
+    from nhp_regime import compute_vol_features, RegimeDetector, RegimeGate, RegimeGateConfig, Regime
     NHP_AVAILABLE = True
 except ImportError:
     NHP_AVAILABLE = False
@@ -325,17 +327,6 @@ else:
 # Allow common frontend domains (add your production domain here)
 CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,https://degencap.uk,https://www.degencap.uk').split(',')
 CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
-
-# Initialize Google Drive historical data on module load (works under gunicorn)
-import threading
-def _init_google_drive_data():
-    try:
-        from data_loader import initialize_data
-        initialize_data()
-    except Exception as e:
-        print(f"Google Drive data initialization skipped: {e}")
-
-threading.Thread(target=_init_google_drive_data, daemon=True).start()
 
 @app.route("/api/health")
 def health():
@@ -3824,28 +3815,15 @@ def train_level_detection_network(ticker='SPY', timeframe='1d', lookback=100,
         print(f"Training level detection network for {ticker} at {timeframe}...")
 
         # ---------- fetch data ----------
-        hist = None
-        try:
-            from data_loader import load_historical_data
-            hist = load_historical_data(ticker, timeframe=timeframe,
-                                        combine_with_realtime=True)
-            if hist is not None and len(hist) > 0:
-                print(f"Using combined Google Drive + yfinance data: {len(hist)} bars")
-            else:
-                hist = None
-        except Exception as e:
-            print(f"Google Drive data not available ({e}), using yfinance only")
-
-        if hist is None:
-            stock = yf.Ticker(ticker)
-            interval_map = {'1m': '1m', '5m': '5m', '15m': '15m',
-                            '1h': '1h', '4h': '1h', '1d': '1d'}
-            interval = interval_map.get(timeframe, '1d')
-            period_map = {'1m': '1mo', '5m': '3mo', '15m': '6mo',
-                          '1h': '1y', '4h': '1y', '1d': '2y'}
-            period = period_map.get(timeframe, '1y')
-            hist = stock.history(period=period, interval=interval)
-            print(f"Using yfinance data: {len(hist)} bars")
+        stock = yf.Ticker(ticker)
+        interval_map = {'1m': '1m', '5m': '5m', '15m': '15m',
+                        '1h': '1h', '4h': '1h', '1d': '1d'}
+        interval = interval_map.get(timeframe, '1d')
+        period_map = {'1m': '1mo', '5m': '3mo', '15m': '6mo',
+                      '1h': '1y', '4h': '1y', '1d': '2y'}
+        period = period_map.get(timeframe, '1y')
+        hist = stock.history(period=period, interval=interval)
+        print(f"Using yfinance data: {len(hist)} bars")
 
         min_bars = lookback + forward_window + 10
         if len(hist) < min_bars:
@@ -4183,13 +4161,13 @@ def _compute_price_activity(hist):
     return activity
 
 
-def run_nhp_on_ohlc(hist, checkpoint_path='nhp_best.pt'):
+def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v2_best.pt'):
     """
-    Run Neural Hawkes Process intensity inference on OHLC data.
+    Run State-Dependent Neural Hawkes Process (v2) with regime gating.
 
-    Produces a per-bar intensity signal by combining the NHP model's
-    learned intensity with price-derived activity features. This ensures
-    the output is informative even with an untrained (random-init) model.
+    Uses the v2 model with volatility state vectors and HMM regime detection.
+    Blends model intensity with price-derived activity, then applies
+    regime-gated signal filtering for higher precision.
 
     Returns:
         dict with intensity_times, intensity_values, signals, summary
@@ -4216,99 +4194,134 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_best.pt'):
         has_checkpoint = os.path.exists(checkpoint_path)
         device = torch.device('cpu')
 
-        # Load or create model
-        cfg = NHPConfig(embed_dim=16, hidden_dim=32, num_heads=2)
-        model = NeuralHawkesProcess(cfg)
+        # Compute vol features and regime state vectors from OHLC
+        prices = hist['Close'].values.astype(np.float64)
+        bar_timestamps = np.arange(len(prices), dtype=np.float64)
+        vf = compute_vol_features(prices, bar_timestamps)
 
+        # Build state vectors for each bar (aligned to dts = bar 1..n)
+        state_vecs = np.zeros((n_bars, 6), dtype=np.float32)
+        median_rv = float(np.median(vf.realized_vol[vf.realized_vol > 0]) + 1e-8)
+        for i in range(n_bars):
+            bar_idx = i + 1  # dts[i] corresponds to bar i+1
+            if bar_idx < len(vf.realized_vol):
+                state_vecs[i, 0] = vf.realized_vol[bar_idx] / median_rv
+                state_vecs[i, 1] = vf.vol_of_vol[bar_idx] / median_rv
+                state_vecs[i, 2] = abs(vf.return_skew[bar_idx])
+                # Regime probs default to uniform if no detector fitted
+                state_vecs[i, 3:6] = [0.33, 0.34, 0.33]
+
+        # Try to load v2 model, fall back to v1
+        use_v2 = False
         if has_checkpoint:
             try:
                 ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
-                model.load_state_dict(ckpt['model_state'])
-                print(f"NHP: Loaded checkpoint from {checkpoint_path}")
+                cfg = ckpt.get('cfg')
+                if cfg is not None and hasattr(cfg, 'state_dim'):
+                    model = StateDependentNHP(cfg)
+                    model.load_state_dict(ckpt['state'])
+                    use_v2 = True
+                    print(f"NHP v2: Loaded state-dependent checkpoint from {checkpoint_path}")
+                else:
+                    # v1 checkpoint
+                    cfg_v1 = NHPConfig(embed_dim=16, hidden_dim=32, num_heads=2)
+                    model = NeuralHawkesProcess(cfg_v1)
+                    model.load_state_dict(ckpt.get('model_state', ckpt.get('state')))
+                    print(f"NHP v1: Loaded checkpoint from {checkpoint_path}")
             except Exception as e:
                 print(f"NHP: Could not load checkpoint ({e}), using untrained model")
                 has_checkpoint = False
-        else:
-            print("NHP: No checkpoint found, using untrained model + price activity")
+
+        if not has_checkpoint:
+            # Default to v2 untrained
+            cfg = NHPv2Config(embed_dim=16, hidden_dim=32, state_dim=6, state_hidden=8)
+            model = StateDependentNHP(cfg)
+            use_v2 = True
+            print("NHP v2: No checkpoint found, using untrained model + price activity")
 
         model.eval()
         model = model.to(device)
 
-        # Forward pass — compute model intensity at each bar
+        # Forward pass — compute model intensity
         dts_t = torch.tensor(dts_scaled, dtype=torch.float32).unsqueeze(0).to(device)
         types_t = torch.ones(1, n_bars, dtype=torch.long).to(device)
 
         with torch.no_grad():
-            hiddens, cells = model.forward_sequence(types_t, dts_t)
+            if use_v2:
+                states_t = torch.tensor(state_vecs, dtype=torch.float32).unsqueeze(0).to(device)
+                hiddens, cells = model.forward_sequence(types_t, dts_t, states_t)
+            else:
+                hiddens, cells = model.forward_sequence(types_t, dts_t)
 
-            # Compute intensity at each event time (dt=0 from itself)
             zero_dts = torch.zeros_like(dts_t)
             seq_len = torch.tensor([n_bars], dtype=torch.long, device=device)
             model_lam = model.intensity_at(hiddens, cells, zero_dts, seq_len)
-            model_lam = model_lam[0].cpu().numpy()  # (n_bars,)
+            model_lam = model_lam[0].cpu().numpy()
 
         # Compute price-derived activity
         price_activity = _compute_price_activity(hist)
-        # Price activity aligns with bars; dts has n_bars values (bar 1..n)
-        # price_activity has n_bars+1 values (bar 0..n); use [1:] to align
         if len(price_activity) == n_bars + 1:
             price_activity = price_activity[1:]
         elif len(price_activity) > n_bars:
             price_activity = price_activity[-n_bars:]
 
-        # Blend: if model is trained, lean on model; otherwise lean on price
-        if has_checkpoint:
-            blend_weight = 0.7  # model-heavy
-        else:
-            blend_weight = 0.2  # price-heavy
-
-        # Normalize model intensity to [0, 1] range for blending
+        # Model modulates price activity (30% weight when trained)
+        blend_weight = 0.3 if has_checkpoint else 0.2
         m_min, m_max = model_lam.min(), model_lam.max()
-        if m_max > m_min:
-            model_norm = (model_lam - m_min) / (m_max - m_min)
-        else:
-            model_norm = np.full(n_bars, 0.5)
-
+        model_norm = (model_lam - m_min) / (m_max - m_min) if m_max > m_min else np.full(n_bars, 0.5)
         blended = blend_weight * model_norm + (1 - blend_weight) * price_activity
-
-        # Scale blended intensity to a meaningful range (0.1 to 2.0)
         blended_scaled = 0.1 + blended * 1.9
 
-        # Build per-bar time axis (cumulative time in scaled units)
-        bar_times = np.concatenate([[0.0], np.cumsum(dts_scaled)])
-        bar_times = bar_times[1:]  # one per bar
+        # Build per-bar time axis
+        bar_times = np.concatenate([[0.0], np.cumsum(dts_scaled)])[1:]
 
-        # Apply regime-aware policy with appropriate thresholds
+        # Apply regime-aware policy
         policy = RegimeAwarePolicy(PolicyConfig(
-            entry_mult=1.3,
-            exit_mult=1.8,
-            hysteresis=0.03,
-            cooldown_steps=3,
+            entry_mult=1.3, exit_mult=1.8, hysteresis=0.03, cooldown_steps=3,
             vol_window=min(15, max(5, n_bars // 4)),
         ))
         signals = policy.apply(blended_scaled, bar_times)
 
+        # Apply regime gate to filter signals (if vol features are available)
+        gate = RegimeGate(RegimeGateConfig(min_confidence=0.65))
+        filtered_signals = []
+        for s in signals:
+            bar_idx = min(s.step + 1, len(vf.realized_vol) - 1)
+            rv = float(vf.realized_vol[bar_idx])
+            # Simple regime estimate from vol level
+            if rv < median_rv * 0.7:
+                regime = Regime.LOW
+            elif rv > median_rv * 1.5:
+                regime = Regime.HIGH
+            else:
+                regime = Regime.NORMAL
+            regime_conf = 0.75  # reasonable default without full HMM
+
+            if s.signal == Signal.ENTER:
+                ok, _ = gate.allows_enter(regime, regime_conf, rv, median_rv)
+            elif s.signal == Signal.EXIT:
+                ok, _ = gate.allows_exit(regime, regime_conf, rv, median_rv)
+            else:
+                ok = True
+            if ok:
+                filtered_signals.append(s)
+
         signal_list = []
         label_map = {Signal.ENTER: 'ENTER', Signal.EXIT: 'EXIT', Signal.HOLD: 'HOLD'}
-        for s in signals:
+        for s in filtered_signals:
             signal_list.append({
-                'step': s.step,
-                'time': float(s.time),
+                'step': s.step, 'time': float(s.time),
                 'signal': label_map.get(s.signal, 'HOLD'),
-                'lambda_t': float(s.lambda_t),
-                'baseline': float(s.baseline),
-                'confidence': float(s.confidence),
-                'bar_index': s.step,
+                'lambda_t': float(s.lambda_t), 'baseline': float(s.baseline),
+                'confidence': float(s.confidence), 'bar_index': s.step,
             })
 
-        # Summary statistics
         mean_lam = float(np.mean(blended_scaled))
         std_lam = float(np.std(blended_scaled))
         max_lam = float(np.max(blended_scaled))
         n_enter = sum(1 for s in signal_list if s['signal'] == 'ENTER')
         n_exit = sum(1 for s in signal_list if s['signal'] == 'EXIT')
 
-        # Extract OHLC prices aligned with intensity bars (bar 1..n)
         closes = hist['Close'].values[1:].tolist()
         opens = hist['Open'].values[1:].tolist()
         highs = hist['High'].values[1:].tolist()
@@ -5631,10 +5644,6 @@ def get_nhp_signals():
     Standalone endpoint for Neural Hawkes Process intensity + signals.
     Query params: ticker, timeframe (default SPY / 1d)
     No auth required - public market data endpoint for cross-origin frontend (degencap.uk)
-
-    Uses Google Drive historical data + yfinance real-time when available
-    (for NQ, ES, VIX) to get a larger dataset for better accuracy testing.
-    Falls back to yfinance-only for other tickers.
     """
 
     if not (TORCH_AVAILABLE and NHP_AVAILABLE):
@@ -5644,32 +5653,11 @@ def get_nhp_signals():
     timeframe = request.args.get('timeframe', '1d').strip().lower()
 
     try:
-        hist = None
-        data_source = 'yfinance'
-
-        # Try Google Drive + yfinance combined data first
-        try:
-            from data_loader import load_historical_data, SYMBOL_MAPPING
-            symbol_upper = ticker.upper().replace('=F', '')
-            if symbol_upper in SYMBOL_MAPPING or ticker.upper() in SYMBOL_MAPPING:
-                lookup = symbol_upper if symbol_upper in SYMBOL_MAPPING else ticker.upper()
-                hist = load_historical_data(lookup, timeframe=timeframe,
-                                            combine_with_realtime=True)
-                if hist is not None and len(hist) > 0:
-                    data_source = 'google_drive+yfinance'
-                    print(f"NHP: Using combined Google Drive + yfinance data for {ticker}: {len(hist)} bars")
-                else:
-                    hist = None
-        except Exception as e:
-            print(f"NHP: Google Drive data not available ({e}), using yfinance only")
-
-        # Fallback to yfinance — request maximum available data for accuracy testing
-        if hist is None:
-            max_period = {
-                '1m': '7d', '5m': '60d', '15m': '60d',
-                '1h': '2y', '4h': '2y', '1d': 'max', '1wk': 'max',
-            }.get(timeframe, '2y')
-            hist = fetch_historical_data_with_resampling(ticker, timeframe, period=max_period)
+        max_period = {
+            '1m': '7d', '5m': '60d', '15m': '60d',
+            '1h': '2y', '4h': '2y', '1d': 'max', '1wk': 'max',
+        }.get(timeframe, '2y')
+        hist = fetch_historical_data_with_resampling(ticker, timeframe, period=max_period)
 
         if hist is None or len(hist) < 10:
             return jsonify({'success': False, 'error': f'Not enough data for {ticker} @ {timeframe}'}), 400
@@ -5683,7 +5671,6 @@ def get_nhp_signals():
             'ticker': ticker,
             'timeframe': timeframe,
             'bars': len(hist),
-            'data_source': data_source,
             **result,
         })
 
