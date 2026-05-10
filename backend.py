@@ -4194,24 +4194,36 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v2_best.pt'):
         has_checkpoint = os.path.exists(checkpoint_path)
         device = torch.device('cpu')
 
-        # Compute vol features and regime state vectors from OHLC
+        # Compute vol features and fit HMM regime detector
         prices = hist['Close'].values.astype(np.float64)
         bar_timestamps = np.arange(len(prices), dtype=np.float64)
         vf = compute_vol_features(prices, bar_timestamps)
 
-        # Build state vectors for each bar (aligned to dts = bar 1..n)
-        state_vecs = np.zeros((n_bars, 6), dtype=np.float32)
-        median_rv = float(np.median(vf.realized_vol[vf.realized_vol > 0]) + 1e-8)
-        for i in range(n_bars):
-            bar_idx = i + 1  # dts[i] corresponds to bar i+1
-            if bar_idx < len(vf.realized_vol):
-                state_vecs[i, 0] = vf.realized_vol[bar_idx] / median_rv
-                state_vecs[i, 1] = vf.vol_of_vol[bar_idx] / median_rv
-                state_vecs[i, 2] = abs(vf.return_skew[bar_idx])
-                # Regime probs default to uniform if no detector fitted
-                state_vecs[i, 3:6] = [0.33, 0.34, 0.33]
+        # Fit HMM on training portion (first 80%) for regime detection
+        train_cutoff = int(len(prices) * 0.8)
+        train_vf = compute_vol_features(prices[:train_cutoff], bar_timestamps[:train_cutoff])
+        detector = RegimeDetector(n_states=3, n_iter=200, random_state=42)
+        try:
+            detector.fit(train_vf)
+            regimes, regime_probs = detector.predict(vf)
+        except Exception:
+            regimes = np.ones(len(prices), dtype=int)
+            regime_probs = np.tile([0.33, 0.34, 0.33], (len(prices), 1))
 
-        # Try to load v2 model, fall back to v1
+        # Build state vectors with clipped vol features and real regime probs
+        state_vecs = np.zeros((n_bars, 6), dtype=np.float32)
+        pos_rv = vf.realized_vol[vf.realized_vol > 0]
+        median_rv = float(np.median(pos_rv)) if len(pos_rv) > 0 else 1e-8
+        clip_max = 5.0
+        for i in range(n_bars):
+            bar_idx = i + 1
+            if bar_idx < len(vf.realized_vol):
+                state_vecs[i, 0] = min(vf.realized_vol[bar_idx] / (median_rv + 1e-8), clip_max)
+                state_vecs[i, 1] = min(vf.vol_of_vol[bar_idx] / (median_rv + 1e-8), clip_max)
+                state_vecs[i, 2] = min(abs(vf.return_skew[bar_idx]), clip_max)
+                state_vecs[i, 3:6] = regime_probs[bar_idx]
+
+        # Load v2 model
         use_v2 = False
         if has_checkpoint:
             try:
@@ -4221,100 +4233,116 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v2_best.pt'):
                     model = StateDependentNHP(cfg)
                     model.load_state_dict(ckpt['state'])
                     use_v2 = True
-                    print(f"NHP v2: Loaded state-dependent checkpoint from {checkpoint_path}")
                 else:
-                    # v1 checkpoint
                     cfg_v1 = NHPConfig(embed_dim=16, hidden_dim=32, num_heads=2)
                     model = NeuralHawkesProcess(cfg_v1)
                     model.load_state_dict(ckpt.get('model_state', ckpt.get('state')))
-                    print(f"NHP v1: Loaded checkpoint from {checkpoint_path}")
             except Exception as e:
                 print(f"NHP: Could not load checkpoint ({e}), using untrained model")
                 has_checkpoint = False
 
         if not has_checkpoint:
-            # Default to v2 untrained
             cfg = NHPv2Config(embed_dim=16, hidden_dim=32, state_dim=6, state_hidden=8)
             model = StateDependentNHP(cfg)
             use_v2 = True
-            print("NHP v2: No checkpoint found, using untrained model + price activity")
 
         model.eval()
         model = model.to(device)
 
-        # Forward pass — compute model intensity
-        dts_t = torch.tensor(dts_scaled, dtype=torch.float32).unsqueeze(0).to(device)
-        types_t = torch.ones(1, n_bars, dtype=torch.long).to(device)
+        # Windowed inference — match training window size
+        window_size = 20
+        stride = 10
+        model_lam = np.zeros(n_bars, dtype=np.float64)
+        lam_counts = np.zeros(n_bars, dtype=np.float64)
 
         with torch.no_grad():
-            if use_v2:
-                states_t = torch.tensor(state_vecs, dtype=torch.float32).unsqueeze(0).to(device)
-                hiddens, cells = model.forward_sequence(types_t, dts_t, states_t)
-            else:
-                hiddens, cells = model.forward_sequence(types_t, dts_t)
+            for start in range(0, n_bars - window_size + 1, stride):
+                end = start + window_size
+                w_dts = torch.tensor(dts_scaled[start:end], dtype=torch.float32).unsqueeze(0).to(device)
+                w_types = torch.ones(1, window_size, dtype=torch.long).to(device)
 
-            zero_dts = torch.zeros_like(dts_t)
-            seq_len = torch.tensor([n_bars], dtype=torch.long, device=device)
-            model_lam = model.intensity_at(hiddens, cells, zero_dts, seq_len)
-            model_lam = model_lam[0].cpu().numpy()
+                if use_v2:
+                    w_states = torch.tensor(state_vecs[start:end], dtype=torch.float32).unsqueeze(0).to(device)
+                    h, c = model.forward_sequence(w_types, w_dts, w_states)
+                else:
+                    h, c = model.forward_sequence(w_types, w_dts)
 
-        # Compute price-derived activity
+                z = torch.zeros_like(w_dts)
+                sl = torch.tensor([window_size], dtype=torch.long, device=device)
+                w_lam = model.intensity_at(h, c, z, sl)[0].cpu().numpy()
+                model_lam[start:end] += w_lam
+                lam_counts[start:end] += 1.0
+
+        lam_counts = np.maximum(lam_counts, 1.0)
+        model_lam = model_lam / lam_counts
+
+        # Price-derived activity
         price_activity = _compute_price_activity(hist)
         if len(price_activity) == n_bars + 1:
             price_activity = price_activity[1:]
         elif len(price_activity) > n_bars:
             price_activity = price_activity[-n_bars:]
 
-        # Model modulates price activity (30% weight when trained)
-        blend_weight = 0.3 if has_checkpoint else 0.2
-        m_min, m_max = model_lam.min(), model_lam.max()
-        model_norm = (model_lam - m_min) / (m_max - m_min) if m_max > m_min else np.full(n_bars, 0.5)
+        # Z-score normalize model output to preserve relative peaks
+        m_mean, m_std = model_lam.mean(), model_lam.std()
+        if m_std > 1e-8:
+            model_zscore = (model_lam - m_mean) / m_std
+            model_norm = np.clip(model_zscore, -3, 3) / 6.0 + 0.5
+        else:
+            model_norm = np.full(n_bars, 0.5)
+
+        blend_weight = 0.4 if has_checkpoint else 0.2
         blended = blend_weight * model_norm + (1 - blend_weight) * price_activity
         blended_scaled = 0.1 + blended * 1.9
 
-        # Build per-bar time axis
-        bar_times = np.concatenate([[0.0], np.cumsum(dts_scaled)])[1:]
-
-        # Apply regime-aware policy
-        policy = RegimeAwarePolicy(PolicyConfig(
-            entry_mult=1.3, exit_mult=1.8, hysteresis=0.03, cooldown_steps=3,
-            vol_window=min(15, max(5, n_bars // 4)),
-        ))
-        signals = policy.apply(blended_scaled, bar_times)
-
-        # Apply regime gate to filter signals (if vol features are available)
-        gate = RegimeGate(RegimeGateConfig(min_confidence=0.65))
-        filtered_signals = []
-        for s in signals:
-            bar_idx = min(s.step + 1, len(vf.realized_vol) - 1)
-            rv = float(vf.realized_vol[bar_idx])
-            # Simple regime estimate from vol level
-            if rv < median_rv * 0.7:
-                regime = Regime.LOW
-            elif rv > median_rv * 1.5:
-                regime = Regime.HIGH
-            else:
-                regime = Regime.NORMAL
-            regime_conf = 0.75  # reasonable default without full HMM
-
-            if s.signal == Signal.ENTER:
-                ok, _ = gate.allows_enter(regime, regime_conf, rv, median_rv)
-            elif s.signal == Signal.EXIT:
-                ok, _ = gate.allows_exit(regime, regime_conf, rv, median_rv)
-            else:
-                ok = True
-            if ok:
-                filtered_signals.append(s)
+        # Momentum-based signal generation
+        lookback = min(10, max(3, n_bars // 100))
+        cooldown = 4
+        cooldown_counter = 0
+        gate = RegimeGate(RegimeGateConfig(min_confidence=0.55))
 
         signal_list = []
-        label_map = {Signal.ENTER: 'ENTER', Signal.EXIT: 'EXIT', Signal.HOLD: 'HOLD'}
-        for s in filtered_signals:
-            signal_list.append({
-                'step': s.step, 'time': float(s.time),
-                'signal': label_map.get(s.signal, 'HOLD'),
-                'lambda_t': float(s.lambda_t), 'baseline': float(s.baseline),
-                'confidence': float(s.confidence), 'bar_index': s.step,
-            })
+        for i in range(lookback, n_bars):
+            if cooldown_counter > 0:
+                cooldown_counter -= 1
+                continue
+
+            local_window = blended_scaled[max(0, i - lookback):i]
+            local_mean = np.mean(local_window)
+            local_std = np.std(local_window) if len(local_window) > 1 else 0.01
+            current = blended_scaled[i]
+            z_val = (current - local_mean) / max(local_std, 1e-6)
+
+            bi = min(i + 1, len(vf.realized_vol) - 1)
+            rv = float(vf.realized_vol[bi])
+            regime = Regime(regimes[bi])
+            regime_conf = float(max(state_vecs[min(i, len(state_vecs)-1), 3],
+                                    state_vecs[min(i, len(state_vecs)-1), 4],
+                                    state_vecs[min(i, len(state_vecs)-1), 5]))
+
+            if z_val > 1.5 and current > local_mean + 1.0 * local_std:
+                ok, _ = gate.allows_enter(regime, regime_conf, rv, median_rv)
+                if ok:
+                    signal_list.append({
+                        'step': i, 'time': float(i),
+                        'signal': 'ENTER', 'lambda_t': float(current),
+                        'baseline': float(local_mean), 'confidence': float(abs(z_val) / 3.0),
+                        'bar_index': i,
+                    })
+                    cooldown_counter = cooldown
+            elif z_val < -1.5 and current < local_mean - 1.0 * local_std:
+                ok, _ = gate.allows_exit(regime, regime_conf, rv, median_rv)
+                if ok:
+                    signal_list.append({
+                        'step': i, 'time': float(i),
+                        'signal': 'EXIT', 'lambda_t': float(current),
+                        'baseline': float(local_mean), 'confidence': float(abs(z_val) / 3.0),
+                        'bar_index': i,
+                    })
+                    cooldown_counter = cooldown
+
+        # Build per-bar time axis
+        bar_times = np.concatenate([[0.0], np.cumsum(dts_scaled)])[1:]
 
         mean_lam = float(np.mean(blended_scaled))
         std_lam = float(np.std(blended_scaled))
