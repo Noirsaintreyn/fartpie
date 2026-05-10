@@ -349,19 +349,28 @@ def run_inference(
     else:
         model_norm = np.full(n_bars, 0.5)
     
-    bw = blend_weight if has_ckpt else 0.2
+    bw = 0.5 if has_ckpt else 0.2
     blended = bw * model_norm + (1 - bw) * pa
     blended_scaled = 0.1 + blended * 1.9
     
-    # Momentum-based signal generation using intensity changes
-    # Aligned with Hawkes clustering: spikes → entry, drops → exit
+    # Selective signal generation: intensity spike + price momentum confirmation
+    # Higher thresholds for fewer, higher-quality signals
     lookback = min(10, max(3, n_bars // 100))
-    cooldown = 4
+    cooldown = 6
     cooldown_counter = 0
     
     gate = RegimeGate(RegimeGateConfig(min_confidence=0.55))
     median_rv_pos = vf.realized_vol[vf.realized_vol > 0]
     median_rv = float(np.median(median_rv_pos)) if len(median_rv_pos) > 0 else 1e-8
+    
+    # Price data for momentum confirmation
+    closes = df['Close'].values.astype(np.float64)
+    # Short EMA for trend confirmation (5-bar)
+    ema5 = np.zeros(len(closes))
+    ema5[0] = closes[0]
+    alpha = 2.0 / 6.0
+    for j in range(1, len(closes)):
+        ema5[j] = alpha * closes[j] + (1 - alpha) * ema5[j - 1]
     
     filtered_signals = []
     
@@ -374,8 +383,6 @@ def run_inference(
         local_window = blended_scaled[max(0, i - lookback):i]
         local_mean = np.mean(local_window)
         local_std = np.std(local_window) if len(local_window) > 1 else 0.01
-        local_min = np.min(local_window)
-        local_max = np.max(local_window)
         
         current = blended_scaled[i]
         z = (current - local_mean) / max(local_std, 1e-6)
@@ -386,26 +393,36 @@ def run_inference(
         regime = Regime(regimes[bi])
         regime_conf = float(max(states[bi, 3], states[bi, 4], states[bi, 5]))
         
-        # ENTER: intensity spike above local context (z > 1.5)
-        # Combined with price activity being elevated
-        if z > 1.5 and current > local_mean + 1.0 * local_std:
-            ok, _ = gate.allows_enter(regime, regime_conf, rv, median_rv)
-            if ok:
-                filtered_signals.append({
-                    'step': i, 'time': float(i),
-                    'signal': 'ENTER', 'bar_index': i,
-                })
-                cooldown_counter = cooldown
+        # Price indices (offset by 1 since dts are between bars)
+        price_idx = min(i + 1, len(closes) - 1)
+        prev_idx = max(0, price_idx - 1)
         
-        # EXIT: intensity drops sharply from local max (z < -1.5)
-        elif z < -1.5 and current < local_mean - 1.0 * local_std:
-            ok, _ = gate.allows_exit(regime, regime_conf, rv, median_rv)
-            if ok:
-                filtered_signals.append({
-                    'step': i, 'time': float(i),
-                    'signal': 'EXIT', 'bar_index': i,
-                })
-                cooldown_counter = cooldown
+        # ENTER: intensity spike (z > 2.0) + price momentum confirmation
+        # Price must be: (1) close > prev close AND (2) close > EMA5
+        if z > 2.0 and current > local_mean + 1.5 * local_std:
+            price_rising = closes[price_idx] > closes[prev_idx]
+            above_ema = closes[price_idx] > ema5[price_idx]
+            if price_rising and above_ema:
+                ok, _ = gate.allows_enter(regime, regime_conf, rv, median_rv)
+                if ok:
+                    filtered_signals.append({
+                        'step': i, 'time': float(i),
+                        'signal': 'ENTER', 'bar_index': i,
+                    })
+                    cooldown_counter = cooldown
+        
+        # EXIT: intensity drops sharply (z < -2.0) + price falling
+        elif z < -2.0 and current < local_mean - 1.5 * local_std:
+            price_falling = closes[price_idx] < closes[prev_idx]
+            below_ema = closes[price_idx] < ema5[price_idx]
+            if price_falling and below_ema:
+                ok, _ = gate.allows_exit(regime, regime_conf, rv, median_rv)
+                if ok:
+                    filtered_signals.append({
+                        'step': i, 'time': float(i),
+                        'signal': 'EXIT', 'bar_index': i,
+                    })
+                    cooldown_counter = cooldown
     
     n_enter = sum(1 for s in filtered_signals if s['signal'] == 'ENTER')
     n_exit = sum(1 for s in filtered_signals if s['signal'] == 'EXIT')

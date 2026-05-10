@@ -4291,15 +4291,23 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v2_best.pt'):
         else:
             model_norm = np.full(n_bars, 0.5)
 
-        blend_weight = 0.4 if has_checkpoint else 0.2
+        blend_weight = 0.5 if has_checkpoint else 0.2
         blended = blend_weight * model_norm + (1 - blend_weight) * price_activity
         blended_scaled = 0.1 + blended * 1.9
 
-        # Momentum-based signal generation
+        # Selective signal generation: intensity spike + price momentum confirmation
         lookback = min(10, max(3, n_bars // 100))
-        cooldown = 4
+        cooldown = 6
         cooldown_counter = 0
         gate = RegimeGate(RegimeGateConfig(min_confidence=0.55))
+
+        # Price data for momentum confirmation
+        hist_closes = hist['Close'].values.astype(np.float64)
+        ema5 = np.zeros(len(hist_closes))
+        ema5[0] = hist_closes[0]
+        ema_alpha = 2.0 / 6.0
+        for j in range(1, len(hist_closes)):
+            ema5[j] = ema_alpha * hist_closes[j] + (1 - ema_alpha) * ema5[j - 1]
 
         signal_list = []
         for i in range(lookback, n_bars):
@@ -4320,26 +4328,35 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v2_best.pt'):
                                     state_vecs[min(i, len(state_vecs)-1), 4],
                                     state_vecs[min(i, len(state_vecs)-1), 5]))
 
-            if z_val > 1.5 and current > local_mean + 1.0 * local_std:
-                ok, _ = gate.allows_enter(regime, regime_conf, rv, median_rv)
-                if ok:
-                    signal_list.append({
-                        'step': i, 'time': float(i),
-                        'signal': 'ENTER', 'lambda_t': float(current),
-                        'baseline': float(local_mean), 'confidence': float(abs(z_val) / 3.0),
-                        'bar_index': i,
-                    })
-                    cooldown_counter = cooldown
-            elif z_val < -1.5 and current < local_mean - 1.0 * local_std:
-                ok, _ = gate.allows_exit(regime, regime_conf, rv, median_rv)
-                if ok:
-                    signal_list.append({
-                        'step': i, 'time': float(i),
-                        'signal': 'EXIT', 'lambda_t': float(current),
-                        'baseline': float(local_mean), 'confidence': float(abs(z_val) / 3.0),
-                        'bar_index': i,
-                    })
-                    cooldown_counter = cooldown
+            price_idx = min(i + 1, len(hist_closes) - 1)
+            prev_idx = max(0, price_idx - 1)
+
+            if z_val > 2.0 and current > local_mean + 1.5 * local_std:
+                price_rising = hist_closes[price_idx] > hist_closes[prev_idx]
+                above_ema = hist_closes[price_idx] > ema5[price_idx]
+                if price_rising and above_ema:
+                    ok, _ = gate.allows_enter(regime, regime_conf, rv, median_rv)
+                    if ok:
+                        signal_list.append({
+                            'step': i, 'time': float(i),
+                            'signal': 'ENTER', 'lambda_t': float(current),
+                            'baseline': float(local_mean), 'confidence': float(abs(z_val) / 3.0),
+                            'bar_index': i,
+                        })
+                        cooldown_counter = cooldown
+            elif z_val < -2.0 and current < local_mean - 1.5 * local_std:
+                price_falling = hist_closes[price_idx] < hist_closes[prev_idx]
+                below_ema = hist_closes[price_idx] < ema5[price_idx]
+                if price_falling and below_ema:
+                    ok, _ = gate.allows_exit(regime, regime_conf, rv, median_rv)
+                    if ok:
+                        signal_list.append({
+                            'step': i, 'time': float(i),
+                            'signal': 'EXIT', 'lambda_t': float(current),
+                            'baseline': float(local_mean), 'confidence': float(abs(z_val) / 3.0),
+                            'bar_index': i,
+                        })
+                        cooldown_counter = cooldown
 
         # Build per-bar time axis
         bar_times = np.concatenate([[0.0], np.cumsum(dts_scaled)])[1:]
