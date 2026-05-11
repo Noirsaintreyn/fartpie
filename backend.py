@@ -4164,133 +4164,161 @@ def _compute_price_activity(hist):
     return activity
 
 
+# ── Cached NHP model (loaded once at module level, not per-request) ──────────
+_nhp_cache = {'model': None, 'cfg': None, 'loaded': False}
+
+
+def _get_nhp_model(checkpoint_path='nhp_v3_regime_best.pt'):
+    """Load NHP model once and cache it. Returns (model, has_checkpoint)."""
+    if _nhp_cache['loaded']:
+        return _nhp_cache['model'], _nhp_cache['model'] is not None
+
+    device = torch.device('cpu')
+    has_checkpoint = os.path.exists(checkpoint_path)
+
+    if has_checkpoint:
+        try:
+            ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
+            cfg = ckpt.get('cfg')
+            if cfg is not None and hasattr(cfg, 'n_regimes'):
+                model = NHPv3(cfg)
+                model.load_state_dict(ckpt['state'])
+            else:
+                cfg = NHPv3Config(embed_dim=16, hidden_dim=32, num_heads=2)
+                model = NHPv3(cfg)
+                model.load_state_dict(ckpt.get('model_state', ckpt.get('state')))
+            del ckpt
+            model.eval()
+            _nhp_cache['model'] = model
+            _nhp_cache['cfg'] = cfg
+            _nhp_cache['loaded'] = True
+            return model, True
+        except Exception as e:
+            print(f"NHP: Could not load checkpoint ({e})")
+
+    cfg = NHPv3Config(embed_dim=16, hidden_dim=32, num_heads=2)
+    model = NHPv3(cfg)
+    model.eval()
+    _nhp_cache['model'] = model
+    _nhp_cache['cfg'] = cfg
+    _nhp_cache['loaded'] = True
+    return model, False
+
+
 def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v3_regime_best.pt'):
     """
     Run NHP v3 Regime-Mixture model with Kalman-filtered slope detection.
-
-    Architecture:
-    - State vectors injected at embedding AND intensity head
-    - 3-expert regime-mixture intensity (soft-gated by P(regime))
-    - Auxiliary cluster quality score gates ENTER signals
-    - Kalman-filtered slope detection for signals (not z-score spikes)
-
-    Returns:
-        dict with intensity_times, intensity_values, signals, summary
-        or None on failure.
+    Memory-optimized for Render free tier (512MB).
     """
     if not (TORCH_AVAILABLE and NHP_AVAILABLE):
         return None
 
+    import gc
+
     try:
-        import pandas as pd
+        # Cap input to 500 bars max to limit memory usage on Render
+        max_bars = 500
+        if len(hist) > max_bars:
+            hist = hist.iloc[-max_bars:]
 
         dts = ohlc_inter_arrival_times(hist)
         if len(dts) < 5:
             return None
 
         n_bars = len(dts)
+        dts_arr = np.array(dts, dtype=np.float32)  # float32 not float64
+        median_dt = float(np.median(dts_arr))
+        scale = median_dt if median_dt > 0 else 1.0
+        dts_scaled = dts_arr / scale
 
-        # Scale inter-arrival times so median = 1.0
-        dts_arr = np.array(dts, dtype=np.float64)
-        median_dt = np.median(dts_arr)
-        scale = median_dt if median_dt > 0 else (np.mean(dts_arr) if np.mean(dts_arr) > 0 else 1.0)
-        dts_scaled = (dts_arr / scale).tolist()
-
-        has_checkpoint = os.path.exists(checkpoint_path)
         device = torch.device('cpu')
+        prices = hist['Close'].values.astype(np.float32)  # float32 saves memory
+        bar_timestamps = np.arange(len(prices), dtype=np.float32)
 
-        # Compute vol features and fit HMM regime detector
-        prices = hist['Close'].values.astype(np.float64)
-        bar_timestamps = np.arange(len(prices), dtype=np.float64)
-        vf = compute_vol_features(prices, bar_timestamps)
+        # Regime detection: use uniform probs (skip expensive HMM fitting)
+        # The model was trained with HMM probs but uniform probs still work
+        # because the regime-mixture head soft-gates by these values
+        regime_probs = np.tile([0.33, 0.34, 0.33], (len(prices), 1)).astype(np.float32)
 
-        # Fit HMM on training portion (first 80%) for regime detection
-        train_cutoff = int(len(prices) * 0.8)
-        train_vf = compute_vol_features(prices[:train_cutoff], bar_timestamps[:train_cutoff])
-        detector = RegimeDetector(n_states=3, n_iter=200, random_state=42)
+        # Lightweight vol features (skip full HMM fitting to save memory)
         try:
-            detector.fit(train_vf)
-            regimes, regime_probs = detector.predict(vf)
-        except Exception:
-            regimes = np.ones(len(prices), dtype=int)
-            regime_probs = np.tile([0.33, 0.34, 0.33], (len(prices), 1))
+            vf = compute_vol_features(prices, bar_timestamps)
+            pos_rv = vf.realized_vol[vf.realized_vol > 0]
+            median_rv = float(np.median(pos_rv)) if len(pos_rv) > 0 else 1e-8
 
-        # Build state vectors for v3 regime model
-        pos_rv = vf.realized_vol[vf.realized_vol > 0]
-        median_rv = float(np.median(pos_rv)) if len(pos_rv) > 0 else 1e-8
+            # Try HMM with reduced iterations for regime probs
+            try:
+                train_cutoff = int(len(prices) * 0.8)
+                train_vf = compute_vol_features(
+                    prices[:train_cutoff], bar_timestamps[:train_cutoff]
+                )
+                detector = RegimeDetector(n_states=3, n_iter=50, random_state=42)
+                detector.fit(train_vf)
+                _, regime_probs = detector.predict(vf)
+                regime_probs = regime_probs.astype(np.float32)
+                del detector, train_vf
+            except Exception:
+                pass  # keep uniform probs
+        except Exception:
+            median_rv = 1e-8
+            vf = None
+
+        # Build state vectors
         clip_max = 5.0
         state_vecs = np.zeros((n_bars, 6), dtype=np.float32)
-        for i in range(n_bars):
-            bi = min(i + 1, len(vf.realized_vol) - 1)
-            state_vecs[i, 0] = min(vf.realized_vol[bi] / (median_rv + 1e-8), clip_max)
-            state_vecs[i, 1] = min(vf.vol_of_vol[bi] / (median_rv + 1e-8), clip_max)
-            state_vecs[i, 2] = min(abs(vf.return_skew[bi]), clip_max)
-            state_vecs[i, 3:6] = regime_probs[bi]
+        if vf is not None:
+            for i in range(n_bars):
+                bi = min(i + 1, len(vf.realized_vol) - 1)
+                state_vecs[i, 0] = min(vf.realized_vol[bi] / (median_rv + 1e-8), clip_max)
+                state_vecs[i, 1] = min(vf.vol_of_vol[bi] / (median_rv + 1e-8), clip_max)
+                state_vecs[i, 2] = min(abs(vf.return_skew[bi]), clip_max)
+                state_vecs[i, 3:6] = regime_probs[bi]
+        else:
+            state_vecs[:, 3:6] = regime_probs[:n_bars]
+        del vf, regime_probs
+        gc.collect()
 
-        # Load regime-mixture v3 model
-        if has_checkpoint:
-            try:
-                ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
-                cfg = ckpt.get('cfg')
-                if cfg is not None and hasattr(cfg, 'n_regimes'):
-                    model = NHPv3(cfg)
-                    model.load_state_dict(ckpt['state'])
-                else:
-                    cfg = NHPv3Config(embed_dim=16, hidden_dim=32, num_heads=2)
-                    model = NHPv3(cfg)
-                    model.load_state_dict(ckpt.get('model_state', ckpt.get('state')))
-            except Exception as e:
-                print(f"NHP: Could not load checkpoint ({e}), using untrained model")
-                has_checkpoint = False
+        # Load cached model (not re-loaded per request)
+        model, has_checkpoint = _get_nhp_model(checkpoint_path)
 
-        if not has_checkpoint:
-            cfg = NHPv3Config(embed_dim=16, hidden_dim=32, num_heads=2)
-            model = NHPv3(cfg)
-
-        model.eval()
-        model = model.to(device)
-
-        # Windowed inference with regime-mixture v3 API
+        # Windowed inference
         window_size = 20
         stride = 10
-        model_lam = np.zeros(n_bars, dtype=np.float64)
-        cluster_prob = np.zeros(n_bars, dtype=np.float64)
-        lam_counts = np.zeros(n_bars, dtype=np.float64)
+        model_lam = np.zeros(n_bars, dtype=np.float32)
+        cluster_prob = np.zeros(n_bars, dtype=np.float32)
+        lam_counts = np.zeros(n_bars, dtype=np.float32)
 
         with torch.no_grad():
             for start in range(0, n_bars - window_size + 1, stride):
                 end = start + window_size
-                w_dts = torch.tensor(dts_scaled[start:end], dtype=torch.float32).unsqueeze(0).to(device)
-                w_types = torch.ones(1, window_size, dtype=torch.long).to(device)
-                w_states = torch.tensor(state_vecs[start:end], dtype=torch.float32).unsqueeze(0).to(device)
-                sl = torch.tensor([window_size], dtype=torch.long, device=device)
+                w_dts = torch.tensor(dts_scaled[start:end], dtype=torch.float32).unsqueeze(0)
+                w_types = torch.ones(1, window_size, dtype=torch.long)
+                w_states = torch.tensor(state_vecs[start:end], dtype=torch.float32).unsqueeze(0)
+                sl = torch.tensor([window_size], dtype=torch.long)
 
                 lams, cscores = model.predict(w_types, w_dts, w_states, sl)
-                w_lam = lams[0].cpu().numpy()
-                w_cp = cscores[0].cpu().numpy()
-
-                model_lam[start:end] += w_lam
-                cluster_prob[start:end] += w_cp
+                model_lam[start:end] += lams[0].cpu().numpy()
+                cluster_prob[start:end] += cscores[0].cpu().numpy()
                 lam_counts[start:end] += 1.0
+
+        del state_vecs, dts_scaled
+        gc.collect()
 
         lam_counts = np.maximum(lam_counts, 1.0)
         model_lam /= lam_counts
         cluster_prob /= lam_counts
+        del lam_counts
 
-        # Kalman filter smoothing + slope detection for signals
+        # Kalman filter + signals
         close_prices = prices[1:] if len(prices) > n_bars else prices[-n_bars:]
-        kout = kalman_pipeline(close_prices, model_lam)
+        kout = kalman_pipeline(close_prices.astype(np.float64), model_lam.astype(np.float64))
 
-        # Generate signals via Kalman policy (slope-based, not z-score spikes)
         kpolicy = KalmanPolicy(KalmanPolicyConfig(
-            entry_slope_z=1.0,
-            exit_slope_z=-1.0,
-            min_confidence=0.0,
-            cooldown_steps=6,
+            entry_slope_z=1.0, exit_slope_z=-1.0,
+            min_confidence=0.0, cooldown_steps=6,
         ))
         raw_signals = kpolicy.apply(kout)
 
-        # Filter ENTER signals by cluster quality probability
         signal_list = []
         for sig in raw_signals:
             cp = cluster_prob[sig.step] if sig.step < len(cluster_prob) else 0.0
@@ -4305,15 +4333,16 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v3_regime_best.pt'):
                 'cluster_prob': float(cp),
             })
 
-        # Use smoothed intensity for display
+        # Display values
         blended_scaled = kout.smoothed.copy()
         bl_min, bl_max = blended_scaled.min(), blended_scaled.max()
         if bl_max > bl_min:
             blended_scaled = 0.1 + (blended_scaled - bl_min) / (bl_max - bl_min) * 1.9
         else:
             blended_scaled = np.full(n_bars, 1.0)
+        del kout
 
-        bar_times = np.concatenate([[0.0], np.cumsum(dts_scaled)])[1:]
+        bar_times = np.concatenate([[0.0], np.cumsum(dts_arr / scale)])[1:]
 
         mean_lam = float(np.mean(model_lam))
         std_lam = float(np.std(model_lam))
@@ -4325,6 +4354,8 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v3_regime_best.pt'):
         opens = hist['Open'].values[1:].tolist()
         highs = hist['High'].values[1:].tolist()
         lows = hist['Low'].values[1:].tolist()
+
+        gc.collect()
 
         return {
             'success': True,
@@ -4353,6 +4384,7 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v3_regime_best.pt'):
     except Exception as e:
         import traceback
         print(f"NHP inference failed: {traceback.format_exc()}")
+        gc.collect()
         return None
 
 
@@ -5652,16 +5684,20 @@ def get_nhp_signals():
     timeframe = request.args.get('timeframe', '1d').strip().lower()
 
     try:
+        import gc
+        # Memory-safe periods: cap data fetched to avoid OOM on Render free tier
         max_period = {
-            '1m': '7d', '5m': '60d', '15m': '60d',
-            '1h': '2y', '4h': '2y', '1d': 'max', '1wk': 'max',
-        }.get(timeframe, '2y')
+            '1m': '7d', '5m': '30d', '15m': '30d',
+            '1h': '60d', '4h': '200d', '1d': '2y', '1wk': '2y',
+        }.get(timeframe, '60d')
         hist = fetch_historical_data_with_resampling(ticker, timeframe, period=max_period)
 
         if hist is None or len(hist) < 10:
             return jsonify({'success': False, 'error': f'Not enough data for {ticker} @ {timeframe}'}), 400
 
         result = run_nhp_on_ohlc(hist)
+        del hist
+        gc.collect()
         if result is None:
             return jsonify({'success': False, 'error': 'NHP inference failed'}), 500
 
@@ -5669,13 +5705,13 @@ def get_nhp_signals():
             'success': True,
             'ticker': ticker,
             'timeframe': timeframe,
-            'bars': len(hist),
             **result,
         })
 
     except Exception as e:
         import traceback
         print(f"ERROR in /api/nhp-signals: {traceback.format_exc()}")
+        gc.collect()
         return jsonify({'success': False, 'error': str(e)}), 400
 
 
