@@ -42,8 +42,8 @@ except ImportError:
     nn = None
 
 try:
+    from nhp_model_v3 import NeuralHawkesProcess as NHPv3, NHPConfig as NHPv3Config
     from nhp_model import NeuralHawkesProcess, NHPConfig
-    from nhp_model_v2 import StateDependentNHP, NHPv2Config
     from nhp_data import ohlc_to_event_sequences, ohlc_inter_arrival_times
     from nhp_policy import RegimeAwarePolicy, PolicyConfig, Signal
     from nhp_regime import compute_vol_features, RegimeDetector, RegimeGate, RegimeGateConfig, Regime
@@ -4161,7 +4161,7 @@ def _compute_price_activity(hist):
     return activity
 
 
-def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v2_best.pt'):
+def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v3_best.pt'):
     """
     Run State-Dependent Neural Hawkes Process (v2) with regime gating.
 
@@ -4210,46 +4210,34 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v2_best.pt'):
             regimes = np.ones(len(prices), dtype=int)
             regime_probs = np.tile([0.33, 0.34, 0.33], (len(prices), 1))
 
-        # Build state vectors with clipped vol features and real regime probs
-        state_vecs = np.zeros((n_bars, 6), dtype=np.float32)
+        # Median vol for regime gate
         pos_rv = vf.realized_vol[vf.realized_vol > 0]
         median_rv = float(np.median(pos_rv)) if len(pos_rv) > 0 else 1e-8
-        clip_max = 5.0
-        for i in range(n_bars):
-            bar_idx = i + 1
-            if bar_idx < len(vf.realized_vol):
-                state_vecs[i, 0] = min(vf.realized_vol[bar_idx] / (median_rv + 1e-8), clip_max)
-                state_vecs[i, 1] = min(vf.vol_of_vol[bar_idx] / (median_rv + 1e-8), clip_max)
-                state_vecs[i, 2] = min(abs(vf.return_skew[bar_idx]), clip_max)
-                state_vecs[i, 3:6] = regime_probs[bar_idx]
 
-        # Load v2 model
-        use_v2 = False
+        # Load v3 model (no state vectors needed)
         if has_checkpoint:
             try:
                 ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
                 cfg = ckpt.get('cfg')
-                if cfg is not None and hasattr(cfg, 'state_dim'):
-                    model = StateDependentNHP(cfg)
+                if cfg is not None and hasattr(cfg, 'softplus_beta'):
+                    model = NHPv3(cfg)
                     model.load_state_dict(ckpt['state'])
-                    use_v2 = True
                 else:
-                    cfg_v1 = NHPConfig(embed_dim=16, hidden_dim=32, num_heads=2)
-                    model = NeuralHawkesProcess(cfg_v1)
+                    cfg = NHPv3Config(embed_dim=16, hidden_dim=32, num_heads=2)
+                    model = NHPv3(cfg)
                     model.load_state_dict(ckpt.get('model_state', ckpt.get('state')))
             except Exception as e:
                 print(f"NHP: Could not load checkpoint ({e}), using untrained model")
                 has_checkpoint = False
 
         if not has_checkpoint:
-            cfg = NHPv2Config(embed_dim=16, hidden_dim=32, state_dim=6, state_hidden=8)
-            model = StateDependentNHP(cfg)
-            use_v2 = True
+            cfg = NHPv3Config(embed_dim=16, hidden_dim=32, num_heads=2)
+            model = NHPv3(cfg)
 
         model.eval()
         model = model.to(device)
 
-        # Windowed inference — match training window size
+        # Windowed inference with v3 API (returns 4 tensors)
         window_size = 20
         stride = 10
         model_lam = np.zeros(n_bars, dtype=np.float64)
@@ -4261,15 +4249,10 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v2_best.pt'):
                 w_dts = torch.tensor(dts_scaled[start:end], dtype=torch.float32).unsqueeze(0).to(device)
                 w_types = torch.ones(1, window_size, dtype=torch.long).to(device)
 
-                if use_v2:
-                    w_states = torch.tensor(state_vecs[start:end], dtype=torch.float32).unsqueeze(0).to(device)
-                    h, c = model.forward_sequence(w_types, w_dts, w_states)
-                else:
-                    h, c = model.forward_sequence(w_types, w_dts)
-
+                hiddens, cells, cbars, outputs = model.forward_sequence(w_types, w_dts)
                 z = torch.zeros_like(w_dts)
                 sl = torch.tensor([window_size], dtype=torch.long, device=device)
-                w_lam = model.intensity_at(h, c, z, sl)[0].cpu().numpy()
+                w_lam = model.intensity_at(hiddens, cells, z, sl, cbars, outputs)[0].cpu().numpy()
                 model_lam[start:end] += w_lam
                 lam_counts[start:end] += 1.0
 
@@ -4324,9 +4307,7 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v2_best.pt'):
             bi = min(i + 1, len(vf.realized_vol) - 1)
             rv = float(vf.realized_vol[bi])
             regime = Regime(regimes[bi])
-            regime_conf = float(max(state_vecs[min(i, len(state_vecs)-1), 3],
-                                    state_vecs[min(i, len(state_vecs)-1), 4],
-                                    state_vecs[min(i, len(state_vecs)-1), 5]))
+            regime_conf = float(max(regime_probs[bi]))
 
             price_idx = min(i + 1, len(hist_closes) - 1)
             prev_idx = max(0, price_idx - 1)
