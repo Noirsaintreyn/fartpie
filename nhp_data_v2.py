@@ -99,7 +99,10 @@ class StateAwareDataset(Dataset):
             L = len(dts)
             if L < 2:
                 continue
-            self.data.append({'dts': dts, 'types': types, 'states': state, 'length': L})
+            item = {'dts': dts, 'types': types, 'states': state, 'length': L}
+            if 'cluster_labels' in seq:
+                item['cluster_labels'] = seq['cluster_labels'][:max_len]
+            self.data.append(item)
 
     def __len__(self):
         return len(self.data)
