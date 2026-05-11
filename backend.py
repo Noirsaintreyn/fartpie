@@ -42,11 +42,14 @@ except ImportError:
     nn = None
 
 try:
-    from nhp_model_v3 import NeuralHawkesProcess as NHPv3, NHPConfig as NHPv3Config
+    from nhp_model_v3_regime import NHPv3, NHPv3Config
+    from nhp_model_v3 import NeuralHawkesProcess as NHPv3Base, NHPConfig as NHPv3BaseConfig
     from nhp_model import NeuralHawkesProcess, NHPConfig
     from nhp_data import ohlc_to_event_sequences, ohlc_inter_arrival_times
     from nhp_policy import RegimeAwarePolicy, PolicyConfig, Signal
     from nhp_regime import compute_vol_features, RegimeDetector, RegimeGate, RegimeGateConfig, Regime
+    from kalman import kalman_pipeline
+    from policy import KalmanPolicy, KalmanPolicyConfig
     NHP_AVAILABLE = True
 except ImportError:
     NHP_AVAILABLE = False
@@ -4161,14 +4164,15 @@ def _compute_price_activity(hist):
     return activity
 
 
-def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v3_best.pt'):
+def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v3_regime_best.pt'):
     """
-    Run Neural Hawkes Process v3 with regime gating.
+    Run NHP v3 Regime-Mixture model with Kalman-filtered slope detection.
 
-    Uses the v3 model with corrected extrapolation (Mei & Eisner formula),
-    LayerNorm+SiLU intensity head, and magnitude-preserving attention.
-    Blends model intensity with price-derived activity, then applies
-    regime-gated signal filtering with price momentum confirmation.
+    Architecture:
+    - State vectors injected at embedding AND intensity head
+    - 3-expert regime-mixture intensity (soft-gated by P(regime))
+    - Auxiliary cluster quality score gates ENTER signals
+    - Kalman-filtered slope detection for signals (not z-score spikes)
 
     Returns:
         dict with intensity_times, intensity_values, signals, summary
@@ -4211,16 +4215,24 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v3_best.pt'):
             regimes = np.ones(len(prices), dtype=int)
             regime_probs = np.tile([0.33, 0.34, 0.33], (len(prices), 1))
 
-        # Median vol for regime gate
+        # Build state vectors for v3 regime model
         pos_rv = vf.realized_vol[vf.realized_vol > 0]
         median_rv = float(np.median(pos_rv)) if len(pos_rv) > 0 else 1e-8
+        clip_max = 5.0
+        state_vecs = np.zeros((n_bars, 6), dtype=np.float32)
+        for i in range(n_bars):
+            bi = min(i + 1, len(vf.realized_vol) - 1)
+            state_vecs[i, 0] = min(vf.realized_vol[bi] / (median_rv + 1e-8), clip_max)
+            state_vecs[i, 1] = min(vf.vol_of_vol[bi] / (median_rv + 1e-8), clip_max)
+            state_vecs[i, 2] = min(abs(vf.return_skew[bi]), clip_max)
+            state_vecs[i, 3:6] = regime_probs[bi]
 
-        # Load v3 model (no state vectors needed)
+        # Load regime-mixture v3 model
         if has_checkpoint:
             try:
                 ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
                 cfg = ckpt.get('cfg')
-                if cfg is not None and hasattr(cfg, 'softplus_beta'):
+                if cfg is not None and hasattr(cfg, 'n_regimes'):
                     model = NHPv3(cfg)
                     model.load_state_dict(ckpt['state'])
                 else:
@@ -4238,10 +4250,11 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v3_best.pt'):
         model.eval()
         model = model.to(device)
 
-        # Windowed inference with v3 API (returns 4 tensors)
+        # Windowed inference with regime-mixture v3 API
         window_size = 20
         stride = 10
         model_lam = np.zeros(n_bars, dtype=np.float64)
+        cluster_prob = np.zeros(n_bars, dtype=np.float64)
         lam_counts = np.zeros(n_bars, dtype=np.float64)
 
         with torch.no_grad():
@@ -4249,103 +4262,62 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v3_best.pt'):
                 end = start + window_size
                 w_dts = torch.tensor(dts_scaled[start:end], dtype=torch.float32).unsqueeze(0).to(device)
                 w_types = torch.ones(1, window_size, dtype=torch.long).to(device)
-
-                hiddens, cells, cbars, outputs = model.forward_sequence(w_types, w_dts)
-                z = torch.zeros_like(w_dts)
+                w_states = torch.tensor(state_vecs[start:end], dtype=torch.float32).unsqueeze(0).to(device)
                 sl = torch.tensor([window_size], dtype=torch.long, device=device)
-                w_lam = model.intensity_at(hiddens, cells, z, sl, cbars, outputs)[0].cpu().numpy()
+
+                lams, cscores = model.predict(w_types, w_dts, w_states, sl)
+                w_lam = lams[0].cpu().numpy()
+                w_cp = cscores[0].cpu().numpy()
+
                 model_lam[start:end] += w_lam
+                cluster_prob[start:end] += w_cp
                 lam_counts[start:end] += 1.0
 
         lam_counts = np.maximum(lam_counts, 1.0)
-        model_lam = model_lam / lam_counts
+        model_lam /= lam_counts
+        cluster_prob /= lam_counts
 
-        # Price-derived activity
-        price_activity = _compute_price_activity(hist)
-        if len(price_activity) == n_bars + 1:
-            price_activity = price_activity[1:]
-        elif len(price_activity) > n_bars:
-            price_activity = price_activity[-n_bars:]
+        # Kalman filter smoothing + slope detection for signals
+        close_prices = prices[1:] if len(prices) > n_bars else prices[-n_bars:]
+        kout = kalman_pipeline(close_prices, model_lam)
 
-        # Z-score normalize model output to preserve relative peaks
-        m_mean, m_std = model_lam.mean(), model_lam.std()
-        if m_std > 1e-8:
-            model_zscore = (model_lam - m_mean) / m_std
-            model_norm = np.clip(model_zscore, -3, 3) / 6.0 + 0.5
-        else:
-            model_norm = np.full(n_bars, 0.5)
+        # Generate signals via Kalman policy (slope-based, not z-score spikes)
+        kpolicy = KalmanPolicy(KalmanPolicyConfig(
+            entry_slope_z=1.0,
+            exit_slope_z=-1.0,
+            min_confidence=0.0,
+            cooldown_steps=6,
+        ))
+        raw_signals = kpolicy.apply(kout)
 
-        blend_weight = 0.5 if has_checkpoint else 0.2
-        blended = blend_weight * model_norm + (1 - blend_weight) * price_activity
-        blended_scaled = 0.1 + blended * 1.9
-
-        # Selective signal generation: intensity spike + price momentum confirmation
-        lookback = min(10, max(3, n_bars // 100))
-        cooldown = 6
-        cooldown_counter = 0
-        gate = RegimeGate(RegimeGateConfig(min_confidence=0.55))
-
-        # Price data for momentum confirmation
-        hist_closes = hist['Close'].values.astype(np.float64)
-        ema5 = np.zeros(len(hist_closes))
-        ema5[0] = hist_closes[0]
-        ema_alpha = 2.0 / 6.0
-        for j in range(1, len(hist_closes)):
-            ema5[j] = ema_alpha * hist_closes[j] + (1 - ema_alpha) * ema5[j - 1]
-
+        # Filter ENTER signals by cluster quality probability
         signal_list = []
-        for i in range(lookback, n_bars):
-            if cooldown_counter > 0:
-                cooldown_counter -= 1
+        for sig in raw_signals:
+            cp = cluster_prob[sig.step] if sig.step < len(cluster_prob) else 0.0
+            if sig.signal == 'ENTER' and cp < 0.3:
                 continue
+            signal_list.append({
+                'step': sig.step, 'time': float(sig.step),
+                'signal': sig.signal, 'lambda_t': float(kout.smoothed[sig.step]),
+                'baseline': float(np.mean(kout.smoothed)),
+                'confidence': sig.confidence,
+                'bar_index': sig.step,
+                'cluster_prob': float(cp),
+            })
 
-            local_window = blended_scaled[max(0, i - lookback):i]
-            local_mean = np.mean(local_window)
-            local_std = np.std(local_window) if len(local_window) > 1 else 0.01
-            current = blended_scaled[i]
-            z_val = (current - local_mean) / max(local_std, 1e-6)
+        # Use smoothed intensity for display
+        blended_scaled = kout.smoothed.copy()
+        bl_min, bl_max = blended_scaled.min(), blended_scaled.max()
+        if bl_max > bl_min:
+            blended_scaled = 0.1 + (blended_scaled - bl_min) / (bl_max - bl_min) * 1.9
+        else:
+            blended_scaled = np.full(n_bars, 1.0)
 
-            bi = min(i + 1, len(vf.realized_vol) - 1)
-            rv = float(vf.realized_vol[bi])
-            regime = Regime(regimes[bi])
-            regime_conf = float(max(regime_probs[bi]))
-
-            price_idx = min(i + 1, len(hist_closes) - 1)
-            prev_idx = max(0, price_idx - 1)
-
-            if z_val > 2.0 and current > local_mean + 1.5 * local_std:
-                price_rising = hist_closes[price_idx] > hist_closes[prev_idx]
-                above_ema = hist_closes[price_idx] > ema5[price_idx]
-                if price_rising and above_ema:
-                    ok, _ = gate.allows_enter(regime, regime_conf, rv, median_rv)
-                    if ok:
-                        signal_list.append({
-                            'step': i, 'time': float(i),
-                            'signal': 'ENTER', 'lambda_t': float(current),
-                            'baseline': float(local_mean), 'confidence': float(abs(z_val) / 3.0),
-                            'bar_index': i,
-                        })
-                        cooldown_counter = cooldown
-            elif z_val < -2.0 and current < local_mean - 1.5 * local_std:
-                price_falling = hist_closes[price_idx] < hist_closes[prev_idx]
-                below_ema = hist_closes[price_idx] < ema5[price_idx]
-                if price_falling and below_ema:
-                    ok, _ = gate.allows_exit(regime, regime_conf, rv, median_rv)
-                    if ok:
-                        signal_list.append({
-                            'step': i, 'time': float(i),
-                            'signal': 'EXIT', 'lambda_t': float(current),
-                            'baseline': float(local_mean), 'confidence': float(abs(z_val) / 3.0),
-                            'bar_index': i,
-                        })
-                        cooldown_counter = cooldown
-
-        # Build per-bar time axis
         bar_times = np.concatenate([[0.0], np.cumsum(dts_scaled)])[1:]
 
-        mean_lam = float(np.mean(blended_scaled))
-        std_lam = float(np.std(blended_scaled))
-        max_lam = float(np.max(blended_scaled))
+        mean_lam = float(np.mean(model_lam))
+        std_lam = float(np.std(model_lam))
+        max_lam = float(np.max(model_lam))
         n_enter = sum(1 for s in signal_list if s['signal'] == 'ENTER')
         n_exit = sum(1 for s in signal_list if s['signal'] == 'EXIT')
 
