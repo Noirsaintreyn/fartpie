@@ -2,8 +2,10 @@ services:
   - type: web
     name: fartpie
     runtime: python
+    branch: main
+    autoDeploy: true
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn backend:app --bind 0.0.0.0:$PORT --timeout 120 --workers 2
+    startCommand: gunicorn backend:app --bind 0.0.0.0:$PORT --timeout 120 --workers 1
     envVars:
       - key: PYTHON_VERSION
         value: "3.12"
