@@ -4252,7 +4252,7 @@ def run_nhp_on_ohlc(hist, checkpoint_path='nhp_v3_regime_best.pt'):
                 train_vf = compute_vol_features(
                     prices[:train_cutoff], bar_timestamps[:train_cutoff]
                 )
-                detector = RegimeDetector(n_states=3, n_iter=50, random_state=42)
+                detector = RegimeDetector(n_states=3, n_iter=200, random_state=42)
                 detector.fit(train_vf)
                 _, regime_probs = detector.predict(vf)
                 regime_probs = regime_probs.astype(np.float32)
