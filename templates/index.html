@@ -583,6 +583,166 @@
         </div>
     </section>
 
+    <!-- MotiveWave Import Panel -->
+    <section style="padding: 80px 48px; background: rgba(201,162,39,0.02); border-top: 1px solid rgba(201,162,39,0.1);">
+        <div style="max-width: 900px; margin: 0 auto;">
+            <div style="margin-bottom: 48px;">
+                <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:2rem;font-weight:300;color:#fff;margin-bottom:12px;">MotiveWave Import</div>
+                <div style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(201,162,39,0.5);">Upload CSV exports to replace yfinance data for NQ=F / ES=F</div>
+                <div style="width:60px;height:1px;background:rgba(201,162,39,0.3);margin-top:24px;"></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;">
+                <!-- Upload Form -->
+                <div style="background:rgba(201,162,39,0.03);border:1px solid rgba(201,162,39,0.15);padding:40px;">
+                    <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:#fff;margin-bottom:28px;">Upload Data</div>
+
+                    <div style="margin-bottom:20px;">
+                        <label style="font-size:0.65rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:rgba(201,162,39,0.6);display:block;margin-bottom:10px;">Ticker</label>
+                        <input id="mw-ticker" type="text" placeholder="NQ=F" value="NQ=F"
+                            style="width:100%;padding:14px 16px;background:rgba(201,162,39,0.04);border:1px solid rgba(201,162,39,0.18);color:#fff;font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:300;box-sizing:border-box;">
+                    </div>
+
+                    <div style="margin-bottom:20px;">
+                        <label style="font-size:0.65rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:rgba(201,162,39,0.6);display:block;margin-bottom:10px;">Timeframe</label>
+                        <select id="mw-timeframe"
+                            style="width:100%;padding:14px 16px;background:#0a0e1a;border:1px solid rgba(201,162,39,0.18);color:#fff;font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:300;box-sizing:border-box;">
+                            <option value="1h">1 Hour</option>
+                            <option value="4h">4 Hours</option>
+                            <option value="1d">1 Day</option>
+                            <option value="15m">15 Minutes</option>
+                            <option value="5m">5 Minutes</option>
+                            <option value="1m">1 Minute</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom:28px;">
+                        <label style="font-size:0.65rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:rgba(201,162,39,0.6);display:block;margin-bottom:10px;">CSV File</label>
+                        <input id="mw-file" type="file" accept=".csv"
+                            style="width:100%;padding:12px 16px;background:rgba(201,162,39,0.04);border:1px solid rgba(201,162,39,0.18);color:rgba(255,255,255,0.6);font-family:'Inter',sans-serif;font-size:0.8rem;box-sizing:border-box;cursor:pointer;">
+                        <div style="font-size:0.65rem;color:rgba(255,255,255,0.25);margin-top:8px;letter-spacing:0.05em;">
+                            MotiveWave Export: File → Export → CSV Data. Needs Date, Open, High, Low, Close columns.
+                        </div>
+                    </div>
+
+                    <button id="mw-upload-btn" onclick="uploadMotiveWave()"
+                        style="width:100%;padding:16px 32px;background:transparent;border:1px solid rgba(201,162,39,0.3);color:#c9a227;font-family:'Inter',sans-serif;font-size:0.7rem;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:all 0.4s ease;">
+                        Import CSV
+                    </button>
+
+                    <div id="mw-upload-status" style="margin-top:16px;font-size:0.75rem;min-height:24px;"></div>
+                </div>
+
+                <!-- Active Datasets -->
+                <div style="background:rgba(201,162,39,0.03);border:1px solid rgba(201,162,39,0.15);padding:40px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+                        <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:#fff;">Active Datasets</div>
+                        <button onclick="loadMwStatus()" style="background:none;border:1px solid rgba(201,162,39,0.2);color:rgba(201,162,39,0.6);padding:5px 12px;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;">Refresh</button>
+                    </div>
+                    <div id="mw-datasets" style="font-size:0.8rem;color:rgba(255,255,255,0.35);font-style:italic;">
+                        Loading...
+                    </div>
+                    <div style="margin-top:24px;padding-top:20px;border-top:1px solid rgba(201,162,39,0.1);font-size:0.65rem;letter-spacing:0.08em;color:rgba(255,255,255,0.2);line-height:1.8;">
+                        Uploaded data is stored in memory for this session.<br>
+                        Re-upload after server restarts.<br>
+                        <strong style="color:rgba(201,162,39,0.4);">Tip:</strong> Upload 1h data — 4h is auto-resampled from it.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        async function uploadMotiveWave() {
+            const ticker = document.getElementById('mw-ticker').value.trim();
+            const timeframe = document.getElementById('mw-timeframe').value;
+            const file = document.getElementById('mw-file').files[0];
+            const status = document.getElementById('mw-upload-status');
+            const btn = document.getElementById('mw-upload-btn');
+
+            if (!ticker || !file) {
+                status.style.color = '#eb5757';
+                status.textContent = 'Please enter a ticker and select a CSV file.';
+                return;
+            }
+
+            const form = new FormData();
+            form.append('ticker', ticker);
+            form.append('timeframe', timeframe);
+            form.append('file', file);
+
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+            status.style.color = 'rgba(255,255,255,0.4)';
+            status.textContent = 'Parsing CSV...';
+
+            try {
+                const resp = await fetch('/api/motivewave/upload', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: form
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    status.style.color = '#6fcf97';
+                    status.textContent = `✓ ${data.bars} bars imported (${data.start} → ${data.end})`;
+                    loadMwStatus();
+                } else {
+                    status.style.color = '#eb5757';
+                    status.textContent = `Error: ${data.error}`;
+                }
+            } catch (e) {
+                status.style.color = '#eb5757';
+                status.textContent = `Upload failed: ${e.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Import CSV';
+            }
+        }
+
+        async function loadMwStatus() {
+            const container = document.getElementById('mw-datasets');
+            try {
+                const resp = await fetch('/api/motivewave/status', { credentials: 'include' });
+                const data = await resp.json();
+                if (!data.success || data.datasets.length === 0) {
+                    container.innerHTML = '<span style="color:rgba(255,255,255,0.25);font-style:italic;">No datasets uploaded yet. Upload a MotiveWave CSV above.</span>';
+                    return;
+                }
+                container.innerHTML = data.datasets.map(d => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(201,162,39,0.08);">
+                        <div>
+                            <div style="color:#c9a227;font-size:0.85rem;font-weight:500;letter-spacing:0.05em;">${d.ticker} <span style="color:rgba(201,162,39,0.5);font-size:0.7rem;">${d.timeframe.toUpperCase()}</span></div>
+                            <div style="color:rgba(255,255,255,0.3);font-size:0.65rem;margin-top:4px;">${d.bars} bars &nbsp;·&nbsp; ${d.start} → ${d.end}</div>
+                        </div>
+                        <button onclick="deleteMwDataset('${d.key}')"
+                            style="background:none;border:1px solid rgba(235,87,87,0.25);color:rgba(235,87,87,0.5);padding:4px 10px;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;">
+                            Remove
+                        </button>
+                    </div>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = '<span style="color:rgba(235,87,87,0.6);">Could not load status.</span>';
+            }
+        }
+
+        async function deleteMwDataset(key) {
+            try {
+                const resp = await fetch('/api/motivewave/delete', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key })
+                });
+                const data = await resp.json();
+                if (data.success) loadMwStatus();
+            } catch (e) {}
+        }
+
+        // Load status on page load
+        window.addEventListener('load', () => setTimeout(loadMwStatus, 500));
+    </script>
+
     <script>
         const btn = document.getElementById('getForecast');
         const container = document.getElementById('forecastContainer');

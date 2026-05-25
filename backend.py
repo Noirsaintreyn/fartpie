@@ -311,6 +311,81 @@ except (ImportError, AttributeError):
     app = Flask(__name__)
     app.json_encoder = NumpyJSONEncoder
 
+# ============================================================================
+# MOTIVEWAVE DATA STORE — uploaded CSVs take priority over yfinance
+# ============================================================================
+
+import io
+MOTIVEWAVE_DATA: dict = {}  # key: "TICKER_TIMEFRAME" → pd.DataFrame
+
+def mw_key(ticker: str, timeframe: str) -> str:
+    return f"{ticker.upper()}_{timeframe.lower()}"
+
+def parse_motivewave_csv(content: str, ticker: str, timeframe: str) -> pd.DataFrame:
+    """
+    Parse a MotiveWave CSV export into a standard OHLCV DataFrame.
+    MotiveWave exports columns like: Date, Time, Open, High, Low, Close, Volume
+    or combined DateTime column.
+    """
+    df = pd.read_csv(io.StringIO(content))
+    df.columns = [c.strip() for c in df.columns]
+
+    # Normalize column names (case-insensitive)
+    col_map = {c.lower(): c for c in df.columns}
+
+    # Build datetime index
+    if 'datetime' in col_map:
+        df['_dt'] = pd.to_datetime(df[col_map['datetime']], infer_datetime_format=True)
+    elif 'date' in col_map and 'time' in col_map:
+        df['_dt'] = pd.to_datetime(df[col_map['date']].astype(str) + ' ' + df[col_map['time']].astype(str), infer_datetime_format=True)
+    elif 'date' in col_map:
+        df['_dt'] = pd.to_datetime(df[col_map['date']], infer_datetime_format=True)
+    else:
+        raise ValueError("MotiveWave CSV must have a Date, DateTime, or Date+Time column.")
+
+    df = df.set_index('_dt')
+    df.index.name = 'Datetime'
+    df.index = df.index.tz_localize(None)  # Remove tz if present
+
+    # Map OHLCV columns
+    ohlcv = {}
+    for std, alts in [('Open', ['open', 'o']), ('High', ['high', 'h']),
+                      ('Low', ['low', 'l']), ('Close', ['close', 'c']),
+                      ('Volume', ['volume', 'vol', 'v'])]:
+        for a in [std.lower()] + alts:
+            if a in col_map:
+                ohlcv[std] = pd.to_numeric(df[col_map[a]], errors='coerce')
+                break
+        if std not in ohlcv:
+            if std == 'Volume':
+                ohlcv[std] = pd.Series(0, index=df.index)
+            else:
+                raise ValueError(f"MotiveWave CSV missing column: {std}")
+
+    result = pd.DataFrame(ohlcv, index=df.index).dropna(subset=['Open', 'High', 'Low', 'Close'])
+    result = result.sort_index()
+
+    # If timeframe needs resampling (e.g. uploaded 1h → want 4h)
+    if needs_resampling(timeframe):
+        result = resample_ohlcv(result, timeframe)
+
+    print(f"✓ MotiveWave import: {ticker} {timeframe} — {len(result)} bars "
+          f"({result.index[0]} → {result.index[-1]})")
+    return result
+
+def get_motivewave_data(ticker: str, timeframe: str) -> pd.DataFrame | None:
+    """Return uploaded MotiveWave data for this ticker/timeframe combo, or None."""
+    key = mw_key(ticker, timeframe)
+    df = MOTIVEWAVE_DATA.get(key)
+    if df is not None and not df.empty:
+        return df
+    # Also check if 1h data was uploaded and we need 4h (resample on the fly)
+    if timeframe == '4h':
+        df1h = MOTIVEWAVE_DATA.get(mw_key(ticker, '1h'))
+        if df1h is not None and not df1h.empty:
+            return resample_ohlcv(df1h, '4h')
+    return None
+
 app.secret_key = "degen-discovery-secret-key-2024"
 
 # Session cookie configuration - different for production vs development
@@ -334,6 +409,81 @@ CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
 @app.route("/api/health")
 def health():
     return {"status": "backend live"}
+
+# ============================================================================
+# MOTIVEWAVE CSV UPLOAD ROUTES
+# ============================================================================
+
+@app.route('/api/motivewave/upload', methods=['POST'])
+def motivewave_upload():
+    auth_error = require_auth()
+    if auth_error:
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
+
+    ticker = request.form.get('ticker', '').strip().upper()
+    timeframe = request.form.get('timeframe', '').strip().lower()
+
+    if not ticker or not timeframe:
+        return jsonify({'success': False, 'error': 'ticker and timeframe are required'}), 400
+
+    if 'file' not in request.files:
+        return jsonify({'success': False, 'error': 'No file uploaded'}), 400
+
+    f = request.files['file']
+    if not f.filename.endswith('.csv'):
+        return jsonify({'success': False, 'error': 'File must be a .csv'}), 400
+
+    try:
+        content = f.read().decode('utf-8', errors='replace')
+        df = parse_motivewave_csv(content, ticker, timeframe)
+        key = mw_key(ticker, timeframe)
+        MOTIVEWAVE_DATA[key] = df
+        return jsonify({
+            'success': True,
+            'ticker': ticker,
+            'timeframe': timeframe,
+            'bars': len(df),
+            'start': df.index[0].strftime('%Y-%m-%d %H:%M'),
+            'end': df.index[-1].strftime('%Y-%m-%d %H:%M'),
+            'message': f'Imported {len(df)} bars for {ticker} ({timeframe}). This data will be used instead of yfinance.'
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/api/motivewave/status', methods=['GET'])
+def motivewave_status():
+    auth_error = require_auth()
+    if auth_error:
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
+
+    datasets = []
+    for key, df in MOTIVEWAVE_DATA.items():
+        parts = key.split('_', 1)
+        ticker = parts[0] if parts else key
+        timeframe = parts[1] if len(parts) > 1 else '?'
+        datasets.append({
+            'key': key,
+            'ticker': ticker,
+            'timeframe': timeframe,
+            'bars': len(df),
+            'start': df.index[0].strftime('%Y-%m-%d %H:%M') if not df.empty else None,
+            'end': df.index[-1].strftime('%Y-%m-%d %H:%M') if not df.empty else None,
+        })
+    return jsonify({'success': True, 'datasets': datasets})
+
+@app.route('/api/motivewave/delete', methods=['POST'])
+def motivewave_delete():
+    auth_error = require_auth()
+    if auth_error:
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
+
+    key = request.json.get('key', '').strip()
+    if key in MOTIVEWAVE_DATA:
+        del MOTIVEWAVE_DATA[key]
+        return jsonify({'success': True, 'message': f'Deleted dataset {key}'})
+    return jsonify({'success': False, 'error': 'Dataset not found'}), 404
   
 FRED_API_KEY = '024452292701539abb68abc50276eb70'
 
@@ -4988,160 +5138,131 @@ def get_data():
         print(f"\n{'='*60}")
         print(f"Analysis: {ticker} - User: {session.get('username')}")
         print(f"{'='*60}")
-        
-        stock = yf.Ticker(ticker)
+
+        # ── MotiveWave priority check ──────────────────────────────────────
+        mw_hist = get_motivewave_data(ticker, timeframe)
+        if mw_hist is not None and not mw_hist.empty:
+            print(f"✓ Using MotiveWave data for {ticker} {timeframe} ({len(mw_hist)} bars)")
+            hist = mw_hist
+        else:
+            hist = None
+
+        if hist is not None and not hist.empty:
+            # Skip all yfinance fetching — jump straight to processing
+            pass
+        else:
+            # Fall through to yfinance below
+            hist = None
+
+        stock = yf.Ticker(ticker) if hist is None else None
         
         # For futures, use alternative interval formats that yfinance accepts better
         is_futures = '=' in ticker
         
-        # Special handling for 1h timeframe - yfinance has issues with it for futures
-        if is_futures and timeframe == '1h':
-            # For futures 1h, use 60m from the start
+        # ── yfinance fetching (skipped if MotiveWave data already loaded) ────
+        if hist is None:
+          # Special handling for 1h timeframe - yfinance has issues with it for futures
+          if is_futures and timeframe == '1h':
             interval = '60m'
             print(f"⚠ Futures 1h timeframe detected for {ticker}, using 60m interval")
-        elif is_futures:
-            # Use minute-based intervals for futures (yfinance prefers these)
-            # Note: 4h is not supported by yfinance - will use resampling from 60m
+          elif is_futures:
             interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '60m', '4h': '60m', '1d': '1d'}
             interval = interval_map.get(timeframe, '1d')
-        else:
+          else:
             interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
             interval = interval_map.get(timeframe, '1d')
-        
-        if start_date and end_date:
-            # Date range path - handle futures intraday here too
-            if is_futures and timeframe == '4h':
-                # For 4h futures with date range, use resampling
-                print(f"Fetching 4h data for {ticker} with date range (will resample from 1h/60m)...")
-                try:
-                    hist = fetch_historical_data_with_resampling(
-                        ticker=ticker,
-                        timeframe='4h',
-                        start_date=start_date,
-                        end_date=end_date,
-                        is_futures=True
-                    )
-                except Exception as e:
-                    print(f"⚠ Resampling fetch failed: {e}")
-                    hist = None
-            else:
-                hist = stock.history(start=start_date, end=end_date, interval=interval)
-        else:
-            # No date range path - handle all futures intraday timeframes here
-            # Futures handling: use shorter periods for intraday timeframes
-            if is_futures and timeframe in ['1m', '5m', '15m', '1h', '4h']:
-                period_map = {'1m': '5d', '5m': '5d', '15m': '7d', '1h': '7d', '4h': '10d', '1d': '2y'}
-            else:
-                period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
-            
-            period = period_map.get(timeframe, '1y')
-            
-            # Try to get data, with fallback to shorter periods for futures
-            hist = None
-            
-            # Handle 4h futures (requires resampling)
-            if is_futures and timeframe == '4h':
-                print(f"Fetching 4h data for {ticker} (will resample from 1h/60m)...")
-                try:
-                    hist = fetch_historical_data_with_resampling(
-                        ticker=ticker,
-                        timeframe='4h',
-                        period=period,
-                        is_futures=True
-                    )
-                except Exception as e:
-                    print(f"⚠ Resampling fetch failed: {e}")
-                    hist = None
-            
-            # Handle 1h futures
-            elif is_futures and timeframe == '1h':
-                # Special handling for 1h futures - try many combinations
-                attempts = [
-                    ('60m', '5d'),   # Most reliable for futures
-                    ('60m', '3d'),
-                    ('60m', '2d'),
-                    ('60m', '1d'),
-                    ('1h', '5d'),    # Try standard format too
-                    ('1h', '3d'),
-                    ('1h', '2d'),
-                    ('1h', '1d'),
-                ]
-                
-                for attempt_interval, attempt_period in attempts:
+
+        if hist is None:
+            # ── yfinance fetch (only when no MotiveWave data available) ──────
+            interval = locals().get('interval', '1d')
+            if start_date and end_date:
+                if is_futures and timeframe == '4h':
+                    print(f"Fetching 4h data for {ticker} with date range (will resample from 1h/60m)...")
                     try:
-                        print(f"Trying {ticker} 1h: interval={attempt_interval}, period={attempt_period}")
-                        hist = stock.history(period=attempt_period, interval=attempt_interval)
-                        if hist is not None and len(hist) > 0:
-                            print(f"✓ Successfully fetched {len(hist)} bars for {ticker} 1h with interval={attempt_interval}, period={attempt_period}")
-                            break
+                        hist = fetch_historical_data_with_resampling(
+                            ticker=ticker, timeframe='4h',
+                            start_date=start_date, end_date=end_date, is_futures=True
+                        )
                     except Exception as e:
-                        error_msg = str(e)
-                        print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:150]}")
-                        continue
-            
-            # Handle 1m, 5m, 15m futures
-            elif is_futures and timeframe in ['1m', '5m', '15m']:
-                if timeframe in ['15m']:
-                    attempts = [period, '5d', '3d', '2d', '1d']
+                        print(f"⚠ Resampling fetch failed: {e}")
+                        hist = None
                 else:
-                    attempts = [period, '5d', '2d', '1d']
-                
-                for attempt_period in attempts:
-                    # Try both the mapped interval and original timeframe format
-                    interval_options = [interval]
-                    if timeframe == '15m':
-                        interval_options = ['15m']
-                    
-                    for attempt_interval in interval_options:
+                    hist = stock.history(start=start_date, end=end_date, interval=interval)
+            else:
+                if is_futures and timeframe in ['1m', '5m', '15m', '1h', '4h']:
+                    period_map = {'1m': '5d', '5m': '5d', '15m': '7d', '1h': '7d', '4h': '10d', '1d': '2y'}
+                else:
+                    period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
+                period = period_map.get(timeframe, '1y')
+
+                if is_futures and timeframe == '4h':
+                    print(f"Fetching 4h data for {ticker} (will resample from 1h/60m)...")
+                    try:
+                        hist = fetch_historical_data_with_resampling(
+                            ticker=ticker, timeframe='4h', period=period, is_futures=True
+                        )
+                    except Exception as e:
+                        print(f"⚠ Resampling fetch failed: {e}")
+                        hist = None
+
+                elif is_futures and timeframe == '1h':
+                    attempts = [
+                        ('60m', '5d'), ('60m', '3d'), ('60m', '2d'), ('60m', '1d'),
+                        ('1h', '5d'), ('1h', '3d'), ('1h', '2d'), ('1h', '1d'),
+                    ]
+                    for attempt_interval, attempt_period in attempts:
                         try:
+                            print(f"Trying {ticker} 1h: interval={attempt_interval}, period={attempt_period}")
                             hist = stock.history(period=attempt_period, interval=attempt_interval)
                             if hist is not None and len(hist) > 0:
-                                print(f"✓ Successfully fetched {len(hist)} bars for {ticker} at {timeframe} with interval={attempt_interval}, period={attempt_period}")
+                                print(f"✓ Fetched {len(hist)} bars for {ticker} 1h")
                                 break
                         except Exception as e:
-                            error_msg = str(e)
-                            if "pattern" not in error_msg.lower() and "expected" not in error_msg.lower():
-                                print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:100]}")
+                            print(f"⚠ Attempt failed: {attempt_interval}/{attempt_period}: {str(e)[:80]}")
                             continue
-                    
-                    if hist is not None and len(hist) > 0:
-                        break
-            
-            # Handle regular (non-futures) 4h (also needs resampling)
-            elif timeframe == '4h':
-                print(f"Fetching 4h data for {ticker} (will resample from 1h)...")
-                try:
-                    hist = fetch_historical_data_with_resampling(
-                        ticker=ticker,
-                        timeframe='4h',
-                        period=period,
-                        is_futures=False
-                    )
-                except Exception as e:
-                    print(f"⚠ Resampling fetch failed: {e}")
-                    hist = None
-            
-            # Fallback for all other cases
-            else:
-                try:
-                    hist = stock.history(period=period, interval=interval)
-                except Exception as e:
-                    error_msg = str(e)
-                    print(f"⚠ Error fetching data for {ticker} {timeframe}: {error_msg}")
-                    # Try alternative interval format if pattern error
-                    if "pattern" in error_msg.lower() or "expected" in error_msg.lower():
+
+                elif is_futures and timeframe in ['1m', '5m', '15m']:
+                    attempts = [period, '5d', '3d', '2d', '1d'] if timeframe == '15m' else [period, '5d', '2d', '1d']
+                    for attempt_period in attempts:
                         try:
-                            if interval == '1h':
-                                hist = stock.history(period=period, interval='60m')
-                        except:
-                            hist = None
-                    else:
+                            hist = stock.history(period=attempt_period, interval=interval)
+                            if hist is not None and len(hist) > 0:
+                                print(f"✓ Fetched {len(hist)} bars for {ticker} {timeframe}")
+                                break
+                        except Exception as e:
+                            if "pattern" not in str(e).lower() and "expected" not in str(e).lower():
+                                print(f"⚠ Attempt failed {attempt_period}: {str(e)[:80]}")
+                            continue
+
+                elif timeframe == '4h':
+                    print(f"Fetching 4h data for {ticker} (will resample from 1h)...")
+                    try:
+                        hist = fetch_historical_data_with_resampling(
+                            ticker=ticker, timeframe='4h', period=period, is_futures=False
+                        )
+                    except Exception as e:
+                        print(f"⚠ Resampling fetch failed: {e}")
                         hist = None
-        
+
+                else:
+                    try:
+                        hist = stock.history(period=period, interval=interval)
+                    except Exception as e:
+                        error_msg = str(e)
+                        print(f"⚠ Error fetching {ticker} {timeframe}: {error_msg}")
+                        if "pattern" in error_msg.lower() or "expected" in error_msg.lower():
+                            try:
+                                if interval == '1h':
+                                    hist = stock.history(period=period, interval='60m')
+                            except:
+                                hist = None
+                        else:
+                            hist = None
+
         if hist is None or len(hist) == 0:
             error_msg = f'No data available for {ticker} at {timeframe}'
             if '=' in ticker and timeframe in ['1m', '5m', '15m', '1h', '4h']:
-                error_msg += '. Futures have limited intraday data availability from yfinance.'
+                error_msg += '. yfinance futures data may be stale or unavailable. Use the MotiveWave Import panel to upload a CSV export from MotiveWave for this ticker/timeframe.'
             return jsonify({'success': False, 'error': error_msg}), 400
         
         price_data = []
