@@ -9,7 +9,7 @@
  */
 
 class LSTMForecast {
-    constructor(apiBaseUrl = 'http://localhost:5001', authToken = null) {
+    constructor(apiBaseUrl = 'https://fartpie.onrender.com', authToken = null) {
         this.apiBaseUrl = apiBaseUrl;
         this.authToken = authToken;
     }

@@ -403,7 +403,7 @@ else:
 
 # CORS configuration - browsers require explicit origins when using credentials
 # Allow common frontend domains (add your production domain here)
-CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,https://degencap.uk,https://www.degencap.uk').split(',')
+CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,https://degencap.uk,https://www.degencap.uk,https://peepeepoop.workers.dev,https://peepeepoop.pages.dev').split(',')
 CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
 
 @app.route("/api/health")
