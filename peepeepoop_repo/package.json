@@ -1,0 +1,10 @@
+{
+  "name": "peepeepoop",
+  "private": true,
+  "scripts": {
+    "build": "node build.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}
