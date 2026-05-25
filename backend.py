@@ -14,14 +14,14 @@ import hdbscan
 try:
     import lightgbm as lgb
     LIGHTGBM_AVAILABLE = True
-except ImportError:
+except (ImportError, OSError):
     LIGHTGBM_AVAILABLE = False
     lgb = None
 
 try:
     import xgboost as xgb
     XGBOOST_AVAILABLE = True
-except ImportError:
+except (ImportError, OSError):
     XGBOOST_AVAILABLE = False
     xgb = None
 
@@ -12674,6 +12674,6 @@ def backtest_levels():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=5000)
 
 
