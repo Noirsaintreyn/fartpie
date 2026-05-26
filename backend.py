@@ -321,6 +321,64 @@ MOTIVEWAVE_DATA: dict = {}  # key: "TICKER_TIMEFRAME" → pd.DataFrame
 def mw_key(ticker: str, timeframe: str) -> str:
     return f"{ticker.upper()}_{timeframe.lower()}"
 
+def save_csv_to_db(ticker: str, timeframe: str, df: pd.DataFrame, uploaded_by: str = None):
+    """Save CSV data to database for persistence"""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        
+        # Convert DataFrame to CSV string
+        csv_content = df.to_csv()
+        
+        # Insert or replace
+        c.execute('''
+            INSERT OR REPLACE INTO csv_data 
+            (ticker, timeframe, csv_content, bars, start_date, end_date, uploaded_by, uploaded_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ''', (
+            ticker.upper(),
+            timeframe.lower(),
+            csv_content,
+            len(df),
+            df.index[0].strftime('%Y-%m-%d %H:%M') if not df.empty else None,
+            df.index[-1].strftime('%Y-%m-%d %H:%M') if not df.empty else None,
+            uploaded_by
+        ))
+        
+        conn.commit()
+        conn.close()
+        print(f"✓ Saved CSV to database: {ticker} {timeframe}")
+        return True
+    except Exception as e:
+        print(f"⚠ Error saving CSV to database: {e}")
+        return False
+
+def load_all_csv_from_db():
+    """Load all CSV data from database into memory on startup"""
+    global MOTIVEWAVE_DATA
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute('SELECT ticker, timeframe, csv_content FROM csv_data')
+        rows = c.fetchall()
+        conn.close()
+        
+        for ticker, timeframe, csv_content in rows:
+            try:
+                # Parse CSV content back to DataFrame
+                df = pd.read_csv(io.StringIO(csv_content), index_col=0, parse_dates=True)
+                key = mw_key(ticker, timeframe)
+                MOTIVEWAVE_DATA[key] = df
+                print(f"✓ Loaded from DB: {ticker} {timeframe} — {len(df)} bars")
+            except Exception as e:
+                print(f"⚠ Error parsing CSV for {ticker} {timeframe}: {e}")
+        
+        print(f"✓ Loaded {len(MOTIVEWAVE_DATA)} datasets from database")
+        return True
+    except Exception as e:
+        print(f"⚠ Error loading CSV data from database: {e}")
+        return False
+
 def parse_motivewave_csv(content: str, ticker: str, timeframe: str) -> pd.DataFrame:
     """
     Parse a MotiveWave CSV export into a standard OHLCV DataFrame.
@@ -437,7 +495,14 @@ def motivewave_upload():
         content = f.read().decode('utf-8', errors='replace')
         df = parse_motivewave_csv(content, ticker, timeframe)
         key = mw_key(ticker, timeframe)
+        
+        # Store in memory
         MOTIVEWAVE_DATA[key] = df
+        
+        # Save to database for persistence
+        uploaded_by = session.get('username', 'unknown')
+        save_csv_to_db(ticker, timeframe, df, uploaded_by)
+        
         return jsonify({
             'success': True,
             'ticker': ticker,
@@ -481,7 +546,24 @@ def motivewave_delete():
 
     key = request.json.get('key', '').strip()
     if key in MOTIVEWAVE_DATA:
+        # Remove from memory
         del MOTIVEWAVE_DATA[key]
+        
+        # Remove from database
+        try:
+            parts = key.split('_', 1)
+            ticker = parts[0] if parts else key
+            timeframe = parts[1] if len(parts) > 1 else ''
+            
+            conn = sqlite3.connect(DB_PATH)
+            c = conn.cursor()
+            c.execute('DELETE FROM csv_data WHERE ticker = ? AND timeframe = ?', (ticker, timeframe))
+            conn.commit()
+            conn.close()
+            print(f"✓ Deleted from database: {ticker} {timeframe}")
+        except Exception as e:
+            print(f"⚠ Error deleting from database: {e}")
+        
         return jsonify({'success': True, 'message': f'Deleted dataset {key}'})
     return jsonify({'success': False, 'error': 'Dataset not found'}), 404
   
@@ -578,6 +660,22 @@ def init_db():
                 key TEXT PRIMARY KEY,           -- e.g. "Fock|highLSS|highVol"
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 params_json TEXT                -- {"tail_mult":1.1,"oi_clip_mult":0.6,"rf_clip":1.7}
+            )
+            ''')
+            
+            # --- CSV data storage table (persistent MotiveWave data) ---
+            c.execute('''
+            CREATE TABLE IF NOT EXISTS csv_data (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ticker TEXT NOT NULL,
+                timeframe TEXT NOT NULL,
+                csv_content TEXT NOT NULL,
+                bars INTEGER,
+                start_date TEXT,
+                end_date TEXT,
+                uploaded_by TEXT,
+                uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(ticker, timeframe)
             )
             ''')
             
@@ -12601,6 +12699,8 @@ def ensure_db():
 # Wrap in try-except to prevent startup failure
 try:
     init_db()
+    # Load all CSV data from database into memory
+    load_all_csv_from_db()
 except Exception as e:
     print(f"⚠ Warning: Database initialization failed on startup: {e}")
     print("⚠ Will retry on first request via ensure_db()")
