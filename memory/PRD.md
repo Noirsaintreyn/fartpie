@@ -26,6 +26,33 @@
 
 ## What's Been Implemented
 
+### 2026-01-26 — VbP Level Detection Integration
+**New file: `/app/vbp_levels.py`** (908 lines)
+- LevelEngine v2 with close-weighted VbP distribution
+- Multi-algo: KDE / HDBSCAN / OPTICS / Isolation Forest / Wyckoff / Persistent Homology
+- POC / VAH / VAL anchor injection
+- `level_holdrate()` walk-forward validation
+- InstrumentProfile for tunable parameters per symbol/timeframe
+- Patched `ripser` import to be optional (graceful degradation)
+
+**Backend (`/app/backend.py`):**
+- Added safe import of `LevelEngine` and `InstrumentProfile` (with `VBP_AVAILABLE` flag)
+- Added `calculate_vbp_levels(hist_df, timeframe, current_price)` wrapper that:
+  - Auto-picks tick size based on price magnitude
+  - Lookback by timeframe (300/400/500 bars)
+  - Maps engine output columns (`price`/`score`/`sources`/`type`) → existing level schema
+  - Tags POC/VAH/VAL anchors with floor strength 0.80
+  - Returns top 12 by strength
+- Wired into both level-detection codepaths in `/api/lstm-forecast`
+- Added `vbp` count to response `levels_detected` block
+
+**Frontend updates:**
+- `/app/templates/index.html`: Added `VbP: ${levelCounts.vbp ?? 0}` to levels grid
+- `/app/peepeepoop_repo/lstm-forecast-example.html`: Added `VbP: ${formattedData.levels.vbp ?? 0}` to levels grid
+
+**Files Created:**
+- `/app/test_vbp_integration.py` — smoke test (passing: POC=102.40, VAH=108.02, VAL=96.00, 12 levels)
+
 ### 2026-01-26 — CSV Persistence Feature
 **Backend (`/app/backend.py`):**
 - Added `csv_data` SQLite table in `init_db()` (ticker, timeframe, csv_content, bars, dates, uploaded_by)

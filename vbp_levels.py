@@ -79,7 +79,12 @@ from scipy.stats import gaussian_kde
 from sklearn.cluster import OPTICS
 from sklearn.ensemble import IsolationForest
 import hdbscan
-from ripser import ripser
+try:
+    from ripser import ripser
+    RIPSER_AVAILABLE = True
+except ImportError:
+    RIPSER_AVAILABLE = False
+    ripser = None
 
 warnings.filterwarnings("ignore")
 
