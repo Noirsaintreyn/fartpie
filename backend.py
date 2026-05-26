@@ -72,6 +72,16 @@ except ImportError:
     HMMLEARN_AVAILABLE = False
     GaussianHMM = None
 
+# VbP (Volume-by-Price) level detection engine
+try:
+    from vbp_levels import LevelEngine as VbpLevelEngine, InstrumentProfile as VbpInstrumentProfile
+    VBP_AVAILABLE = True
+except Exception as _e:
+    VBP_AVAILABLE = False
+    VbpLevelEngine = None
+    VbpInstrumentProfile = None
+    print(f"⚠ vbp_levels not available: {_e}")
+
 from scipy.signal import find_peaks, savgol_filter, argrelextrema
 from scipy.stats import norm, kurtosis, skew, gaussian_kde, kendalltau
 from datetime import datetime, timedelta
@@ -3647,6 +3657,118 @@ def multiscale_hdbscan_levels(highs, lows, closes, timeframe='1d'):
     
     return sorted(all_levels, key=lambda x: x['strength'], reverse=True)[:8]
 
+def calculate_vbp_levels(hist_df, timeframe='1d', current_price=None):
+    """
+    Volume-by-Price level detection using LevelEngine from vbp_levels.py
+    
+    Wraps the new VbP engine (v2) which uses close-weighted volume distribution,
+    KDE/HDBSCAN/OPTICS/Wyckoff/persistent homology, POC/VAH/VAL anchors,
+    and produces scored levels with multi-algo confluence.
+    
+    Args:
+        hist_df: pd.DataFrame with Open/High/Low/Close/Volume columns
+        timeframe: timeframe string (used to size lookback)
+        current_price: optional, for distance metadata
+    
+    Returns: list of level dicts matching the existing pipeline schema:
+        { price, type, strength, category, breakoutProb, reversionProb, tags, vbp_volume_pct }
+    """
+    if not VBP_AVAILABLE or VbpLevelEngine is None:
+        return []
+    if hist_df is None or hist_df.empty or len(hist_df) < 50:
+        return []
+    
+    try:
+        # Tick size — defaults to 0.25 (NQ/ES). For equities/crypto we use a small fraction of price range.
+        try:
+            price_range = float(hist_df['High'].max() - hist_df['Low'].min())
+            spot = float(hist_df['Close'].iloc[-1])
+            # Heuristic tick: 0.25 for futures-like prices, 0.01 for equities, scale otherwise
+            if spot >= 1000:
+                tick = 0.25
+            elif spot >= 50:
+                tick = 0.05
+            elif spot >= 1:
+                tick = 0.01
+            else:
+                tick = max(spot * 0.0001, 1e-6)
+        except Exception:
+            tick = 0.25
+        
+        # Lookback by timeframe — keep small enough for VbP perf budget
+        lookback_map = {
+            '1m': 300, '5m': 300, '15m': 300,
+            '1h': 400, '4h': 400,
+            '1d': 500, '1wk': 200
+        }
+        lookback = lookback_map.get(timeframe, 400)
+        lookback = min(lookback, len(hist_df))
+        
+        profile = VbpInstrumentProfile(tick=tick)
+        engine = VbpLevelEngine(profile=profile)
+        result = engine.run(hist_df, lookback_bars=lookback)
+        
+        levels_df = result.get('levels')
+        if levels_df is None or len(levels_df) == 0:
+            return []
+        
+        cp = current_price if current_price is not None else float(hist_df['Close'].iloc[-1])
+        levels = []
+        for _, row in levels_df.iterrows():
+            try:
+                price = float(row.get('price', 0))
+                if price <= 0:
+                    continue
+                score = float(row.get('score', 0))
+                strength = max(0.0, min(0.95, score))
+                
+                # vbp_levels v2 stores algo names in 'sources' (pipe-separated) and anchor type in 'type'
+                sources_raw = row.get('sources', '') or ''
+                if isinstance(sources_raw, str):
+                    tags = [t.strip() for t in sources_raw.split('|') if t.strip()]
+                else:
+                    tags = list(sources_raw) if sources_raw else []
+                algo_count = int(row.get('algo_count', 1))
+                vbp_pct = float(row.get('vbp_norm', 0))
+                row_type = str(row.get('type', 'level'))
+                
+                # POC/VAH/VAL anchors come through with type='POC'/'VAH'/'VAL'
+                is_anchor = row_type in ('POC', 'VAH', 'VAL')
+                if row_type == 'POC':
+                    type_label = 'VbP-POC'
+                elif row_type == 'VAH':
+                    type_label = 'VbP-VAH'
+                elif row_type == 'VAL':
+                    type_label = 'VbP-VAL'
+                else:
+                    type_label = 'VbP'
+                
+                # Anchors are high-confidence by design — bump strength floor
+                if is_anchor:
+                    strength = max(strength, 0.80)
+                
+                levels.append({
+                    'price': price,
+                    'type': type_label,
+                    'strength': float(strength),
+                    'category': 'VbP',
+                    'breakoutProb': float(1.0 - strength),
+                    'reversionProb': float(strength),
+                    'tags': tags,
+                    'algo_count': algo_count,
+                    'vbp_volume_pct': vbp_pct,
+                    'is_anchor': bool(is_anchor),
+                })
+            except Exception:
+                continue
+        
+        # Return top 12 by strength (matches pattern of other algos that cap at ~8)
+        return sorted(levels, key=lambda x: x['strength'], reverse=True)[:12]
+        
+    except Exception as e:
+        print(f"⚠ VbP level calculation failed: {e}")
+        return []
+
 def time_weighted_hdbscan(highs, lows, closes, timestamps, half_life_days=30):
     """
     Weight recent price action more heavily
@@ -5467,6 +5589,15 @@ def get_data():
             print(f"Multi-scale HDBSCAN failed: {e}")
             multiscale_hdbscan_levels_result = []
         
+        # NEW: VbP (Volume-by-Price) level detection — uses LevelEngine from vbp_levels.py
+        # Close-weighted VbP distribution + KDE/HDBSCAN/OPTICS/Wyckoff/homology + POC/VAH/VAL anchors
+        try:
+            vbp_levels_result = calculate_vbp_levels(hist, timeframe=timeframe, current_price=current_price)
+            print(f"VbP: Generated {len(vbp_levels_result) if vbp_levels_result else 0} levels")
+        except Exception as e:
+            print(f"VbP failed: {e}")
+            vbp_levels_result = []
+        
         # NEW: Time-weighted HDBSCAN (if timestamps available)
         time_weighted_levels_result = []
         try:
@@ -5545,12 +5676,14 @@ def get_data():
         pivot_levels = pivot_levels or []
         fib_levels = fib_levels or []
         gap_levels = gap_levels or []
+        vbp_levels_result = vbp_levels_result or []
         
         # ML LEVELS: Primary discovery algorithms only (including new methods)
         all_ml_levels = (hdbscan_levels + enhanced_optics_levels_result + kde_levels_result + 
                         multiscale_hdbscan_levels_result + time_weighted_levels_result + 
                         wyckoff_levels_result + persistent_homology_levels_result + 
-                        neural_network_levels_result + isolation_forest_levels + peak_valley_levels) 
+                        neural_network_levels_result + isolation_forest_levels + peak_valley_levels +
+                        vbp_levels_result)
         
         # CRITICAL: Preserve levels BEFORE merge (they get consumed by merge)
         # We need BOTH merged levels AND original levels for structural array
@@ -11961,8 +12094,16 @@ def get_lstm_forecast():
         neural_network_levels = detect_levels_with_neural_network(hist, lookback=100, threshold=0.5)
         print(f"✓ Neural Network levels detected: {len(neural_network_levels)} levels")
         
+        # VbP (Volume-by-Price) levels — close-weighted distribution + multi-algo confluence + POC/VAH/VAL anchors
+        try:
+            vbp_levels_result = calculate_vbp_levels(hist, timeframe=timeframe, current_price=current_price)
+            print(f"✓ VbP levels detected: {len(vbp_levels_result)} levels")
+        except Exception as _vbp_err:
+            vbp_levels_result = []
+            print(f"⚠ VbP failed: {_vbp_err}")
+        
         # ML confluence (includes neural network levels)
-        all_ml_levels = hdbscan_levels + optics_levels + interaction_levels + neural_network_levels
+        all_ml_levels = hdbscan_levels + optics_levels + interaction_levels + neural_network_levels + vbp_levels_result
         ml_confluence_levels = get_ml_confluence_levels(all_ml_levels)
         
         # 2a. Get Multi-Timeframe Levels (for enhanced LSTM prediction)
@@ -12288,7 +12429,8 @@ def get_lstm_forecast():
                 'interaction': len(interaction_levels),
                 'ml_confluence': len(ml_confluence_levels),
                 'multiscale': len(multiscale_levels),
-                'neural_network': len(neural_network_levels)
+                'neural_network': len(neural_network_levels),
+                'vbp': len(vbp_levels_result)
             },
             'all_levels': sanitize_for_json(sorted(all_levels, key=lambda x: abs(x.get('price', 0) - current_price))[:50]),
             'microstructure_state': sanitize_for_json(microstructure_state) if microstructure_state else None

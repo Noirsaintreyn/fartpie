@@ -912,6 +912,196 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        /* MotiveWave CSV Import Section */
+        .mw-section {
+            padding: 80px 48px;
+            background: rgba(201, 162, 39, 0.02);
+            border-top: 1px solid rgba(201, 162, 39, 0.1);
+        }
+        .mw-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .mw-header {
+            margin-bottom: 48px;
+        }
+        .mw-title {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 2.2rem;
+            font-weight: 300;
+            color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: 0.02em;
+        }
+        .mw-subtitle {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(201, 162, 39, 0.5);
+            font-weight: 400;
+        }
+        .mw-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+        .mw-card {
+            background: rgba(201, 162, 39, 0.03);
+            border: 1px solid rgba(201, 162, 39, 0.15);
+            border-radius: 2px;
+            padding: 40px;
+        }
+        .mw-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+        .mw-card-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            color: #fff;
+            font-weight: 400;
+            margin-bottom: 28px;
+        }
+        .mw-card-header .mw-card-title {
+            margin-bottom: 0;
+        }
+        .mw-refresh-btn {
+            background: none;
+            border: 1px solid rgba(201, 162, 39, 0.25);
+            color: rgba(201, 162, 39, 0.6);
+            padding: 6px 14px;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            border-radius: 1px;
+        }
+        .mw-refresh-btn:hover {
+            color: #c9a227;
+            border-color: rgba(201, 162, 39, 0.5);
+            background: rgba(201, 162, 39, 0.04);
+        }
+        .mw-file-input {
+            cursor: pointer;
+        }
+        .mw-file-input::file-selector-button {
+            background: rgba(201, 162, 39, 0.08);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            color: #c9a227;
+            padding: 8px 14px;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-right: 12px;
+            font-family: 'Inter', sans-serif;
+            border-radius: 1px;
+            transition: all 0.3s ease;
+        }
+        .mw-file-input::file-selector-button:hover {
+            background: rgba(201, 162, 39, 0.15);
+            border-color: rgba(201, 162, 39, 0.4);
+        }
+        .mw-hint {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.25);
+            margin-top: 10px;
+            letter-spacing: 0.04em;
+            line-height: 1.5;
+        }
+        .mw-status {
+            margin-top: 16px;
+            font-size: 0.78rem;
+            min-height: 24px;
+            letter-spacing: 0.02em;
+            line-height: 1.5;
+        }
+        .mw-status.success { color: #6fcf97; }
+        .mw-status.error { color: #eb5757; }
+        .mw-status.loading { color: rgba(255, 255, 255, 0.4); }
+        .mw-datasets-list {
+            font-size: 0.85rem;
+            min-height: 80px;
+        }
+        .mw-empty {
+            color: rgba(255, 255, 255, 0.25);
+            font-style: italic;
+            font-size: 0.8rem;
+        }
+        .mw-dataset-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.08);
+        }
+        .mw-dataset-row:last-child {
+            border-bottom: none;
+        }
+        .mw-dataset-info {
+            flex: 1;
+        }
+        .mw-dataset-ticker {
+            color: #c9a227;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+        }
+        .mw-dataset-tf {
+            color: rgba(201, 162, 39, 0.5);
+            font-size: 0.72rem;
+            margin-left: 6px;
+            text-transform: uppercase;
+        }
+        .mw-dataset-meta {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.68rem;
+            margin-top: 4px;
+            letter-spacing: 0.02em;
+        }
+        .mw-delete-btn {
+            background: none;
+            border: 1px solid rgba(235, 87, 87, 0.25);
+            color: rgba(235, 87, 87, 0.6);
+            padding: 5px 12px;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            border-radius: 1px;
+        }
+        .mw-delete-btn:hover {
+            color: #eb5757;
+            border-color: rgba(235, 87, 87, 0.5);
+            background: rgba(235, 87, 87, 0.05);
+        }
+        .mw-footer-note {
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(201, 162, 39, 0.1);
+            font-size: 0.68rem;
+            letter-spacing: 0.04em;
+            color: rgba(255, 255, 255, 0.25);
+            line-height: 1.8;
+        }
+        .mw-footer-note strong {
+            color: rgba(201, 162, 39, 0.5);
+            font-weight: 500;
+        }
+        @media (max-width: 900px) {
+            .mw-grid { grid-template-columns: 1fr; }
+            .mw-section { padding: 60px 24px; }
+            .mw-card { padding: 28px; }
+            .mw-title { font-size: 1.8rem; }
+        }
     </style>
 </head>
 <body>
@@ -1049,6 +1239,67 @@
                 </div>
 
                 <div id="backtestContainer"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MotiveWave CSV Import Section -->
+    <section class="mw-section" id="mwSection">
+        <div class="mw-container">
+            <div class="mw-header">
+                <div class="mw-title">MotiveWave Import</div>
+                <div class="mw-subtitle">Upload CSV exports — data persists across sessions and is shared with all users</div>
+                <div class="divider" style="margin-top: 24px;"></div>
+            </div>
+
+            <div class="mw-grid">
+                <!-- Upload Form -->
+                <div class="mw-card">
+                    <div class="mw-card-title">Upload Data</div>
+
+                    <div class="control-group" style="margin-bottom: 20px;">
+                        <label for="mw-ticker">Ticker</label>
+                        <input type="text" id="mw-ticker" placeholder="NQ=F" value="NQ=F">
+                    </div>
+
+                    <div class="control-group" style="margin-bottom: 20px;">
+                        <label for="mw-timeframe">Timeframe</label>
+                        <select id="mw-timeframe">
+                            <option value="1h">1 Hour</option>
+                            <option value="4h">4 Hours</option>
+                            <option value="1d">1 Day</option>
+                            <option value="15m">15 Minutes</option>
+                            <option value="5m">5 Minutes</option>
+                            <option value="1m">1 Minute</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group" style="margin-bottom: 24px;">
+                        <label for="mw-file">CSV File</label>
+                        <input type="file" id="mw-file" accept=".csv" class="mw-file-input">
+                        <div class="mw-hint">MotiveWave Export: File → Export → CSV Data. Needs Date, Open, High, Low, Close columns.</div>
+                    </div>
+
+                    <button class="btn" id="mw-upload-btn">Import CSV</button>
+
+                    <div id="mw-upload-status" class="mw-status"></div>
+                </div>
+
+                <!-- Active Datasets -->
+                <div class="mw-card">
+                    <div class="mw-card-header">
+                        <div class="mw-card-title">Active Datasets</div>
+                        <button class="mw-refresh-btn" id="mw-refresh-btn">Refresh</button>
+                    </div>
+                    <div id="mw-datasets" class="mw-datasets-list">
+                        <div class="mw-empty">Loading...</div>
+                    </div>
+                    <div class="mw-footer-note">
+                        Uploaded CSV data is stored in the database and persists across server restarts.<br>
+                        All users can see and use uploaded datasets.<br>
+                        <strong>Tip:</strong> Upload 1h data — 4h is auto-resampled from it.
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -1606,6 +1857,7 @@
                                 <div class="level-type">ML-Confluence: ${formattedData.levels.ml_confluence}</div>
                                 <div class="level-type">Multiscale: ${formattedData.levels.multiscale}</div>
                                 <div class="level-type">Neural Net: ${formattedData.levels.neural_network}</div>
+                                <div class="level-type">VbP: ${formattedData.levels.vbp ?? 0}</div>
                             </div>
                             ${(() => {
                                 const allLevels = formattedData.allLevels || [];
@@ -2257,6 +2509,109 @@
                 loginBtn.disabled = false;
             }
         }
+
+        // ===== MotiveWave CSV Upload =====
+        async function uploadMotiveWave() {
+            const ticker = document.getElementById('mw-ticker').value.trim();
+            const timeframe = document.getElementById('mw-timeframe').value;
+            const file = document.getElementById('mw-file').files[0];
+            const status = document.getElementById('mw-upload-status');
+            const btn = document.getElementById('mw-upload-btn');
+
+            if (!ticker || !file) {
+                status.className = 'mw-status error';
+                status.textContent = 'Please enter a ticker and select a CSV file.';
+                return;
+            }
+
+            const form = new FormData();
+            form.append('ticker', ticker);
+            form.append('timeframe', timeframe);
+            form.append('file', file);
+
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+            status.className = 'mw-status loading';
+            status.textContent = 'Parsing CSV...';
+
+            try {
+                const resp = await fetch(`${API_BASE}/api/motivewave/upload`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: form
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    status.className = 'mw-status success';
+                    status.innerHTML = `✓ ${data.bars} bars imported (${data.start} → ${data.end})`;
+                    document.getElementById('mw-file').value = '';
+                    loadMwStatus();
+                } else {
+                    status.className = 'mw-status error';
+                    status.textContent = `Error: ${data.error || 'Upload failed'}`;
+                }
+            } catch (e) {
+                status.className = 'mw-status error';
+                status.textContent = `Upload failed: ${e.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Import CSV';
+            }
+        }
+
+        async function loadMwStatus() {
+            const container = document.getElementById('mw-datasets');
+            if (!container) return;
+            try {
+                const resp = await fetch(`${API_BASE}/api/motivewave/status`, { credentials: 'include' });
+                const data = await resp.json();
+                if (!data.success || !data.datasets || data.datasets.length === 0) {
+                    container.innerHTML = '<div class="mw-empty">No datasets uploaded yet. Upload a MotiveWave CSV above.</div>';
+                    return;
+                }
+                container.innerHTML = data.datasets.map(d => `
+                    <div class="mw-dataset-row">
+                        <div class="mw-dataset-info">
+                            <div>
+                                <span class="mw-dataset-ticker">${d.ticker}</span>
+                                <span class="mw-dataset-tf">${(d.timeframe || '').toUpperCase()}</span>
+                            </div>
+                            <div class="mw-dataset-meta">${d.bars} bars &nbsp;·&nbsp; ${d.start || '?'} → ${d.end || '?'}</div>
+                        </div>
+                        <button class="mw-delete-btn" data-key="${d.key}">Remove</button>
+                    </div>
+                `).join('');
+                // Attach delete handlers
+                container.querySelectorAll('.mw-delete-btn').forEach(b => {
+                    b.addEventListener('click', () => deleteMwDataset(b.dataset.key));
+                });
+            } catch (e) {
+                container.innerHTML = '<div class="mw-empty" style="color:rgba(235,87,87,0.6);">Could not load status — backend may be waking up.</div>';
+            }
+        }
+
+        async function deleteMwDataset(key) {
+            if (!confirm(`Remove dataset "${key}"?`)) return;
+            try {
+                const resp = await fetch(`${API_BASE}/api/motivewave/delete`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key })
+                });
+                const data = await resp.json();
+                if (data.success) loadMwStatus();
+            } catch (e) {
+                console.warn('Delete failed:', e);
+            }
+        }
+
+        // Wire up MotiveWave buttons
+        document.getElementById('mw-upload-btn').addEventListener('click', uploadMotiveWave);
+        document.getElementById('mw-refresh-btn').addEventListener('click', loadMwStatus);
+
+        // Load datasets on page load (after a short delay to let the backend wake up)
+        setTimeout(loadMwStatus, 800);
 
         // ===== NHP Independent Fetch =====
         let nhpTimeframe = '1d';
