@@ -3,3 +3,10 @@ venv/
 .venv/
 __pycache__/
 .ipynb_checkpoints/
+.env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials
