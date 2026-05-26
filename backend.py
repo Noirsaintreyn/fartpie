@@ -66,21 +66,23 @@ except ImportError:
     plot_diagrams = None
 
 try:
+    from vbp_levels import LevelEngine, InstrumentProfile, build_vbp, compute_value_area
+    VBP_AVAILABLE = True
+    print("✓ VbP Level Engine loaded")
+except ImportError as _e:
+    VBP_AVAILABLE = False
+    LevelEngine = None
+    InstrumentProfile = None
+    build_vbp = None
+    compute_value_area = None
+    print(f"⚠ VbP engine not available: {_e}")
+
+try:
     from hmmlearn.hmm import GaussianHMM
     HMMLEARN_AVAILABLE = True
 except ImportError:
     HMMLEARN_AVAILABLE = False
     GaussianHMM = None
-
-# VbP (Volume-by-Price) level detection engine
-try:
-    from vbp_levels import LevelEngine as VbpLevelEngine, InstrumentProfile as VbpInstrumentProfile
-    VBP_AVAILABLE = True
-except Exception as _e:
-    VBP_AVAILABLE = False
-    VbpLevelEngine = None
-    VbpInstrumentProfile = None
-    print(f"⚠ vbp_levels not available: {_e}")
 
 from scipy.signal import find_peaks, savgol_filter, argrelextrema
 from scipy.stats import norm, kurtosis, skew, gaussian_kde, kendalltau
@@ -331,109 +333,97 @@ MOTIVEWAVE_DATA: dict = {}  # key: "TICKER_TIMEFRAME" → pd.DataFrame
 def mw_key(ticker: str, timeframe: str) -> str:
     return f"{ticker.upper()}_{timeframe.lower()}"
 
-def save_csv_to_db(ticker: str, timeframe: str, df: pd.DataFrame, uploaded_by: str = None):
-    """Save CSV data to database for persistence"""
+def _parse_mw_volume(val) -> float:
+    """Convert volume values including K/M suffixes (e.g. '6.5K' → 6500)."""
+    s = str(val).strip().upper().replace(',', '')
+    if s.endswith('K'):
+        return float(s[:-1]) * 1_000
+    if s.endswith('M'):
+        return float(s[:-1]) * 1_000_000
     try:
-        conn = sqlite3.connect(DB_PATH)
-        c = conn.cursor()
-        
-        # Convert DataFrame to CSV string
-        csv_content = df.to_csv()
-        
-        # Insert or replace
-        c.execute('''
-            INSERT OR REPLACE INTO csv_data 
-            (ticker, timeframe, csv_content, bars, start_date, end_date, uploaded_by, uploaded_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-        ''', (
-            ticker.upper(),
-            timeframe.lower(),
-            csv_content,
-            len(df),
-            df.index[0].strftime('%Y-%m-%d %H:%M') if not df.empty else None,
-            df.index[-1].strftime('%Y-%m-%d %H:%M') if not df.empty else None,
-            uploaded_by
-        ))
-        
-        conn.commit()
-        conn.close()
-        print(f"✓ Saved CSV to database: {ticker} {timeframe}")
-        return True
-    except Exception as e:
-        print(f"⚠ Error saving CSV to database: {e}")
-        return False
-
-def load_all_csv_from_db():
-    """Load all CSV data from database into memory on startup"""
-    global MOTIVEWAVE_DATA
-    try:
-        conn = sqlite3.connect(DB_PATH)
-        c = conn.cursor()
-        c.execute('SELECT ticker, timeframe, csv_content FROM csv_data')
-        rows = c.fetchall()
-        conn.close()
-        
-        for ticker, timeframe, csv_content in rows:
-            try:
-                # Parse CSV content back to DataFrame
-                df = pd.read_csv(io.StringIO(csv_content), index_col=0, parse_dates=True)
-                key = mw_key(ticker, timeframe)
-                MOTIVEWAVE_DATA[key] = df
-                print(f"✓ Loaded from DB: {ticker} {timeframe} — {len(df)} bars")
-            except Exception as e:
-                print(f"⚠ Error parsing CSV for {ticker} {timeframe}: {e}")
-        
-        print(f"✓ Loaded {len(MOTIVEWAVE_DATA)} datasets from database")
-        return True
-    except Exception as e:
-        print(f"⚠ Error loading CSV data from database: {e}")
-        return False
+        return float(s)
+    except (ValueError, TypeError):
+        return 0.0
 
 def parse_motivewave_csv(content: str, ticker: str, timeframe: str) -> pd.DataFrame:
     """
     Parse a MotiveWave CSV export into a standard OHLCV DataFrame.
-    MotiveWave exports columns like: Date, Time, Open, High, Low, Close, Volume
-    or combined DateTime column.
+
+    Supported formats
+    -----------------
+    • Columns: Date/Time, Open, High, Low, Close, Volume[, Range]
+      Date format: DD/MM/YYYY HH:MM:SS  (MotiveWave default)
+    • Legacy: separate Date + Time columns, or a DateTime column
+    • Volume may carry K/M suffix (e.g. '6.5K')
+    • Extra columns (Range, etc.) are silently ignored.
     """
     df = pd.read_csv(io.StringIO(content))
     df.columns = [c.strip() for c in df.columns]
 
-    # Normalize column names (case-insensitive)
-    col_map = {c.lower(): c for c in df.columns}
+    # Normalize column names (lower, collapse whitespace)
+    col_map = {c.lower().replace(' ', '').replace('/', ''): c for c in df.columns}
+    # Also keep the un-modified lowercase map for legacy column names
+    col_map_raw = {c.lower(): c for c in df.columns}
 
-    # Build datetime index
+    # ── Build datetime index ──────────────────────────────────────────────────
+    # Priority 1: "Date/Time" combined column (MotiveWave default)
     if 'datetime' in col_map:
-        df['_dt'] = pd.to_datetime(df[col_map['datetime']], infer_datetime_format=True)
-    elif 'date' in col_map and 'time' in col_map:
-        df['_dt'] = pd.to_datetime(df[col_map['date']].astype(str) + ' ' + df[col_map['time']].astype(str), infer_datetime_format=True)
-    elif 'date' in col_map:
-        df['_dt'] = pd.to_datetime(df[col_map['date']], infer_datetime_format=True)
+        raw_dt = df[col_map['datetime']].astype(str).str.strip()
+        # Try DD/MM/YYYY HH:MM:SS first, then let pandas infer
+        try:
+            df['_dt'] = pd.to_datetime(raw_dt, format='%d/%m/%Y %H:%M:%S')
+        except Exception:
+            df['_dt'] = pd.to_datetime(raw_dt, infer_datetime_format=True)
+    # Priority 2: separate Date + Time columns
+    elif 'date' in col_map_raw and 'time' in col_map_raw:
+        combined = (df[col_map_raw['date']].astype(str) + ' ' +
+                    df[col_map_raw['time']].astype(str))
+        try:
+            df['_dt'] = pd.to_datetime(combined, format='%d/%m/%Y %H:%M:%S')
+        except Exception:
+            df['_dt'] = pd.to_datetime(combined, infer_datetime_format=True)
+    # Priority 3: bare Date column
+    elif 'date' in col_map_raw:
+        try:
+            df['_dt'] = pd.to_datetime(df[col_map_raw['date']], format='%d/%m/%Y')
+        except Exception:
+            df['_dt'] = pd.to_datetime(df[col_map_raw['date']], infer_datetime_format=True)
     else:
-        raise ValueError("MotiveWave CSV must have a Date, DateTime, or Date+Time column.")
+        raise ValueError(
+            "MotiveWave CSV must contain a 'Date/Time', 'DateTime', or 'Date' column."
+        )
 
     df = df.set_index('_dt')
     df.index.name = 'Datetime'
-    df.index = df.index.tz_localize(None)  # Remove tz if present
+    df.index = df.index.tz_localize(None)
 
-    # Map OHLCV columns
+    # ── Map OHLCV columns ─────────────────────────────────────────────────────
     ohlcv = {}
-    for std, alts in [('Open', ['open', 'o']), ('High', ['high', 'h']),
-                      ('Low', ['low', 'l']), ('Close', ['close', 'c']),
+    for std, alts in [('Open',   ['open',   'o']),
+                      ('High',   ['high',   'h']),
+                      ('Low',    ['low',    'l']),
+                      ('Close',  ['close',  'c']),
                       ('Volume', ['volume', 'vol', 'v'])]:
+        found = False
         for a in [std.lower()] + alts:
-            if a in col_map:
-                ohlcv[std] = pd.to_numeric(df[col_map[a]], errors='coerce')
+            if a in col_map_raw:
+                raw_col = df[col_map_raw[a]]
+                if std == 'Volume':
+                    ohlcv[std] = raw_col.apply(_parse_mw_volume)
+                else:
+                    ohlcv[std] = pd.to_numeric(raw_col, errors='coerce')
+                found = True
                 break
-        if std not in ohlcv:
+        if not found:
             if std == 'Volume':
-                ohlcv[std] = pd.Series(0, index=df.index)
+                ohlcv[std] = pd.Series(0.0, index=df.index)
             else:
-                raise ValueError(f"MotiveWave CSV missing column: {std}")
+                raise ValueError(f"MotiveWave CSV missing required column: {std}")
 
     result = pd.DataFrame(ohlcv, index=df.index).dropna(subset=['Open', 'High', 'Low', 'Close'])
     result = result.sort_index()
 
-    # If timeframe needs resampling (e.g. uploaded 1h → want 4h)
+    # Resample if the data granularity is finer than the requested timeframe
     if needs_resampling(timeframe):
         result = resample_ohlcv(result, timeframe)
 
@@ -505,14 +495,7 @@ def motivewave_upload():
         content = f.read().decode('utf-8', errors='replace')
         df = parse_motivewave_csv(content, ticker, timeframe)
         key = mw_key(ticker, timeframe)
-        
-        # Store in memory
         MOTIVEWAVE_DATA[key] = df
-        
-        # Save to database for persistence
-        uploaded_by = session.get('username', 'unknown')
-        save_csv_to_db(ticker, timeframe, df, uploaded_by)
-        
         return jsonify({
             'success': True,
             'ticker': ticker,
@@ -556,24 +539,7 @@ def motivewave_delete():
 
     key = request.json.get('key', '').strip()
     if key in MOTIVEWAVE_DATA:
-        # Remove from memory
         del MOTIVEWAVE_DATA[key]
-        
-        # Remove from database
-        try:
-            parts = key.split('_', 1)
-            ticker = parts[0] if parts else key
-            timeframe = parts[1] if len(parts) > 1 else ''
-            
-            conn = sqlite3.connect(DB_PATH)
-            c = conn.cursor()
-            c.execute('DELETE FROM csv_data WHERE ticker = ? AND timeframe = ?', (ticker, timeframe))
-            conn.commit()
-            conn.close()
-            print(f"✓ Deleted from database: {ticker} {timeframe}")
-        except Exception as e:
-            print(f"⚠ Error deleting from database: {e}")
-        
         return jsonify({'success': True, 'message': f'Deleted dataset {key}'})
     return jsonify({'success': False, 'error': 'Dataset not found'}), 404
   
@@ -670,22 +636,6 @@ def init_db():
                 key TEXT PRIMARY KEY,           -- e.g. "Fock|highLSS|highVol"
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 params_json TEXT                -- {"tail_mult":1.1,"oi_clip_mult":0.6,"rf_clip":1.7}
-            )
-            ''')
-            
-            # --- CSV data storage table (persistent MotiveWave data) ---
-            c.execute('''
-            CREATE TABLE IF NOT EXISTS csv_data (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                ticker TEXT NOT NULL,
-                timeframe TEXT NOT NULL,
-                csv_content TEXT NOT NULL,
-                bars INTEGER,
-                start_date TEXT,
-                end_date TEXT,
-                uploaded_by TEXT,
-                uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(ticker, timeframe)
             )
             ''')
             
@@ -3657,118 +3607,6 @@ def multiscale_hdbscan_levels(highs, lows, closes, timeframe='1d'):
     
     return sorted(all_levels, key=lambda x: x['strength'], reverse=True)[:8]
 
-def calculate_vbp_levels(hist_df, timeframe='1d', current_price=None):
-    """
-    Volume-by-Price level detection using LevelEngine from vbp_levels.py
-    
-    Wraps the new VbP engine (v2) which uses close-weighted volume distribution,
-    KDE/HDBSCAN/OPTICS/Wyckoff/persistent homology, POC/VAH/VAL anchors,
-    and produces scored levels with multi-algo confluence.
-    
-    Args:
-        hist_df: pd.DataFrame with Open/High/Low/Close/Volume columns
-        timeframe: timeframe string (used to size lookback)
-        current_price: optional, for distance metadata
-    
-    Returns: list of level dicts matching the existing pipeline schema:
-        { price, type, strength, category, breakoutProb, reversionProb, tags, vbp_volume_pct }
-    """
-    if not VBP_AVAILABLE or VbpLevelEngine is None:
-        return []
-    if hist_df is None or hist_df.empty or len(hist_df) < 50:
-        return []
-    
-    try:
-        # Tick size — defaults to 0.25 (NQ/ES). For equities/crypto we use a small fraction of price range.
-        try:
-            price_range = float(hist_df['High'].max() - hist_df['Low'].min())
-            spot = float(hist_df['Close'].iloc[-1])
-            # Heuristic tick: 0.25 for futures-like prices, 0.01 for equities, scale otherwise
-            if spot >= 1000:
-                tick = 0.25
-            elif spot >= 50:
-                tick = 0.05
-            elif spot >= 1:
-                tick = 0.01
-            else:
-                tick = max(spot * 0.0001, 1e-6)
-        except Exception:
-            tick = 0.25
-        
-        # Lookback by timeframe — keep small enough for VbP perf budget
-        lookback_map = {
-            '1m': 300, '5m': 300, '15m': 300,
-            '1h': 400, '4h': 400,
-            '1d': 500, '1wk': 200
-        }
-        lookback = lookback_map.get(timeframe, 400)
-        lookback = min(lookback, len(hist_df))
-        
-        profile = VbpInstrumentProfile(tick=tick)
-        engine = VbpLevelEngine(profile=profile)
-        result = engine.run(hist_df, lookback_bars=lookback)
-        
-        levels_df = result.get('levels')
-        if levels_df is None or len(levels_df) == 0:
-            return []
-        
-        cp = current_price if current_price is not None else float(hist_df['Close'].iloc[-1])
-        levels = []
-        for _, row in levels_df.iterrows():
-            try:
-                price = float(row.get('price', 0))
-                if price <= 0:
-                    continue
-                score = float(row.get('score', 0))
-                strength = max(0.0, min(0.95, score))
-                
-                # vbp_levels v2 stores algo names in 'sources' (pipe-separated) and anchor type in 'type'
-                sources_raw = row.get('sources', '') or ''
-                if isinstance(sources_raw, str):
-                    tags = [t.strip() for t in sources_raw.split('|') if t.strip()]
-                else:
-                    tags = list(sources_raw) if sources_raw else []
-                algo_count = int(row.get('algo_count', 1))
-                vbp_pct = float(row.get('vbp_norm', 0))
-                row_type = str(row.get('type', 'level'))
-                
-                # POC/VAH/VAL anchors come through with type='POC'/'VAH'/'VAL'
-                is_anchor = row_type in ('POC', 'VAH', 'VAL')
-                if row_type == 'POC':
-                    type_label = 'VbP-POC'
-                elif row_type == 'VAH':
-                    type_label = 'VbP-VAH'
-                elif row_type == 'VAL':
-                    type_label = 'VbP-VAL'
-                else:
-                    type_label = 'VbP'
-                
-                # Anchors are high-confidence by design — bump strength floor
-                if is_anchor:
-                    strength = max(strength, 0.80)
-                
-                levels.append({
-                    'price': price,
-                    'type': type_label,
-                    'strength': float(strength),
-                    'category': 'VbP',
-                    'breakoutProb': float(1.0 - strength),
-                    'reversionProb': float(strength),
-                    'tags': tags,
-                    'algo_count': algo_count,
-                    'vbp_volume_pct': vbp_pct,
-                    'is_anchor': bool(is_anchor),
-                })
-            except Exception:
-                continue
-        
-        # Return top 12 by strength (matches pattern of other algos that cap at ~8)
-        return sorted(levels, key=lambda x: x['strength'], reverse=True)[:12]
-        
-    except Exception as e:
-        print(f"⚠ VbP level calculation failed: {e}")
-        return []
-
 def time_weighted_hdbscan(highs, lows, closes, timestamps, half_life_days=30):
     """
     Weight recent price action more heavily
@@ -4823,75 +4661,114 @@ else:
 
 def validate_levels_with_rl(levels, current_price, sigma_price):
     """
-    Use RL validator to filter out weak/noise levels
-    Falls back to simple filtering if model not available
+    Filter levels using a composite score that prioritises OUTCOME-BASED signals.
+
+    Priority order (highest → lowest weight):
+      1. historical_reaction_score  — did price actually bounce here? (OUTCOME-BASED)
+      2. historical_touch_count     — how many times has price visited this zone?
+      3. historical_volume_at_zone  — was there elevated volume on those visits?
+      4. independent_families       — how many distinct algorithm types agree?
+      5. algorithm strength         — algorithm's own confidence (lowest weight, circular)
+
+    NOTE: The pre-trained model (level_validator.pth) path is kept for future use,
+    but the rule-based fallback is now non-circular — it uses historical outcome
+    data that is computed BEFORE this function is called (in the pipeline).
     """
-    if not TORCH_AVAILABLE or not levels:
+    if not levels:
         return levels
-    
+
     try:
         validated_levels = []
-        
-        # Try to load pre-trained validator model
-        try:
-            model = LevelValidator(n_features=10)
-            model_path = 'level_validator.pth'
-            if os.path.exists(model_path):
-                model.load_state_dict(torch.load(model_path, map_location='cpu'))
-                model.eval()
-        except Exception as model_error:
-            model = None
-            print(f"Could not load RL validator model: {model_error}, using rule-based validation")
-        
+
+        model = None
+        if TORCH_AVAILABLE:
+            try:
+                model_path = 'level_validator.pth'
+                if os.path.exists(model_path):
+                    model = LevelValidator(n_features=10)
+                    model.load_state_dict(torch.load(model_path, map_location='cpu'))
+                    model.eval()
+            except Exception:
+                model = None
+
         for level in levels:
-            # Extract features for validation
-            strength = level.get('strength', 0.5)
-            distance_sigma = abs(level.get('price', current_price) - current_price) / (sigma_price + 1e-9)
-            touches = level.get('touches', 1)
-            category = level.get('category', 'Unknown')
-            
-            # Features: strength, distance, touches, category
-            features = np.array([
-                strength,
-                min(distance_sigma / 3.0, 1.0),  # Normalized distance
-                min(touches / 20.0, 1.0),  # Normalized touches
-                1.0 if category in ['Density (HDBSCAN)', 'HDBSCAN', 'OPTICS', 'KDE'] else 0.5,
-                1.0 if level.get('reversionProb', 0.5) > 0.6 else 0.5,
-                1.0 if level.get('breakoutProb', 0.5) < 0.4 else 0.5,
-                1.0 if 'confluence' in str(category).lower() else 0.5,
-                1.0 if distance_sigma < 2.0 else 0.5,
-                1.0 if touches >= 3 else 0.5,
-                1.0 if strength > 0.6 else 0.5
-            ])
-            
-            # Use model if available, otherwise use rule-based scoring
+            price      = level.get('price', current_price)
+            strength   = level.get('strength', 0.5)
+            category   = level.get('category', 'Unknown')
+            distance_sigma = abs(price - current_price) / (sigma_price + 1e-9)
+
+            # --- OUTCOME-BASED signals (non-circular) ---
+            hist_score   = level.get('historical_reaction_score', None)
+            touch_count  = level.get('historical_touch_count', 0)
+            vol_at_zone  = level.get('historical_volume_at_zone', 1.0)
+            freshness    = level.get('historical_freshness_bars', 9999)
+            ind_families = level.get('independent_families', 1)
+
+            has_history = hist_score is not None and touch_count > 0
+
             if model is not None:
+                # If a trained model exists, use it (future path)
+                features = np.array([
+                    hist_score if hist_score is not None else 0.5,
+                    min(touch_count / 10.0, 1.0),
+                    min(vol_at_zone / 3.0, 1.0),
+                    min(ind_families / 3.0, 1.0),
+                    strength,
+                    min(distance_sigma / 3.0, 1.0),
+                    1.0 if category in ['Density (HDBSCAN)', 'HDBSCAN', 'ML-Confluence'] else 0.5,
+                    min(freshness / 100.0, 1.0),
+                    level.get('reversionProb', 0.5),
+                    1.0 if distance_sigma < 2.0 else 0.5,
+                ])
                 with torch.no_grad():
-                    features_tensor = torch.FloatTensor(features).unsqueeze(0)
-                    output = model(features_tensor)
-                    action_probs = torch.softmax(output, dim=1)
-                    accept_prob = action_probs[0][1].item()
-                accept_score = accept_prob
-            else:
-                # Simple rule-based acceptance
+                    ft = torch.FloatTensor(features).unsqueeze(0)
+                    out = model(ft)
+                    accept_score = float(torch.softmax(out, dim=1)[0][1].item())
+            elif has_history:
+                # Outcome-first scoring — historical evidence dominates
+                reaction_component = hist_score  # 0-1, is this level proven?
+                touch_component    = min(touch_count / 5.0, 1.0)  # caps at 5+ touches
+                vol_component      = min((vol_at_zone - 1.0) / 2.0 + 0.5, 1.0)  # >1.0 vol = better
+                freshness_bonus    = 1.0 if freshness < 20 else (0.8 if freshness < 60 else 0.6)
+                family_bonus       = min(ind_families / 2.0, 1.0)  # 2 families = max
+
                 accept_score = (
-                    strength * 0.3 +
-                    (1.0 - min(distance_sigma / 3.0, 1.0)) * 0.2 +
-                    min(touches / 20.0, 1.0) * 0.2 +
-                    (1.0 if category in ['Density (HDBSCAN)', 'HDBSCAN', 'OPTICS', 'KDE'] else 0.5) * 0.15 +
-                    level.get('reversionProb', 0.5) * 0.15
+                    reaction_component * 0.45 +
+                    touch_component    * 0.20 +
+                    vol_component      * 0.15 +
+                    freshness_bonus    * 0.10 +
+                    family_bonus       * 0.10
                 )
-            
-            # Accept if score > 0.5
-            if accept_score > 0.5:
+            else:
+                # No historical data available — use conservative rule-based fallback
+                # Bias towards keeping levels (lower threshold) since we have no evidence
+                accept_score = (
+                    strength          * 0.40 +
+                    min(ind_families / 2.0, 1.0) * 0.30 +
+                    level.get('reversionProb', 0.5) * 0.20 +
+                    (1.0 if distance_sigma < 2.0 else 0.4) * 0.10
+                )
+
+            # Hard reject: levels with strong historical evidence of being NON-levels
+            if has_history and hist_score < 0.30 and touch_count >= 3:
+                # Price visited this zone 3+ times and broke through most of them
+                level['rl_validation_score'] = float(accept_score)
+                level['rl_rejected'] = True
+                level['rejection_reason'] = f'Low reaction rate ({hist_score:.2f}) over {touch_count} touches'
+                continue  # Skip this level
+
+            threshold = 0.38 if has_history else 0.42
+            if accept_score >= threshold:
                 level['rl_validation_score'] = float(accept_score)
                 validated_levels.append(level)
-        
+
+        print(f"  RL validator: {len(levels)} → {len(validated_levels)} levels "
+              f"({'history-based' if any(l.get('historical_reaction_score') is not None for l in levels) else 'rule-based'})")
         return validated_levels
-        
+
     except Exception as e:
         print(f"RL validation failed: {e}")
-        return levels  # Return original levels if validation fails
+        return levels
 
 def calculate_contextual_success_probability(
     level_price,
@@ -5300,43 +5177,184 @@ def hierarchical_merge_nearby_levels(levels, distance_thresh_pct=0.005, current_
     return merged_levels
 
 
+def calculate_historical_reaction_score(level_price, highs, lows, closes, volumes, sigma_price, recency_halflife=30):
+    """
+    Backtest a candidate level against historical price data.
+    Measures: how often did price bounce vs break when it visited this zone?
+
+    This is the PRIMARY quality signal - it answers whether the level has
+    actually WORKED historically, not just whether algorithms detected it.
+
+    Returns a dict with:
+      reaction_rate     - fraction of touches that resulted in a bounce (0-1)
+      touch_count       - number of times price entered the zone
+      weighted_touches  - recency-weighted touch count
+      freshness_bars    - how many bars since last touch (lower = fresher)
+      volume_at_zone    - avg relative volume when price was in the zone
+    """
+    if len(closes) < 10 or sigma_price <= 0:
+        return {'reaction_rate': 0.5, 'touch_count': 0, 'weighted_touches': 0.0,
+                'freshness_bars': 9999, 'volume_at_zone': 1.0}
+
+    zone_half_width = max(sigma_price * 0.4, level_price * 0.001)
+    n = len(closes)
+    avg_vol = float(np.mean(volumes)) if len(volumes) == n else 1.0
+
+    bounces = 0.0
+    breaks_ = 0.0
+    touch_count = 0
+    weighted_touches = 0.0
+    freshness_bars = n  # default: never touched
+    volume_at_zone_sum = 0.0
+
+    in_zone = False
+    for i in range(n - 5):
+        price_in_zone = (lows[i] <= level_price + zone_half_width and
+                         highs[i] >= level_price - zone_half_width)
+
+        if price_in_zone and not in_zone:
+            in_zone = True
+            touch_count += 1
+            recency_weight = np.exp(-((n - 1 - i) / (recency_halflife * 5)))
+            weighted_touches += recency_weight
+            if i < freshness_bars:
+                freshness_bars = n - 1 - i
+            vol_i = volumes[i] if len(volumes) > i else avg_vol
+            volume_at_zone_sum += vol_i / (avg_vol + 1e-9)
+
+            # Check outcome over next 3-8 bars
+            look_forward = min(8, n - i - 1)
+            if look_forward >= 3:
+                future_highs = highs[i+1:i+1+look_forward]
+                future_lows  = lows[i+1:i+1+look_forward]
+                move_up   = float(np.max(future_highs)) - level_price
+                move_down = level_price - float(np.min(future_lows))
+
+                # Bounce: price moved >0.5 sigma away and reversed
+                bounce_threshold = sigma_price * 0.5
+                if closes[i] >= level_price:  # approaching from above → support test
+                    if move_up > bounce_threshold and move_down < zone_half_width * 2:
+                        bounces += recency_weight
+                    elif move_down > bounce_threshold * 1.5:
+                        breaks_ += recency_weight
+                else:  # approaching from below → resistance test
+                    if move_down > bounce_threshold and move_up < zone_half_width * 2:
+                        bounces += recency_weight
+                    elif move_up > bounce_threshold * 1.5:
+                        breaks_ += recency_weight
+        elif not price_in_zone:
+            in_zone = False
+
+    total = bounces + breaks_
+    reaction_rate = float(bounces / total) if total > 0.01 else 0.5
+    volume_at_zone = float(volume_at_zone_sum / touch_count) if touch_count > 0 else 1.0
+
+    return {
+        'reaction_rate': reaction_rate,
+        'touch_count': touch_count,
+        'weighted_touches': float(weighted_touches),
+        'freshness_bars': int(freshness_bars),
+        'volume_at_zone': volume_at_zone
+    }
+
+
 def get_ml_confluence_levels(all_algorithm_levels):
     """
-    ML Confluence: Meta-wrapper for levels where multiple algorithms agree.
-    This is POST-PROCESSING, not discovery. The actual structural levels
-    (HDBSCAN, etc.) should be shown explicitly, not hidden behind this.
+    ML Confluence: Identifies levels where INDEPENDENT algorithm families agree.
+
+    FIX: Previously counted total algorithms, which caused algorithm incest —
+    HDBSCAN, OPTICS, KDE, multiscale HDBSCAN, and time-weighted HDBSCAN are all
+    density estimators. 5 agreeing density algorithms = 1 signal, not 5 signals.
+
+    Now groups algorithms into independent families and requires 2+ DISTINCT
+    families to agree before calling something a confluence level.
+
+    Families:
+      density   → HDBSCAN, OPTICS, KDE, MeanShift, multiscale, time-weighted
+      structure → Wyckoff, Gap, Pivot, Fibonacci
+      ml_stat   → Neural Network, Persistent Homology, Isolation Forest
+      extrema   → Peak-Valley
     """
+    FAMILY_MAP = {
+        'Density (HDBSCAN)': 'density', 'HDBSCAN': 'density',
+        'OPTICS': 'density', 'Enhanced OPTICS': 'density',
+        'KDE': 'density', 'Kernel Density': 'density',
+        'MeanShift': 'density', 'Multiscale HDBSCAN': 'density',
+        'Time-Weighted HDBSCAN': 'density', 'Agglomerative-Merged': 'density',
+        'Wyckoff': 'structure', 'Gap': 'structure', 'Pivot': 'structure',
+        'Fibonacci': 'structure', 'Classical': 'structure',
+        'Neural-Network': 'ml_stat', 'Neural Network': 'ml_stat',
+        'Persistent Homology': 'ml_stat', 'TDA': 'ml_stat',
+        'Isolation-Forest': 'ml_stat', 'Isolation Forest': 'ml_stat',
+        'Peak-Valley': 'extrema', 'PeakValley': 'extrema',
+    }
+
     final_levels = []
     used = set()
     for level in sorted(all_algorithm_levels, key=lambda x: x['price']):
-        if level['price'] in used:
+        price_key = round(level['price'], 4)
+        if price_key in used:
             continue
-        similar = [l for l in all_algorithm_levels 
-                  if abs(l['price'] - level['price']) / level['price'] < 0.01 
-                  and l['price'] not in used]
-        if len(similar) >= 2:
-            avg_price = np.mean([l['price'] for l in similar])
-            avg_strength = np.mean([l.get('strength', 0.5) for l in similar])
-            confluence_strength = min(avg_strength * len(similar) / 2, 0.95)
-            
-            # Preserve source information - if HDBSCAN is in confluence, mark it
-            sources = [l.get('source', l.get('category', 'Unknown')) for l in similar]
-            primary_source = 'HDBSCAN' if 'HDBSCAN' in sources or 'Density (HDBSCAN)' in sources else sources[0] if sources else 'Unknown'
-            
-            final_levels.append({
-                'price': float(avg_price), 
-                'type': 'ML Confluence',
-                'strength': confluence_strength, 
-                'algorithms': [l.get('category', 'Unknown') for l in similar],
-                'source': primary_source,  # Track primary structural source
-                'confluence_count': len(similar), 
-                'breakoutProb': float(1 - confluence_strength),
-                'reversionProb': float(confluence_strength), 
-                'category': 'ML-Confluence'  # Meta-wrapper, not primary level
-            })
+
+        similar = [l for l in all_algorithm_levels
+                   if abs(l['price'] - level['price']) / max(level['price'], 1e-9) < 0.012
+                   and round(l['price'], 4) not in used]
+
+        if len(similar) < 2:
+            continue
+
+        # Map each algorithm to its family
+        families_seen = set()
+        for l in similar:
+            cat = l.get('category', l.get('source', 'Unknown'))
+            family = FAMILY_MAP.get(cat, 'other')
+            families_seen.add(family)
+
+        independent_families = len(families_seen)
+
+        # Require 2+ INDEPENDENT families — same-family agreement doesn't count
+        if independent_families < 2:
             for l in similar:
-                used.add(l['price'])
-    return final_levels  
+                used.add(round(l['price'], 4))
+            continue
+
+        avg_price = float(np.mean([l['price'] for l in similar]))
+        avg_strength = float(np.mean([l.get('strength', 0.5) for l in similar]))
+
+        # Scale confluence boost by number of INDEPENDENT families (max 3)
+        independence_multiplier = min(independent_families / 2.0, 1.5)
+        confluence_strength = min(avg_strength * independence_multiplier, 0.95)
+
+        sources = [l.get('source', l.get('category', 'Unknown')) for l in similar]
+        primary_source = ('HDBSCAN' if any('HDBSCAN' in str(s) for s in sources)
+                          else sources[0] if sources else 'Unknown')
+
+        # Carry historical quality if already computed
+        hist_scores = [l.get('historical_reaction_score') for l in similar
+                       if l.get('historical_reaction_score') is not None]
+        hist_score = float(np.mean(hist_scores)) if hist_scores else None
+
+        entry = {
+            'price': avg_price,
+            'type': 'ML Confluence',
+            'strength': confluence_strength,
+            'algorithms': [l.get('category', 'Unknown') for l in similar],
+            'families': list(families_seen),
+            'independent_families': independent_families,
+            'source': primary_source,
+            'confluence_count': len(similar),
+            'breakoutProb': float(1 - confluence_strength),
+            'reversionProb': float(confluence_strength),
+            'category': 'ML-Confluence',
+        }
+        if hist_score is not None:
+            entry['historical_reaction_score'] = hist_score
+
+        final_levels.append(entry)
+        for l in similar:
+            used.add(round(l['price'], 4))
+
+    return final_levels
 
 # ============================================================================
 # ENHANCED API ENDPOINT WITH MICROSTRUCTURE
@@ -5558,7 +5576,37 @@ def get_data():
         # MACRO INDICATORS
         macro_indicators = get_macro_indicators()
         
-       # LEVEL DETECTION - Best-in-class production stack
+        # ── VOLUME-BY-PRICE ENGINE ─────────────────────────────────────────────
+        # Runs on MotiveWave data (or yfinance OHLCV if MW not loaded).
+        # Produces: vbp_series, poc, vah, val, vbp_atr
+        # These feed into the algorithms below as a shared data layer.
+        vbp_context = None
+        vbp_series  = None
+        vbp_poc     = None
+        vbp_vah     = None
+        vbp_val     = None
+        if VBP_AVAILABLE and hist_data_subset is not None and len(hist_data_subset) >= 20:
+            try:
+                _tick = 0.25 if '=F' in ticker else 0.01
+                _profile = InstrumentProfile(
+                    tick=_tick,
+                    value_area_pct=0.68,
+                    close_weight=0.5,
+                    vbp_noise_percentile=40,
+                    merge_radius_atr=0.75,
+                )
+                _engine = LevelEngine(profile=_profile)
+                vbp_context = _engine.run(hist_data_subset, lookback_bars=min(len(hist_data_subset), 500))
+                vbp_series  = vbp_context['vbp']
+                vbp_poc     = vbp_context['poc']
+                vbp_vah     = vbp_context['vah']
+                vbp_val     = vbp_context['val']
+                print(f"✓ VbP built — POC:{vbp_poc:.2f}  VAH:{vbp_vah:.2f}  VAL:{vbp_val:.2f}")
+            except Exception as _vbp_err:
+                print(f"⚠ VbP engine failed: {_vbp_err}")
+        # ──────────────────────────────────────────────────────────────────────
+
+        # LEVEL DETECTION - Best-in-class production stack
         print("Running level detection algorithms...")
         
         # PRIMARY: HDBSCAN (state-of-the-art density clustering)
@@ -5588,15 +5636,6 @@ def get_data():
         except Exception as e:
             print(f"Multi-scale HDBSCAN failed: {e}")
             multiscale_hdbscan_levels_result = []
-        
-        # NEW: VbP (Volume-by-Price) level detection — uses LevelEngine from vbp_levels.py
-        # Close-weighted VbP distribution + KDE/HDBSCAN/OPTICS/Wyckoff/homology + POC/VAH/VAL anchors
-        try:
-            vbp_levels_result = calculate_vbp_levels(hist, timeframe=timeframe, current_price=current_price)
-            print(f"VbP: Generated {len(vbp_levels_result) if vbp_levels_result else 0} levels")
-        except Exception as e:
-            print(f"VbP failed: {e}")
-            vbp_levels_result = []
         
         # NEW: Time-weighted HDBSCAN (if timestamps available)
         time_weighted_levels_result = []
@@ -5651,16 +5690,11 @@ def get_data():
         )
         print(f"Local Interaction: Generated {len(local_interaction_levels) if local_interaction_levels else 0} levels")
         
-        # FALLBACK: Peak/Valley (last-resort when density clustering fails)
-        peak_valley_levels = find_peaks_valleys_scipy(hist_highs, hist_lows, hist_closes)
-        
         # MeanShift removed from level production - now used as validator only
         # (validates HDBSCAN levels and boosts confidence if agrees)
-        
-        # CLASSICAL STRUCTURAL (constraints/magnets, not ML discovery)
-        pivot_levels = calculate_pivot_points(hist_data_subset, timeframe)
-        fib_levels = calculate_fibonacci_levels(hist_highs, hist_lows)  # For metadata only, not primary levels
-        gap_levels = find_gap_levels(hist_data_subset)
+
+        # Fibonacci for metadata enrichment only (not primary levels)
+        fib_levels = calculate_fibonacci_levels(hist_highs, hist_lows)
 
         # ---- HARD GUARD: ensure all level outputs are lists ----
         hdbscan_levels = hdbscan_levels or []
@@ -5672,18 +5706,13 @@ def get_data():
         persistent_homology_levels_result = persistent_homology_levels_result or []
         neural_network_levels_result = neural_network_levels_result or []
         isolation_forest_levels = isolation_forest_levels or []
-        peak_valley_levels = peak_valley_levels or []
-        pivot_levels = pivot_levels or []
         fib_levels = fib_levels or []
-        gap_levels = gap_levels or []
-        vbp_levels_result = vbp_levels_result or []
-        
-        # ML LEVELS: Primary discovery algorithms only (including new methods)
-        all_ml_levels = (hdbscan_levels + enhanced_optics_levels_result + kde_levels_result + 
-                        multiscale_hdbscan_levels_result + time_weighted_levels_result + 
-                        wyckoff_levels_result + persistent_homology_levels_result + 
-                        neural_network_levels_result + isolation_forest_levels + peak_valley_levels +
-                        vbp_levels_result)
+
+        # ML LEVELS: Primary discovery algorithms only
+        all_ml_levels = (hdbscan_levels + enhanced_optics_levels_result + kde_levels_result +
+                        multiscale_hdbscan_levels_result + time_weighted_levels_result +
+                        wyckoff_levels_result + persistent_homology_levels_result +
+                        neural_network_levels_result + isolation_forest_levels) 
         
         # CRITICAL: Preserve levels BEFORE merge (they get consumed by merge)
         # We need BOTH merged levels AND original levels for structural array
@@ -5729,15 +5758,75 @@ def get_data():
         
         # Use merged levels for confluence, but preserve HDBSCAN separately
         all_ml_levels = all_ml_levels_merged
-        
+
+        # ── HISTORICAL REACTION SCORING ────────────────────────────────────────
+        # For each candidate level, backtest against real price history:
+        # "When price visited this zone before, did it bounce or break?"
+        # This is the only truly non-circular quality signal — it uses OUTCOMES,
+        # not the algorithm's own confidence score.
+        # Adds: historical_reaction_score, historical_touch_count,
+        #       historical_volume_at_zone, historical_freshness_bars to each level.
+        try:
+            _vol_arr = np.array(hist_volumes.values, dtype=float) if hasattr(hist_volumes, 'values') else np.array(hist_volumes, dtype=float)
+            _hi_arr  = np.array(hist_highs,  dtype=float)
+            _lo_arr  = np.array(hist_lows,   dtype=float)
+            _cl_arr  = np.array(hist_closes, dtype=float)
+            for _lvl in all_ml_levels:
+                _score = calculate_historical_reaction_score(
+                    _lvl['price'], _hi_arr, _lo_arr, _cl_arr, _vol_arr, sigma_price
+                )
+                _lvl['historical_reaction_score']  = _score['reaction_rate']
+                _lvl['historical_touch_count']     = _score['touch_count']
+                _lvl['historical_volume_at_zone']  = _score['volume_at_zone']
+                _lvl['historical_freshness_bars']  = _score['freshness_bars']
+            proven = sum(1 for l in all_ml_levels if l.get('historical_touch_count', 0) >= 2)
+            print(f"✓ Historical reaction scored {len(all_ml_levels)} levels — {proven} have 2+ historical touches")
+        except Exception as _e:
+            print(f"⚠ Historical reaction scoring failed: {_e}")
+        # ──────────────────────────────────────────────────────────────────────
+
         confluence_levels = get_ml_confluence_levels(all_ml_levels)
         confluence_levels = confluence_levels or []
 
-        # Combine ML levels with classical structural (as constraints)
-        # NOTE: Fibonacci is NOT added here - it will be added as metadata only
-        all_levels_combined = (confluence_levels + all_ml_levels + 
-                              pivot_levels + gap_levels)
-        
+        # Combine ML levels (no gap/pivot/peak-valley — volume-based only)
+        all_levels_combined = confluence_levels + all_ml_levels
+
+        # ── VbP BOOSTING + POC/VAH/VAL INJECTION ──────────────────────────────
+        if vbp_series is not None and len(vbp_series) > 0:
+            try:
+                _vbp_max = float(vbp_series.max())
+                _tick    = 0.25 if '=F' in ticker else 0.01
+                for _lv in all_levels_combined:
+                    _p = round(_lv['price'] / _tick) * _tick
+                    _node_vol = float(vbp_series.get(_p, 0.0))
+                    _vbp_norm = _node_vol / (_vbp_max + 1e-9)
+                    _lv['vbp_volume_norm'] = _vbp_norm
+                    if _vbp_norm > 0.3:
+                        _boost = min(0.15, _vbp_norm * 0.2)
+                        _lv['strength'] = min(0.97, _lv.get('strength', 0.5) + _boost)
+                        _lv['vbp_confirmed'] = True
+                _poc_norm = float(vbp_series.get(round(vbp_poc / _tick) * _tick, 0.0)) / (_vbp_max + 1e-9)
+                _vah_norm = float(vbp_series.get(round(vbp_vah / _tick) * _tick, 0.0)) / (_vbp_max + 1e-9)
+                _val_norm = float(vbp_series.get(round(vbp_val / _tick) * _tick, 0.0)) / (_vbp_max + 1e-9)
+                all_levels_combined += [
+                    {'price': float(vbp_poc), 'type': 'POC', 'category': 'Volume-Profile',
+                     'source': 'VbP', 'strength': 0.92, 'breakoutProb': 0.08,
+                     'reversionProb': 0.92, 'vbp_volume_norm': _poc_norm,
+                     'vbp_confirmed': True, 'label': 'Point of Control', 'independent_families': 3},
+                    {'price': float(vbp_vah), 'type': 'VAH', 'category': 'Volume-Profile',
+                     'source': 'VbP', 'strength': 0.82, 'breakoutProb': 0.18,
+                     'reversionProb': 0.82, 'vbp_volume_norm': _vah_norm,
+                     'vbp_confirmed': True, 'label': 'Value Area High', 'independent_families': 2},
+                    {'price': float(vbp_val), 'type': 'VAL', 'category': 'Volume-Profile',
+                     'source': 'VbP', 'strength': 0.82, 'breakoutProb': 0.18,
+                     'reversionProb': 0.82, 'vbp_volume_norm': _val_norm,
+                     'vbp_confirmed': True, 'label': 'Value Area Low', 'independent_families': 2},
+                ]
+                print(f"✓ VbP: POC={vbp_poc:.2f} VAH={vbp_vah:.2f} VAL={vbp_val:.2f} injected. {sum(1 for l in all_levels_combined if l.get('vbp_confirmed'))} levels VbP-confirmed")
+            except Exception as _ve:
+                print(f"⚠ VbP injection failed: {_ve}")
+        # ──────────────────────────────────────────────────────────────────────
+
         # Add Fibonacci as metadata/confluence to nearby levels (not as primary levels)
         all_levels_combined = add_fibonacci_metadata_to_levels(
             all_levels_combined, fib_levels, sigma_price, threshold_sigma=1.0
@@ -5895,13 +5984,9 @@ def get_data():
         hdbscan_ml = hdbscan_ml + enhanced_optics_ml + kde_ml + multiscale_hdbscan_ml + time_weighted_ml + wyckoff_ml + persistent_homology_ml + neural_network_ml
         
         isolation_forest_ml = [l for l in all_levels_combined if l['category'] == 'Isolation-Forest']
-        peak_valley_ml = [l for l in all_levels_combined if l['category'] == 'Peak-Valley']
-        
-        pivot_classical = [l for l in all_levels_combined if l['category'] == 'Pivot']
-        gap_classical = [l for l in all_levels_combined if l['category'] == 'Gap']
-        
+
         # DEBUG: Log level counts before building response
-        print(f"Level organization - HDBSCAN: {len(hdbscan_ml)}, Confluence: {len(ml_confluence)}, Event: {len(isolation_forest_ml)}, Interaction: {len(local_interaction_levels)}, Fallback: {len(peak_valley_ml)}")
+        print(f"Level organization - HDBSCAN: {len(hdbscan_ml)}, Confluence: {len(ml_confluence)}, Event: {len(isolation_forest_ml)}, Interaction: {len(local_interaction_levels)}")
         
         # VALIDATION: Ensure all structural levels have valid price field
         hdbscan_ml = [l for l in hdbscan_ml if l and isinstance(l.get('price'), (int, float)) and not (np.isnan(l.get('price')) or np.isinf(l.get('price')))]
@@ -5920,34 +6005,27 @@ def get_data():
 
         levels = {
             # PRIMARY STRUCTURAL LEVELS (discovered density / memory)
-            'structural': hdbscan_ml,              # HDBSCAN + Agglomerative merged levels
+            'structural': hdbscan_ml,
 
             # EVENT / PIVOT LEVELS (behavioral, fast-decay)
-            'event': isolation_forest_ml,          # Stop-runs, gaps, impulse pivots
+            'event': isolation_forest_ml,
 
-            # INTERACTION LEVELS (local density, near price, short memory, explicitly non-structural)
-            'interaction': local_interaction_levels,  # Local density modes - play zones, not structure
+            # INTERACTION LEVELS (local density, near price, short memory)
+            'interaction': local_interaction_levels,
 
-            # FALLBACK STRUCTURE (only if density is sparse)
-            'fallback': peak_valley_ml,            # Peak / valley geometric structure
-
-            # CLASSICAL REFERENCES (constraints, not ML discovery)
-            'classicalStructural': {
-                'pivots': pivot_classical,
-                'gaps': gap_classical
-            },
-            
-            # Backward compatibility: Include old fields
-            'mlConfluence': ml_confluence,  # ML confluence levels
-            'peakValley': peak_valley_ml,   # Peak-Valley levels (fallback)
-            'meanshift': [],  # Removed from production, now validator only
-            'dbscan': [],     # Removed from production
-            'gmm': [],        # Removed from production
-            'kmeans': [],     # Removed from production
-            'volatility': [], # Removed from production
-            'pivots': pivot_classical,  # Also at top level for backward compatibility
-            'fibonacci': [],  # Removed as primary level - now metadata only
-            'gaps': gap_classical      # Also at top level for backward compatibility
+            # Backward compatibility: empty lists for removed algorithm types
+            'mlConfluence': ml_confluence,
+            'peakValley': [],
+            'fallback': [],
+            'classicalStructural': {'pivots': [], 'gaps': []},
+            'meanshift': [],
+            'dbscan': [],
+            'gmm': [],
+            'kmeans': [],
+            'volatility': [],
+            'pivots': [],
+            'fibonacci': [],
+            'gaps': []
         }
         
         # CRITICAL DEBUG: Log final counts before sending to frontend
@@ -11023,9 +11101,6 @@ def get_level_constrained_hod_lod():
         # SECONDARY: IsolationForest (event pivot candidates)
         isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
         
-        # FALLBACK: Peak/Valley (last-resort when density clustering fails)
-        peak_valley_levels = find_peaks_valleys_scipy(highs, lows, closes)
-        
         # Neural Network levels (with volume profile)
         try:
             neural_network_levels_result = detect_levels_with_neural_network(hist_data_subset, lookback=100, threshold=0.5)
@@ -11033,17 +11108,12 @@ def get_level_constrained_hod_lod():
         except Exception as e:
             print(f"Neural Network level detection failed: {e}")
             neural_network_levels_result = []
-        
-        # MeanShift removed from level production - now used as validator only
-        # (validates HDBSCAN levels and boosts confidence if agrees)
-        
-        # CLASSICAL STRUCTURAL (constraints/magnets, not ML discovery)
-        pivot_levels = calculate_pivot_points(hist_data_subset, timeframe)
-        fib_levels = calculate_fibonacci_levels(highs, lows)  # For metadata only, not primary levels
-        gap_levels = find_gap_levels(hist_data_subset)
-        
-        # ML LEVELS: Primary discovery algorithms only (including neural network)
-        all_ml_levels = (hdbscan_levels + isolation_forest_levels + peak_valley_levels + 
+
+        # Fibonacci for metadata enrichment only (not primary levels)
+        fib_levels = calculate_fibonacci_levels(highs, lows)
+
+        # ML LEVELS: Primary discovery algorithms only
+        all_ml_levels = (hdbscan_levels + isolation_forest_levels +
                         (neural_network_levels_result if neural_network_levels_result else []))
         
         # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
@@ -11055,12 +11125,10 @@ def get_level_constrained_hod_lod():
         )
         
         confluence_levels = get_ml_confluence_levels(all_ml_levels)
-        
-        # Combine ML levels with classical structural (as constraints)
-        # NOTE: Fibonacci is NOT added here - it will be added as metadata only
-        all_levels_combined = (confluence_levels + all_ml_levels + 
-                              pivot_levels + gap_levels)
-        
+
+        # Combine ML levels (no gap/pivot/peak-valley — volume-based only)
+        all_levels_combined = confluence_levels + all_ml_levels
+
         # Add Fibonacci as metadata/confluence to nearby levels (not as primary levels)
         all_levels_combined = add_fibonacci_metadata_to_levels(
             all_levels_combined, fib_levels, sigma_price, threshold_sigma=1.0
@@ -11613,19 +11681,11 @@ def get_state_conditioned_hod_lod():
                                 # SECONDARY: IsolationForest (event pivot candidates)
                                 isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
                                 
-                                # FALLBACK: Peak/Valley (last-resort when density clustering fails)
-                                peak_valley_levels = find_peaks_valleys_scipy(highs, lows, closes)
-                                
-                                # MeanShift removed from level production - now used as validator only
-                                # (validates HDBSCAN levels and boosts confidence if agrees)
-                                
-                                # CLASSICAL STRUCTURAL (constraints/magnets, not ML discovery)
-                                pivot_levels = calculate_pivot_points(hist_data_subset, timeframe)
-                                fib_levels = calculate_fibonacci_levels(highs, lows)  # For metadata only, not primary levels
-                                gap_levels = find_gap_levels(hist_data_subset)
-                                
+                                # Fibonacci for metadata enrichment only (not primary levels)
+                                fib_levels = calculate_fibonacci_levels(highs, lows)
+
                                 # ML LEVELS: Primary discovery algorithms only
-                                all_ml_levels = (hdbscan_levels + isolation_forest_levels + peak_valley_levels)
+                                all_ml_levels = hdbscan_levels + isolation_forest_levels
                                 
                                 # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
                                 # Use timeframe-aware threshold (cleaner than regime-aware for this step)
@@ -11636,11 +11696,9 @@ def get_state_conditioned_hod_lod():
                                 )
                                 
                                 confluence_levels = get_ml_confluence_levels(all_ml_levels)
-                                
-                                # Combine ML levels with classical structural (as constraints)
-                                # NOTE: Fibonacci is NOT added here - it will be added as metadata only
-                                all_levels_combined = (confluence_levels + all_ml_levels + 
-                                                      pivot_levels + gap_levels)
+
+                                # Combine ML levels (no gap/pivot/peak-valley — volume-based only)
+                                all_levels_combined = confluence_levels + all_ml_levels
                                 
                                 # Add Fibonacci as metadata/confluence to nearby levels (not as primary levels)
                                 all_levels_combined = add_fibonacci_metadata_to_levels(
@@ -12094,16 +12152,8 @@ def get_lstm_forecast():
         neural_network_levels = detect_levels_with_neural_network(hist, lookback=100, threshold=0.5)
         print(f"✓ Neural Network levels detected: {len(neural_network_levels)} levels")
         
-        # VbP (Volume-by-Price) levels — close-weighted distribution + multi-algo confluence + POC/VAH/VAL anchors
-        try:
-            vbp_levels_result = calculate_vbp_levels(hist, timeframe=timeframe, current_price=current_price)
-            print(f"✓ VbP levels detected: {len(vbp_levels_result)} levels")
-        except Exception as _vbp_err:
-            vbp_levels_result = []
-            print(f"⚠ VbP failed: {_vbp_err}")
-        
         # ML confluence (includes neural network levels)
-        all_ml_levels = hdbscan_levels + optics_levels + interaction_levels + neural_network_levels + vbp_levels_result
+        all_ml_levels = hdbscan_levels + optics_levels + interaction_levels + neural_network_levels
         ml_confluence_levels = get_ml_confluence_levels(all_ml_levels)
         
         # 2a. Get Multi-Timeframe Levels (for enhanced LSTM prediction)
@@ -12429,8 +12479,7 @@ def get_lstm_forecast():
                 'interaction': len(interaction_levels),
                 'ml_confluence': len(ml_confluence_levels),
                 'multiscale': len(multiscale_levels),
-                'neural_network': len(neural_network_levels),
-                'vbp': len(vbp_levels_result)
+                'neural_network': len(neural_network_levels)
             },
             'all_levels': sanitize_for_json(sorted(all_levels, key=lambda x: abs(x.get('price', 0) - current_price))[:50]),
             'microstructure_state': sanitize_for_json(microstructure_state) if microstructure_state else None
@@ -12841,8 +12890,6 @@ def ensure_db():
 # Wrap in try-except to prevent startup failure
 try:
     init_db()
-    # Load all CSV data from database into memory
-    load_all_csv_from_db()
 except Exception as e:
     print(f"⚠ Warning: Database initialization failed on startup: {e}")
     print("⚠ Will retry on first request via ensure_db()")
