@@ -11691,7 +11691,8 @@ def get_lstm_forecast():
         # 3. Predict level reactions AND which levels will become actual HOD/LOD
         # NOTE: neural_network_levels are included in all_levels for theoretical HOD/LOD refinement
         print("Predicting level reactions and HOD/LOD candidates...")
-        all_levels = hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels + multiscale_levels + neural_network_levels
+        all_levels = (hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels +
+                     multiscale_levels + neural_network_levels + gmm_levels + kde_levels + meanshift_levels)
         start_of_move_price = closes[0] if len(closes) > 0 else current_price  # Session start
         
         level_reactions = []
@@ -11947,7 +11948,8 @@ def get_lstm_forecast():
         
         # 6. Find which level the model is targeting
         target_price = prediction['target_price']
-        all_levels = hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels + multiscale_levels + neural_network_levels
+        all_levels = (hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels +
+                     multiscale_levels + neural_network_levels + gmm_levels + kde_levels + meanshift_levels)
         
         # Find closest level to predicted target
         closest_level = None
