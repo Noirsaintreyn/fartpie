@@ -415,14 +415,25 @@ def compute_atr(highs, lows, closes, period=14):
 def run_backtest(df, instrument, timeframe, lookback, horizon, step,
                   bounce_atr_mult, break_atr_mult, break_confirm_bars,
                   reaction_bars, recovery_bars,
-                  max_windows=None, verbose=False):
+                  max_windows=None, verbose=False, start_date=None, end_date=None):
     highs = df['high'].values
     lows = df['low'].values
     closes = df['close'].values
+    datetimes = df['datetime'].values
 
     rows = []
     n = len(df)
     starts = list(range(lookback, n - horizon, step))
+    if start_date or end_date:
+        # Filter by the EVALUATION point's date (last bar of the detection
+        # window), not the underlying data - lookback context before the
+        # period start is still fair game (PIT-safe), we're just
+        # restricting which dates get scored.
+        start_ts = np.datetime64(start_date) if start_date else None
+        end_ts = np.datetime64(end_date) if end_date else None
+        starts = [t for t in starts
+                  if (start_ts is None or datetimes[t - 1] >= start_ts)
+                  and (end_ts is None or datetimes[t - 1] <= end_ts)]
     if max_windows:
         starts = starts[:max_windows]
 
@@ -518,6 +529,8 @@ def main():
     ap.add_argument('--reaction-bars', type=int, default=10, help='bars after touch to resolve bounce vs. break')
     ap.add_argument('--recovery-bars', type=int, default=10, help='bars after a break to check for recovery')
     ap.add_argument('--max-windows', type=int, default=None, help='cap windows per file (for quick smoke tests)')
+    ap.add_argument('--start-date', default=None, help='only score evaluation points on/after this date (YYYY-MM-DD) - lookback context before it is still used')
+    ap.add_argument('--end-date', default=None, help='only score evaluation points on/before this date (YYYY-MM-DD)')
     ap.add_argument('--out', default='backtest_results.csv')
     ap.add_argument('--summary-out', default='backtest_summary.csv')
     ap.add_argument('-v', '--verbose', action='store_true')
@@ -538,6 +551,7 @@ def main():
             break_confirm_bars=args.break_confirm_bars,
             reaction_bars=args.reaction_bars, recovery_bars=args.recovery_bars,
             max_windows=args.max_windows, verbose=args.verbose,
+            start_date=args.start_date, end_date=args.end_date,
         )
         print(f"  -> {len(res)} candidate levels evaluated")
         all_results.append(res)

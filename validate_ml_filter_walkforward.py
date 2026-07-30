@@ -98,7 +98,7 @@ def main():
 
     print("\n=== POOLED walk-forward result (the real test - many folds, many time periods) ===")
     p_rand, n_rand = args.random_accuracy, args.random_n
-    n_comparisons = 3
+    n_comparisons = oos['level_type'].nunique()
     alpha = 0.05 / n_comparisons
 
     for level_type, g in oos.groupby('level_type'):
