@@ -3702,73 +3702,68 @@ def detect_wyckoff_zones(hist, lookback=50):
 
 def persistent_homology_levels(highs, lows, closes, max_levels=8):
     """
-    Use persistent homology to find levels that exist across multiple scales
-    
-    Intuition: 
-    - Build filtration at different price thresholds
-    - Levels that persist = structurally significant
+    Use 0-dimensional persistent homology (connected-component merging) to
+    find price clusters that persist across multiple distance scales.
+
+    FIXED: the previous version treated the raw (birth, death) pair from the
+    ripser diagram as if it were a price coordinate - for 0-dim persistence
+    on a 1D point cloud, birth is always 0 and death is the MERGE DISTANCE
+    between two point-clusters, not a price. That produced nonsense "prices"
+    like 23.6 on a $25,000 instrument. The correct level price is the mean
+    price of the points in the cluster that persists - recovered here via
+    scipy's single-linkage hierarchy, which is mathematically equivalent to
+    0-dim persistent homology's merge tree (same persistence/"death"
+    distances), but actually gives you cluster membership to compute a real
+    price from.
     """
-    if not RIPSER_AVAILABLE:
-        return []
-    
     if len(closes) < 20:
         return []
-    
+
     all_prices = np.concatenate([highs, lows, closes])
-    
-    # Build point cloud (1D)
     points = all_prices.reshape(-1, 1)
-    
+
     try:
-        # Compute persistent homology
-        if not RIPSER_AVAILABLE or ripser is None:
-            return None  # Skip topological analysis if ripser not available
-        result = ripser(points, maxdim=0)
-        diagrams = result['dgms']
-        
-        # 0-dimensional persistence (connected components)
-        # Each bar in diagram = (birth, death) of a component
-        h0_diagram = diagrams[0]
-        
+        from scipy.cluster.hierarchy import linkage, fcluster
+        Z = linkage(points, method='single')
+        merge_distances = Z[:, 2]
+        max_persistence = float(merge_distances.max()) if len(merge_distances) else 0.0
+        if max_persistence <= 0:
+            return []
+
         levels = []
-        for birth, death in h0_diagram:
-            if np.isinf(death):
-                continue
-            
-            # Persistence = how long this level "lived"
-            persistence = death - birth
-            
-            # Level price = midpoint of birth/death
-            level_price = (birth + death) / 2
-            
-            # Strength from persistence
-            finite_deaths = h0_diagram[~np.isinf(h0_diagram[:, 1])]
-            if len(finite_deaths) > 0:
-                max_persistence = np.max(finite_deaths[:, 1] - finite_deaths[:, 0])
+        seen_prices = set()
+        # Walk merge events from most persistent (largest gap closed) down,
+        # cutting the dendrogram just below each merge distance to recover
+        # the cluster that existed right before that merge.
+        for dist in sorted(set(merge_distances), reverse=True)[:max_levels * 2]:
+            cluster_ids = fcluster(Z, t=dist - 1e-9, criterion='distance')
+            for cid in set(cluster_ids):
+                member_prices = all_prices[cluster_ids == cid]
+                if len(member_prices) < 3:
+                    continue
+                level_price = float(np.mean(member_prices))
+                price_key = round(level_price, 2)
+                if price_key in seen_prices:
+                    continue
+
+                persistence = dist
                 strength = persistence / (max_persistence + 1e-9)
-            else:
-                strength = 0.5
-            
-            # Filter weak levels
-            if strength < 0.3:
-                continue
-            
-            # Count touches
-            touches = np.sum(np.abs(all_prices - level_price) < level_price * 0.005)
-            
-            levels.append({
-                'price': float(level_price),
-                'type': 'Persistent Homology',
-                'strength': float(strength),
-                'persistence': float(persistence),
-                'birth': float(birth),
-                'death': float(death),
-                'touches': int(touches),
-                'category': 'TDA',
-                'breakoutProb': float(1 - strength),
-                'reversionProb': float(strength)
-            })
-        
+                if strength < 0.3:
+                    continue
+
+                touches = int(np.sum(np.abs(all_prices - level_price) < level_price * 0.005))
+                levels.append({
+                    'price': level_price,
+                    'type': 'Persistent Homology',
+                    'strength': float(strength),
+                    'persistence': float(persistence),
+                    'touches': touches,
+                    'category': 'TDA',
+                    'breakoutProb': float(1 - strength),
+                    'reversionProb': float(strength)
+                })
+                seen_prices.add(price_key)
+
         return sorted(levels, key=lambda x: x['persistence'], reverse=True)[:max_levels]
     except Exception as e:
         print(f"Persistent Homology failed: {e}")
@@ -4470,12 +4465,14 @@ def get_model_accuracy_by_category(category, source=None):
     Isolation-Forest before; the real data says they're statistically
     indistinguishable.
 
-    Interaction, ML-Confluence, and Neural-Network are NOT yet backed by
-    that same measured backtest (Neural-Network specifically is pending
-    results from backtest_nn_levels.py, run against the current
-    causal-CNN+LSTM+forward-reaction-label architecture) - still hand-set
-    placeholders. Don't treat them as equally trustworthy to HDBSCAN/
-    Isolation-Forest/GMM above.
+    Neural-Network is now measured too (backtest_nn_levels.py, PIT-safe:
+    trained only on the first 70% of each file chronologically, evaluated
+    only on later unseen bars) - despite real architecture improvements
+    (causal convolutions, genuine forward-reaction labels instead of
+    HDBSCAN imitation), it lands in the same band as everything else, not
+    above it. Interaction and ML-Confluence are still NOT backed by a
+    measured backtest - hand-set placeholders, don't treat them as equally
+    trustworthy to the five measured methods above.
     """
     if category == 'Density (HDBSCAN)' or source == 'HDBSCAN' or category == 'HDBSCAN':
         return 0.427
@@ -4488,7 +4485,7 @@ def get_model_accuracy_by_category(category, source=None):
     elif category == 'ML-Confluence':
         return 0.60  # Not backtested - placeholder
     elif category == 'Neural-Network' or source == 'Neural Network':
-        return 0.60  # Not backtested yet - pending backtest_nn_levels.py results
+        return 0.426
     else:
         return 0.50  # Default: neutral
 

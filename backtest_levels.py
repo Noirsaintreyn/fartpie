@@ -106,6 +106,10 @@ def _run_kde(h, l, c, tf):
     return backend.kde_based_levels(h, l, c)
 
 
+def _run_tda(h, l, c, tf):
+    return backend.persistent_homology_levels(h, l, c, max_levels=8)
+
+
 # --- New candidates: no persistent training, refit fresh on each window
 # (same pattern as HDBSCAN/OPTICS/KDE above), so no extra PIT risk. ---
 
@@ -290,6 +294,7 @@ METHODS = {
     'MeanShift': _run_meanshift,
     'KDE': _run_kde,
     'GMM': _run_gmm,
+    'TDA': _run_tda,
     # Wavelet/HMM-Levels function defs kept above for reference but not
     # registered - both backtested weaker than the rest, see prior findings.
 }
