@@ -3402,6 +3402,104 @@ def kde_based_levels(highs, lows, closes, n_levels=10):
     # Sort by strength and return top N
     return sorted(levels, key=lambda x: x['strength'], reverse=True)[:n_levels]
 
+
+def _atr_for_ml_filter(highs, lows, closes, period=14):
+    """Same ATR formula used in backtest_levels.py's compute_atr - must match
+    exactly, since the ML filter below was validated against that specific
+    computation."""
+    if len(closes) < 2:
+        return 0.0
+    prev_close = np.concatenate([[closes[0]], closes[:-1]])
+    tr = np.maximum(highs - lows, np.maximum(np.abs(highs - prev_close), np.abs(lows - prev_close)))
+    return float(np.mean(tr[-period:]))
+
+
+def score_and_filter_gmm_tda_levels(gmm_levels, tda_levels, highs, lows, closes, volumes,
+                                     current_price, timestamps=None):
+    """
+    Apply the validated ML filter to GMM and TDA candidate levels, returning
+    ONLY the levels that score above each type's validated threshold - not
+    the raw unfiltered candidates.
+
+    Walk-forward validated (16 independent retrain/test folds across 12yr
+    NQ/ES 1H+4H data - see backtest_ml_filter.py and
+    validate_ml_filter_walkforward.py):
+      GMM: 0.433 -> 0.480 accuracy filtered, improved in 16/16 folds, p=0.00000
+      TDA: 0.437 -> 0.497 accuracy filtered, improved in 16/16 folds, p=0.00000
+    VWAP was tested as a third candidate but only improved in 13/16 folds and
+    failed Bonferroni correction (p=0.0196 vs 0.0167 threshold) - not
+    included here; VWAP is tracked on the chart directly instead.
+
+    Coefficients below are a logistic regression fit on the full validated
+    dataset (backtest_ml_filter_events.csv, ~38k touched GMM/TDA events),
+    not re-fit per request - this is a fixed, already-validated model.
+    """
+    if len(closes) < 50:
+        return (gmm_levels or []) + (tda_levels or [])
+
+    try:
+        vwap_result = calculate_vwap(highs, lows, closes, volumes, timestamps=timestamps)
+        vwap = vwap_result['vwap'] if vwap_result else current_price
+    except Exception:
+        vwap = current_price
+
+    vol_forecast = None
+    try:
+        returns_pct = np.diff(np.log(closes)) * 100
+        garch = fit_garch_model(returns_pct)
+        if garch and garch.get('forecast_vol'):
+            vol_forecast = garch['forecast_vol'][0] / 100.0 * current_price
+    except Exception:
+        vol_forecast = None
+    if vol_forecast is None or vol_forecast <= 0:
+        return (gmm_levels or []) + (tda_levels or [])
+
+    atr = _atr_for_ml_filter(highs, lows, closes)
+    if atr <= 0:
+        return (gmm_levels or []) + (tda_levels or [])
+
+    INTERCEPT = -0.2049073677340225
+    COEF_VWAP_DIST = -0.024837128930900492
+    COEF_VOL_FORECAST_PCT = -0.0008176414997215035
+    COEF_ATR_DIST = -0.04401730255805446
+    GMM_OFFSET = -0.09920365004217427
+    TDA_OFFSET = -0.10559972475456823
+    GMM_THRESHOLD = 0.427383
+    TDA_THRESHOLD = 0.429283
+
+    vol_forecast_pct = vol_forecast / current_price
+
+    def _score(price, offset):
+        vwap_dist_norm = (price - vwap) / (vol_forecast + 1e-9)
+        atr_dist = (price - current_price) / atr
+        logit = (INTERCEPT + offset +
+                 COEF_VWAP_DIST * vwap_dist_norm +
+                 COEF_VOL_FORECAST_PCT * vol_forecast_pct +
+                 COEF_ATR_DIST * atr_dist)
+        return 1.0 / (1.0 + np.exp(-logit))
+
+    filtered = []
+    for lvl in (gmm_levels or []):
+        price = lvl.get('price')
+        if price is None:
+            continue
+        prob = _score(price, GMM_OFFSET)
+        if prob >= GMM_THRESHOLD:
+            lvl = dict(lvl)
+            lvl['ml_filter_score'] = float(prob)
+            filtered.append(lvl)
+    for lvl in (tda_levels or []):
+        price = lvl.get('price')
+        if price is None:
+            continue
+        prob = _score(price, TDA_OFFSET)
+        if prob >= TDA_THRESHOLD:
+            lvl = dict(lvl)
+            lvl['ml_filter_score'] = float(prob)
+            filtered.append(lvl)
+    return filtered
+
+
 def calculate_gmm_levels(highs, lows, closes, min_components=3, max_components=10, min_frac=0.03):
     """
     Gaussian Mixture Model: soft/probabilistic alternative to HDBSCAN.
@@ -5279,12 +5377,11 @@ def get_data():
             print(f"Wyckoff zones failed: {e}")
             wyckoff_levels_result = []
         
-        # NEW: Persistent Homology (TDA)
+        # NEW: Persistent Homology (TDA) - raw, filtered below alongside GMM
         persistent_homology_levels_result = []
         try:
-            if RIPSER_AVAILABLE:
-                persistent_homology_levels_result = persistent_homology_levels(hist_highs, hist_lows, hist_closes, max_levels=8)
-                print(f"Persistent Homology: Generated {len(persistent_homology_levels_result) if persistent_homology_levels_result else 0} levels")
+            persistent_homology_levels_result = persistent_homology_levels(hist_highs, hist_lows, hist_closes, max_levels=8)
+            print(f"Persistent Homology: Generated {len(persistent_homology_levels_result) if persistent_homology_levels_result else 0} raw levels")
         except Exception as e:
             print(f"Persistent Homology failed: {e}")
             persistent_homology_levels_result = []
@@ -5302,9 +5399,26 @@ def get_data():
         # SECONDARY: IsolationForest (event pivot candidates)
         isolation_forest_levels = find_pivot_anomalies(hist_highs, hist_lows, hist_closes)
 
-        # GMM: soft/probabilistic clustering (backtested: tied-best support
-        # accuracy of any method tested - see backtest_summary_fixed.csv)
+        # GMM: soft/probabilistic clustering, ML-filtered below alongside TDA
         gmm_levels_result = calculate_gmm_levels(hist_highs, hist_lows, hist_closes)
+        print(f"GMM: Generated {len(gmm_levels_result) if gmm_levels_result else 0} raw levels")
+
+        # ML FILTER: keep only GMM/TDA levels the validated logistic
+        # regression scores above threshold (walk-forward validated: GMM
+        # 0.433->0.480 accuracy, TDA 0.437->0.497, both 16/16 folds improved -
+        # see score_and_filter_gmm_tda_levels docstring). Raw/unfiltered
+        # candidates are discarded, not exposed.
+        try:
+            filtered = score_and_filter_gmm_tda_levels(
+                gmm_levels_result, persistent_homology_levels_result,
+                hist_highs, hist_lows, hist_closes, hist_volumes, current_price,
+                timestamps=hist_data_subset.index.values,
+            )
+            gmm_levels_result = [l for l in filtered if l.get('category') == 'GMM']
+            persistent_homology_levels_result = [l for l in filtered if l.get('category') == 'TDA']
+            print(f"ML filter: kept {len(gmm_levels_result)} GMM, {len(persistent_homology_levels_result)} TDA levels")
+        except Exception as e:
+            print(f"ML filter failed, falling back to unfiltered GMM/TDA: {e}")
 
         # INTERACTION: Local density modes (near price, short memory, explicitly non-structural)
         local_interaction_levels = calculate_local_interaction_levels(
@@ -10681,9 +10795,18 @@ def get_level_constrained_hod_lod():
         # SECONDARY: IsolationForest (event pivot candidates)
         isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
 
-        # GMM: soft/probabilistic clustering (backtested: tied-best support
-        # accuracy of any method tested)
+        # GMM + TDA: ML-filtered below - raw candidates are not exposed
         gmm_levels_result = calculate_gmm_levels(highs, lows, closes)
+        tda_levels_result = persistent_homology_levels(highs, lows, closes, max_levels=8)
+        try:
+            filtered = score_and_filter_gmm_tda_levels(
+                gmm_levels_result, tda_levels_result, highs, lows, closes, volumes, current_price,
+                timestamps=hist.index.values,
+            )
+            gmm_levels_result = [l for l in filtered if l.get('category') == 'GMM']
+            tda_levels_result = [l for l in filtered if l.get('category') == 'TDA']
+        except Exception as e:
+            print(f"ML filter failed, falling back to unfiltered GMM/TDA: {e}")
 
         # KDE: kernel density peaks (backtested: 0.433, tied-best)
         kde_levels_result = kde_based_levels(highs, lows, closes, n_levels=10)
@@ -10703,7 +10826,7 @@ def get_level_constrained_hod_lod():
         fib_levels = calculate_fibonacci_levels(highs, lows)
 
         # ML LEVELS: Primary discovery algorithms only
-        all_ml_levels = (hdbscan_levels + isolation_forest_levels + gmm_levels_result +
+        all_ml_levels = (hdbscan_levels + isolation_forest_levels + gmm_levels_result + tda_levels_result +
                         kde_levels_result + meanshift_levels_result +
                         (neural_network_levels_result if neural_network_levels_result else []))
         
@@ -11272,9 +11395,18 @@ def get_state_conditioned_hod_lod():
                                 # SECONDARY: IsolationForest (event pivot candidates)
                                 isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
 
-                                # GMM: soft/probabilistic clustering (backtested: tied-best
-                                # support accuracy of any method tested)
+                                # GMM + TDA: ML-filtered below - raw candidates are not exposed
                                 gmm_levels_result = calculate_gmm_levels(highs, lows, closes)
+                                tda_levels_result = persistent_homology_levels(highs, lows, closes, max_levels=8)
+                                try:
+                                    filtered = score_and_filter_gmm_tda_levels(
+                                        gmm_levels_result, tda_levels_result, highs, lows, closes, volumes, current_price,
+                                        timestamps=hist.index.values,
+                                    )
+                                    gmm_levels_result = [l for l in filtered if l.get('category') == 'GMM']
+                                    tda_levels_result = [l for l in filtered if l.get('category') == 'TDA']
+                                except Exception as e:
+                                    print(f"ML filter failed, falling back to unfiltered GMM/TDA: {e}")
 
                                 # KDE: kernel density peaks (backtested: 0.433, tied-best)
                                 kde_levels_result = kde_based_levels(highs, lows, closes, n_levels=10)
@@ -11286,7 +11418,7 @@ def get_state_conditioned_hod_lod():
                                 fib_levels = calculate_fibonacci_levels(highs, lows)
 
                                 # ML LEVELS: Primary discovery algorithms only
-                                all_ml_levels = (hdbscan_levels + isolation_forest_levels + gmm_levels_result +
+                                all_ml_levels = (hdbscan_levels + isolation_forest_levels + gmm_levels_result + tda_levels_result +
                                                 kde_levels_result + meanshift_levels_result)
                                 
                                 # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
@@ -11749,9 +11881,18 @@ def get_lstm_forecast():
         # Multiscale levels
         multiscale_levels = multiscale_hdbscan_levels(highs, lows, closes, timeframe=timeframe)
 
-        # GMM: soft/probabilistic clustering (backtested: tied-best support
-        # accuracy of any method tested - see backtest_summary_fixed.csv)
+        # GMM + TDA: ML-filtered below - raw candidates are not exposed
         gmm_levels = calculate_gmm_levels(highs, lows, closes)
+        tda_levels = persistent_homology_levels(highs, lows, closes, max_levels=8)
+        try:
+            filtered = score_and_filter_gmm_tda_levels(
+                gmm_levels, tda_levels, highs, lows, closes, volumes, current_price,
+                timestamps=hist.index.values,
+            )
+            gmm_levels = [l for l in filtered if l.get('category') == 'GMM']
+            tda_levels = [l for l in filtered if l.get('category') == 'TDA']
+        except Exception as e:
+            print(f"ML filter failed, falling back to unfiltered GMM/TDA: {e}")
 
         # KDE: kernel density peaks (backtested: 0.433, tied-best - was only
         # wired into /api/data before, missing here)
@@ -11769,7 +11910,7 @@ def get_lstm_forecast():
 
         # ML confluence (includes neural network levels)
         all_ml_levels = (hdbscan_levels + optics_levels + interaction_levels + neural_network_levels +
-                        gmm_levels + kde_levels + meanshift_levels)
+                        gmm_levels + tda_levels + kde_levels + meanshift_levels)
         ml_confluence_levels = get_ml_confluence_levels(all_ml_levels)
         
         # 2a. Get Multi-Timeframe Levels (for enhanced LSTM prediction)
@@ -11787,7 +11928,7 @@ def get_lstm_forecast():
         # NOTE: neural_network_levels are included in all_levels for theoretical HOD/LOD refinement
         print("Predicting level reactions and HOD/LOD candidates...")
         all_levels = (hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels +
-                     multiscale_levels + neural_network_levels + gmm_levels + kde_levels + meanshift_levels)
+                     multiscale_levels + neural_network_levels + gmm_levels + tda_levels + kde_levels + meanshift_levels)
         start_of_move_price = closes[0] if len(closes) > 0 else current_price  # Session start
         
         level_reactions = []
@@ -12044,7 +12185,7 @@ def get_lstm_forecast():
         # 6. Find which level the model is targeting
         target_price = prediction['target_price']
         all_levels = (hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels +
-                     multiscale_levels + neural_network_levels + gmm_levels + kde_levels + meanshift_levels)
+                     multiscale_levels + neural_network_levels + gmm_levels + tda_levels + kde_levels + meanshift_levels)
         
         # Find closest level to predicted target
         closest_level = None
@@ -12099,6 +12240,7 @@ def get_lstm_forecast():
                 'multiscale': len(multiscale_levels),
                 'neural_network': len(neural_network_levels),
                 'gmm': len(gmm_levels),
+                'tda': len(tda_levels),
                 'kde': len(kde_levels),
                 'meanshift': len(meanshift_levels)
             },
