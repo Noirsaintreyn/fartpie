@@ -51,18 +51,6 @@ except ImportError:
     plot_diagrams = None
 
 try:
-    from vbp_levels import LevelEngine, InstrumentProfile, build_vbp, compute_value_area
-    VBP_AVAILABLE = True
-    print("✓ VbP Level Engine loaded")
-except ImportError as _e:
-    VBP_AVAILABLE = False
-    LevelEngine = None
-    InstrumentProfile = None
-    build_vbp = None
-    compute_value_area = None
-    print(f"⚠ VbP engine not available: {_e}")
-
-try:
     from hmmlearn.hmm import GaussianHMM
     HMMLEARN_AVAILABLE = True
 except ImportError:
@@ -2966,42 +2954,6 @@ def fractional_brownian_adjustment(base_hod, base_lod, hurst, sigma):
 
 # [ALL THE LEVEL DETECTION FUNCTIONS - KEEPING THEM EXACTLY AS BEFORE]
 
-def find_peaks_valleys_scipy(highs, lows, closes, prominence=0.02):
-    price_range = highs.max() - lows.min()
-    min_prominence = price_range * prominence
-    if len(closes) > 11:
-        smoothed = savgol_filter(closes, window_length=11, polyorder=3)
-    else:
-        smoothed = closes
-    peaks, peak_props = find_peaks(smoothed, prominence=min_prominence, distance=5)
-    valleys, valley_props = find_peaks(-smoothed, prominence=min_prominence, distance=5)
-    levels = []
-    for i, peak_idx in enumerate(peaks):
-        if peak_idx >= len(highs):
-            continue
-        level_price = highs[peak_idx]
-        touches = np.sum(np.abs(highs - level_price) < level_price * 0.005)
-        bars_ago = len(closes) - peak_idx
-        recency = 1.0 / (1 + bars_ago / 50)
-        prom_strength = min(peak_props['prominences'][i] / min_prominence / 3, 0.9)
-        strength = (prom_strength * 0.6 + recency * 0.4) * min(touches / 3, 1.0)
-        levels.append({'price': float(level_price), 'type': 'Peak Resistance', 'touches': int(touches), 
-                      'strength': float(strength), 'breakoutProb': float(1 - strength), 
-                      'reversionProb': float(strength), 'category': 'Peak-Valley'})
-    for i, valley_idx in enumerate(valleys):
-        if valley_idx >= len(lows):
-            continue
-        level_price = lows[valley_idx]
-        touches = np.sum(np.abs(lows - level_price) < level_price * 0.005)
-        bars_ago = len(closes) - valley_idx
-        recency = 1.0 / (1 + bars_ago / 50)
-        prom_strength = min(valley_props['prominences'][i] / min_prominence / 3, 0.9)
-        strength = (prom_strength * 0.6 + recency * 0.4) * min(touches / 3, 1.0)
-        levels.append({'price': float(level_price), 'type': 'Valley Support', 'touches': int(touches),
-                      'strength': float(strength), 'breakoutProb': float(1 - strength),
-                      'reversionProb': float(strength), 'category': 'Peak-Valley'})
-    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:10]
-
 def calculate_meanshift_levels(highs, lows, closes):
     all_prices = np.concatenate([highs, lows, closes]).reshape(-1, 1)
     bandwidth = estimate_bandwidth(all_prices, quantile=0.15, n_samples=min(len(all_prices), 1000))
@@ -3020,29 +2972,6 @@ def calculate_meanshift_levels(highs, lows, closes):
                       'reversionProb': float(strength), 'category': 'MeanShift'})
     return sorted(levels, key=lambda x: x['strength'], reverse=True)[:6]
 
-
-def calculate_pivot_points(hist_data, timeframe):
-    if len(hist_data) < 2:
-        return []
-    prev = hist_data.iloc[-2]
-    high, low, close = prev['High'], prev['Low'], prev['Close']
-    pivot = (high + low + close) / 3
-    r1 = 2 * pivot - low
-    s1 = 2 * pivot - high
-    r2 = pivot + (high - low)
-    s2 = pivot - (high - low)
-    r3 = high + 2 * (pivot - low)
-    s3 = low - 2 * (high - pivot)
-    period_name = "Day" if timeframe == "1d" else "Period"
-    return [
-        {'price': float(pivot), 'type': f'{period_name} Pivot', 'strength': 0.85, 'breakoutProb': 0.15, 'reversionProb': 0.85, 'category': 'Pivot'},
-        {'price': float(r1), 'type': f'{period_name} R1', 'strength': 0.75, 'breakoutProb': 0.25, 'reversionProb': 0.75, 'category': 'Pivot'},
-        {'price': float(s1), 'type': f'{period_name} S1', 'strength': 0.75, 'breakoutProb': 0.25, 'reversionProb': 0.75, 'category': 'Pivot'},
-        {'price': float(r2), 'type': f'{period_name} R2', 'strength': 0.65, 'breakoutProb': 0.35, 'reversionProb': 0.65, 'category': 'Pivot'},
-        {'price': float(s2), 'type': f'{period_name} S2', 'strength': 0.65, 'breakoutProb': 0.35, 'reversionProb': 0.65, 'category': 'Pivot'},
-        {'price': float(r3), 'type': f'{period_name} R3', 'strength': 0.55, 'breakoutProb': 0.45, 'reversionProb': 0.55, 'category': 'Pivot'},
-        {'price': float(s3), 'type': f'{period_name} S3', 'strength': 0.55, 'breakoutProb': 0.45, 'reversionProb': 0.55, 'category': 'Pivot'},
-    ]
 
 def calculate_fibonacci_levels(highs, lows):
     """
@@ -3099,33 +3028,6 @@ def add_fibonacci_metadata_to_levels(all_levels, fib_levels, sigma_price, thresh
             level['has_fib_confluence'] = True
     
     return all_levels
-
-def find_gap_levels(hist_data):
-    gap_levels = []
-    for i in range(1, len(hist_data)):
-        curr = hist_data.iloc[i]
-        prev = hist_data.iloc[i-1]
-        if curr['Low'] > prev['High']:
-            gap_mid = (curr['Low'] + prev['High']) / 2
-            filled = False
-            for j in range(i+1, len(hist_data)):
-                if hist_data.iloc[j]['Low'] <= gap_mid:
-                    filled = True
-                    break
-            if not filled and len(hist_data) - i < 100:
-                gap_levels.append({'price': float(gap_mid), 'type': 'Gap Up', 'strength': 0.85,
-                                  'breakoutProb': 0.15, 'reversionProb': 0.85, 'category': 'Gap'})
-        elif curr['High'] < prev['Low']:
-            gap_mid = (prev['Low'] + curr['High']) / 2
-            filled = False
-            for j in range(i+1, len(hist_data)):
-                if hist_data.iloc[j]['High'] >= gap_mid:
-                    filled = True
-                    break
-            if not filled and len(hist_data) - i < 100:
-                gap_levels.append({'price': float(gap_mid), 'type': 'Gap Down', 'strength': 0.85,
-                                  'breakoutProb': 0.15, 'reversionProb': 0.85, 'category': 'Gap'})
-    return gap_levels
 
 def find_pivot_anomalies(highs, lows, closes):
     """
@@ -5252,36 +5154,6 @@ def get_data():
         
         # MACRO INDICATORS
         macro_indicators = get_macro_indicators()
-        
-        # ── VOLUME-BY-PRICE ENGINE ─────────────────────────────────────────────
-        # Runs on MotiveWave data (or yfinance OHLCV if MW not loaded).
-        # Produces: vbp_series, poc, vah, val, vbp_atr
-        # These feed into the algorithms below as a shared data layer.
-        vbp_context = None
-        vbp_series  = None
-        vbp_poc     = None
-        vbp_vah     = None
-        vbp_val     = None
-        if VBP_AVAILABLE and hist_data_subset is not None and len(hist_data_subset) >= 20:
-            try:
-                _tick = 0.25 if '=F' in ticker else 0.01
-                _profile = InstrumentProfile(
-                    tick=_tick,
-                    value_area_pct=0.68,
-                    close_weight=0.5,
-                    vbp_noise_percentile=40,
-                    merge_radius_atr=0.75,
-                )
-                _engine = LevelEngine(profile=_profile)
-                vbp_context = _engine.run(hist_data_subset, lookback_bars=min(len(hist_data_subset), 500))
-                vbp_series  = vbp_context['vbp']
-                vbp_poc     = vbp_context['poc']
-                vbp_vah     = vbp_context['vah']
-                vbp_val     = vbp_context['val']
-                print(f"✓ VbP built — POC:{vbp_poc:.2f}  VAH:{vbp_vah:.2f}  VAL:{vbp_val:.2f}")
-            except Exception as _vbp_err:
-                print(f"⚠ VbP engine failed: {_vbp_err}")
-        # ──────────────────────────────────────────────────────────────────────
 
         # LEVEL DETECTION - Best-in-class production stack
         print("Running level detection algorithms...")
@@ -5465,44 +5337,8 @@ def get_data():
         confluence_levels = get_ml_confluence_levels(all_ml_levels)
         confluence_levels = confluence_levels or []
 
-        # Combine ML levels (no gap/pivot/peak-valley — volume-based only)
+        # Combine ML levels (no gap/pivot/peak-valley/VbP — pure ML discovery)
         all_levels_combined = confluence_levels + all_ml_levels
-
-        # ── VbP BOOSTING + POC/VAH/VAL INJECTION ──────────────────────────────
-        if vbp_series is not None and len(vbp_series) > 0:
-            try:
-                _vbp_max = float(vbp_series.max())
-                _tick    = 0.25 if '=F' in ticker else 0.01
-                for _lv in all_levels_combined:
-                    _p = round(_lv['price'] / _tick) * _tick
-                    _node_vol = float(vbp_series.get(_p, 0.0))
-                    _vbp_norm = _node_vol / (_vbp_max + 1e-9)
-                    _lv['vbp_volume_norm'] = _vbp_norm
-                    if _vbp_norm > 0.3:
-                        _boost = min(0.15, _vbp_norm * 0.2)
-                        _lv['strength'] = min(0.97, _lv.get('strength', 0.5) + _boost)
-                        _lv['vbp_confirmed'] = True
-                _poc_norm = float(vbp_series.get(round(vbp_poc / _tick) * _tick, 0.0)) / (_vbp_max + 1e-9)
-                _vah_norm = float(vbp_series.get(round(vbp_vah / _tick) * _tick, 0.0)) / (_vbp_max + 1e-9)
-                _val_norm = float(vbp_series.get(round(vbp_val / _tick) * _tick, 0.0)) / (_vbp_max + 1e-9)
-                all_levels_combined += [
-                    {'price': float(vbp_poc), 'type': 'POC', 'category': 'Volume-Profile',
-                     'source': 'VbP', 'strength': 0.92, 'breakoutProb': 0.08,
-                     'reversionProb': 0.92, 'vbp_volume_norm': _poc_norm,
-                     'vbp_confirmed': True, 'label': 'Point of Control', 'independent_families': 3},
-                    {'price': float(vbp_vah), 'type': 'VAH', 'category': 'Volume-Profile',
-                     'source': 'VbP', 'strength': 0.82, 'breakoutProb': 0.18,
-                     'reversionProb': 0.82, 'vbp_volume_norm': _vah_norm,
-                     'vbp_confirmed': True, 'label': 'Value Area High', 'independent_families': 2},
-                    {'price': float(vbp_val), 'type': 'VAL', 'category': 'Volume-Profile',
-                     'source': 'VbP', 'strength': 0.82, 'breakoutProb': 0.18,
-                     'reversionProb': 0.82, 'vbp_volume_norm': _val_norm,
-                     'vbp_confirmed': True, 'label': 'Value Area Low', 'independent_families': 2},
-                ]
-                print(f"✓ VbP: POC={vbp_poc:.2f} VAH={vbp_vah:.2f} VAL={vbp_val:.2f} injected. {sum(1 for l in all_levels_combined if l.get('vbp_confirmed'))} levels VbP-confirmed")
-            except Exception as _ve:
-                print(f"⚠ VbP injection failed: {_ve}")
-        # ──────────────────────────────────────────────────────────────────────
 
         # Add Fibonacci as metadata/confluence to nearby levels (not as primary levels)
         all_levels_combined = add_fibonacci_metadata_to_levels(
@@ -12614,12 +12450,6 @@ def backtest_levels():
         elif method_name == 'wyckoff':
             train_df = df.iloc[:split_idx]
             levels = detect_wyckoff_zones(train_df, lookback=50) or []
-        elif method_name == 'pivot':
-            train_df = df.iloc[:split_idx]
-            levels = calculate_pivot_points(train_df, interval) or []
-        elif method_name == 'gap':
-            train_df = df.iloc[:split_idx]
-            levels = find_gap_levels(train_df) or []
         elif method_name == 'interaction':
             current_price = float(train_closes[-1])
             sigma_price = float(np.std(train_closes))
@@ -12633,7 +12463,7 @@ def backtest_levels():
             all_algo = h_levels + o_levels + k_levels + m_levels
             levels = get_ml_confluence_levels(all_algo) or []
         else:
-            return jsonify({'error': f'Unknown method: {method}. Available: hdbscan, optics, kde, multiscale, neural_network, wyckoff, pivot, gap, interaction, ml_confluence'}), 400
+            return jsonify({'error': f'Unknown method: {method}. Available: hdbscan, optics, kde, multiscale, neural_network, wyckoff, interaction, ml_confluence'}), 400
 
         # Serialize levels
         serialized_levels = []
