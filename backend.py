@@ -6,6 +6,7 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 from sklearn.cluster import MeanShift, estimate_bandwidth, AgglomerativeClustering, OPTICS
+from sklearn.mixture import GaussianMixture
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.ensemble import RandomForestRegressor, IsolationForest
@@ -3401,6 +3402,55 @@ def kde_based_levels(highs, lows, closes, n_levels=10):
     # Sort by strength and return top N
     return sorted(levels, key=lambda x: x['strength'], reverse=True)[:n_levels]
 
+def calculate_gmm_levels(highs, lows, closes, min_components=3, max_components=10, min_frac=0.03):
+    """
+    Gaussian Mixture Model: soft/probabilistic alternative to HDBSCAN.
+    Clusters raw prices same as HDBSCAN, but each level's confidence comes
+    from the component's posterior probability (graded) instead of a hard
+    cluster assignment. Component count picked by BIC.
+
+    Backtested (backtest_levels.py, 12yr NQ/ES 1H+4H): tied for the highest
+    weighted-average support accuracy of any method tested (0.434), ahead
+    of HDBSCAN (0.427) on the same data - see backtest_summary_fixed.csv.
+    """
+    if len(closes) < 20:
+        return []
+    all_prices = np.concatenate([highs, lows, closes])
+    X = all_prices.reshape(-1, 1)
+    n = len(X)
+
+    best_gmm, best_bic = None, np.inf
+    for k in range(min_components, min(max_components, n // 5) + 1):
+        try:
+            gmm = GaussianMixture(n_components=k, random_state=42, max_iter=200, n_init=1)
+            gmm.fit(X)
+            bic = gmm.bic(X)
+            if bic < best_bic:
+                best_bic, best_gmm = bic, gmm
+        except Exception:
+            continue
+    if best_gmm is None:
+        return []
+
+    labels = best_gmm.predict(X)
+    probs = best_gmm.predict_proba(X)
+    levels = []
+    for k in range(best_gmm.n_components):
+        mask = labels == k
+        count = int(mask.sum())
+        if count < max(5, n * min_frac):
+            continue
+        center = float(best_gmm.means_[k][0])
+        if center <= 0:
+            continue
+        confidence = float(np.clip(probs[mask, k].mean(), 0, 0.95))
+        levels.append({
+            'price': center, 'type': 'GMM Cluster', 'touches': count,
+            'strength': confidence, 'breakoutProb': float(1 - confidence),
+            'reversionProb': confidence, 'category': 'GMM',
+        })
+    return levels
+
 def multiscale_hdbscan_levels(highs, lows, closes, timeframe='1d'):
     """
     Run HDBSCAN at multiple scales to catch both major and minor levels
@@ -4411,25 +4461,34 @@ def calculate_contextual_success_probability(
 def get_model_accuracy_by_category(category, source=None):
     """
     Model accuracy (historical skill) by level category.
-    
-    These are model-conditional accuracies based on historical performance.
-    In production, these should be back-filled from realized outcomes.
-    
-    Returns accuracy between 0.45-0.65 (conservative, honest)
+
+    HDBSCAN, Isolation-Forest, GMM below are measured: weighted-average
+    Support Accuracy from a walk-forward backtest against realized
+    bounce/break outcomes on 12yr NQ+ES 1H/4H data (see backtest_levels.py /
+    backtest_summary_fixed.csv). They came out far closer together than
+    this function previously assumed - HDBSCAN was rated far above
+    Isolation-Forest before; the real data says they're statistically
+    indistinguishable.
+
+    Interaction, ML-Confluence, and Neural-Network are NOT yet backed by
+    that same measured backtest (Neural-Network specifically is pending
+    results from backtest_nn_levels.py, run against the current
+    causal-CNN+LSTM+forward-reaction-label architecture) - still hand-set
+    placeholders. Don't treat them as equally trustworthy to HDBSCAN/
+    Isolation-Forest/GMM above.
     """
-    # Map category/source to historical accuracy
     if category == 'Density (HDBSCAN)' or source == 'HDBSCAN' or category == 'HDBSCAN':
-        return 0.62  # Structural levels: highest accuracy
-    elif category == 'Interaction' or source == 'Local Density':
-        return 0.55  # Local interaction: moderate accuracy
+        return 0.427
+    elif category == 'GMM' or source == 'GMM':
+        return 0.434
     elif category == 'Isolation-Forest' or source == 'Isolation Forest':
-        return 0.48  # Event pivots: lower accuracy (fast decay)
-    elif category == 'Peak-Valley':
-        return 0.50  # Fallback: neutral
+        return 0.431
+    elif category == 'Interaction' or source == 'Local Density':
+        return 0.55  # Not backtested - placeholder
     elif category == 'ML-Confluence':
-        return 0.60  # Confluence: slightly higher (multiple algorithms agree)
+        return 0.60  # Not backtested - placeholder
     elif category == 'Neural-Network' or source == 'Neural Network':
-        return 0.60  # Neural Network: causal CNN+LSTM trained on forward-reaction labels
+        return 0.60  # Not backtested yet - pending backtest_nn_levels.py results
     else:
         return 0.50  # Default: neutral
 
@@ -5227,7 +5286,11 @@ def get_data():
         
         # SECONDARY: IsolationForest (event pivot candidates)
         isolation_forest_levels = find_pivot_anomalies(hist_highs, hist_lows, hist_closes)
-        
+
+        # GMM: soft/probabilistic clustering (backtested: tied-best support
+        # accuracy of any method tested - see backtest_summary_fixed.csv)
+        gmm_levels_result = calculate_gmm_levels(hist_highs, hist_lows, hist_closes)
+
         # INTERACTION: Local density modes (near price, short memory, explicitly non-structural)
         local_interaction_levels = calculate_local_interaction_levels(
             hist_closes, 
@@ -5255,13 +5318,14 @@ def get_data():
         persistent_homology_levels_result = persistent_homology_levels_result or []
         neural_network_levels_result = neural_network_levels_result or []
         isolation_forest_levels = isolation_forest_levels or []
+        gmm_levels_result = gmm_levels_result or []
         fib_levels = fib_levels or []
 
         # ML LEVELS: Primary discovery algorithms only
         all_ml_levels = (hdbscan_levels + enhanced_optics_levels_result + kde_levels_result +
                         multiscale_hdbscan_levels_result + time_weighted_levels_result +
                         wyckoff_levels_result + persistent_homology_levels_result +
-                        neural_network_levels_result + isolation_forest_levels) 
+                        neural_network_levels_result + isolation_forest_levels + gmm_levels_result)
         
         # CRITICAL: Preserve levels BEFORE merge (they get consumed by merge)
         # We need BOTH merged levels AND original levels for structural array
@@ -10521,7 +10585,11 @@ def get_level_constrained_hod_lod():
         
         # SECONDARY: IsolationForest (event pivot candidates)
         isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
-        
+
+        # GMM: soft/probabilistic clustering (backtested: tied-best support
+        # accuracy of any method tested)
+        gmm_levels_result = calculate_gmm_levels(highs, lows, closes)
+
         # Neural Network levels (with volume profile)
         try:
             neural_network_levels_result = detect_levels_with_neural_network(hist_data_subset, lookback=100, threshold=0.5)
@@ -10534,7 +10602,7 @@ def get_level_constrained_hod_lod():
         fib_levels = calculate_fibonacci_levels(highs, lows)
 
         # ML LEVELS: Primary discovery algorithms only
-        all_ml_levels = (hdbscan_levels + isolation_forest_levels +
+        all_ml_levels = (hdbscan_levels + isolation_forest_levels + gmm_levels_result +
                         (neural_network_levels_result if neural_network_levels_result else []))
         
         # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
@@ -11101,12 +11169,16 @@ def get_state_conditioned_hod_lod():
                                 
                                 # SECONDARY: IsolationForest (event pivot candidates)
                                 isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
-                                
+
+                                # GMM: soft/probabilistic clustering (backtested: tied-best
+                                # support accuracy of any method tested)
+                                gmm_levels_result = calculate_gmm_levels(highs, lows, closes)
+
                                 # Fibonacci for metadata enrichment only (not primary levels)
                                 fib_levels = calculate_fibonacci_levels(highs, lows)
 
                                 # ML LEVELS: Primary discovery algorithms only
-                                all_ml_levels = hdbscan_levels + isolation_forest_levels
+                                all_ml_levels = hdbscan_levels + isolation_forest_levels + gmm_levels_result
                                 
                                 # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
                                 # Use timeframe-aware threshold (cleaner than regime-aware for this step)
@@ -11567,14 +11639,18 @@ def get_lstm_forecast():
         
         # Multiscale levels
         multiscale_levels = multiscale_hdbscan_levels(highs, lows, closes, timeframe=timeframe)
-        
+
+        # GMM: soft/probabilistic clustering (backtested: tied-best support
+        # accuracy of any method tested - see backtest_summary_fixed.csv)
+        gmm_levels = calculate_gmm_levels(highs, lows, closes)
+
         # Neural Network levels (with volume profile) - INCLUDED in theoretical HOD/LOD and LSTM forecast
         print("Detecting neural network levels...")
         neural_network_levels = detect_levels_with_neural_network(hist, lookback=100, threshold=0.5)
         print(f"✓ Neural Network levels detected: {len(neural_network_levels)} levels")
-        
+
         # ML confluence (includes neural network levels)
-        all_ml_levels = hdbscan_levels + optics_levels + interaction_levels + neural_network_levels
+        all_ml_levels = hdbscan_levels + optics_levels + interaction_levels + neural_network_levels + gmm_levels
         ml_confluence_levels = get_ml_confluence_levels(all_ml_levels)
         
         # 2a. Get Multi-Timeframe Levels (for enhanced LSTM prediction)
@@ -11900,7 +11976,8 @@ def get_lstm_forecast():
                 'interaction': len(interaction_levels),
                 'ml_confluence': len(ml_confluence_levels),
                 'multiscale': len(multiscale_levels),
-                'neural_network': len(neural_network_levels)
+                'neural_network': len(neural_network_levels),
+                'gmm': len(gmm_levels)
             },
             'all_levels': sanitize_for_json(sorted(all_levels, key=lambda x: abs(x.get('price', 0) - current_price))[:50]),
             'microstructure_state': sanitize_for_json(microstructure_state) if microstructure_state else None
