@@ -106,6 +106,22 @@ def _run_kde(h, l, c, tf):
     return backend.kde_based_levels(h, l, c)
 
 
+_RANDOM_RNG = np.random.default_rng(42)
+
+
+def _run_random(h, l, c, tf, n_levels=8):
+    """Baseline sanity check: n_levels drawn uniformly from the window's own
+    observed price range, no structure at all. If this scores anywhere near
+    the real methods, that says something important about what the metric
+    is actually measuring (e.g. generic mean-reversion at this ATR scale)
+    rather than method-specific level quality."""
+    lo, hi = float(l.min()), float(h.max())
+    if hi <= lo:
+        return []
+    prices = _RANDOM_RNG.uniform(lo, hi, size=n_levels)
+    return [{'price': float(p), 'category': 'Random', 'type': 'Random Baseline'} for p in prices]
+
+
 def _run_tda(h, l, c, tf):
     return backend.persistent_homology_levels(h, l, c, max_levels=8)
 
@@ -295,6 +311,7 @@ METHODS = {
     'KDE': _run_kde,
     'GMM': _run_gmm,
     'TDA': _run_tda,
+    'Random': _run_random,
     # Wavelet/HMM-Levels function defs kept above for reference but not
     # registered - both backtested weaker than the rest, see prior findings.
 }

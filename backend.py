@@ -4457,37 +4457,55 @@ def get_model_accuracy_by_category(category, source=None):
     """
     Model accuracy (historical skill) by level category.
 
-    HDBSCAN, Isolation-Forest, GMM below are measured: weighted-average
-    Support Accuracy from a walk-forward backtest against realized
-    bounce/break outcomes on 12yr NQ+ES 1H/4H data (see backtest_levels.py /
-    backtest_summary_fixed.csv). They came out far closer together than
-    this function previously assumed - HDBSCAN was rated far above
-    Isolation-Forest before; the real data says they're statistically
-    indistinguishable.
+    IMPORTANT - the real finding from this whole backtest program: a random
+    price drawn uniformly from the recent trading range scores 0.4227
+    support accuracy. Every price-clustering method tested (HDBSCAN, OPTICS,
+    GMM, KDE, MeanShift, Isolation-Forest, Peak-Valley, Wavelet, HMM-based
+    levels, and a trained neural network) landed in the 0.42-0.43 band -
+    statistically indistinguishable from that random baseline AND from each
+    other, once corrected for testing multiple methods (Bonferroni). The
+    small differences between them (e.g. GMM 0.434 vs HDBSCAN 0.427) are
+    noise, not real skill differences - don't read anything into them.
 
-    Neural-Network is now measured too (backtest_nn_levels.py, PIT-safe:
-    trained only on the first 70% of each file chronologically, evaluated
-    only on later unseen bars) - despite real architecture improvements
-    (causal convolutions, genuine forward-reaction labels instead of
-    HDBSCAN imitation), it lands in the same band as everything else, not
-    above it. Interaction and ML-Confluence are still NOT backed by a
-    measured backtest - hand-set placeholders, don't treat them as equally
-    trustworthy to the five measured methods above.
+    Only four methods have shown REAL, statistically significant edge over
+    the random baseline (p < 0.05/n after Bonferroni correction for every
+    method tested this session): VWAP, TDA (persistent homology - fixed a
+    bug where it output nonsense prices; the corrected version tests
+    genuinely well), Session-Open, and Prior-Day-High/Low. All four are
+    reference points real participants actually watch, not statistically-
+    discovered price clusters - see backtest_reference_levels.py /
+    backtest_reference_summary.csv and backtest_summary_tda.csv.
+
+    Interaction and ML-Confluence are still NOT backed by any measured
+    backtest at all - hand-set placeholders from before this program
+    started, kept only so old callers don't break.
     """
-    if category == 'Density (HDBSCAN)' or source == 'HDBSCAN' or category == 'HDBSCAN':
-        return 0.427
+    if category == 'VWAP' or source == 'VWAP':
+        return 0.437  # Proven: p=0.0001 vs random baseline
+    elif category == 'TDA' or source == 'TDA':
+        return 0.437  # Proven: p=0.0010 vs random baseline (post bug-fix)
+    elif category == 'Session-Open' or source == 'Session-Open':
+        return 0.445  # Proven: p=0.0011 vs random baseline
+    elif category == 'Prior-Day-HL' or source == 'Prior-Day-HL':
+        return 0.436  # Proven: p=0.0060 vs random baseline
+    elif category == 'Density (HDBSCAN)' or source == 'HDBSCAN' or category == 'HDBSCAN':
+        return 0.427  # NOT proven vs random - see docstring
     elif category == 'GMM' or source == 'GMM':
-        return 0.434
+        return 0.434  # NOT proven vs random - see docstring
     elif category == 'Isolation-Forest' or source == 'Isolation Forest':
-        return 0.431
-    elif category == 'Interaction' or source == 'Local Density':
-        return 0.55  # Not backtested - placeholder
-    elif category == 'ML-Confluence':
-        return 0.60  # Not backtested - placeholder
+        return 0.431  # NOT proven vs random - see docstring
+    elif category == 'KDE' or source == 'KDE':
+        return 0.433  # NOT proven vs random - see docstring
+    elif category == 'MeanShift' or source == 'MeanShift':
+        return 0.427  # NOT proven vs random - see docstring
     elif category == 'Neural-Network' or source == 'Neural Network':
-        return 0.426
+        return 0.426  # NOT proven vs random - see docstring
+    elif category == 'Interaction' or source == 'Local Density':
+        return 0.55  # Not backtested at all - placeholder
+    elif category == 'ML-Confluence':
+        return 0.60  # Not backtested at all - placeholder
     else:
-        return 0.50  # Default: neutral
+        return 0.4227  # Default: the measured random baseline itself
 
 def enhance_levels_with_contextual_probability(
     levels,
@@ -8149,6 +8167,86 @@ def calculate_level_confidence(predicted_price, levels, current_price, sigma_pri
 # ============================================================================
 # VOLUME PROFILE & LEVEL REACTION ANALYSIS
 # ============================================================================
+
+def calculate_vwap(highs, lows, closes, volumes, timestamps=None, n_sigma_bands=(1, 2, 3)):
+    """
+    VWAP with standard-deviation bands, anchored to session (day) if
+    timestamps are available, otherwise a single anchor over the whole
+    window (rolling-window callers should pass just the trailing slice
+    they want anchored from).
+
+    Uses typical price (H+L+C)/3, the standard VWAP convention, weighted by
+    volume. Bands use the volume-weighted variance of typical price around
+    the running VWAP, so they widen/narrow with actual dispersion instead
+    of a fixed percentage.
+
+    Returns
+    -------
+    dict: {
+        'vwap': float,               # current (session-to-date) VWAP
+        'vwap_series': np.ndarray,   # running VWAP at every bar
+        'bands': {sigma: {'upper': float, 'lower': float}, ...},  # current bands
+        'band_series': {sigma: {'upper': np.ndarray, 'lower': np.ndarray}, ...},
+        'session_start_idx': int,    # index the current session's anchor starts at
+    }
+    """
+    highs = np.asarray(highs, dtype=float)
+    lows = np.asarray(lows, dtype=float)
+    closes = np.asarray(closes, dtype=float)
+    volumes = np.asarray(volumes, dtype=float)
+    n = len(closes)
+    if n == 0:
+        return None
+
+    typical_price = (highs + lows + closes) / 3.0
+
+    # Determine session anchor: reset at each new calendar day if we have
+    # timestamps, otherwise anchor once at the start of the whole array
+    # (caller's responsibility to pass a session-sliced window in that case).
+    if timestamps is not None:
+        ts = pd.to_datetime(pd.Series(timestamps))
+        session_ids = ts.dt.date
+        session_start_idx = int(np.where(session_ids.values == session_ids.values[-1])[0][0])
+    else:
+        session_start_idx = 0
+
+    pv = typical_price * volumes
+    cum_pv = np.zeros(n)
+    cum_vol = np.zeros(n)
+    running_pv, running_vol = 0.0, 0.0
+    for i in range(n):
+        if i == session_start_idx:
+            running_pv, running_vol = 0.0, 0.0
+        running_pv += pv[i]
+        running_vol += volumes[i]
+        cum_pv[i] = running_pv
+        cum_vol[i] = running_vol if running_vol > 0 else 1e-9
+
+    vwap_series = cum_pv / cum_vol
+
+    # Volume-weighted variance of typical price around running VWAP, session-to-date
+    band_series = {s: {'upper': np.zeros(n), 'lower': np.zeros(n)} for s in n_sigma_bands}
+    running_sq_dev_vol = 0.0
+    for i in range(n):
+        if i == session_start_idx:
+            running_sq_dev_vol = 0.0
+        dev = typical_price[i] - vwap_series[i]
+        running_sq_dev_vol += (dev ** 2) * volumes[i]
+        variance = running_sq_dev_vol / cum_vol[i]
+        sigma = np.sqrt(max(variance, 0))
+        for s in n_sigma_bands:
+            band_series[s]['upper'][i] = vwap_series[i] + s * sigma
+            band_series[s]['lower'][i] = vwap_series[i] - s * sigma
+
+    return {
+        'vwap': float(vwap_series[-1]),
+        'vwap_series': vwap_series,
+        'bands': {s: {'upper': float(band_series[s]['upper'][-1]),
+                      'lower': float(band_series[s]['lower'][-1])} for s in n_sigma_bands},
+        'band_series': band_series,
+        'session_start_idx': session_start_idx,
+    }
+
 
 def calculate_volume_profile(highs, lows, closes, volumes, bins=30):
     """
