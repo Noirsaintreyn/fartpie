@@ -10590,6 +10590,12 @@ def get_level_constrained_hod_lod():
         # accuracy of any method tested)
         gmm_levels_result = calculate_gmm_levels(highs, lows, closes)
 
+        # KDE: kernel density peaks (backtested: 0.433, tied-best)
+        kde_levels_result = kde_based_levels(highs, lows, closes, n_levels=10)
+
+        # MeanShift: backtested at 0.427, same tier as HDBSCAN/OPTICS
+        meanshift_levels_result = calculate_meanshift_levels(highs, lows, closes)
+
         # Neural Network levels (with volume profile)
         try:
             neural_network_levels_result = detect_levels_with_neural_network(hist_data_subset, lookback=100, threshold=0.5)
@@ -10603,6 +10609,7 @@ def get_level_constrained_hod_lod():
 
         # ML LEVELS: Primary discovery algorithms only
         all_ml_levels = (hdbscan_levels + isolation_forest_levels + gmm_levels_result +
+                        kde_levels_result + meanshift_levels_result +
                         (neural_network_levels_result if neural_network_levels_result else []))
         
         # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
@@ -11174,11 +11181,18 @@ def get_state_conditioned_hod_lod():
                                 # support accuracy of any method tested)
                                 gmm_levels_result = calculate_gmm_levels(highs, lows, closes)
 
+                                # KDE: kernel density peaks (backtested: 0.433, tied-best)
+                                kde_levels_result = kde_based_levels(highs, lows, closes, n_levels=10)
+
+                                # MeanShift: backtested at 0.427, same tier as HDBSCAN/OPTICS
+                                meanshift_levels_result = calculate_meanshift_levels(highs, lows, closes)
+
                                 # Fibonacci for metadata enrichment only (not primary levels)
                                 fib_levels = calculate_fibonacci_levels(highs, lows)
 
                                 # ML LEVELS: Primary discovery algorithms only
-                                all_ml_levels = hdbscan_levels + isolation_forest_levels + gmm_levels_result
+                                all_ml_levels = (hdbscan_levels + isolation_forest_levels + gmm_levels_result +
+                                                kde_levels_result + meanshift_levels_result)
                                 
                                 # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
                                 # Use timeframe-aware threshold (cleaner than regime-aware for this step)
@@ -11644,13 +11658,23 @@ def get_lstm_forecast():
         # accuracy of any method tested - see backtest_summary_fixed.csv)
         gmm_levels = calculate_gmm_levels(highs, lows, closes)
 
+        # KDE: kernel density peaks (backtested: 0.433, tied-best - was only
+        # wired into /api/data before, missing here)
+        kde_levels = kde_based_levels(highs, lows, closes, n_levels=10)
+
+        # MeanShift: was validator-only everywhere - backtested at 0.427,
+        # same tier as HDBSCAN/OPTICS, so also wired in as a primary
+        # producer here (its validator role elsewhere is unaffected)
+        meanshift_levels = calculate_meanshift_levels(highs, lows, closes)
+
         # Neural Network levels (with volume profile) - INCLUDED in theoretical HOD/LOD and LSTM forecast
         print("Detecting neural network levels...")
         neural_network_levels = detect_levels_with_neural_network(hist, lookback=100, threshold=0.5)
         print(f"✓ Neural Network levels detected: {len(neural_network_levels)} levels")
 
         # ML confluence (includes neural network levels)
-        all_ml_levels = hdbscan_levels + optics_levels + interaction_levels + neural_network_levels + gmm_levels
+        all_ml_levels = (hdbscan_levels + optics_levels + interaction_levels + neural_network_levels +
+                        gmm_levels + kde_levels + meanshift_levels)
         ml_confluence_levels = get_ml_confluence_levels(all_ml_levels)
         
         # 2a. Get Multi-Timeframe Levels (for enhanced LSTM prediction)
@@ -11977,7 +12001,9 @@ def get_lstm_forecast():
                 'ml_confluence': len(ml_confluence_levels),
                 'multiscale': len(multiscale_levels),
                 'neural_network': len(neural_network_levels),
-                'gmm': len(gmm_levels)
+                'gmm': len(gmm_levels),
+                'kde': len(kde_levels),
+                'meanshift': len(meanshift_levels)
             },
             'all_levels': sanitize_for_json(sorted(all_levels, key=lambda x: abs(x.get('price', 0) - current_price))[:50]),
             'microstructure_state': sanitize_for_json(microstructure_state) if microstructure_state else None
