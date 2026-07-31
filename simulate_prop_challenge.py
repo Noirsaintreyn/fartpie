@@ -38,6 +38,7 @@ import contextlib
 import io
 import os
 import re
+import time
 
 import numpy as np
 import pandas as pd
@@ -71,11 +72,21 @@ def generate_trades(path, lookback=150, step=5,
     start_ts = np.datetime64(start_date) if start_date else None
     end_ts = np.datetime64(end_date) if end_date else None
 
+    t0 = time.time()
     for wi, t in enumerate(starts):
+        if verbose and wi % 200 == 0:
+            print(f"  window {wi}/{len(starts)} ({time.time()-t0:.1f}s elapsed, {len(trades)} trades so far)")
         # manage an already-open trade first: check if this bar's H/L hits
-        # stop or target (hard intrabar exit, checked in time order)
+        # stop or target (hard intrabar exit, checked in time order).
+        # Scans only the NEW bars since the last check (last_checked_idx),
+        # not from entry every time - the old version re-scanned the whole
+        # trade history on every outer iteration while a trade stayed open,
+        # O(max_hold_bars^2/step) redundant work per trade instead of
+        # O(max_hold_bars).
         if open_trade is not None:
-            for i in range(open_trade['entry_idx'] + 1, min(t, open_trade['entry_idx'] + max_hold_bars) + 1):
+            scan_start = open_trade['last_checked_idx'] + 1
+            scan_end = min(t, open_trade['entry_idx'] + max_hold_bars) + 1
+            for i in range(scan_start, scan_end):
                 if i >= n:
                     break
                 h, l = highs[i], lows[i]
@@ -98,6 +109,8 @@ def generate_trades(path, lookback=150, step=5,
                         _close_trade(open_trade, i, open_trade['target_price'], 'target', datetimes, point_value, trades)
                         open_trade = None
                         break
+                if open_trade is not None:
+                    open_trade['last_checked_idx'] = i
             else:
                 if open_trade is not None and t >= open_trade['entry_idx'] + max_hold_bars:
                     exit_idx = min(open_trade['entry_idx'] + max_hold_bars, n - 1)
@@ -165,6 +178,7 @@ def generate_trades(path, lookback=150, step=5,
             'ml_filter_score': best['ml_filter_score'], 'side': side,
             'entry_idx': t, 'entry_price': current_price, 'level_price': price,
             'stop_price': stop_price, 'target_price': target_price,
+            'last_checked_idx': t,
         }
 
     return pd.DataFrame(trades)
