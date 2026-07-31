@@ -31,6 +31,14 @@ and easy to change via CLI flags rather than assumed silently):
                                files CAN legitimately overlap in time - a
                                real account can hold NQ and ES positions
                                at once - this just caps how many at a time)
+
+Position sizing (see size_contracts()): dynamic per trade, using the
+CURRENT attempt's running state - MIN(needed to hit the remaining profit
+target within the next --pacing-horizon-trades trades, contracts_max - the
+win-rate/risk-budget ceiling precomputed in simulate_prop_challenge.py).
+This is why sizing lives here and not in the trade generator: "remaining
+target" only means something relative to a specific attempt's running
+balance and phase, which doesn't exist until this stage.
 """
 import argparse
 
@@ -45,9 +53,31 @@ def load_trades(paths):
     return trades
 
 
+def size_contracts(row, remaining_target, pacing_horizon_trades, min_contracts):
+    """Dynamic, attempt-state-aware contract sizing: use the MINIMUM size
+    that would let this trade's target hit contribute a fair share
+    (remaining_target / pacing_horizon_trades) toward the goal, but never
+    exceed contracts_max (the win-rate/risk-budget ceiling precomputed in
+    simulate_prop_challenge.py). If the minimum needed exceeds the ceiling,
+    trade at the ceiling instead (can't safely size up to the ideal pace).
+
+    Worked example that calibrated this (user-provided): remaining_target/
+    pacing_horizon = $428, target_distance=30.75 points, NQ point_value=$2
+    -> ceil(428 / 61.5) = 7 contracts (\"minimum id need to risk is 7 micros\").
+    """
+    target_distance_points = abs(row['target_price'] - row['level_price'])
+    if target_distance_points <= 0:
+        return min_contracts
+    required_profit_this_trade = max(remaining_target, 0.0) / pacing_horizon_trades
+    contracts_min = int(np.ceil(required_profit_this_trade / (target_distance_points * row['point_value'])))
+    contracts_min = max(contracts_min, min_contracts)
+    return int(np.clip(contracts_min, min_contracts, max(row['contracts_max'], min_contracts)))
+
+
 def simulate_one_attempt(trades, start_idx, eval_target=3000, eval_min_days=2,
                           drawdown_limit=2000, funded_days_needed=5, funded_daily_target=150,
-                          max_trades_per_day=4, cooldown_after_losses=2, max_concurrent=3):
+                          max_trades_per_day=4, cooldown_after_losses=2, max_concurrent=3,
+                          pacing_horizon_trades=7, min_contracts=1):
     """Walk forward through `trades` starting at start_idx, applying risk
     controls, until eval passes/fails, then (if passed) until funded
     passes/fails or data runs out."""
@@ -89,8 +119,17 @@ def simulate_one_attempt(trades, start_idx, eval_target=3000, eval_min_days=2,
             i += 1
             continue
 
+        # remaining-target/remaining-opportunity-aware sizing: how much
+        # profit is still needed for the current phase, spread over the
+        # next `pacing_horizon_trades` trades - see size_contracts()
+        if phase == 'eval':
+            remaining_target = eval_target - (balance - phase_start_balance)
+        else:
+            remaining_target = funded_daily_target - daily_pnl.get(day, 0.0)
+        contracts = size_contracts(row, remaining_target, pacing_horizon_trades, min_contracts)
+
         # take the trade
-        pnl = row['pnl_usd']
+        pnl = row['points'] * row['point_value'] * contracts
         balance += pnl
         daily_pnl[day] = daily_pnl.get(day, 0.0) + pnl
         daily_trade_count[day] = daily_trade_count.get(day, 0) + 1
@@ -155,6 +194,10 @@ def main():
     ap.add_argument('--max-trades-per-day', type=int, default=4)
     ap.add_argument('--cooldown-after-losses', type=int, default=2)
     ap.add_argument('--max-concurrent', type=int, default=3)
+    ap.add_argument('--pacing-horizon-trades', type=int, default=7,
+                     help='remaining profit target is divided by this many upcoming trades to size the '
+                          'minimum needed per trade (user-specified worked example used 7)')
+    ap.add_argument('--min-contracts', type=int, default=1)
     ap.add_argument('--out', default='prop_challenge_attempts.csv')
     args = ap.parse_args()
 
@@ -173,6 +216,7 @@ def main():
             funded_days_needed=args.funded_days_needed, funded_daily_target=args.funded_daily_target,
             max_trades_per_day=args.max_trades_per_day, cooldown_after_losses=args.cooldown_after_losses,
             max_concurrent=args.max_concurrent,
+            pacing_horizon_trades=args.pacing_horizon_trades, min_contracts=args.min_contracts,
         )
         results.append(r)
 

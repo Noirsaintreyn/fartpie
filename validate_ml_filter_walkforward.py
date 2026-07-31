@@ -20,7 +20,12 @@ import pandas as pd
 from scipy.stats import norm
 from sklearn.linear_model import LogisticRegression
 
-FEATURE_COLS = ['vwap_distance_norm', 'vol_forecast_pct_of_price', 'atr_distance']
+FEATURE_SETS = {
+    'v1': ['vwap_distance_norm', 'vol_forecast_pct_of_price', 'atr_distance'],
+    'v2': ['vwap_distance_norm', 'vol_forecast_pct_of_price', 'atr_distance',
+           'confluence', 'hurst', 'hmm_state_confidence', 'hmm_recent_flip',
+           'garman_klass_vol_pct', 'gjr_vol_regime_ratio', 'vwap_bias_alignment'],
+}
 
 
 def zscore_test(p1, n1, p2, n2):
@@ -36,12 +41,16 @@ def zscore_test(p1, n1, p2, n2):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--events', default='backtest_ml_filter_events.csv')
+    ap.add_argument('--feature-set', choices=list(FEATURE_SETS.keys()), default='v1')
     ap.add_argument('--k-folds', type=int, default=5)
     ap.add_argument('--random-accuracy', type=float, default=0.4227)
     ap.add_argument('--random-n', type=int, default=29257)
+    ap.add_argument('--out-prefix', default='backtest_ml_filter_walkforward')
     args = ap.parse_args()
 
+    feature_cols = FEATURE_SETS[args.feature_set]
     events = pd.read_csv(args.events)
+    events = events.dropna(subset=[c for c in feature_cols if c in events.columns])
     oos_rows = []
     fold_summary_rows = []
 
@@ -56,8 +65,8 @@ def main():
             test = g[g['fold'] == k]
             if len(train) < 200 or len(test) < 50:
                 continue
-            X_train = pd.get_dummies(train[FEATURE_COLS + ['level_type']], columns=['level_type'])
-            X_test = pd.get_dummies(test[FEATURE_COLS + ['level_type']], columns=['level_type'])
+            X_train = pd.get_dummies(train[feature_cols + ['level_type']], columns=['level_type'])
+            X_test = pd.get_dummies(test[feature_cols + ['level_type']], columns=['level_type'])
             X_test = X_test.reindex(columns=X_train.columns, fill_value=0)
 
             model = LogisticRegression(max_iter=1000)
@@ -85,8 +94,8 @@ def main():
 
     oos = pd.concat(oos_rows, ignore_index=True)
     fold_summary = pd.DataFrame(fold_summary_rows)
-    oos.to_csv('backtest_ml_filter_walkforward_oos.csv', index=False)
-    fold_summary.to_csv('backtest_ml_filter_walkforward_folds.csv', index=False)
+    oos.to_csv(f'{args.out_prefix}_oos.csv', index=False)
+    fold_summary.to_csv(f'{args.out_prefix}_folds.csv', index=False)
 
     print(f"Total pooled out-of-sample events (across all folds, all files): {len(oos)}")
     print(f"Folds run per file: {args.k_folds - 1}\n")

@@ -247,6 +247,7 @@ import warnings
 import requests
 import os
 import pickle
+import time
 from arch import arch_model
 warnings.filterwarnings('ignore')
 
@@ -1781,6 +1782,27 @@ def fit_garch_model(returns, p=1, q=1):
         
     except Exception as e:
         print(f"GARCH fitting error: {e}")
+        return None
+
+
+def fit_gjr_garch_vol_forecast_pct(returns_pct):
+    """
+    GJR-GARCH(1,1,1) 1-step vol forecast, in the same percent units as
+    returns_pct. The o=1 asymmetry term captures the leverage effect
+    (vol reacts more to down moves than up moves) that plain GARCH
+    (fit_garch_model) misses - used by score_and_filter_levels_v2's
+    vwap_distance_norm/vol_forecast_pct_of_price/gjr_vol_regime_ratio
+    features. Returns None on failure (too little data, non-convergence
+    treated as best-effort by the arch package itself).
+    """
+    try:
+        if len(returns_pct) < 50:
+            return None
+        model = arch_model(returns_pct, vol='GARCH', p=1, o=1, q=1, rescale=False)
+        result = model.fit(disp='off', show_warning=False)
+        forecast = result.forecast(horizon=1)
+        return float(np.sqrt(forecast.variance.values[-1, 0]))
+    except Exception:
         return None
 
 
@@ -3512,6 +3534,184 @@ def score_and_filter_levels(levels_by_category, highs, lows, closes, volumes,
             if price is None:
                 continue
             prob = _score(price, offset)
+            if prob >= threshold:
+                lvl = dict(lvl)
+                lvl['ml_filter_score'] = float(prob)
+                filtered.append(lvl)
+    return filtered
+
+
+# ============================================================================
+# ML FILTER v2 - Hurst, HMM regime-change, GJR-GARCH, Garman-Klass,
+# confluence, VWAP bias/stretch added on top of the v1 filter above.
+# ============================================================================
+# Coefficients: logistic regression fit on the FULL v2 dataset
+# (backtest_ml_filter_v2_events.csv, ~150k events, 12yr NQ/ES 1H+4H), same
+# 7 production categories as v1. Walk-forward validated (16 folds,
+# validate_ml_filter_walkforward.py --feature-set v2): 6/7 categories at
+# 100% fold consistency (Isolation-Forest 93.8%), all 7 clear Bonferroni
+# correction. Filtered accuracy 0.483-0.504 (v1 was 0.480-0.497) - the
+# real improvement isn't the headline accuracy, it's that pred_proba now
+# discriminates WITHIN the filtered population (pooled walk-forward
+# holdout, top-25%-of-filtered vs rest-of-filtered accuracy spread):
+# GMM +0.056, HDBSCAN +0.065, Isolation-Forest +0.041, KDE +0.053,
+# MeanShift +0.064, OPTICS +0.060, TDA +0.062. v1 had essentially none of
+# this (flat scores regardless of outcome), which is exactly what made the
+# trade simulator's "take the single highest-scoring candidate" rule
+# meaningless - see simulate_prop_challenge.py history.
+_ML_FILTER_V2_INTERCEPT = -0.09550514020085478
+_ML_FILTER_V2_COEF_VWAP_DIST = -0.03117995003161389
+_ML_FILTER_V2_COEF_VOL_FORECAST_PCT = -0.0013540725253570474
+_ML_FILTER_V2_COEF_ATR_DIST = -0.03223406859338196
+_ML_FILTER_V2_COEF_CONFLUENCE = -0.017667877441859152
+_ML_FILTER_V2_COEF_HURST = 0.3346999532374335
+_ML_FILTER_V2_COEF_HMM_CONFIDENCE = 0.04804291584223122
+_ML_FILTER_V2_COEF_HMM_FLIP = -0.16367347474479166
+_ML_FILTER_V2_COEF_GK_VOL_PCT = -0.13773557187129407
+_ML_FILTER_V2_COEF_GJR_REGIME_RATIO = -0.1410323984314109
+_ML_FILTER_V2_COEF_VWAP_BIAS = -0.001663097004885809
+_ML_FILTER_V2_OFFSETS = {
+    'GMM': 0.009732512315720157,
+    'HDBSCAN': -0.025645667487374405,
+    'Isolation-Forest': -0.04837356634313406,
+    'KDE': 0.021995201026009485,
+    'MeanShift': -0.033440097487212564,
+    'OPTICS': -0.013081112628211837,
+    'TDA': -0.006270496723109859,
+}
+_ML_FILTER_V2_THRESHOLDS = {
+    'GMM': 0.427264,
+    'HDBSCAN': 0.419601,
+    'Isolation-Forest': 0.418986,
+    'KDE': 0.427638,
+    'MeanShift': 0.418313,
+    'OPTICS': 0.421419,
+    'TDA': 0.427575,
+}
+
+
+def score_and_filter_levels_v2(levels_by_category, highs, lows, opens, closes, volumes,
+                                current_price, timestamps=None, confluence_atr_mult=0.5):
+    """
+    v2 of score_and_filter_levels: same 7 validated categories and same
+    "return only levels clearing their category's threshold" contract, but
+    scored with the expanded, walk-forward-validated feature set (see
+    module comment above _ML_FILTER_V2_INTERCEPT).
+
+    Needs `opens` (not required by v1) for the Garman-Klass realized-vol
+    feature - pass the same window's open prices alongside highs/lows/closes.
+
+    Latency note: this fits a GJR-GARCH model AND an HMM per call (on top
+    of the plain-GARCH v1 already fit elsewhere), roughly 2-4x the compute
+    of score_and_filter_levels. Fine for backtesting; for a live request
+    path, profile before assuming it's free.
+
+    GEX/dealer-positioning context (get_gex_context) is deliberately NOT a
+    feature here - by explicit request it stays a display-only overlay for
+    the reasons in its own docstring (unvalidated live-only data).
+    """
+    all_raw = [lvl for lvls in levels_by_category.values() for lvl in (lvls or [])]
+    if len(closes) < 60:
+        return all_raw
+
+    try:
+        vwap_result = calculate_vwap(highs, lows, closes, volumes, timestamps=timestamps)
+        vwap = vwap_result['vwap'] if vwap_result else current_price
+    except Exception:
+        vwap = current_price
+
+    returns_pct = np.diff(np.log(closes)) * 100
+    gjr_vol_pct = fit_gjr_garch_vol_forecast_pct(returns_pct)
+    if gjr_vol_pct is None or gjr_vol_pct <= 0:
+        return all_raw
+    vol_forecast = gjr_vol_pct / 100.0 * current_price
+    vol_forecast_pct = vol_forecast / current_price
+
+    atr = _atr_for_ml_filter(highs, lows, closes)
+    if atr <= 0:
+        return all_raw
+
+    try:
+        gk_vol_pct = garman_klass_daily_volatility(opens, highs, lows, closes) * 100
+    except Exception:
+        gk_vol_pct = None
+    if gk_vol_pct is None or gk_vol_pct <= 0:
+        return all_raw
+    gjr_vol_regime_ratio = gjr_vol_pct / (gk_vol_pct + 1e-9)
+
+    try:
+        hurst = calculate_hurst_exponent(closes)['hurst']
+    except Exception:
+        hurst = 0.5  # neutral fallback (random walk)
+
+    hmm_confidence, hmm_flip = 0.5, 0
+    if HMMLEARN_AVAILABLE and GaussianHMM is not None and len(closes) >= 60:
+        try:
+            hmm_returns = np.diff(np.log(closes)).reshape(-1, 1)
+            hmm_model = GaussianHMM(n_components=3, covariance_type='diag', n_iter=50, random_state=42)
+            hmm_model.fit(hmm_returns)
+            states = hmm_model.predict(hmm_returns)
+            post = hmm_model.predict_proba(hmm_returns)
+            hmm_confidence = float(post[-1, states[-1]])
+            hmm_flip = int(states[-1] != states[max(0, len(states) - 1 - 5)])
+        except Exception:
+            hmm_confidence, hmm_flip = 0.5, 0
+
+    # confluence needs every candidate across all categories up front
+    all_candidates = [(lvl.get('price'), cat) for cat, lvls in levels_by_category.items()
+                       for lvl in (lvls or []) if lvl.get('price') is not None]
+    by_type = {}
+    for price, cat in all_candidates:
+        by_type.setdefault(cat, []).append(price)
+    tol = confluence_atr_mult * atr
+
+    def _confluence_count(price, own_type):
+        count = 0
+        for cat, prices in by_type.items():
+            if cat == own_type:
+                continue
+            if any(abs(p - price) <= tol for p in prices):
+                count += 1
+        return count
+
+    def _score(price, category, offset):
+        atr_dist = (price - current_price) / atr
+        confluence = _confluence_count(price, category)
+
+        side = 'support' if price < current_price else 'resistance'
+        trade_direction = 'long' if side == 'support' else 'short'
+        price_vs_vwap = current_price - vwap
+        aligned_with_bias = (trade_direction == 'long' and price_vs_vwap > 0) or \
+                             (trade_direction == 'short' and price_vs_vwap < 0)
+        vwap_stretch = abs(price_vs_vwap) / (vol_forecast + 1e-9)
+        vwap_bias_alignment = vwap_stretch if aligned_with_bias else -vwap_stretch
+        vwap_dist_norm = (price - vwap) / (vol_forecast + 1e-9)
+
+        logit = (_ML_FILTER_V2_INTERCEPT + offset +
+                 _ML_FILTER_V2_COEF_VWAP_DIST * vwap_dist_norm +
+                 _ML_FILTER_V2_COEF_VOL_FORECAST_PCT * vol_forecast_pct +
+                 _ML_FILTER_V2_COEF_ATR_DIST * atr_dist +
+                 _ML_FILTER_V2_COEF_CONFLUENCE * confluence +
+                 _ML_FILTER_V2_COEF_HURST * hurst +
+                 _ML_FILTER_V2_COEF_HMM_CONFIDENCE * hmm_confidence +
+                 _ML_FILTER_V2_COEF_HMM_FLIP * hmm_flip +
+                 _ML_FILTER_V2_COEF_GK_VOL_PCT * gk_vol_pct +
+                 _ML_FILTER_V2_COEF_GJR_REGIME_RATIO * gjr_vol_regime_ratio +
+                 _ML_FILTER_V2_COEF_VWAP_BIAS * vwap_bias_alignment)
+        return 1.0 / (1.0 + np.exp(-logit))
+
+    filtered = []
+    for category, lvls in levels_by_category.items():
+        offset = _ML_FILTER_V2_OFFSETS.get(category)
+        threshold = _ML_FILTER_V2_THRESHOLDS.get(category)
+        if offset is None or threshold is None:
+            filtered.extend(lvls or [])
+            continue
+        for lvl in (lvls or []):
+            price = lvl.get('price')
+            if price is None:
+                continue
+            prob = _score(price, category, offset)
             if prob >= threshold:
                 lvl = dict(lvl)
                 lvl['ml_filter_score'] = float(prob)
@@ -8316,6 +8516,301 @@ def calculate_level_confidence(predicted_price, levels, current_price, sigma_pri
     )
     
     return float(np.clip(confidence, 0.0, 1.0))
+
+# ============================================================================
+# GEX CONTEXT (FreeFlow, DISPLAY-ONLY - not a trained feature)
+# ============================================================================
+
+FREEFLOW_API_KEY = os.environ.get('FREEFLOW_API_KEY')
+FREEFLOW_PROXY_SYMBOL = {'NQ': 'QQQ', 'ES': 'SPY'}  # futures have no listed options; use the liquid ETF proxy
+
+
+def _next_friday_str():
+    today = datetime.utcnow().date()
+    days_ahead = (4 - today.weekday()) % 7  # Friday = weekday 4
+    return (today + timedelta(days=days_ahead)).strftime('%Y-%m-%d')
+
+
+def get_gex_context(instrument, timeout=5):
+    """
+    Live dealer-positioning snapshot (gamma walls, gamma flip, max pain)
+    from FreeFlow (free-flow.site) for the instrument's liquid ETF options
+    proxy (NQ->QQQ, ES->SPY - the futures themselves have no listed chain
+    FreeFlow prices).
+
+    DISPLAY-ONLY, by explicit request: this must never feed
+    score_and_filter_levels, ml_filter_score, level filtering, or position
+    sizing - only shown as context alongside a signal. Two reasons: (1) the
+    user asked for it to be context, not a model input, and (2) FreeFlow
+    only exposes a live snapshot (no historical endpoint confirmed), so
+    unlike every other level/feature in this system it has NOT been
+    walk-forward backtested - treating it as a trained input would break
+    from this project's whole validation standard. Same treatment VWAP
+    already gets (tracked on the chart, excluded from the trained filter).
+
+    Returns None on any failure (missing key, network error, bad symbol) -
+    context is optional, never worth breaking a request over.
+    """
+    symbol = FREEFLOW_PROXY_SYMBOL.get(instrument)
+    if not symbol or not FREEFLOW_API_KEY:
+        return None
+    exp = _next_friday_str()
+    try:
+        resp = requests.get(
+            'https://www.free-flow.site/public/walls',
+            headers={'X-API-Key': FREEFLOW_API_KEY},
+            params={'symbol': symbol, 'exp': exp},
+            timeout=timeout,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception:
+        return None
+    return {
+        'proxy_symbol': symbol, 'expiration': exp, 'spot': data.get('spot'),
+        'call_wall': data.get('call_wall'), 'put_wall': data.get('put_wall'),
+        'gamma_flip': data.get('gamma_flip'), 'max_pain': data.get('max_pain'),
+        'vol_trigger': data.get('vol_trigger'),
+    }
+
+
+def fetch_options_snapshot(symbol, exp, timeout=15, retries=3):
+    """Full per-strike Greeks snapshot from FreeFlow, with retries - the API
+    times out intermittently under back-to-back calls. Raises the last
+    error if all retries fail (unlike get_gex_context, callers here want to
+    know if the fetch failed, not silently get nothing)."""
+    last_error = None
+    for _ in range(retries):
+        try:
+            resp = requests.get(
+                'https://www.free-flow.site/public/snapshot',
+                headers={'X-API-Key': FREEFLOW_API_KEY},
+                params={'symbol': symbol, 'exp': exp},
+                timeout=timeout,
+            )
+            resp.raise_for_status()
+            return resp.json()
+        except requests.exceptions.RequestException as e:
+            last_error = e
+            time.sleep(1.5)
+    raise last_error
+
+
+def _net_exposure_by_strike(rows, field):
+    by_strike = {}
+    for row in rows:
+        by_strike[row['strike']] = by_strike.get(row['strike'], 0.0) + row.get(field, 0.0)
+    strikes = np.array(sorted(by_strike.keys()))
+    values = np.array([by_strike[s] for s in strikes])
+    return strikes, values
+
+
+def _find_exposure_flip(strikes, values):
+    signs = np.sign(values)
+    idx = np.where(np.diff(signs) != 0)[0]
+    if len(idx) == 0:
+        return None
+    mid = len(strikes) // 2
+    best = idx[np.argmin(np.abs(idx - mid))]
+    return float((strikes[best] + strikes[best + 1]) / 2)
+
+
+def _find_exposure_extreme(strikes, values):
+    kind = 'min' if np.sum(values) < 0 else 'max'
+    i = np.argmax(values) if kind == 'max' else np.argmin(values)
+    return float(strikes[i]), float(values[i])
+
+
+def _top_abs_gex_strikes(rows, n=3):
+    """Individual strikes with the largest ABSOLUTE gamma exposure
+    (FreeFlow's 'ag' field - matches its own UI's "Abs GEX" per-strike
+    figure, which sums |gex| across calls+puts so opposite signs don't
+    cancel). These are real per-strike open-interest concentration points,
+    distinct from the aggregate net-GEX flip - validated directly: NQ
+    rallied into and reversed hard almost exactly at the QQQ 693 strike,
+    which showed a clear individual abs-GEX spike on FreeFlow's own chart
+    even though it wasn't the aggregate gamma_flip strike that day."""
+    by_strike = {}
+    for row in rows:
+        by_strike[row['strike']] = by_strike.get(row['strike'], 0.0) + row.get('ag', 0.0)
+    ranked = sorted(by_strike.items(), key=lambda kv: -kv[1])
+    return ranked[:n]
+
+
+def find_options_zones(instrument, exp):
+    """
+    Options-derived "zone finder" - see options_zones.py for the full
+    design writeup (same logic, this is the production copy backend
+    endpoints call; options_zones.py is now a thin CLI wrapper around this).
+    Zone CENTERS from live dealer positioning (GEX/gamma flip, vanna
+    concentration, vega wall, charm concentration, all from ONE live
+    FreeFlow snapshot). Zone WIDTH pairs that with a volatility forecast -
+    max(ATM IV implied expected move, GJR-GARCH forecast on the proxy's own
+    real price history). Stays in the proxy's own price terms (QQQ/SPY) -
+    no NQ/ES rescaling, by explicit request (the frontend/caller handles
+    translation to the actual futures price scale itself).
+    """
+    symbol = FREEFLOW_PROXY_SYMBOL[instrument]
+    data = fetch_options_snapshot(symbol, exp)
+    spot = data['spot']
+    dte = max(data['dte'], 0.5)
+    atm_iv = data['atm_iv'] / 100.0
+    iv_expected_move = spot * atm_iv * np.sqrt(dte / 365.0)
+
+    hist = yf.Ticker(symbol).history(period='30d', interval='1h')
+    price_expected_move, hurst = None, None
+    if hist is not None and len(hist) >= 60:
+        closes = hist['Close'].values
+        returns_pct = np.diff(np.log(closes)) * 100
+        vol_pct = fit_gjr_garch_vol_forecast_pct(returns_pct)
+        if vol_pct is not None:
+            price_expected_move = closes[-1] * (vol_pct / 100.0) * np.sqrt(dte)
+        try:
+            hurst = calculate_hurst_exponent(closes)['hurst']
+        except Exception:
+            hurst = None
+
+    expected_move = max(iv_expected_move, price_expected_move or 0)
+
+    rows = [r for r in data['rows'] if r.get('gex') is not None]
+    zones = []
+
+    gex_strikes, gex_vals = _net_exposure_by_strike(rows, 'gex')
+    gamma_flip = _find_exposure_flip(gex_strikes, gex_vals)
+    if gamma_flip is not None:
+        zones.append({'center': gamma_flip, 'source': 'gamma_flip',
+                       'note': 'net GEX sign change - dealer hedging flips long/short gamma here'})
+
+    for field, source, note_prefix in [
+        ('vanna', 'vanna_concentration', 'largest net vanna exposure'),
+        ('vegaex', 'vega_wall', 'largest net vega exposure'),
+        ('charmex', 'charm_concentration', 'largest net charm exposure'),
+    ]:
+        strikes, vals = _net_exposure_by_strike(rows, field)
+        strike, val = _find_exposure_extreme(strikes, vals)
+        zones.append({'center': strike, 'source': source, 'note': f'{note_prefix} ({val:.1f})'})
+
+    for strike, abs_gex in _top_abs_gex_strikes(rows, n=3):
+        zones.append({'center': strike, 'source': 'gex_spike',
+                       'note': f'individual strike with high open-interest abs GEX ({abs_gex:.1f}) - '
+                               f'a real per-strike reaction point, not just the aggregate flip'})
+
+    for z in zones:
+        z['low'] = round(z['center'] - expected_move, 2)
+        z['high'] = round(z['center'] + expected_move, 2)
+        z['center'] = round(z['center'], 2)
+
+    centers = sorted(z['center'] for z in zones)
+    for z in zones:
+        z['confluence'] = sum(1 for c in centers if abs(c - z['center']) <= expected_move and c != z['center'])
+
+    regime_note = None
+    if hurst is not None:
+        regime_note = ('mean-reverting (Hurst %.2f) - zones more likely to act as real support/resistance' % hurst
+                        if hurst < 0.45 else
+                        'trending (Hurst %.2f) - zones more likely to be broken through than to hold' % hurst
+                        if hurst > 0.55 else
+                        'no strong persistence/mean-reversion signal (Hurst %.2f)' % hurst)
+
+    return {
+        'instrument': instrument, 'proxy_symbol': symbol, 'spot': spot, 'dte': data['dte'],
+        'atm_iv_pct': data['atm_iv'],
+        'iv_expected_move_pct': round(iv_expected_move / spot * 100, 2),
+        'price_expected_move_pct': round((price_expected_move or 0) / spot * 100, 2) if price_expected_move else None,
+        'hurst': round(hurst, 3) if hurst is not None else None, 'regime_note': regime_note,
+        'zones': zones,
+    }
+
+
+def fetch_vol_surface(instrument, expirations=None):
+    """Strike x DTE x IV grid for the 3D vol surface, calls only, from
+    FreeFlow snapshots across several expirations. expirations defaults to
+    the next 5 Fridays (weekly SPY/QQQ options)."""
+    symbol = FREEFLOW_PROXY_SYMBOL[instrument]
+    if expirations is None:
+        today = datetime.utcnow().date()
+        days_to_friday = (4 - today.weekday()) % 7
+        first_friday = today + timedelta(days=days_to_friday)
+        expirations = [(first_friday + timedelta(weeks=i)).strftime('%Y-%m-%d') for i in range(5)]
+
+    spot = None
+    dtes = []
+    strike_ivs = []
+    for exp in expirations:
+        try:
+            data = fetch_options_snapshot(symbol, exp)
+        except Exception:
+            continue
+        spot = data['spot']
+        rows = [r for r in data['rows'] if r['right'] == 'C' and r.get('iv_pct') is not None and r['iv_pct'] < 150]
+        if not rows:
+            continue
+        rows.sort(key=lambda r: r['strike'])
+        dtes.append(data['dte'])
+        strike_ivs.append(([r['strike'] for r in rows], [r['iv_pct'] for r in rows]))
+
+    if spot is None or not dtes:
+        return None
+
+    lo, hi = spot * 0.85, spot * 1.15
+    grid_strikes = np.linspace(lo, hi, 30)
+    z = []
+    for strikes, ivs in strike_ivs:
+        strikes_arr, ivs_arr = np.array(strikes), np.array(ivs)
+        smin, smax = strikes_arr.min(), strikes_arr.max()
+        row = [round(float(np.interp(gs, strikes_arr, ivs_arr)), 2) if smin <= gs <= smax else None
+               for gs in grid_strikes]
+        z.append(row)
+
+    return {
+        'instrument': instrument, 'proxy_symbol': symbol, 'spot': spot,
+        'strikes': [round(float(s), 1) for s in grid_strikes], 'dtes': dtes, 'z': z,
+    }
+
+
+@app.route('/api/options-zones', methods=['GET'])
+def get_options_zones():
+    auth_error = require_auth()
+    if auth_error:
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
+
+    instrument = request.args.get('instrument', 'NQ').upper()
+    exp = request.args.get('exp')
+    if instrument not in FREEFLOW_PROXY_SYMBOL:
+        return jsonify({'success': False, 'error': 'instrument must be NQ or ES'}), 400
+    if not exp:
+        today = datetime.utcnow().date()
+        exp = (today + timedelta(days=(4 - today.weekday()) % 7)).strftime('%Y-%m-%d')
+    if not FREEFLOW_API_KEY:
+        return jsonify({'success': False, 'error': 'FREEFLOW_API_KEY not configured'}), 400
+
+    try:
+        result = find_options_zones(instrument, exp)
+        return jsonify({'success': True, **result})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+
+@app.route('/api/vol-surface', methods=['GET'])
+def get_vol_surface():
+    auth_error = require_auth()
+    if auth_error:
+        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
+
+    instrument = request.args.get('instrument', 'NQ').upper()
+    if instrument not in FREEFLOW_PROXY_SYMBOL:
+        return jsonify({'success': False, 'error': 'instrument must be NQ or ES'}), 400
+    if not FREEFLOW_API_KEY:
+        return jsonify({'success': False, 'error': 'FREEFLOW_API_KEY not configured'}), 400
+
+    try:
+        result = fetch_vol_surface(instrument)
+        if result is None:
+            return jsonify({'success': False, 'error': 'no data available'}), 400
+        return jsonify({'success': True, **result})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
 
 # ============================================================================
 # VOLUME PROFILE & LEVEL REACTION ANALYSIS
