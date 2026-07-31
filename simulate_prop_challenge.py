@@ -1,11 +1,15 @@
 """
 Entry/SL/TP trade simulator + prop-firm challenge pass-rate backtest, built
-on top of the validated ML-filtered GMM+TDA levels (score_and_filter_gmm_tda_levels
-in backend.py - walk-forward validated: GMM 0.433->0.480, TDA 0.437->0.497,
-both 16/16 folds improved).
+on top of ALL 7 validated ML-filtered level types (score_and_filter_levels
+in backend.py - walk-forward validated: GMM, HDBSCAN, Isolation-Forest,
+KDE, MeanShift, OPTICS, and TDA all improved in 16/16 folds and cleared
+Bonferroni correction once filtered, 0.480-0.497 filtered accuracy).
+Originally only used GMM+TDA - expanded after realizing the trade
+simulator was never updated when the production filter was.
 
-Entry: price touches a filtered GMM/TDA level -> long if support (level
-below price), short if resistance (level above price).
+Entry: price touches the highest-scoring filtered level (any of the 7
+types) -> long if support (level below price), short if resistance
+(level above price).
 Stop:  break_atr_mult * ATR beyond the level (0.5 ATR) - hard intrabar
        stop using highs/lows, not the softer "2 consecutive closes"
        confirmation used to score level VALIDITY - a real stop has to be
@@ -121,10 +125,17 @@ def generate_trades(path, lookback=150, step=5,
 
         try:
             with contextlib.redirect_stdout(io.StringIO()):
-                gmm_levels = backend.calculate_gmm_levels(win_h, win_l, win_c)
-                tda_levels = backend.persistent_homology_levels(win_h, win_l, win_c, max_levels=8)
-                filtered = backend.score_and_filter_gmm_tda_levels(
-                    gmm_levels, tda_levels, win_h, win_l, win_c, win_v, current_price, timestamps=win_dt,
+                levels_by_category = {
+                    'GMM': backend.calculate_gmm_levels(win_h, win_l, win_c),
+                    'TDA': backend.persistent_homology_levels(win_h, win_l, win_c, max_levels=8),
+                    'HDBSCAN': backend.calculate_hdbscan_levels(win_h, win_l, win_c, timeframe=timeframe),
+                    'OPTICS': backend.optics_multi_density_levels(win_h, win_l, win_c),
+                    'KDE': backend.kde_based_levels(win_h, win_l, win_c),
+                    'MeanShift': backend.calculate_meanshift_levels(win_h, win_l, win_c),
+                    'Isolation-Forest': backend.find_pivot_anomalies(win_h, win_l, win_c),
+                }
+                filtered = backend.score_and_filter_levels(
+                    levels_by_category, win_h, win_l, win_c, win_v, current_price, timestamps=win_dt,
                 )
         except Exception as e:
             if verbose:
