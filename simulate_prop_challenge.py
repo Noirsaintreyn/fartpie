@@ -198,8 +198,8 @@ def generate_trades(path, lookback=150, step=5,
                     'MeanShift': backend.calculate_meanshift_levels(win_h, win_l, win_c),
                     'Isolation-Forest': backend.find_pivot_anomalies(win_h, win_l, win_c),
                 }
-                filtered = backend.score_and_filter_levels(
-                    levels_by_category, win_h, win_l, win_c, win_v, current_price, timestamps=win_dt,
+                filtered = backend.score_and_filter_levels_v2(
+                    levels_by_category, win_h, win_l, win_o, win_c, win_v, current_price, timestamps=win_dt,
                 )
         except Exception as e:
             if verbose:

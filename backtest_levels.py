@@ -60,7 +60,10 @@ def _parse_euro_number(x):
 
 def load_csv(path):
     """Loads one of the exported CSVs: title row, then header, then data
-    (most-recent-first, one row per contract-month, European number format)."""
+    (most-recent-first, one row per contract-month, European number format).
+    Intraday exports have a date+time column ('%m/%d/%Y %I:%M %p'); daily
+    exports (D_NQ.csv/D_ES.csv) are date-only ('%m/%d/%Y') - try intraday
+    format first, fall back to date-only rather than dropping every row."""
     df = pd.read_csv(path, skiprows=1)
     df.columns = [c.strip().lower() for c in df.columns]
     for col in ['open', 'high', 'low', 'close']:
@@ -68,6 +71,8 @@ def load_csv(path):
     df['volume'] = pd.to_numeric(df['volume'], errors='coerce').fillna(0)
     date_col = df.columns[0]
     df['datetime'] = pd.to_datetime(df[date_col], format='%m/%d/%Y %I:%M %p', errors='coerce')
+    if df['datetime'].isna().all():
+        df['datetime'] = pd.to_datetime(df[date_col], format='%m/%d/%Y', errors='coerce')
     df = df.dropna(subset=['datetime', 'open', 'high', 'low', 'close'])
     df = df.sort_values('datetime').reset_index(drop=True)
     return df[['datetime', 'open', 'high', 'low', 'close', 'volume']]

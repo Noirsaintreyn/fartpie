@@ -25,6 +25,10 @@ FEATURE_SETS = {
     'v2': ['vwap_distance_norm', 'vol_forecast_pct_of_price', 'atr_distance',
            'confluence', 'hurst', 'hmm_state_confidence', 'hmm_recent_flip',
            'garman_klass_vol_pct', 'gjr_vol_regime_ratio', 'vwap_bias_alignment'],
+    'v3': ['vwap_distance_norm', 'vol_forecast_pct_of_price', 'atr_distance',
+           'confluence', 'hurst', 'hmm_state_confidence', 'hmm_recent_flip',
+           'garman_klass_vol_pct', 'gjr_vol_regime_ratio', 'vwap_bias_alignment',
+           'ou_zone_distance_atr'],
 }
 
 
@@ -41,7 +45,7 @@ def zscore_test(p1, n1, p2, n2):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--events', default='backtest_ml_filter_events.csv')
-    ap.add_argument('--feature-set', choices=list(FEATURE_SETS.keys()), default='v1')
+    ap.add_argument('--feature-set', choices=list(FEATURE_SETS.keys()), default='v2')
     ap.add_argument('--k-folds', type=int, default=5)
     ap.add_argument('--random-accuracy', type=float, default=0.4227)
     ap.add_argument('--random-n', type=int, default=29257)

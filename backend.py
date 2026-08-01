@@ -247,7 +247,6 @@ import warnings
 import requests
 import os
 import pickle
-import time
 from arch import arch_model
 warnings.filterwarnings('ignore')
 
@@ -3605,10 +3604,6 @@ def score_and_filter_levels_v2(levels_by_category, highs, lows, opens, closes, v
     of the plain-GARCH v1 already fit elsewhere), roughly 2-4x the compute
     of score_and_filter_levels. Fine for backtesting; for a live request
     path, profile before assuming it's free.
-
-    GEX/dealer-positioning context (get_gex_context) is deliberately NOT a
-    feature here - by explicit request it stays a display-only overlay for
-    the reasons in its own docstring (unvalidated live-only data).
     """
     all_raw = [lvl for lvls in levels_by_category.values() for lvl in (lvls or [])]
     if len(closes) < 60:
@@ -8518,298 +8513,95 @@ def calculate_level_confidence(predicted_price, levels, current_price, sigma_pri
     return float(np.clip(confidence, 0.0, 1.0))
 
 # ============================================================================
-# GEX CONTEXT (FreeFlow, DISPLAY-ONLY - not a trained feature)
+# OU ZONE MODEL (standalone - independently validated, NOT the level detector)
 # ============================================================================
+#
+# Zone construction: fit an Ornstein-Uhlenbeck process to price-minus-VWAP
+# (a mean-reverting quantity by construction), zone = VWAP + mu +/- k*std.
+# Validated on the full 12-year NQ/ES 1H/4H history (see conversation/
+# backtest_ou_zones.py): ~61-64% reject rate at the zone edge (vs 50%
+# random for a symmetric edge, z=5.7-14.6, highly significant), stable
+# across all four 12-year time-quartiles, and the rejection rate holds up
+# whether the PRIOR zone rejected or broke (a genuine recurring regime
+# read, not a one-shot fit). Adding Hurst/HMM/GJR-GARCH/EGARCH/
+# Garman-Klass as extra context features was tested and showed NO
+# improvement (near-zero/insignificant discrimination, walk-forward
+# validated) - so this stays deliberately simple: two inputs (price,
+# VWAP), no other model.
+#
+# Separately: only ~19-21% of touches are a genuinely DURABLE rejection
+# (a real move that doesn't later get run over) - the flat reject rate
+# overstates how much a single touch can be trusted to hold.
 
-FREEFLOW_API_KEY = os.environ.get('FREEFLOW_API_KEY')
-FREEFLOW_PROXY_SYMBOL = {'NQ': 'QQQ', 'ES': 'SPY'}  # futures have no listed options; use the liquid ETF proxy
+_OU_ZONE_K = 0.25  # zone half-width in stationary-std units, tuned during validation
+_OU_ZONE_BACKTEST_SUMMARY = {
+    'note': 'Independently validated on 12yr NQ/ES 1H/4H history - not the level detector.',
+    'flat_reject_rate': {'ES_1h': 0.641, 'ES_4h': 0.633, 'NQ_1h': 0.639, 'NQ_4h': 0.615},
+    'touch_rate': {'ES_1h': 0.632, 'ES_4h': 0.610, 'NQ_1h': 0.632, 'NQ_4h': 0.619},
+    'strong_durable_reject_rate': {'ES_1h': 0.208, 'ES_4h': 0.187, 'NQ_1h': 0.209, 'NQ_4h': 0.209},
+    'median_zone_width_atr': {'ES_1h': 1.17, 'ES_4h': 1.22, 'NQ_1h': 1.26, 'NQ_4h': 1.27},
+}
 
 
-def _next_friday_str():
-    today = datetime.utcnow().date()
-    days_ahead = (4 - today.weekday()) % 7  # Friday = weekday 4
-    return (today + timedelta(days=days_ahead)).strftime('%Y-%m-%d')
-
-
-def get_gex_context(instrument, timeout=5):
-    """
-    Live dealer-positioning snapshot (gamma walls, gamma flip, max pain)
-    from FreeFlow (free-flow.site) for the instrument's liquid ETF options
-    proxy (NQ->QQQ, ES->SPY - the futures themselves have no listed chain
-    FreeFlow prices).
-
-    DISPLAY-ONLY, by explicit request: this must never feed
-    score_and_filter_levels, ml_filter_score, level filtering, or position
-    sizing - only shown as context alongside a signal. Two reasons: (1) the
-    user asked for it to be context, not a model input, and (2) FreeFlow
-    only exposes a live snapshot (no historical endpoint confirmed), so
-    unlike every other level/feature in this system it has NOT been
-    walk-forward backtested - treating it as a trained input would break
-    from this project's whole validation standard. Same treatment VWAP
-    already gets (tracked on the chart, excluded from the trained filter).
-
-    Returns None on any failure (missing key, network error, bad symbol) -
-    context is optional, never worth breaking a request over.
-    """
-    symbol = FREEFLOW_PROXY_SYMBOL.get(instrument)
-    if not symbol or not FREEFLOW_API_KEY:
+def fit_ou_process(x, dt=1.0):
+    """Fit OU via AR(1) regression: x[t+1] = a + b*x[t] + eps.
+    Returns (theta, mu, stationary_std) or None if the fit is degenerate
+    (b outside (0,1) means no real mean reversion, or a flat/zero-variance
+    series)."""
+    if len(x) < 20:
         return None
-    exp = _next_friday_str()
-    try:
-        resp = requests.get(
-            'https://www.free-flow.site/public/walls',
-            headers={'X-API-Key': FREEFLOW_API_KEY},
-            params={'symbol': symbol, 'exp': exp},
-            timeout=timeout,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-    except Exception:
+    x0, x1 = x[:-1], x[1:]
+    if np.std(x0) < 1e-9:
         return None
-    return {
-        'proxy_symbol': symbol, 'expiration': exp, 'spot': data.get('spot'),
-        'call_wall': data.get('call_wall'), 'put_wall': data.get('put_wall'),
-        'gamma_flip': data.get('gamma_flip'), 'max_pain': data.get('max_pain'),
-        'vol_trigger': data.get('vol_trigger'),
-    }
-
-
-def fetch_options_snapshot(symbol, exp, timeout=15, retries=3):
-    """Full per-strike Greeks snapshot from FreeFlow, with retries - the API
-    times out intermittently under back-to-back calls. Raises the last
-    error if all retries fail (unlike get_gex_context, callers here want to
-    know if the fetch failed, not silently get nothing)."""
-    last_error = None
-    for _ in range(retries):
-        try:
-            resp = requests.get(
-                'https://www.free-flow.site/public/snapshot',
-                headers={'X-API-Key': FREEFLOW_API_KEY},
-                params={'symbol': symbol, 'exp': exp},
-                timeout=timeout,
-            )
-            resp.raise_for_status()
-            return resp.json()
-        except requests.exceptions.RequestException as e:
-            last_error = e
-            time.sleep(1.5)
-    raise last_error
-
-
-def _net_exposure_by_strike(rows, field):
-    by_strike = {}
-    for row in rows:
-        by_strike[row['strike']] = by_strike.get(row['strike'], 0.0) + row.get(field, 0.0)
-    strikes = np.array(sorted(by_strike.keys()))
-    values = np.array([by_strike[s] for s in strikes])
-    return strikes, values
-
-
-def _find_exposure_flip(strikes, values):
-    signs = np.sign(values)
-    idx = np.where(np.diff(signs) != 0)[0]
-    if len(idx) == 0:
+    b, a = np.polyfit(x0, x1, 1)
+    if not (0 < b < 1):
         return None
-    mid = len(strikes) // 2
-    best = idx[np.argmin(np.abs(idx - mid))]
-    return float((strikes[best] + strikes[best + 1]) / 2)
+    resid = x1 - (a + b * x0)
+    resid_var = np.var(resid)
+    theta = (1 - b) / dt
+    mu = a / (1 - b)
+    stationary_var = resid_var / (1 - b ** 2)
+    if stationary_var <= 0:
+        return None
+    return theta, mu, float(np.sqrt(stationary_var))
 
 
-def _find_exposure_extreme(strikes, values):
-    kind = 'min' if np.sum(values) < 0 else 'max'
-    i = np.argmax(values) if kind == 'max' else np.argmin(values)
-    return float(strikes[i]), float(values[i])
-
-
-def _top_abs_gex_strikes(rows, n=3):
-    """Individual strikes with the largest ABSOLUTE gamma exposure
-    (FreeFlow's 'ag' field - matches its own UI's "Abs GEX" per-strike
-    figure, which sums |gex| across calls+puts so opposite signs don't
-    cancel). These are real per-strike open-interest concentration points,
-    distinct from the aggregate net-GEX flip - validated directly: NQ
-    rallied into and reversed hard almost exactly at the QQQ 693 strike,
-    which showed a clear individual abs-GEX spike on FreeFlow's own chart
-    even though it wasn't the aggregate gamma_flip strike that day."""
-    by_strike = {}
-    for row in rows:
-        by_strike[row['strike']] = by_strike.get(row['strike'], 0.0) + row.get('ag', 0.0)
-    ranked = sorted(by_strike.items(), key=lambda kv: -kv[1])
-    return ranked[:n]
-
-
-def find_options_zones(instrument, exp):
+def get_ou_zone_history(highs, lows, closes, volumes, timestamps, lookback=150, step=5, k=_OU_ZONE_K):
     """
-    Options-derived "zone finder" - see options_zones.py for the full
-    design writeup (same logic, this is the production copy backend
-    endpoints call; options_zones.py is now a thin CLI wrapper around this).
-    Zone CENTERS from live dealer positioning (GEX/gamma flip, vanna
-    concentration, vega wall, charm concentration, all from ONE live
-    FreeFlow snapshot). Zone WIDTH pairs that with a volatility forecast -
-    max(ATM IV implied expected move, GJR-GARCH forecast on the proxy's own
-    real price history). Stays in the proxy's own price terms (QQQ/SPY) -
-    no NQ/ES rescaling, by explicit request (the frontend/caller handles
-    translation to the actual futures price scale itself).
+    Rolling OU zone over a displayed price history, for charting - NOT a
+    12-year backtest, just enough rolling re-fits to draw a zone band
+    evolving alongside the price series. Returns parallel arrays: the
+    scan points (index into the input arrays), and zone_low/zone_high/vwap
+    at each scan point. Frontend holds the last known zone between scan
+    points for a continuous-looking band.
     """
-    symbol = FREEFLOW_PROXY_SYMBOL[instrument]
-    data = fetch_options_snapshot(symbol, exp)
-    spot = data['spot']
-    dte = max(data['dte'], 0.5)
-    atm_iv = data['atm_iv'] / 100.0
-    iv_expected_move = spot * atm_iv * np.sqrt(dte / 365.0)
-
-    hist = yf.Ticker(symbol).history(period='30d', interval='1h')
-    price_expected_move, hurst = None, None
-    if hist is not None and len(hist) >= 60:
-        closes = hist['Close'].values
-        returns_pct = np.diff(np.log(closes)) * 100
-        vol_pct = fit_gjr_garch_vol_forecast_pct(returns_pct)
-        if vol_pct is not None:
-            price_expected_move = closes[-1] * (vol_pct / 100.0) * np.sqrt(dte)
+    n = len(closes)
+    scan_idx, zone_low_list, zone_high_list, vwap_list = [], [], [], []
+    for t in range(lookback, n, step):
+        win_h, win_l, win_c = highs[t - lookback:t], lows[t - lookback:t], closes[t - lookback:t]
+        win_v = volumes[t - lookback:t]
+        win_dt = timestamps[t - lookback:t] if timestamps is not None else None
         try:
-            hurst = calculate_hurst_exponent(closes)['hurst']
-        except Exception:
-            hurst = None
-
-    expected_move = max(iv_expected_move, price_expected_move or 0)
-
-    rows = [r for r in data['rows'] if r.get('gex') is not None]
-    zones = []
-
-    gex_strikes, gex_vals = _net_exposure_by_strike(rows, 'gex')
-    gamma_flip = _find_exposure_flip(gex_strikes, gex_vals)
-    if gamma_flip is not None:
-        zones.append({'center': gamma_flip, 'source': 'gamma_flip',
-                       'note': 'net GEX sign change - dealer hedging flips long/short gamma here'})
-
-    for field, source, note_prefix in [
-        ('vanna', 'vanna_concentration', 'largest net vanna exposure'),
-        ('vegaex', 'vega_wall', 'largest net vega exposure'),
-        ('charmex', 'charm_concentration', 'largest net charm exposure'),
-    ]:
-        strikes, vals = _net_exposure_by_strike(rows, field)
-        strike, val = _find_exposure_extreme(strikes, vals)
-        zones.append({'center': strike, 'source': source, 'note': f'{note_prefix} ({val:.1f})'})
-
-    for strike, abs_gex in _top_abs_gex_strikes(rows, n=3):
-        zones.append({'center': strike, 'source': 'gex_spike',
-                       'note': f'individual strike with high open-interest abs GEX ({abs_gex:.1f}) - '
-                               f'a real per-strike reaction point, not just the aggregate flip'})
-
-    for z in zones:
-        z['low'] = round(z['center'] - expected_move, 2)
-        z['high'] = round(z['center'] + expected_move, 2)
-        z['center'] = round(z['center'], 2)
-
-    centers = sorted(z['center'] for z in zones)
-    for z in zones:
-        z['confluence'] = sum(1 for c in centers if abs(c - z['center']) <= expected_move and c != z['center'])
-
-    regime_note = None
-    if hurst is not None:
-        regime_note = ('mean-reverting (Hurst %.2f) - zones more likely to act as real support/resistance' % hurst
-                        if hurst < 0.45 else
-                        'trending (Hurst %.2f) - zones more likely to be broken through than to hold' % hurst
-                        if hurst > 0.55 else
-                        'no strong persistence/mean-reversion signal (Hurst %.2f)' % hurst)
-
-    return {
-        'instrument': instrument, 'proxy_symbol': symbol, 'spot': spot, 'dte': data['dte'],
-        'atm_iv_pct': data['atm_iv'],
-        'iv_expected_move_pct': round(iv_expected_move / spot * 100, 2),
-        'price_expected_move_pct': round((price_expected_move or 0) / spot * 100, 2) if price_expected_move else None,
-        'hurst': round(hurst, 3) if hurst is not None else None, 'regime_note': regime_note,
-        'zones': zones,
-    }
-
-
-def fetch_vol_surface(instrument, expirations=None):
-    """Strike x DTE x IV grid for the 3D vol surface, calls only, from
-    FreeFlow snapshots across several expirations. expirations defaults to
-    the next 5 Fridays (weekly SPY/QQQ options)."""
-    symbol = FREEFLOW_PROXY_SYMBOL[instrument]
-    if expirations is None:
-        today = datetime.utcnow().date()
-        days_to_friday = (4 - today.weekday()) % 7
-        first_friday = today + timedelta(days=days_to_friday)
-        expirations = [(first_friday + timedelta(weeks=i)).strftime('%Y-%m-%d') for i in range(5)]
-
-    spot = None
-    dtes = []
-    strike_ivs = []
-    for exp in expirations:
-        try:
-            data = fetch_options_snapshot(symbol, exp)
+            vwap_result = calculate_vwap(win_h, win_l, win_c, win_v, timestamps=win_dt)
         except Exception:
             continue
-        spot = data['spot']
-        rows = [r for r in data['rows'] if r['right'] == 'C' and r.get('iv_pct') is not None and r['iv_pct'] < 150]
-        if not rows:
+        if vwap_result is None:
             continue
-        rows.sort(key=lambda r: r['strike'])
-        dtes.append(data['dte'])
-        strike_ivs.append(([r['strike'] for r in rows], [r['iv_pct'] for r in rows]))
-
-    if spot is None or not dtes:
-        return None
-
-    lo, hi = spot * 0.85, spot * 1.15
-    grid_strikes = np.linspace(lo, hi, 30)
-    z = []
-    for strikes, ivs in strike_ivs:
-        strikes_arr, ivs_arr = np.array(strikes), np.array(ivs)
-        smin, smax = strikes_arr.min(), strikes_arr.max()
-        row = [round(float(np.interp(gs, strikes_arr, ivs_arr)), 2) if smin <= gs <= smax else None
-               for gs in grid_strikes]
-        z.append(row)
-
+        vwap_series = vwap_result['vwap_series']
+        deviation = win_c - vwap_series
+        fit = fit_ou_process(deviation)
+        if fit is None:
+            continue
+        _, mu, stationary_std = fit
+        current_vwap = vwap_series[-1]
+        scan_idx.append(t - 1)
+        zone_low_list.append(float(current_vwap + mu - k * stationary_std))
+        zone_high_list.append(float(current_vwap + mu + k * stationary_std))
+        vwap_list.append(float(current_vwap))
     return {
-        'instrument': instrument, 'proxy_symbol': symbol, 'spot': spot,
-        'strikes': [round(float(s), 1) for s in grid_strikes], 'dtes': dtes, 'z': z,
+        'scan_idx': scan_idx, 'zone_low': zone_low_list, 'zone_high': zone_high_list,
+        'vwap': vwap_list,
     }
-
-
-@app.route('/api/options-zones', methods=['GET'])
-def get_options_zones():
-    auth_error = require_auth()
-    if auth_error:
-        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
-
-    instrument = request.args.get('instrument', 'NQ').upper()
-    exp = request.args.get('exp')
-    if instrument not in FREEFLOW_PROXY_SYMBOL:
-        return jsonify({'success': False, 'error': 'instrument must be NQ or ES'}), 400
-    if not exp:
-        today = datetime.utcnow().date()
-        exp = (today + timedelta(days=(4 - today.weekday()) % 7)).strftime('%Y-%m-%d')
-    if not FREEFLOW_API_KEY:
-        return jsonify({'success': False, 'error': 'FREEFLOW_API_KEY not configured'}), 400
-
-    try:
-        result = find_options_zones(instrument, exp)
-        return jsonify({'success': True, **result})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
-
-
-@app.route('/api/vol-surface', methods=['GET'])
-def get_vol_surface():
-    auth_error = require_auth()
-    if auth_error:
-        return jsonify({'success': False, 'error': auth_error['error']}), auth_error['code']
-
-    instrument = request.args.get('instrument', 'NQ').upper()
-    if instrument not in FREEFLOW_PROXY_SYMBOL:
-        return jsonify({'success': False, 'error': 'instrument must be NQ or ES'}), 400
-    if not FREEFLOW_API_KEY:
-        return jsonify({'success': False, 'error': 'FREEFLOW_API_KEY not configured'}), 400
-
-    try:
-        result = fetch_vol_surface(instrument)
-        if result is None:
-            return jsonify({'success': False, 'error': 'no data available'}), 400
-        return jsonify({'success': True, **result})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
 
 
 # ============================================================================
@@ -8894,6 +8686,50 @@ def calculate_vwap(highs, lows, closes, volumes, timestamps=None, n_sigma_bands=
         'band_series': band_series,
         'session_start_idx': session_start_idx,
     }
+
+
+def calculate_htf_anchored_vwap(daily_dates, daily_highs, daily_lows, daily_closes, daily_volumes,
+                                 current_timestamp, anchor='week'):
+    """
+    Anchored VWAP using DAILY bars, reset at the start of the current
+    week/month/quarter (Monday / 1st of month / 1st of quarter of
+    current_timestamp's date). calculate_vwap() above already covers the
+    daily case (it resets every calendar day using intraday bars) - this
+    covers the longer horizons, which need more history than a typical
+    150-bar intraday lookback window has.
+
+    PIT-safety: only uses daily bars strictly BEFORE current_timestamp's
+    own date - today's daily bar isn't finalized (its H/L/C isn't known)
+    until the day closes, so including it would leak the rest of today's
+    range into a same-day intraday score.
+
+    daily_dates: array of daily bar dates (date, not datetime)
+    Returns None if no bars fall in the anchor window (e.g. very first
+    week/month/quarter of history).
+    """
+    ts = pd.Timestamp(current_timestamp).normalize()
+    if anchor == 'week':
+        anchor_date = (ts - pd.Timedelta(days=ts.weekday())).date()
+    elif anchor == 'month':
+        anchor_date = ts.replace(day=1).date()
+    elif anchor == 'quarter':
+        q_start_month = ((ts.month - 1) // 3) * 3 + 1
+        anchor_date = ts.replace(month=q_start_month, day=1).date()
+    else:
+        raise ValueError(f"unknown anchor: {anchor}")
+
+    daily_dates = np.asarray(daily_dates)
+    today = ts.date()
+    mask = (daily_dates >= anchor_date) & (daily_dates < today)
+    if not mask.any():
+        return None
+
+    h, l, c, v = daily_highs[mask], daily_lows[mask], daily_closes[mask], daily_volumes[mask]
+    typical = (h + l + c) / 3.0
+    total_vol = v.sum()
+    if total_vol <= 0:
+        return float(c[-1])
+    return float((typical * v).sum() / total_vol)
 
 
 def calculate_volume_profile(highs, lows, closes, volumes, bins=30):
@@ -12798,19 +12634,13 @@ def get_lstm_forecast():
             'level_sequence_prediction': sanitize_for_json(level_sequence_prediction) if 'level_sequence_prediction' in locals() and level_sequence_prediction else None,  # Multi-timeframe level sequence prediction
             'monte_carlo': sanitize_for_json(monte_carlo_result) if monte_carlo_result else None,
             'model_used': 'MTF Level Sequence LSTM' if level_sequence_prediction else ('LSTM + Monte Carlo' if monte_carlo_result else ('LSTM' if model is not None else 'Level-based heuristic')),
-            'levels_detected': {
-                'hdbscan': len(hdbscan_levels),
-                'optics': len(optics_levels),
-                'interaction': len(interaction_levels),
-                'ml_confluence': len(ml_confluence_levels),
-                'multiscale': len(multiscale_levels),
-                'neural_network': len(neural_network_levels),
-                'gmm': len(gmm_levels),
-                'tda': len(tda_levels),
-                'kde': len(kde_levels),
-                'meanshift': len(meanshift_levels)
-            },
-            'all_levels': sanitize_for_json(sorted(all_levels, key=lambda x: abs(x.get('price', 0) - current_price))[:50]),
+            # NOTE: level-detector counts/list (levels_detected, all_levels) removed
+            # from the response by request - the frontend no longer displays them.
+            # The underlying detection (hdbscan_levels, gmm_levels, etc. above) still
+            # runs internally since all_levels/closest_level feed the actual target-
+            # price prediction, HOD/LOD refinement, and level_reactions logic in this
+            # same function - removing that would mean rewriting the forecast engine
+            # itself, which wasn't asked for. Only the product-facing exposure is gone.
             'microstructure_state': sanitize_for_json(microstructure_state) if microstructure_state else None
         }
         
@@ -12821,6 +12651,90 @@ def get_lstm_forecast():
         error_trace = traceback.format_exc()
         print(f"ERROR in /api/lstm-forecast: {error_trace}")
         return jsonify({'success': False, 'error': str(e)}), 400
+
+
+@app.route('/api/ou-zone-history', methods=['GET'])
+def get_ou_zone_history_endpoint():
+    """
+    Price history + rolling OU zone band, for the zone heatmap chart -
+    replaces the NHP panel (which had no working backend endpoint at all -
+    /api/nhp-signals never existed here, matching the perpetual loading
+    spinner on the live site).
+    """
+    # No auth required - public market data endpoint, same as /api/lstm-forecast
+
+    ticker = request.args.get('ticker', 'SPY')
+    timeframe = request.args.get('timeframe', '1h').strip().lower().replace('240m', '4h').replace('60m', '1h')
+
+    try:
+        is_futures = '=' in ticker
+        period_map = {'1m': '5d', '5m': '5d', '15m': '10d', '1h': '20d', '4h': '60d', '1d': '2y'} if is_futures \
+            else {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '2mo', '4h': '6mo', '1d': '2y'}
+        period = period_map.get(timeframe, '1mo')
+
+        hist = fetch_historical_data_with_resampling(ticker=ticker, timeframe=timeframe, period=period, is_futures=is_futures)
+        if hist is None or len(hist) == 0:
+            return jsonify({'success': False, 'error': f'No data available for {ticker} at {timeframe}'}), 400
+
+        highs, lows, closes = hist['High'].values, hist['Low'].values, hist['Close'].values
+        volumes = hist['Volume'].values
+        timestamps = hist.index.values
+        lookback = min(150, len(closes) - 5)
+        if lookback < 20:
+            return jsonify({'success': False, 'error': 'Not enough bars for a zone fit'}), 400
+
+        zone_history = get_ou_zone_history(highs, lows, closes, volumes, timestamps, lookback=lookback, step=5)
+
+        # crop to where the zone actually starts (skip the dead lookback
+        # lead-in with no zone yet), then to a smaller trailing window so
+        # individual touches/reactions are visible instead of compressed
+        # across the whole fetched history
+        scan_idx = zone_history['scan_idx']
+        n = len(closes)
+        max_display_bars = int(request.args.get('bars', 150))
+        if scan_idx:
+            crop_start = max(scan_idx[0], n - max_display_bars)
+        else:
+            crop_start = max(0, n - max_display_bars)
+        times_out = timestamps[crop_start:]
+        closes_out = closes[crop_start:]
+        scan_idx_out = [i - crop_start for i in scan_idx if i >= crop_start]
+        n_dropped_scans = len(scan_idx) - len(scan_idx_out)
+        zone_low_out = zone_history['zone_low'][n_dropped_scans:]
+        zone_high_out = zone_history['zone_high'][n_dropped_scans:]
+        zone_vwap_out = zone_history['vwap'][n_dropped_scans:]
+
+        instrument_key = 'NQ' if 'NQ' in ticker.upper() else ('ES' if 'ES' in ticker.upper() else None)
+        summary_key = f'{instrument_key}_{timeframe}' if instrument_key else None
+        summary = None
+        if summary_key and summary_key in _OU_ZONE_BACKTEST_SUMMARY['flat_reject_rate']:
+            summary = {
+                'flat_reject_rate': _OU_ZONE_BACKTEST_SUMMARY['flat_reject_rate'][summary_key],
+                'touch_rate': _OU_ZONE_BACKTEST_SUMMARY['touch_rate'][summary_key],
+                'strong_durable_reject_rate': _OU_ZONE_BACKTEST_SUMMARY['strong_durable_reject_rate'][summary_key],
+                'median_zone_width_atr': _OU_ZONE_BACKTEST_SUMMARY['median_zone_width_atr'][summary_key],
+                'note': _OU_ZONE_BACKTEST_SUMMARY['note'],
+            }
+
+        return jsonify({
+            'success': True, 'ticker': ticker, 'timeframe': timeframe,
+            'times': [pd.Timestamp(t).isoformat() for t in times_out],
+            'prices': [float(c) for c in closes_out],
+            'zone_scan_idx': scan_idx_out,
+            'zone_low': zone_low_out,
+            'zone_high': zone_high_out,
+            'zone_vwap': zone_vwap_out,
+            'current_zone': {
+                'low': zone_low_out[-1], 'high': zone_high_out[-1],
+                'vwap': zone_vwap_out[-1],
+            } if zone_low_out else None,
+            'backtest_summary': summary,
+        })
+    except Exception as e:
+        import traceback
+        print(f"ERROR in /api/ou-zone-history: {traceback.format_exc()}")
+        return jsonify({'success': False, 'error': str(e)}), 400
+
 
 @app.route("/api/ml/hodlod-realized", methods=["POST"])
 def api_ml_hodlod_realized():
