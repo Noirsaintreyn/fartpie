@@ -12238,15 +12238,23 @@ def get_lstm_forecast():
             interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
         
         interval = interval_map.get(timeframe, '1d')
-        
-        # Simple fix: Use shorter periods for futures on intraday timeframes
-        if is_futures and timeframe in ['1m', '5m', '15m', '1h', '4h']:
+
+        # Crypto trades 24/7 like futures do, so the same "3mo of hourly
+        # bars" period that's fine for a 6.5h/day equity like SPY (~410
+        # bars) balloons to ~2160 bars for BTC-USD - enough to blow past
+        # Render's free-tier memory/time budget across the 10+ level
+        # detectors this endpoint runs and crash the whole worker (502,
+        # not a caught exception). Treat it like futures for period sizing.
+        is_continuous_trading = is_futures or ticker.upper().endswith('-USD')
+
+        # Simple fix: Use shorter periods for futures/crypto on intraday timeframes
+        if is_continuous_trading and timeframe in ['1m', '5m', '15m', '1h', '4h']:
             period_map = {'1m': '5d', '5m': '5d', '15m': '7d', '1h': '7d', '4h': '10d', '1d': '2y'}
         else:
             period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
-        
+
         period = period_map.get(timeframe, '1y')
-        
+
         # For futures, try multiple approaches - especially for 1h which is problematic
         hist = None
         if is_futures and timeframe == '1h':
