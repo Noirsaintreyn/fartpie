@@ -9411,22 +9411,33 @@ def get_multi_timeframe_levels(ticker: str, base_timeframe: str = '5m', hist_bas
     all_mtf_levels = {}
     
     for tf in timeframes:
-        # Fetch appropriate period for each timeframe
-        period_map = {
-            '1m': '5d', '5m': '5d', '15m': '1mo', 
-            '1h': '3mo', '4h': '6mo', '1d': '2y'
-        }
-        
+        # Fetch appropriate period for each timeframe - reduced for
+        # tickers that trade continuously (futures, and crypto's true 24/7),
+        # since the same calendar period holds far more bars for them than
+        # for a 6.5h/day equity, multiplying the cost of running HDBSCAN/
+        # OPTICS across every timeframe in the hierarchy
+        is_futures = '=' in ticker
+        is_continuous_trading = is_futures or ticker.upper().endswith('-USD')
+        if is_continuous_trading:
+            period_map = {
+                '1m': '5d', '5m': '5d', '15m': '7d',
+                '1h': '10d', '4h': '1mo', '1d': '1y'
+            }
+        else:
+            period_map = {
+                '1m': '5d', '5m': '5d', '15m': '1mo',
+                '1h': '3mo', '4h': '6mo', '1d': '2y'
+            }
+
         try:
             # For futures, handle interval conversion
-            is_futures = '=' in ticker
             if is_futures and tf == '1h':
                 interval = '60m'
             elif is_futures and tf == '4h':
                 interval = '240m'
             else:
                 interval = tf
-            
+
             hist = stock.history(period=period_map.get(tf, '1y'), interval=interval)
             if len(hist) < 20:
                 continue
