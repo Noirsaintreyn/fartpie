@@ -12849,6 +12849,7 @@ def get_ou_zone_history_endpoint():
             for lvl in filtered:
                 structural_levels.append({
                     'price': lvl['price'], 'strength': lvl.get('ml_filter_score', lvl.get('strength', 0.5)),
+                    'touches': int(lvl.get('touches', 0)),
                     'formed_at_idx': scan_t - crop_start,
                 })
 
