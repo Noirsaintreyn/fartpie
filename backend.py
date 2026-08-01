@@ -12745,13 +12745,19 @@ def get_lstm_forecast():
             'level_sequence_prediction': sanitize_for_json(level_sequence_prediction) if 'level_sequence_prediction' in locals() and level_sequence_prediction else None,  # Multi-timeframe level sequence prediction
             'monte_carlo': sanitize_for_json(monte_carlo_result) if monte_carlo_result else None,
             'model_used': 'MTF Level Sequence LSTM' if level_sequence_prediction else ('LSTM + Monte Carlo' if monte_carlo_result else ('LSTM' if model is not None else 'Level-based heuristic')),
-            # NOTE: level-detector counts/list (levels_detected, all_levels) removed
-            # from the response by request - the frontend no longer displays them.
-            # The underlying detection (hdbscan_levels, gmm_levels, etc. above) still
-            # runs internally since all_levels/closest_level feed the actual target-
-            # price prediction, HOD/LOD refinement, and level_reactions logic in this
-            # same function - removing that would mean rewriting the forecast engine
-            # itself, which wasn't asked for. Only the product-facing exposure is gone.
+            'levels_detected': {
+                'hdbscan': len(hdbscan_levels),
+                'optics': len(optics_levels),
+                'interaction': len(interaction_levels),
+                'ml_confluence': len(ml_confluence_levels),
+                'multiscale': len(multiscale_levels),
+                'neural_network': len(neural_network_levels),
+                'gmm': len(gmm_levels),
+                'tda': len(tda_levels),
+                'kde': len(kde_levels),
+                'meanshift': len(meanshift_levels)
+            },
+            'all_levels': sanitize_for_json(sorted(all_levels, key=lambda x: abs(x.get('price', 0) - current_price))[:50]),
             'microstructure_state': sanitize_for_json(microstructure_state) if microstructure_state else None
         }
         
