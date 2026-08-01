@@ -9430,15 +9430,23 @@ def get_multi_timeframe_levels(ticker: str, base_timeframe: str = '5m', hist_bas
             }
 
         try:
-            # For futures, handle interval conversion
-            if is_futures and tf == '1h':
-                interval = '60m'
-            elif is_futures and tf == '4h':
-                interval = '240m'
+            # Reuse the caller's already-fetched history for the base
+            # timeframe instead of hitting the network again for data we
+            # already have - this was previously ignored entirely despite
+            # being passed in as hist_base, doubling up one yfinance round
+            # trip on every call for no reason.
+            if tf == base_timeframe and hist_base is not None and len(hist_base) >= 20:
+                hist = hist_base
             else:
-                interval = tf
+                # For futures, handle interval conversion
+                if is_futures and tf == '1h':
+                    interval = '60m'
+                elif is_futures and tf == '4h':
+                    interval = '240m'
+                else:
+                    interval = tf
 
-            hist = stock.history(period=period_map.get(tf, '1y'), interval=interval)
+                hist = stock.history(period=period_map.get(tf, '1y'), interval=interval)
             if len(hist) < 20:
                 continue
             
