@@ -8604,6 +8604,117 @@ def get_ou_zone_history(highs, lows, closes, volumes, timestamps, lookback=150, 
     }
 
 
+def _htf_vwap_anchors(daily_highs, daily_lows, daily_closes, daily_volumes, daily_dates, current_ts, lookback_days=90):
+    """Weekly/monthly anchored VWAP from daily bars, as of the most recent
+    COMPLETE daily bar before current_ts (never peeks at today's incomplete
+    day). Same methodology validated in backtest_ou_zones_hybrid.py."""
+    mask = daily_dates < pd.Timestamp(current_ts).normalize()
+    if mask.sum() < 5:
+        return None, None
+    idx = np.where(mask)[0][-lookback_days:]
+    typical = (daily_highs[idx] + daily_lows[idx] + daily_closes[idx]) / 3.0
+    vol = daily_volumes[idx]
+    dts = daily_dates[idx]
+
+    last_date = pd.Timestamp(dts[-1])
+    week_start = last_date - pd.Timedelta(days=last_date.dayofweek)
+    month_start = last_date.replace(day=1)
+
+    def vwap_of(period_start):
+        m = dts >= np.datetime64(period_start)
+        v = vol[m]
+        if v.sum() <= 0:
+            return None
+        return float((typical[m] * v).sum() / v.sum())
+
+    return vwap_of(week_start), vwap_of(month_start)
+
+
+def get_hybrid_zone_with_target(highs, lows, closes, opens, volumes, timestamps,
+                                 daily_highs, daily_lows, daily_closes, daily_volumes, daily_dates,
+                                 lookback=150, k=_OU_ZONE_K, touch_tolerance_atr=0.25, corridor_buffer_atr=0.3):
+    """
+    Current hybrid OU zone (multi-timeframe VWAP consensus center, held
+    fixed rather than re-fit every bar - validated at the same ~62-64%
+    reject rate as the simple version but with far higher touch reliability,
+    89-95% vs 61-63%) PLUS target selection: a real KDE structural level
+    sitting between the zone's stretch edge and the fair-value center
+    (padded by corridor_buffer_atr on each side - validated separately:
+    widening the ENTRY zone (k) to find more targets measurably hurt
+    target-reach quality (93.6%->80.5% at k=0.8), but widening just the
+    target-SEARCH corridor at the validated k=0.25 raised target
+    availability from 18.8% to 35.8% with NO quality cost (93.6%->95.2%
+    reach rate) - the entry mechanics and the target search are separate
+    questions, and only the corridor needed relaxing), picked by
+    historical touch_count (how many times price has actually tested that
+    price before).
+
+    Returns None if there isn't enough data for a fit, or a dict with the
+    zone bounds, side, consensus_vwap, and target info (may be None if no
+    qualifying KDE candidate sits on the path to fair value right now).
+    """
+    n = len(closes)
+    if n < lookback + 1:
+        return None
+    win_h, win_l, win_c = highs[-lookback:], lows[-lookback:], closes[-lookback:]
+    win_v, win_dt = volumes[-lookback:], timestamps[-lookback:]
+    atr = _atr_for_ml_filter(win_h, win_l, win_c)
+    if atr <= 0:
+        return None
+
+    vwap_result = calculate_vwap(win_h, win_l, win_c, win_v, timestamps=win_dt)
+    if vwap_result is None:
+        return None
+    session_vwap = vwap_result['vwap']
+    weekly_vwap, monthly_vwap = _htf_vwap_anchors(daily_highs, daily_lows, daily_closes, daily_volumes,
+                                                    daily_dates, timestamps[-1])
+    anchors = [a for a in [session_vwap, weekly_vwap, monthly_vwap] if a is not None]
+    consensus_vwap = float(np.mean(anchors))
+
+    vwap_series = vwap_result['vwap_series']
+    deviation = win_c - vwap_series
+    fit = fit_ou_process(deviation)
+    if fit is None:
+        return None
+    _, _, stationary_std = fit
+
+    zone_low = consensus_vwap - k * stationary_std
+    zone_high = consensus_vwap + k * stationary_std
+    current_price = closes[-1]
+
+    if current_price >= consensus_vwap:
+        edge, side = zone_high, 'resistance'
+        stretched = current_price >= edge
+    else:
+        edge, side = zone_low, 'support'
+        stretched = current_price <= edge
+
+    target_price, target_touch_count = None, None
+    if stretched:
+        try:
+            kde_candidates = kde_based_levels(win_h, win_l, win_c, n_levels=8)
+        except Exception:
+            kde_candidates = []
+        lo, hi = (consensus_vwap, edge) if side == 'resistance' else (edge, consensus_vwap)
+        corridor_pad = corridor_buffer_atr * atr
+        lo, hi = lo - corridor_pad, hi + corridor_pad
+        path_candidates = [c for c in kde_candidates if lo <= c['price'] <= hi]
+        tol = touch_tolerance_atr * atr
+        best_tc = -1
+        for c in path_candidates:
+            near_mask = (win_l <= c['price'] + tol) & (win_h >= c['price'] - tol)
+            tc = int(near_mask.sum())
+            if tc > best_tc:
+                best_tc, target_price = tc, c['price']
+        target_touch_count = best_tc if target_price is not None else None
+
+    return {
+        'side': side, 'edge': edge, 'zone_low': zone_low, 'zone_high': zone_high,
+        'consensus_vwap': consensus_vwap, 'stretched': stretched,
+        'target_price': target_price, 'target_touch_count': target_touch_count,
+    }
+
+
 # ============================================================================
 # VOLUME PROFILE & LEVEL REACTION ANALYSIS
 # ============================================================================
@@ -12704,6 +12815,50 @@ def get_ou_zone_history_endpoint():
         zone_high_out = zone_history['zone_high'][n_dropped_scans:]
         zone_vwap_out = zone_history['vwap'][n_dropped_scans:]
 
+        # structural levels: KDE peaks (where price actually consolidated/
+        # got "stuck", i.e. real structure) - NOT the VWAP-tracking OU zone.
+        # Rolling scan (not one static call on the whole window) so older
+        # zones stay visible alongside newer ones - "adaptive S/R zones"
+        # showing how structure evolved, not a single current-moment
+        # snapshot. Each candidate is scored with the same validated ML
+        # filter (score_and_filter_levels_v2) used everywhere else in this
+        # project - raw KDE alone tests at ~43% (statistically
+        # indistinguishable from the 42.27% random baseline, confirmed
+        # separately), so only filter-passing levels are worth showing as
+        # if they mean something.
+        structural_scan_step = 15
+        structural_lookback = 100
+        structural_levels = []
+        for scan_t in range(structural_lookback, n, structural_scan_step):
+            s_h, s_l, s_c = highs[scan_t - structural_lookback:scan_t], lows[scan_t - structural_lookback:scan_t], closes[scan_t - structural_lookback:scan_t]
+            s_o, s_v = hist['Open'].values[scan_t - structural_lookback:scan_t], volumes[scan_t - structural_lookback:scan_t]
+            s_dt = timestamps[scan_t - structural_lookback:scan_t]
+            try:
+                kde_candidates = kde_based_levels(s_h, s_l, s_c, n_levels=6)
+                filtered = score_and_filter_levels_v2(
+                    {'KDE': kde_candidates}, s_h, s_l, s_o, s_c, s_v, closes[scan_t - 1], timestamps=s_dt,
+                )
+            except Exception:
+                filtered = []
+            for lvl in filtered:
+                structural_levels.append({
+                    'price': lvl['price'], 'strength': lvl.get('ml_filter_score', lvl.get('strength', 0.5)),
+                    'formed_at_idx': scan_t - crop_start,
+                })
+
+        # drop levels from a price regime that's no longer relevant (e.g.
+        # NQ was 1500pts higher earlier in the fetch window) - only keep
+        # ones within the displayed price range, padded a bit, so old
+        # zones from a completely different price era don't clutter the
+        # chart with lines price has no realistic path back to
+        if closes_out.size:
+            disp_lo, disp_hi = closes_out.min(), closes_out.max()
+            disp_pad = (disp_hi - disp_lo) * 0.1 or disp_hi * 0.01
+            structural_levels = [
+                lvl for lvl in structural_levels
+                if disp_lo - disp_pad <= lvl['price'] <= disp_hi + disp_pad
+            ]
+
         instrument_key = 'NQ' if 'NQ' in ticker.upper() else ('ES' if 'ES' in ticker.upper() else None)
         summary_key = f'{instrument_key}_{timeframe}' if instrument_key else None
         summary = None
@@ -12715,6 +12870,30 @@ def get_ou_zone_history_endpoint():
                 'median_zone_width_atr': _OU_ZONE_BACKTEST_SUMMARY['median_zone_width_atr'][summary_key],
                 'note': _OU_ZONE_BACKTEST_SUMMARY['note'],
             }
+
+        # Current target: the hybrid zone (multi-timeframe VWAP consensus,
+        # held-fixed rather than re-fit every bar) + a KDE structural level
+        # on the path back to fair value, validated at 93-96% target-reach
+        # rate (with the corridor-buffer fix) when a target exists. Needs
+        # daily bars for the weekly/monthly anchors - a second, separate
+        # fetch, best-effort (if it fails, target is just omitted).
+        target_info = None
+        try:
+            daily_hist = fetch_historical_data_with_resampling(ticker=ticker, timeframe='1d', period='1y', is_futures=is_futures)
+            if daily_hist is not None and len(daily_hist) >= 20:
+                hybrid = get_hybrid_zone_with_target(
+                    highs, lows, closes, hist['Open'].values, volumes, timestamps,
+                    daily_hist['High'].values, daily_hist['Low'].values, daily_hist['Close'].values,
+                    daily_hist['Volume'].values, daily_hist.index.values,
+                )
+                if hybrid:
+                    target_info = {
+                        'side': hybrid['side'], 'stretched': hybrid['stretched'],
+                        'edge': hybrid['edge'], 'consensus_vwap': hybrid['consensus_vwap'],
+                        'target_price': hybrid['target_price'], 'target_touch_count': hybrid['target_touch_count'],
+                    }
+        except Exception:
+            target_info = None
 
         return jsonify({
             'success': True, 'ticker': ticker, 'timeframe': timeframe,
@@ -12728,7 +12907,9 @@ def get_ou_zone_history_endpoint():
                 'low': zone_low_out[-1], 'high': zone_high_out[-1],
                 'vwap': zone_vwap_out[-1],
             } if zone_low_out else None,
+            'structural_levels': structural_levels,
             'backtest_summary': summary,
+            'target': target_info,
         })
     except Exception as e:
         import traceback

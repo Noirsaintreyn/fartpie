@@ -122,10 +122,30 @@ def backtest_hybrid(path, daily_path, lookback=150, k=0.25, vol_shift_threshold=
         zone_low = consensus_vwap - k * stationary_std
         zone_high = consensus_vwap + k * stationary_std
         formation_date = dates[t - 1]
+
+        # pick the edge on the stretch side of current price (matching the
+        # validated standalone OU zone's semantic: test whether price,
+        # extending further from fair value, reaches and rejects at the
+        # far edge - not whether an already-stretched price reverts back
+        # in, which is near-tautological). Skip formation entirely if
+        # price has already passed its own-side edge - this was the exact
+        # bug that produced the earlier 100%-touch/25.6%-reject nonsense
+        # result (current_price was never checked against the zone at all).
+        current_price = closes[t - 1]
+        if current_price >= consensus_vwap:
+            edge, side = zone_high, 'resistance'
+            if current_price >= edge:
+                t += 1
+                continue
+        else:
+            edge, side = zone_low, 'support'
+            if current_price <= edge:
+                t += 1
+                continue
         n_zones += 1
 
         # hold this zone fixed, walking forward bar by bar, until a trigger fires
-        touched_edge, touch_idx = None, None
+        touched, touch_idx = False, None
         outcome_reason, rejected = None, None
         i = t
         end_i = min(t + max_hold_bars, n)
@@ -138,24 +158,25 @@ def backtest_hybrid(path, daily_path, lookback=150, k=0.25, vol_shift_threshold=
                 outcome_reason = 'vol_shift'
                 break
 
-            if touched_edge is None:
-                if highs[i] >= zone_high:
-                    touched_edge, touch_idx = 'resistance', i
-                elif lows[i] <= zone_low:
-                    touched_edge, touch_idx = 'support', i
+            if not touched:
+                if side == 'resistance' and highs[i] >= edge:
+                    touched, touch_idx = True, i
+                elif side == 'support' and lows[i] <= edge:
+                    touched, touch_idx = True, i
             else:
                 if i >= touch_idx + touch_confirm_bars:
                     confirm_c = closes[touch_idx:touch_idx + touch_confirm_bars]
-                    if touched_edge == 'resistance':
-                        broke = np.sum(confirm_c > zone_high) >= touch_confirm_bars
+                    if side == 'resistance':
+                        broke = np.sum(confirm_c > edge) >= touch_confirm_bars
                     else:
-                        broke = np.sum(confirm_c < zone_low) >= touch_confirm_bars
+                        broke = np.sum(confirm_c < edge) >= touch_confirm_bars
                     rejected = not broke
                     outcome_reason = 'resolved'
                     break
             i += 1
         else:
             outcome_reason = outcome_reason or 'max_hold_reached'
+        touched_edge = side if touched else None
 
         rows.append({
             'instrument': instrument, 'timeframe': timeframe, 't_formed': t,
