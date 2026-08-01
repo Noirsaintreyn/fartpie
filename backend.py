@@ -8540,6 +8540,15 @@ _OU_ZONE_BACKTEST_SUMMARY = {
     'touch_rate': {'ES_1h': 0.632, 'ES_4h': 0.610, 'NQ_1h': 0.632, 'NQ_4h': 0.619},
     'strong_durable_reject_rate': {'ES_1h': 0.208, 'ES_4h': 0.187, 'NQ_1h': 0.209, 'NQ_4h': 0.209},
     'median_zone_width_atr': {'ES_1h': 1.17, 'ES_4h': 1.22, 'NQ_1h': 1.26, 'NQ_4h': 1.27},
+    # Target pipeline (k=0.25, corridor_buffer_atr=0.3) - of rejected zones
+    # that had a real KDE target on the path to fair value: does price ever
+    # reach it (target_reach_rate), and separately, does it get there
+    # before a 1-ATR adverse move against a position entered at the edge
+    # (clean_reach_rate) - i.e. would a real trade with a 1-ATR stop have
+    # survived to see the target. From backtest_zone_target.py.
+    'target_availability': {'ES_1h': 0.313, 'ES_4h': 0.371, 'NQ_1h': 0.322, 'NQ_4h': 0.358},
+    'target_reach_rate': {'ES_1h': 0.957, 'ES_4h': 0.934, 'NQ_1h': 0.948, 'NQ_4h': 0.952},
+    'target_clean_reach_rate': {'ES_1h': 0.851, 'ES_4h': 0.771, 'NQ_1h': 0.838, 'NQ_4h': 0.822},
 }
 
 
@@ -12875,6 +12884,9 @@ def get_ou_zone_history_endpoint():
                 'touch_rate': _OU_ZONE_BACKTEST_SUMMARY['touch_rate'][summary_key],
                 'strong_durable_reject_rate': _OU_ZONE_BACKTEST_SUMMARY['strong_durable_reject_rate'][summary_key],
                 'median_zone_width_atr': _OU_ZONE_BACKTEST_SUMMARY['median_zone_width_atr'][summary_key],
+                'target_availability': _OU_ZONE_BACKTEST_SUMMARY['target_availability'][summary_key],
+                'target_reach_rate': _OU_ZONE_BACKTEST_SUMMARY['target_reach_rate'][summary_key],
+                'target_clean_reach_rate': _OU_ZONE_BACKTEST_SUMMARY['target_clean_reach_rate'][summary_key],
                 'note': _OU_ZONE_BACKTEST_SUMMARY['note'],
             }
 
