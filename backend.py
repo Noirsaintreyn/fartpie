@@ -12833,7 +12833,13 @@ def get_ou_zone_history_endpoint():
 
     try:
         is_futures = '=' in ticker
-        period_map = {'1m': '5d', '5m': '5d', '15m': '10d', '1h': '20d', '4h': '60d', '1d': '2y'} if is_futures \
+        # Crypto trades 24/7 like futures do, so the same calendar period
+        # holds far more bars than for a 6.5h/day equity - the equity-sized
+        # period_map combined with the 4h resampling multiplier (4x) could
+        # balloon into a ~2yr/17,500-bar fetch for BTC-USD, slow enough to
+        # cross Render's request-time budget. Size it like futures instead.
+        is_continuous_trading = is_futures or ticker.upper().endswith('-USD')
+        period_map = {'1m': '5d', '5m': '5d', '15m': '10d', '1h': '20d', '4h': '60d', '1d': '2y'} if is_continuous_trading \
             else {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '2mo', '4h': '6mo', '1d': '2y'}
         period = period_map.get(timeframe, '1mo')
 
