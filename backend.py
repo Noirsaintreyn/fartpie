@@ -440,7 +440,7 @@ CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
 
 @app.route("/api/health")
 def health():
-    return {"status": "backend live"}
+    return {"status": "backend live", "zone_target_pipeline": "corridor_buffer_0.3"}
 
 # ============================================================================
 # MOTIVEWAVE CSV UPLOAD ROUTES
