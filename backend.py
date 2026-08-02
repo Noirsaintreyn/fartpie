@@ -189,7 +189,12 @@ def fetch_historical_data_with_resampling(
         elif period.endswith('mo'):
             months = int(period[:-2])
             adjusted_months = min(months * mult, 24)  # Cap at 2 years
-            period = f"{adjusted_months}mo"
+            # yfinance's 1h-data 730-day cap rejects period="24mo" even
+            # though it's nominally the same span as "2y" (date-math
+            # quirk) - "2y" fetches fine, "24mo" returns zero bars with a
+            # "must be within the last 730 days" error. Use "2y" whenever
+            # the cap is hit instead of the equivalent "24mo" string.
+            period = "2y" if adjusted_months >= 24 else f"{adjusted_months}mo"
     
     # Fetch data with retry logic
     hist = None
