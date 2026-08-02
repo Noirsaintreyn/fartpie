@@ -11181,15 +11181,16 @@ def get_level_constrained_hod_lod():
                     error_msg = str(e)
                     print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:150]}")
                     continue
-        elif is_futures and timeframe == '4h':
-            # For 4h futures, yfinance doesn't support '4h' or '240m' - must fetch 1h/60m and resample
+        elif timeframe == '4h':
+            # yfinance doesn't support '4h'/'240m' natively for any ticker -
+            # must fetch 1h/60m and resample, regardless of futures/crypto
             print(f"Fetching 4h data for {ticker} (will resample from 1h/60m)...")
             try:
                 hist = fetch_historical_data_with_resampling(
                     ticker=ticker,
                     timeframe='4h',
                     period=period,
-                    is_futures=True
+                    is_futures=is_futures
                 )
             except Exception as e:
                 print(f"⚠ Resampling fetch failed: {e}")
@@ -12322,15 +12323,21 @@ def get_lstm_forecast():
                     if "pattern" not in error_msg.lower() and "expected" not in error_msg.lower():
                         print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:100]}")
                     continue
-        elif is_futures and timeframe == '4h':
-            # For 4h futures, yfinance doesn't support '4h' or '240m' - must fetch 1h/60m and resample
+        elif timeframe == '4h':
+            # yfinance doesn't support '4h' or '240m' natively for ANY
+            # ticker (futures or not) - must fetch 1h/60m and resample.
+            # This used to be futures-only, silently leaving crypto (e.g.
+            # BTC-USD) and other non-futures tickers falling through to a
+            # plain 1h fetch mislabeled as "4h" - fetch_historical_data_
+            # with_resampling already handles both cases correctly, it
+            # just wasn't being called for non-futures tickers.
             print(f"Fetching 4h data for {ticker} (will resample from 1h/60m)...")
             try:
                 hist = fetch_historical_data_with_resampling(
                     ticker=ticker,
                     timeframe='4h',
                     period=period,
-                    is_futures=True
+                    is_futures=is_futures
                 )
             except Exception as e:
                 print(f"⚠ Resampling fetch failed: {e}")
