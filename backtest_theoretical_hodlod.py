@@ -76,6 +76,18 @@ def run_file(path, vol_window=60, min_history_bars=100, verbose=False):
         if sigma_price <= 0 or not np.isfinite(sigma_price):
             continue
 
+        # compute_session_volatility returns the vol of the NEXT SINGLE
+        # BAR, not the whole session - matches backend.py's production
+        # /api/lstm-forecast exactly: scale by sqrt(bars per day) since a
+        # whole trading day spans many bars, not one (random-walk
+        # variance-scales-with-time). Computed from the SAME PIT-safe
+        # hist_slice the vol itself came from.
+        hist_dates = pd.Series(hist_slice['datetime'].values).dt.date
+        n_unique_days_hist = max(1, hist_dates.nunique())
+        avg_bars_per_day = max(1.0, len(hist_slice) / n_unique_days_hist)
+        session_scale = np.sqrt(avg_bars_per_day)
+        sigma_price = sigma_price * session_scale
+
         anchor_price = df['open'].values[first_bar_idx]  # day's opening price - the fixed anchor
         hod_id = anchor_price + 1.5 * sigma_price
         lod_id = anchor_price - 1.5 * sigma_price
