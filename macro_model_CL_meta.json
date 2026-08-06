@@ -1,6 +1,7 @@
 {
   "instrument": "CL",
   "label": "Crude oil",
+  "idea": "A_baseline",
   "feature_cols": [
     "own_atr_pct",
     "vix_level",
@@ -16,9 +17,20 @@
     "energy_equities": "XLE",
     "natgas": "NG=F"
   },
-  "n_train_days": 5943,
-  "unconditional_trending_rate": 0.45549385832071343,
+  "n_train_days": 5881,
+  "unconditional_trending_rate": 0.4550246556708043,
   "validated": false,
-  "backtest_z": -0.58,
+  "backtest_z": 0.39,
+  "feature_importances": {
+    "own_atr_pct": 122,
+    "vix_level": 147,
+    "vix_change_1d": 105,
+    "vix_zscore_20d": 142,
+    "yield_level": 150,
+    "yield_change_1d": 162,
+    "dollar_change_1d": 124,
+    "energy_equities_change_1d": 155,
+    "natgas_change_1d": 79
+  },
   "trained_through": "2026-08-06 00:00:00"
 }

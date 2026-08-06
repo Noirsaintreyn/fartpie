@@ -487,7 +487,7 @@ def _load_macro_model(instrument):
         return None
 
 
-def _fetch_daily_closes(ticker_map, period='2mo'):
+def _fetch_daily_closes(ticker_map, period='3mo'):
     series = {}
     for name, tk in ticker_map.items():
         try:
@@ -500,31 +500,159 @@ def _fetch_daily_closes(ticker_map, period='2mo'):
     return series
 
 
+# name aliases: feature names use short forms ("yield", "dollar") that
+# don't match the raw series dict keys ("yield10y", "dollar") 1:1 in
+# every case - kept explicit rather than guessing string transforms
+_MACRO_SERIES_ALIAS = {'yield': 'yield10y'}
+_MACRO_DIFF_NOT_PCT = {'yield10y'}  # yields move in absolute bps, not %, everything else uses % change
+
+
+def _resolve_macro_feature(name, series, own_atr_pct):
+    """Generic resolver so new feature ideas (momentum, yield curve, ...)
+    don't each need hand-written fetch logic - parses the same naming
+    convention backtest_macro_ideas.py's feature builders use."""
+    if name == 'own_atr_pct':
+        return own_atr_pct
+    if name in ('vix_level', 'yield_level'):
+        key = _MACRO_SERIES_ALIAS.get(name.replace('_level', ''), name.replace('_level', ''))
+        s = series.get(key)
+        return float(s.iloc[-1]) if s is not None and len(s) else None
+    if name == 'vix_zscore_20d':
+        s = series.get('vix')
+        if s is None or len(s) < 20:
+            return None
+        return float((s.iloc[-1] - s.tail(20).mean()) / (s.tail(20).std() + 1e-9))
+    if name == 'vxn_minus_vix':
+        vxn, vix = series.get('vxn'), series.get('vix')
+        if vxn is None or vix is None:
+            return None
+        return float(vxn.iloc[-1] - vix.iloc[-1])
+    if name == 'curve_3m10y':
+        y10, y3m = series.get('yield10y'), series.get('yield3m')
+        if y10 is None or y3m is None:
+            return None
+        return float(y10.iloc[-1] - y3m.iloc[-1])
+    if name == 'curve_3m10y_change_1d':
+        y10, y3m = series.get('yield10y'), series.get('yield3m')
+        if y10 is None or y3m is None or len(y10) < 2:
+            return None
+        curve = y10 - y3m
+        return float(curve.diff().iloc[-1])
+    for suffix, days in [('_change_1d', 1), ('_change_5d', 5)]:
+        if name.endswith(suffix):
+            base = name[:-len(suffix)]
+            key = _MACRO_SERIES_ALIAS.get(base, base)
+            s = series.get(key)
+            if s is None or len(s) < days + 1:
+                return None
+            if key in _MACRO_DIFF_NOT_PCT:
+                return float(s.diff(days).iloc[-1])
+            return float(s.pct_change(days).iloc[-1])
+    return None
+
+
+def _describe_macro_feature(name, value):
+    """Plain-language description of one feature's current reading, for
+    the narrative layer - grounded in the actual number, not vague."""
+    if value is None or not np.isfinite(value):
+        return None
+    pct = lambda v: f"{v*100:+.1f}%"
+    if name == 'own_atr_pct':
+        return f"its own recent volatility (14-day ATR) is running at {value*100:.2f}% of price"
+    if name == 'vix_level':
+        return f"VIX is at {value:.1f}"
+    if name == 'yield_level':
+        return f"the 10Y yield is at {value:.2f}%"
+    if name == 'vix_zscore_20d':
+        tag = 'elevated relative to' if value > 0.5 else 'subdued relative to' if value < -0.5 else 'near'
+        return f"VIX is {tag} its 20-day average ({value:+.2f}σ)"
+    if name == 'vxn_minus_vix':
+        tag = 'pricing more relative fear into Nasdaq options than the broad market' if value > 0 else 'pricing LESS relative fear into Nasdaq than the broad market'
+        return f"VXN-VIX spread is {value:+.2f} - {tag}"
+    if name == 'curve_3m10y':
+        tag = 'a normal (positively-sloped) curve' if value > 0 else 'an inverted curve - a classic recession-risk signal'
+        return f"the 3M-10Y yield curve is at {value:+.2f} - {tag}"
+    if name == 'curve_3m10y_change_1d':
+        return f"the yield curve steepened {value:+.2f} yesterday" if value > 0 else f"the yield curve flattened/inverted further {value:+.2f} yesterday"
+    if name.startswith('yield10y_change') or name.startswith('yield_change'):
+        horizon = '5-day' if '5d' in name else '1-day'
+        return f"the 10Y yield moved {value:+.2f} pts over the last {horizon}"
+    if name.endswith('_change_1d') or name.endswith('_change_5d'):
+        horizon = '5-day' if name.endswith('_5d') else '1-day'
+        base = name.replace('_change_1d', '').replace('_change_5d', '')
+        label = {'vix': 'VIX', 'dollar': 'the dollar', 'vxn': 'VXN', 'qqq': 'QQQ', 'soxx': 'semiconductors (SOXX)',
+                  'silver': 'silver', 'miners': 'gold miners (GDX)', 'real_yield_proxy': 'TIPS (real yields)',
+                  'energy_equities': 'energy stocks (XLE)', 'natgas': 'natural gas', 'xlf': 'financials (XLF)',
+                  'xly': 'discretionary stocks (XLY)', 'xlk': 'tech (XLK)'}.get(base, base)
+        return f"{label} moved {pct(value)} over the last {horizon}"
+    return f"{name} = {value:.4f}"
+
+
+def _build_macro_narrative(instrument, meta, feat, trending_prob, lean):
+    """The 'reading + reasons + how to apply it' review - built from the
+    model's OWN feature_importances_ and the live feature snapshot, so
+    the explanation always matches what the model actually weighted for
+    this instrument (momentum for NQ, yield curve for GC, etc.) rather
+    than a generic script that doesn't reflect the real model."""
+    importances = meta.get('feature_importances') or {}
+    ranked = sorted(importances.items(), key=lambda kv: -kv[1])
+    top_reasons = []
+    for name, _ in ranked:
+        if name not in feat or feat[name] is None:
+            continue
+        desc = _describe_macro_feature(name, feat[name])
+        if desc:
+            top_reasons.append(desc)
+        if len(top_reasons) >= 4:
+            break
+
+    confidence_word = ('a strong' if abs(trending_prob - 0.5) > 0.15 else
+                        'a modest' if abs(trending_prob - 0.5) > 0.05 else 'only a slight')
+    reading = (f"{instrument}: {confidence_word} lean toward a {lean} day "
+               f"({trending_prob*100:.0f}% probability, vs. this instrument's own {meta['unconditional_trending_rate']*100:.0f}% "
+               f"baseline trending rate).")
+
+    if not meta.get('validated'):
+        reasons = (f"Reasons (informational only - this read is NOT statistically validated for {instrument}, "
+                    f"treat it as color, not a signal): " + "; ".join(top_reasons) + ".") if top_reasons else \
+                   "Not enough feature data to explain this reading."
+    else:
+        reasons = (f"Reasons (walk-forward validated, z={meta['backtest_z']}): " + "; ".join(top_reasons) + ".") \
+                   if top_reasons else "Not enough feature data to explain this reading."
+
+    if lean == 'trending':
+        application = ("How to apply it: a trending read favors continuation - trend-following entries and giving "
+                        "winners room, and treating structural level touches as places price is more likely to "
+                        "BREAK than reject. Fading extremes back toward fair value is lower-probability today.")
+    else:
+        application = ("How to apply it: a choppy/mean-reverting read favors fading extremes - the structural "
+                        "zone edges and detected levels are more likely to hold and reject today, so mean-reversion "
+                        "entries back toward fair value are the higher-probability read. Trend-following breakout "
+                        "entries are lower-probability today.")
+
+    return f"{reading} {reasons} {application}"
+
+
 @app.route('/api/macro-regime', methods=['GET'])
 def get_macro_regime():
     """
     Cross-asset macro read for one instrument: predicted probability
-    today is a TRENDING vs CHOPPY/MEAN-REVERTING day, plus the raw
-    feature snapshot behind it. Meant as one input into the day's
-    framework (alongside options context and structural levels), not a
-    standalone signal - the validated edge is modest (NQ: 47%->51%).
+    today is a TRENDING vs CHOPPY/MEAN-REVERTING day, the feature
+    snapshot behind it, AND a plain-language narrative explaining the
+    reading, the specific data points behind it, and how to apply it to
+    trading the day (trend-following vs mean-reversion at the structural
+    levels already detected elsewhere). Each instrument uses its own
+    independently-validated best feature set (NQ: momentum; GC: yield
+    curve; others: baseline, unvalidated) - see backtest_macro_ideas.py.
     """
     ticker = request.args.get('ticker', 'NQ=F').strip().upper()
     instrument = _MACRO_INSTRUMENT_MAP.get(ticker)
 
     try:
-        universal_map = {'vix': '^VIX', 'yield10y': '^TNX', 'dollar': 'DX-Y.NYB'}
-        universal = _fetch_daily_closes(universal_map, period='2mo')
+        universal_map = {'vix': '^VIX', 'yield10y': '^TNX', 'dollar': 'DX-Y.NYB', 'yield3m': '^IRX'}
+        universal = _fetch_daily_closes(universal_map, period='3mo')
         if 'vix' not in universal or len(universal['vix']) < 21:
             return jsonify({'success': False, 'error': 'Could not fetch macro data (VIX/yields/USD)'}), 400
-
-        vix, tnx, dxy = universal['vix'], universal.get('yield10y'), universal.get('dollar')
-        vix_level = float(vix.iloc[-1])
-        vix_change_1d = float(vix.pct_change().iloc[-1])
-        vix_zscore_20d = float((vix.iloc[-1] - vix.tail(20).mean()) / (vix.tail(20).std() + 1e-9))
-        yield_level = float(tnx.iloc[-1]) if tnx is not None and len(tnx) else None
-        yield_change_1d = float(tnx.diff().iloc[-1]) if tnx is not None and len(tnx) >= 2 else None
-        dollar_change_1d = float(dxy.pct_change().iloc[-1]) if dxy is not None and len(dxy) >= 2 else None
 
         model_data = _load_macro_model(instrument) if instrument else None
 
@@ -532,13 +660,13 @@ def get_macro_regime():
             # unlisted/untrained ticker - honest context-only response, no fabricated prediction
             generic_map = {'spy': 'SPY', 'midcap': 'IJH', 'smallcap': 'IWM'}
             generic = _fetch_daily_closes(generic_map, period='1mo')
-            context = {
-                'vix_level': vix_level, 'vix_change_1d': vix_change_1d, 'vix_zscore_20d': vix_zscore_20d,
-                'yield_10y_level': yield_level, 'yield_change_1d': yield_change_1d,
-                'dollar_change_1d': dollar_change_1d,
-            }
-            for name, s in generic.items():
-                context[f'{name}_change_1d'] = float(s.pct_change().iloc[-1])
+            all_series = {**universal, **generic}
+            context = {}
+            for name in ['vix_level', 'yield_level', 'vix_change_1d', 'vix_zscore_20d', 'dollar_change_1d',
+                         'spy_change_1d', 'midcap_change_1d', 'smallcap_change_1d']:
+                v = _resolve_macro_feature(name, all_series, None)
+                if v is not None:
+                    context[name] = v
             return jsonify({
                 'success': True, 'ticker': ticker, 'instrument': None, 'validated': False, 'has_prediction': False,
                 'note': 'No backtested macro model for this ticker - showing raw macro context only, not a prediction.',
@@ -556,22 +684,14 @@ def get_macro_regime():
         own_atr14 = own_range.rolling(14).mean()
         own_atr_pct = float((own_atr14 / own_hist['Close']).iloc[-1])
 
-        sector = _fetch_daily_closes(meta['sector_tickers'], period='2mo')
+        sector = _fetch_daily_closes(meta['sector_tickers'], period='3mo')
+        all_series = {**universal, **sector}
 
-        feat = {
-            'own_atr_pct': own_atr_pct, 'vix_level': vix_level, 'vix_change_1d': vix_change_1d,
-            'vix_zscore_20d': vix_zscore_20d, 'yield_level': yield_level,
-            'yield_change_1d': yield_change_1d, 'dollar_change_1d': dollar_change_1d,
-        }
-        if 'vxn' in sector:
-            feat['vxn_change_1d'] = float(sector['vxn'].pct_change().iloc[-1])
-            feat['vxn_minus_vix'] = float(sector['vxn'].iloc[-1] - vix_level)
-        for name, s in sector.items():
-            if name == 'vxn':
-                continue
-            feat[f'{name}_change_1d'] = float(s.pct_change().iloc[-1])
+        feat = {}
+        for col in meta['feature_cols']:
+            feat[col] = _resolve_macro_feature(col, all_series, own_atr_pct)
 
-        missing = [c for c in meta['feature_cols'] if c not in feat or feat[c] is None or not np.isfinite(feat[c])]
+        missing = [c for c in meta['feature_cols'] if feat.get(c) is None or not np.isfinite(feat[c])]
         if missing:
             return jsonify({'success': False, 'error': f'Missing/invalid features: {missing}'}), 400
 
@@ -579,15 +699,18 @@ def get_macro_regime():
         trending_prob = float(model.predict_proba(X)[0, 1])
         lean = 'trending' if trending_prob >= 0.5 else 'choppy / mean-reverting'
         lean_strength = abs(trending_prob - 0.5) * 2  # 0 = coin flip, 1 = maximal confidence
+        narrative = _build_macro_narrative(instrument, meta, feat, trending_prob, lean)
 
         return jsonify({
             'success': True, 'ticker': ticker, 'instrument': instrument, 'label': meta['label'],
+            'idea': meta.get('idea', 'baseline'),
             'validated': bool(meta['validated']), 'backtest_z': meta['backtest_z'],
             'has_prediction': True,
             'trending_probability': trending_prob,
             'lean': lean, 'lean_strength': lean_strength,
             'unconditional_base_rate': meta['unconditional_trending_rate'],
             'feature_snapshot': sanitize_for_json(feat),
+            'narrative': narrative,
             'note': ('Validated: real, modest, walk-forward-tested edge.' if meta['validated']
                      else 'NOT statistically validated for this instrument - treat as informational only, not a proven edge.'),
         })

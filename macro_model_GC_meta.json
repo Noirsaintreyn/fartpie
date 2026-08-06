@@ -1,6 +1,7 @@
 {
   "instrument": "GC",
   "label": "Gold",
+  "idea": "B_yield_curve",
   "feature_cols": [
     "own_atr_pct",
     "vix_level",
@@ -11,16 +12,32 @@
     "dollar_change_1d",
     "silver_change_1d",
     "miners_change_1d",
-    "real_yield_proxy_change_1d"
+    "real_yield_proxy_change_1d",
+    "curve_3m10y",
+    "curve_3m10y_change_1d"
   ],
   "sector_tickers": {
     "silver": "SI=F",
     "miners": "GDX",
     "real_yield_proxy": "TIP"
   },
-  "n_train_days": 4387,
-  "unconditional_trending_rate": 0.5748803282425348,
-  "validated": false,
-  "backtest_z": 1.92,
+  "n_train_days": 4368,
+  "unconditional_trending_rate": 0.5741758241758241,
+  "validated": true,
+  "backtest_z": 2.36,
+  "feature_importances": {
+    "own_atr_pct": 109,
+    "vix_level": 133,
+    "vix_change_1d": 105,
+    "vix_zscore_20d": 91,
+    "yield_level": 97,
+    "yield_change_1d": 74,
+    "dollar_change_1d": 114,
+    "silver_change_1d": 96,
+    "miners_change_1d": 89,
+    "real_yield_proxy_change_1d": 61,
+    "curve_3m10y": 122,
+    "curve_3m10y_change_1d": 76
+  },
   "trained_through": "2026-08-06 00:00:00"
 }

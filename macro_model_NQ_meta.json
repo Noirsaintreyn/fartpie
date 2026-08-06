@@ -1,6 +1,7 @@
 {
   "instrument": "NQ",
   "label": "Nasdaq / tech",
+  "idea": "D_momentum",
   "feature_cols": [
     "own_atr_pct",
     "vix_level",
@@ -9,19 +10,42 @@
     "yield_level",
     "yield_change_1d",
     "dollar_change_1d",
-    "vxn_change_1d",
-    "vxn_minus_vix",
     "qqq_change_1d",
-    "soxx_change_1d"
+    "soxx_change_1d",
+    "vxn_change_1d",
+    "vix_change_5d",
+    "yield_change_5d",
+    "dollar_change_5d",
+    "qqq_change_5d",
+    "soxx_change_5d",
+    "vxn_change_5d"
   ],
   "sector_tickers": {
     "qqq": "QQQ",
     "soxx": "SOXX",
     "vxn": "^VXN"
   },
-  "n_train_days": 2963,
-  "unconditional_trending_rate": 0.47013162335470804,
+  "n_train_days": 2962,
+  "unconditional_trending_rate": 0.4699527346387576,
   "validated": true,
-  "backtest_z": 2.74,
+  "backtest_z": 2.47,
+  "feature_importances": {
+    "own_atr_pct": 99,
+    "vix_level": 51,
+    "vix_change_1d": 70,
+    "vix_zscore_20d": 104,
+    "yield_level": 41,
+    "yield_change_1d": 94,
+    "dollar_change_1d": 66,
+    "qqq_change_1d": 77,
+    "soxx_change_1d": 99,
+    "vxn_change_1d": 98,
+    "vix_change_5d": 52,
+    "yield_change_5d": 85,
+    "dollar_change_5d": 38,
+    "qqq_change_5d": 68,
+    "soxx_change_5d": 79,
+    "vxn_change_5d": 52
+  },
   "trained_through": "2026-01-30 00:00:00"
 }
