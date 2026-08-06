@@ -633,6 +633,79 @@ def _build_macro_narrative(instrument, meta, feat, trending_prob, lean):
     return f"{reading} {reasons} {application}"
 
 
+def _compute_expected_range(own_hist, feat):
+    """
+    GJR-GARCH-based expected range for TODAY, anchored to the day's open
+    (not a bare "+/-50 points" number) - validated as the best of four
+    estimators tested (backtest_expected_range.py: GJR-GARCH R^2=0.45-0.51
+    vs Garman-Klass/Yang-Zhang ~0.20, EGARCH ~0). Also reports where
+    CURRENT price sits within that range, and whether today's forecast is
+    running hot/cold vs this instrument's own recent typical range, with
+    a reason grounded in the VIX context already computed for the main
+    prediction (not a fabricated news explanation).
+    """
+    closes = own_hist['Close'].values
+    highs, lows = own_hist['High'].values, own_hist['Low'].values
+    if len(closes) < 30:
+        return None
+
+    # exclude today's still-forming bar from the fit (PIT-safe)
+    hist_closes = closes[:-1]
+    returns_pct = np.diff(np.log(hist_closes)) * 100
+    gjr_vol_pct = fit_gjr_garch_vol_forecast_pct(returns_pct)
+    if gjr_vol_pct is None:
+        return None
+    vol_forecast = gjr_vol_pct / 100.0  # decimal, e.g. 0.018 = 1.8%
+
+    today_open = float(own_hist['Open'].iloc[-1])
+    current_price = float(closes[-1])
+    expected_low = today_open * np.exp(-vol_forecast / 2)
+    expected_high = today_open * np.exp(vol_forecast / 2)
+
+    # typical range = trailing realized log-range over the recent history
+    # (excluding today), as the "normal" baseline to compare today's
+    # forecast against
+    hist_highs, hist_lows = highs[:-1], lows[:-1]
+    realized_log_range = np.log(hist_highs[-60:] / hist_lows[-60:])
+    typical_range = float(np.mean(realized_log_range)) if len(realized_log_range) >= 20 else None
+    vs_typical_pct = ((vol_forecast - typical_range) / typical_range * 100) if typical_range and typical_range > 0 else None
+
+    if current_price < expected_low:
+        position_desc = f"already {(expected_low - current_price) / (expected_high - expected_low) * 100:.0f}% below the expected range's low"
+        position_pct = None
+    elif current_price > expected_high:
+        position_desc = f"already {(current_price - expected_high) / (expected_high - expected_low) * 100:.0f}% above the expected range's high"
+        position_pct = None
+    else:
+        position_pct = (current_price - expected_low) / (expected_high - expected_low) * 100
+        position_desc = f"{position_pct:.0f}% of the way through the expected range"
+
+    vol_regime_note = None
+    if vs_typical_pct is not None:
+        vix_z = feat.get('vix_zscore_20d')
+        vix_5d = feat.get('vix_change_5d')
+        if vs_typical_pct > 15:
+            reason = (f"VIX is running {vix_z:+.2f}σ above its 20-day average" if vix_z and vix_z > 0.3 else
+                      f"VIX is up {vix_5d*100:+.0f}% over 5 days" if vix_5d and vix_5d > 0.05 else
+                      "recent realized volatility has picked up")
+            vol_regime_note = f"Expected range is running {vs_typical_pct:+.0f}% above its recent typical size, coinciding with {reason} - more room for a big move than usual."
+        elif vs_typical_pct < -15:
+            reason = (f"VIX is running {vix_z:+.2f}σ below its 20-day average" if vix_z and vix_z < -0.3 else
+                      "recent realized volatility has been unusually calm")
+            vol_regime_note = f"Expected range is running {vs_typical_pct:+.0f}% below its recent typical size, coinciding with {reason} - a tighter day than usual is more likely."
+        else:
+            vol_regime_note = "Expected range is close to its recent typical size - nothing unusual in the volatility backdrop today."
+
+    return {
+        'today_open': today_open, 'current_price': current_price,
+        'expected_low': float(expected_low), 'expected_high': float(expected_high),
+        'expected_range_pct': vol_forecast * 100,
+        'vs_typical_pct': vs_typical_pct,
+        'position_in_range_pct': position_pct, 'position_description': position_desc,
+        'note': vol_regime_note,
+    }
+
+
 @app.route('/api/macro-regime', methods=['GET'])
 def get_macro_regime():
     """
@@ -675,9 +748,10 @@ def get_macro_regime():
 
         model, meta = model_data['model'], model_data['meta']
 
-        # instrument's own recent price, for the own_atr_pct feature
+        # instrument's own recent price, for the own_atr_pct feature AND
+        # the expected-range calc below
         price_ticker = _MACRO_PRICE_TICKER.get(instrument, ticker)
-        own_hist = yf.Ticker(price_ticker).history(period='2mo', interval='1d')
+        own_hist = yf.Ticker(price_ticker).history(period='4mo', interval='1d')
         if len(own_hist) < 15:
             return jsonify({'success': False, 'error': f'Could not fetch price history for {price_ticker}'}), 400
         own_range = own_hist['High'] - own_hist['Low']
@@ -700,6 +774,7 @@ def get_macro_regime():
         lean = 'trending' if trending_prob >= 0.5 else 'choppy / mean-reverting'
         lean_strength = abs(trending_prob - 0.5) * 2  # 0 = coin flip, 1 = maximal confidence
         narrative = _build_macro_narrative(instrument, meta, feat, trending_prob, lean)
+        expected_range = _compute_expected_range(own_hist, feat)
 
         return jsonify({
             'success': True, 'ticker': ticker, 'instrument': instrument, 'label': meta['label'],
@@ -711,6 +786,7 @@ def get_macro_regime():
             'unconditional_base_rate': meta['unconditional_trending_rate'],
             'feature_snapshot': sanitize_for_json(feat),
             'narrative': narrative,
+            'expected_range': sanitize_for_json(expected_range),
             'note': ('Validated: real, modest, walk-forward-tested edge.' if meta['validated']
                      else 'NOT statistically validated for this instrument - treat as informational only, not a proven edge.'),
         })
