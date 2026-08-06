@@ -1,0 +1,24 @@
+{
+  "instrument": "AAPL",
+  "label": "Apple (mega-cap tech)",
+  "feature_cols": [
+    "own_atr_pct",
+    "vix_level",
+    "vix_change_1d",
+    "vix_zscore_20d",
+    "yield_level",
+    "yield_change_1d",
+    "dollar_change_1d",
+    "xlk_change_1d",
+    "qqq_change_1d"
+  ],
+  "sector_tickers": {
+    "xlk": "XLK",
+    "qqq": "QQQ"
+  },
+  "n_train_days": 6189,
+  "unconditional_trending_rate": 0.47729843270318306,
+  "validated": null,
+  "backtest_z": null,
+  "trained_through": "2026-08-05 00:00:00"
+}

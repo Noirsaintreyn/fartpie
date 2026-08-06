@@ -1,0 +1,27 @@
+{
+  "instrument": "NQ",
+  "label": "Nasdaq / tech",
+  "feature_cols": [
+    "own_atr_pct",
+    "vix_level",
+    "vix_change_1d",
+    "vix_zscore_20d",
+    "yield_level",
+    "yield_change_1d",
+    "dollar_change_1d",
+    "vxn_change_1d",
+    "vxn_minus_vix",
+    "qqq_change_1d",
+    "soxx_change_1d"
+  ],
+  "sector_tickers": {
+    "qqq": "QQQ",
+    "soxx": "SOXX",
+    "vxn": "^VXN"
+  },
+  "n_train_days": 2963,
+  "unconditional_trending_rate": 0.47013162335470804,
+  "validated": true,
+  "backtest_z": 2.74,
+  "trained_through": "2026-01-30 00:00:00"
+}

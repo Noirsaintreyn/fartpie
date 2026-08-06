@@ -1,0 +1,26 @@
+{
+  "instrument": "GC",
+  "label": "Gold",
+  "feature_cols": [
+    "own_atr_pct",
+    "vix_level",
+    "vix_change_1d",
+    "vix_zscore_20d",
+    "yield_level",
+    "yield_change_1d",
+    "dollar_change_1d",
+    "silver_change_1d",
+    "miners_change_1d",
+    "real_yield_proxy_change_1d"
+  ],
+  "sector_tickers": {
+    "silver": "SI=F",
+    "miners": "GDX",
+    "real_yield_proxy": "TIP"
+  },
+  "n_train_days": 4387,
+  "unconditional_trending_rate": 0.5748803282425348,
+  "validated": false,
+  "backtest_z": 1.92,
+  "trained_through": "2026-08-06 00:00:00"
+}

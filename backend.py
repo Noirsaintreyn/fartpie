@@ -447,6 +447,155 @@ CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
 def health():
     return {"status": "backend live", "zone_target_pipeline": "corridor_buffer_0.3"}
 
+
+# ============================================================================
+# MACRO REGIME READ - "is today likely to trend or chop", per instrument,
+# from cross-asset macro signals (VIX/yields/USD + sector-specific tilt).
+# Models trained offline (backtest_macro_regime.py), walk-forward validated,
+# loaded here from the committed .pkl files - NOT retrained live. Only NQ
+# is actually validated (z=2.74, p=0.006); ES/GC/CL/SI/AMD/AAPL either
+# showed no significant edge or were never backtested - the endpoint says
+# so explicitly rather than presenting every instrument as equally trustworthy.
+# ============================================================================
+_MACRO_MODELS_CACHE = {}
+_MACRO_INSTRUMENT_MAP = {
+    'NQ=F': 'NQ', 'NQ': 'NQ', '^NDX': 'NQ',
+    'ES=F': 'ES', 'ES': 'ES', '^GSPC': 'ES', 'SPY': 'ES',
+    'GC=F': 'GC', 'GC': 'GC',
+    'CL=F': 'CL', 'CL': 'CL',
+    'SI=F': 'SI', 'SI': 'SI',
+    'AMD': 'AMD',
+    'AAPL': 'AAPL',
+}
+_MACRO_PRICE_TICKER = {'NQ': 'NQ=F', 'ES': 'ES=F', 'GC': 'GC=F', 'CL': 'CL=F',
+                        'SI': 'SI=F', 'AMD': 'AMD', 'AAPL': 'AAPL'}
+
+
+def _load_macro_model(instrument):
+    if instrument in _MACRO_MODELS_CACHE:
+        return _MACRO_MODELS_CACHE[instrument]
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f'macro_model_{instrument}.pkl')
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, 'rb') as f:
+            data = pickle.load(f)
+        _MACRO_MODELS_CACHE[instrument] = data
+        return data
+    except Exception as e:
+        print(f"⚠ Failed to load macro model for {instrument}: {e}")
+        return None
+
+
+def _fetch_daily_closes(ticker_map, period='2mo'):
+    series = {}
+    for name, tk in ticker_map.items():
+        try:
+            h = yf.Ticker(tk).history(period=period, interval='1d')
+            if len(h) >= 2:
+                h.index = pd.to_datetime(h.index.date)
+                series[name] = h['Close']
+        except Exception:
+            continue
+    return series
+
+
+@app.route('/api/macro-regime', methods=['GET'])
+def get_macro_regime():
+    """
+    Cross-asset macro read for one instrument: predicted probability
+    today is a TRENDING vs CHOPPY/MEAN-REVERTING day, plus the raw
+    feature snapshot behind it. Meant as one input into the day's
+    framework (alongside options context and structural levels), not a
+    standalone signal - the validated edge is modest (NQ: 47%->51%).
+    """
+    ticker = request.args.get('ticker', 'NQ=F').strip().upper()
+    instrument = _MACRO_INSTRUMENT_MAP.get(ticker)
+
+    try:
+        universal_map = {'vix': '^VIX', 'yield10y': '^TNX', 'dollar': 'DX-Y.NYB'}
+        universal = _fetch_daily_closes(universal_map, period='2mo')
+        if 'vix' not in universal or len(universal['vix']) < 21:
+            return jsonify({'success': False, 'error': 'Could not fetch macro data (VIX/yields/USD)'}), 400
+
+        vix, tnx, dxy = universal['vix'], universal.get('yield10y'), universal.get('dollar')
+        vix_level = float(vix.iloc[-1])
+        vix_change_1d = float(vix.pct_change().iloc[-1])
+        vix_zscore_20d = float((vix.iloc[-1] - vix.tail(20).mean()) / (vix.tail(20).std() + 1e-9))
+        yield_level = float(tnx.iloc[-1]) if tnx is not None and len(tnx) else None
+        yield_change_1d = float(tnx.diff().iloc[-1]) if tnx is not None and len(tnx) >= 2 else None
+        dollar_change_1d = float(dxy.pct_change().iloc[-1]) if dxy is not None and len(dxy) >= 2 else None
+
+        model_data = _load_macro_model(instrument) if instrument else None
+
+        if model_data is None:
+            # unlisted/untrained ticker - honest context-only response, no fabricated prediction
+            generic_map = {'spy': 'SPY', 'midcap': 'IJH', 'smallcap': 'IWM'}
+            generic = _fetch_daily_closes(generic_map, period='1mo')
+            context = {
+                'vix_level': vix_level, 'vix_change_1d': vix_change_1d, 'vix_zscore_20d': vix_zscore_20d,
+                'yield_10y_level': yield_level, 'yield_change_1d': yield_change_1d,
+                'dollar_change_1d': dollar_change_1d,
+            }
+            for name, s in generic.items():
+                context[f'{name}_change_1d'] = float(s.pct_change().iloc[-1])
+            return jsonify({
+                'success': True, 'ticker': ticker, 'instrument': None, 'validated': False, 'has_prediction': False,
+                'note': 'No backtested macro model for this ticker - showing raw macro context only, not a prediction.',
+                'macro_context': sanitize_for_json(context),
+            })
+
+        model, meta = model_data['model'], model_data['meta']
+
+        # instrument's own recent price, for the own_atr_pct feature
+        price_ticker = _MACRO_PRICE_TICKER.get(instrument, ticker)
+        own_hist = yf.Ticker(price_ticker).history(period='2mo', interval='1d')
+        if len(own_hist) < 15:
+            return jsonify({'success': False, 'error': f'Could not fetch price history for {price_ticker}'}), 400
+        own_range = own_hist['High'] - own_hist['Low']
+        own_atr14 = own_range.rolling(14).mean()
+        own_atr_pct = float((own_atr14 / own_hist['Close']).iloc[-1])
+
+        sector = _fetch_daily_closes(meta['sector_tickers'], period='2mo')
+
+        feat = {
+            'own_atr_pct': own_atr_pct, 'vix_level': vix_level, 'vix_change_1d': vix_change_1d,
+            'vix_zscore_20d': vix_zscore_20d, 'yield_level': yield_level,
+            'yield_change_1d': yield_change_1d, 'dollar_change_1d': dollar_change_1d,
+        }
+        if 'vxn' in sector:
+            feat['vxn_change_1d'] = float(sector['vxn'].pct_change().iloc[-1])
+            feat['vxn_minus_vix'] = float(sector['vxn'].iloc[-1] - vix_level)
+        for name, s in sector.items():
+            if name == 'vxn':
+                continue
+            feat[f'{name}_change_1d'] = float(s.pct_change().iloc[-1])
+
+        missing = [c for c in meta['feature_cols'] if c not in feat or feat[c] is None or not np.isfinite(feat[c])]
+        if missing:
+            return jsonify({'success': False, 'error': f'Missing/invalid features: {missing}'}), 400
+
+        X = pd.DataFrame([[feat[c] for c in meta['feature_cols']]], columns=meta['feature_cols'])
+        trending_prob = float(model.predict_proba(X)[0, 1])
+        lean = 'trending' if trending_prob >= 0.5 else 'choppy / mean-reverting'
+        lean_strength = abs(trending_prob - 0.5) * 2  # 0 = coin flip, 1 = maximal confidence
+
+        return jsonify({
+            'success': True, 'ticker': ticker, 'instrument': instrument, 'label': meta['label'],
+            'validated': bool(meta['validated']), 'backtest_z': meta['backtest_z'],
+            'has_prediction': True,
+            'trending_probability': trending_prob,
+            'lean': lean, 'lean_strength': lean_strength,
+            'unconditional_base_rate': meta['unconditional_trending_rate'],
+            'feature_snapshot': sanitize_for_json(feat),
+            'note': ('Validated: real, modest, walk-forward-tested edge.' if meta['validated']
+                     else 'NOT statistically validated for this instrument - treat as informational only, not a proven edge.'),
+        })
+    except Exception as e:
+        import traceback
+        print(f"ERROR in /api/macro-regime: {traceback.format_exc()}")
+        return jsonify({'success': False, 'error': str(e)}), 400
+
 # ============================================================================
 # MOTIVEWAVE CSV UPLOAD ROUTES
 # ============================================================================
