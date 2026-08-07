@@ -253,6 +253,7 @@ import requests
 import os
 import pickle
 from arch import arch_model
+from arch.univariate import SkewStudent
 warnings.filterwarnings('ignore')
 
 # Custom JSON encoder to handle numpy/pandas types
@@ -635,14 +636,21 @@ def _build_macro_narrative(instrument, meta, feat, trending_prob, lean):
 
 def _compute_expected_range(own_hist, feat):
     """
-    GJR-GARCH-based expected range for TODAY, anchored to the day's open
-    (not a bare "+/-50 points" number) - validated as the best of four
-    estimators tested (backtest_expected_range.py: GJR-GARCH R^2=0.45-0.51
-    vs Garman-Klass/Yang-Zhang ~0.20, EGARCH ~0). Also reports where
-    CURRENT price sits within that range, and whether today's forecast is
-    running hot/cold vs this instrument's own recent typical range, with
-    a reason grounded in the VIX context already computed for the main
-    prediction (not a fabricated news explanation).
+    Skew-t GJR-GARCH expected range for TODAY, anchored to the day's open
+    (not a bare "+/-50 points" number) - the 30th/70th conditional
+    quantiles (matching the width of the previous +/-0.5 sigma normal
+    approximation this replaced, but now genuinely asymmetric). Validated
+    in backtest_returns_distribution.py as the best of 5 candidates
+    (empirical/normal/t/skew-t/LightGBM quantile regression) on both NQ
+    and ES - skew-t's fat tails + leverage-effect skew beat a plain
+    symmetric normal by ~5-8% lower pinball loss, with the fewest
+    calibration violations. Falls back to the symmetric normal GJR-GARCH
+    forecast if the skew-t fit doesn't converge (4-parameter fit is more
+    fragile than plain GARCH). Also reports where CURRENT price sits
+    within that range, and whether today's forecast is running hot/cold
+    vs this instrument's own recent typical range, with a reason grounded
+    in the VIX context already computed for the main prediction (not a
+    fabricated news explanation).
     """
     closes = own_hist['Close'].values
     highs, lows = own_hist['High'].values, own_hist['Low'].values
@@ -652,15 +660,21 @@ def _compute_expected_range(own_hist, feat):
     # exclude today's still-forming bar from the fit (PIT-safe)
     hist_closes = closes[:-1]
     returns_pct = np.diff(np.log(hist_closes)) * 100
-    gjr_vol_pct = fit_gjr_garch_vol_forecast_pct(returns_pct)
-    if gjr_vol_pct is None:
-        return None
-    vol_forecast = gjr_vol_pct / 100.0  # decimal, e.g. 0.018 = 1.8%
+
+    quantiles_pct = fit_gjr_garch_skewt_quantiles_pct(returns_pct, [0.30, 0.70])
+    if quantiles_pct is not None:
+        low_pct, high_pct = quantiles_pct[0.30], quantiles_pct[0.70]
+    else:
+        gjr_vol_pct = fit_gjr_garch_vol_forecast_pct(returns_pct)
+        if gjr_vol_pct is None:
+            return None
+        low_pct, high_pct = -gjr_vol_pct / 2, gjr_vol_pct / 2
 
     today_open = float(own_hist['Open'].iloc[-1])
     current_price = float(closes[-1])
-    expected_low = today_open * np.exp(-vol_forecast / 2)
-    expected_high = today_open * np.exp(vol_forecast / 2)
+    expected_low = today_open * np.exp(low_pct / 100)
+    expected_high = today_open * np.exp(high_pct / 100)
+    range_width = (high_pct - low_pct) / 100  # decimal, e.g. 0.018 = 1.8%
 
     # typical range = trailing realized log-range over the recent history
     # (excluding today), as the "normal" baseline to compare today's
@@ -668,7 +682,7 @@ def _compute_expected_range(own_hist, feat):
     hist_highs, hist_lows = highs[:-1], lows[:-1]
     realized_log_range = np.log(hist_highs[-60:] / hist_lows[-60:])
     typical_range = float(np.mean(realized_log_range)) if len(realized_log_range) >= 20 else None
-    vs_typical_pct = ((vol_forecast - typical_range) / typical_range * 100) if typical_range and typical_range > 0 else None
+    vs_typical_pct = ((range_width - typical_range) / typical_range * 100) if typical_range and typical_range > 0 else None
 
     if current_price < expected_low:
         position_desc = f"already {(expected_low - current_price) / (expected_high - expected_low) * 100:.0f}% below the expected range's low"
@@ -699,7 +713,7 @@ def _compute_expected_range(own_hist, feat):
     return {
         'today_open': today_open, 'current_price': current_price,
         'expected_low': float(expected_low), 'expected_high': float(expected_high),
-        'expected_range_pct': vol_forecast * 100,
+        'expected_range_pct': range_width * 100,
         'vs_typical_pct': vs_typical_pct,
         'position_in_range_pct': position_pct, 'position_description': position_desc,
         'note': vol_regime_note,
@@ -2154,6 +2168,34 @@ def fit_gjr_garch_vol_forecast_pct(returns_pct):
         result = model.fit(disp='off', show_warning=False)
         forecast = result.forecast(horizon=1)
         return float(np.sqrt(forecast.variance.values[-1, 0]))
+    except Exception:
+        return None
+
+
+def fit_gjr_garch_skewt_quantiles_pct(returns_pct, quantiles):
+    """
+    GJR-GARCH(1,1,1) 1-step conditional quantile forecast with Hansen's
+    skew-t innovations - captures both fat tails and the leverage-effect
+    skew (down moves have a genuinely wider tail than up moves, not just
+    at the extremes). Validated in backtest_returns_distribution.py as
+    the best of 5 candidates (empirical/normal/t/skew-t/LightGBM quantile
+    regression) on both NQ and ES: ~6-8% lower pinball loss than the
+    unconditional empirical baseline, fewest calibration violations.
+    Returns {quantile_level: forecast_return_pct} or None on failure.
+    """
+    try:
+        if len(returns_pct) < 50:
+            return None
+        model = arch_model(returns_pct, vol='GARCH', p=1, o=1, q=1, dist='skewt', rescale=False)
+        result = model.fit(disp='off', show_warning=False)
+        forecast = result.forecast(horizon=1, reindex=False)
+        mean = float(forecast.mean.values[-1, 0])
+        sigma = float(np.sqrt(forecast.variance.values[-1, 0]))
+        if not np.isfinite(mean) or not np.isfinite(sigma) or sigma <= 0:
+            return None
+        eta, lam = result.params['eta'], result.params['lambda']
+        dist_obj = SkewStudent()
+        return {q: mean + sigma * float(dist_obj.ppf(q, [eta, lam])) for q in quantiles}
     except Exception:
         return None
 
