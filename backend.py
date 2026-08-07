@@ -5844,23 +5844,26 @@ def get_data():
         closes = hist['Close'].values
         highs = hist['High'].values
         lows = hist['Low'].values
+        opens = hist['Open'].values if 'Open' in hist.columns else closes
         volumes = hist['Volume'].values
         current_price = closes[-1]
-        
+
         print(f"Current: ${current_price:.2f} | Bars: {len(closes)}")
-        
+
         if historical_mode:
             lookback_idx = int(len(closes) * 0.8)
             lookback_idx = min(max(lookback_idx, 50), len(closes))
             hist_closes = closes[:lookback_idx]
             hist_highs = highs[:lookback_idx]
             hist_lows = lows[:lookback_idx]
+            hist_opens = opens[:lookback_idx]
             hist_volumes = volumes[:lookback_idx]
             hist_data_subset = hist.iloc[:lookback_idx]
         else:
             hist_closes = closes
             hist_highs = highs
             hist_lows = lows
+            hist_opens = opens
             hist_volumes = volumes
             hist_data_subset = hist
         
@@ -5979,19 +5982,31 @@ def get_data():
         gmm_levels_result = calculate_gmm_levels(hist_highs, hist_lows, hist_closes)
         print(f"GMM: Generated {len(gmm_levels_result) if gmm_levels_result else 0} raw levels")
 
-        # ML FILTER: keep only levels the validated logistic regression
-        # scores above threshold - all 7 categories walk-forward validated
-        # (16/16 folds improved, Bonferroni-significant - see
-        # score_and_filter_levels docstring). Raw/unfiltered candidates are
-        # discarded, not exposed.
+        # MeanShift: was previously dropped from the ML-filter category set
+        # entirely (not just here - no live endpoint fed it in, before this
+        # fix). v2's own validation docs list it as one of the 7 Bonferroni-
+        # significant categories with one of the LARGER discrimination
+        # improvements (+0.064) - real signal was being left on the table.
+        # It's also still used separately as a validator against HDBSCAN
+        # levels via enhance_levels_with_microstructure() below - that's a
+        # different mechanism (post-hoc confidence boost), not mutually
+        # exclusive with also scoring it here as its own candidate source.
+        meanshift_levels_result = calculate_meanshift_levels(hist_highs, hist_lows, hist_closes)
+
+        # ML FILTER v2: keep only levels the validated logistic regression
+        # scores above threshold - all 7 categories walk-forward validated,
+        # 6/7 at 100% fold consistency (see score_and_filter_levels_v2
+        # docstring/module comment). Raw/unfiltered candidates are discarded,
+        # not exposed.
         try:
-            filtered = score_and_filter_levels(
+            filtered = score_and_filter_levels_v2(
                 {
                     'GMM': gmm_levels_result, 'TDA': persistent_homology_levels_result,
                     'HDBSCAN': hdbscan_levels, 'OPTICS': enhanced_optics_levels_result,
                     'KDE': kde_levels_result, 'Isolation-Forest': isolation_forest_levels,
+                    'MeanShift': meanshift_levels_result,
                 },
-                hist_highs, hist_lows, hist_closes, hist_volumes, current_price,
+                hist_highs, hist_lows, hist_opens, hist_closes, hist_volumes, current_price,
                 timestamps=hist_data_subset.index.values,
             )
             gmm_levels_result = [l for l in filtered if l.get('category') == 'GMM']
@@ -6000,27 +6015,24 @@ def get_data():
             enhanced_optics_levels_result = [l for l in filtered if l.get('category') == 'OPTICS']
             kde_levels_result = [l for l in filtered if l.get('category') == 'KDE']
             isolation_forest_levels = [l for l in filtered if l.get('category') == 'Isolation-Forest']
-            print(f"ML filter: kept {len(gmm_levels_result)} GMM, {len(persistent_homology_levels_result)} TDA, "
+            meanshift_levels_result = [l for l in filtered if l.get('category') == 'MeanShift']
+            print(f"ML filter v2: kept {len(gmm_levels_result)} GMM, {len(persistent_homology_levels_result)} TDA, "
                   f"{len(hdbscan_levels)} HDBSCAN, {len(enhanced_optics_levels_result)} OPTICS, "
-                  f"{len(kde_levels_result)} KDE, {len(isolation_forest_levels)} Isolation-Forest levels")
+                  f"{len(kde_levels_result)} KDE, {len(isolation_forest_levels)} Isolation-Forest, "
+                  f"{len(meanshift_levels_result)} MeanShift levels")
         except Exception as e:
             print(f"ML filter failed, falling back to unfiltered GMM/TDA: {e}")
 
         # INTERACTION: Local density modes (near price, short memory, explicitly non-structural)
         local_interaction_levels = calculate_local_interaction_levels(
-            hist_closes, 
-            current_price, 
+            hist_closes,
+            current_price,
             sigma_price,
             lookback=200 if not is_intraday else 300,  # More bars for intraday
             bins=30,
             max_levels=5
         )
         print(f"Local Interaction: Generated {len(local_interaction_levels) if local_interaction_levels else 0} levels")
-        
-        # MeanShift removed as a primary level-producer here. It still runs
-        # as a validator against HDBSCAN levels, but that logic lives in the
-        # shared enhance_levels_with_microstructure() helper (called below),
-        # not inline in this function - the old comment implied it was here.
 
         # Fibonacci for metadata enrichment only (not primary levels)
         fib_levels = calculate_fibonacci_levels(hist_highs, hist_lows)
@@ -6036,13 +6048,15 @@ def get_data():
         neural_network_levels_result = neural_network_levels_result or []
         isolation_forest_levels = isolation_forest_levels or []
         gmm_levels_result = gmm_levels_result or []
+        meanshift_levels_result = meanshift_levels_result or []
         fib_levels = fib_levels or []
 
         # ML LEVELS: Primary discovery algorithms only
         all_ml_levels = (hdbscan_levels + enhanced_optics_levels_result + kde_levels_result +
                         multiscale_hdbscan_levels_result + time_weighted_levels_result +
                         wyckoff_levels_result + persistent_homology_levels_result +
-                        neural_network_levels_result + isolation_forest_levels + gmm_levels_result)
+                        neural_network_levels_result + isolation_forest_levels + gmm_levels_result +
+                        meanshift_levels_result)
         
         # CRITICAL: Preserve levels BEFORE merge (they get consumed by merge)
         # We need BOTH merged levels AND original levels for structural array
@@ -10549,9 +10563,10 @@ def get_level_constrained_hod_lod():
         closes = hist['Close'].values
         highs = hist['High'].values if 'High' in hist.columns else closes
         lows = hist['Low'].values if 'Low' in hist.columns else closes
+        opens = hist['Open'].values if 'Open' in hist.columns else closes
         volumes = hist['Volume'].values if 'Volume' in hist.columns else np.ones(len(closes))
         current_price = closes[-1]
-        
+
         # 1. Get session volatility (for next-period prediction, not annualized)
         garch_vol_regime = calculate_garch_volatility_regime(closes)
         
@@ -10647,22 +10662,26 @@ def get_level_constrained_hod_lod():
             print(f"Wyckoff zones failed: {e}")
             wyckoff_levels_result = []
 
-        # GMM, TDA, KDE: ML-filtered below alongside HDBSCAN/Isolation-Forest/OPTICS
-        # (MeanShift removed as a primary producer here, matching /api/data -
-        # it still runs as a validator via enhance_levels_with_microstructure()
-        # below, so this endpoint doesn't lose MeanShift signal entirely)
+        # GMM, TDA, KDE: ML-filtered below alongside HDBSCAN/Isolation-Forest/OPTICS/MeanShift
         gmm_levels_result = calculate_gmm_levels(highs, lows, closes)
         tda_levels_result = persistent_homology_levels(highs, lows, closes, max_levels=8)
         kde_levels_result = kde_based_levels(highs, lows, closes, n_levels=10)
+        # MeanShift: scored through the validated v2 filter as its own
+        # candidate source (one of the 7 Bonferroni-significant categories,
+        # +0.064 discrimination improvement in v2) - separate from, and not
+        # mutually exclusive with, its other role as a validator against
+        # HDBSCAN levels via enhance_levels_with_microstructure() below.
+        meanshift_levels_result = calculate_meanshift_levels(highs, lows, closes)
 
         try:
-            filtered = score_and_filter_levels(
+            filtered = score_and_filter_levels_v2(
                 {
                     'GMM': gmm_levels_result, 'TDA': tda_levels_result,
                     'HDBSCAN': hdbscan_levels, 'Isolation-Forest': isolation_forest_levels,
                     'KDE': kde_levels_result, 'OPTICS': optics_levels_result,
+                    'MeanShift': meanshift_levels_result,
                 },
-                highs, lows, closes, volumes, current_price, timestamps=hist.index.values,
+                highs, lows, opens, closes, volumes, current_price, timestamps=hist.index.values,
             )
             gmm_levels_result = [l for l in filtered if l.get('category') == 'GMM']
             tda_levels_result = [l for l in filtered if l.get('category') == 'TDA']
@@ -10670,6 +10689,7 @@ def get_level_constrained_hod_lod():
             isolation_forest_levels = [l for l in filtered if l.get('category') == 'Isolation-Forest']
             kde_levels_result = [l for l in filtered if l.get('category') == 'KDE']
             optics_levels_result = [l for l in filtered if l.get('category') == 'OPTICS']
+            meanshift_levels_result = [l for l in filtered if l.get('category') == 'MeanShift']
         except Exception as e:
             print(f"ML filter failed, falling back to unfiltered levels: {e}")
 
@@ -10687,7 +10707,7 @@ def get_level_constrained_hod_lod():
         # ML LEVELS: Primary discovery algorithms only
         all_ml_levels = (hdbscan_levels + isolation_forest_levels + gmm_levels_result + tda_levels_result +
                         kde_levels_result + optics_levels_result + multiscale_hdbscan_levels_result +
-                        time_weighted_levels_result + wyckoff_levels_result +
+                        time_weighted_levels_result + wyckoff_levels_result + meanshift_levels_result +
                         (neural_network_levels_result if neural_network_levels_result else []))
         
         # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
@@ -11284,22 +11304,26 @@ def get_state_conditioned_hod_lod():
                                     print(f"Wyckoff zones failed: {e}")
                                     wyckoff_levels_result = []
 
-                                # GMM, TDA, KDE: ML-filtered below alongside HDBSCAN/Isolation-Forest/OPTICS
-                                # (MeanShift removed as a primary producer here, matching /api/data -
-                                # it still runs as a validator via enhance_levels_with_microstructure()
-                                # below, so this endpoint doesn't lose MeanShift signal entirely)
+                                # GMM, TDA, KDE: ML-filtered below alongside HDBSCAN/Isolation-Forest/OPTICS/MeanShift
                                 gmm_levels_result = calculate_gmm_levels(highs, lows, closes)
                                 tda_levels_result = persistent_homology_levels(highs, lows, closes, max_levels=8)
                                 kde_levels_result = kde_based_levels(highs, lows, closes, n_levels=10)
+                                # MeanShift: scored through the validated v2 filter as its own
+                                # candidate source (one of the 7 Bonferroni-significant categories,
+                                # +0.064 discrimination improvement in v2) - separate from, and not
+                                # mutually exclusive with, its other role as a validator against
+                                # HDBSCAN levels via enhance_levels_with_microstructure() below.
+                                meanshift_levels_result = calculate_meanshift_levels(highs, lows, closes)
 
                                 try:
-                                    filtered = score_and_filter_levels(
+                                    filtered = score_and_filter_levels_v2(
                                         {
                                             'GMM': gmm_levels_result, 'TDA': tda_levels_result,
                                             'HDBSCAN': hdbscan_levels, 'Isolation-Forest': isolation_forest_levels,
                                             'KDE': kde_levels_result, 'OPTICS': optics_levels_result,
+                                            'MeanShift': meanshift_levels_result,
                                         },
-                                        highs, lows, closes, volumes, current_price, timestamps=hist.index.values,
+                                        highs, lows, opens, closes, volumes, current_price, timestamps=hist.index.values,
                                     )
                                     gmm_levels_result = [l for l in filtered if l.get('category') == 'GMM']
                                     tda_levels_result = [l for l in filtered if l.get('category') == 'TDA']
@@ -11307,6 +11331,7 @@ def get_state_conditioned_hod_lod():
                                     isolation_forest_levels = [l for l in filtered if l.get('category') == 'Isolation-Forest']
                                     kde_levels_result = [l for l in filtered if l.get('category') == 'KDE']
                                     optics_levels_result = [l for l in filtered if l.get('category') == 'OPTICS']
+                                    meanshift_levels_result = [l for l in filtered if l.get('category') == 'MeanShift']
                                 except Exception as e:
                                     print(f"ML filter failed, falling back to unfiltered levels: {e}")
 
@@ -11316,7 +11341,7 @@ def get_state_conditioned_hod_lod():
                                 # ML LEVELS: Primary discovery algorithms only
                                 all_ml_levels = (hdbscan_levels + isolation_forest_levels + gmm_levels_result + tda_levels_result +
                                                 kde_levels_result + optics_levels_result + multiscale_hdbscan_levels_result +
-                                                time_weighted_levels_result + wyckoff_levels_result)
+                                                time_weighted_levels_result + wyckoff_levels_result + meanshift_levels_result)
                                 
                                 # NEW: Agglomerative merge BEFORE confluence (prevents probability fragmentation)
                                 # Use timeframe-aware threshold (cleaner than regime-aware for this step)
@@ -11755,9 +11780,10 @@ def get_lstm_forecast():
         closes = hist['Close'].values
         highs = hist['High'].values if 'High' in hist.columns else closes
         lows = hist['Low'].values if 'Low' in hist.columns else closes
+        opens = hist['Open'].values if 'Open' in hist.columns else closes
         volumes = hist['Volume'].values if 'Volume' in hist.columns else np.ones(len(closes))
         current_price = closes[-1]
-        
+
         # Get session volatility for theoretical bounds
         vol_result = compute_session_volatility(hist, window=60)
         sigma_price = vol_result.get('sigma_price', 0.0)
@@ -11812,25 +11838,27 @@ def get_lstm_forecast():
 
         isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
 
-        # GMM, TDA, KDE: ML-filtered below alongside HDBSCAN/OPTICS/Isolation-Forest
-        # (MeanShift removed as a primary producer here, matching /api/data -
-        # note this endpoint doesn't call enhance_levels_with_microstructure(),
-        # so unlike /api/data and the HOD/LOD endpoints it loses MeanShift
-        # signal entirely rather than keeping it as a validator - flagged as
-        # a separate follow-up, not fixed here since wiring in that shared
-        # helper is a bigger structural change to this endpoint's pipeline)
+        # GMM, TDA, KDE: ML-filtered below alongside HDBSCAN/OPTICS/Isolation-Forest/MeanShift.
+        # Note this endpoint doesn't call enhance_levels_with_microstructure(),
+        # so unlike /api/data and the HOD/LOD endpoints, MeanShift only gets
+        # scored here as a v2-filtered candidate source - it doesn't also get
+        # the separate validator role those other endpoints have. Wiring in
+        # that shared helper is a bigger structural change to this endpoint's
+        # pipeline, flagged as a separate follow-up, not done here.
         gmm_levels = calculate_gmm_levels(highs, lows, closes)
         tda_levels = persistent_homology_levels(highs, lows, closes, max_levels=8)
         kde_levels = kde_based_levels(highs, lows, closes, n_levels=10)
+        meanshift_levels = calculate_meanshift_levels(highs, lows, closes)
 
         try:
-            filtered = score_and_filter_levels(
+            filtered = score_and_filter_levels_v2(
                 {
                     'GMM': gmm_levels, 'TDA': tda_levels,
                     'HDBSCAN': hdbscan_levels, 'OPTICS': optics_levels,
                     'KDE': kde_levels, 'Isolation-Forest': isolation_forest_levels,
+                    'MeanShift': meanshift_levels,
                 },
-                highs, lows, closes, volumes, current_price, timestamps=hist.index.values,
+                highs, lows, opens, closes, volumes, current_price, timestamps=hist.index.values,
             )
             gmm_levels = [l for l in filtered if l.get('category') == 'GMM']
             tda_levels = [l for l in filtered if l.get('category') == 'TDA']
@@ -11838,6 +11866,7 @@ def get_lstm_forecast():
             optics_levels = [l for l in filtered if l.get('category') == 'OPTICS']
             kde_levels = [l for l in filtered if l.get('category') == 'KDE']
             isolation_forest_levels = [l for l in filtered if l.get('category') == 'Isolation-Forest']
+            meanshift_levels = [l for l in filtered if l.get('category') == 'MeanShift']
         except Exception as e:
             print(f"ML filter failed, falling back to unfiltered levels: {e}")
 
@@ -11852,7 +11881,7 @@ def get_lstm_forecast():
         # ML confluence (includes neural network levels)
         all_ml_levels = (hdbscan_levels + optics_levels + interaction_levels + neural_network_levels +
                         gmm_levels + tda_levels + kde_levels + time_weighted_levels + wyckoff_levels +
-                        isolation_forest_levels)
+                        isolation_forest_levels + meanshift_levels)
         all_ml_levels = add_fibonacci_metadata_to_levels(all_ml_levels, fib_levels, sigma_price, threshold_sigma=1.0)
         ml_confluence_levels = get_ml_confluence_levels(all_ml_levels)
         
@@ -11872,7 +11901,7 @@ def get_lstm_forecast():
         print("Predicting level reactions and HOD/LOD candidates...")
         all_levels = (hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels +
                      multiscale_levels + neural_network_levels + gmm_levels + tda_levels + kde_levels +
-                     time_weighted_levels + wyckoff_levels + isolation_forest_levels)
+                     time_weighted_levels + wyckoff_levels + isolation_forest_levels + meanshift_levels)
         start_of_move_price = closes[0] if len(closes) > 0 else current_price  # Session start
         
         level_reactions = []
@@ -12163,7 +12192,7 @@ def get_lstm_forecast():
         target_price = prediction['target_price']
         all_levels = (hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels +
                      multiscale_levels + neural_network_levels + gmm_levels + tda_levels + kde_levels +
-                     time_weighted_levels + wyckoff_levels + isolation_forest_levels)
+                     time_weighted_levels + wyckoff_levels + isolation_forest_levels + meanshift_levels)
         
         # Find closest level to predicted target
         closest_level = None
@@ -12222,7 +12251,8 @@ def get_lstm_forecast():
                 'kde': len(kde_levels),
                 'time_weighted': len(time_weighted_levels),
                 'wyckoff': len(wyckoff_levels),
-                'isolation_forest': len(isolation_forest_levels)
+                'isolation_forest': len(isolation_forest_levels),
+                'meanshift': len(meanshift_levels)
             },
             'all_levels': sanitize_for_json(sorted(all_levels, key=lambda x: abs(x.get('price', 0) - current_price))[:50]),
             'microstructure_state': sanitize_for_json(microstructure_state) if microstructure_state else None
