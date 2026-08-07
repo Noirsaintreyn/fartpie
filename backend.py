@@ -3124,7 +3124,11 @@ def get_macro_indicators():
             }
     return indicators
 
-def nbeats_forecast(prices, forecast_periods=10, num_scenarios=3):
+def trend_reversion_scenario_forecast(prices, forecast_periods=10, num_scenarios=3):
+    """Rolling-mean trend extraction + mean-reversion term + injected noise,
+    branched into bullish/base/bearish scenarios via trend/vol multipliers.
+    NOT an N-BEATS model (no basis expansion, no neural net, no training) -
+    previously misleadingly named nbeats_forecast."""
     if len(prices) < 50:
         return None
     scaler = StandardScaler()
@@ -3166,7 +3170,11 @@ def nbeats_forecast(prices, forecast_periods=10, num_scenarios=3):
         scenarios.append(forecast_original.tolist())
     return {'bullish': scenarios[0], 'base': scenarios[1], 'bearish': scenarios[2]}
 
-def tcn_style_forecast(prices, volumes, forecast_periods=10):
+def multiscale_weighted_average_forecast(prices, volumes, forecast_periods=10):
+    """Exponentially-weighted average across 4 lookback scales (5/10/20/40
+    bars) + linear trend extrapolation + damped noise. NOT a TCN (no
+    convolutions, no dilated layers, no learned weights) - previously
+    misleadingly named tcn_style_forecast."""
     if len(prices) < 50:
         return None
     scales = [5, 10, 20, 40]
@@ -3193,10 +3201,10 @@ def tcn_style_forecast(prices, volumes, forecast_periods=10):
 
 def generate_price_forecast(closes, highs, lows, volumes, forecast_periods=20):
     forecasts = {}
-    nbeats = nbeats_forecast(closes, forecast_periods=forecast_periods, num_scenarios=3)
+    nbeats = trend_reversion_scenario_forecast(closes, forecast_periods=forecast_periods, num_scenarios=3)
     if nbeats:
         forecasts['scenarios'] = nbeats
-    tcn = tcn_style_forecast(closes, volumes, forecast_periods=forecast_periods)
+    tcn = multiscale_weighted_average_forecast(closes, volumes, forecast_periods=forecast_periods)
     if tcn:
         forecasts['tcn'] = tcn
     if nbeats and tcn:
@@ -4870,7 +4878,12 @@ def detect_levels_with_neural_network(hist, lookback=100, threshold=0.7):
         except Exception as model_error:
             print(f"Could not load neural network model: {model_error}, using fallback")
 
-        # --- fallback: scipy local extrema ---
+        # --- fallback: scipy local extrema (NOT the neural net - category
+        # is kept as 'Neural-Network' so this still occupies its slot in the
+        # ml_stat ensemble family, but 'type'/'usedFallback' are honest about
+        # what actually ran, since this used to silently claim to be NN
+        # output even when the model file was missing) ---
+        print(f"⚠ Neural network fallback active: using scipy local-extrema, not {model_path}")
         from scipy.signal import argrelextrema
         high_indices = argrelextrema(highs, np.greater, order=5)[0]
         low_indices  = argrelextrema(lows,  np.less,    order=5)[0]
@@ -4879,22 +4892,24 @@ def detect_levels_with_neural_network(hist, lookback=100, threshold=0.7):
         for idx in high_indices:
             levels.append({
                 'price': float(highs[idx]),
-                'type': 'Neural Network (Local High)',
+                'type': 'Local Extrema Fallback (High)',
                 'strength': 0.65,
                 'category': 'Neural-Network',
                 'breakoutProb': 0.35,
                 'reversionProb': 0.65,
                 'touches': 1,
+                'usedFallback': True,
             })
         for idx in low_indices:
             levels.append({
                 'price': float(lows[idx]),
-                'type': 'Neural Network (Local Low)',
+                'type': 'Local Extrema Fallback (Low)',
                 'strength': 0.65,
                 'category': 'Neural-Network',
                 'breakoutProb': 0.35,
                 'reversionProb': 0.65,
                 'touches': 1,
+                'usedFallback': True,
             })
 
         seen = set()
@@ -4935,9 +4950,11 @@ else:
         def __init__(self, *args, **kwargs):
             pass
 
-def validate_levels_with_rl(levels, current_price, sigma_price):
+def score_levels_by_historical_outcome(levels, current_price, sigma_price):
     """
-    Filter levels using a composite score that prioritises OUTCOME-BASED signals.
+    NOT reinforcement learning (no policy/reward/environment) - previously
+    misleadingly named validate_levels_with_rl. Filter levels using a
+    composite score that prioritises OUTCOME-BASED signals.
 
     Priority order (highest → lowest weight):
       1. historical_reaction_score  — did price actually bounce here? (OUTCOME-BASED)
@@ -6134,7 +6151,7 @@ def get_data():
         # NEW: Apply RL validation to filter weak levels (before extraction)
         try:
             if TORCH_AVAILABLE:
-                all_levels_combined = validate_levels_with_rl(all_levels_combined, current_price, sigma_price)
+                all_levels_combined = score_levels_by_historical_outcome(all_levels_combined, current_price, sigma_price)
                 print(f"✓ RL validation filtered to {len(all_levels_combined)} validated levels")
         except Exception as e:
             print(f"⚠ RL validation failed: {e}, using all levels")
