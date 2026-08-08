@@ -8169,6 +8169,39 @@ _OU_ZONE_BACKTEST_SUMMARY = {
     'target_clean_reach_rate': {'ES_1h': 0.851, 'ES_4h': 0.771, 'NQ_1h': 0.838, 'NQ_4h': 0.822},
 }
 
+# ============================================================================
+# LEVEL-DETECTION ALGORITHM BACKTEST (per-algorithm, NOT the OU zone model
+# above - this validates the actual structural level detectors: HDBSCAN,
+# GMM, TDA, OPTICS, KDE, MeanShift, Multiscale-HDBSCAN, Isolation-Forest)
+# ============================================================================
+# Walk-forward (70/30 train/holdout split), pooled across NQ/ES 1H/4H,
+# ~175k candidate-touch events - see backtest_ml_filter_v3_events.py.
+# "unconditional" = raw accuracy of that algorithm's candidates with no
+# filtering; "filtered" = accuracy of the top-half by the validated ML
+# filter's predicted P(bounce); "lift" is the improvement filtering adds.
+# All except KDE clear Bonferroni correction (alpha=0.05/8=0.00625).
+# Regenerated after today's system review: OPTICS now reflects
+# enhanced_optics_levels (the function actually live in production - the
+# original version of this backtest referenced optics_multi_density_levels,
+# which had zero live callers and was removed as dead code), and
+# Multiscale-HDBSCAN was added since it's part of the current live
+# algorithm set. Wyckoff and time-weighted-HDBSCAN aren't included yet -
+# different call signature (DataFrame / timestamps array) this backtest
+# script doesn't support without separate handling.
+_LEVEL_ALGO_BACKTEST_SUMMARY = {
+    'note': 'Walk-forward holdout, pooled NQ/ES 1H/4H, ~175k candidate-touch events.',
+    'algorithms': {
+        'TDA':                 {'unconditional': 0.4330, 'filtered': 0.4890, 'lift': 0.0560, 'z': 7.58, 'n_holdout': 7194},
+        'OPTICS':               {'unconditional': 0.4181, 'filtered': 0.4736, 'lift': 0.0555, 'z': 5.97, 'n_holdout': 7617},
+        'Multiscale-HDBSCAN':   {'unconditional': 0.4320, 'filtered': 0.4803, 'lift': 0.0483, 'z': 7.39, 'n_holdout': 9352},
+        'Isolation-Forest':     {'unconditional': 0.4150, 'filtered': 0.4676, 'lift': 0.0526, 'z': 3.86, 'n_holdout': 3858},
+        'HDBSCAN':              {'unconditional': 0.4243, 'filtered': 0.4644, 'lift': 0.0401, 'z': 5.27, 'n_holdout': 9036},
+        'MeanShift':            {'unconditional': 0.4280, 'filtered': 0.4626, 'lift': 0.0346, 'z': 4.14, 'n_holdout': 5780},
+        'GMM':                  {'unconditional': 0.4309, 'filtered': 0.4639, 'lift': 0.0331, 'z': 3.81, 'n_holdout': 4491},
+        'KDE':                  {'unconditional': 0.4204, 'filtered': 0.4512, 'lift': 0.0308, 'z': 2.11, 'n_holdout': 2788},
+    },
+}
+
 
 def fit_ou_process(x, dt=1.0):
     """Fit OU via AR(1) regression: x[t+1] = a + b*x[t] + eps.
@@ -12422,6 +12455,7 @@ def get_ou_zone_history_endpoint():
             } if zone_low_out else None,
             'structural_levels': structural_levels,
             'backtest_summary': summary,
+            'level_algo_backtest': _LEVEL_ALGO_BACKTEST_SUMMARY,
             'target': target_info,
         })
     except Exception as e:
