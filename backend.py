@@ -12340,6 +12340,27 @@ def get_level_algo_backtest():
     return jsonify({'success': True, **_LEVEL_ALGO_BACKTEST_SUMMARY})
 
 
+_EQUITY_CURVE_CACHE = None
+
+
+@app.route('/api/level-algo-equity-curve', methods=['GET'])
+def get_level_algo_equity_curve():
+    """Static reference data (no market fetch, no auth) - weekly asset
+    price vs. the filtered-strategy cumulative R-multiple equity curve
+    over the same holdout period, per instrument/timeframe. See
+    build_equity_curve_vs_price.py. R-multiples assume the fixed 1.0/0.5
+    ATR target/stop every trade was evaluated against (2R win / -1R loss)
+    - a realistic, tradeable rule, but doesn't account for slippage/fees."""
+    global _EQUITY_CURVE_CACHE
+    if _EQUITY_CURVE_CACHE is None:
+        try:
+            with open('equity_curve_vs_price.json') as f:
+                _EQUITY_CURVE_CACHE = json.load(f)
+        except Exception as e:
+            return jsonify({'success': False, 'error': f'Equity curve data not available: {e}'}), 500
+    return jsonify({'success': True, 'by_instrument': _EQUITY_CURVE_CACHE})
+
+
 @app.route('/api/ou-zone-history', methods=['GET'])
 def get_ou_zone_history_endpoint():
     """
