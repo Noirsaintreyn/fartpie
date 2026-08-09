@@ -8189,16 +8189,48 @@ _OU_ZONE_BACKTEST_SUMMARY = {
 # different call signature (DataFrame / timestamps array) this backtest
 # script doesn't support without separate handling.
 _LEVEL_ALGO_BACKTEST_SUMMARY = {
-    'note': 'Walk-forward holdout, pooled NQ/ES 1H/4H, ~175k candidate-touch events.',
-    'algorithms': {
-        'TDA':                 {'unconditional': 0.4330, 'filtered': 0.4890, 'lift': 0.0560, 'z': 7.58, 'n_holdout': 7194},
-        'OPTICS':               {'unconditional': 0.4181, 'filtered': 0.4736, 'lift': 0.0555, 'z': 5.97, 'n_holdout': 7617},
-        'Multiscale-HDBSCAN':   {'unconditional': 0.4320, 'filtered': 0.4803, 'lift': 0.0483, 'z': 7.39, 'n_holdout': 9352},
-        'Isolation-Forest':     {'unconditional': 0.4150, 'filtered': 0.4676, 'lift': 0.0526, 'z': 3.86, 'n_holdout': 3858},
-        'HDBSCAN':              {'unconditional': 0.4243, 'filtered': 0.4644, 'lift': 0.0401, 'z': 5.27, 'n_holdout': 9036},
-        'MeanShift':            {'unconditional': 0.4280, 'filtered': 0.4626, 'lift': 0.0346, 'z': 4.14, 'n_holdout': 5780},
-        'GMM':                  {'unconditional': 0.4309, 'filtered': 0.4639, 'lift': 0.0331, 'z': 3.81, 'n_holdout': 4491},
-        'KDE':                  {'unconditional': 0.4204, 'filtered': 0.4512, 'lift': 0.0308, 'z': 2.11, 'n_holdout': 2788},
+    'note': 'Walk-forward holdout, ~175k candidate-touch events - same trained filter, broken out per instrument/timeframe rather than pooled. VWAP excluded (not a discovery algorithm, showed no/negative lift).',
+    'by_instrument': {
+        'NQ_1h': {
+            'TDA': {'unconditional': 0.4278, 'filtered': 0.4805, 'lift': 0.0527, 'z': 4.33, 'n_holdout': 2875},
+            'OPTICS': {'unconditional': 0.4112, 'filtered': 0.4521, 'lift': 0.0408, 'z': 2.25, 'n_holdout': 3025},
+            'Multiscale-HDBSCAN': {'unconditional': 0.4267, 'filtered': 0.4595, 'lift': 0.0329, 'z': 3.12, 'n_holdout': 3729},
+            'KDE': {'unconditional': 0.4155, 'filtered': 0.4478, 'lift': 0.0324, 'z': 1.19, 'n_holdout': 1112},
+            'GMM': {'unconditional': 0.4288, 'filtered': 0.46, 'lift': 0.0312, 'z': 2.26, 'n_holdout': 1847},
+            'MeanShift': {'unconditional': 0.4229, 'filtered': 0.4534, 'lift': 0.0306, 'z': 2.06, 'n_holdout': 2275},
+            'HDBSCAN': {'unconditional': 0.4185, 'filtered': 0.4475, 'lift': 0.029, 'z': 2.04, 'n_holdout': 3522},
+            'Isolation-Forest': {'unconditional': 0.4038, 'filtered': 0.4239, 'lift': 0.0201, 'z': 0.07, 'n_holdout': 1523},
+        },
+        'NQ_4h': {
+            'OPTICS': {'unconditional': 0.4738, 'filtered': 0.5994, 'lift': 0.1257, 'z': 6.76, 'n_holdout': 724},
+            'TDA': {'unconditional': 0.4269, 'filtered': 0.5497, 'lift': 0.1228, 'z': 4.73, 'n_holdout': 684},
+            'Isolation-Forest': {'unconditional': 0.4532, 'filtered': 0.5478, 'lift': 0.0947, 'z': 3.83, 'n_holdout': 459},
+            'Multiscale-HDBSCAN': {'unconditional': 0.4462, 'filtered': 0.5226, 'lift': 0.0763, 'z': 4.32, 'n_holdout': 930},
+            'HDBSCAN': {'unconditional': 0.4272, 'filtered': 0.5, 'lift': 0.0728, 'z': 3.34, 'n_holdout': 927},
+            'KDE': {'unconditional': 0.4535, 'filtered': 0.5194, 'lift': 0.0659, 'z': 2.22, 'n_holdout': 258},
+            'GMM': {'unconditional': 0.4805, 'filtered': 0.5459, 'lift': 0.0654, 'z': 3.67, 'n_holdout': 435},
+            'MeanShift': {'unconditional': 0.458, 'filtered': 0.5105, 'lift': 0.0524, 'z': 2.99, 'n_holdout': 572},
+        },
+        'ES_1h': {
+            'Isolation-Forest': {'unconditional': 0.4199, 'filtered': 0.489, 'lift': 0.0691, 'z': 3.56, 'n_holdout': 1448},
+            'OPTICS': {'unconditional': 0.4036, 'filtered': 0.4706, 'lift': 0.0669, 'z': 3.73, 'n_holdout': 3124},
+            'TDA': {'unconditional': 0.4365, 'filtered': 0.4859, 'lift': 0.0493, 'z': 4.75, 'n_holdout': 2898},
+            'Multiscale-HDBSCAN': {'unconditional': 0.4307, 'filtered': 0.4762, 'lift': 0.0455, 'z': 4.54, 'n_holdout': 3745},
+            'MeanShift': {'unconditional': 0.4265, 'filtered': 0.4662, 'lift': 0.0397, 'z': 2.97, 'n_holdout': 2368},
+            'HDBSCAN': {'unconditional': 0.4249, 'filtered': 0.461, 'lift': 0.0361, 'z': 3.22, 'n_holdout': 3688},
+            'KDE': {'unconditional': 0.4221, 'filtered': 0.4553, 'lift': 0.0333, 'z': 1.56, 'n_holdout': 1142},
+            'GMM': {'unconditional': 0.4227, 'filtered': 0.4492, 'lift': 0.0265, 'z': 1.57, 'n_holdout': 1772},
+        },
+        'ES_4h': {
+            'Multiscale-HDBSCAN': {'unconditional': 0.4441, 'filtered': 0.5316, 'lift': 0.0876, 'z': 4.76, 'n_holdout': 948},
+            'HDBSCAN': {'unconditional': 0.4416, 'filtered': 0.5133, 'lift': 0.0717, 'z': 3.86, 'n_holdout': 899},
+            'Isolation-Forest': {'unconditional': 0.3972, 'filtered': 0.4673, 'lift': 0.0701, 'z': 1.32, 'n_holdout': 428},
+            'MeanShift': {'unconditional': 0.4248, 'filtered': 0.4806, 'lift': 0.0558, 'z': 1.96, 'n_holdout': 565},
+            'TDA': {'unconditional': 0.445, 'filtered': 0.4932, 'lift': 0.0482, 'z': 2.72, 'n_holdout': 737},
+            'GMM': {'unconditional': 0.4233, 'filtered': 0.4521, 'lift': 0.0287, 'z': 0.88, 'n_holdout': 437},
+            'OPTICS': {'unconditional': 0.453, 'filtered': 0.4624, 'lift': 0.0094, 'z': 1.54, 'n_holdout': 744},
+            'KDE': {'unconditional': 0.4022, 'filtered': 0.4058, 'lift': 0.0036, 'z': -0.4, 'n_holdout': 276},
+        },
     },
 }
 
