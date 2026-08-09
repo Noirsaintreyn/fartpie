@@ -12300,6 +12300,13 @@ def get_lstm_forecast():
         return jsonify({'success': False, 'error': str(e)}), 400
 
 
+@app.route('/api/level-algo-backtest', methods=['GET'])
+def get_level_algo_backtest():
+    """Static reference data (no market fetch, no auth) - per-algorithm
+    level-detection backtest stats, shown in the site's Data tab."""
+    return jsonify({'success': True, **_LEVEL_ALGO_BACKTEST_SUMMARY})
+
+
 @app.route('/api/ou-zone-history', methods=['GET'])
 def get_ou_zone_history_endpoint():
     """
@@ -12455,7 +12462,6 @@ def get_ou_zone_history_endpoint():
             } if zone_low_out else None,
             'structural_levels': structural_levels,
             'backtest_summary': summary,
-            'level_algo_backtest': _LEVEL_ALGO_BACKTEST_SUMMARY,
             'target': target_info,
         })
     except Exception as e:
