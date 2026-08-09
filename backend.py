@@ -8190,6 +8190,7 @@ _OU_ZONE_BACKTEST_SUMMARY = {
 # script doesn't support without separate handling.
 _LEVEL_ALGO_BACKTEST_SUMMARY = {
     'note': 'Walk-forward holdout, ~175k candidate-touch events - same trained filter, broken out per instrument/timeframe rather than pooled. VWAP excluded (not a discovery algorithm, showed no/negative lift).',
+    'random_baseline': 0.4227,
     'by_instrument': {
         'NQ_1h': {
             'TDA': {'unconditional': 0.4278, 'filtered': 0.4805, 'lift': 0.0527, 'z': 4.33, 'n_holdout': 2875},
