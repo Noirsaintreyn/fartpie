@@ -8232,6 +8232,74 @@ _LEVEL_ALGO_BACKTEST_SUMMARY = {
             'OPTICS': {'unconditional': 0.453, 'filtered': 0.4624, 'lift': 0.0094, 'z': 1.54, 'n_holdout': 744, 'realized_rr': 1.122},
             'KDE': {'unconditional': 0.4022, 'filtered': 0.4058, 'lift': 0.0036, 'z': -0.4, 'n_holdout': 276, 'realized_rr': 1.257},
         },
+        # GC/SI/CL added later, from a separate 1-min-resampled data source
+        # (not the same vendor as NQ/ES) - shorter history than NQ/ES's
+        # 2014-2026 (GC/SI: 2020-2026, ~6yr; CL: 2020-2024, ~5yr, missing
+        # the most recent ~14mo - no "_full" export exists yet for CL).
+        # Same walk-forward methodology (compute_level_algo_summary.py,
+        # validated to reproduce the NQ/ES numbers above before trusting
+        # it here) - lower z-scores here largely reflect that shorter
+        # history, not a weaker effect.
+        'GC_1h': {
+            'OPTICS': {'unconditional': 0.4745, 'filtered': 0.5258, 'lift': 0.0513, 'z': 6.0, 'n_holdout': 854, 'realized_rr': 1.225},
+            'Multiscale-HDBSCAN': {'unconditional': 0.462, 'filtered': 0.5151, 'lift': 0.053, 'z': 5.98, 'n_holdout': 1062, 'realized_rr': 1.141},
+            'TDA': {'unconditional': 0.4612, 'filtered': 0.5135, 'lift': 0.0523, 'z': 5.17, 'n_holdout': 814, 'realized_rr': 1.123},
+            'MeanShift': {'unconditional': 0.4539, 'filtered': 0.5125, 'lift': 0.0586, 'z': 4.4, 'n_holdout': 599, 'realized_rr': 1.218},
+            'HDBSCAN': {'unconditional': 0.4612, 'filtered': 0.5094, 'lift': 0.0482, 'z': 5.49, 'n_holdout': 1013, 'realized_rr': 1.081},
+            'Isolation-Forest': {'unconditional': 0.4344, 'filtered': 0.498, 'lift': 0.0635, 'z': 3.34, 'n_holdout': 490, 'realized_rr': 1.156},
+            'GMM': {'unconditional': 0.442, 'filtered': 0.4653, 'lift': 0.0233, 'z': 1.86, 'n_holdout': 475, 'realized_rr': 1.071},
+            'KDE': {'unconditional': 0.4371, 'filtered': 0.4563, 'lift': 0.0192, 'z': 1.19, 'n_holdout': 309, 'realized_rr': 0.971},
+        },
+        'GC_4h': {
+            'Multiscale-HDBSCAN': {'unconditional': 0.4344, 'filtered': 0.4801, 'lift': 0.0458, 'z': 2.09, 'n_holdout': 327, 'realized_rr': 1.224},
+            'HDBSCAN': {'unconditional': 0.4364, 'filtered': 0.4795, 'lift': 0.043, 'z': 1.95, 'n_holdout': 292, 'realized_rr': 1.252},
+            'TDA': {'unconditional': 0.4167, 'filtered': 0.4755, 'lift': 0.0588, 'z': 1.73, 'n_holdout': 265, 'realized_rr': 1.065},
+            'KDE': {'unconditional': 0.4526, 'filtered': 0.475, 'lift': 0.0224, 'z': 0.95, 'n_holdout': 80, 'realized_rr': 1.286},
+            'OPTICS': {'unconditional': 0.4262, 'filtered': 0.4568, 'lift': 0.0306, 'z': 1.07, 'n_holdout': 243, 'realized_rr': 1.185},
+            'MeanShift': {'unconditional': 0.412, 'filtered': 0.4343, 'lift': 0.0223, 'z': 0.31, 'n_holdout': 175, 'realized_rr': 1.02},
+            'Isolation-Forest': {'unconditional': 0.4023, 'filtered': 0.432, 'lift': 0.0297, 'z': 0.24, 'n_holdout': 169, 'realized_rr': 1.116},
+            'GMM': {'unconditional': 0.4404, 'filtered': 0.4275, 'lift': -0.0128, 'z': 0.11, 'n_holdout': 138, 'realized_rr': 1.079},
+        },
+        'SI_1h': {
+            'TDA': {'unconditional': 0.4488, 'filtered': 0.5247, 'lift': 0.0759, 'z': 5.35, 'n_holdout': 688, 'realized_rr': 1.169},
+            'OPTICS': {'unconditional': 0.4725, 'filtered': 0.5201, 'lift': 0.0476, 'z': 5.4, 'n_holdout': 773, 'realized_rr': 1.215},
+            'Isolation-Forest': {'unconditional': 0.4647, 'filtered': 0.5083, 'lift': 0.0437, 'z': 3.53, 'n_holdout': 421, 'realized_rr': 1.176},
+            'Multiscale-HDBSCAN': {'unconditional': 0.4507, 'filtered': 0.4819, 'lift': 0.0312, 'z': 3.51, 'n_holdout': 884, 'realized_rr': 1.213},
+            'HDBSCAN': {'unconditional': 0.4502, 'filtered': 0.4814, 'lift': 0.0312, 'z': 3.48, 'n_holdout': 887, 'realized_rr': 1.163},
+            'KDE': {'unconditional': 0.4366, 'filtered': 0.476, 'lift': 0.0394, 'z': 1.7, 'n_holdout': 250, 'realized_rr': 1.108},
+            'MeanShift': {'unconditional': 0.4112, 'filtered': 0.4496, 'lift': 0.0384, 'z': 1.27, 'n_holdout': 556, 'realized_rr': 1.123},
+            'GMM': {'unconditional': 0.4221, 'filtered': 0.4334, 'lift': 0.0114, 'z': 0.42, 'n_holdout': 383, 'realized_rr': 1.067},
+        },
+        'SI_4h': {
+            'GMM': {'unconditional': 0.4811, 'filtered': 0.5465, 'lift': 0.0654, 'z': 2.32, 'n_holdout': 86, 'realized_rr': 1.102},
+            'OPTICS': {'unconditional': 0.4778, 'filtered': 0.4855, 'lift': 0.0077, 'z': 1.96, 'n_holdout': 241, 'realized_rr': 1.002},
+            'KDE': {'unconditional': 0.3904, 'filtered': 0.4853, 'lift': 0.0949, 'z': 1.04, 'n_holdout': 68, 'realized_rr': 1.029},
+            'MeanShift': {'unconditional': 0.4158, 'filtered': 0.4754, 'lift': 0.0596, 'z': 1.18, 'n_holdout': 122, 'realized_rr': 0.986},
+            'Isolation-Forest': {'unconditional': 0.3868, 'filtered': 0.437, 'lift': 0.0502, 'z': 0.31, 'n_holdout': 119, 'realized_rr': 0.99},
+            'HDBSCAN': {'unconditional': 0.4134, 'filtered': 0.4318, 'lift': 0.0184, 'z': 0.27, 'n_holdout': 220, 'realized_rr': 1.093},
+            'Multiscale-HDBSCAN': {'unconditional': 0.405, 'filtered': 0.4198, 'lift': 0.0149, 'z': -0.08, 'n_holdout': 212, 'realized_rr': 0.983},
+            'TDA': {'unconditional': 0.3842, 'filtered': 0.3949, 'lift': 0.0107, 'z': -0.7, 'n_holdout': 157, 'realized_rr': 1.014},
+        },
+        'CL_1h': {
+            'Isolation-Forest': {'unconditional': 0.4569, 'filtered': 0.5147, 'lift': 0.0578, 'z': 3.06, 'n_holdout': 272, 'realized_rr': 1.304},
+            'OPTICS': {'unconditional': 0.424, 'filtered': 0.4667, 'lift': 0.0426, 'z': 2.21, 'n_holdout': 630, 'realized_rr': 1.253},
+            'TDA': {'unconditional': 0.427, 'filtered': 0.4631, 'lift': 0.0361, 'z': 1.89, 'n_holdout': 542, 'realized_rr': 1.244},
+            'Multiscale-HDBSCAN': {'unconditional': 0.4277, 'filtered': 0.4537, 'lift': 0.0259, 'z': 1.65, 'n_holdout': 712, 'realized_rr': 1.223},
+            'HDBSCAN': {'unconditional': 0.417, 'filtered': 0.4525, 'lift': 0.0355, 'z': 1.58, 'n_holdout': 705, 'realized_rr': 1.27},
+            'GMM': {'unconditional': 0.417, 'filtered': 0.4381, 'lift': 0.0211, 'z': 0.54, 'n_holdout': 299, 'realized_rr': 1.117},
+            'MeanShift': {'unconditional': 0.4115, 'filtered': 0.4319, 'lift': 0.0204, 'z': 0.38, 'n_holdout': 426, 'realized_rr': 1.128},
+            'KDE': {'unconditional': 0.4381, 'filtered': 0.4227, 'lift': -0.0154, 'z': -0.0, 'n_holdout': 194, 'realized_rr': 1.135},
+        },
+        'CL_4h': {
+            'KDE': {'unconditional': 0.4906, 'filtered': 0.5319, 'lift': 0.0413, 'z': 1.51, 'n_holdout': 47, 'realized_rr': 1.495},
+            'Isolation-Forest': {'unconditional': 0.4976, 'filtered': 0.5275, 'lift': 0.0299, 'z': 2.02, 'n_holdout': 91, 'realized_rr': 1.231},
+            'MeanShift': {'unconditional': 0.4978, 'filtered': 0.5045, 'lift': 0.0067, 'z': 1.74, 'n_holdout': 111, 'realized_rr': 1.217},
+            'OPTICS': {'unconditional': 0.5196, 'filtered': 0.4904, 'lift': -0.0292, 'z': 1.39, 'n_holdout': 104, 'realized_rr': 1.538},
+            'Multiscale-HDBSCAN': {'unconditional': 0.4197, 'filtered': 0.4581, 'lift': 0.0384, 'z': 0.89, 'n_holdout': 155, 'realized_rr': 1.256},
+            'HDBSCAN': {'unconditional': 0.4442, 'filtered': 0.4321, 'lift': -0.0121, 'z': 0.24, 'n_holdout': 162, 'realized_rr': 1.304},
+            'GMM': {'unconditional': 0.4379, 'filtered': 0.4211, 'lift': -0.0168, 'z': -0.03, 'n_holdout': 76, 'realized_rr': 1.222},
+            'TDA': {'unconditional': 0.3973, 'filtered': 0.3985, 'lift': 0.0012, 'z': -0.56, 'n_holdout': 133, 'realized_rr': 1.186},
+        },
     },
 }
 
