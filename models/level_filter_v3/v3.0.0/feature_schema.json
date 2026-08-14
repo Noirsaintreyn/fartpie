@@ -1,0 +1,49 @@
+{
+  "feature_cols": [
+    "vwap_distance_norm",
+    "vol_forecast_pct_of_price",
+    "atr_distance",
+    "confluence",
+    "hurst",
+    "hmm_state_confidence",
+    "hmm_recent_flip",
+    "garman_klass_vol_pct",
+    "gjr_vol_regime_ratio",
+    "vwap_bias_alignment",
+    "ou_zone_distance_atr"
+  ],
+  "feature_schema_sha256": "9134b9704abbe362fdf3a9868f462150514bce671ee2396902814b48c5c47afc",
+  "level_type_categories": [
+    "GMM",
+    "HDBSCAN",
+    "Isolation-Forest",
+    "KDE",
+    "MeanShift",
+    "Multiscale-HDBSCAN",
+    "OPTICS",
+    "TDA",
+    "VWAP"
+  ],
+  "ordered_feature_names": [
+    "vwap_distance_norm",
+    "vol_forecast_pct_of_price",
+    "atr_distance",
+    "confluence",
+    "hurst",
+    "hmm_state_confidence",
+    "hmm_recent_flip",
+    "garman_klass_vol_pct",
+    "gjr_vol_regime_ratio",
+    "vwap_bias_alignment",
+    "ou_zone_distance_atr",
+    "level_type_GMM",
+    "level_type_HDBSCAN",
+    "level_type_Isolation-Forest",
+    "level_type_KDE",
+    "level_type_MeanShift",
+    "level_type_Multiscale-HDBSCAN",
+    "level_type_OPTICS",
+    "level_type_TDA",
+    "level_type_VWAP"
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "GMM|1h": {
+    "source": "category_timeframe",
+    "n": 3907,
+    "pos": 1668,
+    "fallback_n": null
+  },
+  "GMM|4h": {
+    "source": "category_timeframe",
+    "n": 947,
+    "pos": 420,
+    "fallback_n": null
+  },
+  "HDBSCAN|1h": {
+    "source": "category_timeframe",
+    "n": 8230,
+    "pos": 3416,
+    "fallback_n": null
+  },
+  "HDBSCAN|4h": {
+    "source": "category_timeframe",
+    "n": 1958,
+    "pos": 900,
+    "fallback_n": null
+  },
+  "Isolation-Forest|1h": {
+    "source": "category_timeframe",
+    "n": 3545,
+    "pos": 1522,
+    "fallback_n": null
+  },
+  "Isolation-Forest|4h": {
+    "source": "category_timeframe",
+    "n": 1165,
+    "pos": 483,
+    "fallback_n": null
+  },
+  "KDE|1h": {
+    "source": "category_timeframe",
+    "n": 2401,
+    "pos": 1014,
+    "fallback_n": null
+  },
+  "KDE|4h": {
+    "source": "category_timeframe",
+    "n": 565,
+    "pos": 246,
+    "fallback_n": null
+  },
+  "MeanShift|1h": {
+    "source": "category_timeframe",
+    "n": 5204,
+    "pos": 2187,
+    "fallback_n": null
+  },
+  "MeanShift|4h": {
+    "source": "category_timeframe",
+    "n": 1289,
+    "pos": 558,
+    "fallback_n": null
+  },
+  "Multiscale-HDBSCAN|1h": {
+    "source": "category_timeframe",
+    "n": 8510,
+    "pos": 3569,
+    "fallback_n": null
+  },
+  "Multiscale-HDBSCAN|4h": {
+    "source": "category_timeframe",
+    "n": 2074,
+    "pos": 962,
+    "fallback_n": null
+  },
+  "OPTICS|1h": {
+    "source": "category_timeframe",
+    "n": 6896,
+    "pos": 2929,
+    "fallback_n": null
+  },
+  "OPTICS|4h": {
+    "source": "category_timeframe",
+    "n": 1788,
+    "pos": 808,
+    "fallback_n": null
+  },
+  "TDA|1h": {
+    "source": "category_timeframe",
+    "n": 6547,
+    "pos": 2771,
+    "fallback_n": null
+  },
+  "TDA|4h": {
+    "source": "category_timeframe",
+    "n": 1489,
+    "pos": 695,
+    "fallback_n": null
+  },
+  "VWAP|1h": {
+    "source": "category_timeframe",
+    "n": 2099,
+    "pos": 927,
+    "fallback_n": null
+  },
+  "VWAP|4h": {
+    "source": "category_timeframe",
+    "n": 546,
+    "pos": 230,
+    "fallback_n": null
+  },
+  "_global": {
+    "source": "global",
+    "n": 59160,
+    "pos": 25305
+  }
+}

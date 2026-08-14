@@ -1,0 +1,82 @@
+{
+  "model_name": "level_filter_v3",
+  "model_version": "v3.0.0",
+  "trained_at_utc": "2026-08-12T04:32:33.102579+00:00",
+  "training_data_start": 150,
+  "training_data_end": 71710,
+  "event_files": [
+    "backtest_ml_filter_v3_events.csv",
+    "backtest_ml_filter_v3_events_gc_si_cl.csv"
+  ],
+  "label_definition_version": "bounce_atr_mult=1.0,break_atr_mult=0.5,break_confirm_bars=2 (evaluate_level default)",
+  "event_horizon_bars": 40,
+  "feature_schema_version": 1,
+  "ordered_feature_names": [
+    "vwap_distance_norm",
+    "vol_forecast_pct_of_price",
+    "atr_distance",
+    "confluence",
+    "hurst",
+    "hmm_state_confidence",
+    "hmm_recent_flip",
+    "garman_klass_vol_pct",
+    "gjr_vol_regime_ratio",
+    "vwap_bias_alignment",
+    "ou_zone_distance_atr",
+    "level_type_GMM",
+    "level_type_HDBSCAN",
+    "level_type_Isolation-Forest",
+    "level_type_KDE",
+    "level_type_MeanShift",
+    "level_type_Multiscale-HDBSCAN",
+    "level_type_OPTICS",
+    "level_type_TDA",
+    "level_type_VWAP"
+  ],
+  "feature_schema_sha256": "9134b9704abbe362fdf3a9868f462150514bce671ee2396902814b48c5c47afc",
+  "imputer": null,
+  "scaler": null,
+  "regularized_logistic_C": 0.01,
+  "cv_results_by_C": {
+    "0.01": 0.6767570469223969,
+    "0.1": 0.6767791900543798,
+    "1.0": 0.6767918987770161,
+    "10.0": 0.6767913860246579
+  },
+  "threshold_policy_version": "v2_preserved_interim",
+  "thresholds_by_category": {
+    "GMM": 0.427264,
+    "HDBSCAN": 0.419601,
+    "Isolation-Forest": 0.418986,
+    "KDE": 0.427638,
+    "MeanShift": 0.418313,
+    "OPTICS": 0.421419,
+    "TDA": 0.427575
+  },
+  "excluded_level_types": [
+    "Changepoint"
+  ],
+  "instrument_as_feature": false,
+  "instruments_trained_on": [
+    "CL",
+    "ES",
+    "GC",
+    "NQ",
+    "SI"
+  ],
+  "dependency_versions": {
+    "sklearn": "1.9.0",
+    "numpy": "1.26.4",
+    "pandas": "2.1.4",
+    "python": "3.11.14 (main, Oct  9 2025, 16:16:55) [Clang 17.0.0 (clang-1700.6.3.2)]"
+  },
+  "git_commit": "517d8dab8a07b6d387895e7f3503bb10ea54618c",
+  "split_sizes": {
+    "train": 164901,
+    "holdout": 74620,
+    "calib": 59160,
+    "purged": 2373
+  },
+  "purge_embargo_bars": 40,
+  "artifact_sha256": "aeb55ad99ae68e677b616e250d3eb70f991ede0a033ff6d90f59a7b97215aa23"
+}

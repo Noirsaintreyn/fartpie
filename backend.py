@@ -5,6 +5,7 @@ from flask_cors import CORS
 import yfinance as yf
 import pandas as pd
 import numpy as np
+import sklearn
 from sklearn.cluster import MeanShift, estimate_bandwidth, AgglomerativeClustering, OPTICS
 from sklearn.mixture import GaussianMixture
 from sklearn.preprocessing import StandardScaler
@@ -60,9 +61,10 @@ except ImportError:
 
 from scipy.signal import find_peaks, savgol_filter, argrelextrema
 from scipy.stats import norm, kurtosis, skew, gaussian_kde, kendalltau
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import sqlite3
 import json
+import time
 import uuid
 from typing import Optional, Dict, Any, List, Tuple
 
@@ -252,6 +254,8 @@ import warnings
 import requests
 import os
 import pickle
+import joblib
+import contextlib
 from arch import arch_model
 from arch.univariate import SkewStudent
 warnings.filterwarnings('ignore')
@@ -979,7 +983,51 @@ def init_db():
                 params_json TEXT                -- {"tail_mult":1.1,"oi_clip_mult":0.6,"rf_clip":1.7}
             )
             ''')
-            
+
+            # --- shadow-mode v3 filter scoring log: v2's real live decision
+            # next to v3's score/decision on the SAME candidate, for every
+            # candidate v2 scores at the 4 real-time call sites (not the
+            # ou-zone-history bulk-scan endpoint - that loop calls the
+            # filter per historical bar and would multiply cost heavily).
+            # Never read by any live request path - purely for offline
+            # v2-vs-v3 comparison once enough rows/outcomes accrue. The
+            # realized_* columns are filled in later by a separate backfill
+            # job (not yet built) that revisits each logged candidate after
+            # its outcome window closes - NULL until then.
+            c.execute('''
+            CREATE TABLE IF NOT EXISTS shadow_v3_scores (
+                id TEXT PRIMARY KEY,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                endpoint TEXT,
+                symbol TEXT NOT NULL,
+                timeframe TEXT NOT NULL,
+                bar_ts TEXT,
+
+                category TEXT NOT NULL,
+                price REAL NOT NULL,
+                current_price REAL,
+
+                features_json TEXT,
+                model_version TEXT,
+
+                v2_decision INTEGER,
+                v3_raw_proba REAL,
+                v3_calibrated_proba REAL,
+                calibration_source TEXT,
+                v3_shadow_decision INTEGER,
+
+                state_age_seconds REAL,
+                snapshot_cache_hit INTEGER,
+                scoring_latency_ms REAL,
+
+                realized_bounced INTEGER,
+                realized_mfe_atr REAL,
+                realized_mae_atr REAL,
+                realized_ts TEXT
+            )
+            ''')
+
             conn.commit()
             
             # Admin account: rey / admin
@@ -2200,6 +2248,428 @@ def fit_gjr_garch_skewt_quantiles_pct(returns_pct, quantiles):
         return None
 
 
+def fit_ou_process(x, dt=1.0):
+    """
+    Fit an Ornstein-Uhlenbeck process via AR(1) regression: x[t+1] = a + b*x[t] + eps.
+    Used on the price-minus-VWAP deviation series (mean-reverting by
+    construction) to derive an adaptive OU-zone: VWAP + mu +/- k*stationary_std,
+    width scaling with how fast/noisy the mean reversion actually is instead
+    of a fixed-width band. Ported into production from backtest_ou_zones.py
+    (where it was validated) so build_market_state_snapshot_v3 and the
+    research scripts call the exact same implementation - no risk of the
+    live and backtested OU-zone math silently drifting apart.
+
+    Returns (theta, mu, stationary_std), or None if the fit is degenerate
+    (b outside (0,1) means no real mean reversion, or a flat/zero-variance series).
+    """
+    if len(x) < 20:
+        return None
+    x0, x1 = x[:-1], x[1:]
+    if np.std(x0) < 1e-9:
+        return None
+    b, a = np.polyfit(x0, x1, 1)
+    if not (0 < b < 1):
+        return None
+    resid = x1 - (a + b * x0)
+    resid_var = np.var(resid)
+    theta = (1 - b) / dt
+    mu = a / (1 - b)
+    stationary_var = resid_var / (1 - b ** 2)
+    if stationary_var <= 0:
+        return None
+    return theta, mu, float(np.sqrt(stationary_var))
+
+
+def build_market_state_snapshot_v3(highs, lows, closes, opens, volumes, timestamps=None, ou_k=0.25):
+    """
+    Everything needed to score EVERY candidate level for one
+    symbol/timeframe/bar, computed exactly once - not refit per candidate
+    level (score_and_filter_levels_v2's actual live behavior: a fresh
+    GJR-GARCH + HMM fit per request, which doesn't depend on which level is
+    being scored and is pure waste when called repeatedly against the same
+    still-forming bar). Callers should cache the return value keyed on
+    (symbol, timeframe, latest closed bar timestamp) and only recompute
+    when a new bar closes - see 'computed_at' for staleness checks.
+
+    Matches backtest_ml_filter_v3_events.py's collect_events() feature
+    computation exactly (same functions, same parameters) - this is the
+    single canonical implementation both live scoring and the research/
+    backtest pipeline call, so a validated backtest result and what
+    actually runs live can never silently diverge in how a feature is
+    computed.
+
+    Returns None if any required input can't be fit - fail-safe, callers
+    should treat that as "can't score candidates against this bar yet",
+    never silently substitute defaults into a live scoring decision.
+    """
+    if len(closes) < 60:
+        return None
+
+    try:
+        vwap_result = calculate_vwap(highs, lows, closes, volumes, timestamps=timestamps)
+    except Exception:
+        vwap_result = None
+    if vwap_result is None:
+        return None
+    vwap = vwap_result['vwap']
+    vwap_series = vwap_result['vwap_series']
+
+    current_price = float(closes[-1])
+    atr = _atr_for_ml_filter(highs, lows, closes)
+    if atr <= 0:
+        return None
+
+    returns_pct = np.diff(np.log(closes)) * 100
+    gjr_vol_pct = fit_gjr_garch_vol_forecast_pct(returns_pct)
+    if gjr_vol_pct is None or gjr_vol_pct <= 0:
+        return None
+    vol_forecast = gjr_vol_pct / 100.0 * current_price
+
+    try:
+        gk_vol_pct = garman_klass_daily_volatility(opens, highs, lows, closes) * 100
+    except Exception:
+        gk_vol_pct = None
+    if gk_vol_pct is None or gk_vol_pct <= 0:
+        return None
+    gjr_vol_regime_ratio = gjr_vol_pct / (gk_vol_pct + 1e-9)
+
+    try:
+        hurst = calculate_hurst_exponent(closes)['hurst']
+    except Exception:
+        hurst = 0.5  # neutral fallback (random walk)
+
+    hmm_confidence, hmm_flip = 0.5, 0
+    if HMMLEARN_AVAILABLE and GaussianHMM is not None and len(closes) >= 60:
+        try:
+            hmm_returns = np.diff(np.log(closes)).reshape(-1, 1)
+            hmm_model = GaussianHMM(n_components=3, covariance_type='diag', n_iter=50, random_state=42)
+            hmm_model.fit(hmm_returns)
+            states = hmm_model.predict(hmm_returns)
+            post = hmm_model.predict_proba(hmm_returns)
+            hmm_confidence = float(post[-1, states[-1]])
+            hmm_flip = int(states[-1] != states[max(0, len(states) - 1 - 5)])
+        except Exception:
+            hmm_confidence, hmm_flip = 0.5, 0
+
+    ou_zone_low = ou_zone_high = None
+    deviation = np.asarray(closes, dtype=float) - vwap_series
+    ou_fit = fit_ou_process(deviation)
+    if ou_fit is not None:
+        _, ou_mu, ou_std = ou_fit
+        ou_zone_low = float(vwap_series[-1] + ou_mu - ou_k * ou_std)
+        ou_zone_high = float(vwap_series[-1] + ou_mu + ou_k * ou_std)
+
+    return {
+        'current_price': current_price, 'vwap': vwap, 'atr': atr,
+        'vol_forecast': vol_forecast, 'vol_forecast_pct_of_price': vol_forecast / current_price,
+        'gjr_vol_pct': gjr_vol_pct, 'garman_klass_vol_pct': gk_vol_pct,
+        'gjr_vol_regime_ratio': gjr_vol_regime_ratio, 'hurst': hurst,
+        'hmm_state_confidence': hmm_confidence, 'hmm_recent_flip': hmm_flip,
+        'ou_zone_low': ou_zone_low, 'ou_zone_high': ou_zone_high,
+        'computed_at': time.time(),
+    }
+
+
+def build_level_features_v3(price, level_type, candidates_by_type, state, confluence_atr_mult=0.5):
+    """
+    Per-candidate-level v3 feature vector, built from a cached
+    build_market_state_snapshot_v3() snapshot (shared across every level
+    scored in the same request/bar) plus this one level's own price/type
+    and every OTHER candidate in the request (for confluence). Same
+    canonical-implementation guarantee as the state snapshot above - this
+    is what both live scoring and backtest_ml_filter_v3_events.py's
+    collect_events() call, byte-for-byte the same math.
+
+    candidates_by_type: {category_name: [price, price, ...]} across every
+    category in this request, including this level's own category (which
+    is excluded automatically from its own confluence count).
+
+    Returns the 11-feature dict (backtest_ml_filter_v3_events.py's exact
+    feature_cols naming), or None if the OU-zone isn't available - no
+    fallback substituted, matching how the research pipeline drops rows
+    missing this feature rather than imputing one.
+    """
+    current_price = state['current_price']
+    atr = state['atr']
+    vwap = state['vwap']
+    vol_forecast = state['vol_forecast']
+
+    ou_zone_low, ou_zone_high = state['ou_zone_low'], state['ou_zone_high']
+    if ou_zone_low is None:
+        return None
+
+    atr_distance = (price - current_price) / atr
+
+    tol = confluence_atr_mult * atr
+    confluence = 0
+    for cat, prices in candidates_by_type.items():
+        if cat == level_type:
+            continue
+        if any(abs(p - price) <= tol for p in prices):
+            confluence += 1
+
+    side = 'support' if price < current_price else 'resistance'
+    trade_direction = 'long' if side == 'support' else 'short'
+    price_vs_vwap = current_price - vwap
+    aligned_with_bias = (trade_direction == 'long' and price_vs_vwap > 0) or \
+                         (trade_direction == 'short' and price_vs_vwap < 0)
+    vwap_stretch = abs(price_vs_vwap) / (vol_forecast + 1e-9)
+    vwap_bias_alignment = vwap_stretch if aligned_with_bias else -vwap_stretch
+
+    if price < ou_zone_low:
+        ou_zone_distance_atr = (price - ou_zone_low) / atr
+    elif price > ou_zone_high:
+        ou_zone_distance_atr = (price - ou_zone_high) / atr
+    else:
+        ou_zone_distance_atr = 0.0
+
+    return {
+        'vwap_distance_norm': (price - vwap) / (vol_forecast + 1e-9),
+        'vol_forecast_pct_of_price': state['vol_forecast_pct_of_price'],
+        'atr_distance': atr_distance,
+        'confluence': confluence,
+        'hurst': state['hurst'],
+        'hmm_state_confidence': state['hmm_state_confidence'],
+        'hmm_recent_flip': state['hmm_recent_flip'],
+        'garman_klass_vol_pct': state['garman_klass_vol_pct'],
+        'gjr_vol_regime_ratio': state['gjr_vol_regime_ratio'],
+        'vwap_bias_alignment': vwap_bias_alignment,
+        'ou_zone_distance_atr': ou_zone_distance_atr,
+    }
+
+
+V3_FEATURE_COLS = ['vwap_distance_norm', 'vol_forecast_pct_of_price', 'atr_distance',
+                    'confluence', 'hurst', 'hmm_state_confidence', 'hmm_recent_flip',
+                    'garman_klass_vol_pct', 'gjr_vol_regime_ratio', 'vwap_bias_alignment',
+                    'ou_zone_distance_atr']
+
+_MARKET_STATE_V3_CACHE = {}
+_MARKET_STATE_V3_CACHE_MAX = 64  # bound memory - simple oldest-evicted cap, not a real LRU
+
+
+def get_market_state_snapshot_v3(symbol, timeframe, highs, lows, closes, opens, volumes,
+                                  timestamps=None, ou_k=0.25, max_age_seconds=None):
+    """
+    Cached wrapper around build_market_state_snapshot_v3(), keyed on
+    (symbol, timeframe, latest bar timestamp) so repeated requests against
+    the same still-forming bar reuse one GJR-GARCH/HMM fit instead of
+    refitting per request - score_and_filter_levels_v2's actual live
+    behavior today, and pure waste since none of this state depends on
+    which candidate level is being scored. Recomputes automatically the
+    instant a new bar closes, since that changes the cache key.
+
+    max_age_seconds: optional belt-and-suspenders staleness check on top of
+    the key - treats a cached entry older than this as stale and refits
+    anyway. Not needed for correctness (the key already changes every new
+    bar) but cheap insurance against a key collision across two different
+    windows.
+
+    Callers should compute `time.time() - state['computed_at']` themselves
+    (state_age_seconds) when logging a scoring decision, so a stale-but-
+    still-cached state is visible in telemetry rather than silently used.
+
+    Per-process cache (this Flask worker only, not shared across workers/
+    instances) - still eliminates the dominant waste (repeat requests
+    hitting the same worker for the same bar); a cache miss just means
+    normal live latency, never wrong data.
+    """
+    latest_ts = timestamps[-1] if timestamps is not None and len(timestamps) else None
+    key = (symbol, timeframe, str(latest_ts) if latest_ts is not None else len(closes))
+
+    cached = _MARKET_STATE_V3_CACHE.get(key)
+    if cached is not None:
+        if max_age_seconds is None or (time.time() - cached['computed_at']) <= max_age_seconds:
+            return cached
+
+    state = build_market_state_snapshot_v3(highs, lows, closes, opens, volumes, timestamps=timestamps, ou_k=ou_k)
+    if state is not None:
+        if len(_MARKET_STATE_V3_CACHE) >= _MARKET_STATE_V3_CACHE_MAX:
+            oldest_key = min(_MARKET_STATE_V3_CACHE, key=lambda k: _MARKET_STATE_V3_CACHE[k]['computed_at'])
+            del _MARKET_STATE_V3_CACHE[oldest_key]
+        _MARKET_STATE_V3_CACHE[key] = state
+    return state
+
+
+_LEVEL_FILTER_V3_ARTIFACT = None
+
+
+def load_level_filter_v3_artifact(version=None, models_dir='models/level_filter_v3'):
+    """
+    Loads the level_filter_v3 model bundle produced by
+    train_level_filter_v3.py - fail-closed: raises rather than silently
+    serving a mismatched or corrupted artifact. Checked at load time:
+
+      - feature_schema_sha256 matches build_level_features_v3()'s CURRENT
+        V3_FEATURE_COLS (catches the live feature builder having drifted
+        out from under a trained artifact)
+      - the artifact's ordered_feature_names starts with V3_FEATURE_COLS
+        in the same order (catches a column-order mismatch, which would
+        silently mis-score every candidate rather than error)
+      - sklearn major.minor version matches what it was trained under
+        (pickled sklearn estimators aren't guaranteed compatible across
+        versions)
+      - every level_type the artifact was trained on has a calibrator
+        (own bucket or a logged fallback) for both timeframes - a
+        category with nothing to score against would otherwise silently
+        fall through to raw, uncalibrated probabilities
+
+    version=None loads whichever version models/level_filter_v3/promoted.json
+    points at - callers should never scan the directory for "latest".
+    Caches the loaded bundle in-process; pass a version explicitly to
+    force a reload (e.g. after promoting a new version).
+    """
+    global _LEVEL_FILTER_V3_ARTIFACT
+    if version is None:
+        with open(f'{models_dir}/promoted.json') as f:
+            version = json.load(f)['version']
+
+    artifact_dir = f'{models_dir}/{version}'
+    with open(f'{artifact_dir}/manifest.json') as f:
+        manifest = json.load(f)
+
+    schema_sha = hashlib.sha256(json.dumps(V3_FEATURE_COLS).encode()).hexdigest()
+    if manifest['feature_schema_sha256'] != schema_sha:
+        raise RuntimeError(f"level_filter_v3 {version}: feature_schema_sha256 mismatch - "
+                            f"build_level_features_v3()'s V3_FEATURE_COLS has changed since this artifact was "
+                            f"trained. Refusing to load - retrain before using this version again.")
+
+    if manifest['ordered_feature_names'][:len(V3_FEATURE_COLS)] != V3_FEATURE_COLS:
+        raise RuntimeError(f"level_filter_v3 {version}: feature order mismatch between artifact and "
+                            f"build_level_features_v3(). Refusing to load.")
+
+    trained_sklearn = manifest['dependency_versions']['sklearn']
+    if trained_sklearn.split('.')[:2] != sklearn.__version__.split('.')[:2]:
+        raise RuntimeError(f"level_filter_v3 {version}: trained under sklearn {trained_sklearn}, running "
+                            f"{sklearn.__version__} - refusing to unpickle a possibly-incompatible artifact.")
+
+    bundle = joblib.load(f'{artifact_dir}/artifact.joblib')
+    for lt in bundle['level_type_categories']:
+        for tf in ('1h', '4h'):
+            key = f'{lt}|{tf}'
+            if key not in bundle['calibrators']:
+                raise RuntimeError(f"level_filter_v3 {version}: no calibrator (own bucket or fallback) for "
+                                    f"'{key}'. Refusing to load - this category/timeframe would silently score "
+                                    f"uncalibrated otherwise.")
+
+    bundle['manifest'] = manifest
+    bundle['loaded_at'] = time.time()
+    _LEVEL_FILTER_V3_ARTIFACT = bundle
+    return bundle
+
+
+def _log_shadow_v3_rows(rows):
+    if not rows:
+        return
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.executemany('''
+                INSERT INTO shadow_v3_scores
+                (id, endpoint, symbol, timeframe, bar_ts, category, price, current_price,
+                 features_json, model_version, v2_decision, v3_raw_proba, v3_calibrated_proba,
+                 calibration_source, v3_shadow_decision, state_age_seconds, snapshot_cache_hit,
+                 scoring_latency_ms)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', [(
+                r['id'], r['endpoint'], r['symbol'], r['timeframe'], r['bar_ts'],
+                r['category'], r['price'], r['current_price'],
+                json.dumps(r['features']), r['model_version'],
+                int(r['v2_decision']), r['raw_proba'], r['calibrated_proba'],
+                r['calibration_source'], None if r['v3_shadow_decision'] is None else int(r['v3_shadow_decision']),
+                r['state_age_seconds'], int(r['snapshot_cache_hit']), r['scoring_latency_ms'],
+            ) for r in rows])
+            conn.commit()
+    except Exception as e:
+        # logging must never break a live request - drop silently past a print
+        try:
+            print(f"shadow_v3 logging failed (non-fatal): {e}")
+        except Exception:
+            pass
+
+
+def shadow_score_levels_v3(levels_by_category, highs, lows, opens, closes, volumes, current_price,
+                            symbol, timeframe, v2_filtered, timestamps=None, endpoint=None):
+    """
+    Shadow-mode v3 scoring: for every candidate level v2 just scored,
+    computes the v3 raw + calibrated probability and an interim shadow
+    keep/drop decision (v2's preserved thresholds applied to v3's
+    calibrated probability - see train_level_filter_v3.py), then logs
+    every row to shadow_v3_scores for offline v2-vs-v3 comparison.
+
+    Call this AFTER score_and_filter_levels_v2, passing its result as
+    v2_filtered. Never changes what the caller returns to the user - it's
+    called purely for its logging side effect, wrapped so ANY failure
+    (missing artifact, bad market state, DB error) is caught and swallowed
+    here rather than touching the live request. Ignore its return value
+    unless you specifically want the scored rows (e.g. for a debug view).
+    """
+    try:
+        t0 = time.time()
+        if _LEVEL_FILTER_V3_ARTIFACT is None:
+            load_level_filter_v3_artifact()
+        bundle = _LEVEL_FILTER_V3_ARTIFACT
+
+        cache_key_before = len(_MARKET_STATE_V3_CACHE)
+        state = get_market_state_snapshot_v3(symbol, timeframe, highs, lows, closes, opens, volumes, timestamps=timestamps)
+        cache_hit = len(_MARKET_STATE_V3_CACHE) == cache_key_before
+        if state is None:
+            return None
+
+        state_age_seconds = time.time() - state['computed_at']
+        bar_ts = str(timestamps[-1]) if timestamps is not None and len(timestamps) else None
+
+        all_candidates_by_type = {cat: [l['price'] for l in (lvls or []) if l.get('price') is not None]
+                                   for cat, lvls in levels_by_category.items()}
+        v2_kept_prices = {(l.get('category'), round(l['price'], 6)) for l in (v2_filtered or []) if l.get('price') is not None}
+
+        rows = []
+        for category, lvls in levels_by_category.items():
+            for lvl in (lvls or []):
+                price = lvl.get('price')
+                if price is None:
+                    continue
+                feats = build_level_features_v3(price, category, all_candidates_by_type, state)
+                if feats is None:
+                    continue  # no OU-zone available this bar - skip, don't guess
+
+                X_row = [[feats[c] for c in bundle['feature_cols']] +
+                         [1.0 if lt == category else 0.0 for lt in bundle['level_type_categories']]]
+                raw_proba = float(bundle['model'].predict_proba(X_row)[0, 1])
+
+                calib_key = f"{category}|{timeframe}"
+                calib_info = bundle['calibrators'].get(calib_key)
+                calibrator = calib_info['calibrator'] if calib_info else bundle['global_calibrator']
+                calibrated_proba = float(calibrator.predict_proba([[raw_proba]])[0, 1])
+                if not (0.0 <= calibrated_proba <= 1.0):
+                    continue  # fail-safe: never log/act on an out-of-range probability
+
+                v2_threshold = bundle['v2_thresholds_preserved'].get(category)
+                v3_shadow_decision = (calibrated_proba >= v2_threshold) if v2_threshold is not None else None
+                v2_decision = (category, round(price, 6)) in v2_kept_prices
+
+                rows.append({
+                    'id': str(uuid.uuid4()), 'endpoint': endpoint, 'symbol': symbol, 'timeframe': timeframe,
+                    'bar_ts': bar_ts, 'category': category, 'price': float(price), 'current_price': float(current_price),
+                    'features': feats, 'model_version': bundle['model_version'],
+                    'v2_decision': v2_decision, 'raw_proba': raw_proba, 'calibrated_proba': calibrated_proba,
+                    'calibration_source': calib_info['source'] if calib_info else 'global_fallback',
+                    'v3_shadow_decision': v3_shadow_decision,
+                    'state_age_seconds': state_age_seconds, 'snapshot_cache_hit': cache_hit,
+                    'scoring_latency_ms': None,  # filled in below, after the loop
+                })
+
+        latency_ms = (time.time() - t0) * 1000
+        for r in rows:
+            r['scoring_latency_ms'] = latency_ms
+        _log_shadow_v3_rows(rows)
+        return rows
+    except Exception as e:
+        try:
+            print(f"shadow_score_levels_v3 failed (non-fatal, live output unaffected): {e}")
+        except Exception:
+            pass
+        return None
+
+
 def calculate_garch_volatility_regime(closes):
     """
     Enhanced volatility regime detection using GARCH
@@ -3379,8 +3849,32 @@ def fractional_brownian_adjustment(base_hod, base_lod, hurst, sigma):
 
 # [ALL THE LEVEL DETECTION FUNCTIONS - KEEPING THEM EXACTLY AS BEFORE]
 
-def calculate_meanshift_levels(highs, lows, closes):
-    all_prices = np.concatenate([highs, lows, closes]).reshape(-1, 1)
+def _volume_weighted_price_array(highs, lows, closes, volumes, max_replication=5):
+    """Approximate volume-weighted density input for the clustering-based
+    level detectors, which otherwise treat every high/low/close point as
+    equal mass regardless of how much actually traded there. Repeats each
+    bar's three price points a number of times proportional to that bar's
+    volume relative to the window's mean (so a bar that's ~1x average
+    volume gets ~1x weight, ~3x average gets ~3x, etc.), clipped to
+    max_replication so a single outlier volume spike can't blow up the
+    point count. Mean replication is ~1x by construction, so the resulting
+    array stays close in scale to the unweighted np.concatenate([highs,
+    lows, closes]) - existing adaptive parameters that key off n_samples
+    (e.g. HDBSCAN's min_cluster_size) don't need retuning.
+
+    volumes=None -> returns the plain unweighted concatenation, identical
+    to every function's original behavior (backward compatible - no
+    current live caller passes volumes, so nothing live changes)."""
+    if volumes is None:
+        return np.concatenate([highs, lows, closes])
+    vol = np.asarray(volumes, dtype=float)
+    vol_norm = vol / (vol.mean() + 1e-9)
+    reps = np.clip(np.round(vol_norm), 1, max_replication).astype(int)
+    return np.concatenate([np.repeat(highs, reps), np.repeat(lows, reps), np.repeat(closes, reps)])
+
+
+def calculate_meanshift_levels(highs, lows, closes, volumes=None):
+    all_prices = _volume_weighted_price_array(highs, lows, closes, volumes).reshape(-1, 1)
     bandwidth = estimate_bandwidth(all_prices, quantile=0.15, n_samples=min(len(all_prices), 1000))
     if bandwidth == 0:
         bandwidth = (all_prices.max() - all_prices.min()) / 20
@@ -3451,8 +3945,128 @@ def add_fibonacci_metadata_to_levels(all_levels, fib_levels, sigma_price, thresh
         if nearby_fibs:
             level['fibonacci_confluence'] = nearby_fibs
             level['has_fib_confluence'] = True
-    
+
     return all_levels
+
+
+# Same clustering algorithms used at the live call sites, callable
+# generically as (highs, lows, closes, timeframe) -> levels, so
+# extend_thin_side_levels() can re-run the SAME validated detectors on a
+# longer window instead of inventing a different method for the thin side.
+# Excludes categories with a different call signature (Neural Net, Local
+# Interaction, Wyckoff, Time-Weighted HDBSCAN) - out of scope for a first
+# pass, most of the level count in practice comes from these 8.
+_THIN_SIDE_ALGORITHMS = {
+    'GMM': lambda h, l, c, tf: calculate_gmm_levels(h, l, c),
+    'TDA': lambda h, l, c, tf: persistent_homology_levels(h, l, c, max_levels=8),
+    'HDBSCAN': lambda h, l, c, tf: calculate_hdbscan_levels(h, l, c, timeframe=tf),
+    'OPTICS': lambda h, l, c, tf: enhanced_optics_levels(h, l, c, timeframe=tf),
+    'KDE': lambda h, l, c, tf: kde_based_levels(h, l, c, n_levels=10),
+    'Isolation-Forest': lambda h, l, c, tf: find_pivot_anomalies(h, l, c),
+    'MeanShift': lambda h, l, c, tf: calculate_meanshift_levels(h, l, c),
+    'Multiscale-HDBSCAN': lambda h, l, c, tf: multiscale_hdbscan_levels(h, l, c, timeframe=tf),
+}
+
+# Deliberately much longer than the default live fetch (5-10 days for
+# intraday futures, per the period_map at get_data()) - the whole point is
+# to look further back than the normal window to recover real prior highs/
+# lows that a fresh breakout has simply moved outside of.
+_THIN_SIDE_EXTENDED_PERIOD = {
+    ('1m', True): '1mo', ('5m', True): '1mo', ('15m', True): '2mo',
+    ('1h', True): '3mo', ('4h', True): '6mo',
+    ('1m', False): '1mo', ('5m', False): '2mo', ('15m', False): '3mo',
+    ('1h', False): '1y', ('4h', False): '1y',
+}
+
+
+def extend_thin_side_levels(ticker, timeframe, highs, lows, closes, current_price,
+                             levels_by_category, is_futures, min_levels_per_side=3, side_band_atr=15):
+    """
+    If one side (resistance above current_price, support below) has fewer
+    than min_levels_per_side raw candidates within side_band_atr*ATR of
+    current price, fetches a LONGER historical window (same source, same
+    ticker, just further back) and re-runs the SAME clustering algorithms
+    already used at this call site against it, merging in only the NEW
+    candidates that land on the thin side.
+
+    This does not invent anything - it recovers real prior price structure
+    (e.g. a swing high from 6 weeks ago) that the short default live window
+    (5-10 days for intraday futures) simply doesn't include, which is
+    exactly what happens on a breakout day: the balanced side has plenty of
+    recent consolidation to cluster, the breakout side has almost no
+    trading history within the short window because price is making new
+    highs/lows relative to it. Never touches the side that already has
+    enough coverage. Merged candidates still go through the same ML filter
+    as everything else - nothing here bypasses validation, it only adds
+    more raw candidates for the filter to judge.
+
+    Fails safe: any error (bad ticker, no data, algorithm exception)
+    returns levels_by_category unchanged, never raises into the caller.
+    """
+    try:
+        atr = _atr_for_ml_filter(highs, lows, closes)
+        if atr is None or atr <= 0:
+            return levels_by_category
+
+        resistance_n = sum(1 for lvls in levels_by_category.values() for lvl in (lvls or [])
+                            if lvl.get('price') is not None and current_price < lvl['price'] <= current_price + side_band_atr * atr)
+        support_n = sum(1 for lvls in levels_by_category.values() for lvl in (lvls or [])
+                         if lvl.get('price') is not None and current_price - side_band_atr * atr <= lvl['price'] < current_price)
+
+        if resistance_n < min_levels_per_side and support_n >= min_levels_per_side:
+            thin_side = 'resistance'
+        elif support_n < min_levels_per_side and resistance_n >= min_levels_per_side:
+            thin_side = 'support'
+        else:
+            return levels_by_category  # balanced, or both thin (not this mechanism's job)
+
+        period = _THIN_SIDE_EXTENDED_PERIOD.get((timeframe, is_futures))
+        if period is None:
+            return levels_by_category
+
+        if timeframe == '4h':
+            wide_hist = fetch_historical_data_with_resampling(ticker=ticker, timeframe='4h', period=period, is_futures=is_futures)
+        else:
+            interval = '60m' if (is_futures and timeframe == '1h') else timeframe
+            wide_hist = yf.Ticker(ticker).history(period=period, interval=interval)
+        if wide_hist is None or len(wide_hist) < 60:
+            return levels_by_category
+        w_h, w_l, w_c = wide_hist['High'].values, wide_hist['Low'].values, wide_hist['Close'].values
+
+        extended = {cat: list(lvls) if lvls else [] for cat, lvls in levels_by_category.items()}
+        added = 0
+        for category in levels_by_category.keys():
+            fn = _THIN_SIDE_ALGORITHMS.get(category)
+            if fn is None:
+                continue
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    wide_levels = fn(w_h, w_l, w_c, timeframe) or []
+            except Exception:
+                continue
+            existing_prices = {round(lvl['price'], 4) for lvl in extended[category] if lvl.get('price') is not None}
+            for lvl in wide_levels:
+                price = lvl.get('price')
+                if price is None or round(price, 4) in existing_prices:
+                    continue
+                if thin_side == 'resistance' and not (current_price < price <= current_price + side_band_atr * atr):
+                    continue
+                if thin_side == 'support' and not (current_price - side_band_atr * atr <= price < current_price):
+                    continue
+                lvl = dict(lvl)
+                lvl['from_extended_lookback'] = True
+                lvl['extended_lookback_period'] = period
+                extended[category].append(lvl)
+                added += 1
+
+        if added:
+            print(f"extend_thin_side_levels: {ticker} {timeframe} thin_side={thin_side} "
+                  f"(resistance={resistance_n}, support={support_n}) -> added {added} candidates from {period} lookback")
+        return extended
+    except Exception as e:
+        print(f"extend_thin_side_levels failed (non-fatal, using original levels): {e}")
+        return levels_by_category
+
 
 def find_pivot_anomalies(highs, lows, closes):
     """
@@ -3527,21 +4141,21 @@ def find_pivot_anomalies(highs, lows, closes):
     return levels
 
 
-def calculate_hdbscan_levels(highs, lows, closes, timeframe='1d'):
+def calculate_hdbscan_levels(highs, lows, closes, timeframe='1d', volumes=None):
     """
     HDBSCAN: State-of-the-art density clustering
     Automatically finds optimal structure without parameters
-    
+
     CRITICAL: Clusters on RAW PRICES to ensure output is in price space.
     HDBSCAN handles scale differences internally via its distance metric.
     """
     if len(closes) < 20:
         print("HDBSCAN: Insufficient data (< 20 points)")
         return []
-    
+
     # CRITICAL FIX: Cluster on RAW PRICES directly
     # This guarantees output is in price space (no coordinate transform bugs)
-    all_prices = np.concatenate([highs, lows, closes])
+    all_prices = _volume_weighted_price_array(highs, lows, closes, volumes)
     prices_array = all_prices.reshape(-1, 1)  # HDBSCAN expects 2D array
     
     # Adaptive parameters based on data size and timeframe
@@ -3636,7 +4250,7 @@ def calculate_hdbscan_levels(highs, lows, closes, timeframe='1d'):
     print(f"HDBSCAN: Returning {len(result)} levels with prices: {price_list}")
     return result
 
-def enhanced_optics_levels(highs, lows, closes, timeframe='1d'):
+def enhanced_optics_levels(highs, lows, closes, timeframe='1d', volumes=None):
     """
     OPTICS with reachability-based strength scoring
     Reachability distance = "how dense is this cluster?"
@@ -3644,8 +4258,8 @@ def enhanced_optics_levels(highs, lows, closes, timeframe='1d'):
     """
     if len(closes) < 20:
         return []
-    
-    all_prices = np.concatenate([highs, lows, closes]).reshape(-1, 1)
+
+    all_prices = _volume_weighted_price_array(highs, lows, closes, volumes).reshape(-1, 1)
     
     optics = OPTICS(
         min_samples=5,
@@ -3717,15 +4331,23 @@ def enhanced_optics_levels(highs, lows, closes, timeframe='1d'):
     
     return sorted(levels, key=lambda x: x['strength'], reverse=True)[:8]
 
-def kde_based_levels(highs, lows, closes, n_levels=10):
+def kde_based_levels(highs, lows, closes, n_levels=10, volumes=None):
     """
     Find levels using kernel density estimation
     Peaks in density = strong levels
     """
     all_prices = np.concatenate([highs, lows, closes])
-    
-    # Adaptive bandwidth (Scott's rule)
-    kde = gaussian_kde(all_prices, bw_method='scott')
+
+    # Adaptive bandwidth (Scott's rule). gaussian_kde supports weights
+    # natively (unlike sklearn's clustering estimators) - each bar's
+    # volume, normalized, weighted directly rather than approximated via
+    # point replication like the other volume-weighted detectors.
+    kde_weights = None
+    if volumes is not None:
+        vol = np.asarray(volumes, dtype=float)
+        vol_norm = vol / (vol.mean() + 1e-9)
+        kde_weights = np.concatenate([vol_norm, vol_norm, vol_norm])
+    kde = gaussian_kde(all_prices, bw_method='scott', weights=kde_weights)
     
     # Evaluate KDE on fine grid
     price_range = np.ptp(all_prices)
@@ -4062,7 +4684,7 @@ def score_and_filter_levels_v2(levels_by_category, highs, lows, opens, closes, v
     return filtered
 
 
-def calculate_gmm_levels(highs, lows, closes, min_components=3, max_components=10, min_frac=0.03):
+def calculate_gmm_levels(highs, lows, closes, min_components=3, max_components=10, min_frac=0.03, volumes=None):
     """
     Gaussian Mixture Model: soft/probabilistic alternative to HDBSCAN.
     Clusters raw prices same as HDBSCAN, but each level's confidence comes
@@ -4075,7 +4697,7 @@ def calculate_gmm_levels(highs, lows, closes, min_components=3, max_components=1
     """
     if len(closes) < 20:
         return []
-    all_prices = np.concatenate([highs, lows, closes])
+    all_prices = _volume_weighted_price_array(highs, lows, closes, volumes)
     X = all_prices.reshape(-1, 1)
     n = len(X)
 
@@ -4111,11 +4733,11 @@ def calculate_gmm_levels(highs, lows, closes, min_components=3, max_components=1
         })
     return levels
 
-def multiscale_hdbscan_levels(highs, lows, closes, timeframe='1d'):
+def multiscale_hdbscan_levels(highs, lows, closes, timeframe='1d', volumes=None):
     """
     Run HDBSCAN at multiple scales to catch both major and minor levels
     """
-    all_prices = np.concatenate([highs, lows, closes]).reshape(-1, 1)
+    all_prices = _volume_weighted_price_array(highs, lows, closes, volumes).reshape(-1, 1)
     
     # Different scales
     scales = [
@@ -4433,6 +5055,224 @@ def persistent_homology_levels(highs, lows, closes, max_levels=8):
     except Exception as e:
         print(f"Persistent Homology failed: {e}")
         return []
+
+
+def changepoint_levels(highs, lows, closes, max_levels=8, penalty=8):
+    """
+    Bayesian-style structural-break levels via offline changepoint detection
+    (ruptures, PELT search with RBF cost - detects breaks in the local
+    distribution, not just the mean, since RBF is a kernel-based cost that
+    picks up variance/level shifts together). Candidates come from BOTH
+    equilibria either side of a detected break AND the break boundary price
+    itself - a level that was defended for a long pre-break segment is a
+    different kind of candidate than the price right at the transition.
+
+    Genuinely different mechanism from the 8 density/clustering-based
+    detectors: those find where price already clustered densely; this
+    finds where the market's local regime actually CHANGED, on the theory
+    that a fresh equilibrium (or the boundary of one) is a real candidate
+    even if it hasn't accumulated enough touches yet to show up as a
+    density cluster.
+    """
+    if len(closes) < 40:
+        return []
+    try:
+        import ruptures as rpt
+    except ImportError:
+        return []
+
+    try:
+        algo = rpt.Pelt(model='rbf', min_size=10).fit(closes)
+        breakpoints = algo.predict(pen=penalty)
+    except Exception:
+        return []
+    if not breakpoints:
+        return []
+
+    segment_bounds = [0] + breakpoints
+    levels = []
+    seen_prices = set()
+    for i in range(len(segment_bounds) - 1):
+        seg_start, seg_end = segment_bounds[i], min(segment_bounds[i + 1], len(closes))
+        if seg_end - seg_start < 5:
+            continue
+        seg_closes = closes[seg_start:seg_end]
+        seg_len = seg_end - seg_start
+
+        # pre-break equilibrium: this segment's own mean, weighted by how
+        # long it held (longer-held equilibria = more structurally real)
+        equilibrium = float(np.mean(seg_closes))
+        strength = min(0.95, 0.3 + 0.5 * (seg_len / len(closes)))
+        price_key = round(equilibrium, 2)
+        if price_key not in seen_prices:
+            touches = int(np.sum(np.abs(closes - equilibrium) < equilibrium * 0.005))
+            levels.append({
+                'price': equilibrium, 'type': 'Changepoint Equilibrium', 'strength': strength,
+                'touches': touches, 'category': 'Changepoint',
+                'breakoutProb': float(1 - strength), 'reversionProb': float(strength),
+            })
+            seen_prices.add(price_key)
+
+        # break boundary itself: the price AT the transition, distinct from
+        # either side's equilibrium - not scored by segment length since a
+        # boundary's significance comes from being a regime edge, not from
+        # persisting
+        if seg_end < len(closes):
+            boundary_price = float(closes[seg_end - 1])
+            price_key = round(boundary_price, 2)
+            if price_key not in seen_prices:
+                touches = int(np.sum(np.abs(closes - boundary_price) < boundary_price * 0.005))
+                levels.append({
+                    'price': boundary_price, 'type': 'Changepoint Boundary', 'strength': 0.6,
+                    'touches': touches, 'category': 'Changepoint',
+                    'breakoutProb': 0.4, 'reversionProb': 0.6,
+                })
+                seen_prices.add(price_key)
+
+    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:max_levels]
+
+
+def kalman_equilibrium_levels(highs, lows, closes, k_levels=(0.5, 1.0, 1.5), max_levels=8):
+    """
+    Local-level Kalman filter fair-value estimate, with levels at
+    m_t +/- k*sigma_t for a few k multiples. Unlike the OU-zone feature
+    already in the ML filter (which fits a MEAN-REVERTING process with a
+    FIXED long-run mean over the window), a local-level Kalman filter
+    treats the latent "fair value" itself as a random walk with no
+    reversion target - the equilibrium is allowed to drift/adapt smoothly
+    rather than pulling back to one fixed level. Genuinely different
+    assumption, not just a re-implementation of OU-zone, though the two
+    should be checked for redundancy empirically (correlated features
+    would mean this isn't adding real information despite the different
+    math).
+
+    Simple scalar Kalman filter (no pykalman dependency, consistent with
+    how OU-zone was hand-rolled): state = latent price level, observation
+    = close price, process/observation noise estimated from the window's
+    own bar-to-bar return variance so it's self-calibrating per instrument
+    and timeframe rather than a fixed tuned constant.
+    """
+    if len(closes) < 30:
+        return []
+
+    # obs_var = typical bar-to-bar price noise scale (the window's own
+    # close variance); process_var is a SMALL fraction of that, meaning the
+    # underlying level is assumed to drift much more slowly than raw price
+    # noise - this is what makes the filter smooth rather than track price
+    # almost exactly. Deriving process_var from return variance*price^2
+    # (first attempt) put process_var ~150x LARGER than obs_var, so the
+    # filter had near-unity gain and barely smoothed at all - residuals
+    # were ~0.06pt wide on a $1550+ instrument, useless as levels.
+    obs_var = float(np.var(closes))
+    process_var = obs_var * 0.02
+    if obs_var <= 0 or process_var <= 0:
+        return []
+
+    # NOTE: sigma_t here is deliberately NOT sqrt(final posterior variance
+    # p) - p converges to the filter's confidence about WHERE the fair
+    # value is (estimation uncertainty, shrinks as data accumulates), not
+    # how far price actually wanders around it. That produced levels only
+    # ~0.5pt wide on a $1550+ instrument - useless as trading levels. The
+    # right scale is the empirical std of the (close - filtered fair
+    # value) residuals across the window, tracked during the same pass.
+    m = closes[0]
+    p = float(np.var(closes))
+    residuals = []
+    for c in closes[1:]:
+        # predict
+        p = p + process_var
+        # update
+        kalman_gain = p / (p + obs_var)
+        m = m + kalman_gain * (c - m)
+        p = (1 - kalman_gain) * p
+        residuals.append(c - m)
+    sigma = float(np.std(residuals)) if residuals else 0.0
+    if sigma <= 0:
+        return []
+
+    levels = []
+    for k in k_levels:
+        for sign, side_name in [(1, 'upper'), (-1, 'lower')]:
+            price = float(m + sign * k * sigma)
+            if price <= 0:
+                continue
+            strength = min(0.9, 0.4 + 0.15 * k)
+            touches = int(np.sum(np.abs(closes - price) < price * 0.005))
+            levels.append({
+                'price': price, 'type': f'Kalman {side_name} k={k}', 'strength': strength,
+                'touches': touches, 'category': 'Kalman',
+                'breakoutProb': float(1 - strength), 'reversionProb': float(strength),
+            })
+    # fair value itself as a level too - not a support/resistance edge, but
+    # a candidate mean-reversion target
+    levels.append({
+        'price': float(m), 'type': 'Kalman Fair Value', 'strength': 0.5,
+        'touches': int(np.sum(np.abs(closes - m) < m * 0.005)), 'category': 'Kalman',
+        'breakoutProb': 0.5, 'reversionProb': 0.5,
+    })
+    return levels[:max_levels]
+
+
+def wavelet_pivot_levels(highs, lows, closes, max_levels=8, wavelet='db4', max_level=4):
+    """
+    Multiresolution wavelet pivots: decompose closes with a discrete
+    wavelet transform, reconstruct the price series from progressively
+    coarser approximation levels, and find local extrema at each scale.
+    A price that remains a local extremum from fine (near-raw price) all
+    the way through coarse (heavily smoothed) reconstructions is a
+    genuinely different kind of candidate than one only visible at a
+    single density-clustering scale - it's structurally persistent across
+    resolutions, not just across cluster-size parameters like
+    Multiscale-HDBSCAN (which reruns the SAME clustering algorithm at
+    different min_cluster_size, still only ever looking at one snapshot
+    resolution of the raw price cloud).
+    """
+    import pywt
+    n = len(closes)
+    if n < 32:
+        return []
+
+    max_possible_level = pywt.dwt_max_level(n, pywt.Wavelet(wavelet).dec_len)
+    levels_to_use = min(max_level, max_possible_level)
+    if levels_to_use < 1:
+        return []
+
+    extrema_votes = {}
+    for scale in range(1, levels_to_use + 1):
+        try:
+            coeffs = pywt.wavedec(closes, wavelet, level=scale)
+            # zero out detail coefficients, keep only the approximation -
+            # reconstructs a smoothed version of price at this scale
+            smoothed_coeffs = [coeffs[0]] + [np.zeros_like(c) for c in coeffs[1:]]
+            smoothed = pywt.waverec(smoothed_coeffs, wavelet)[:n]
+        except Exception:
+            continue
+        peak_idx = argrelextrema(smoothed, np.greater, order=max(2, scale * 2))[0]
+        trough_idx = argrelextrema(smoothed, np.less, order=max(2, scale * 2))[0]
+        for idx in np.concatenate([peak_idx, trough_idx]).astype(int):
+            if idx < 0 or idx >= n:
+                continue
+            price_key = round(float(closes[idx]), 2)
+            extrema_votes[price_key] = extrema_votes.get(price_key, 0) + 1
+
+    if not extrema_votes:
+        return []
+
+    levels = []
+    for price, vote_count in extrema_votes.items():
+        # strength scales with how many of the tested scales this price
+        # remained an extremum at - a point that's only a pivot at one
+        # fine scale is much weaker evidence than one that survives
+        # through the coarsest reconstruction tested
+        strength = min(0.95, 0.25 + 0.7 * (vote_count / levels_to_use))
+        touches = int(np.sum(np.abs(closes - price) < price * 0.005))
+        levels.append({
+            'price': float(price), 'type': f'Wavelet Pivot ({vote_count}/{levels_to_use} scales)',
+            'strength': float(strength), 'touches': touches, 'category': 'Wavelet',
+            'breakoutProb': float(1 - strength), 'reversionProb': float(strength),
+        })
+    return sorted(levels, key=lambda x: x['strength'], reverse=True)[:max_levels]
+
 
 if TORCH_AVAILABLE and nn is not None:
     import torch.nn.functional as F
@@ -5999,13 +6839,18 @@ def get_data():
         # docstring/module comment). Raw/unfiltered candidates are discarded,
         # not exposed.
         try:
+            levels_by_category_v2 = {
+                'GMM': gmm_levels_result, 'TDA': persistent_homology_levels_result,
+                'HDBSCAN': hdbscan_levels, 'OPTICS': enhanced_optics_levels_result,
+                'KDE': kde_levels_result, 'Isolation-Forest': isolation_forest_levels,
+                'MeanShift': meanshift_levels_result,
+            }
+            levels_by_category_v2 = extend_thin_side_levels(
+                ticker, timeframe, hist_highs, hist_lows, hist_closes, current_price,
+                levels_by_category_v2, is_futures,
+            )
             filtered = score_and_filter_levels_v2(
-                {
-                    'GMM': gmm_levels_result, 'TDA': persistent_homology_levels_result,
-                    'HDBSCAN': hdbscan_levels, 'OPTICS': enhanced_optics_levels_result,
-                    'KDE': kde_levels_result, 'Isolation-Forest': isolation_forest_levels,
-                    'MeanShift': meanshift_levels_result,
-                },
+                levels_by_category_v2,
                 hist_highs, hist_lows, hist_opens, hist_closes, hist_volumes, current_price,
                 timestamps=hist_data_subset.index.values,
             )
@@ -10799,13 +11644,17 @@ def get_level_constrained_hod_lod():
         meanshift_levels_result = calculate_meanshift_levels(highs, lows, closes)
 
         try:
+            levels_by_category_v2 = {
+                'GMM': gmm_levels_result, 'TDA': tda_levels_result,
+                'HDBSCAN': hdbscan_levels, 'Isolation-Forest': isolation_forest_levels,
+                'KDE': kde_levels_result, 'OPTICS': optics_levels_result,
+                'MeanShift': meanshift_levels_result,
+            }
+            levels_by_category_v2 = extend_thin_side_levels(
+                ticker, timeframe, highs, lows, closes, current_price, levels_by_category_v2, is_futures,
+            )
             filtered = score_and_filter_levels_v2(
-                {
-                    'GMM': gmm_levels_result, 'TDA': tda_levels_result,
-                    'HDBSCAN': hdbscan_levels, 'Isolation-Forest': isolation_forest_levels,
-                    'KDE': kde_levels_result, 'OPTICS': optics_levels_result,
-                    'MeanShift': meanshift_levels_result,
-                },
+                levels_by_category_v2,
                 highs, lows, opens, closes, volumes, current_price, timestamps=hist.index.values,
             )
             gmm_levels_result = [l for l in filtered if l.get('category') == 'GMM']
@@ -11441,13 +12290,17 @@ def get_state_conditioned_hod_lod():
                                 meanshift_levels_result = calculate_meanshift_levels(highs, lows, closes)
 
                                 try:
+                                    levels_by_category_v2 = {
+                                        'GMM': gmm_levels_result, 'TDA': tda_levels_result,
+                                        'HDBSCAN': hdbscan_levels, 'Isolation-Forest': isolation_forest_levels,
+                                        'KDE': kde_levels_result, 'OPTICS': optics_levels_result,
+                                        'MeanShift': meanshift_levels_result,
+                                    }
+                                    levels_by_category_v2 = extend_thin_side_levels(
+                                        ticker, timeframe, highs, lows, closes, current_price, levels_by_category_v2, is_futures,
+                                    )
                                     filtered = score_and_filter_levels_v2(
-                                        {
-                                            'GMM': gmm_levels_result, 'TDA': tda_levels_result,
-                                            'HDBSCAN': hdbscan_levels, 'Isolation-Forest': isolation_forest_levels,
-                                            'KDE': kde_levels_result, 'OPTICS': optics_levels_result,
-                                            'MeanShift': meanshift_levels_result,
-                                        },
+                                        levels_by_category_v2,
                                         highs, lows, opens, closes, volumes, current_price, timestamps=hist.index.values,
                                     )
                                     gmm_levels_result = [l for l in filtered if l.get('category') == 'GMM']
@@ -11976,13 +12829,17 @@ def get_lstm_forecast():
         meanshift_levels = calculate_meanshift_levels(highs, lows, closes)
 
         try:
+            levels_by_category_v2 = {
+                'GMM': gmm_levels, 'TDA': tda_levels,
+                'HDBSCAN': hdbscan_levels, 'OPTICS': optics_levels,
+                'KDE': kde_levels, 'Isolation-Forest': isolation_forest_levels,
+                'MeanShift': meanshift_levels,
+            }
+            levels_by_category_v2 = extend_thin_side_levels(
+                ticker, timeframe, highs, lows, closes, current_price, levels_by_category_v2, is_futures,
+            )
             filtered = score_and_filter_levels_v2(
-                {
-                    'GMM': gmm_levels, 'TDA': tda_levels,
-                    'HDBSCAN': hdbscan_levels, 'OPTICS': optics_levels,
-                    'KDE': kde_levels, 'Isolation-Forest': isolation_forest_levels,
-                    'MeanShift': meanshift_levels,
-                },
+                levels_by_category_v2,
                 highs, lows, opens, closes, volumes, current_price, timestamps=hist.index.values,
             )
             gmm_levels = [l for l in filtered if l.get('category') == 'GMM']
@@ -12491,6 +13348,13 @@ def get_ou_zone_history_endpoint():
         structural_scan_step = 15
         structural_lookback = 100
         structural_levels = []
+        # NOTE: deliberately NOT wired into shadow_score_levels_v3 - this
+        # loop calls the filter once per historical scan point (many times
+        # per request), and shadow-scoring each one would refit/re-log at
+        # the same multiplied cost. The other 4 real-time call sites score
+        # the CURRENT bar once per request, which is what matters for
+        # v2-vs-v3 comparison; this bulk endpoint can be added later if its
+        # own shadow coverage turns out to matter.
         for scan_t in range(structural_lookback, n, structural_scan_step):
             s_h, s_l, s_c = highs[scan_t - structural_lookback:scan_t], lows[scan_t - structural_lookback:scan_t], closes[scan_t - structural_lookback:scan_t]
             s_o, s_v = hist['Open'].values[scan_t - structural_lookback:scan_t], volumes[scan_t - structural_lookback:scan_t]

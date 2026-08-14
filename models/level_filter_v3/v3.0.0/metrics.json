@@ -1,0 +1,85 @@
+{
+  "pooled": {
+    "n": 74620,
+    "auc_raw": 0.5705974591724321,
+    "auc_calibrated": 0.5626999716079508,
+    "log_loss_raw": 0.6792249769304192,
+    "log_loss_calibrated": 0.6807039955426457,
+    "brier_calibrated": 0.24384177194484064
+  },
+  "by_instrument": {
+    "CL": {
+      "n": 8931,
+      "auc_calibrated": 0.5307702337984181,
+      "log_loss_calibrated": 0.6844002078247988,
+      "shadow_kept_precision": 0.4623131903833658,
+      "shadow_coverage": 0.44028036046345304
+    },
+    "ES": {
+      "n": 21926,
+      "auc_calibrated": 0.5641954955995891,
+      "log_loss_calibrated": 0.6785906783026374,
+      "shadow_kept_precision": 0.47628345009762263,
+      "shadow_coverage": 0.5110041669112038
+    },
+    "GC": {
+      "n": 10937,
+      "auc_calibrated": 0.5741490267705154,
+      "log_loss_calibrated": 0.6821477652637765,
+      "shadow_kept_precision": 0.5005796429399489,
+      "shadow_coverage": 0.510414201183432
+    },
+    "NQ": {
+      "n": 21591,
+      "auc_calibrated": 0.5657786119494659,
+      "log_loss_calibrated": 0.6799227832687194,
+      "shadow_kept_precision": 0.48420928588263024,
+      "shadow_coverage": 0.505932152864723
+    },
+    "SI": {
+      "n": 11235,
+      "auc_calibrated": 0.5680761308492069,
+      "log_loss_calibrated": 0.6819859151402293,
+      "shadow_kept_precision": 0.48947849954254347,
+      "shadow_coverage": 0.4988589685075308
+    }
+  },
+  "by_level_type": {
+    "GMM": {
+      "n": 6116,
+      "auc_calibrated": 0.5521659139742379
+    },
+    "HDBSCAN": {
+      "n": 12883,
+      "auc_calibrated": 0.558173917130009
+    },
+    "Isolation-Forest": {
+      "n": 5822,
+      "auc_calibrated": 0.5765505376962413
+    },
+    "KDE": {
+      "n": 3888,
+      "auc_calibrated": 0.5449811278644796
+    },
+    "MeanShift": {
+      "n": 8078,
+      "auc_calibrated": 0.5629642296479032
+    },
+    "Multiscale-HDBSCAN": {
+      "n": 13279,
+      "auc_calibrated": 0.564307289491332
+    },
+    "OPTICS": {
+      "n": 10999,
+      "auc_calibrated": 0.5782431221055582
+    },
+    "TDA": {
+      "n": 10231,
+      "auc_calibrated": 0.56710056100683
+    },
+    "VWAP": {
+      "n": 3324,
+      "auc_calibrated": 0.5168191033126996
+    }
+  }
+}

@@ -35,18 +35,48 @@ from sklearn.linear_model import LogisticRegression
 
 from backtest_levels import load_csv, infer_timeframe, compute_atr, evaluate_level
 from backtest_ou_zones import fit_ou_process
+from backtest_hvn_lvn_context import build_volume_profile, nearest_hvn_lvn_distance
 
 with contextlib.redirect_stdout(io.StringIO()):
     import backend
 
 CANDIDATE_METHODS = [
-    ('GMM', backend.calculate_gmm_levels, {}),
+    ('GMM', backend.calculate_gmm_levels, {'volumes_kw': True}),
     ('TDA', backend.persistent_homology_levels, {'max_levels': 8}),
-    ('HDBSCAN', backend.calculate_hdbscan_levels, {'timeframe_kw': True}),
-    ('OPTICS', backend.optics_multi_density_levels, {}),
-    ('KDE', backend.kde_based_levels, {}),
-    ('MeanShift', backend.calculate_meanshift_levels, {}),
+    ('HDBSCAN', backend.calculate_hdbscan_levels, {'timeframe_kw': True, 'volumes_kw': True}),
+    # OPTICS: was backend.optics_multi_density_levels, which had zero live
+    # callers and was removed as dead code in today's system review - the
+    # function actually wired into every live endpoint is enhanced_optics_levels
+    ('OPTICS', backend.enhanced_optics_levels, {'timeframe_kw': True, 'volumes_kw': True}),
+    ('KDE', backend.kde_based_levels, {'volumes_kw': True}),
+    ('MeanShift', backend.calculate_meanshift_levels, {'volumes_kw': True}),
     ('Isolation-Forest', backend.find_pivot_anomalies, {}),
+    # Added to match today's unified algorithm set across the 4 main
+    # endpoints (previously this v3 script predated that unification and
+    # was never actually run to completion - no output CSV existed).
+    # Wyckoff and time_weighted_hdbscan are NOT included here despite also
+    # being part of today's unified set - both take a different call
+    # signature (DataFrame / timestamps array, not just highs/lows/closes)
+    # that this script's generic call loop doesn't support - would need
+    # separate handling, scoped out of this pass rather than rushed.
+    ('Multiscale-HDBSCAN', backend.multiscale_hdbscan_levels, {'timeframe_kw': True, 'volumes_kw': True}),
+    # Three new candidate generators (mechanistically different from the
+    # 8 above - all of those find dense historical price clusters; these
+    # find structural breaks, an adaptive fair-value estimate, and
+    # multi-scale-persistent pivots instead) - see backend.py docstrings
+    # for each. Not yet validated, being tested exactly like every other
+    # candidate: same events pipeline, same walk-forward accuracy check.
+    # Changepoint validated as a real edge on 4H, but only on NQ (+13.3pp
+    # over its own realized-R:R breakeven) and ES (+6.3pp) once broken out
+    # per instrument - GC/SI were noise-level (+1.4pp/+0.7pp) and CL was
+    # net negative (-8.7pp, n=134). Gated to 4H + NQ/ES only rather than
+    # run everywhere.
+    ('Changepoint', backend.changepoint_levels, {'timeframe_only': '4h', 'instrument_allowlist': {'NQ', 'ES'}}),
+    # Kalman (neutral/inconclusive) and Wavelet (moderate, not yet decided)
+    # left out of the active set for now - not rejected like volume-weighted
+    # clustering or 3:1 RR were, just not formalized yet. Uncomment to re-test.
+    # ('Kalman', backend.kalman_equilibrium_levels, {}),
+    # ('Wavelet', backend.wavelet_pivot_levels, {}),
 ]
 
 
@@ -80,7 +110,7 @@ def hmm_regime_change_features(closes, n_states=3, flip_lookback=5):
 def collect_events(path, lookback, horizon, step,
                     bounce_atr_mult, break_atr_mult, break_confirm_bars,
                     reaction_bars, recovery_bars, confluence_atr_mult=0.5,
-                    ou_k=0.25, verbose=False):
+                    ou_k=0.25, verbose=False, volume_weighted_clustering=False):
     instrument = re.sub(r'^\d+[a-zA-Z]+_', '', os.path.splitext(os.path.basename(path))[0])
     timeframe = infer_timeframe(os.path.basename(path))
     print(f"Loading {path} (instrument={instrument}, timeframe={timeframe})...")
@@ -103,6 +133,14 @@ def collect_events(path, lookback, horizon, step,
         atr = compute_atr(win_h, win_l, win_c)
         if atr <= 0:
             continue
+
+        # OHLCV-approximated volume-by-price for this window (not true
+        # tick-level VP, which we don't have - see backtest_hvn_lvn_context.py
+        # for the approximation and the validated incremental lift over the
+        # existing feature set). Computed once per window here (candidate
+        # loop below re-slices win_h/win_l for the forward reaction window,
+        # so this must happen before that reassignment).
+        hvn_bin_centers, hvn_vol_at_price = build_volume_profile(win_h, win_l, win_v)
 
         returns_pct = np.diff(np.log(win_c)) * 100
         with contextlib.redirect_stdout(io.StringIO()):
@@ -145,7 +183,15 @@ def collect_events(path, lookback, horizon, step,
 
         candidates = []
         for level_name, fn, kwargs in CANDIDATE_METHODS:
-            call_kwargs = {'timeframe': timeframe} if kwargs.get('timeframe_kw') else {k: v for k, v in kwargs.items() if k != 'timeframe_kw'}
+            if kwargs.get('timeframe_only') and kwargs['timeframe_only'] != timeframe:
+                continue
+            if kwargs.get('instrument_allowlist') and instrument not in kwargs['instrument_allowlist']:
+                continue
+            call_kwargs = {k: v for k, v in kwargs.items() if k not in ('timeframe_kw', 'volumes_kw', 'timeframe_only', 'instrument_allowlist')}
+            if kwargs.get('timeframe_kw'):
+                call_kwargs['timeframe'] = timeframe
+            if volume_weighted_clustering and kwargs.get('volumes_kw'):
+                call_kwargs['volumes'] = win_v
             try:
                 with contextlib.redirect_stdout(io.StringIO()):
                     lvls = fn(win_h, win_l, win_c, **call_kwargs)
@@ -180,6 +226,32 @@ def collect_events(path, lookback, horizon, step,
             if outcome is None:
                 continue
 
+            # Realized MFE/MAE (max favorable/adverse excursion, in ATR
+            # units) within the same reaction window evaluate_level uses -
+            # duplicates its touch-detection scan rather than modifying the
+            # shared function (evaluate_level is imported/used elsewhere in
+            # the codebase, don't want to risk changing its return contract).
+            # This is the ACTUAL price movement, not the fixed 1.0/0.5 ATR
+            # target/stop evaluate_level's bounce/break labels are defined
+            # against - answers "how far did it really go", not just
+            # "did it clear the fixed target before the fixed stop".
+            touch_idx = None
+            for i in range(len(fwd_h)):
+                if fwd_l[i] <= price <= fwd_h[i]:
+                    touch_idx = i
+                    break
+            mfe_atr = mae_atr = np.nan
+            if touch_idx is not None:
+                react_end = min(touch_idx + reaction_bars, len(fwd_c))
+                win_h, win_l = fwd_h[touch_idx:react_end], fwd_l[touch_idx:react_end]
+                if len(win_h):
+                    if side == 'support':
+                        mfe_atr = float((win_h - price).max() / atr)
+                        mae_atr = float((price - win_l).max() / atr)
+                    else:
+                        mfe_atr = float((price - win_l).max() / atr)
+                        mae_atr = float((win_h - price).max() / atr)
+
             trade_direction = 'long' if side == 'support' else 'short'
             price_vs_vwap = current_price - vwap
             aligned_with_bias = (trade_direction == 'long' and price_vs_vwap > 0) or \
@@ -199,6 +271,8 @@ def collect_events(path, lookback, horizon, step,
             else:
                 ou_zone_distance_atr = np.nan
 
+            dist_hvn_atr, dist_lvn_atr = nearest_hvn_lvn_distance(price, hvn_bin_centers, hvn_vol_at_price, atr)
+
             rows.append({
                 'instrument': instrument, 'timeframe': timeframe, 'level_type': level_type,
                 't': t, 'price': price,
@@ -214,6 +288,8 @@ def collect_events(path, lookback, horizon, step,
                 'vwap_bias_alignment': vwap_bias_alignment,
                 'ou_zone_distance_atr': ou_zone_distance_atr,
                 'bounced': int(outcome['bounced']),
+                'mfe_atr': mfe_atr, 'mae_atr': mae_atr,
+                'dist_hvn_atr': dist_hvn_atr, 'dist_lvn_atr': dist_lvn_atr,
             })
 
     return pd.DataFrame(rows)
@@ -246,13 +322,17 @@ def main():
     ap.add_argument('--random-n', type=int, default=29257)
     ap.add_argument('--out', default='backtest_ml_filter_v3_events.csv')
     ap.add_argument('-v', '--verbose', action='store_true')
+    ap.add_argument('--volume-weighted-clustering', action='store_true',
+                     help='Pass volumes into HDBSCAN/OPTICS/Multiscale-HDBSCAN/GMM/MeanShift/KDE so the '
+                          'clustering itself is volume-weighted, not just an added filter feature')
     args = ap.parse_args()
 
     all_events = []
     for path in args.files:
         ev = collect_events(path, args.lookback, args.horizon, args.step,
                              args.bounce_atr_mult, args.break_atr_mult, args.break_confirm_bars,
-                             args.reaction_bars, args.recovery_bars, ou_k=args.ou_k, verbose=args.verbose)
+                             args.reaction_bars, args.recovery_bars, ou_k=args.ou_k, verbose=args.verbose,
+                             volume_weighted_clustering=args.volume_weighted_clustering)
         print(f"  -> {len(ev)} touched candidate events collected")
         all_events.append(ev)
         pd.concat(all_events, ignore_index=True).to_csv(args.out, index=False)
