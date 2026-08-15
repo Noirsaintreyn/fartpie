@@ -3805,7 +3805,12 @@ def detect_market_regime_hmm(closes, n_states=3):
         current_state = int(states[-1])
         state_probs = model.predict_proba(returns)[-1]
         confidence = float(state_probs[current_state])
-        regime_names = ['Bearish', 'Neutral', 'Bullish']
+        # raw state IDs are arbitrary (label-switching - EM doesn't order
+        # states by mean return), so map by fitted mean return instead of
+        # raw index, or 'Bullish'/'Bearish' get coin-flip-attached to the
+        # wrong state on a fresh fit
+        ordered_states = np.argsort(model.means_[:, 0])
+        regime_names = {int(ordered_states[0]): 'Bearish', int(ordered_states[1]): 'Neutral', int(ordered_states[2]): 'Bullish'}
         return {'state': current_state, 'regime': regime_names[current_state], 'confidence': confidence}
     except:
         return {'state': 1, 'regime': 'Neutral', 'confidence': 0.5}
@@ -9900,17 +9905,19 @@ def predict_level_reaction(level, current_price, start_of_move_price, sigma_pric
     vol_bounce_factor = 0.8 if is_high_vol else (0.6 if is_extreme_vol else 1.0)
     
     # ===== HMM REGIME =====
-    hmm_state = hmm_regime.get('state', 'Unknown') if hmm_regime else 'Unknown'
-    is_bullish_regime = hmm_state in ['Bull', 'Strong Bull']
-    is_bearish_regime = hmm_state in ['Bear', 'Strong Bear']
-    
-    # Regime impact: bullish = more likely to break resistance, bearish = more likely to break support
-    if current_price < level_price:  # Approaching resistance
-        regime_break_factor = 1.2 if is_bullish_regime else (0.8 if is_bearish_regime else 1.0)
-        regime_bounce_factor = 0.8 if is_bullish_regime else (1.2 if is_bearish_regime else 1.0)
-    else:  # Approaching support
-        regime_break_factor = 1.2 if is_bearish_regime else (0.8 if is_bullish_regime else 1.0)
-        regime_bounce_factor = 0.8 if is_bearish_regime else (1.2 if is_bullish_regime else 1.0)
+    # previously compared hmm_regime['state'] (an int) against ['Bull',
+    # 'Strong Bull'] (strings that don't even exist in detect_market_regime_hmm's
+    # regime_names) - always False, so this block was a permanent no-op.
+    # Fixed to read the actual 'regime' label. Left disabled (pinned to 1.0)
+    # since these break/bounce multipliers (1.2/0.8) were never backtested -
+    # every ad hoc directional/bias signal tested this session has failed,
+    # so this needs the same walk-forward/DM-test evidence as the v2 filter
+    # and GJR+IV blend before it's allowed to affect live scores.
+    hmm_regime_label = hmm_regime.get('regime', 'Unknown') if hmm_regime else 'Unknown'
+    is_bullish_regime = hmm_regime_label == 'Bullish'
+    is_bearish_regime = hmm_regime_label == 'Bearish'
+    regime_break_factor = 1.0
+    regime_bounce_factor = 1.0
     
     # ===== MICROSTRUCTURE STATE =====
     micro_state = microstructure_state.get('state', 'Unknown') if microstructure_state else 'Unknown'
