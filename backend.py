@@ -638,7 +638,59 @@ def _build_macro_narrative(instrument, meta, feat, trending_prob, lean):
     return f"{reading} {reasons} {application}"
 
 
-def _compute_expected_range(own_hist, feat):
+def _compute_expected_range_iv_blend_scale(returns_pct, low_pct, high_pct):
+    """
+    expected_range_v2: widens/narrows the skew-t band around its own
+    center by the ratio of a 50/50 GJR+QQQ-options-IV blended sigma to
+    the GJR-only sigma, preserving the skew-t fit's asymmetric SHAPE
+    (already independently validated - see the module docstring above)
+    while applying the separately-validated blend WIDTH improvement.
+
+    Validated in backtest_options_range_forecast_v2.py: the 50/50
+    variance blend beat GJR-only on QLIKE with a HAC-adjusted DM p=0.0002
+    and a moving-block-bootstrap 95% CI fully excluding zero, stable
+    across 2018-2021/2022-2024/2025-2026 sub-periods, all three horizon
+    buckets, and all three IV-regime terciles - IV ALONE did not clear
+    the same bar (p=0.05, borderline), which is why this blends rather
+    than swaps to IV outright.
+
+    ONLY called for NQ (see _compute_expected_range) - the blend was
+    validated using QQQ's own price history against QQQ's own options
+    IV; QQQ and NQ track the same index closely enough to transfer this,
+    but applying QQQ-derived IV to GC/SI/CL/ES's own expected range was
+    never tested and would not be a defensible transfer.
+
+    Returns (low_pct, high_pct) rescaled, or the ORIGINAL (low_pct,
+    high_pct) unchanged on any failure (missing/stale options data,
+    network error, GJR refit failure) - fails back to the already-
+    validated skew-t-only behavior, never blocks the live request.
+    """
+    try:
+        gjr_sigma_pct = fit_gjr_garch_vol_forecast_pct(returns_pct)
+        if gjr_sigma_pct is None or gjr_sigma_pct <= 0:
+            return low_pct, high_pct
+
+        import options_context_panel as _ocp
+        state = _ocp.build_state_panel('QQQ')
+        if state.get('panel_status') not in ('ok', 'degraded'):
+            return low_pct, high_pct
+        front_atm_iv = state.get('iv_regime', {}).get('atm_iv')
+        if front_atm_iv is None or front_atm_iv <= 0:
+            return low_pct, high_pct
+
+        iv_sigma_pct = front_atm_iv / np.sqrt(252) * 100  # annualized IV -> 1-day, same units as gjr_sigma_pct
+        blend_sigma_pct = np.sqrt(0.5 * gjr_sigma_pct ** 2 + 0.5 * iv_sigma_pct ** 2)
+        scale = blend_sigma_pct / gjr_sigma_pct
+        if not np.isfinite(scale) or scale <= 0:
+            return low_pct, high_pct
+
+        mean_pct = (low_pct + high_pct) / 2
+        return mean_pct - (mean_pct - low_pct) * scale, mean_pct + (high_pct - mean_pct) * scale
+    except Exception:
+        return low_pct, high_pct
+
+
+def _compute_expected_range(own_hist, feat, instrument=None):
     """
     Skew-t GJR-GARCH expected range for TODAY, anchored to the day's open
     (not a bare "+/-50 points" number) - the 30th/70th conditional
@@ -655,6 +707,11 @@ def _compute_expected_range(own_hist, feat):
     vs this instrument's own recent typical range, with a reason grounded
     in the VIX context already computed for the main prediction (not a
     fabricated news explanation).
+
+    For instrument='NQ' only: widens/narrows the resulting band by the
+    validated GJR+QQQ-options-IV blend ratio (expected_range_v2) - see
+    _compute_expected_range_iv_blend_scale. Every other instrument keeps
+    the original skew-t-only behavior unchanged (unvalidated for them).
     """
     closes = own_hist['Close'].values
     highs, lows = own_hist['High'].values, own_hist['Low'].values
@@ -666,6 +723,7 @@ def _compute_expected_range(own_hist, feat):
     returns_pct = np.diff(np.log(hist_closes)) * 100
 
     quantiles_pct = fit_gjr_garch_skewt_quantiles_pct(returns_pct, [0.30, 0.70])
+    range_model = 'gjr_skewt_v1'
     if quantiles_pct is not None:
         low_pct, high_pct = quantiles_pct[0.30], quantiles_pct[0.70]
     else:
@@ -673,6 +731,12 @@ def _compute_expected_range(own_hist, feat):
         if gjr_vol_pct is None:
             return None
         low_pct, high_pct = -gjr_vol_pct / 2, gjr_vol_pct / 2
+
+    if instrument == 'NQ':
+        blended_low_pct, blended_high_pct = _compute_expected_range_iv_blend_scale(returns_pct, low_pct, high_pct)
+        if (blended_low_pct, blended_high_pct) != (low_pct, high_pct):
+            low_pct, high_pct = blended_low_pct, blended_high_pct
+            range_model = 'gjr_iv_blend_v2'
 
     today_open = float(own_hist['Open'].iloc[-1])
     current_price = float(closes[-1])
@@ -720,7 +784,7 @@ def _compute_expected_range(own_hist, feat):
         'expected_range_pct': range_width * 100,
         'vs_typical_pct': vs_typical_pct,
         'position_in_range_pct': position_pct, 'position_description': position_desc,
-        'note': vol_regime_note,
+        'note': vol_regime_note, 'range_model': range_model,
     }
 
 
@@ -792,7 +856,7 @@ def get_macro_regime():
         lean = 'trending' if trending_prob >= 0.5 else 'choppy / mean-reverting'
         lean_strength = abs(trending_prob - 0.5) * 2  # 0 = coin flip, 1 = maximal confidence
         narrative = _build_macro_narrative(instrument, meta, feat, trending_prob, lean)
-        expected_range = _compute_expected_range(own_hist, feat)
+        expected_range = _compute_expected_range(own_hist, feat, instrument=instrument)
 
         return jsonify({
             'success': True, 'ticker': ticker, 'instrument': instrument, 'label': meta['label'],
@@ -2216,6 +2280,43 @@ def fit_gjr_garch_vol_forecast_pct(returns_pct):
         result = model.fit(disp='off', show_warning=False)
         forecast = result.forecast(horizon=1)
         return float(np.sqrt(forecast.variance.values[-1, 0]))
+    except Exception:
+        return None
+
+
+def fit_egarch_vol_forecast_pct(returns_pct):
+    """
+    EGARCH(1,1,1) 1-step vol forecast, same interface/units as
+    fit_gjr_garch_vol_forecast_pct - models log-variance directly, so
+    asymmetry (the leverage effect) is continuous rather than GJR's
+    on/off threshold term on negative shocks. Candidate to compare
+    against GJR via QLIKE (backtest_options_range_forecast_v2.py's
+    methodology extended), not a replacement until it demonstrates
+    stable incremental value out-of-sample.
+    """
+    try:
+        if len(returns_pct) < 50:
+            return None
+        model = arch_model(returns_pct, vol='EGARCH', p=1, o=1, q=1, rescale=False)
+        result = model.fit(disp='off', show_warning=False)
+        # analytic is exact (not simulated) for a 1-step-ahead forecast - only
+        # multi-step EGARCH forecasts require simulation/bootstrap in `arch`.
+        # The original simulation-based version produced degenerate near-zero
+        # and blown-up (>1e50) values on ~12% of fitting windows out of 1252
+        # tested - a Monte Carlo noise problem, not a real EGARCH property.
+        forecast = result.forecast(horizon=1, method='analytic')
+        vol_pct = float(np.sqrt(forecast.variance.values[-1, 0]))
+        # EGARCH's likelihood surface is known to be harder to optimize than
+        # GJR's. Non-convergent/degenerate fits show up across a wide range
+        # of scales - from near-zero (1e-139) up through mild-looking but
+        # still-unrealistic double-digit forecasts (30-43% single-day vol,
+        # which QQQ essentially never realizes even on its worst historical
+        # days). A 50% cap let a whole tail of these through. 10% is still
+        # generous (roughly 5x a typical day) but excludes the degenerate
+        # tail; treat anything past it the same as a non-convergent fit.
+        if not np.isfinite(vol_pct) or vol_pct < 0.05 or vol_pct > 10:
+            return None
+        return vol_pct
     except Exception:
         return None
 
