@@ -11,7 +11,6 @@ statsmodels
 lightgbm
 gunicorn
 gdown
-torch
 hmmlearn
 arch>=6.3.0,<7.0.0
 flask
