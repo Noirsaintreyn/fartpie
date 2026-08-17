@@ -10056,7 +10056,7 @@ def predict_level_reaction(level, current_price, start_of_move_price, sigma_pric
             'bounce_factor': float(vol_bounce_factor)
         },
         'hmm_regime': {
-            'state': hmm_state,
+            'state': hmm_regime_label,
             'break_factor': float(regime_break_factor),
             'bounce_factor': float(regime_bounce_factor)
         },
