@@ -27,3 +27,5 @@ scikit-learn
 scipy
 statsmodels
 yfinance
+PyWavelets
+python-dotenv
