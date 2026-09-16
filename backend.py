@@ -335,7 +335,17 @@ def get_motivewave_data(ticker: str, timeframe: str) -> pd.DataFrame | None:
 app.secret_key = "degen-discovery-secret-key-2024"
 
 # Session cookie configuration - different for production vs development
-IS_PROD = os.getenv("ENV") == "production" or os.getenv("FLASK_ENV") == "production"
+IS_PROD = (
+    os.getenv("ENV") == "production"
+    or os.getenv("FLASK_ENV") == "production"
+    or os.getenv("RENDER") is not None  # Render sets this on every service automatically -
+    # don't rely on ENV/FLASK_ENV alone having been set manually in the
+    # dashboard. Wrong here means SameSite=Lax cookies, which browsers
+    # silently refuse to send back on the cross-site degencap.uk ->
+    # fartpie.onrender.com requests this app depends on - login succeeds
+    # and sets a cookie, but it never comes back, so every auth-gated
+    # route after that reports "Not authenticated" immediately.
+)
 
 # session cookies for cross-domain login
 # Secure cookies (HTTPS only) + SameSite=None required for cross-origin in production
