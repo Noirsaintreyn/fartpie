@@ -44,7 +44,14 @@ def load_sectors():
     return {k.replace('.', '-'): v for k, v in raw.items()}
 
 
-def batch_download_cached(tickers):
+def batch_download_cached(tickers, period='max'):
+    """period only affects tickers actually fetched fresh this call - a
+    cache hit returns whatever period that file was originally saved
+    with (usually 'max' from a research run), regardless of what's
+    requested here. Callers that don't need decades of history (e.g.
+    a quick peer-breadth read on a server with no warm cache and real
+    memory limits) can pass a shorter period to avoid pulling full
+    history for every ticker on every cold request."""
     os.makedirs(CACHE_DIR, exist_ok=True)
     all_data = {}
     to_fetch = []
@@ -62,7 +69,7 @@ def batch_download_cached(tickers):
     batch_size = 50
     for i in range(0, len(to_fetch), batch_size):
         batch = to_fetch[i:i + batch_size]
-        data = yf.download(batch, period='max', interval='1d', group_by='ticker',
+        data = yf.download(batch, period=period, interval='1d', group_by='ticker',
                             auto_adjust=False, threads=True, progress=False)
         for t in batch:
             try:
@@ -77,7 +84,13 @@ def batch_download_cached(tickers):
                 df['datetime'] = pd.to_datetime(df['datetime']).dt.tz_localize(None)
                 df = df.rename(columns={'adj close': 'adjclose'})
                 df = df[['datetime', 'open', 'high', 'low', 'close', 'adjclose']]
-                df.to_parquet(f"{CACHE_DIR}/{t}.parquet", index=False)
+                if period == 'max':
+                    # only a full-history fetch is safe to write to the
+                    # shared cache - every other caller expects a cache
+                    # hit to mean "full history," and a short-period
+                    # fetch cached under the same filename would silently
+                    # truncate what they read next time
+                    df.to_parquet(f"{CACHE_DIR}/{t}.parquet", index=False)
                 all_data[t] = df
             except Exception:
                 continue

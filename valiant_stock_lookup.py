@@ -46,7 +46,14 @@ HMM_STRESS_THRESHOLD = 0.5
 YZ_WINDOW = 20
 YZ_LOOKBACK_FOR_PERCENTILE = 252
 PEER_BREADTH_TREND_LOOKBACK = 20  # bars ago to compare breadth against, for a strengthening/weakening read
-PEER_MAX_COUNT = 60               # cap on sector peers fetched, for very large sectors
+PEER_MAX_COUNT = 25                # cap on sector peers fetched, for very large sectors -
+                                    # kept small deliberately: a live server request fetching
+                                    # dozens of peers' full history at once is real memory
+                                    # pressure on a small instance (this caused a production
+                                    # OOM crash at PEER_MAX_COUNT=60 with period='max')
+PEER_FETCH_PERIOD = '2y'           # plenty for run_state_machine's ~60-bar warmup + the
+                                    # 90-day trailing correlation window, far less memory
+                                    # than fetching each peer's full decades-long history
 PEER_CORR_WINDOW = 90
 
 
@@ -291,7 +298,7 @@ def peer_breadth(ticker, timeframe):
     if len(peers) > PEER_MAX_COUNT:
         peers = peers[:PEER_MAX_COUNT]
 
-    raw = batch_download_cached(peers)
+    raw = batch_download_cached(peers, period=PEER_FETCH_PERIOD)
     warmup = max(ATR_LEN, SLOW_LEN, PIVOT_LEN * 2) + 5
     peer_states, peer_closes = [], {}
 
