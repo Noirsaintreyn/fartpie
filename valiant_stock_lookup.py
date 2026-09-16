@@ -200,6 +200,38 @@ def fundamentals_rating(ticker, as_of_date):
     return result
 
 
+def fundamentals_narrative(fund):
+    """Plain-language read of the actual fundamentals numbers, not just
+    a pass/fail count - the tool's reasoning should read like a
+    fundamentals+macro analyst's note, not a technical-indicator log."""
+    if fund is None:
+        return "fundamentals data unavailable"
+    parts = []
+    pm = fund.get('profit_margin')
+    if pm is not None:
+        parts.append(f"{'strong' if pm > 0.15 else 'modest' if pm > 0 else 'negative'} profit margin ({pm*100:+.1f}%)")
+    rg = fund.get('revenue_growth')
+    if rg is not None:
+        parts.append(f"{'strong' if rg > 0.10 else 'modest' if rg > 0 else 'shrinking'} revenue growth ({rg*100:+.1f}% YoY)")
+    dte = fund.get('debt_to_equity')
+    if dte is not None:
+        parts.append(f"{'conservative' if dte < 50 else 'moderate' if dte < 150 else 'high'} leverage (D/E {dte:.0f}%)")
+    cr = fund.get('current_ratio')
+    if cr is not None:
+        parts.append(f"{'strong' if cr >= 1.5 else 'adequate' if cr >= 1.0 else 'weak'} liquidity (current ratio {cr:.1f}x)")
+    if not parts:
+        return "fundamentals data incomplete"
+    return ", ".join(parts)
+
+
+def macro_narrative(market_stress_prob, market_stressed):
+    if np.isnan(market_stress_prob):
+        return "macro backdrop unavailable"
+    if market_stressed:
+        return f"a stressed macro backdrop (broad-market stress probability {market_stress_prob*100:.0f}%)"
+    return f"a calm macro backdrop (broad-market stress probability {market_stress_prob*100:.0f}%)"
+
+
 def candle_shape_stats(bars, regimes, current_regime, idx):
     """Typical candle shape for bars historically in the SAME regime
     direction as right now - decomposed into four ATR-normalized
@@ -473,24 +505,34 @@ def build_report(ticker, timeframe, verbose=False):
         print(f"Fetching {CONFIRMATION_TIMEFRAME[timeframe]} confirmation timeframe...")
     conf_regime, conf_label = confirmation_regime(ticker, timeframe, daily)
 
+    fund = fundamentals_rating(ticker, bars['datetime'].iloc[idx].strftime('%Y-%m-%d'))
+    fund_note = fundamentals_narrative(fund)
+    macro_note = macro_narrative(market_stress_prob, market_stressed)
+
     # --- classification ---
+    # Leads with fundamentals + macro context (what an analyst would
+    # cite), with the underlying structural read as the concluding
+    # verdict rather than the headline mechanism.
     if not sufficient_history:
         classification = "NOT CONFIDENT"
-        reason = f"insufficient track record for this valiant mechanism on {ticker} ({flips_so_far} flips, quality z={quality_z:+.2f} <= 0 means the valiant hasn't historically agreed with forward direction here)"
+        reason = (f"{ticker} doesn't have a reliable enough track record here to call a structural direction "
+                  f"({flips_so_far} historical regime changes, low agreement with forward direction) - "
+                  f"for context, fundamentals show {fund_note}, against {macro_note}")
     elif is_choppy:
         classification = "CONSOLIDATION"
-        reason = f"{len(recent_flips_in_window)} regime flips in the last {CHOPPY_WINDOW} bars - price is chopping, not trending"
+        reason = (f"price structure is choppy, not trending ({len(recent_flips_in_window)} direction changes "
+                  f"in the last {CHOPPY_WINDOW} bars) - fundamentals show {fund_note}, against {macro_note}")
     elif current_regime == 1 and not market_stressed:
         classification = "BULLISH"
-        reason = "stock's own valiant is in a support/bullish regime AND the broader market regime is not stressed - agreement"
+        reason = f"fundamentals show {fund_note}, and against {macro_note}, the stock's structure is confirmed bullish"
     elif current_regime == -1 and market_stressed:
         classification = "BEARISH"
-        reason = "stock's own valiant is in a resistance/bearish regime AND the broader market regime is stressed - agreement"
+        reason = f"fundamentals show {fund_note}, and against {macro_note}, the stock's structure is confirmed bearish"
     else:
         classification = "NOT CONFIDENT"
-        reason = ("stock's own valiant and the broader market regime disagree - "
-                  f"valiant says {'bullish' if current_regime == 1 else 'bearish'}, "
-                  f"market regime is {'stressed' if market_stressed else 'calm'}")
+        reason = (f"structure and market backdrop disagree - price structure reads "
+                  f"{'bullish' if current_regime == 1 else 'bearish'} but the macro backdrop is "
+                  f"{'stressed' if market_stressed else 'calm'} - fundamentals show {fund_note}")
 
     # --- move-size read (Yang-Zhang, backward-looking realized vol) ---
     daily_yz = yang_zhang_vol(daily)
@@ -510,7 +552,6 @@ def build_report(ticker, timeframe, verbose=False):
         move_size = "UNKNOWN (insufficient history)"
 
     maturity = regime_maturity(flips, current_regime, bars_since_flip) if bars_since_flip is not None else None
-    fund = fundamentals_rating(ticker, bars['datetime'].iloc[idx].strftime('%Y-%m-%d'))
     candle_stats = candle_shape_stats(bars, regimes, current_regime, idx)
     move = expected_move(bars.iloc[:idx + 1])
 

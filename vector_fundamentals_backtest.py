@@ -173,7 +173,14 @@ def fundamentals_asof(gaap, as_of_date_str):
 
     n_passed = sum(available_checks)
     n_total = len(available_checks)
-    return {'strict_pass': n_passed == n_total, 'n_passed': n_passed, 'n_total': n_total}
+    return {
+        'strict_pass': n_passed == n_total, 'n_passed': n_passed, 'n_total': n_total,
+        # actual metric values, added for narrative reasoning (e.g. the
+        # lookup tool) - purely additive, every existing caller that only
+        # reads strict_pass/n_passed/n_total is unaffected
+        'profit_margin': profit_margin, 'revenue_growth': revenue_growth,
+        'debt_to_equity': debt_to_equity, 'current_ratio': current_ratio,
+    }
 
 
 def fetch_fred(series_id, start='2010-01-01'):
