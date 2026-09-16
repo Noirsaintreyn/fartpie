@@ -231,6 +231,71 @@ def compute_bar_atr(bars, window=ATR_LEN):
     return pd.Series(tr).ewm(span=window, min_periods=window).mean().values
 
 
+def expected_move(bars):
+    """GJR-GARCH(1,1,1) skew-t 1-bar-ahead quantile forecast, anchored to
+    the current close - the exact same methodology already validated
+    for NQ/ES in backend.py's macro-regime expected-range feature
+    (backtest_returns_distribution.py: best of 5 candidates tested,
+    ~5-8% lower pinball loss than a symmetric normal, fewest calibration
+    violations), reimplemented standalone here rather than imported
+    from backend.py - avoids pulling in that whole module's own import
+    chain for two small, genuinely asset-agnostic functions.
+
+    "1 bar ahead" means whatever timeframe `bars` already is - next
+    day for daily, next week for weekly, next month for monthly, same
+    bar-resolution semantics as everything else in this tool. Not
+    validated specifically on individual equities (only NQ/ES) - this
+    is the same model applied to a new asset class, not a re-proof."""
+    closes = bars['close'].values
+    highs, lows = bars['high'].values, bars['low'].values
+    if len(closes) < 80:
+        return None
+    try:
+        from arch import arch_model
+        from arch.univariate import SkewStudent
+    except ImportError:
+        return None
+
+    returns_pct = np.diff(np.log(closes)) * 100
+    try:
+        model = arch_model(returns_pct, vol='GARCH', p=1, o=1, q=1, dist='skewt', rescale=False)
+        result = model.fit(disp='off', show_warning=False)
+        forecast = result.forecast(horizon=1, reindex=False)
+        mean = float(forecast.mean.values[-1, 0])
+        sigma = float(np.sqrt(forecast.variance.values[-1, 0]))
+        if not np.isfinite(mean) or not np.isfinite(sigma) or sigma <= 0:
+            return None
+        eta, lam = result.params['eta'], result.params['lambda']
+        dist_obj = SkewStudent()
+        quantiles_pct = {q: mean + sigma * float(dist_obj.ppf(q, [eta, lam]))
+                          for q in [0.10, 0.30, 0.50, 0.70, 0.90]}
+    except Exception:
+        return None
+
+    current_price = float(closes[-1])
+    bounds = {q: current_price * np.exp(v / 100) for q, v in quantiles_pct.items()}
+    range_width_pct = quantiles_pct[0.70] - quantiles_pct[0.30]
+
+    # context: this bar-size's own trailing realized range, as the
+    # "normal" baseline - grounded in the stock's own history, not VIX
+    # (which doesn't apply to an individual equity the way it does to
+    # index futures)
+    realized_log_range = np.log(highs[-60:] / lows[-60:])
+    typical_range_pct = float(np.mean(realized_log_range)) * 100 if len(realized_log_range) >= 20 else None
+    vs_typical_pct = ((range_width_pct - typical_range_pct) / typical_range_pct * 100
+                       if typical_range_pct and typical_range_pct > 0 else None)
+
+    return {
+        'current_price': current_price,
+        'low_30': bounds[0.30], 'high_70': bounds[0.70],
+        'low_10': bounds[0.10], 'high_90': bounds[0.90],
+        'median': bounds[0.50],
+        'range_width_pct': range_width_pct,
+        'typical_range_pct': typical_range_pct,
+        'vs_typical_pct': vs_typical_pct,
+    }
+
+
 def peer_correlation_regime(peer_closes, window=PEER_CORR_WINDOW):
     """Rough average pairwise correlation among sector peers' trailing
     daily returns - a correlation/volatility-regime read (high = peers
@@ -447,6 +512,7 @@ def build_report(ticker, timeframe, verbose=False):
     maturity = regime_maturity(flips, current_regime, bars_since_flip) if bars_since_flip is not None else None
     fund = fundamentals_rating(ticker, bars['datetime'].iloc[idx].strftime('%Y-%m-%d'))
     candle_stats = candle_shape_stats(bars, regimes, current_regime, idx)
+    move = expected_move(bars.iloc[:idx + 1])
 
     if verbose:
         print(f"\n  Computing sector peer breadth...")
@@ -472,6 +538,7 @@ def build_report(ticker, timeframe, verbose=False):
         'sector_breadth_agrees': agrees_with_peers,
         'fundamentals': fund,
         'candle_shape': candle_stats,
+        'expected_move': move,
         'move_size': move_size,
         'current_yz_vol': None if np.isnan(current_yz) else float(current_yz),
         'yz_percentile': None if np.isnan(pct) else float(pct),
@@ -550,6 +617,21 @@ def print_report(report):
     print(f"\n  Move-size (Yang-Zhang realized vol, annualized): {report['move_size']}")
     if report['current_yz_vol'] is not None:
         print(f"    current YZ vol: {report['current_yz_vol']*100:.1f}%   percentile vs own history: {report['yz_percentile']:.0f}th")
+
+    move = report['expected_move']
+    if move is not None:
+        bar_noun = {'daily': 'day', 'weekly': 'week', 'monthly': 'month'}.get(timeframe, timeframe)
+        print(f"\n  Expected move (GJR-GARCH skew-t, next {bar_noun}'s bar, from ${move['current_price']:.2f}):")
+        print(f"    30-70% range:  ${move['low_30']:.2f}  -  ${move['high_70']:.2f}")
+        print(f"    10-90% range:  ${move['low_10']:.2f}  -  ${move['high_90']:.2f}   (median ${move['median']:.2f})")
+        if move['vs_typical_pct'] is not None:
+            tag = ('WIDER than typical' if move['vs_typical_pct'] > 15 else
+                   'NARROWER than typical' if move['vs_typical_pct'] < -15 else 'close to typical')
+            print(f"    range width vs this bar-size's own trailing typical range: {move['vs_typical_pct']:+.0f}% ({tag})")
+        print(f"    same methodology validated on NQ/ES in the macro-regime forecast - not separately validated on individual equities.")
+    else:
+        print(f"\n  Expected move: unavailable (not enough history for a stable GARCH fit)")
+
     print(f"\n  This is a state description, not a prediction. 'Bullish'/'Bearish' means the valiant and")
     print(f"  market regime AGREE, not that a positive/negative return is expected with any stated odds.")
 
