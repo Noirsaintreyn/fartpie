@@ -19,6 +19,7 @@ question from whether it's useful CONTEXT to show a human.
 
 Usage: .venv311/bin/python valiant_stock_lookup.py TICKER [daily|weekly|monthly]
 """
+import json
 import sys
 import warnings
 from datetime import datetime, timedelta
@@ -244,23 +245,49 @@ def peer_correlation_regime(peer_closes, window=PEER_CORR_WINDOW):
     return float(np.nanmean(upper.values))
 
 
+def load_subindustries():
+    """Real GICS-level sub-industry (e.g. "Semiconductors"), from
+    yfinance's .info - a one-time batch build (build_sp500_subindustries.py),
+    not fetched live here. Missing/empty if that build hasn't been run
+    yet or a given ticker wasn't resolved; callers fall back to the
+    broad 11-sector grouping in that case."""
+    try:
+        with open('sp500_subindustries.json') as f:
+            raw = json.load(f)
+        return {k: v['industry'] for k, v in raw.items() if v.get('industry')}
+    except FileNotFoundError:
+        return {}
+
+
 def peer_breadth(ticker, timeframe):
-    """BROAD GICS SECTOR breadth (11 top-level sectors only - no sub-
-    industry/SIC data available), not narrow peer-group breadth: how
-    many of this stock's sector peers currently agree with its valiant
-    state - context, not a vote. Correctly read as e.g. "58% of AMD's
-    60 Information Technology sector-mates are bullish", NOT "58% of
-    AMD's semiconductor peers" - IT includes software, hardware,
-    semis, and IT services together. Adding real GICS sub-industry or
-    SIC mapping to narrow this to true peers is a known, unfinished
-    improvement, not done here."""
+    """Peer/sector breadth: how many of this stock's peers currently
+    agree with its valiant state - context, not a vote. Uses real GICS
+    sub-industry (e.g. "Semiconductors") when available - true peers,
+    not "all of Information Technology" - and falls back to the broad
+    11-sector grouping only for tickers the sub-industry build didn't
+    resolve."""
+    subindustries = load_subindustries()
     sectors = load_sectors()
-    sector = sectors.get(ticker)
-    if sector is None:
-        return None, f"no sector classification available for {ticker}"
-    peers = [t for t, s in sectors.items() if s == sector and t != ticker]
+
+    group = subindustries.get(ticker)
+    grouping_label = 'sub-industry'
+    if group is None:
+        group = sectors.get(ticker)
+        grouping_label = 'broad sector'
+    if group is None:
+        return None, f"no sector or sub-industry classification available for {ticker}"
+
+    lookup = subindustries if grouping_label == 'sub-industry' else sectors
+    peers = [t for t, g in lookup.items() if g == group and t != ticker]
     if len(peers) < 3:
-        return None, f"too few sector peers ({len(peers)}) for a meaningful breadth read"
+        # sub-industry group too small (or ticker missing from it) - widen
+        # to the broad sector rather than give up on breadth entirely
+        broad = sectors.get(ticker)
+        if broad is not None and grouping_label == 'sub-industry':
+            group, grouping_label = broad, 'broad sector'
+            peers = [t for t, s in sectors.items() if s == broad and t != ticker]
+    if len(peers) < 3:
+        return None, f"too few peers ({len(peers)}) for a meaningful breadth read"
     if len(peers) > PEER_MAX_COUNT:
         peers = peers[:PEER_MAX_COUNT]
 
@@ -324,7 +351,7 @@ def peer_breadth(ticker, timeframe):
     avg_corr = peer_correlation_regime(peer_closes)
 
     return {
-        'sector': sector, 'n_peers': n_peers, 'pct_bullish': pct_bullish,
+        'sector': group, 'grouping': grouping_label, 'n_peers': n_peers, 'pct_bullish': pct_bullish,
         'recent_bullish_flips': recent_bullish_flips, 'recent_bearish_flips': recent_bearish_flips,
         'median_dist_atr': median_dist, 'pct_bullish_prior': pct_bullish_prior,
         'breadth_trend': breadth_trend, 'dispersion': dispersion, 'avg_corr': avg_corr,
@@ -479,8 +506,9 @@ def print_report(report):
 
     breadth = report['sector_breadth']
     if breadth is not None:
-        print(f"  Sector breadth (broad GICS '{breadth['sector']}', n={breadth['n_peers']} - "
-              f"NOT narrow peers, e.g. IT includes software+hardware+semis+services): "
+        label = "peer" if breadth['grouping'] == 'sub-industry' else "broad-sector"
+        print(f"  {label.capitalize()} breadth ('{breadth['sector']}', {breadth['grouping']}, "
+              f"n={breadth['n_peers']}): "
               f"{breadth['pct_bullish']:.0f}% bullish  [{breadth['dispersion']}]"
               + (f", {breadth['breadth_trend'].lower()}" if breadth['breadth_trend'] else ""))
         print(f"    {breadth['recent_bullish_flips']} peers flipped bullish and "
