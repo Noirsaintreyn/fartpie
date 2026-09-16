@@ -1,0 +1,45 @@
+[
+  {
+    "as_of": "2026-09-15",
+    "membership_snapshot": "2026-08",
+    "n_eligible": 6,
+    "exposure_dial": 1.0,
+    "picks": [
+      {
+        "ticker": "NFLX",
+        "sector": "Communication Services",
+        "z": 3.5653,
+        "weight_flat": 0.23347235044407705,
+        "entry_price": 77.9
+      },
+      {
+        "ticker": "META",
+        "sector": "Communication Services",
+        "z": 2.3098,
+        "weight_flat": 0.21691647949279674,
+        "entry_price": 670.24
+      },
+      {
+        "ticker": "CBOE",
+        "sector": "Financials",
+        "z": 2.249,
+        "weight_flat": 0.17650046774415323,
+        "entry_price": 270.44
+      },
+      {
+        "ticker": "AMD",
+        "sector": "Information Technology",
+        "z": 1.476,
+        "weight_flat": 0.14964416820866072,
+        "entry_price": 504.2
+      },
+      {
+        "ticker": "HAL",
+        "sector": "Energy",
+        "z": 0.9579,
+        "weight_flat": 0.2234665341103123,
+        "entry_price": 35.67
+      }
+    ]
+  }
+]
