@@ -380,8 +380,33 @@ _MACRO_PRICE_TICKER = {'NQ': 'NQ=F', 'ES': 'ES=F', 'GC': 'GC=F', 'CL': 'CL=F',
                         'SI': 'SI=F', 'AMD': 'AMD', 'AAPL': 'AAPL'}
 
 
+def _load_macro_model(instrument):
+    if instrument in _MACRO_MODELS_CACHE:
+        return _MACRO_MODELS_CACHE[instrument]
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f'macro_model_{instrument}.pkl')
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, 'rb') as f:
+            data = pickle.load(f)
+        _MACRO_MODELS_CACHE[instrument] = data
+        return data
+    except Exception as e:
+        print(f"⚠ Failed to load macro model for {instrument}: {e}")
+        return None
 
 
+def _fetch_daily_closes(ticker_map, period='3mo'):
+    series = {}
+    for name, tk in ticker_map.items():
+        try:
+            h = yf.Ticker(tk).history(period=period, interval='1d')
+            if len(h) >= 2:
+                h.index = pd.to_datetime(h.index.date)
+                series[name] = h['Close']
+        except Exception:
+            continue
+    return series
 
 
 # name aliases: feature names use short forms ("yield", "dollar") that
@@ -391,16 +416,370 @@ _MACRO_SERIES_ALIAS = {'yield': 'yield10y'}
 _MACRO_DIFF_NOT_PCT = {'yield10y'}  # yields move in absolute bps, not %, everything else uses % change
 
 
+def _resolve_macro_feature(name, series, own_atr_pct):
+    """Generic resolver so new feature ideas (momentum, yield curve, ...)
+    don't each need hand-written fetch logic - parses the same naming
+    convention backtest_macro_ideas.py's feature builders use."""
+    if name == 'own_atr_pct':
+        return own_atr_pct
+    if name in ('vix_level', 'yield_level'):
+        key = _MACRO_SERIES_ALIAS.get(name.replace('_level', ''), name.replace('_level', ''))
+        s = series.get(key)
+        return float(s.iloc[-1]) if s is not None and len(s) else None
+    if name == 'vix_zscore_20d':
+        s = series.get('vix')
+        if s is None or len(s) < 20:
+            return None
+        return float((s.iloc[-1] - s.tail(20).mean()) / (s.tail(20).std() + 1e-9))
+    if name == 'vxn_minus_vix':
+        vxn, vix = series.get('vxn'), series.get('vix')
+        if vxn is None or vix is None:
+            return None
+        return float(vxn.iloc[-1] - vix.iloc[-1])
+    if name == 'curve_3m10y':
+        y10, y3m = series.get('yield10y'), series.get('yield3m')
+        if y10 is None or y3m is None:
+            return None
+        return float(y10.iloc[-1] - y3m.iloc[-1])
+    if name == 'curve_3m10y_change_1d':
+        y10, y3m = series.get('yield10y'), series.get('yield3m')
+        if y10 is None or y3m is None or len(y10) < 2:
+            return None
+        curve = y10 - y3m
+        return float(curve.diff().iloc[-1])
+    for suffix, days in [('_change_1d', 1), ('_change_5d', 5)]:
+        if name.endswith(suffix):
+            base = name[:-len(suffix)]
+            key = _MACRO_SERIES_ALIAS.get(base, base)
+            s = series.get(key)
+            if s is None or len(s) < days + 1:
+                return None
+            if key in _MACRO_DIFF_NOT_PCT:
+                return float(s.diff(days).iloc[-1])
+            return float(s.pct_change(days).iloc[-1])
+    return None
 
 
+def _describe_macro_feature(name, value):
+    """Plain-language description of one feature's current reading, for
+    the narrative layer - grounded in the actual number, not vague."""
+    if value is None or not np.isfinite(value):
+        return None
+    pct = lambda v: f"{v*100:+.1f}%"
+    if name == 'own_atr_pct':
+        return f"its own recent volatility (14-day ATR) is running at {value*100:.2f}% of price"
+    if name == 'vix_level':
+        return f"VIX is at {value:.1f}"
+    if name == 'yield_level':
+        return f"the 10Y yield is at {value:.2f}%"
+    if name == 'vix_zscore_20d':
+        tag = 'elevated relative to' if value > 0.5 else 'subdued relative to' if value < -0.5 else 'near'
+        return f"VIX is {tag} its 20-day average ({value:+.2f}σ)"
+    if name == 'vxn_minus_vix':
+        tag = 'pricing more relative fear into Nasdaq options than the broad market' if value > 0 else 'pricing LESS relative fear into Nasdaq than the broad market'
+        return f"VXN-VIX spread is {value:+.2f} - {tag}"
+    if name == 'curve_3m10y':
+        tag = 'a normal (positively-sloped) curve' if value > 0 else 'an inverted curve - a classic recession-risk signal'
+        return f"the 3M-10Y yield curve is at {value:+.2f} - {tag}"
+    if name == 'curve_3m10y_change_1d':
+        return f"the yield curve steepened {value:+.2f} yesterday" if value > 0 else f"the yield curve flattened/inverted further {value:+.2f} yesterday"
+    if name.startswith('yield10y_change') or name.startswith('yield_change'):
+        horizon = '5-day' if '5d' in name else '1-day'
+        return f"the 10Y yield moved {value:+.2f} pts over the last {horizon}"
+    if name.endswith('_change_1d') or name.endswith('_change_5d'):
+        horizon = '5-day' if name.endswith('_5d') else '1-day'
+        base = name.replace('_change_1d', '').replace('_change_5d', '')
+        label = {'vix': 'VIX', 'dollar': 'the dollar', 'vxn': 'VXN', 'qqq': 'QQQ', 'soxx': 'semiconductors (SOXX)',
+                  'silver': 'silver', 'miners': 'gold miners (GDX)', 'real_yield_proxy': 'TIPS (real yields)',
+                  'energy_equities': 'energy stocks (XLE)', 'natgas': 'natural gas', 'xlf': 'financials (XLF)',
+                  'xly': 'discretionary stocks (XLY)', 'xlk': 'tech (XLK)'}.get(base, base)
+        return f"{label} moved {pct(value)} over the last {horizon}"
+    return f"{name} = {value:.4f}"
 
 
+def _build_macro_narrative(instrument, meta, feat, trending_prob, lean):
+    """The 'reading + reasons + how to apply it' review - built from the
+    model's OWN feature_importances_ and the live feature snapshot, so
+    the explanation always matches what the model actually weighted for
+    this instrument (momentum for NQ, yield curve for GC, etc.) rather
+    than a generic script that doesn't reflect the real model."""
+    importances = meta.get('feature_importances') or {}
+    ranked = sorted(importances.items(), key=lambda kv: -kv[1])
+    top_reasons = []
+    for name, _ in ranked:
+        if name not in feat or feat[name] is None:
+            continue
+        desc = _describe_macro_feature(name, feat[name])
+        if desc:
+            top_reasons.append(desc)
+        if len(top_reasons) >= 4:
+            break
+
+    confidence_word = ('a strong' if abs(trending_prob - 0.5) > 0.15 else
+                        'a modest' if abs(trending_prob - 0.5) > 0.05 else 'only a slight')
+    reading = (f"{instrument}: {confidence_word} lean toward a {lean} day "
+               f"({trending_prob*100:.0f}% probability, vs. this instrument's own {meta['unconditional_trending_rate']*100:.0f}% "
+               f"baseline trending rate).")
+
+    if not meta.get('validated'):
+        reasons = (f"Reasons (informational only - this read is NOT statistically validated for {instrument}, "
+                    f"treat it as color, not a signal): " + "; ".join(top_reasons) + ".") if top_reasons else \
+                   "Not enough feature data to explain this reading."
+    else:
+        reasons = (f"Reasons (walk-forward validated, z={meta['backtest_z']}): " + "; ".join(top_reasons) + ".") \
+                   if top_reasons else "Not enough feature data to explain this reading."
+
+    if lean == 'trending':
+        application = ("How to apply it: a trending read favors continuation - trend-following entries and giving "
+                        "winners room, and treating structural level touches as places price is more likely to "
+                        "BREAK than reject. Fading extremes back toward fair value is lower-probability today.")
+    else:
+        application = ("How to apply it: a choppy/mean-reverting read favors fading extremes - the structural "
+                        "zone edges and detected levels are more likely to hold and reject today, so mean-reversion "
+                        "entries back toward fair value are the higher-probability read. Trend-following breakout "
+                        "entries are lower-probability today.")
+
+    return f"{reading} {reasons} {application}"
 
 
+def _compute_expected_range_iv_blend_scale(returns_pct, low_pct, high_pct):
+    """
+    expected_range_v2: widens/narrows the skew-t band around its own
+    center by the ratio of a 50/50 GJR+QQQ-options-IV blended sigma to
+    the GJR-only sigma, preserving the skew-t fit's asymmetric SHAPE
+    (already independently validated - see the module docstring above)
+    while applying the separately-validated blend WIDTH improvement.
+
+    Validated in backtest_options_range_forecast_v2.py: the 50/50
+    variance blend beat GJR-only on QLIKE with a HAC-adjusted DM p=0.0002
+    and a moving-block-bootstrap 95% CI fully excluding zero, stable
+    across 2018-2021/2022-2024/2025-2026 sub-periods, all three horizon
+    buckets, and all three IV-regime terciles - IV ALONE did not clear
+    the same bar (p=0.05, borderline), which is why this blends rather
+    than swaps to IV outright.
+
+    ONLY called for NQ (see _compute_expected_range) - the blend was
+    validated using QQQ's own price history against QQQ's own options
+    IV; QQQ and NQ track the same index closely enough to transfer this,
+    but applying QQQ-derived IV to GC/SI/CL/ES's own expected range was
+    never tested and would not be a defensible transfer.
+
+    Returns (low_pct, high_pct) rescaled, or the ORIGINAL (low_pct,
+    high_pct) unchanged on any failure (missing/stale options data,
+    network error, GJR refit failure) - fails back to the already-
+    validated skew-t-only behavior, never blocks the live request.
+    """
+    try:
+        gjr_sigma_pct = fit_gjr_garch_vol_forecast_pct(returns_pct)
+        if gjr_sigma_pct is None or gjr_sigma_pct <= 0:
+            return low_pct, high_pct
+
+        import options_context_panel as _ocp
+        state = _ocp.build_state_panel('QQQ')
+        if state.get('panel_status') not in ('ok', 'degraded'):
+            return low_pct, high_pct
+        front_atm_iv = state.get('iv_regime', {}).get('atm_iv')
+        if front_atm_iv is None or front_atm_iv <= 0:
+            return low_pct, high_pct
+
+        iv_sigma_pct = front_atm_iv / np.sqrt(252) * 100  # annualized IV -> 1-day, same units as gjr_sigma_pct
+        blend_sigma_pct = np.sqrt(0.5 * gjr_sigma_pct ** 2 + 0.5 * iv_sigma_pct ** 2)
+        scale = blend_sigma_pct / gjr_sigma_pct
+        if not np.isfinite(scale) or scale <= 0:
+            return low_pct, high_pct
+
+        mean_pct = (low_pct + high_pct) / 2
+        return mean_pct - (mean_pct - low_pct) * scale, mean_pct + (high_pct - mean_pct) * scale
+    except Exception:
+        return low_pct, high_pct
 
 
+def _compute_expected_range(own_hist, feat, instrument=None):
+    """
+    Skew-t GJR-GARCH expected range for TODAY, anchored to the day's open
+    (not a bare "+/-50 points" number) - the 30th/70th conditional
+    quantiles (matching the width of the previous +/-0.5 sigma normal
+    approximation this replaced, but now genuinely asymmetric). Validated
+    in backtest_returns_distribution.py as the best of 5 candidates
+    (empirical/normal/t/skew-t/LightGBM quantile regression) on both NQ
+    and ES - skew-t's fat tails + leverage-effect skew beat a plain
+    symmetric normal by ~5-8% lower pinball loss, with the fewest
+    calibration violations. Falls back to the symmetric normal GJR-GARCH
+    forecast if the skew-t fit doesn't converge (4-parameter fit is more
+    fragile than plain GARCH). Also reports where CURRENT price sits
+    within that range, and whether today's forecast is running hot/cold
+    vs this instrument's own recent typical range, with a reason grounded
+    in the VIX context already computed for the main prediction (not a
+    fabricated news explanation).
+
+    For instrument='NQ' only: widens/narrows the resulting band by the
+    validated GJR+QQQ-options-IV blend ratio (expected_range_v2) - see
+    _compute_expected_range_iv_blend_scale. Every other instrument keeps
+    the original skew-t-only behavior unchanged (unvalidated for them).
+    """
+    closes = own_hist['Close'].values
+    highs, lows = own_hist['High'].values, own_hist['Low'].values
+    if len(closes) < 30:
+        return None
+
+    # exclude today's still-forming bar from the fit (PIT-safe)
+    hist_closes = closes[:-1]
+    returns_pct = np.diff(np.log(hist_closes)) * 100
+
+    quantiles_pct = fit_gjr_garch_skewt_quantiles_pct(returns_pct, [0.30, 0.70])
+    range_model = 'gjr_skewt_v1'
+    if quantiles_pct is not None:
+        low_pct, high_pct = quantiles_pct[0.30], quantiles_pct[0.70]
+    else:
+        gjr_vol_pct = fit_gjr_garch_vol_forecast_pct(returns_pct)
+        if gjr_vol_pct is None:
+            return None
+        low_pct, high_pct = -gjr_vol_pct / 2, gjr_vol_pct / 2
+
+    if instrument == 'NQ':
+        blended_low_pct, blended_high_pct = _compute_expected_range_iv_blend_scale(returns_pct, low_pct, high_pct)
+        if (blended_low_pct, blended_high_pct) != (low_pct, high_pct):
+            low_pct, high_pct = blended_low_pct, blended_high_pct
+            range_model = 'gjr_iv_blend_v2'
+
+    today_open = float(own_hist['Open'].iloc[-1])
+    current_price = float(closes[-1])
+    expected_low = today_open * np.exp(low_pct / 100)
+    expected_high = today_open * np.exp(high_pct / 100)
+    range_width = (high_pct - low_pct) / 100  # decimal, e.g. 0.018 = 1.8%
+
+    # typical range = trailing realized log-range over the recent history
+    # (excluding today), as the "normal" baseline to compare today's
+    # forecast against
+    hist_highs, hist_lows = highs[:-1], lows[:-1]
+    realized_log_range = np.log(hist_highs[-60:] / hist_lows[-60:])
+    typical_range = float(np.mean(realized_log_range)) if len(realized_log_range) >= 20 else None
+    vs_typical_pct = ((range_width - typical_range) / typical_range * 100) if typical_range and typical_range > 0 else None
+
+    if current_price < expected_low:
+        position_desc = f"already {(expected_low - current_price) / (expected_high - expected_low) * 100:.0f}% below the expected range's low"
+        position_pct = None
+    elif current_price > expected_high:
+        position_desc = f"already {(current_price - expected_high) / (expected_high - expected_low) * 100:.0f}% above the expected range's high"
+        position_pct = None
+    else:
+        position_pct = (current_price - expected_low) / (expected_high - expected_low) * 100
+        position_desc = f"{position_pct:.0f}% of the way through the expected range"
+
+    vol_regime_note = None
+    if vs_typical_pct is not None:
+        vix_z = feat.get('vix_zscore_20d')
+        vix_5d = feat.get('vix_change_5d')
+        if vs_typical_pct > 15:
+            reason = (f"VIX is running {vix_z:+.2f}σ above its 20-day average" if vix_z and vix_z > 0.3 else
+                      f"VIX is up {vix_5d*100:+.0f}% over 5 days" if vix_5d and vix_5d > 0.05 else
+                      "recent realized volatility has picked up")
+            vol_regime_note = f"Expected range is running {vs_typical_pct:+.0f}% above its recent typical size, coinciding with {reason} - more room for a big move than usual."
+        elif vs_typical_pct < -15:
+            reason = (f"VIX is running {vix_z:+.2f}σ below its 20-day average" if vix_z and vix_z < -0.3 else
+                      "recent realized volatility has been unusually calm")
+            vol_regime_note = f"Expected range is running {vs_typical_pct:+.0f}% below its recent typical size, coinciding with {reason} - a tighter day than usual is more likely."
+        else:
+            vol_regime_note = "Expected range is close to its recent typical size - nothing unusual in the volatility backdrop today."
+
+    return {
+        'today_open': today_open, 'current_price': current_price,
+        'expected_low': float(expected_low), 'expected_high': float(expected_high),
+        'expected_range_pct': range_width * 100,
+        'vs_typical_pct': vs_typical_pct,
+        'position_in_range_pct': position_pct, 'position_description': position_desc,
+        'note': vol_regime_note, 'range_model': range_model,
+    }
 
 
+@app.route('/api/macro-regime', methods=['GET'])
+def get_macro_regime():
+    """
+    Cross-asset macro read for one instrument: predicted probability
+    today is a TRENDING vs CHOPPY/MEAN-REVERTING day, the feature
+    snapshot behind it, AND a plain-language narrative explaining the
+    reading, the specific data points behind it, and how to apply it to
+    trading the day (trend-following vs mean-reversion at the structural
+    levels already detected elsewhere). Each instrument uses its own
+    independently-validated best feature set (NQ: momentum; GC: yield
+    curve; others: baseline, unvalidated) - see backtest_macro_ideas.py.
+    """
+    ticker = request.args.get('ticker', 'NQ=F').strip().upper()
+    instrument = _MACRO_INSTRUMENT_MAP.get(ticker)
+
+    try:
+        universal_map = {'vix': '^VIX', 'yield10y': '^TNX', 'dollar': 'DX-Y.NYB', 'yield3m': '^IRX'}
+        universal = _fetch_daily_closes(universal_map, period='3mo')
+        if 'vix' not in universal or len(universal['vix']) < 21:
+            return jsonify({'success': False, 'error': 'Could not fetch macro data (VIX/yields/USD)'}), 400
+
+        model_data = _load_macro_model(instrument) if instrument else None
+
+        if model_data is None:
+            # unlisted/untrained ticker - honest context-only response, no fabricated prediction
+            generic_map = {'spy': 'SPY', 'midcap': 'IJH', 'smallcap': 'IWM'}
+            generic = _fetch_daily_closes(generic_map, period='1mo')
+            all_series = {**universal, **generic}
+            context = {}
+            for name in ['vix_level', 'yield_level', 'vix_change_1d', 'vix_zscore_20d', 'dollar_change_1d',
+                         'spy_change_1d', 'midcap_change_1d', 'smallcap_change_1d']:
+                v = _resolve_macro_feature(name, all_series, None)
+                if v is not None:
+                    context[name] = v
+            return jsonify({
+                'success': True, 'ticker': ticker, 'instrument': None, 'validated': False, 'has_prediction': False,
+                'note': 'No backtested macro model for this ticker - showing raw macro context only, not a prediction.',
+                'macro_context': sanitize_for_json(context),
+            })
+
+        model, meta = model_data['model'], model_data['meta']
+
+        # instrument's own recent price, for the own_atr_pct feature AND
+        # the expected-range calc below
+        price_ticker = _MACRO_PRICE_TICKER.get(instrument, ticker)
+        own_hist = yf.Ticker(price_ticker).history(period='4mo', interval='1d')
+        if len(own_hist) < 15:
+            return jsonify({'success': False, 'error': f'Could not fetch price history for {price_ticker}'}), 400
+        own_range = own_hist['High'] - own_hist['Low']
+        own_atr14 = own_range.rolling(14).mean()
+        own_atr_pct = float((own_atr14 / own_hist['Close']).iloc[-1])
+
+        sector = _fetch_daily_closes(meta['sector_tickers'], period='3mo')
+        all_series = {**universal, **sector}
+
+        feat = {}
+        for col in meta['feature_cols']:
+            feat[col] = _resolve_macro_feature(col, all_series, own_atr_pct)
+
+        missing = [c for c in meta['feature_cols'] if feat.get(c) is None or not np.isfinite(feat[c])]
+        if missing:
+            return jsonify({'success': False, 'error': f'Missing/invalid features: {missing}'}), 400
+
+        X = pd.DataFrame([[feat[c] for c in meta['feature_cols']]], columns=meta['feature_cols'])
+        trending_prob = float(model.predict_proba(X)[0, 1])
+        lean = 'trending' if trending_prob >= 0.5 else 'choppy / mean-reverting'
+        lean_strength = abs(trending_prob - 0.5) * 2  # 0 = coin flip, 1 = maximal confidence
+        narrative = _build_macro_narrative(instrument, meta, feat, trending_prob, lean)
+        expected_range = _compute_expected_range(own_hist, feat, instrument=instrument)
+
+        return jsonify({
+            'success': True, 'ticker': ticker, 'instrument': instrument, 'label': meta['label'],
+            'idea': meta.get('idea', 'baseline'),
+            'validated': bool(meta['validated']), 'backtest_z': meta['backtest_z'],
+            'has_prediction': True,
+            'trending_probability': trending_prob,
+            'lean': lean, 'lean_strength': lean_strength,
+            'unconditional_base_rate': meta['unconditional_trending_rate'],
+            'feature_snapshot': sanitize_for_json(feat),
+            'narrative': narrative,
+            'expected_range': sanitize_for_json(expected_range),
+            'note': ('Validated: real, modest, walk-forward-tested edge.' if meta['validated']
+                     else 'NOT statistically validated for this instrument - treat as informational only, not a proven edge.'),
+        })
+    except Exception as e:
+        import traceback
+        print(f"ERROR in /api/macro-regime: {traceback.format_exc()}")
+        return jsonify({'success': False, 'error': str(e)}), 400
 
 # ============================================================================
 # MOTIVEWAVE CSV UPLOAD ROUTES
@@ -1399,8 +1778,64 @@ def fit_gjr_garch_vol_forecast_pct(returns_pct):
 
 
 
+def fit_gjr_garch_skewt_quantiles_pct(returns_pct, quantiles):
+    """
+    GJR-GARCH(1,1,1) 1-step conditional quantile forecast with Hansen's
+    skew-t innovations - captures both fat tails and the leverage-effect
+    skew (down moves have a genuinely wider tail than up moves, not just
+    at the extremes). Validated in backtest_returns_distribution.py as
+    the best of 5 candidates (empirical/normal/t/skew-t/LightGBM quantile
+    regression) on both NQ and ES: ~6-8% lower pinball loss than the
+    unconditional empirical baseline, fewest calibration violations.
+    Returns {quantile_level: forecast_return_pct} or None on failure.
+    """
+    try:
+        if len(returns_pct) < 50:
+            return None
+        model = arch_model(returns_pct, vol='GARCH', p=1, o=1, q=1, dist='skewt', rescale=False)
+        result = model.fit(disp='off', show_warning=False)
+        forecast = result.forecast(horizon=1, reindex=False)
+        mean = float(forecast.mean.values[-1, 0])
+        sigma = float(np.sqrt(forecast.variance.values[-1, 0]))
+        if not np.isfinite(mean) or not np.isfinite(sigma) or sigma <= 0:
+            return None
+        eta, lam = result.params['eta'], result.params['lambda']
+        dist_obj = SkewStudent()
+        return {q: mean + sigma * float(dist_obj.ppf(q, [eta, lam])) for q in quantiles}
+    except Exception:
+        return None
 
 
+def fit_ou_process(x, dt=1.0):
+    """
+    Fit an Ornstein-Uhlenbeck process via AR(1) regression: x[t+1] = a + b*x[t] + eps.
+    Used on the price-minus-VWAP deviation series (mean-reverting by
+    construction) to derive an adaptive OU-zone: VWAP + mu +/- k*stationary_std,
+    width scaling with how fast/noisy the mean reversion actually is instead
+    of a fixed-width band. Ported into production from backtest_ou_zones.py
+    (where it was validated) so build_market_state_snapshot_v3 and the
+    research scripts call the exact same implementation - no risk of the
+    live and backtested OU-zone math silently drifting apart.
+
+    Returns (theta, mu, stationary_std), or None if the fit is degenerate
+    (b outside (0,1) means no real mean reversion, or a flat/zero-variance series).
+    """
+    if len(x) < 20:
+        return None
+    x0, x1 = x[:-1], x[1:]
+    if np.std(x0) < 1e-9:
+        return None
+    b, a = np.polyfit(x0, x1, 1)
+    if not (0 < b < 1):
+        return None
+    resid = x1 - (a + b * x0)
+    resid_var = np.var(resid)
+    theta = (1 - b) / dt
+    mu = a / (1 - b)
+    stationary_var = resid_var / (1 - b ** 2)
+    if stationary_var <= 0:
+        return None
+    return theta, mu, float(np.sqrt(stationary_var))
 
 
 
@@ -6143,12 +6578,176 @@ _LEVEL_ALGO_BACKTEST_SUMMARY = {
 }
 
 
+def fit_ou_process(x, dt=1.0):
+    """Fit OU via AR(1) regression: x[t+1] = a + b*x[t] + eps.
+    Returns (theta, mu, stationary_std) or None if the fit is degenerate
+    (b outside (0,1) means no real mean reversion, or a flat/zero-variance
+    series)."""
+    if len(x) < 20:
+        return None
+    x0, x1 = x[:-1], x[1:]
+    if np.std(x0) < 1e-9:
+        return None
+    b, a = np.polyfit(x0, x1, 1)
+    if not (0 < b < 1):
+        return None
+    resid = x1 - (a + b * x0)
+    resid_var = np.var(resid)
+    theta = (1 - b) / dt
+    mu = a / (1 - b)
+    stationary_var = resid_var / (1 - b ** 2)
+    if stationary_var <= 0:
+        return None
+    return theta, mu, float(np.sqrt(stationary_var))
 
 
+def get_ou_zone_history(highs, lows, closes, volumes, timestamps, lookback=150, step=5, k=_OU_ZONE_K):
+    """
+    Rolling OU zone over a displayed price history, for charting - NOT a
+    12-year backtest, just enough rolling re-fits to draw a zone band
+    evolving alongside the price series. Returns parallel arrays: the
+    scan points (index into the input arrays), and zone_low/zone_high/vwap
+    at each scan point. Frontend holds the last known zone between scan
+    points for a continuous-looking band.
+    """
+    n = len(closes)
+    scan_idx, zone_low_list, zone_high_list, vwap_list = [], [], [], []
+    for t in range(lookback, n, step):
+        win_h, win_l, win_c = highs[t - lookback:t], lows[t - lookback:t], closes[t - lookback:t]
+        win_v = volumes[t - lookback:t]
+        win_dt = timestamps[t - lookback:t] if timestamps is not None else None
+        try:
+            vwap_result = calculate_vwap(win_h, win_l, win_c, win_v, timestamps=win_dt)
+        except Exception:
+            continue
+        if vwap_result is None:
+            continue
+        vwap_series = vwap_result['vwap_series']
+        deviation = win_c - vwap_series
+        fit = fit_ou_process(deviation)
+        if fit is None:
+            continue
+        _, mu, stationary_std = fit
+        current_vwap = vwap_series[-1]
+        scan_idx.append(t - 1)
+        zone_low_list.append(float(current_vwap + mu - k * stationary_std))
+        zone_high_list.append(float(current_vwap + mu + k * stationary_std))
+        vwap_list.append(float(current_vwap))
+    return {
+        'scan_idx': scan_idx, 'zone_low': zone_low_list, 'zone_high': zone_high_list,
+        'vwap': vwap_list,
+    }
 
 
+def _htf_vwap_anchors(daily_highs, daily_lows, daily_closes, daily_volumes, daily_dates, current_ts, lookback_days=90):
+    """Weekly/monthly anchored VWAP from daily bars, as of the most recent
+    COMPLETE daily bar before current_ts (never peeks at today's incomplete
+    day). Same methodology validated in backtest_ou_zones_hybrid.py."""
+    mask = daily_dates < pd.Timestamp(current_ts).normalize()
+    if mask.sum() < 5:
+        return None, None
+    idx = np.where(mask)[0][-lookback_days:]
+    typical = (daily_highs[idx] + daily_lows[idx] + daily_closes[idx]) / 3.0
+    vol = daily_volumes[idx]
+    dts = daily_dates[idx]
+
+    last_date = pd.Timestamp(dts[-1])
+    week_start = last_date - pd.Timedelta(days=last_date.dayofweek)
+    month_start = last_date.replace(day=1)
+
+    def vwap_of(period_start):
+        m = dts >= np.datetime64(period_start)
+        v = vol[m]
+        if v.sum() <= 0:
+            return None
+        return float((typical[m] * v).sum() / v.sum())
+
+    return vwap_of(week_start), vwap_of(month_start)
 
 
+def get_hybrid_zone_with_target(highs, lows, closes, opens, volumes, timestamps,
+                                 daily_highs, daily_lows, daily_closes, daily_volumes, daily_dates,
+                                 lookback=150, k=_OU_ZONE_K, touch_tolerance_atr=0.25, corridor_buffer_atr=0.3):
+    """
+    Current hybrid OU zone (multi-timeframe VWAP consensus center, held
+    fixed rather than re-fit every bar - validated at the same ~62-64%
+    reject rate as the simple version but with far higher touch reliability,
+    89-95% vs 61-63%) PLUS target selection: a real KDE structural level
+    sitting between the zone's stretch edge and the fair-value center
+    (padded by corridor_buffer_atr on each side - validated separately:
+    widening the ENTRY zone (k) to find more targets measurably hurt
+    target-reach quality (93.6%->80.5% at k=0.8), but widening just the
+    target-SEARCH corridor at the validated k=0.25 raised target
+    availability from 18.8% to 35.8% with NO quality cost (93.6%->95.2%
+    reach rate) - the entry mechanics and the target search are separate
+    questions, and only the corridor needed relaxing), picked by
+    historical touch_count (how many times price has actually tested that
+    price before).
+
+    Returns None if there isn't enough data for a fit, or a dict with the
+    zone bounds, side, consensus_vwap, and target info (may be None if no
+    qualifying KDE candidate sits on the path to fair value right now).
+    """
+    n = len(closes)
+    if n < lookback + 1:
+        return None
+    win_h, win_l, win_c = highs[-lookback:], lows[-lookback:], closes[-lookback:]
+    win_v, win_dt = volumes[-lookback:], timestamps[-lookback:]
+    atr = _atr_for_ml_filter(win_h, win_l, win_c)
+    if atr <= 0:
+        return None
+
+    vwap_result = calculate_vwap(win_h, win_l, win_c, win_v, timestamps=win_dt)
+    if vwap_result is None:
+        return None
+    session_vwap = vwap_result['vwap']
+    weekly_vwap, monthly_vwap = _htf_vwap_anchors(daily_highs, daily_lows, daily_closes, daily_volumes,
+                                                    daily_dates, timestamps[-1])
+    anchors = [a for a in [session_vwap, weekly_vwap, monthly_vwap] if a is not None]
+    consensus_vwap = float(np.mean(anchors))
+
+    vwap_series = vwap_result['vwap_series']
+    deviation = win_c - vwap_series
+    fit = fit_ou_process(deviation)
+    if fit is None:
+        return None
+    _, _, stationary_std = fit
+
+    zone_low = consensus_vwap - k * stationary_std
+    zone_high = consensus_vwap + k * stationary_std
+    current_price = closes[-1]
+
+    if current_price >= consensus_vwap:
+        edge, side = zone_high, 'resistance'
+        stretched = current_price >= edge
+    else:
+        edge, side = zone_low, 'support'
+        stretched = current_price <= edge
+
+    target_price, target_touch_count = None, None
+    if stretched:
+        try:
+            kde_candidates = kde_based_levels(win_h, win_l, win_c, n_levels=8)
+        except Exception:
+            kde_candidates = []
+        lo, hi = (consensus_vwap, edge) if side == 'resistance' else (edge, consensus_vwap)
+        corridor_pad = corridor_buffer_atr * atr
+        lo, hi = lo - corridor_pad, hi + corridor_pad
+        path_candidates = [c for c in kde_candidates if lo <= c['price'] <= hi]
+        tol = touch_tolerance_atr * atr
+        best_tc = -1
+        for c in path_candidates:
+            near_mask = (win_l <= c['price'] + tol) & (win_h >= c['price'] - tol)
+            tc = int(near_mask.sum())
+            if tc > best_tc:
+                best_tc, target_price = tc, c['price']
+        target_touch_count = best_tc if target_price is not None else None
+
+    return {
+        'side': side, 'edge': edge, 'zone_low': zone_low, 'zone_high': zone_high,
+        'consensus_vwap': consensus_vwap, 'stretched': stretched,
+        'target_price': target_price, 'target_touch_count': target_touch_count,
+    }
 
 
 # ============================================================================
@@ -6237,18 +6836,716 @@ def calculate_vwap(highs, lows, closes, volumes, timestamps=None, n_sigma_bands=
 
 
 
+def calculate_volume_profile(highs, lows, closes, volumes, bins=30):
+    """
+    Calculate volume profile (value areas) for directional understanding
+    
+    Returns:
+    --------
+    dict: {
+        'poc': float,  # Point of Control (highest volume price)
+        'value_area_high': float,  # 70% value area high
+        'value_area_low': float,   # 70% value area low
+        'profile': list,  # [(price, volume), ...]
+        'volume_distribution': dict  # {price_bin: volume}
+    }
+    """
+    if len(closes) == 0:
+        return None
+    
+    price_range = (np.max(highs) - np.min(lows))
+    if price_range == 0:
+        return None
+    
+    # Create price bins
+    min_price = np.min(lows)
+    max_price = np.max(highs)
+    bin_edges = np.linspace(min_price, max_price, bins + 1)
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+    
+    # Distribute volume across price bins
+    volume_distribution = np.zeros(bins)
+    
+    for i in range(len(closes)):
+        # For each bar, distribute volume across the price range it traded
+        bar_low = lows[i]
+        bar_high = highs[i]
+        bar_volume = volumes[i]
+        
+        # Find which bins this bar overlaps
+        low_bin = np.searchsorted(bin_edges, bar_low) - 1
+        high_bin = np.searchsorted(bin_edges, bar_high)
+        
+        low_bin = max(0, min(low_bin, bins - 1))
+        high_bin = max(0, min(high_bin, bins))
+        
+        # Distribute volume evenly across overlapping bins
+        if high_bin > low_bin:
+            volume_per_bin = bar_volume / (high_bin - low_bin)
+            for b in range(low_bin, high_bin):
+                if 0 <= b < bins:
+                    volume_distribution[b] += volume_per_bin
+    
+    # Find POC (Point of Control)
+    poc_idx = np.argmax(volume_distribution)
+    poc = bin_centers[poc_idx]
+    
+    # Calculate 70% value area
+    total_volume = np.sum(volume_distribution)
+    target_volume = total_volume * 0.70
+    
+    # Find value area by expanding from POC
+    sorted_indices = np.argsort(volume_distribution)[::-1]
+    cumulative_volume = 0
+    value_area_indices = []
+    
+    for idx in sorted_indices:
+        cumulative_volume += volume_distribution[idx]
+        value_area_indices.append(idx)
+        if cumulative_volume >= target_volume:
+            break
+    
+    value_area_prices = [bin_centers[i] for i in value_area_indices]
+    value_area_high = np.max(value_area_prices)
+    value_area_low = np.min(value_area_prices)
+    
+    # Build profile
+    profile = [(float(bin_centers[i]), float(volume_distribution[i])) 
+               for i in range(bins) if volume_distribution[i] > 0]
+    
+    return {
+        'poc': float(poc),
+        'value_area_high': float(value_area_high),
+        'value_area_low': float(value_area_low),
+        'profile': profile,
+        'volume_distribution': {float(bin_centers[i]): float(volume_distribution[i]) 
+                               for i in range(bins) if volume_distribution[i] > 0}
+    }
 
 
+def predict_level_as_hod_lod(level, current_price, all_levels, volume_profile, 
+                              microstructure_state, sigma_price, timeframe):
+    """
+    Predict if a level will become the actual HOD or LOD
+    
+    Uses:
+    - Level strength and confluence
+    - Volume profile (value areas)
+    - Distance from current price
+    - Microstructure state
+    - Other competing levels
+    
+    Returns:
+    --------
+    dict: {
+        'will_be_hod': bool,
+        'will_be_lod': bool,
+        'hod_probability': float,  # 0-1
+        'lod_probability': float,  # 0-1
+        'confidence': float,
+        'reasoning': str
+    }
+    """
+    if level is None or 'price' not in level:
+        return None
+    
+    level_price = level.get('price', current_price)
+    is_above = level_price > current_price
+    is_below = level_price < current_price
+    
+    if not (is_above or is_below):
+        return None  # Level is at current price
+    
+    # Level strength factors
+    level_strength = level.get('strength', level.get('levelStrength', 0.5))
+    confluence_count = level.get('confluence_count', 1)
+    
+    # Distance from current (closer = more likely to be HOD/LOD)
+    distance_pct = abs(level_price - current_price) / current_price
+    distance_factor = 1.0 / (1.0 + distance_pct * 10)  # Closer = higher
+    
+    # Volume profile context
+    volume_weight = 0.5
+    if volume_profile:
+        poc = volume_profile.get('poc', current_price)
+        va_high = volume_profile.get('value_area_high', current_price)
+        va_low = volume_profile.get('value_area_low', current_price)
+        
+        # If level is near POC or in value area, more likely to be HOD/LOD
+        dist_to_poc = abs(level_price - poc) / current_price
+        if dist_to_poc < 0.01:
+            volume_weight = 1.0
+        elif va_low <= level_price <= va_high:
+            volume_weight = 0.8
+        else:
+            volume_weight = 0.3
+    
+    # Check for competing levels (other levels closer to theoretical bounds)
+    competing_factor = 1.0
+    if is_above:
+        # Check if there are stronger levels above this one
+        stronger_above = [l for l in all_levels 
+                         if l.get('price', 0) > level_price and 
+                         (l.get('strength', 0) > level_strength or 
+                          l.get('confluence_count', 0) > confluence_count)]
+        if stronger_above:
+            competing_factor = 0.6  # Less likely if stronger levels exist above
+    else:
+        # Check if there are stronger levels below this one
+        stronger_below = [l for l in all_levels 
+                         if l.get('price', 0) < level_price and 
+                         (l.get('strength', 0) > level_strength or 
+                          l.get('confluence_count', 0) > confluence_count)]
+        if stronger_below:
+            competing_factor = 0.6
+    
+    # Microstructure context
+    micro_state = microstructure_state.get('state', 'Unknown') if microstructure_state else 'Unknown'
+    is_trending = micro_state in ['Fock', 'Trending', 'Expansion']
+    
+    # Calculate probabilities
+    base_prob = (level_strength * 0.4 + 
+                min(confluence_count / 5, 1.0) * 0.3 + 
+                distance_factor * 0.2 + 
+                volume_weight * 0.1) * competing_factor
+    
+    if is_above:
+        hod_prob = base_prob
+        lod_prob = 0.1  # Very unlikely to be LOD if above current
+        will_be_hod = hod_prob > 0.5
+        will_be_lod = False
+        reasoning = f"Resistance level at ${level_price:.2f}. Strength: {level_strength:.2f}, Confluence: {confluence_count}"
+    else:
+        lod_prob = base_prob
+        hod_prob = 0.1  # Very unlikely to be HOD if below current
+        will_be_hod = False
+        will_be_lod = lod_prob > 0.5
+        reasoning = f"Support level at ${level_price:.2f}. Strength: {level_strength:.2f}, Confluence: {confluence_count}"
+    
+    confidence = min(0.9, base_prob + (confluence_count / 10))
+    
+    return {
+        'will_be_hod': will_be_hod,
+        'will_be_lod': will_be_lod,
+        'hod_probability': float(np.clip(hod_prob, 0.0, 1.0)),
+        'lod_probability': float(np.clip(lod_prob, 0.0, 1.0)),
+        'confidence': float(confidence),
+        'reasoning': reasoning,
+        'level_price': float(level_price),
+        'distance_pct': float(distance_pct * 100)
+    }
 
+def predict_level_reaction(level, current_price, start_of_move_price, sigma_price, 
+                          volume_profile, microstructure_state, hurst_data, garch_regime, 
+                          hmm_regime, timeframe):
+    """
+    Predict how price will react when reaching a level
+    
+    Enhanced with:
+    - Hurst exponent (trending vs mean-reverting)
+    - GARCH volatility regime (volatility context)
+    - HMM regime (market state)
+    - Microstructure state (Fock/Thermal/Coherent)
+    - Start of move (how far we've come)
+    - Volume profile (value areas)
+    - Level strength
+    
+    Returns:
+    --------
+    dict: {
+        'reaction_type': str,  # 'bounce', 'break', 'pause', 'reject'
+        'probability': float,  # 0-1
+        'expected_move_after': float,  # % move after reaction
+        'confidence': float,
+        'factors': dict  # Breakdown of contributing factors
+    }
+    """
+    if level is None or 'price' not in level:
+        return None
+    
+    level_price = level.get('price', current_price)
+    distance_to_level = abs(level_price - current_price) / current_price
+    
+    # Distance from start of move
+    move_from_start = abs(current_price - start_of_move_price) / start_of_move_price
+    move_to_level = abs(level_price - start_of_move_price) / start_of_move_price
+    
+    # Level strength
+    level_strength = level.get('strength', level.get('levelStrength', 0.5))
+    confluence_count = level.get('confluence_count', 1)
+    
+    # ===== HURST EXPONENT ANALYSIS =====
+    hurst = hurst_data.get('hurst', 0.5) if hurst_data else 0.5
+    hurst_regime = hurst_data.get('regime', 'Random Walk') if hurst_data else 'Random Walk'
+    is_mean_reverting = hurst < 0.4  # Mean-reverting: levels more likely to hold
+    is_trending_hurst = hurst > 0.6  # Trending: levels more likely to break
+    is_random_walk = 0.4 <= hurst <= 0.6
+    
+    # Hurst impact on reaction
+    # Mean-reverting: price tends to return to levels (bounce more likely)
+    # Trending: price tends to continue through levels (break more likely)
+    hurst_bounce_factor = 1.4 if is_mean_reverting else (0.7 if is_trending_hurst else 1.0)
+    hurst_break_factor = 0.7 if is_mean_reverting else (1.3 if is_trending_hurst else 1.0)
+    
+    # ===== GARCH VOLATILITY REGIME =====
+    garch_regime_name = garch_regime.get('regime', 'Normal Vol') if garch_regime else 'Normal Vol'
+    vol_ratio = garch_regime.get('vol_ratio', 1.0) if garch_regime else 1.0
+    is_high_vol = vol_ratio > 1.3  # Elevated volatility
+    is_extreme_vol = vol_ratio > 1.5  # Extreme volatility spike
+    
+    # High vol = more likely to break levels, less likely to hold
+    vol_break_factor = 1.2 if is_high_vol else (1.5 if is_extreme_vol else 1.0)
+    vol_bounce_factor = 0.8 if is_high_vol else (0.6 if is_extreme_vol else 1.0)
+    
+    # ===== HMM REGIME =====
+    # previously compared hmm_regime['state'] (an int) against ['Bull',
+    # 'Strong Bull'] (strings that don't even exist in detect_market_regime_hmm's
+    # regime_names) - always False, so this block was a permanent no-op.
+    # Fixed to read the actual 'regime' label. Left disabled (pinned to 1.0)
+    # since these break/bounce multipliers (1.2/0.8) were never backtested -
+    # every ad hoc directional/bias signal tested this session has failed,
+    # so this needs the same walk-forward/DM-test evidence as the v2 filter
+    # and GJR+IV blend before it's allowed to affect live scores.
+    hmm_regime_label = hmm_regime.get('regime', 'Unknown') if hmm_regime else 'Unknown'
+    is_bullish_regime = hmm_regime_label == 'Bullish'
+    is_bearish_regime = hmm_regime_label == 'Bearish'
+    regime_break_factor = 1.0
+    regime_bounce_factor = 1.0
+    
+    # ===== MICROSTRUCTURE STATE =====
+    micro_state = microstructure_state.get('state', 'Unknown') if microstructure_state else 'Unknown'
+    is_fock = micro_state == 'Fock'  # Jump-dominated, fat tails - more likely to overshoot/break
+    is_coherent = micro_state == 'Coherent'  # Directional - more likely to continue trend
+    is_thermal = micro_state == 'Thermal'  # Diffusive - more likely to respect levels
+    
+    # Microstructure impact
+    if is_fock:
+        # Fock: High jump probability, levels more likely to break
+        micro_break_factor = 1.3
+        micro_bounce_factor = 0.7
+    elif is_coherent:
+        # Coherent: Directional, trend continuation
+        micro_break_factor = 1.1
+        micro_bounce_factor = 0.9
+    elif is_thermal:
+        # Thermal: Diffusive, levels more likely to hold
+        micro_break_factor = 0.8
+        micro_bounce_factor = 1.2
+    else:
+        micro_break_factor = 1.0
+        micro_bounce_factor = 1.0
+    
+    # Volatility context (sigma)
+    sigma_pct = sigma_price / current_price
+    
+    # ===== COMBINED REACTION PREDICTION =====
+    reaction_type = 'pause'  # Default
+    probability = 0.5
+    
+    # Calculate expected move based on volatility (sigma_price), not arbitrary percentages
+    # Strong reactions: 1.5-2.5σ moves, weak reactions: 0.5-1.0σ moves
+    # Convert sigma_price to percentage for expected_move_after
+    base_move_pct = sigma_price / current_price if current_price > 0 else 0.01  # At least 1%
+    
+    # Calculate combined factors
+    combined_bounce_factor = hurst_bounce_factor * vol_bounce_factor * regime_bounce_factor * micro_bounce_factor
+    combined_break_factor = hurst_break_factor * vol_break_factor * regime_break_factor * micro_break_factor
+    
+    # Strong level = likely bounce/reject (adjusted by factors)
+    if level_strength > 0.7:
+        if current_price < level_price:
+            # Approaching resistance from below
+            bounce_prob = 0.7 + (level_strength * 0.2)
+            break_prob = 0.3 - (level_strength * 0.2)
+            
+            # Apply factors
+            bounce_prob *= combined_bounce_factor
+            break_prob *= combined_break_factor
+            
+            if bounce_prob > break_prob:
+                reaction_type = 'bounce'
+                probability = min(0.95, bounce_prob)
+                # Bounce: expect 1.0-1.5σ pullback
+                expected_move_after = -base_move_pct * (1.0 + vol_ratio * 0.5)  # Negative = pullback
+            else:
+                reaction_type = 'break'
+                probability = min(0.95, break_prob)
+                # Break: expect 1.5-2.5σ continuation
+                expected_move_after = base_move_pct * (1.5 + vol_ratio * 1.0)  # Positive = continue up
+        else:
+            # Approaching support from above
+            bounce_prob = 0.6 + (level_strength * 0.2)
+            break_prob = 0.4 - (level_strength * 0.2)
+            
+            bounce_prob *= combined_bounce_factor
+            break_prob *= combined_break_factor
+            
+            if bounce_prob > break_prob:
+                reaction_type = 'bounce'
+                probability = min(0.95, bounce_prob)
+                # Bounce: expect 1.0-1.5σ bounce up
+                expected_move_after = base_move_pct * (1.0 + vol_ratio * 0.5)  # Positive = bounce up
+            else:
+                reaction_type = 'break'
+                probability = min(0.95, break_prob)
+                # Break: expect 1.5-2.5σ continuation down
+                expected_move_after = -base_move_pct * (1.5 + vol_ratio * 1.0)  # Negative = continue down
+    
+    # Weak level = likely break (adjusted by factors)
+    elif level_strength < 0.4:
+        reaction_type = 'break'
+        base_prob = 0.6 + ((1 - level_strength) * 0.3)
+        probability = min(0.95, base_prob * combined_break_factor)
+        
+        if current_price < level_price:
+            # Weak resistance: expect 1.0-2.0σ break up
+            expected_move_after = base_move_pct * (1.0 + vol_ratio * 1.0)
+        else:
+            # Weak support: expect 1.0-2.0σ break down
+            expected_move_after = -base_move_pct * (1.0 + vol_ratio * 1.0)
+    
+    # Medium strength = pause/consolidation
+    else:
+        reaction_type = 'pause'
+        probability = 0.5
+        # Pause: small move, 0.3-0.7σ
+        expected_move_after = base_move_pct * (0.3 + vol_ratio * 0.4)  # Small move, scaled by vol
+    
+    # Ensure expected_move_after is meaningful (at least 0.5% or 0.5σ)
+    min_move_pct = max(0.005, base_move_pct * 0.5)
+    if abs(expected_move_after) < min_move_pct:
+        expected_move_after = min_move_pct if expected_move_after > 0 else -min_move_pct
+    
+    # Adjust based on move distance (fatigue)
+    if move_to_level > 0.03:  # Moved more than 3%
+        probability *= 0.8  # Less likely to react strongly
+        # Reduce expected move slightly if already moved far
+        expected_move_after *= 0.85
+        if reaction_type == 'break':
+            probability *= 1.1  # But more likely to break if already weak
+    
+    # Confidence based on confluence and factor agreement
+    base_confidence = 0.5 + (confluence_count / 5) * 0.3
+    factor_agreement = 1.0  # How much factors agree
+    
+    # If factors strongly favor one direction, increase confidence
+    if abs(combined_bounce_factor - combined_break_factor) > 0.3:
+        factor_agreement = 1.2
+    
+    confidence = min(0.95, base_confidence * factor_agreement)
+    
+    # Build factors breakdown
+    factors = {
+        'hurst': {
+            'value': float(hurst),
+            'regime': hurst_regime,
+            'bounce_factor': float(hurst_bounce_factor),
+            'break_factor': float(hurst_break_factor)
+        },
+        'garch_regime': {
+            'regime': garch_regime_name,
+            'vol_ratio': float(vol_ratio),
+            'break_factor': float(vol_break_factor),
+            'bounce_factor': float(vol_bounce_factor)
+        },
+        'hmm_regime': {
+            'state': hmm_regime_label,
+            'break_factor': float(regime_break_factor),
+            'bounce_factor': float(regime_bounce_factor)
+        },
+        'microstructure': {
+            'state': micro_state,
+            'break_factor': float(micro_break_factor),
+            'bounce_factor': float(micro_bounce_factor)
+        },
+        'combined': {
+            'bounce_factor': float(combined_bounce_factor),
+            'break_factor': float(combined_break_factor)
+        }
+    }
+    
+    return {
+        'reaction_type': reaction_type,
+        'probability': float(np.clip(probability, 0.0, 1.0)),
+        'expected_move_after': float(expected_move_after),
+        'confidence': float(confidence),
+        'level_price': float(level_price),
+        'distance_pct': float(distance_to_level * 100),
+        'factors': factors
+    }
 
 # ============================================================================
 # MULTI-TIMEFRAME LEVEL-BASED LSTM FORECASTING
 # Predicts: Which levels will be touched, in what order, and when
 # ============================================================================
 
+def get_multi_timeframe_levels(ticker: str, base_timeframe: str = '5m', hist_base=None):
+    """
+    Fetch and detect levels across multiple timeframes
+    Creates a hierarchical level structure
+    """
+    # Define timeframe hierarchy (each level is ~5x the previous)
+    tf_hierarchy = {
+        '1m': ['1m', '5m', '15m', '1h', '4h', '1d'],
+        '5m': ['5m', '15m', '1h', '4h', '1d'],
+        '15m': ['15m', '1h', '4h', '1d'],
+        '1h': ['1h', '4h', '1d'],
+        '4h': ['4h', '1d'],
+        '1d': ['1d']
+    }
+    
+    timeframes = tf_hierarchy.get(base_timeframe, ['5m', '1h', '1d'])
+    
+    stock = yf.Ticker(ticker)
+    all_mtf_levels = {}
+    
+    for tf in timeframes:
+        # Fetch appropriate period for each timeframe - reduced for
+        # tickers that trade continuously (futures, and crypto's true 24/7),
+        # since the same calendar period holds far more bars for them than
+        # for a 6.5h/day equity, multiplying the cost of running HDBSCAN/
+        # OPTICS across every timeframe in the hierarchy
+        is_futures = '=' in ticker
+        is_continuous_trading = is_futures or ticker.upper().endswith('-USD')
+        if is_continuous_trading:
+            period_map = {
+                '1m': '5d', '5m': '5d', '15m': '7d',
+                '1h': '10d', '4h': '1mo', '1d': '1y'
+            }
+        else:
+            period_map = {
+                '1m': '5d', '5m': '5d', '15m': '1mo',
+                '1h': '3mo', '4h': '6mo', '1d': '2y'
+            }
 
+        try:
+            # Reuse the caller's already-fetched history for the base
+            # timeframe instead of hitting the network again for data we
+            # already have - this was previously ignored entirely despite
+            # being passed in as hist_base, doubling up one yfinance round
+            # trip on every call for no reason.
+            if tf == base_timeframe and hist_base is not None and len(hist_base) >= 20:
+                hist = hist_base
+            else:
+                # For futures, handle interval conversion
+                if is_futures and tf == '1h':
+                    interval = '60m'
+                elif is_futures and tf == '4h':
+                    interval = '240m'
+                else:
+                    interval = tf
 
+                hist = stock.history(period=period_map.get(tf, '1y'), interval=interval)
+            if len(hist) < 20:
+                continue
+            
+            # Use existing level detection functions
+            highs = hist['High'].values
+            lows = hist['Low'].values
+            closes = hist['Close'].values
+            
+            # Detect levels using existing methods
+            levels = []
+            
+            # HDBSCAN levels
+            hdbscan_levels = calculate_hdbscan_levels(highs, lows, closes, timeframe=tf)
+            levels.extend([{**l, 'method': 'hdbscan'} for l in hdbscan_levels])
+            
+            # OPTICS levels
+            optics_levels = enhanced_optics_levels(highs, lows, closes, timeframe=tf)
+            levels.extend([{**l, 'method': 'optics'} for l in optics_levels])
+            
+            # Add timeframe metadata
+            for level in levels:
+                level['timeframe'] = tf
+                level['tf_weight'] = get_timeframe_weight(base_timeframe, tf)
+            
+            all_mtf_levels[tf] = levels
+            
+        except Exception as e:
+            print(f"⚠ Failed to fetch {tf}: {e}")
+            continue
+    
+    return all_mtf_levels
 
+def get_timeframe_weight(base_tf: str, target_tf: str) -> float:
+    """Calculate weight based on timeframe relationship"""
+    tf_order = ['1m', '5m', '15m', '1h', '4h', '1d']
+    
+    try:
+        base_idx = tf_order.index(base_tf)
+        target_idx = tf_order.index(target_tf)
+        
+        if target_idx == base_idx:
+            return 1.0
+        elif target_idx > base_idx:
+            diff = target_idx - base_idx
+            return 1.0 + (diff * 0.2)
+        else:
+            diff = base_idx - target_idx
+            return max(0.3, 1.0 - (diff * 0.15))
+    except:
+        return 1.0
+
+def engineer_mtf_level_features(
+    current_price: float,
+    current_bar_data: Dict,
+    mtf_levels: Dict[str, List[Dict]],
+    historical_level_touches: List[Dict],
+    lookback_bars: pd.DataFrame
+) -> np.ndarray:
+    """
+    Engineer features that capture multi-timeframe level structure
+    """
+    features = []
+    
+    # === PRICE POSITION FEATURES ===
+    recent_high = lookback_bars['High'].max()
+    recent_low = lookback_bars['Low'].min()
+    price_position = (current_price - recent_low) / (recent_high - recent_low) if recent_high > recent_low else 0.5
+    
+    features.extend([
+        float(price_position),
+        float((current_price - lookback_bars['Close'].mean()) / (lookback_bars['Close'].std() + 1e-8)),
+    ])
+    
+    # === MOMENTUM FEATURES ===
+    returns = lookback_bars['Close'].pct_change().fillna(0)
+    features.extend([
+        float(returns.iloc[-1]),
+        float(returns.tail(5).mean()),
+        float(returns.tail(10).mean()),
+        float(returns.std()),
+    ])
+    
+    # === MULTI-TIMEFRAME LEVEL FEATURES ===
+    for tf, levels in sorted(mtf_levels.items()):
+        if not levels:
+            features.extend([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+            continue
+        
+        levels_above = [l for l in levels if l.get('price', 0) > current_price]
+        levels_below = [l for l in levels if l.get('price', float('inf')) < current_price]
+        
+        # Nearest resistance
+        if levels_above:
+            nearest_res = min(levels_above, key=lambda x: x.get('price', float('inf')))
+            res_dist = (nearest_res.get('price', current_price) - current_price) / current_price
+            res_strength = nearest_res.get('strength', nearest_res.get('levelStrength', 0.5))
+            res_weight = nearest_res.get('tf_weight', 1.0)
+        else:
+            res_dist = 0.05
+            res_strength = 0.0
+            res_weight = 0.0
+        
+        # Nearest support
+        if levels_below:
+            nearest_sup = max(levels_below, key=lambda x: x.get('price', 0))
+            sup_dist = (current_price - nearest_sup.get('price', current_price)) / current_price
+            sup_strength = nearest_sup.get('strength', nearest_sup.get('levelStrength', 0.5))
+            sup_weight = nearest_sup.get('tf_weight', 1.0)
+        else:
+            sup_dist = 0.05
+            sup_strength = 0.0
+            sup_weight = 0.0
+        
+        features.extend([
+            float(res_dist),
+            float(res_strength * res_weight),
+            float(sup_dist),
+            float(sup_strength * sup_weight),
+            float(len(levels_above) / 10),
+            float(len(levels_below) / 10)
+        ])
+    
+    # === LEVEL CONFLUENCE FEATURES ===
+    confluence_zones = find_confluence_zones(mtf_levels, current_price)
+    features.extend([
+        float(len(confluence_zones.get('resistance', []))),
+        float(len(confluence_zones.get('support', []))),
+    ])
+    
+    # === HISTORICAL TOUCH PATTERN FEATURES ===
+    if historical_level_touches:
+        recent_touches = historical_level_touches[-10:]
+        if len(recent_touches) >= 2:
+            touch_intervals = [recent_touches[i].get('bar', 0) - recent_touches[i-1].get('bar', 0) 
+                             for i in range(1, len(recent_touches))]
+            avg_interval = np.mean(touch_intervals) if touch_intervals else 10.0
+        else:
+            avg_interval = 10.0
+        
+        features.append(float(1.0 / (avg_interval + 1)))
+        
+        last_touch = recent_touches[-1] if recent_touches else None
+        if last_touch:
+            features.extend([
+                float((last_touch.get('level_price', current_price) / current_price) - 1),
+                float(last_touch.get('level_strength', 0.5)),
+            ])
+        else:
+            features.extend([0.0, 0.0])
+    else:
+        features.extend([0.0, 0.0, 0.0])
+    
+    return np.array(features, dtype=np.float32)
+
+def find_confluence_zones(mtf_levels: Dict, current_price: float, tolerance: float = 0.01) -> Dict:
+    """Find price zones where multiple timeframes have levels"""
+    all_levels = []
+    for tf, levels in mtf_levels.items():
+        for level in levels:
+            price = level.get('price', 0)
+            if price > 0:
+                all_levels.append({**level, 'timeframe': tf})
+    
+    if not all_levels:
+        return {'resistance': [], 'support': []}
+    
+    resistance = []
+    support = []
+    
+    for level in all_levels:
+        price = level.get('price', 0)
+        if price <= 0:
+            continue
+            
+        if abs(price - current_price) / current_price < tolerance:
+            continue
+        
+        if price > current_price:
+            found = False
+            for zone in resistance:
+                if abs(price - zone['price']) / price < tolerance:
+                    zone['count'] += 1
+                    zone['total_strength'] += level.get('strength', level.get('levelStrength', 0.5))
+                    found = True
+                    break
+            if not found:
+                resistance.append({
+                    'price': price,
+                    'count': 1,
+                    'total_strength': level.get('strength', level.get('levelStrength', 0.5))
+                })
+        else:
+            found = False
+            for zone in support:
+                if abs(price - zone['price']) / price < tolerance:
+                    zone['count'] += 1
+                    zone['total_strength'] += level.get('strength', level.get('levelStrength', 0.5))
+                    found = True
+                    break
+            if not found:
+                support.append({
+                    'price': price,
+                    'count': 1,
+                    'total_strength': level.get('strength', level.get('levelStrength', 0.5))
+                })
+    
+    resistance = [z for z in resistance if z['count'] >= 2]
+    support = [z for z in support if z['count'] >= 2]
+    
+    return {'resistance': resistance, 'support': support}
 
 if torch is not None:
     class LevelSequenceLSTM(nn.Module):
@@ -6318,14 +7615,471 @@ else:
     LevelSequenceLSTM = None
 
 
+def find_closest_mtf_level(price: float, mtf_levels: Dict[str, List[Dict]], tolerance: float = 0.01) -> Optional[Dict]:
+    """Find closest actual level from multi-timeframe levels"""
+    all_levels = []
+    for tf, levels in mtf_levels.items():
+        for level in levels:
+            level_price = level.get('price', 0)
+            if level_price > 0:
+                all_levels.append({**level, 'timeframe': tf})
+    
+    if not all_levels:
+        return None
+    
+    closest = min(all_levels, key=lambda l: abs(l.get('price', 0) - price))
+    
+    if abs(closest.get('price', 0) - price) / price < tolerance:
+        return closest
+    return None
+
+def get_timeframe_minutes(tf: str) -> int:
+    """Convert timeframe to minutes"""
+    map = {'1m': 1, '5m': 5, '15m': 15, '1h': 60, '4h': 240, '1d': 1440}
+    return map.get(tf, 5)
 
 
-
+def predict_level_sequence(
+    model: 'LevelSequenceLSTM',
+    recent_features: np.ndarray,
+    current_price: float,
+    mtf_levels: Dict[str, List[Dict]],
+    base_timeframe: str = '5m'
+) -> Dict:
+    """
+    Predict next levels and their touch sequence using LevelSequenceLSTM
+    
+    Returns rich prediction with:
+    - level_path: ordered list of levels to be touched
+    - time_estimates: when each level will be touched
+    - confidence_scores: confidence in each prediction
+    - direction_bias: overall directional bias
+    """
+    if model is None or torch is None:
+        return None
+    
+    model.eval()
+    
+    with torch.no_grad():
+        X = torch.FloatTensor(recent_features).unsqueeze(0)  # [1, seq_len, features]
+        
+        level_preds, direction_probs, attn_weights = model(X)
+        
+        # Extract predictions
+        level_preds = level_preds.squeeze(0).cpu().numpy()  # [max_levels, 3]
+        direction_probs = direction_probs.squeeze(0).cpu().numpy()  # [2]
+        
+        # Build level path
+        level_path = []
+        
+        for i, (price_offset, time_norm, confidence) in enumerate(level_preds):
+            if confidence < 0.3:  # Skip low confidence
+                continue
+            
+            predicted_price = current_price * (1 + price_offset)
+            predicted_time_bars = int(time_norm * 30)  # Denormalize
+            
+            # Find closest actual level from MTF
+            closest_level = find_closest_mtf_level(predicted_price, mtf_levels)
+            
+            level_path.append({
+                'sequence_num': i + 1,
+                'predicted_price': float(predicted_price),
+                'actual_level_price': closest_level.get('price') if closest_level else None,
+                'actual_level_strength': closest_level.get('strength', closest_level.get('levelStrength', 0)) if closest_level else 0,
+                'actual_level_timeframe': closest_level.get('timeframe', 'unknown') if closest_level else None,
+                'time_bars': predicted_time_bars,
+                'time_minutes': predicted_time_bars * get_timeframe_minutes(base_timeframe),
+                'confidence': float(confidence),
+                'price_offset_pct': float(price_offset * 100)
+            })
+        
+        # Sort by time (order of touch)
+        level_path = sorted(level_path, key=lambda x: x['time_bars'])
+        
+        return {
+            'level_path': level_path,
+            'direction_bias': {
+                'up_probability': float(direction_probs[0]),
+                'down_probability': float(direction_probs[1]),
+                'bias': 'bullish' if direction_probs[0] > direction_probs[1] else 'bearish'
+            },
+            'total_levels_predicted': len(level_path),
+            'average_confidence': float(np.mean([l['confidence'] for l in level_path])) if level_path else 0.0
+        }
 
 # ============================================================================
 # LEVEL-BASED LSTM FORECAST: "Where is price going today?"
 # ============================================================================
 
+def engineer_level_features_for_lstm(
+    current_price,
+    theoretical_hod_premarket,
+    theoretical_lod_premarket,
+    theoretical_hod_intraday,
+    theoretical_lod_intraday,
+    hdbscan_levels,
+    optics_levels,
+    interaction_levels,
+    ml_confluence_levels,
+    multiscale_levels,
+    neural_network_levels=None,
+    volume_profile=None,
+    all_levels=None
+):
+    """
+    Convert levels into LSTM-ready features
+    
+    Key idea: Encode price's RELATIONSHIP to each level type
+    Not the absolute prices, but relative positions
+    
+    Returns:
+    --------
+    np.array of shape (n_features,) ready for LSTM input
+    """
+    features = []
+    
+    # ===== 1. THEORETICAL BOUNDS (baseline expectation) =====
+    
+    # Pre-market bounds (set at open, static)
+    if theoretical_hod_premarket > theoretical_lod_premarket:
+        dist_to_pm_hod = (theoretical_hod_premarket - current_price) / current_price
+        dist_to_pm_lod = (current_price - theoretical_lod_premarket) / current_price
+        pm_range_position = (current_price - theoretical_lod_premarket) / \
+                            (theoretical_hod_premarket - theoretical_lod_premarket)
+    else:
+        dist_to_pm_hod = 0.05
+        dist_to_pm_lod = 0.05
+        pm_range_position = 0.5
+    
+    features.extend([
+        float(dist_to_pm_hod),      # How far to pre-market HOD (%)
+        float(dist_to_pm_lod),      # How far to pre-market LOD (%)
+        float(pm_range_position)    # Position in pre-market range (0-1)
+    ])
+    
+    # Intraday bounds (updated as session progresses)
+    if theoretical_hod_intraday > theoretical_lod_intraday:
+        dist_to_id_hod = (theoretical_hod_intraday - current_price) / current_price
+        dist_to_id_lod = (current_price - theoretical_lod_intraday) / current_price
+        id_range_position = (current_price - theoretical_lod_intraday) / \
+                            (theoretical_hod_intraday - theoretical_lod_intraday)
+    else:
+        dist_to_id_hod = 0.05
+        dist_to_id_lod = 0.05
+        id_range_position = 0.5
+    
+    # Bound evolution (how have bounds changed intraday vs pre-market?)
+    hod_expansion = (theoretical_hod_intraday - theoretical_hod_premarket) / current_price
+    lod_expansion = (theoretical_lod_premarket - theoretical_lod_intraday) / current_price
+    
+    features.extend([
+        float(dist_to_id_hod),
+        float(dist_to_id_lod),
+        float(id_range_position),
+        float(hod_expansion),       # Did HOD expand? (positive = yes)
+        float(lod_expansion)        # Did LOD expand? (positive = yes)
+    ])
+    
+    # ===== 2. HDBSCAN STRUCTURAL LEVELS =====
+    
+    # Find nearest HDBSCAN levels above/below
+    hdbscan_above = [l for l in hdbscan_levels if l.get('price', 0) > current_price]
+    hdbscan_below = [l for l in hdbscan_levels if l.get('price', 0) < current_price]
+    
+    if hdbscan_above:
+        nearest_above = min(hdbscan_above, key=lambda x: x.get('price', float('inf')))
+        hdbscan_resistance_dist = (nearest_above.get('price', current_price) - current_price) / current_price
+        hdbscan_resistance_strength = nearest_above.get('strength', nearest_above.get('levelStrength', 0.5))
+    else:
+        hdbscan_resistance_dist = 0.05  # Default: 5% above
+        hdbscan_resistance_strength = 0.0
+    
+    if hdbscan_below:
+        nearest_below = max(hdbscan_below, key=lambda x: x.get('price', 0))
+        hdbscan_support_dist = (current_price - nearest_below.get('price', current_price)) / current_price
+        hdbscan_support_strength = nearest_below.get('strength', nearest_below.get('levelStrength', 0.5))
+    else:
+        hdbscan_support_dist = 0.05  # Default: 5% below
+        hdbscan_support_strength = 0.0
+    
+    # Count levels in vicinity (within ±2%)
+    hdbscan_density_above = sum(1 for l in hdbscan_above 
+                                if (l.get('price', current_price) - current_price) / current_price < 0.02)
+    hdbscan_density_below = sum(1 for l in hdbscan_below 
+                                if (current_price - l.get('price', current_price)) / current_price < 0.02)
+    
+    features.extend([
+        float(hdbscan_resistance_dist),
+        float(hdbscan_resistance_strength),
+        float(hdbscan_support_dist),
+        float(hdbscan_support_strength),
+        float(hdbscan_density_above / 10),   # Normalize by dividing by max expected
+        float(hdbscan_density_below / 10)
+    ])
+    
+    # ===== 3. OPTICS MULTI-DENSITY LEVELS =====
+    
+    # Same pattern as HDBSCAN
+    optics_above = [l for l in optics_levels if l.get('price', 0) > current_price]
+    optics_below = [l for l in optics_levels if l.get('price', 0) < current_price]
+    
+    if optics_above:
+        nearest = min(optics_above, key=lambda x: x.get('price', float('inf')))
+        optics_resistance_dist = (nearest.get('price', current_price) - current_price) / current_price
+        optics_resistance_density = nearest.get('density_score', nearest.get('strength', 0.5))
+    else:
+        optics_resistance_dist = 0.05
+        optics_resistance_density = 0.0
+    
+    if optics_below:
+        nearest = max(optics_below, key=lambda x: x.get('price', 0))
+        optics_support_dist = (current_price - nearest.get('price', current_price)) / current_price
+        optics_support_density = nearest.get('density_score', nearest.get('strength', 0.5))
+    else:
+        optics_support_dist = 0.05
+        optics_support_density = 0.0
+    
+    features.extend([
+        float(optics_resistance_dist),
+        float(optics_resistance_density),
+        float(optics_support_dist),
+        float(optics_support_density)
+    ])
+    
+    # ===== 4. INTERACTION LEVELS (local density, short memory) =====
+    
+    interaction_above = [l for l in interaction_levels if l.get('price', 0) > current_price]
+    interaction_below = [l for l in interaction_levels if l.get('price', 0) < current_price]
+    
+    # Interaction levels are short-memory, so weight by recency
+    if interaction_above:
+        nearest = min(interaction_above, key=lambda x: x.get('price', float('inf')))
+        interaction_resistance_dist = (nearest.get('price', current_price) - current_price) / current_price
+        interaction_resistance_density = nearest.get('density_prominence', nearest.get('strength', 0.5))
+    else:
+        interaction_resistance_dist = 0.02  # Smaller default (local)
+        interaction_resistance_density = 0.0
+    
+    if interaction_below:
+        nearest = max(interaction_below, key=lambda x: x.get('price', 0))
+        interaction_support_dist = (current_price - nearest.get('price', current_price)) / current_price
+        interaction_support_density = nearest.get('density_prominence', nearest.get('strength', 0.5))
+    else:
+        interaction_support_dist = 0.02
+        interaction_support_density = 0.0
+    
+    features.extend([
+        float(interaction_resistance_dist),
+        float(interaction_resistance_density),
+        float(interaction_support_dist),
+        float(interaction_support_density)
+    ])
+    
+    # ===== 5. ML-CONFLUENCE LEVELS (algorithm agreement) =====
+    
+    ml_above = [l for l in ml_confluence_levels if l.get('price', 0) > current_price]
+    ml_below = [l for l in ml_confluence_levels if l.get('price', 0) < current_price]
+    
+    if ml_above:
+        nearest = min(ml_above, key=lambda x: x.get('price', float('inf')))
+        ml_resistance_dist = (nearest.get('price', current_price) - current_price) / current_price
+        ml_resistance_confluence = min(nearest.get('confluence_count', 1) / 5, 1.0)  # Normalize
+    else:
+        ml_resistance_dist = 0.05
+        ml_resistance_confluence = 0.0
+    
+    if ml_below:
+        nearest = max(ml_below, key=lambda x: x.get('price', 0))
+        ml_support_dist = (current_price - nearest.get('price', current_price)) / current_price
+        ml_support_confluence = min(nearest.get('confluence_count', 1) / 5, 1.0)
+    else:
+        ml_support_dist = 0.05
+        ml_support_confluence = 0.0
+    
+    features.extend([
+        float(ml_resistance_dist),
+        float(ml_resistance_confluence),
+        float(ml_support_dist),
+        float(ml_support_confluence)
+    ])
+    
+    # ===== 6. MULTI-SCALE HDBSCAN LEVELS =====
+    
+    # Separate by scale
+    micro_levels = [l for l in multiscale_levels if l.get('scale') == 'micro']
+    meso_levels = [l for l in multiscale_levels if l.get('scale') == 'meso']
+    macro_levels = [l for l in multiscale_levels if l.get('scale') == 'macro']
+    
+    def nearest_level_distance(levels, above=True):
+        if above:
+            filtered = [l for l in levels if l.get('price', 0) > current_price]
+            if filtered:
+                nearest = min(filtered, key=lambda x: x.get('price', float('inf')))
+                return (nearest.get('price', current_price) - current_price) / current_price
+        else:
+            filtered = [l for l in levels if l.get('price', 0) < current_price]
+            if filtered:
+                nearest = max(filtered, key=lambda x: x.get('price', 0))
+                return (current_price - nearest.get('price', current_price)) / current_price
+        return 0.05  # Default
+    
+    features.extend([
+        float(nearest_level_distance(micro_levels, above=True)),   # Micro resistance
+        float(nearest_level_distance(micro_levels, above=False)),  # Micro support
+        float(nearest_level_distance(meso_levels, above=True)),    # Meso resistance
+        float(nearest_level_distance(meso_levels, above=False)),   # Meso support
+        float(nearest_level_distance(macro_levels, above=True)),   # Macro resistance
+        float(nearest_level_distance(macro_levels, above=False))   # Macro support
+    ])
+    
+    # ===== 7. NEURAL NETWORK LEVELS (pattern + volume profile based) =====
+    
+    if neural_network_levels is None:
+        neural_network_levels = []
+    
+    nn_above = [l for l in neural_network_levels if l.get('price', 0) > current_price]
+    nn_below = [l for l in neural_network_levels if l.get('price', 0) < current_price]
+    
+    if nn_above:
+        nearest = min(nn_above, key=lambda x: x.get('price', float('inf')))
+        nn_resistance_dist = (nearest.get('price', current_price) - current_price) / current_price
+        nn_resistance_strength = nearest.get('strength', nearest.get('levelStrength', 0.5))
+    else:
+        nn_resistance_dist = 0.05
+        nn_resistance_strength = 0.0
+    
+    if nn_below:
+        nearest = max(nn_below, key=lambda x: x.get('price', 0))
+        nn_support_dist = (current_price - nearest.get('price', current_price)) / current_price
+        nn_support_strength = nearest.get('strength', nearest.get('levelStrength', 0.5))
+    else:
+        nn_support_dist = 0.05
+        nn_support_strength = 0.0
+    
+    # Count neural network levels in vicinity
+    nn_density_above = sum(1 for l in nn_above 
+                           if (l.get('price', current_price) - current_price) / current_price < 0.02)
+    nn_density_below = sum(1 for l in nn_below 
+                           if (current_price - l.get('price', current_price)) / current_price < 0.02)
+    
+    features.extend([
+        float(nn_resistance_dist),
+        float(nn_resistance_strength),
+        float(nn_support_dist),
+        float(nn_support_strength),
+        float(nn_density_above),
+        float(nn_density_below)
+    ])
+    
+    # ===== 8. CROSS-LEVEL AGREEMENT (meta-feature) =====
+    
+    # Do all level types agree on nearest resistance/support?
+    all_resistance_dists = [
+        hdbscan_resistance_dist,
+        optics_resistance_dist,
+        interaction_resistance_dist,
+        ml_resistance_dist,
+        nn_resistance_dist
+    ]
+    all_support_dists = [
+        hdbscan_support_dist,
+        optics_support_dist,
+        interaction_support_dist,
+        ml_support_dist,
+        nn_support_dist
+    ]
+    
+    # Agreement = low variance in distances (all see same level)
+    resistance_agreement = 1.0 / (1.0 + np.std(all_resistance_dists) if len(all_resistance_dists) > 0 else 1.0)
+    support_agreement = 1.0 / (1.0 + np.std(all_support_dists) if len(all_support_dists) > 0 else 1.0)
+    
+    features.extend([
+        float(resistance_agreement),
+        float(support_agreement)
+    ])
+    
+    # ===== 9. VOLUME PROFILE FEATURES =====
+    if volume_profile:
+        poc = volume_profile.get('poc', current_price)
+        va_high = volume_profile.get('value_area_high', current_price)
+        va_low = volume_profile.get('value_area_low', current_price)
+        
+        # Distance to POC and value area
+        dist_to_poc = (poc - current_price) / current_price
+        dist_to_va_high = (va_high - current_price) / current_price
+        dist_to_va_low = (current_price - va_low) / current_price
+        
+        # Position in value area (0 = at VA low, 1 = at VA high, 0.5 = at POC)
+        if va_high > va_low:
+            va_position = (current_price - va_low) / (va_high - va_low)
+        else:
+            va_position = 0.5
+        
+        # Volume profile direction bias
+        if current_price < va_low:
+            va_bias = -1.0  # Below VA = bearish
+        elif current_price > va_high:
+            va_bias = 1.0   # Above VA = bullish
+        else:
+            va_bias = (current_price - poc) / (va_high - va_low) if va_high > va_low else 0.0
+        
+        features.extend([
+            float(dist_to_poc),
+            float(dist_to_va_high),
+            float(dist_to_va_low),
+            float(va_position),
+            float(va_bias)
+        ])
+    else:
+        features.extend([0.0, 0.0, 0.0, 0.5, 0.0])  # Defaults
+    
+    # ===== 9. LEVEL DENSITY AND PATTERNS =====
+    if all_levels:
+        # Count levels in different zones
+        levels_above = [l for l in all_levels if l.get('price', 0) > current_price]
+        levels_below = [l for l in all_levels if l.get('price', 0) < current_price]
+        
+        # Density in near zones (within 1%, 2%, 5%)
+        density_1pct_above = sum(1 for l in levels_above 
+                                if (l.get('price', current_price) - current_price) / current_price < 0.01)
+        density_2pct_above = sum(1 for l in levels_above 
+                                if (l.get('price', current_price) - current_price) / current_price < 0.02)
+        density_5pct_above = sum(1 for l in levels_above 
+                                if (l.get('price', current_price) - current_price) / current_price < 0.05)
+        
+        density_1pct_below = sum(1 for l in levels_below 
+                                if (current_price - l.get('price', current_price)) / current_price < 0.01)
+        density_2pct_below = sum(1 for l in levels_below 
+                                if (current_price - l.get('price', current_price)) / current_price < 0.02)
+        density_5pct_below = sum(1 for l in levels_below 
+                                if (current_price - l.get('price', current_price)) / current_price < 0.05)
+        
+        # Average strength of nearby levels
+        nearby_above = [l for l in levels_above 
+                       if (l.get('price', current_price) - current_price) / current_price < 0.02]
+        nearby_below = [l for l in levels_below 
+                       if (current_price - l.get('price', current_price)) / current_price < 0.02]
+        
+        avg_strength_above = np.mean([l.get('strength', l.get('levelStrength', 0.5)) 
+                                      for l in nearby_above]) if nearby_above else 0.0
+        avg_strength_below = np.mean([l.get('strength', l.get('levelStrength', 0.5)) 
+                                     for l in nearby_below]) if nearby_below else 0.0
+        
+        features.extend([
+            float(density_1pct_above / 5),   # Normalize
+            float(density_2pct_above / 10),
+            float(density_5pct_above / 20),
+            float(density_1pct_below / 5),
+            float(density_2pct_below / 10),
+            float(density_5pct_below / 20),
+            float(avg_strength_above),
+            float(avg_strength_below)
+        ])
+    else:
+        features.extend([0.0] * 8)  # Defaults
+    
+    return np.array(features, dtype=np.float32)
 
 # LSTM Model (only if torch is available)
 if TORCH_AVAILABLE:
@@ -6437,9 +8191,483 @@ else:
     LevelBasedLSTM = None
 
 
+def calculate_time_to_target(target_price, current_price, sigma_price, volatility_factor=1.0):
+    """
+    Calculate time estimate to reach target based on:
+    - Distance to target (price units)
+    - Volatility (sigma) - how fast price moves
+    - Volatility factor (adjusts speed estimate)
+    
+    Returns estimated bars to reach target
+    """
+    if sigma_price <= 0:
+        return 20  # Default if no volatility data
+    
+    # Distance to target in price units
+    distance = abs(target_price - current_price)
+    
+    # Distance in terms of standard deviations
+    distance_sigma = distance / sigma_price
+    
+    # Typical move per bar (average of last N bars)
+    # Assume price moves ~0.5-1.0 sigma per bar on average (varies by regime)
+    typical_move_per_bar = sigma_price * 0.75 * volatility_factor
+    
+    # Estimate bars = distance / typical_move_per_bar
+    if typical_move_per_bar > 0:
+        estimated_bars = distance / typical_move_per_bar
+    else:
+        estimated_bars = distance_sigma * 2  # Fallback: ~2 bars per sigma
+    
+    # Clamp to reasonable range (5-100 bars)
+    estimated_bars = max(5, min(100, int(estimated_bars)))
+    
+    return estimated_bars
 
+def predict_price_target(
+    model,
+    recent_features,  # [lookback_window, n_features]
+    current_price,
+    sigma_price=0.0,  # Optional: volatility for time calculation
+    volatility_factor=1.0  # Optional: adjust time estimate speed
+):
+    """
+    Answer: "Where is price going today?"
+    
+    Returns:
+    --------
+    dict : {
+        'target_price': predicted price level,
+        'target_pct_move': % move from current,
+        'confidence': model confidence (0-1),
+        'expected_time_bars': bars to reach target (calculated from distance/volatility, not LSTM output),
+        'attention_weights': which timesteps matter most
+    }
+    """
+    if not TORCH_AVAILABLE or model is None:
+        return None
+    
+    model.eval()
+    
+    with torch.no_grad():
+        # Add batch dimension
+        X = torch.FloatTensor(recent_features).unsqueeze(0)  # [1, seq_len, features]
+        
+        # Forward pass with attention
+        result = model(X, return_attention=True)
+        
+        # Handle both old and new model formats
+        if len(result) == 4:
+            # Old model format
+            price_pred, confidence, time_pred_raw, attn_weights = result
+            hod_probs = None
+            lod_probs = None
+        else:
+            # New model format with HOD/LOD predictions
+            price_pred, confidence, time_pred_raw, attn_weights, hod_probs, lod_probs = result
+        
+        # Convert % move to absolute price
+        target_pct_move = float(price_pred.squeeze().item())
+        target_price = current_price * (1 + target_pct_move)
+        
+        # Combine LSTM's time prediction with distance-based estimate
+        # LSTM learned temporal patterns - use them, but weight with distance-based calculation
+        model_confidence = float(confidence.squeeze().item())
+        
+        # Extract LSTM time prediction (convert to bars, clamp to reasonable range)
+        if time_pred_raw is not None:
+            lstm_time_raw = float(time_pred_raw.squeeze().item())
+            # LSTM outputs normalized or raw time - try to interpret
+            # If it's very small (< 1), treat as normalized (multiply by 30)
+            # If it's larger, treat as bars directly
+            if lstm_time_raw < 1.0:
+                lstm_time_bars = int(lstm_time_raw * 30)  # Denormalize
+            else:
+                lstm_time_bars = int(lstm_time_raw)
+            # Clamp to reasonable range (1-200 bars)
+            lstm_time_bars = max(1, min(200, lstm_time_bars))
+        else:
+            lstm_time_bars = 20  # Default fallback
+        
+        # Calculate distance-based time estimate
+        if sigma_price > 0:
+            distance_time_bars = calculate_time_to_target(target_price, current_price, sigma_price, volatility_factor)
+        else:
+            # Fallback: use distance-based estimate if no volatility
+            distance_pct = abs(target_pct_move) * 100
+            # Rough estimate: ~1% move per bar (conservative)
+            distance_time_bars = max(5, min(100, int(distance_pct)))
+        
+        # Weight LSTM prediction with distance-based estimate based on confidence
+        # High confidence → trust LSTM more, Low confidence → trust distance more
+        expected_time_bars = int(
+            model_confidence * lstm_time_bars + (1 - model_confidence) * distance_time_bars
+        )
+        # Ensure reasonable bounds
+        expected_time_bars = max(1, min(200, expected_time_bars))
+        
+        return {
+            'target_price': float(target_price),
+            'target_pct_move': float(target_pct_move * 100),  # %
+            'confidence': float(confidence.squeeze().item()),
+            'expected_time_bars': int(expected_time_bars),  # Calculated from distance/volatility
+            'attention_weights': attn_weights.squeeze().cpu().numpy().tolist(),
+            'hod_level_probs': hod_probs.squeeze().cpu().numpy().tolist() if hod_probs is not None else None,
+            'lod_level_probs': lod_probs.squeeze().cpu().numpy().tolist() if lod_probs is not None else None
+        }
 
+def predict_hod_lod_from_levels(
+    model,
+    recent_features,  # [lookback_window, n_features]
+    current_price,
+    candidate_levels,  # List of all candidate levels (including theoretical HOD/LOD)
+    theoretical_hod,
+    theoretical_lod
+):
+    """
+    Predict which level will become actual HOD/LOD using LSTM
+    
+    Uses all levels (including theoretical HOD/LOD as candidates) and predicts
+    probability distribution over levels based on patterns, volume, and level interactions.
+    
+    Returns:
+    --------
+    dict : {
+        'predicted_hod_level': level that will be HOD,
+        'predicted_lod_level': level that will be LOD,
+        'hod_probabilities': {level_price: probability},
+        'lod_probabilities': {level_price: probability},
+        'confidence': model confidence
+    }
+    """
+    if not TORCH_AVAILABLE or model is None:
+        return None
+    
+    # Add theoretical HOD/LOD as candidate levels if not already present
+    candidate_prices = [l.get('price', 0) for l in candidate_levels if 'price' in l]
+    
+    # Add theoretical bounds as levels
+    theoretical_hod_level = {
+        'price': theoretical_hod,
+        'type': 'Theoretical HOD',
+        'strength': 0.8,
+        'is_theoretical': True
+    }
+    theoretical_lod_level = {
+        'price': theoretical_lod,
+        'type': 'Theoretical LOD',
+        'strength': 0.8,
+        'is_theoretical': True
+    }
+    
+    # Combine all candidates (remove duplicates)
+    all_candidates = candidate_levels + [theoretical_hod_level, theoretical_lod_level]
+    unique_candidates = {}
+    for cand in all_candidates:
+        price = cand.get('price', 0)
+        if price > 0:
+            if price not in unique_candidates:
+                unique_candidates[price] = cand
+            else:
+                # Keep the one with higher strength
+                if cand.get('strength', 0.5) > unique_candidates[price].get('strength', 0.5):
+                    unique_candidates[price] = cand
+    
+    # Sort candidates by price
+    sorted_candidates = sorted(unique_candidates.values(), key=lambda x: x.get('price', 0))
+    
+    # Limit to max_levels (if model has this attribute)
+    max_levels = getattr(model, 'max_levels', 50)
+    if len(sorted_candidates) > max_levels:
+        # Keep most relevant (closest to current price and strongest)
+        sorted_candidates = sorted(sorted_candidates, 
+                                  key=lambda x: (abs(x.get('price', 0) - current_price) / current_price, 
+                                               -x.get('strength', 0.5)))[:max_levels]
+    
+    model.eval()
+    
+    with torch.no_grad():
+        # Add batch dimension
+        X = torch.FloatTensor(recent_features).unsqueeze(0)  # [1, seq_len, features]
+        
+        # Forward pass
+        result = model(X, return_attention=True)
+        
+        # Check if model has HOD/LOD prediction capability
+        if len(result) < 6:
+            # Old model - use fallback
+            return None
+        
+        price_pred, confidence, time_pred, attn_weights, hod_probs, lod_probs = result
+        
+        # Get probabilities for each candidate level
+        hod_probs_np = hod_probs.squeeze().cpu().numpy()  # [max_levels]
+        lod_probs_np = lod_probs.squeeze().cpu().numpy()  # [max_levels]
+        
+        # Map probabilities to actual level prices
+        hod_probabilities = {}
+        lod_probabilities = {}
+        
+        for i, cand in enumerate(sorted_candidates):
+            if i < len(hod_probs_np):
+                price = cand.get('price', 0)
+                hod_probabilities[price] = float(hod_probs_np[i])
+                lod_probabilities[price] = float(lod_probs_np[i])
+        
+        # Find most likely HOD/LOD levels
+        if hod_probabilities:
+            predicted_hod_price = max(hod_probabilities.items(), key=lambda x: x[1])[0]
+            predicted_hod_level = next((c for c in sorted_candidates if abs(c.get('price', 0) - predicted_hod_price) < 0.01), None)
+        else:
+            predicted_hod_level = theoretical_hod_level
+            predicted_hod_price = theoretical_hod
+        
+        if lod_probabilities:
+            predicted_lod_price = max(lod_probabilities.items(), key=lambda x: x[1])[0]
+            predicted_lod_level = next((c for c in sorted_candidates if abs(c.get('price', 0) - predicted_lod_price) < 0.01), None)
+        else:
+            predicted_lod_level = theoretical_lod_level
+            predicted_lod_price = theoretical_lod
+        
+        return {
+            'predicted_hod_level': predicted_hod_level,
+            'predicted_lod_level': predicted_lod_level,
+            'predicted_hod_price': float(predicted_hod_price),
+            'predicted_lod_price': float(predicted_lod_price),
+            'hod_probabilities': hod_probabilities,
+            'lod_probabilities': lod_probabilities,
+            'confidence': float(confidence.squeeze().item()),
+            'candidate_levels': sorted_candidates[:20]  # Top 20 for reference
+        }
 
+def monte_carlo_lstm_forecast(
+    model,
+    recent_features,
+    current_price,
+    theoretical_hod,
+    theoretical_lod,
+    levels,
+    volume_profile,
+    sigma_price,
+    hurst_data=None,
+    garch_regime=None,
+    hmm_regime=None,
+    microstructure_state=None,
+    n_simulations=30,  # Reduced from 100 for production (can be overridden for higher accuracy)
+    forecast_bars=30
+):
+    """
+    Monte Carlo simulation using LSTM to generate multiple price path scenarios
+    
+    Uses:
+    - LSTM base prediction
+    - Theoretical HOD/LOD as boundaries
+    - Levels as reaction points
+    - Volume profile for value areas
+    - Random walk with LSTM-guided drift
+    
+    Returns:
+    --------
+    dict: {
+        'scenarios': list of price paths,
+        'probabilities': dict of outcome probabilities,
+        'expected_path': average path,
+        'confidence_intervals': {50%, 80%, 95%}
+    }
+    """
+    if not TORCH_AVAILABLE or model is None:
+        return None
+    
+    model.eval()
+    scenarios = []
+    
+    # Get base LSTM prediction
+    base_prediction = predict_price_target(model, recent_features, current_price)
+    if not base_prediction:
+        return None
+    
+    base_drift = base_prediction['target_pct_move'] / 100.0  # Convert to decimal
+    base_confidence = base_prediction['confidence']
+    
+    # Volatility for random walk
+    sigma = sigma_price / current_price
+    
+    with torch.no_grad():
+        X_base = torch.FloatTensor(recent_features).unsqueeze(0)
+        
+        for sim in range(n_simulations):
+            path = [current_price]
+            
+            # Track actual HOD/LOD for this scenario
+            scenario_hod = current_price
+            scenario_lod = current_price
+            hod_level = None
+            lod_level = None
+            
+            # Add noise to features for variation
+            noise = np.random.normal(0, 0.01, recent_features.shape)
+            X_noisy = torch.FloatTensor(recent_features + noise).unsqueeze(0)
+            
+            # Get prediction with noise
+            price_pred, confidence, time_pred, _ = model(X_noisy, return_attention=True)
+            drift = float(price_pred.squeeze().item())
+            
+            # Generate path with regime-aware adjustments
+            # Get regime factors
+            hurst = hurst_data.get('hurst', 0.5) if hurst_data else 0.5
+            vol_ratio = garch_regime.get('vol_ratio', 1.0) if garch_regime else 1.0
+            micro_state = microstructure_state.get('state', 'Unknown') if microstructure_state else 'Unknown'
+            
+            # Adjust volatility based on regime
+            regime_sigma = sigma * vol_ratio
+            
+            # Hurst adjustment: mean-reverting = more constrained, trending = more momentum
+            if hurst < 0.4:  # Mean-reverting
+                momentum_factor = 0.8  # Less momentum
+            elif hurst > 0.6:  # Trending
+                momentum_factor = 1.2  # More momentum
+            else:
+                momentum_factor = 1.0
+            
+            # Microstructure adjustment
+            if micro_state == 'Fock':  # Jump-dominated
+                jump_probability = 0.1  # 10% chance of jump
+            else:
+                jump_probability = 0.02  # 2% chance normally
+            
+            # Generate path
+            for bar in range(forecast_bars):
+                # Random walk with LSTM drift, adjusted by regimes
+                base_shock = np.random.normal(drift / forecast_bars * momentum_factor, 
+                                             regime_sigma / np.sqrt(forecast_bars))
+                
+                # Add jump component if in Fock state
+                if np.random.random() < jump_probability:
+                    jump_size = np.random.normal(0, regime_sigma * 2)  # Large jump
+                    base_shock += jump_size
+                
+                next_price = path[-1] * (1 + base_shock)
+                
+                # Apply boundaries (theoretical HOD/LOD)
+                next_price = np.clip(next_price, theoretical_lod, theoretical_hod)
+                
+                # Track HOD/LOD
+                if next_price > scenario_hod:
+                    scenario_hod = next_price
+                    # Check if this matches a level
+                    for level in levels:
+                        level_price = level.get('price', 0)
+                        if abs(next_price - level_price) / next_price < 0.005:
+                            hod_level = level_price
+                            break
+                
+                if next_price < scenario_lod:
+                    scenario_lod = next_price
+                    # Check if this matches a level
+                    for level in levels:
+                        level_price = level.get('price', 0)
+                        if abs(next_price - level_price) / next_price < 0.005:
+                            lod_level = level_price
+                            break
+                
+                # Check for level reactions
+                for level in levels:
+                    level_price = level.get('price', 0)
+                    if abs(next_price - level_price) / level_price < 0.002:  # Within 0.2%
+                        # Small reaction at level
+                        reaction = np.random.choice([-1, 0, 1], p=[0.3, 0.4, 0.3])
+                        next_price = level_price * (1 + reaction * 0.001)
+                        break
+                
+                path.append(float(next_price))
+            
+            scenarios.append({
+                'path': path,
+                'hod': float(scenario_hod),
+                'lod': float(scenario_lod),
+                'hod_level': float(hod_level) if hod_level else None,
+                'lod_level': float(lod_level) if lod_level else None
+            })
+    
+    # Extract paths and HOD/LOD data
+    paths = [s['path'] for s in scenarios]
+    hods = [s['hod'] for s in scenarios]
+    lods = [s['lod'] for s in scenarios]
+    hod_levels = [s['hod_level'] for s in scenarios if s['hod_level'] is not None]
+    lod_levels = [s['lod_level'] for s in scenarios if s['lod_level'] is not None]
+    
+    # Calculate statistics
+    final_prices = [p[-1] for p in paths]
+    final_prices_sorted = sorted(final_prices)
+    
+    # Confidence intervals
+    ci_50 = (final_prices_sorted[int(n_simulations * 0.25)], 
+             final_prices_sorted[int(n_simulations * 0.75)])
+    ci_80 = (final_prices_sorted[int(n_simulations * 0.10)], 
+             final_prices_sorted[int(n_simulations * 0.90)])
+    ci_95 = (final_prices_sorted[int(n_simulations * 0.025)], 
+             final_prices_sorted[int(n_simulations * 0.975)])
+    
+    # Expected path (mean) - this is the theoretical path line
+    expected_path = [np.mean([p[i] for p in paths]) for i in range(forecast_bars + 1)]
+    
+    # Expected HOD/LOD (mean of scenario HODs/LODs)
+    expected_hod = float(np.mean(hods))
+    expected_lod = float(np.mean(lods))
+    
+    # Find which levels most often become HOD/LOD
+    from collections import Counter
+    hod_level_counts = Counter(hod_levels)
+    lod_level_counts = Counter(lod_levels)
+    
+    most_likely_hod_level = hod_level_counts.most_common(1)[0][0] if hod_level_counts else None
+    most_likely_lod_level = lod_level_counts.most_common(1)[0][0] if lod_level_counts else None
+    
+    hod_level_prob = hod_level_counts[most_likely_hod_level] / n_simulations if most_likely_hod_level else 0
+    lod_level_prob = lod_level_counts[most_likely_lod_level] / n_simulations if most_likely_lod_level else 0
+    
+    # Outcome probabilities
+    up_prob = sum(1 for p in final_prices if p > current_price) / n_simulations
+    down_prob = sum(1 for p in final_prices if p < current_price) / n_simulations
+    neutral_prob = 1 - up_prob - down_prob
+    
+    # Value area probabilities
+    va_prob = 0
+    if volume_profile:
+        va_low = volume_profile.get('value_area_low', current_price)
+        va_high = volume_profile.get('value_area_high', current_price)
+        va_prob = sum(1 for p in final_prices if va_low <= p <= va_high) / n_simulations
+    
+    return {
+        'scenarios': paths[:10],  # Return first 10 paths for visualization
+        'expected_path': expected_path,  # This is the theoretical path line
+        'expected_hod': expected_hod,
+        'expected_lod': expected_lod,
+        'most_likely_hod_level': float(most_likely_hod_level) if most_likely_hod_level else None,
+        'most_likely_lod_level': float(most_likely_lod_level) if most_likely_lod_level else None,
+        'hod_level_probability': float(hod_level_prob),
+        'lod_level_probability': float(lod_level_prob),
+        'confidence_intervals': {
+            '50': ci_50,
+            '80': ci_80,
+            '95': ci_95
+        },
+        'probabilities': {
+            'up': float(up_prob),
+            'down': float(down_prob),
+            'neutral': float(neutral_prob),
+            'in_value_area': float(va_prob)
+        },
+        'statistics': {
+            'mean_final': float(np.mean(final_prices)),
+            'median_final': float(np.median(final_prices)),
+            'std_final': float(np.std(final_prices)),
+            'min_final': float(np.min(final_prices)),
+            'max_final': float(np.max(final_prices)),
+            'mean_hod': expected_hod,
+            'mean_lod': expected_lod
+        }
+    }
 
 # NEW ENDPOINT: LEVEL-CONSTRAINED HOD/LOD PREDICTION
 @app.route('/api/level-constrained-hod-lod', methods=['GET'])
@@ -6913,15 +9141,843 @@ def get_stdv_hod_lod():
 
 # NEW ENDPOINT: STATE-CONDITIONED HOD/LOD
 
+@app.route('/api/lstm-forecast', methods=['GET'])
+def get_lstm_forecast():
+    """
+    "Where is price going today?" - LSTM-based answer using level features
+    """
+    # No auth required - public market data endpoint for cross-origin frontend (degencap.uk)
+
+    ticker = request.args.get('ticker', 'SPY')
+    timeframe = request.args.get('timeframe', '5m').strip().lower().replace('240m','4h').replace('4hour','4h').replace('4hours','4h').replace('60m','1h')
+    lookback_window = int(request.args.get('lookback', 20))
+    
+    # Note: PyTorch is optional - we'll use level-based heuristic if torch is not available
+    
+    try:
+        print(f"Generating LSTM forecast for {ticker} at {timeframe}...")
+        
+        # Fetch data
+        stock = yf.Ticker(ticker)
+        
+        # For futures, use alternative interval formats that yfinance accepts better
+        is_futures = '=' in ticker
+        if is_futures:
+            # Use minute-based intervals for futures (yfinance prefers these)
+            # Note: 4h is not supported by yfinance - will use resampling from 60m
+            interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '60m', '4h': '60m', '1d': '1d'}
+        else:
+            # Note: 4h is not supported by yfinance - will use resampling from 1h
+            interval_map = {'1m': '1m', '5m': '5m', '15m': '15m', '1h': '1h', '4h': '1h', '1d': '1d'}
+        
+        interval = interval_map.get(timeframe, '1d')
+
+        # Crypto trades 24/7 like futures do, so the same "3mo of hourly
+        # bars" period that's fine for a 6.5h/day equity like SPY (~410
+        # bars) balloons to ~2160 bars for BTC-USD - enough to blow past
+        # Render's free-tier memory/time budget across the 10+ level
+        # detectors this endpoint runs and crash the whole worker (502,
+        # not a caught exception). Treat it like futures for period sizing.
+        is_continuous_trading = is_futures or ticker.upper().endswith('-USD')
+
+        # Simple fix: Use shorter periods for futures/crypto on intraday timeframes
+        if is_continuous_trading and timeframe in ['1m', '5m', '15m', '1h', '4h']:
+            period_map = {'1m': '5d', '5m': '5d', '15m': '7d', '1h': '7d', '4h': '10d', '1d': '2y'}
+        else:
+            period_map = {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '4h': '3mo', '1d': '2y'}
+
+        period = period_map.get(timeframe, '1y')
+
+        # For futures, try multiple approaches - especially for 1h which is problematic
+        hist = None
+        if is_futures and timeframe == '1h':
+            # For 1h futures, yfinance is very picky - try many combinations
+            attempts = [
+                ('60m', '5d'),   # Most reliable for futures
+                ('60m', '3d'),
+                ('60m', '2d'),
+                ('60m', '1d'),
+                ('1h', '5d'),    # Try standard format too
+                ('1h', '3d'),
+                ('1h', '2d'),
+                ('1h', '1d'),
+            ]
+            
+            for attempt_interval, attempt_period in attempts:
+                try:
+                    print(f"Trying {ticker} 1h: interval={attempt_interval}, period={attempt_period}")
+                    hist = stock.history(period=attempt_period, interval=attempt_interval)
+                    if hist is not None and len(hist) > 0:
+                        print(f"✓ Successfully fetched {len(hist)} bars for {ticker} 1h with interval={attempt_interval}, period={attempt_period}")
+                        break
+                except Exception as e:
+                    error_msg = str(e)
+                    print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:150]}")
+                    # Continue trying other combinations
+                    continue
+        elif is_futures and timeframe == '15m':
+            # For 15m futures, try different periods
+            attempts = [
+                ('15m', period),
+                ('15m', '5d'),
+                ('15m', '3d'),
+                ('15m', '2d'),
+                ('15m', '1d'),
+            ]
+            
+            for attempt_interval, attempt_period in attempts:
+                try:
+                    hist = stock.history(period=attempt_period, interval=attempt_interval)
+                    if hist is not None and len(hist) > 0:
+                        print(f"✓ Successfully fetched {len(hist)} bars for {ticker} 15m with interval={attempt_interval}, period={attempt_period}")
+                        break
+                except Exception as e:
+                    error_msg = str(e)
+                    if "pattern" not in error_msg.lower() and "expected" not in error_msg.lower():
+                        print(f"⚠ Attempt failed: interval={attempt_interval}, period={attempt_period}, error={error_msg[:100]}")
+                    continue
+        elif timeframe == '4h':
+            # yfinance doesn't support '4h' or '240m' natively for ANY
+            # ticker (futures or not) - must fetch 1h/60m and resample.
+            # This used to be futures-only, silently leaving crypto (e.g.
+            # BTC-USD) and other non-futures tickers falling through to a
+            # plain 1h fetch mislabeled as "4h" - fetch_historical_data_
+            # with_resampling already handles both cases correctly, it
+            # just wasn't being called for non-futures tickers.
+            print(f"Fetching 4h data for {ticker} (will resample from 1h/60m)...")
+            try:
+                hist = fetch_historical_data_with_resampling(
+                    ticker=ticker,
+                    timeframe='4h',
+                    period=period,
+                    is_futures=is_futures
+                )
+            except Exception as e:
+                print(f"⚠ Resampling fetch failed: {e}")
+                hist = None
+        elif is_futures and timeframe in ['1m', '5m']:
+            # For other futures timeframes, try with fallback periods
+            attempts = [
+                (interval, period),
+                (interval, '5d'),
+                (interval, '2d'),
+                (interval, '1d'),
+            ]
+            
+            for attempt_interval, attempt_period in attempts:
+                try:
+                    hist = stock.history(period=attempt_period, interval=attempt_interval)
+                    if hist is not None and len(hist) > 0:
+                        print(f"✓ Successfully fetched {len(hist)} bars for {ticker} {timeframe}")
+                        break
+                except Exception as e:
+                    error_msg = str(e)
+                    if "pattern" not in error_msg.lower() and "expected" not in error_msg.lower():
+                        print(f"⚠ Attempt failed: {error_msg[:100]}")
+                    continue
+        else:
+            try:
+                hist = stock.history(period=period, interval=interval)
+            except Exception as e:
+                error_msg = str(e)
+                print(f"⚠ Error fetching data for {ticker} {timeframe}: {error_msg}")
+                hist = None
+        
+        if hist is None or len(hist) < lookback_window + 10:
+            needed = lookback_window + 10
+            got = 0 if hist is None else len(hist)
+            return jsonify({'success': False, 'error': f'Insufficient data for {ticker} @ {timeframe}. Need at least {needed} bars, got {got}.'}), 400
+        
+        closes = hist['Close'].values
+        highs = hist['High'].values if 'High' in hist.columns else closes
+        lows = hist['Low'].values if 'Low' in hist.columns else closes
+        opens = hist['Open'].values if 'Open' in hist.columns else closes
+        volumes = hist['Volume'].values if 'Volume' in hist.columns else np.ones(len(closes))
+        current_price = closes[-1]
+
+        # Get session volatility for theoretical bounds
+        vol_result = compute_session_volatility(hist, window=60)
+        sigma_price = vol_result.get('sigma_price', 0.0)
+        
+        # Fallback: if sigma_price is 0 or invalid, estimate from price range
+        if sigma_price <= 0 or not np.isfinite(sigma_price):
+            price_range = np.max(highs) - np.min(lows)
+            sigma_price = price_range * 0.02  # Rough estimate: 2% of range
+            print(f"⚠ Using fallback sigma_price: {sigma_price:.4f}")
+        
+        # Get microstructure state, Hurst, and regimes for level reactions
+        returns = np.log(closes[1:] / closes[:-1]) * 100
+        microstructure_state = detect_market_microstructure_state(closes, volumes, returns, highs, lows)
+        hurst_data = calculate_hurst_exponent(closes)
+        garch_regime = calculate_garch_volatility_regime(closes)
+        hmm_regime = detect_market_regime_hmm(closes)
+        
+        # 1. Calculate Volume Profile (for value areas and directional understanding)
+        print("Calculating volume profile...")
+        volume_profile = calculate_volume_profile(highs, lows, closes, volumes, bins=30)
+        
+        # 2. Detect all levels (your existing code)
+        print("Detecting levels...")
+        hdbscan_levels = calculate_hdbscan_levels(highs, lows, closes, timeframe=timeframe)
+        optics_levels = enhanced_optics_levels(highs, lows, closes, timeframe=timeframe)
+
+        # Interaction levels
+        interaction_levels = calculate_local_interaction_levels(
+            closes, current_price, sigma_price, lookback=200, bins=30, max_levels=5
+        )
+
+        # Multiscale levels
+        multiscale_levels = multiscale_hdbscan_levels(highs, lows, closes, timeframe=timeframe)
+
+        # Time-weighted HDBSCAN, Wyckoff, IsolationForest pivot anomalies -
+        # brought in line with /api/data's algorithm set (was previously
+        # missing here, organic drift between endpoints built at different times)
+        time_weighted_levels = []
+        try:
+            if hasattr(hist.index, 'values'):
+                time_weighted_levels = time_weighted_hdbscan(highs, lows, closes, hist.index.values, half_life_days=30)
+        except Exception as e:
+            print(f"Time-weighted HDBSCAN failed: {e}")
+            time_weighted_levels = []
+
+        hist_data_subset = hist.tail(min(len(hist), 100))
+        try:
+            wyckoff_levels = detect_wyckoff_zones(hist_data_subset, lookback=50)
+        except Exception as e:
+            print(f"Wyckoff zones failed: {e}")
+            wyckoff_levels = []
+
+        isolation_forest_levels = find_pivot_anomalies(highs, lows, closes)
+
+        # GMM, TDA, KDE: ML-filtered below alongside HDBSCAN/OPTICS/Isolation-Forest/MeanShift.
+        # Note this endpoint doesn't call enhance_levels_with_microstructure(),
+        # so unlike /api/data and the HOD/LOD endpoints, MeanShift only gets
+        # scored here as a v2-filtered candidate source - it doesn't also get
+        # the separate validator role those other endpoints have. Wiring in
+        # that shared helper is a bigger structural change to this endpoint's
+        # pipeline, flagged as a separate follow-up, not done here.
+        gmm_levels = calculate_gmm_levels(highs, lows, closes)
+        tda_levels = persistent_homology_levels(highs, lows, closes, max_levels=8)
+        kde_levels = kde_based_levels(highs, lows, closes, n_levels=10)
+        meanshift_levels = calculate_meanshift_levels(highs, lows, closes)
+
+        try:
+            levels_by_category_v2 = {
+                'GMM': gmm_levels, 'TDA': tda_levels,
+                'HDBSCAN': hdbscan_levels, 'OPTICS': optics_levels,
+                'KDE': kde_levels, 'Isolation-Forest': isolation_forest_levels,
+                'MeanShift': meanshift_levels,
+            }
+            levels_by_category_v2 = extend_thin_side_levels(
+                ticker, timeframe, highs, lows, closes, current_price, levels_by_category_v2, is_futures,
+            )
+            filtered = score_and_filter_levels_v2(
+                levels_by_category_v2,
+                highs, lows, opens, closes, volumes, current_price, timestamps=hist.index.values,
+            )
+            gmm_levels = [l for l in filtered if l.get('category') == 'GMM']
+            tda_levels = [l for l in filtered if l.get('category') == 'TDA']
+            hdbscan_levels = [l for l in filtered if l.get('category') in ('HDBSCAN', 'Density (HDBSCAN)')]
+            optics_levels = [l for l in filtered if l.get('category') == 'OPTICS']
+            kde_levels = [l for l in filtered if l.get('category') == 'KDE']
+            isolation_forest_levels = [l for l in filtered if l.get('category') == 'Isolation-Forest']
+            meanshift_levels = [l for l in filtered if l.get('category') == 'MeanShift']
+        except Exception as e:
+            print(f"ML filter failed, falling back to unfiltered levels: {e}")
+
+        # Fibonacci for metadata enrichment only (not primary levels)
+        fib_levels = calculate_fibonacci_levels(highs, lows)
+
+        # Neural Network levels (with volume profile) - INCLUDED in theoretical HOD/LOD and LSTM forecast
+        print("Detecting neural network levels...")
+        neural_network_levels = detect_levels_with_neural_network(hist, lookback=100, threshold=0.5)
+        print(f"✓ Neural Network levels detected: {len(neural_network_levels)} levels")
+
+        # ML confluence (includes neural network levels)
+        all_ml_levels = (hdbscan_levels + optics_levels + interaction_levels + neural_network_levels +
+                        gmm_levels + tda_levels + kde_levels + time_weighted_levels + wyckoff_levels +
+                        isolation_forest_levels + meanshift_levels)
+        all_ml_levels = add_fibonacci_metadata_to_levels(all_ml_levels, fib_levels, sigma_price, threshold_sigma=1.0)
+        ml_confluence_levels = get_ml_confluence_levels(all_ml_levels)
+        
+        # 2a. Get Multi-Timeframe Levels (for enhanced LSTM prediction)
+        print("Fetching multi-timeframe levels...")
+        mtf_levels = {}
+        level_sequence_prediction = None
+        try:
+            mtf_levels = get_multi_timeframe_levels(ticker, timeframe, hist)
+            print(f"✓ Multi-timeframe levels fetched: {len(mtf_levels)} timeframes")
+        except Exception as e:
+            print(f"⚠ Multi-timeframe level fetch failed: {e}")
+            mtf_levels = {}
+        
+        # 3. Predict level reactions AND which levels will become actual HOD/LOD
+        # NOTE: neural_network_levels are included in all_levels for theoretical HOD/LOD refinement
+        print("Predicting level reactions and HOD/LOD candidates...")
+        all_levels = (hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels +
+                     multiscale_levels + neural_network_levels + gmm_levels + tda_levels + kde_levels +
+                     time_weighted_levels + wyckoff_levels + isolation_forest_levels + meanshift_levels)
+        start_of_move_price = closes[0] if len(closes) > 0 else current_price  # Session start
+        
+        level_reactions = []
+        hod_lod_predictions = []
+        
+        for level in all_levels[:20]:  # Analyze top 20 levels
+            # Predict reaction (with Hurst, GARCH, HMM regimes)
+            reaction = predict_level_reaction(
+                level, current_price, start_of_move_price, sigma_price,
+                volume_profile, microstructure_state, hurst_data, garch_regime,
+                hmm_regime, timeframe
+            )
+            if reaction:
+                reaction['level'] = sanitize_for_json(level)
+                level_reactions.append(reaction)
+            
+            # Predict if this level will become actual HOD/LOD
+            hod_lod_pred = predict_level_as_hod_lod(
+                level, current_price, all_levels, volume_profile,
+                microstructure_state, sigma_price, timeframe
+            )
+            if hod_lod_pred:
+                hod_lod_pred['level'] = sanitize_for_json(level)
+                hod_lod_predictions.append(hod_lod_pred)
+        
+        # Sort by distance from current price
+        level_reactions.sort(key=lambda x: x['distance_pct'])
+        
+        # Sort HOD/LOD predictions by probability
+        hod_lod_predictions.sort(key=lambda x: max(x.get('hod_probability', 0), x.get('lod_probability', 0)), reverse=True)
+        
+        # 4. Calculate theoretical bounds (pre-market and intraday) - these are the edges
+        # Ensure sigma_price is valid and non-zero
+        if sigma_price <= 0 or not np.isfinite(sigma_price):
+            price_range = np.max(highs) - np.min(lows) if len(highs) > 0 else current_price * 0.1
+            sigma_price = max(price_range * 0.02, current_price * 0.01)  # At least 1% of price
+            print(f"⚠ Theoretical bounds: Using fallback sigma_price: {sigma_price:.4f}")
+
+        # FIXED: compute_session_volatility returns the vol of the NEXT
+        # SINGLE BAR, not the whole session - there's no horizon scaling in
+        # it. Backtested on 12yr NQ/ES 1H+4H (backtest_theoretical_hodlod.py):
+        # without this scaling, the 1.5-sigma "intraday" band was breached
+        # 57-69% of days (vs ~6.7% expected for a normal distribution at
+        # that many sigma) because a whole trading day spans many bars, not
+        # one. Scaling sigma by sqrt(bars per day) - standard random-walk
+        # variance-scales-with-time - brought the breach rate down to
+        # ~13-17%, close to what real fat-tailed return distributions
+        # produce (still somewhat above the normal-distribution figure,
+        # which is expected - markets have fatter tails than a normal
+        # distribution, this isn't a remaining bug).
+        try:
+            n_unique_days = max(1, len(pd.Series(hist.index).dt.date.unique()))
+            avg_bars_per_day = max(1.0, len(hist) / n_unique_days)
+            session_scale = np.sqrt(avg_bars_per_day)
+        except Exception:
+            session_scale = 1.0
+        sigma_price_session = sigma_price * session_scale
+
+        # Asymmetric multipliers, not the same one on both sides - the
+        # symmetric 1.5/2.0 sigma bands breached FAR more than their
+        # nominal rate (15%/19% and 6%/11% HOD/LOD respectively, vs the
+        # 6.68%/2.28% these multipliers are supposed to target) AND
+        # breached the downside more than the upside every time (the
+        # well-known "leverage effect" - down moves are sharper than up
+        # moves). Calibrated per-side by taking the empirical quantile of
+        # the upside/downside excursion distribution at the target breach
+        # rate, fit on the first 60% of 12yr NQ/ES 1H/4H days and
+        # validated OUT-OF-SAMPLE on the rest (backtest_hodlod_asymmetric_
+        # calibration.py) - held up consistently across every instrument/
+        # timeframe individually, not just pooled: OOS breach rates landed
+        # at 7.0%/6.5% (HOD/LOD, target 6.68%) and 2.3%/1.6% (target 2.28%).
+        theoretical_hod_pm = float(current_price + 2.55 * sigma_price_session)
+        theoretical_lod_pm = float(current_price - 3.41 * sigma_price_session)
+
+        # Intraday bounds
+        theoretical_hod_id = float(current_price + 1.95 * sigma_price_session)
+        theoretical_lod_id = float(current_price - 2.41 * sigma_price_session)
+        
+        # Ensure bounds are valid (HOD > LOD)
+        if theoretical_hod_pm <= theoretical_lod_pm:
+            theoretical_hod_pm = current_price * 1.02
+            theoretical_lod_pm = current_price * 0.98
+        if theoretical_hod_id <= theoretical_lod_id:
+            theoretical_hod_id = current_price * 1.015
+            theoretical_lod_id = current_price * 0.985
+        
+        print(f"✓ Theoretical bounds calculated: HOD={theoretical_hod_pm:.2f}, LOD={theoretical_lod_pm:.2f}")
+        
+        # 3. Build feature sequence (last N bars)
+        print(f"Building feature sequence (lookback={lookback_window})...")
+        recent_features = []
+        recent_features_mtf = []  # For multi-timeframe model
+        
+        # Track historical level touches for MTF features
+        historical_touches = []
+        
+        for i in range(max(0, len(hist) - lookback_window), len(hist)):
+            bar = hist.iloc[i]
+            bar_price = bar['Close']
+            lookback_window_data = hist.iloc[max(0, i-lookback_window):i+1]
+            
+            # Engineer features for this timestep (with volume profile and all levels)
+            features = engineer_level_features_for_lstm(
+                current_price=bar_price,
+                theoretical_hod_premarket=theoretical_hod_pm,
+                theoretical_lod_premarket=theoretical_lod_pm,
+                theoretical_hod_intraday=theoretical_hod_id,
+                theoretical_lod_intraday=theoretical_lod_id,
+                hdbscan_levels=hdbscan_levels,
+                optics_levels=optics_levels,
+                interaction_levels=interaction_levels,
+                ml_confluence_levels=ml_confluence_levels,
+                multiscale_levels=multiscale_levels,
+                neural_network_levels=neural_network_levels,
+                volume_profile=volume_profile,
+                all_levels=all_levels
+            )
+            recent_features.append(features)
+            
+            # Also build MTF features if available
+            if mtf_levels:
+                try:
+                    features_mtf = engineer_mtf_level_features(
+                        current_price=bar_price,
+                        current_bar_data=bar.to_dict(),
+                        mtf_levels=mtf_levels,
+                        historical_level_touches=historical_touches,
+                        lookback_bars=lookback_window_data
+                    )
+                    recent_features_mtf.append(features_mtf)
+                except Exception as e:
+                    print(f"⚠ MTF feature engineering failed for bar {i}: {e}")
+                    # Fallback: use regular features
+                    if recent_features_mtf:
+                        recent_features_mtf.append(recent_features_mtf[-1])
+                    else:
+                        recent_features_mtf.append(features)
+        
+        recent_features = np.array(recent_features)
+        if recent_features_mtf:
+            recent_features_mtf = np.array(recent_features_mtf)
+        else:
+            recent_features_mtf = recent_features  # Fallback
+        
+        # 4. Load model and run Monte Carlo simulation (if model exists and torch is available)
+        model_path = 'level_lstm_best.pth'
+        model_path_mtf = 'level_sequence_lstm_best.pth'  # New MTF model path
+        model = None
+        model_mtf = None  # Multi-timeframe level sequence model
+        prediction = None
+        monte_carlo_result = None
+        
+        # Try to load multi-timeframe level sequence model first
+        if TORCH_AVAILABLE and LevelSequenceLSTM is not None and mtf_levels:
+            try:
+                if os.path.exists(model_path_mtf):
+                    print("Loading multi-timeframe level sequence model...")
+                    n_features_mtf = recent_features_mtf.shape[1] if len(recent_features_mtf.shape) > 1 else recent_features.shape[1]
+                    model_mtf = LevelSequenceLSTM(n_features=n_features_mtf, max_levels_predict=5)
+                    model_mtf.load_state_dict(torch.load(model_path_mtf, map_location='cpu'))
+                    print("✓ Multi-timeframe level sequence model loaded")
+                    
+                    # Make level sequence prediction
+                    level_sequence_prediction = predict_level_sequence(
+                        model=model_mtf,
+                        recent_features=recent_features_mtf,
+                        current_price=current_price,
+                        mtf_levels=mtf_levels,
+                        base_timeframe=timeframe
+                    )
+                    if level_sequence_prediction:
+                        print(f"✓ Level sequence prediction: {level_sequence_prediction['total_levels_predicted']} levels")
+            except Exception as e:
+                print(f"⚠ Multi-timeframe model loading/prediction failed: {e}")
+                import traceback
+                traceback.print_exc()
+                model_mtf = None
+                level_sequence_prediction = None
+        
+        if TORCH_AVAILABLE and LevelBasedLSTM is not None:
+            try:
+                if os.path.exists(model_path):
+                    # Try to load model with HOD/LOD prediction capability
+                    try:
+                        model = LevelBasedLSTM(n_features=recent_features.shape[1], max_levels=50)
+                        model.load_state_dict(torch.load(model_path, map_location='cpu'))
+                    except:
+                        # Fallback to old model format (without HOD/LOD heads)
+                        model = LevelBasedLSTM(n_features=recent_features.shape[1])
+                        model.load_state_dict(torch.load(model_path, map_location='cpu'))
+                    
+                    # Get base prediction (with volatility for time calculation)
+                    prediction = predict_price_target(model, recent_features, current_price, sigma_price=sigma_price, volatility_factor=1.0)
+                    
+                    # Predict which level will be HOD/LOD (using all levels including theoretical as candidates)
+                    hod_lod_prediction = None
+                    try:
+                        print("Predicting HOD/LOD levels from LSTM...")
+                        hod_lod_prediction = predict_hod_lod_from_levels(
+                            model=model,
+                            recent_features=recent_features,
+                            current_price=current_price,
+                            candidate_levels=all_levels,
+                            theoretical_hod=theoretical_hod_id,
+                            theoretical_lod=theoretical_lod_id
+                        )
+                        if hod_lod_prediction:
+                            print(f"✓ LSTM HOD prediction: ${hod_lod_prediction['predicted_hod_price']:.2f}")
+                            print(f"✓ LSTM LOD prediction: ${hod_lod_prediction['predicted_lod_price']:.2f}")
+                    except Exception as e:
+                        print(f"⚠ HOD/LOD level prediction failed: {e}")
+                        import traceback
+                        traceback.print_exc()
+                        hod_lod_prediction = None
+                    
+                    # Run Monte Carlo simulation (with regimes)
+                    # Use fewer simulations for production (30 instead of 100 for speed)
+                    # Can be increased for higher accuracy if needed
+                    print("Running Monte Carlo LSTM simulation...")
+                    monte_carlo_result = monte_carlo_lstm_forecast(
+                        model=model,
+                        recent_features=recent_features,
+                        current_price=current_price,
+                        theoretical_hod=theoretical_hod_id,
+                        theoretical_lod=theoretical_lod_id,
+                        levels=all_levels[:20],  # Top 20 levels for reactions
+                        volume_profile=volume_profile,
+                        sigma_price=sigma_price,
+                        hurst_data=hurst_data,
+                        garch_regime=garch_regime,
+                        hmm_regime=hmm_regime,
+                        microstructure_state=microstructure_state,
+                        n_simulations=30,  # Reduced from 100 for production performance
+                        forecast_bars=30
+                    )
+                    
+                    if prediction:
+                        print(f"✓ LSTM prediction: target={prediction['target_price']:.2f}, confidence={prediction['confidence']:.2f}")
+                    if monte_carlo_result:
+                        print(f"✓ Monte Carlo: {monte_carlo_result['probabilities']['up']*100:.1f}% up, {monte_carlo_result['probabilities']['down']*100:.1f}% down")
+                else:
+                    print(f"⚠ Model file not found: {model_path}. Using level-based estimate.")
+            except Exception as e:
+                print(f"⚠ Model loading/prediction failed: {e}. Using level-based estimate.")
+                import traceback
+                traceback.print_exc()
+        else:
+            print(f"⚠ PyTorch not available. Using level-based heuristic estimate.")
+        
+        # 5. Fallback: If no model, use level-based heuristic with volume profile
+        if prediction is None:
+            # Use volume profile POC as directional guide
+            if volume_profile:
+                poc = volume_profile.get('poc', current_price)
+                va_high = volume_profile.get('value_area_high', current_price)
+                va_low = volume_profile.get('value_area_low', current_price)
+                
+                # If current price is below POC, likely to move toward POC
+                if current_price < poc:
+                    target_price = min(poc, va_high)
+                elif current_price > poc:
+                    target_price = max(poc, va_low)
+                else:
+                    target_price = current_price * 1.01
+            else:
+                # Find nearest levels above/below
+                levels_above = [l for l in all_levels if l.get('price', 0) > current_price]
+                levels_below = [l for l in all_levels if l.get('price', 0) < current_price]
+                
+                if levels_above:
+                    nearest_resistance = min(levels_above, key=lambda x: x.get('price', float('inf')))
+                    target_price = nearest_resistance.get('price', current_price * 1.01)
+                else:
+                    target_price = theoretical_hod_id
+            
+            target_pct_move = (target_price - current_price) / current_price * 100
+            confidence = 0.6  # Moderate confidence for heuristic
+            
+            prediction = {
+                'target_price': float(target_price),
+                'target_pct_move': float(target_pct_move),
+                'confidence': float(confidence),
+                'expected_time_bars': 20,  # Default estimate
+                'attention_weights': None
+            }
+        
+        # 6. Find which level the model is targeting
+        target_price = prediction['target_price']
+        all_levels = (hdbscan_levels + optics_levels + interaction_levels + ml_confluence_levels +
+                     multiscale_levels + neural_network_levels + gmm_levels + tda_levels + kde_levels +
+                     time_weighted_levels + wyckoff_levels + isolation_forest_levels + meanshift_levels)
+        
+        # Find closest level to predicted target
+        closest_level = None
+        if all_levels:
+            closest_level = min(all_levels, key=lambda l: abs(l.get('price', current_price) - target_price))
+        
+        # Calculate timeframe multiplier for time estimate
+        timeframe_minutes = {'1m': 1, '5m': 5, '15m': 15, '1h': 60, '4h': 240, '1d': 1440}.get(timeframe, 5)
+        
+        # Build response with all new features
+        response_data = {
+            'success': True,
+            'question': 'Where is price going today?',
+            'answer': {
+                'target_price': prediction['target_price'],
+                'target_pct_move': prediction['target_pct_move'],
+                'confidence': prediction['confidence'],
+                'expected_time_minutes': prediction['expected_time_bars'] * timeframe_minutes,
+                'expected_time_bars': prediction['expected_time_bars'],
+                'expected_time_description': f"Estimated {prediction['expected_time_bars']} bars ({prediction['expected_time_bars'] * timeframe_minutes} minutes) until price reaches target",
+                'closest_level': sanitize_for_json(closest_level) if closest_level else None,
+                'attention_focus': {
+                    'most_important_bar': int(np.argmax(prediction['attention_weights'])) if prediction.get('attention_weights') else None,
+                    'weights': prediction.get('attention_weights')
+                } if prediction.get('attention_weights') else None
+            },
+            'theoretical_bounds': {
+                'hod_premarket': float(theoretical_hod_pm),
+                'lod_premarket': float(theoretical_lod_pm),
+                'hod_intraday': float(theoretical_hod_id),
+                'lod_intraday': float(theoretical_lod_id),
+                'hod_1std': float(current_price + sigma_price),
+                'hod_2std': float(current_price + 2 * sigma_price),
+                'hod_3std': float(current_price + 3 * sigma_price),
+                'lod_1std': float(current_price - sigma_price),
+                'lod_2std': float(current_price - 2 * sigma_price),
+                'lod_3std': float(current_price - 3 * sigma_price),
+                'sigma_price': float(sigma_price)
+            },
+            'volume_profile': sanitize_for_json(volume_profile) if volume_profile else None,
+            'level_reactions': sanitize_for_json(level_reactions[:10]) if level_reactions else [],  # Top 10 closest
+            'hod_lod_predictions': sanitize_for_json(hod_lod_predictions[:5]) if hod_lod_predictions else [],  # Top 5 most likely
+            'lstm_hod_lod_prediction': sanitize_for_json(hod_lod_prediction) if 'hod_lod_prediction' in locals() and hod_lod_prediction else None,  # LSTM prediction of which level becomes HOD/LOD
+            'level_sequence_prediction': sanitize_for_json(level_sequence_prediction) if 'level_sequence_prediction' in locals() and level_sequence_prediction else None,  # Multi-timeframe level sequence prediction
+            'monte_carlo': sanitize_for_json(monte_carlo_result) if monte_carlo_result else None,
+            'model_used': 'MTF Level Sequence LSTM' if level_sequence_prediction else ('LSTM + Monte Carlo' if monte_carlo_result else ('LSTM' if model is not None else 'Level-based heuristic')),
+            'levels_detected': {
+                'hdbscan': len(hdbscan_levels),
+                'optics': len(optics_levels),
+                'interaction': len(interaction_levels),
+                'ml_confluence': len(ml_confluence_levels),
+                'multiscale': len(multiscale_levels),
+                'neural_network': len(neural_network_levels),
+                'gmm': len(gmm_levels),
+                'tda': len(tda_levels),
+                'kde': len(kde_levels),
+                'time_weighted': len(time_weighted_levels),
+                'wyckoff': len(wyckoff_levels),
+                'isolation_forest': len(isolation_forest_levels),
+                'meanshift': len(meanshift_levels)
+            },
+            'all_levels': sanitize_for_json(sorted(all_levels, key=lambda x: abs(x.get('price', 0) - current_price))[:50]),
+            'microstructure_state': sanitize_for_json(microstructure_state) if microstructure_state else None
+        }
+        
+        return jsonify(response_data)
+        
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"ERROR in /api/lstm-forecast: {error_trace}")
+        return jsonify({'success': False, 'error': str(e)}), 400
 
 
+@app.route('/api/level-algo-backtest', methods=['GET'])
+def get_level_algo_backtest():
+    """Static reference data (no market fetch, no auth) - per-algorithm
+    level-detection backtest stats, shown in the site's Data tab."""
+    return jsonify({'success': True, **_LEVEL_ALGO_BACKTEST_SUMMARY})
 
 
 _EQUITY_CURVE_CACHE = None
 
 
+@app.route('/api/level-algo-equity-curve', methods=['GET'])
+def get_level_algo_equity_curve():
+    """Static reference data (no market fetch, no auth) - weekly asset
+    price vs. the filtered-strategy cumulative R-multiple equity curve
+    over the same holdout period, per instrument/timeframe. See
+    build_equity_curve_vs_price.py. R-multiples assume the fixed 1.0/0.5
+    ATR target/stop every trade was evaluated against (2R win / -1R loss)
+    - a realistic, tradeable rule, but doesn't account for slippage/fees."""
+    global _EQUITY_CURVE_CACHE
+    if _EQUITY_CURVE_CACHE is None:
+        try:
+            with open('equity_curve_vs_price.json') as f:
+                _EQUITY_CURVE_CACHE = json.load(f)
+        except Exception as e:
+            return jsonify({'success': False, 'error': f'Equity curve data not available: {e}'}), 500
+    return jsonify({'success': True, 'by_instrument': _EQUITY_CURVE_CACHE})
 
 
+@app.route('/api/ou-zone-history', methods=['GET'])
+def get_ou_zone_history_endpoint():
+    """
+    Price history + rolling OU zone band, for the zone heatmap chart -
+    replaces the NHP panel (which had no working backend endpoint at all -
+    /api/nhp-signals never existed here, matching the perpetual loading
+    spinner on the live site).
+    """
+    # No auth required - public market data endpoint, same as /api/lstm-forecast
+
+    ticker = request.args.get('ticker', 'SPY')
+    timeframe = request.args.get('timeframe', '1h').strip().lower().replace('240m', '4h').replace('60m', '1h')
+
+    try:
+        is_futures = '=' in ticker
+        # Crypto trades 24/7 like futures do, so the same calendar period
+        # holds far more bars than for a 6.5h/day equity - the equity-sized
+        # period_map combined with the 4h resampling multiplier (4x) could
+        # balloon into a ~2yr/17,500-bar fetch for BTC-USD, slow enough to
+        # cross Render's request-time budget. Size it like futures instead.
+        is_continuous_trading = is_futures or ticker.upper().endswith('-USD')
+        period_map = {'1m': '5d', '5m': '5d', '15m': '10d', '1h': '20d', '4h': '60d', '1d': '2y'} if is_continuous_trading \
+            else {'1m': '7d', '5m': '1mo', '15m': '1mo', '1h': '2mo', '4h': '6mo', '1d': '2y'}
+        period = period_map.get(timeframe, '1mo')
+
+        hist = fetch_historical_data_with_resampling(ticker=ticker, timeframe=timeframe, period=period, is_futures=is_futures)
+        if hist is None or len(hist) == 0:
+            return jsonify({'success': False, 'error': f'No data available for {ticker} at {timeframe}'}), 400
+
+        highs, lows, closes = hist['High'].values, hist['Low'].values, hist['Close'].values
+        volumes = hist['Volume'].values
+        timestamps = hist.index.values
+        lookback = min(150, len(closes) - 5)
+        if lookback < 20:
+            return jsonify({'success': False, 'error': 'Not enough bars for a zone fit'}), 400
+
+        zone_history = get_ou_zone_history(highs, lows, closes, volumes, timestamps, lookback=lookback, step=5)
+
+        # crop to where the zone actually starts (skip the dead lookback
+        # lead-in with no zone yet), then to a smaller trailing window so
+        # individual touches/reactions are visible instead of compressed
+        # across the whole fetched history
+        scan_idx = zone_history['scan_idx']
+        n = len(closes)
+        max_display_bars = int(request.args.get('bars', 150))
+        if scan_idx:
+            crop_start = max(scan_idx[0], n - max_display_bars)
+        else:
+            crop_start = max(0, n - max_display_bars)
+        times_out = timestamps[crop_start:]
+        closes_out = closes[crop_start:]
+        scan_idx_out = [i - crop_start for i in scan_idx if i >= crop_start]
+        n_dropped_scans = len(scan_idx) - len(scan_idx_out)
+        zone_low_out = zone_history['zone_low'][n_dropped_scans:]
+        zone_high_out = zone_history['zone_high'][n_dropped_scans:]
+        zone_vwap_out = zone_history['vwap'][n_dropped_scans:]
+
+        # structural levels: KDE peaks (where price actually consolidated/
+        # got "stuck", i.e. real structure) - NOT the VWAP-tracking OU zone.
+        # Rolling scan (not one static call on the whole window) so older
+        # zones stay visible alongside newer ones - "adaptive S/R zones"
+        # showing how structure evolved, not a single current-moment
+        # snapshot. Each candidate is scored with the same validated ML
+        # filter (score_and_filter_levels_v2) used everywhere else in this
+        # project - raw KDE alone tests at ~43% (statistically
+        # indistinguishable from the 42.27% random baseline, confirmed
+        # separately), so only filter-passing levels are worth showing as
+        # if they mean something.
+        structural_scan_step = 15
+        structural_lookback = 100
+        structural_levels = []
+        # NOTE: deliberately NOT wired into shadow_score_levels_v3 - this
+        # loop calls the filter once per historical scan point (many times
+        # per request), and shadow-scoring each one would refit/re-log at
+        # the same multiplied cost. The other 4 real-time call sites score
+        # the CURRENT bar once per request, which is what matters for
+        # v2-vs-v3 comparison; this bulk endpoint can be added later if its
+        # own shadow coverage turns out to matter.
+        for scan_t in range(structural_lookback, n, structural_scan_step):
+            s_h, s_l, s_c = highs[scan_t - structural_lookback:scan_t], lows[scan_t - structural_lookback:scan_t], closes[scan_t - structural_lookback:scan_t]
+            s_o, s_v = hist['Open'].values[scan_t - structural_lookback:scan_t], volumes[scan_t - structural_lookback:scan_t]
+            s_dt = timestamps[scan_t - structural_lookback:scan_t]
+            try:
+                kde_candidates = kde_based_levels(s_h, s_l, s_c, n_levels=6)
+                filtered = score_and_filter_levels_v2(
+                    {'KDE': kde_candidates}, s_h, s_l, s_o, s_c, s_v, closes[scan_t - 1], timestamps=s_dt,
+                )
+            except Exception:
+                filtered = []
+            for lvl in filtered:
+                structural_levels.append({
+                    'price': lvl['price'], 'strength': lvl.get('ml_filter_score', lvl.get('strength', 0.5)),
+                    'touches': int(lvl.get('touches', 0)),
+                    'formed_at_idx': scan_t - crop_start,
+                })
+
+        # drop levels from a price regime that's no longer relevant (e.g.
+        # NQ was 1500pts higher earlier in the fetch window) - only keep
+        # ones within the displayed price range, padded a bit, so old
+        # zones from a completely different price era don't clutter the
+        # chart with lines price has no realistic path back to
+        if closes_out.size:
+            disp_lo, disp_hi = closes_out.min(), closes_out.max()
+            disp_pad = (disp_hi - disp_lo) * 0.1 or disp_hi * 0.01
+            structural_levels = [
+                lvl for lvl in structural_levels
+                if disp_lo - disp_pad <= lvl['price'] <= disp_hi + disp_pad
+            ]
+
+        instrument_key = 'NQ' if 'NQ' in ticker.upper() else ('ES' if 'ES' in ticker.upper() else None)
+        summary_key = f'{instrument_key}_{timeframe}' if instrument_key else None
+        summary = None
+        if summary_key and summary_key in _OU_ZONE_BACKTEST_SUMMARY['flat_reject_rate']:
+            summary = {
+                'flat_reject_rate': _OU_ZONE_BACKTEST_SUMMARY['flat_reject_rate'][summary_key],
+                'touch_rate': _OU_ZONE_BACKTEST_SUMMARY['touch_rate'][summary_key],
+                'strong_durable_reject_rate': _OU_ZONE_BACKTEST_SUMMARY['strong_durable_reject_rate'][summary_key],
+                'median_zone_width_atr': _OU_ZONE_BACKTEST_SUMMARY['median_zone_width_atr'][summary_key],
+                'target_availability': _OU_ZONE_BACKTEST_SUMMARY['target_availability'][summary_key],
+                'target_reach_rate': _OU_ZONE_BACKTEST_SUMMARY['target_reach_rate'][summary_key],
+                'target_clean_reach_rate': _OU_ZONE_BACKTEST_SUMMARY['target_clean_reach_rate'][summary_key],
+                'note': _OU_ZONE_BACKTEST_SUMMARY['note'],
+            }
+
+        # Current target: the hybrid zone (multi-timeframe VWAP consensus,
+        # held-fixed rather than re-fit every bar) + a KDE structural level
+        # on the path back to fair value, validated at 93-96% target-reach
+        # rate (with the corridor-buffer fix) when a target exists. Needs
+        # daily bars for the weekly/monthly anchors - a second, separate
+        # fetch, best-effort (if it fails, target is just omitted).
+        target_info = None
+        try:
+            daily_hist = fetch_historical_data_with_resampling(ticker=ticker, timeframe='1d', period='1y', is_futures=is_futures)
+            if daily_hist is not None and len(daily_hist) >= 20:
+                hybrid = get_hybrid_zone_with_target(
+                    highs, lows, closes, hist['Open'].values, volumes, timestamps,
+                    daily_hist['High'].values, daily_hist['Low'].values, daily_hist['Close'].values,
+                    daily_hist['Volume'].values, daily_hist.index.values,
+                )
+                if hybrid:
+                    target_info = {
+                        'side': hybrid['side'], 'stretched': hybrid['stretched'],
+                        'edge': hybrid['edge'], 'consensus_vwap': hybrid['consensus_vwap'],
+                        'target_price': hybrid['target_price'], 'target_touch_count': hybrid['target_touch_count'],
+                    }
+        except Exception:
+            target_info = None
+
+        return jsonify({
+            'success': True, 'ticker': ticker, 'timeframe': timeframe,
+            'times': [pd.Timestamp(t).isoformat() for t in times_out],
+            'prices': [float(c) for c in closes_out],
+            'zone_scan_idx': scan_idx_out,
+            'zone_low': zone_low_out,
+            'zone_high': zone_high_out,
+            'zone_vwap': zone_vwap_out,
+            'current_zone': {
+                'low': zone_low_out[-1], 'high': zone_high_out[-1],
+                'vwap': zone_vwap_out[-1],
+            } if zone_low_out else None,
+            'structural_levels': structural_levels,
+            'backtest_summary': summary,
+            'target': target_info,
+        })
+    except Exception as e:
+        import traceback
+        print(f"ERROR in /api/ou-zone-history: {traceback.format_exc()}")
+        return jsonify({'success': False, 'error': str(e)}), 400
 
 
 
@@ -6991,6 +10047,9 @@ def login_page():
 def logout_page():
     session.clear()
     return redirect(url_for('login_page'))
+
+
+
 
 
 # ============================================================================
@@ -7103,6 +10162,7 @@ def post_valiant_record_month():
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
+
 
 
 
