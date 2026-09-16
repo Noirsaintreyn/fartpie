@@ -96,7 +96,7 @@ def _run_hdbscan(h, l, c, tf):
 
 
 def _run_optics(h, l, c, tf):
-    return backend.optics_multi_density_levels(h, l, c)
+    return backend.enhanced_optics_levels(h, l, c, timeframe=tf)
 
 
 def _run_isolation_forest(h, l, c, tf):

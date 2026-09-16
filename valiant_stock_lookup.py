@@ -29,7 +29,7 @@ import yfinance as yf
 from hmmlearn.hmm import GaussianHMM
 
 from fetch_lse_ohlcv import fetch_ohlcv
-from vector_fundamentals_backtest import fundamentals_asof, load_facts_cache
+from vector_fundamentals_backtest import fundamentals_asof, load_facts_cache, get_facts_for_ticker
 from vector_screener_sp500_sectors import load_sectors, batch_download_cached
 
 from backtest_pivot_ratchet import run_state_machine, regime_strip_agreement, ATR_LEN, SLOW_LEN, PIVOT_LEN
@@ -185,7 +185,7 @@ def regime_maturity(flips, current_regime, bars_since_flip):
 
 def fundamentals_rating(ticker, as_of_date):
     facts_by_ticker = load_facts_cache()
-    gaap = facts_by_ticker.get(ticker)
+    gaap = get_facts_for_ticker(ticker, facts_by_ticker)
     if gaap is None:
         return None
     result = fundamentals_asof(gaap, as_of_date)

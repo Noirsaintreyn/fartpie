@@ -37,7 +37,7 @@ import pandas as pd
 from vector_rebuilt_hmm_model import build_state, eligibility_z, exposure_multiplier, trailing_returns_matrix
 from vector_fundamentals_sector_cap import apply_sector_cap
 from vector_screener_sp500_sectors import batch_download_cached, load_sectors
-from vector_fundamentals_backtest import fundamentals_asof, load_facts_cache
+from vector_fundamentals_backtest import fundamentals_asof, load_facts_cache, get_facts_for_ticker
 
 TOP_N = 5
 LEDGER_PATH = 'valiant_paper_tracking_ledger.json'
@@ -72,7 +72,7 @@ def compute_current_picks(as_of=None):
     candidates = []
     for t, s in stocks.items():
         idx = len(s['df']) - 1
-        gaap = facts_by_ticker.get(t)
+        gaap = get_facts_for_ticker(t, facts_by_ticker)
         if gaap is None:
             continue
         result = fundamentals_asof(gaap, as_of_str)
