@@ -5026,7 +5026,13 @@ def get_data():
             if '=' in ticker and timeframe in ['1m', '5m', '15m', '1h', '4h']:
                 error_msg += '. yfinance futures data may be stale or unavailable. Use the MotiveWave Import panel to upload a CSV export from MotiveWave for this ticker/timeframe.'
             return jsonify({'success': False, 'error': error_msg}), 400
-        
+
+        # Drop the still-forming current bar (all-NaN OHLC) yfinance returns
+        # mid-session for some tickers - OPTICS/KDE crash 400 on NaN input otherwise.
+        hist = hist.dropna(subset=['Open', 'High', 'Low', 'Close'])
+        if len(hist) == 0:
+            return jsonify({'success': False, 'error': f'No usable (non-NaN) bars for {ticker} at {timeframe}'}), 400
+
         price_data = []
         for idx, row in hist.iterrows():
             price_data.append({
@@ -5037,7 +5043,7 @@ def get_data():
                 'close': float(row['Close']),
                 'volume': int(row['Volume'])
             })
-        
+
         closes = hist['Close'].values
         highs = hist['High'].values
         lows = hist['Low'].values
@@ -9297,7 +9303,13 @@ def get_lstm_forecast():
             needed = lookback_window + 10
             got = 0 if hist is None else len(hist)
             return jsonify({'success': False, 'error': f'Insufficient data for {ticker} @ {timeframe}. Need at least {needed} bars, got {got}.'}), 400
-        
+
+        # Drop the still-forming current bar (all-NaN OHLC) yfinance returns
+        # mid-session for some tickers - OPTICS/KDE crash 400 on NaN input otherwise.
+        hist = hist.dropna(subset=['Open', 'High', 'Low', 'Close'])
+        if len(hist) < lookback_window + 10:
+            return jsonify({'success': False, 'error': f'Insufficient non-NaN data for {ticker} @ {timeframe} after dropping incomplete bars.'}), 400
+
         closes = hist['Close'].values
         highs = hist['High'].values if 'High' in hist.columns else closes
         lows = hist['Low'].values if 'Low' in hist.columns else closes
@@ -9818,6 +9830,59 @@ def get_level_algo_equity_curve():
         except Exception as e:
             return jsonify({'success': False, 'error': f'Equity curve data not available: {e}'}), 500
     return jsonify({'success': True, 'by_instrument': _EQUITY_CURVE_CACHE})
+
+
+@app.route('/api/target-probability', methods=['GET'])
+def get_target_probability_endpoint():
+    """
+    Calibrated P(target reached before stop) for an arbitrary entry/stop/
+    target/horizon - the validated V1 model from the 2026-09-23 target-
+    selection research (see project_target_selection_calibration memory):
+    plain Gaussian-OU race + isotonic calibration, the only version of
+    several tried that survived walk-forward validation (beat naive
+    base-rate Brier in 4/5 folds spanning ~2 years). No auth required -
+    public market data + a stateless calculation, same class as
+    /api/ou-zone-history.
+
+    Query params: ticker, timeframe (default 1h), direction (long/short),
+    entry, stop, target (prices), horizon_hours (float - how many HOURS
+    you intend to hold; NOT auto-derived, see target_probability.py docstring).
+    """
+    import target_probability as tp
+
+    ticker = request.args.get('ticker', 'SPY')
+    timeframe = request.args.get('timeframe', '1h').strip().lower()
+    direction = request.args.get('direction', 'long').strip().lower()
+    try:
+        entry = float(request.args['entry'])
+        stop = float(request.args['stop'])
+        target = float(request.args['target'])
+        horizon_hours = float(request.args.get('horizon_hours', 40))
+    except (KeyError, ValueError):
+        return jsonify({'success': False, 'error': 'entry, stop, target required (floats); horizon_hours optional (float)'}), 400
+
+    is_futures = '=' in ticker
+    period_map = {'1h': '40d', '4h': '120d', '1d': '2y'}  # need >=150 bars for the OU fit's lookback
+    period = period_map.get(timeframe, '40d')
+
+    try:
+        hist = fetch_historical_data_with_resampling(ticker=ticker, timeframe=timeframe, period=period, is_futures=is_futures)
+        if hist is None or len(hist) < 150:
+            return jsonify({'success': False, 'error': f'not enough bars for {ticker} at {timeframe} ({0 if hist is None else len(hist)} < 150)'}), 400
+
+        include_paths = request.args.get('include_sample_paths', '').lower() in ('1', 'true', 'yes')
+        result = tp.predict_target_probability(
+            highs=hist['High'].values, lows=hist['Low'].values, closes=hist['Close'].values,
+            volumes=hist['Volume'].values, timestamps=hist.index.values,
+            entry_price=entry, stop_price=stop, target_price=target,
+            horizon_hours=horizon_hours, timeframe=timeframe, include_sample_paths=include_paths)
+
+        if result['error']:
+            return jsonify({'success': False, 'error': result['error']}), 400
+        return jsonify({'success': True, 'ticker': ticker, 'timeframe': timeframe, 'direction': direction,
+                         'entry': entry, 'stop': stop, 'target': target, 'horizon_hours': horizon_hours, **result})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/api/ou-zone-history', methods=['GET'])

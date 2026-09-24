@@ -176,6 +176,107 @@
             border-radius: 1px;
         }
 
+        .tp-explainer {
+            font-size: 0.82rem;
+            line-height: 1.6;
+            color: rgba(232, 230, 227, 0.65);
+            margin-bottom: 32px;
+            padding: 18px 20px;
+            background: rgba(201, 162, 39, 0.02);
+            border-left: 2px solid rgba(201, 162, 39, 0.25);
+        }
+        .tp-explainer p { margin-bottom: 10px; }
+        .tp-explainer p:last-child { margin-bottom: 0; }
+        .tp-explainer strong { color: rgba(201, 162, 39, 0.85); font-weight: 500; }
+
+        .tp-result {
+            margin-top: 32px;
+        }
+        .tp-prob-row {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+        .tp-prob-stat .tp-prob-value {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 2.8rem;
+            font-weight: 500;
+            color: #c9a227;
+            line-height: 1;
+        }
+        .tp-prob-stat .tp-prob-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(232, 230, 227, 0.4);
+            margin-top: 8px;
+        }
+        .tp-canvas-wrap {
+            position: relative;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(201, 162, 39, 0.12);
+            border-radius: 2px;
+            padding: 16px;
+        }
+        #tpCanvas { width: 100%; display: block; }
+        .tp-tally {
+            display: flex;
+            gap: 28px;
+            margin-top: 16px;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+        .tp-tally span.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+        .tp-tally .target-dot { background: #22c55e; }
+        .tp-tally .stop-dot { background: #ef4444; }
+        .tp-tally .running-dot { background: rgba(232, 230, 227, 0.3); }
+
+        .tp-signal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 22px;
+            border: 1px solid rgba(201, 162, 39, 0.4);
+            border-radius: 2px;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #c9a227;
+            margin-bottom: 24px;
+        }
+        .tp-signal-badge .validated-tag {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.62rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 1px;
+        }
+        .tp-signal-badge .validated-tag.yes { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+        .tp-signal-badge .validated-tag.no { background: rgba(232, 230, 227, 0.08); color: rgba(232, 230, 227, 0.4); }
+
+        .tp-stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+            margin-bottom: 28px;
+        }
+        .tp-stats-table th, .tp-stats-table td {
+            text-align: left;
+            padding: 8px 14px;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.1);
+        }
+        .tp-stats-table th {
+            color: rgba(201, 162, 39, 0.6);
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+        }
+        .tp-stats-table td { color: rgba(232, 230, 227, 0.75); }
+        .tp-stats-note { font-size: 0.72rem; color: rgba(232, 230, 227, 0.4); margin-bottom: 28px; }
+
         /* Form Controls */
         .controls {
             display: grid;
@@ -295,274 +396,6 @@
             margin: 0 auto 48px;
         }
 
-        /* Backtest Styles */
-        .bt-controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .bt-control {
-            background: rgba(201, 162, 39, 0.04);
-            border-radius: 4px;
-            padding: 10px 12px;
-        }
-
-        .bt-control-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .bt-control-label {
-            font-size: 0.65rem;
-            color: rgba(255, 255, 255, 0.4);
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
-
-        .bt-control-value {
-            font-size: 0.7rem;
-            font-weight: 500;
-            color: #e8e6e3;
-        }
-
-        .bt-slider {
-            width: 100%;
-            -webkit-appearance: none;
-            appearance: none;
-            height: 4px;
-            border-radius: 2px;
-            background: rgba(201, 162, 39, 0.12);
-            outline: none;
-        }
-
-        .bt-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #ffffff;
-            cursor: pointer;
-        }
-
-        .bt-level-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-
-        .bt-level-card {
-            background: rgba(201, 162, 39, 0.03);
-            border: 1px solid rgba(201, 162, 39, 0.12);
-            border-radius: 4px;
-            padding: 10px 12px;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .bt-level-card:hover {
-            border-color: rgba(201, 162, 39, 0.3);
-        }
-
-        .bt-level-card.selected {
-            background: rgba(201, 162, 39, 0.05);
-        }
-
-        .bt-level-price {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #ffffff;
-        }
-
-        .bt-level-score {
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .bt-level-meta {
-            font-size: 0.65rem;
-            color: rgba(255, 255, 255, 0.4);
-            margin: 4px 0;
-        }
-
-        .bt-score-bar {
-            height: 3px;
-            background: rgba(201, 162, 39, 0.08);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .bt-score-fill {
-            height: 100%;
-            border-radius: 2px;
-            transition: width 0.3s;
-        }
-
-        .bt-detail {
-            border: 1px solid rgba(201, 162, 39, 0.15);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .bt-detail-header {
-            padding: 14px 18px;
-            border-bottom: 1px solid rgba(201, 162, 39, 0.12);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .bt-detail-price {
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: #ffffff;
-        }
-
-        .bt-badge {
-            font-size: 0.55rem;
-            font-weight: 500;
-            letter-spacing: 0.05em;
-            padding: 2px 6px;
-            border-radius: 3px;
-            text-transform: uppercase;
-        }
-
-        .bt-detail-meta {
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.4);
-            margin-left: auto;
-        }
-
-        .bt-detail-body {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
-        }
-
-        .bt-detail-left {
-            padding: 18px;
-            border-right: 1px solid rgba(201, 162, 39, 0.12);
-        }
-
-        .bt-detail-right {
-            padding: 18px;
-        }
-
-        .bt-section-label {
-            font-size: 0.6rem;
-            color: rgba(255, 255, 255, 0.35);
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .bt-stat-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            padding: 5px 0;
-            border-bottom: 1px solid rgba(201, 162, 39, 0.08);
-        }
-
-        .bt-stat-label {
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .bt-stat-value {
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .bt-stat-sub {
-            font-size: 0.6rem;
-            color: rgba(255, 255, 255, 0.25);
-            margin-left: 4px;
-        }
-
-        .bt-gauges {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-
-        .bt-gauge-label {
-            font-size: 0.6rem;
-            color: rgba(255, 255, 255, 0.4);
-            text-align: center;
-            max-width: 70px;
-        }
-
-        .bt-regime-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 6px;
-        }
-
-        .bt-regime-label {
-            width: 52px;
-            font-size: 0.65rem;
-            color: rgba(255, 255, 255, 0.4);
-            text-align: right;
-        }
-
-        .bt-regime-bar {
-            flex: 1;
-            height: 8px;
-            background: rgba(201, 162, 39, 0.08);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .bt-regime-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.6s ease;
-        }
-
-        .bt-regime-pct {
-            width: 36px;
-            font-size: 0.65rem;
-            color: #e8e6e3;
-            text-align: right;
-        }
-
-        .bt-regime-count {
-            width: 28px;
-            font-size: 0.65rem;
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .bt-interp {
-            font-size: 0.7rem;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .bt-footer {
-            margin-top: 12px;
-            font-size: 0.65rem;
-            color: rgba(255, 255, 255, 0.2);
-            text-align: right;
-        }
-
-        @media (max-width: 768px) {
-            .bt-detail-body {
-                grid-template-columns: 1fr;
-            }
-            .bt-detail-left {
-                border-right: none;
-                border-bottom: 1px solid rgba(201, 162, 39, 0.12);
-            }
-        }
-
-        /* Responsive */
         @media (max-width: 1024px) {
             .hero-content {
                 grid-template-columns: 1fr;
@@ -913,195 +746,6 @@
             cursor: not-allowed;
         }
 
-        /* MotiveWave CSV Import Section */
-        .mw-section {
-            padding: 80px 48px;
-            background: rgba(201, 162, 39, 0.02);
-            border-top: 1px solid rgba(201, 162, 39, 0.1);
-        }
-        .mw-container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-        .mw-header {
-            margin-bottom: 48px;
-        }
-        .mw-title {
-            font-family: 'Cormorant Garamond', Georgia, serif;
-            font-size: 2.2rem;
-            font-weight: 300;
-            color: #fff;
-            margin-bottom: 12px;
-            letter-spacing: 0.02em;
-        }
-        .mw-subtitle {
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: rgba(201, 162, 39, 0.5);
-            font-weight: 400;
-        }
-        .mw-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            align-items: start;
-        }
-        .mw-card {
-            background: rgba(201, 162, 39, 0.03);
-            border: 1px solid rgba(201, 162, 39, 0.15);
-            border-radius: 2px;
-            padding: 40px;
-        }
-        .mw-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 28px;
-        }
-        .mw-card-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.3rem;
-            color: #fff;
-            font-weight: 400;
-            margin-bottom: 28px;
-        }
-        .mw-card-header .mw-card-title {
-            margin-bottom: 0;
-        }
-        .mw-refresh-btn {
-            background: none;
-            border: 1px solid rgba(201, 162, 39, 0.25);
-            color: rgba(201, 162, 39, 0.6);
-            padding: 6px 14px;
-            font-size: 0.6rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
-            border-radius: 1px;
-        }
-        .mw-refresh-btn:hover {
-            color: #c9a227;
-            border-color: rgba(201, 162, 39, 0.5);
-            background: rgba(201, 162, 39, 0.04);
-        }
-        .mw-file-input {
-            cursor: pointer;
-        }
-        .mw-file-input::file-selector-button {
-            background: rgba(201, 162, 39, 0.08);
-            border: 1px solid rgba(201, 162, 39, 0.2);
-            color: #c9a227;
-            padding: 8px 14px;
-            font-size: 0.7rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-right: 12px;
-            font-family: 'Inter', sans-serif;
-            border-radius: 1px;
-            transition: all 0.3s ease;
-        }
-        .mw-file-input::file-selector-button:hover {
-            background: rgba(201, 162, 39, 0.15);
-            border-color: rgba(201, 162, 39, 0.4);
-        }
-        .mw-hint {
-            font-size: 0.65rem;
-            color: rgba(255, 255, 255, 0.25);
-            margin-top: 10px;
-            letter-spacing: 0.04em;
-            line-height: 1.5;
-        }
-        .mw-status {
-            margin-top: 16px;
-            font-size: 0.78rem;
-            min-height: 24px;
-            letter-spacing: 0.02em;
-            line-height: 1.5;
-        }
-        .mw-status.success { color: #6fcf97; }
-        .mw-status.error { color: #eb5757; }
-        .mw-status.loading { color: rgba(255, 255, 255, 0.4); }
-        .mw-datasets-list {
-            font-size: 0.85rem;
-            min-height: 80px;
-        }
-        .mw-empty {
-            color: rgba(255, 255, 255, 0.25);
-            font-style: italic;
-            font-size: 0.8rem;
-        }
-        .mw-dataset-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 0;
-            border-bottom: 1px solid rgba(201, 162, 39, 0.08);
-        }
-        .mw-dataset-row:last-child {
-            border-bottom: none;
-        }
-        .mw-dataset-info {
-            flex: 1;
-        }
-        .mw-dataset-ticker {
-            color: #c9a227;
-            font-size: 0.9rem;
-            font-weight: 500;
-            letter-spacing: 0.04em;
-        }
-        .mw-dataset-tf {
-            color: rgba(201, 162, 39, 0.5);
-            font-size: 0.72rem;
-            margin-left: 6px;
-            text-transform: uppercase;
-        }
-        .mw-dataset-meta {
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 0.68rem;
-            margin-top: 4px;
-            letter-spacing: 0.02em;
-        }
-        .mw-delete-btn {
-            background: none;
-            border: 1px solid rgba(235, 87, 87, 0.25);
-            color: rgba(235, 87, 87, 0.6);
-            padding: 5px 12px;
-            font-size: 0.6rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
-            border-radius: 1px;
-        }
-        .mw-delete-btn:hover {
-            color: #eb5757;
-            border-color: rgba(235, 87, 87, 0.5);
-            background: rgba(235, 87, 87, 0.05);
-        }
-        .mw-footer-note {
-            margin-top: 28px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(201, 162, 39, 0.1);
-            font-size: 0.68rem;
-            letter-spacing: 0.04em;
-            color: rgba(255, 255, 255, 0.25);
-            line-height: 1.8;
-        }
-        .mw-footer-note strong {
-            color: rgba(201, 162, 39, 0.5);
-            font-weight: 500;
-        }
-        @media (max-width: 900px) {
-            .mw-grid { grid-template-columns: 1fr; }
-            .mw-section { padding: 60px 24px; }
-            .mw-card { padding: 28px; }
-            .mw-title { font-size: 1.8rem; }
-        }
     </style>
 </head>
 <body>
@@ -1128,7 +772,7 @@
         <div class="nav-brand">L'argent parle.</div>
         <ul class="nav-links">
             <li><a href="#" class="active" data-tab="forecast">Forecast</a></li>
-            <li><a href="#" data-tab="backtest">Backtest</a></li>
+            <li><a href="#" data-tab="targetprob">Target Prob</a></li>
             <li><a href="#" data-tab="analysis">Analysis</a></li>
             <li><a href="#" data-tab="levels">Levels</a></li>
             <li><a href="#" data-tab="models">Models</a></li>
@@ -1176,130 +820,66 @@
                 <div id="forecastContainer"></div>
             </div>
 
-            <!-- Backtest Panel -->
-            <div class="forecast-panel backtest-panel" id="backtestPanel" style="display: none;">
+            <!-- Target Probability Panel -->
+            <div class="forecast-panel backtest-panel" id="targetProbPanel" style="display: none;">
                 <div class="panel-header">
-                    <div class="panel-title">Level Detection Backtest</div>
-                    <div class="panel-badge">yfinance</div>
+                    <div class="panel-title">Target Probability</div>
+                    <div class="panel-badge">Price-only · Monte Carlo</div>
+                </div>
+
+                <div class="tp-explainer">
+                    <p><strong>What this is:</strong> simulates thousands of possible price paths from your entry
+                    and checks whether price reaches your target before your stop.</p>
+                    <p><strong>High vs Low:</strong> High means the simulation thinks price has the momentum to
+                    reach the target. Low means it doesn't. Counterintuitively, on 4h charts a <em>Low</em> reading
+                    on a candidate level has meant that level is more likely to hold (act as real support/resistance)
+                    rather than break — so Low is often the more useful reading for a reversion trade, not High.</p>
+                    <p><strong>What to look for:</strong> trust <strong>NVDA, TSLA, META</strong>. Stats for your
+                    selected ticker/timeframe show below once you run a simulation.</p>
                 </div>
 
                 <div class="controls">
                     <div class="control-group">
-                        <label for="bt-ticker">Ticker</label>
-                        <input type="text" id="bt-ticker" value="SPY" placeholder="SPY, NQ=F, etc.">
+                        <label for="tp-ticker">Ticker</label>
+                        <input type="text" id="tp-ticker" value="NVDA" placeholder="NVDA, TSLA, META...">
                     </div>
                     <div class="control-group">
-                        <label for="bt-interval">Timeframe</label>
-                        <select id="bt-interval">
-                            <option value="5m">5 Min</option>
-                            <option value="15m">15 Min</option>
+                        <label for="tp-timeframe">Timeframe</label>
+                        <select id="tp-timeframe">
                             <option value="1h">1 Hour</option>
-                            <option value="4h">4 Hours</option>
-                            <option value="1d" selected>Daily</option>
-                            <option value="1wk">Weekly</option>
+                            <option value="4h" selected>4 Hours</option>
+                            <option value="1d">Daily</option>
                         </select>
                     </div>
                     <div class="control-group">
-                        <label for="bt-period">Period</label>
-                        <select id="bt-period">
-                            <option value="1mo">1 Month</option>
-                            <option value="3mo">3 Months</option>
-                            <option value="6mo">6 Months</option>
-                            <option value="1y" selected>1 Year</option>
-                            <option value="2y">2 Years</option>
-                            <option value="5y">5 Years</option>
+                        <label for="tp-direction">Direction</label>
+                        <select id="tp-direction">
+                            <option value="long">Long</option>
+                            <option value="short">Short</option>
                         </select>
                     </div>
                     <div class="control-group">
-                        <label for="bt-method">Detection Method</label>
-                        <select id="bt-method">
-                            <option value="hdbscan">HDBSCAN</option>
-                            <option value="optics">OPTICS</option>
-                            <option value="kde">KDE</option>
-                            <option value="multiscale">Multiscale HDBSCAN</option>
-                            <option value="neural_network">Neural Network</option>
-                            <option value="wyckoff">Wyckoff</option>
-                            <option value="ml_confluence">ML Confluence</option>
-                            <option value="interaction">Interaction</option>
-                            <option value="pivot">Pivots</option>
-                            <option value="gap">Gaps</option>
-                        </select>
+                        <label for="tp-entry">Entry</label>
+                        <input type="number" id="tp-entry" step="any" placeholder="auto: last price">
                     </div>
                     <div class="control-group">
-                        <label for="bt-sl">Stop Loss (%)</label>
-                        <input type="number" id="bt-sl" value="1" min="0.1" max="20" step="0.1" placeholder="1.0">
+                        <label for="tp-stop">Stop</label>
+                        <input type="number" id="tp-stop" step="any" placeholder="required">
                     </div>
                     <div class="control-group">
-                        <label for="bt-tp">Take Profit (%)</label>
-                        <input type="number" id="bt-tp" value="2" min="0.1" max="20" step="0.1" placeholder="2.0">
+                        <label for="tp-target">Target</label>
+                        <input type="number" id="tp-target" step="any" placeholder="required">
+                    </div>
+                    <div class="control-group">
+                        <label for="tp-horizon">Horizon (hours)</label>
+                        <input type="number" id="tp-horizon" value="160" step="1">
                     </div>
                     <div class="control-group full-width">
-                        <button class="btn" id="runBacktest">Run Backtest</button>
+                        <button class="btn" id="runTargetProb">Run Simulation</button>
                     </div>
                 </div>
 
-                <div id="backtestContainer"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- MotiveWave CSV Import Section -->
-    <section class="mw-section" id="mwSection">
-        <div class="mw-container">
-            <div class="mw-header">
-                <div class="mw-title">MotiveWave Import</div>
-                <div class="mw-subtitle">Upload CSV exports — data persists across sessions and is shared with all users</div>
-                <div class="divider" style="margin-top: 24px;"></div>
-            </div>
-
-            <div class="mw-grid">
-                <!-- Upload Form -->
-                <div class="mw-card">
-                    <div class="mw-card-title">Upload Data</div>
-
-                    <div class="control-group" style="margin-bottom: 20px;">
-                        <label for="mw-ticker">Ticker</label>
-                        <input type="text" id="mw-ticker" placeholder="NQ=F" value="NQ=F">
-                    </div>
-
-                    <div class="control-group" style="margin-bottom: 20px;">
-                        <label for="mw-timeframe">Timeframe</label>
-                        <select id="mw-timeframe">
-                            <option value="1h">1 Hour</option>
-                            <option value="4h">4 Hours</option>
-                            <option value="1d">1 Day</option>
-                            <option value="15m">15 Minutes</option>
-                            <option value="5m">5 Minutes</option>
-                            <option value="1m">1 Minute</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group" style="margin-bottom: 24px;">
-                        <label for="mw-file">CSV File</label>
-                        <input type="file" id="mw-file" accept=".csv" class="mw-file-input">
-                        <div class="mw-hint">MotiveWave Export: File → Export → CSV Data. Needs Date, Open, High, Low, Close columns.</div>
-                    </div>
-
-                    <button class="btn" id="mw-upload-btn">Import CSV</button>
-
-                    <div id="mw-upload-status" class="mw-status"></div>
-                </div>
-
-                <!-- Active Datasets -->
-                <div class="mw-card">
-                    <div class="mw-card-header">
-                        <div class="mw-card-title">Active Datasets</div>
-                        <button class="mw-refresh-btn" id="mw-refresh-btn">Refresh</button>
-                    </div>
-                    <div id="mw-datasets" class="mw-datasets-list">
-                        <div class="mw-empty">Loading...</div>
-                    </div>
-                    <div class="mw-footer-note">
-                        Uploaded CSV data is stored in the database and persists across server restarts.<br>
-                        All users can see and use uploaded datasets.<br>
-                        <strong>Tip:</strong> Upload 1h data — 4h is auto-resampled from it.
-                    </div>
-                </div>
+                <div id="targetProbContainer"></div>
             </div>
         </div>
     </section>
@@ -2510,109 +2090,6 @@
             }
         }
 
-        // ===== MotiveWave CSV Upload =====
-        async function uploadMotiveWave() {
-            const ticker = document.getElementById('mw-ticker').value.trim();
-            const timeframe = document.getElementById('mw-timeframe').value;
-            const file = document.getElementById('mw-file').files[0];
-            const status = document.getElementById('mw-upload-status');
-            const btn = document.getElementById('mw-upload-btn');
-
-            if (!ticker || !file) {
-                status.className = 'mw-status error';
-                status.textContent = 'Please enter a ticker and select a CSV file.';
-                return;
-            }
-
-            const form = new FormData();
-            form.append('ticker', ticker);
-            form.append('timeframe', timeframe);
-            form.append('file', file);
-
-            btn.disabled = true;
-            btn.textContent = 'Uploading...';
-            status.className = 'mw-status loading';
-            status.textContent = 'Parsing CSV...';
-
-            try {
-                const resp = await fetch(`${API_BASE}/api/motivewave/upload`, {
-                    method: 'POST',
-                    credentials: 'include',
-                    body: form
-                });
-                const data = await resp.json();
-                if (data.success) {
-                    status.className = 'mw-status success';
-                    status.innerHTML = `✓ ${data.bars} bars imported (${data.start} → ${data.end})`;
-                    document.getElementById('mw-file').value = '';
-                    loadMwStatus();
-                } else {
-                    status.className = 'mw-status error';
-                    status.textContent = `Error: ${data.error || 'Upload failed'}`;
-                }
-            } catch (e) {
-                status.className = 'mw-status error';
-                status.textContent = `Upload failed: ${e.message}`;
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Import CSV';
-            }
-        }
-
-        async function loadMwStatus() {
-            const container = document.getElementById('mw-datasets');
-            if (!container) return;
-            try {
-                const resp = await fetch(`${API_BASE}/api/motivewave/status`, { credentials: 'include' });
-                const data = await resp.json();
-                if (!data.success || !data.datasets || data.datasets.length === 0) {
-                    container.innerHTML = '<div class="mw-empty">No datasets uploaded yet. Upload a MotiveWave CSV above.</div>';
-                    return;
-                }
-                container.innerHTML = data.datasets.map(d => `
-                    <div class="mw-dataset-row">
-                        <div class="mw-dataset-info">
-                            <div>
-                                <span class="mw-dataset-ticker">${d.ticker}</span>
-                                <span class="mw-dataset-tf">${(d.timeframe || '').toUpperCase()}</span>
-                            </div>
-                            <div class="mw-dataset-meta">${d.bars} bars &nbsp;·&nbsp; ${d.start || '?'} → ${d.end || '?'}</div>
-                        </div>
-                        <button class="mw-delete-btn" data-key="${d.key}">Remove</button>
-                    </div>
-                `).join('');
-                // Attach delete handlers
-                container.querySelectorAll('.mw-delete-btn').forEach(b => {
-                    b.addEventListener('click', () => deleteMwDataset(b.dataset.key));
-                });
-            } catch (e) {
-                container.innerHTML = '<div class="mw-empty" style="color:rgba(235,87,87,0.6);">Could not load status — backend may be waking up.</div>';
-            }
-        }
-
-        async function deleteMwDataset(key) {
-            if (!confirm(`Remove dataset "${key}"?`)) return;
-            try {
-                const resp = await fetch(`${API_BASE}/api/motivewave/delete`, {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ key })
-                });
-                const data = await resp.json();
-                if (data.success) loadMwStatus();
-            } catch (e) {
-                console.warn('Delete failed:', e);
-            }
-        }
-
-        // Wire up MotiveWave buttons
-        document.getElementById('mw-upload-btn').addEventListener('click', uploadMotiveWave);
-        document.getElementById('mw-refresh-btn').addEventListener('click', loadMwStatus);
-
-        // Load datasets on page load (after a short delay to let the backend wake up)
-        setTimeout(loadMwStatus, 800);
-
         // ===== NHP Independent Fetch =====
         let nhpTimeframe = '1d';
         let currentTicker = 'SPY';
@@ -2710,7 +2187,7 @@
         // ===== Tab Switching =====
         const navLinks = document.querySelectorAll('.nav-links a[data-tab]');
         const forecastPanel = document.querySelector('.forecast-panel:not(.backtest-panel)');
-        const backtestPanel = document.getElementById('backtestPanel');
+        const targetProbPanel = document.getElementById('targetProbPanel');
 
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -2718,304 +2195,228 @@
                 navLinks.forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
                 const tab = link.dataset.tab;
-                if (tab === 'backtest') {
-                    forecastPanel.style.display = 'none';
-                    backtestPanel.style.display = 'block';
-                } else {
-                    forecastPanel.style.display = 'block';
-                    backtestPanel.style.display = 'none';
+                forecastPanel.style.display = tab === 'forecast' ? 'block' : 'none';
+                targetProbPanel.style.display = tab === 'targetprob' ? 'block' : 'none';
+                if (tab !== 'forecast' && tab !== 'targetprob') {
+                    forecastPanel.style.display = 'block'; // analysis/levels/models are placeholders for now
                 }
             });
         });
 
-        // ===== Backtest Engine =====
-        const BT_COLORS = {
-            green: '#22c55e', red: '#ef4444', amber: '#f59e0b',
-            blue: '#3b82f6', purple: '#8b5cf6', teal: '#14b8a6'
+        // ===== Target Probability stats (from backtest_filtered_levels_v1_confluence.py, 2026-09-23) =====
+        // median: this ticker/timeframe's own median calibrated_probability from the backtest -
+        // the threshold a new result is compared against to call it High or Low.
+        // baseline/high/low: bounce accuracy (does the level hold) - overall / V1-high split / V1-low split.
+        // validated: true only for NVDA/TSLA/META with a real, walk-forward-checked effect.
+        const V1_STATS = {
+            '4h': {
+                NVDA: { median: 0.0652, baseline: 0.5201, high: 0.4515, low: 0.6494, n: 1390, validated: true },
+                META: { median: 0.0652, baseline: 0.4484, high: 0.4143, low: 0.5428, n: 1804, validated: true },
+                TSLA: { median: 0.0652, baseline: 0.5435, high: 0.5054, low: 0.6250, n: 955, validated: true },
+                MSFT: { median: 0.1125, baseline: 0.4672, high: 0.4432, low: 0.4949, n: 1888, validated: false },
+                AAPL: { median: 0.1125, baseline: 0.4470, high: 0.4527, low: 0.4410, n: 2027, validated: false },
+                AMD: { median: 0.0652, baseline: 0.4076, high: 0.4516, low: 0.3351, n: 979, validated: false },
+            },
+            '1d': {
+                META: { median: 0.0234, baseline: 0.5918, high: 0.5082, low: 0.6758, n: 365, validated: true },
+                MSFT: { median: 0.0417, baseline: 0.6530, high: 0.5551, low: 0.7597, n: 487, validated: false },
+                AAPL: { median: 0.0051, baseline: 0.4221, high: 0.4387, low: 0.3981, n: 263, validated: false },
+                // NVDA/TSLA/AMD daily: too few touched candidates in the backtest to split - omitted rather than shown
+            },
+            '1h': {
+                // full 6-ticker 1h sweep not run yet - no numbers to show without overclaiming
+            },
         };
 
-        function simulateTrades(data, levels, splitIdx, slPct, tpPct) {
-            const trades = [];
-            const tolerance = 0.003; // 0.3% zone around level
-
-            for (const level of levels) {
-                const price = level.price;
-                const slDist = price * (slPct / 100);
-                const tpDist = price * (tpPct / 100);
-                let cooldown = 0;
-
-                for (let i = splitIdx; i < data.length; i++) {
-                    if (cooldown > 0) { cooldown--; continue; }
-                    const bar = data[i];
-
-                    // Price touches the level (low reaches within tolerance)
-                    if (bar.low <= price * (1 + tolerance) && bar.low >= price * (1 - tolerance * 3)) {
-                        const entryPrice = price;
-                        const slPrice = entryPrice - slDist;
-                        const tpPrice = entryPrice + tpDist;
-                        let result = null;
-                        let exitIdx = i;
-                        let exitPrice = entryPrice;
-
-                        for (let j = i + 1; j < data.length; j++) {
-                            if (data[j].low <= slPrice) {
-                                result = 'loss';
-                                exitIdx = j;
-                                exitPrice = slPrice;
-                                break;
-                            }
-                            if (data[j].high >= tpPrice) {
-                                result = 'win';
-                                exitIdx = j;
-                                exitPrice = tpPrice;
-                                break;
-                            }
-                        }
-
-                        if (result) {
-                            trades.push({
-                                level: price,
-                                entryIdx: i,
-                                entryDate: bar.date,
-                                exitIdx,
-                                exitDate: data[exitIdx].date,
-                                entryPrice,
-                                exitPrice,
-                                result,
-                                pnlPct: ((exitPrice - entryPrice) / entryPrice * 100),
-                                barsHeld: exitIdx - i
-                            });
-                        }
-                        cooldown = 3; // skip next 3 bars to avoid repeat entries
-                    }
-                }
-            }
-            return trades;
+        function tpStatsFor(ticker, timeframe) {
+            return (V1_STATS[timeframe] || {})[ticker] || null;
         }
 
-        function renderBacktestResults(data, levels, trades, splitIdx, method, slPct, tpPct) {
-            const container = document.getElementById('backtestContainer');
-            const interval = document.getElementById('bt-interval').value;
-            const tfLabels = {'5m':'5min','15m':'15min','1h':'1H','4h':'4H','1d':'Daily','1wk':'Weekly'};
-            const tfLabel = tfLabels[interval] || interval;
-            const methodLabels = {
-                hdbscan:'HDBSCAN', optics:'OPTICS', kde:'KDE', multiscale:'Multiscale HDBSCAN',
-                neural_network:'Neural Network', wyckoff:'Wyckoff', ml_confluence:'ML Confluence',
-                interaction:'Interaction', pivot:'Pivots', gap:'Gaps'
-            };
+        // ===== Target Probability: Monte Carlo race + animation =====
+        document.getElementById('runTargetProb').addEventListener('click', async () => {
+            const tpBtn = document.getElementById('runTargetProb');
+            const tpContainer = document.getElementById('targetProbContainer');
+            const ticker = document.getElementById('tp-ticker').value.trim().toUpperCase();
+            const timeframe = document.getElementById('tp-timeframe').value;
+            const direction = document.getElementById('tp-direction').value;
+            const stop = parseFloat(document.getElementById('tp-stop').value);
+            const target = parseFloat(document.getElementById('tp-target').value);
+            const horizonHours = parseFloat(document.getElementById('tp-horizon').value) || 160;
+            const entryInput = document.getElementById('tp-entry').value;
 
-            const wins = trades.filter(t => t.result === 'win');
-            const losses = trades.filter(t => t.result === 'loss');
-            const winRate = trades.length > 0 ? wins.length / trades.length : 0;
-            const avgWin = wins.length > 0 ? wins.reduce((s, t) => s + t.pnlPct, 0) / wins.length : 0;
-            const avgLoss = losses.length > 0 ? losses.reduce((s, t) => s + t.pnlPct, 0) / losses.length : 0;
-            const totalPnl = trades.reduce((s, t) => s + t.pnlPct, 0);
-            const expectancy = trades.length > 0 ? totalPnl / trades.length : 0;
-            const avgBars = trades.length > 0 ? trades.reduce((s, t) => s + t.barsHeld, 0) / trades.length : 0;
-            const profitFactor = Math.abs(avgLoss) > 0 ? (wins.length * avgWin) / (losses.length * Math.abs(avgLoss)) : wins.length > 0 ? Infinity : 0;
-
-            // Per-level breakdown
-            const byLevel = {};
-            for (const lv of levels) {
-                byLevel[lv.price] = { price: lv.price, type: lv.type, trades: [], wins: 0, losses: 0 };
-            }
-            for (const t of trades) {
-                if (byLevel[t.level]) {
-                    byLevel[t.level].trades.push(t);
-                    if (t.result === 'win') byLevel[t.level].wins++;
-                    else byLevel[t.level].losses++;
-                }
+            if (!stop || !target) {
+                tpContainer.innerHTML = `<div class="lstm-forecast-error"><h3>Error</h3><p>Stop and target are required.</p></div>`;
+                return;
             }
 
-            let html = `
-                <div class="bt-controls">
-                    <div class="bt-control">
-                        <div class="bt-control-header">
-                            <span class="bt-control-label">Method</span>
-                            <span class="bt-control-value">${methodLabels[method] || method}</span>
-                        </div>
-                    </div>
-                    <div class="bt-control">
-                        <div class="bt-control-header">
-                            <span class="bt-control-label">Levels found</span>
-                            <span class="bt-control-value">${levels.length}</span>
-                        </div>
-                    </div>
-                    <div class="bt-control">
-                        <div class="bt-control-header">
-                            <span class="bt-control-label">SL / TP</span>
-                            <span class="bt-control-value">${slPct}% / ${tpPct}%</span>
-                        </div>
-                    </div>
-                    <div class="bt-control">
-                        <div class="bt-control-header">
-                            <span class="bt-control-label">Train / Test</span>
-                            <span class="bt-control-value">${splitIdx} / ${data.length - splitIdx} bars</span>
-                        </div>
-                    </div>
-                </div>`;
-
-            // Aggregate stats
-            const wrColor = winRate >= 0.55 ? BT_COLORS.green : winRate >= 0.4 ? BT_COLORS.amber : BT_COLORS.red;
-            const pfColor = profitFactor >= 1.5 ? BT_COLORS.green : profitFactor >= 1 ? BT_COLORS.amber : BT_COLORS.red;
-            const expColor = expectancy > 0 ? BT_COLORS.green : BT_COLORS.red;
-
-            html += `
-                <div class="bt-detail">
-                    <div class="bt-detail-header">
-                        <span class="bt-detail-price">${methodLabels[method] || method}</span>
-                        <span class="bt-badge" style="border:1px solid ${wrColor};color:${wrColor}">${(winRate * 100).toFixed(1)}% WIN RATE</span>
-                        <span class="bt-badge" style="border:1px solid ${BT_COLORS.blue};color:${BT_COLORS.blue}">${trades.length} TRADES</span>
-                        <span class="bt-detail-meta">out-of-sample on ${data.length - splitIdx} bars &middot; ${tfLabel}</span>
-                    </div>
-                    <div class="bt-detail-body">
-                        <div class="bt-detail-left">
-                            <div class="bt-section-label">TRADE RESULTS</div>
-                            <div class="bt-stat-row">
-                                <span class="bt-stat-label">Total trades</span>
-                                <span class="bt-stat-value">${trades.length}</span>
-                            </div>
-                            <div class="bt-stat-row">
-                                <span class="bt-stat-label">Wins</span>
-                                <span class="bt-stat-value" style="color:${BT_COLORS.green}">${wins.length}</span>
-                            </div>
-                            <div class="bt-stat-row">
-                                <span class="bt-stat-label">Losses</span>
-                                <span class="bt-stat-value" style="color:${BT_COLORS.red}">${losses.length}</span>
-                            </div>
-                            <div class="bt-stat-row">
-                                <span class="bt-stat-label">Win rate</span>
-                                <span class="bt-stat-value" style="color:${wrColor}">${(winRate * 100).toFixed(1)}%</span>
-                            </div>
-                            <div class="bt-stat-row">
-                                <span class="bt-stat-label">Avg win</span>
-                                <span class="bt-stat-value" style="color:${BT_COLORS.green}">+${avgWin.toFixed(2)}%</span>
-                            </div>
-                            <div class="bt-stat-row">
-                                <span class="bt-stat-label">Avg loss</span>
-                                <span class="bt-stat-value" style="color:${BT_COLORS.red}">${avgLoss.toFixed(2)}%</span>
-                            </div>
-                            <div class="bt-stat-row">
-                                <span class="bt-stat-label">Expectancy</span>
-                                <span class="bt-stat-value" style="color:${expColor}">${expectancy >= 0 ? '+' : ''}${expectancy.toFixed(2)}%<span class="bt-stat-sub">per trade</span></span>
-                            </div>
-                            <div class="bt-stat-row">
-                                <span class="bt-stat-label">Profit factor</span>
-                                <span class="bt-stat-value" style="color:${pfColor}">${profitFactor === Infinity ? '∞' : profitFactor.toFixed(2)}</span>
-                            </div>
-                            <div class="bt-stat-row">
-                                <span class="bt-stat-label">Total P&L</span>
-                                <span class="bt-stat-value" style="color:${totalPnl >= 0 ? BT_COLORS.green : BT_COLORS.red}">${totalPnl >= 0 ? '+' : ''}${totalPnl.toFixed(2)}%</span>
-                            </div>
-                            <div class="bt-stat-row">
-                                <span class="bt-stat-label">Avg bars held</span>
-                                <span class="bt-stat-value">${avgBars.toFixed(1)}</span>
-                            </div>
-                        </div>
-                        <div class="bt-detail-right">
-                            <div class="bt-section-label">PER-LEVEL BREAKDOWN</div>
-                            ${Object.values(byLevel).map(lv => {
-                                const lvTotal = lv.trades.length;
-                                const lvWr = lvTotal > 0 ? lv.wins / lvTotal : 0;
-                                const lvColor = lvWr >= 0.55 ? BT_COLORS.green : lvWr >= 0.4 ? BT_COLORS.amber : BT_COLORS.red;
-                                return `
-                                    <div style="margin-bottom:8px;padding:8px;background:rgba(255,255,255,0.02);border-radius:3px">
-                                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-                                            <span style="font-weight:500;font-size:13px">$${lv.price.toFixed(2)}</span>
-                                            <span style="font-size:11px;color:rgba(255,255,255,0.4)">${lv.type || ''}</span>
-                                        </div>
-                                        <div style="display:flex;gap:12px;font-size:11px">
-                                            <span>${lvTotal} trade${lvTotal !== 1 ? 's' : ''}</span>
-                                            <span style="color:${BT_COLORS.green}">${lv.wins}W</span>
-                                            <span style="color:${BT_COLORS.red}">${lv.losses}L</span>
-                                            <span style="color:${lvColor}">${(lvWr * 100).toFixed(0)}%</span>
-                                        </div>
-                                        <div class="bt-score-bar" style="margin-top:4px"><div class="bt-score-fill" style="width:${lvWr * 100}%;background:${lvColor}"></div></div>
-                                    </div>`;
-                            }).join('')}
-                            <div style="margin-top:16px">
-                                <div class="bt-section-label">DATA INTEGRITY</div>
-                                <div class="bt-interp">
-                                    Levels detected on first ${splitIdx} bars (training). Trades simulated on last ${data.length - splitIdx} bars (test). No data leakage — levels never see test data.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-
-            // Trade log
-            if (trades.length > 0) {
-                html += `<div style="margin-top:16px"><div class="bt-section-label" style="padding:0 4px;margin-bottom:8px">TRADE LOG (last 20)</div>`;
-                html += `<div style="overflow-x:auto"><table style="width:100%;font-size:11px;border-collapse:collapse">
-                    <tr style="color:rgba(255,255,255,0.4);text-align:left">
-                        <th style="padding:4px 8px">Level</th><th style="padding:4px 8px">Entry</th><th style="padding:4px 8px">Exit</th>
-                        <th style="padding:4px 8px">Result</th><th style="padding:4px 8px">P&L</th><th style="padding:4px 8px">Bars</th>
-                    </tr>`;
-                trades.slice(-20).forEach(t => {
-                    const rc = t.result === 'win' ? BT_COLORS.green : BT_COLORS.red;
-                    html += `<tr style="border-top:1px solid rgba(255,255,255,0.04)">
-                        <td style="padding:4px 8px">$${t.level.toFixed(2)}</td>
-                        <td style="padding:4px 8px">${t.entryDate}</td>
-                        <td style="padding:4px 8px">${t.exitDate}</td>
-                        <td style="padding:4px 8px;color:${rc}">${t.result.toUpperCase()}</td>
-                        <td style="padding:4px 8px;color:${rc}">${t.pnlPct >= 0 ? '+' : ''}${t.pnlPct.toFixed(2)}%</td>
-                        <td style="padding:4px 8px">${t.barsHeld}</td>
-                    </tr>`;
-                });
-                html += `</table></div></div>`;
-            }
-
-            html += `<div class="bt-footer">yfinance OHLCV &middot; ${data.length} bars &middot; ${tfLabel} &middot; ${methodLabels[method] || method} &middot; ${splitIdx}/${data.length - splitIdx} train/test split &middot; no data leakage</div>`;
-            container.innerHTML = html;
-        }
-
-        // Backtest button handler
-        document.getElementById('runBacktest').addEventListener('click', async () => {
-            const ticker = document.getElementById('bt-ticker').value.trim();
-            const period = document.getElementById('bt-period').value;
-            const interval = document.getElementById('bt-interval').value;
-            const method = document.getElementById('bt-method').value;
-            const slPct = parseFloat(document.getElementById('bt-sl').value) || 1;
-            const tpPct = parseFloat(document.getElementById('bt-tp').value) || 2;
-            const btBtn = document.getElementById('runBacktest');
-            const btContainer = document.getElementById('backtestContainer');
-
-            if (!ticker) { alert('Please enter a ticker symbol'); return; }
-
-            btBtn.disabled = true;
-            btContainer.innerHTML = `<div class="loading"><div class="spinner"></div><p>Running ${method} on ${ticker} ${interval} data...</p></div>`;
+            tpBtn.disabled = true;
+            tpContainer.innerHTML = `<div style="text-align:center;padding:40px;color:rgba(232,230,227,0.5);">Running simulation...</div>`;
 
             try {
-                const url = new URL('https://fartpie.onrender.com/api/backtest-levels');
-                url.searchParams.set('ticker', ticker);
-                url.searchParams.set('period', period);
-                url.searchParams.set('interval', interval);
-                url.searchParams.set('method', method);
-
-                const response = await fetch(url.toString());
-                if (!response.ok) {
-                    const err = await response.json();
-                    throw new Error(err.error || `HTTP ${response.status}`);
-                }
-
-                const result = await response.json();
-                const data = result.data;
-                const levels = result.levels;
-                const splitIdx = result.split_idx;
-
-                if (!levels || levels.length === 0) {
-                    btContainer.innerHTML = `<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.5);">No levels detected by ${method} on the training data. Try a different method or longer period.</div>`;
+                const params = new URLSearchParams({
+                    ticker, timeframe, direction, stop, target,
+                    horizon_hours: horizonHours, include_sample_paths: 'true',
+                });
+                if (entryInput) params.set('entry', entryInput);
+                else {
+                    // entry defaults to last close server-side isn't supported yet - fetch it isn't required
+                    // since the backend needs an explicit entry; use stop/target midpoint as a fallback prompt
+                    tpContainer.innerHTML = `<div class="lstm-forecast-error"><h3>Entry required</h3><p>Enter an entry price (a "last price" default isn't wired up yet).</p></div>`;
+                    tpBtn.disabled = false;
                     return;
                 }
 
-                const trades = simulateTrades(data, levels, splitIdx, slPct, tpPct);
-                renderBacktestResults(data, levels, trades, splitIdx, method, slPct, tpPct);
+                const resp = await fetch(`${API_BASE}/api/target-probability?${params.toString()}`);
+                const result = await resp.json();
+                if (!result.success) throw new Error(result.error || 'Request failed');
+
+                renderTargetProbResult(result);
             } catch (error) {
-                btContainer.innerHTML = `<div class="lstm-forecast-error"><h3>Error</h3><p>${error.message}</p></div>`;
+                tpContainer.innerHTML = `<div class="lstm-forecast-error"><h3>Error</h3><p>${error.message}</p></div>`;
             } finally {
-                btBtn.disabled = false;
+                tpBtn.disabled = false;
             }
         });
+
+        function renderTargetProbResult(result) {
+            const tpContainer = document.getElementById('targetProbContainer');
+            const calPct = (result.calibrated_probability * 100).toFixed(1);
+            const rawPct = (result.raw_probability * 100).toFixed(1);
+            const stats = tpStatsFor(result.ticker, result.timeframe);
+
+            // High/Low is relative to this ticker+timeframe's OWN median from the backtest -
+            // falls back to 50% of the observed max (rough) if we have no stats for this combo yet.
+            const threshold = stats ? stats.median : 0.5;
+            const signal = result.calibrated_probability >= threshold ? 'HIGH' : 'LOW';
+
+            const badgeHtml = `
+                <div class="tp-signal-badge">
+                    ${signal}
+                    <span class="validated-tag ${stats && stats.validated ? 'yes' : 'no'}">
+                        ${stats && stats.validated ? 'Validated' : 'Not confirmed'}
+                    </span>
+                </div>
+            `;
+
+            const statsHtml = stats ? `
+                <table class="tp-stats-table">
+                    <thead>
+                        <tr><th>${result.ticker} · ${result.timeframe}</th><th>Bounce Accuracy</th><th>n</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Baseline (all levels)</td><td>${(stats.baseline*100).toFixed(1)}%</td><td>${stats.n}</td></tr>
+                        <tr><td>When V1 reads High</td><td>${(stats.high*100).toFixed(1)}%</td><td></td></tr>
+                        <tr><td>When V1 reads Low</td><td>${(stats.low*100).toFixed(1)}%</td><td></td></tr>
+                    </tbody>
+                </table>
+            ` : `<p class="tp-stats-note">No backtest stats for ${result.ticker} at ${result.timeframe} yet.</p>`;
+
+            tpContainer.innerHTML = `
+                <div class="tp-result">
+                    ${badgeHtml}
+                    ${statsHtml}
+                    <div class="tp-prob-row">
+                        <div class="tp-prob-stat">
+                            <div class="tp-prob-value">${calPct}%</div>
+                            <div class="tp-prob-label">Calibrated Probability</div>
+                        </div>
+                        <div class="tp-prob-stat">
+                            <div class="tp-prob-value" style="color: rgba(232,230,227,0.4); font-size: 1.8rem;">${rawPct}%</div>
+                            <div class="tp-prob-label">Raw (uncalibrated)</div>
+                        </div>
+                    </div>
+                    <div class="tp-canvas-wrap">
+                        <canvas id="tpCanvas" width="900" height="360"></canvas>
+                        <div class="tp-tally" id="tpTally">
+                            <span><span class="dot target-dot"></span>Target: <span id="tpTallyTarget">0</span></span>
+                            <span><span class="dot stop-dot"></span>Stop: <span id="tpTallyStop">0</span></span>
+                            <span><span class="dot running-dot"></span>Running: <span id="tpTallyRunning">${result.sample_paths.paths_price.length}</span></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (result.sample_paths) {
+                animateMonteCarloRace(result.sample_paths, result.entry, result.stop, result.target);
+            }
+        }
+
+        function animateMonteCarloRace(samplePaths, entry, stop, target) {
+            const canvas = document.getElementById('tpCanvas');
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width, H = canvas.height;
+            const paths = samplePaths.paths_price;
+            const outcomes = samplePaths.outcome;
+            const hitSteps = samplePaths.hit_step;
+            const nSteps = paths[0].length;
+
+            let yMin = Math.min(stop, target, ...paths.flat());
+            let yMax = Math.max(stop, target, ...paths.flat());
+            const pad = (yMax - yMin) * 0.08 || 1;
+            yMin -= pad; yMax += pad;
+
+            const xOf = (step) => (step / (nSteps - 1)) * (W - 60) + 50;
+            const yOf = (price) => H - 30 - ((price - yMin) / (yMax - yMin)) * (H - 60);
+
+            const COLORS = { target: '#22c55e', stop: '#ef4444', running: 'rgba(201, 162, 39, 0.35)' };
+
+            function drawStatic() {
+                ctx.clearRect(0, 0, W, H);
+                // target/stop/entry reference lines
+                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = COLORS.target; ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(50, yOf(target)); ctx.lineTo(W - 10, yOf(target)); ctx.stroke();
+                ctx.strokeStyle = COLORS.stop;
+                ctx.beginPath(); ctx.moveTo(50, yOf(stop)); ctx.lineTo(W - 10, yOf(stop)); ctx.stroke();
+                ctx.strokeStyle = 'rgba(201, 162, 39, 0.5)';
+                ctx.beginPath(); ctx.moveTo(50, yOf(entry)); ctx.lineTo(W - 10, yOf(entry)); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = COLORS.target; ctx.font = '11px Inter'; ctx.fillText('target', 8, yOf(target) + 4);
+                ctx.fillStyle = COLORS.stop; ctx.fillText('stop', 8, yOf(stop) + 4);
+                ctx.fillStyle = 'rgba(201, 162, 39, 0.7)'; ctx.fillText('entry', 8, yOf(entry) + 4);
+            }
+
+            let frame = 0;
+            const totalFrames = nSteps + 20;
+            const staggerPerPath = 1; // paths start one frame apart for a cascading look
+
+            function tick() {
+                drawStatic();
+                let nTarget = 0, nStop = 0, nRunning = 0;
+                paths.forEach((path, i) => {
+                    const startFrame = i * staggerPerPath;
+                    const localFrame = Math.max(0, frame - startFrame);
+                    const upTo = Math.min(localFrame, nSteps - 1);
+                    const resolved = hitSteps[i] >= 0 && upTo >= hitSteps[i];
+                    const color = resolved ? COLORS[outcomes[i]] : COLORS.running;
+
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = resolved ? 1.6 : 1;
+                    ctx.globalAlpha = resolved ? 0.9 : 0.55;
+                    ctx.beginPath();
+                    ctx.moveTo(xOf(0), yOf(path[0]));
+                    const drawUpTo = resolved ? hitSteps[i] : upTo;
+                    for (let s = 1; s <= drawUpTo; s++) ctx.lineTo(xOf(s), yOf(path[s]));
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+
+                    if (localFrame >= nSteps - 1 || resolved) {
+                        if (outcomes[i] === 'target') nTarget++;
+                        else if (outcomes[i] === 'stop') nStop++;
+                        else nRunning++;
+                    } else {
+                        nRunning++;
+                    }
+                });
+                document.getElementById('tpTallyTarget').textContent = nTarget;
+                document.getElementById('tpTallyStop').textContent = nStop;
+                document.getElementById('tpTallyRunning').textContent = nRunning;
+
+                frame++;
+                if (frame < totalFrames) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+        }
     </script>
 </body>
 </html>
