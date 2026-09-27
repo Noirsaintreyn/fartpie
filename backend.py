@@ -3511,6 +3511,20 @@ _ML_FILTER_V2_THRESHOLDS = {
 }
 
 
+def levels_filtered_only_requested():
+    """True (default) = feed downstream algorithms ONLY the levels that passed score_and_filter_levels_v2
+    (GMM, TDA, HDBSCAN, OPTICS, KDE, Isolation-Forest, MeanShift). The extra detectors that never go through the
+    filter (multiscale / time-weighted HDBSCAN, Wyckoff, local interaction, neural network) are left out, and
+    ML-confluence is built from the filtered set only. Turn off per request with ?filtered_only=0 or globally with
+    the LEVELS_FILTERED_ONLY=0 environment variable. Only takes effect when the v2 filter actually ran (if it
+    failed, the old unfiltered behaviour is used so the endpoint still answers)."""
+    try:
+        v = request.args.get('filtered_only', os.getenv('LEVELS_FILTERED_ONLY', '1'))
+    except RuntimeError:
+        v = os.getenv('LEVELS_FILTERED_ONLY', '1')
+    return str(v).strip().lower() not in ('0', 'false', 'no', 'off')
+
+
 def score_and_filter_levels_v2(levels_by_category, highs, lows, opens, closes, volumes,
                                 current_price, timestamps=None, confluence_atr_mult=0.5):
     """
@@ -5201,6 +5215,7 @@ def get_data():
         # 6/7 at 100% fold consistency (see score_and_filter_levels_v2
         # docstring/module comment). Raw/unfiltered candidates are discarded,
         # not exposed.
+        _filter_v2_ok = False
         try:
             levels_by_category_v2 = {
                 'GMM': gmm_levels_result, 'TDA': persistent_homology_levels_result,
@@ -5224,12 +5239,20 @@ def get_data():
             kde_levels_result = [l for l in filtered if l.get('category') == 'KDE']
             isolation_forest_levels = [l for l in filtered if l.get('category') == 'Isolation-Forest']
             meanshift_levels_result = [l for l in filtered if l.get('category') == 'MeanShift']
+            _filter_v2_ok = True
             print(f"ML filter v2: kept {len(gmm_levels_result)} GMM, {len(persistent_homology_levels_result)} TDA, "
                   f"{len(hdbscan_levels)} HDBSCAN, {len(enhanced_optics_levels_result)} OPTICS, "
                   f"{len(kde_levels_result)} KDE, {len(isolation_forest_levels)} Isolation-Forest, "
                   f"{len(meanshift_levels_result)} MeanShift levels")
         except Exception as e:
             print(f"ML filter failed, falling back to unfiltered GMM/TDA: {e}")
+
+        # FILTERED-ONLY (default): drop the detectors that never pass through score_and_filter_levels_v2
+        _filtered_only_active = _filter_v2_ok and levels_filtered_only_requested()
+        if _filtered_only_active:
+            multiscale_hdbscan_levels_result, time_weighted_levels_result = [], []
+            wyckoff_levels_result, neural_network_levels_result = [], []
+            print("Filtered-only levels: dropped multiscale / time-weighted / Wyckoff / neural-network / interaction (unfiltered detectors)")
 
         # INTERACTION: Local density modes (near price, short memory, explicitly non-structural)
         local_interaction_levels = calculate_local_interaction_levels(
@@ -5241,6 +5264,8 @@ def get_data():
             max_levels=5
         )
         print(f"Local Interaction: Generated {len(local_interaction_levels) if local_interaction_levels else 0} levels")
+        if _filtered_only_active:
+            local_interaction_levels = []
 
         # Fibonacci for metadata enrichment only (not primary levels)
         fib_levels = calculate_fibonacci_levels(hist_highs, hist_lows)
@@ -8912,6 +8937,7 @@ def get_level_constrained_hod_lod():
         # HDBSCAN levels via enhance_levels_with_microstructure() below.
         meanshift_levels_result = calculate_meanshift_levels(highs, lows, closes)
 
+        _filter_v2_ok = False
         try:
             levels_by_category_v2 = {
                 'GMM': gmm_levels_result, 'TDA': tda_levels_result,
@@ -8933,6 +8959,7 @@ def get_level_constrained_hod_lod():
             kde_levels_result = [l for l in filtered if l.get('category') == 'KDE']
             optics_levels_result = [l for l in filtered if l.get('category') == 'OPTICS']
             meanshift_levels_result = [l for l in filtered if l.get('category') == 'MeanShift']
+            _filter_v2_ok = True
         except Exception as e:
             print(f"ML filter failed, falling back to unfiltered levels: {e}")
 
@@ -8943,6 +8970,11 @@ def get_level_constrained_hod_lod():
         except Exception as e:
             print(f"Neural Network level detection failed: {e}")
             neural_network_levels_result = []
+
+        if _filter_v2_ok and levels_filtered_only_requested():
+            multiscale_hdbscan_levels_result, time_weighted_levels_result = [], []
+            wyckoff_levels_result, neural_network_levels_result = [], []
+            print("Filtered-only levels: dropped multiscale / time-weighted / Wyckoff / neural-network (unfiltered detectors)")
 
         # Fibonacci for metadata enrichment only (not primary levels)
         fib_levels = calculate_fibonacci_levels(highs, lows)
@@ -9383,6 +9415,7 @@ def get_lstm_forecast():
         kde_levels = kde_based_levels(highs, lows, closes, n_levels=10)
         meanshift_levels = calculate_meanshift_levels(highs, lows, closes)
 
+        filter_applied = False
         try:
             levels_by_category_v2 = {
                 'GMM': gmm_levels, 'TDA': tda_levels,
@@ -9404,15 +9437,23 @@ def get_lstm_forecast():
             kde_levels = [l for l in filtered if l.get('category') == 'KDE']
             isolation_forest_levels = [l for l in filtered if l.get('category') == 'Isolation-Forest']
             meanshift_levels = [l for l in filtered if l.get('category') == 'MeanShift']
+            filter_applied = True
         except Exception as e:
             print(f"ML filter failed, falling back to unfiltered levels: {e}")
+
+        # FILTERED-ONLY (default): the forecast, level reactions and HOD/LOD candidates only see levels that
+        # passed score_and_filter_levels_v2; unfiltered detectors are excluded and ML confluence is built from the filtered set.
+        filtered_only_active = filter_applied and levels_filtered_only_requested()
+        if filtered_only_active:
+            interaction_levels, multiscale_levels, time_weighted_levels, wyckoff_levels = [], [], [], []
+            print("Filtered-only levels: dropped interaction / multiscale / time-weighted / Wyckoff / neural-network (unfiltered detectors)")
 
         # Fibonacci for metadata enrichment only (not primary levels)
         fib_levels = calculate_fibonacci_levels(highs, lows)
 
         # Neural Network levels (with volume profile) - INCLUDED in theoretical HOD/LOD and LSTM forecast
         print("Detecting neural network levels...")
-        neural_network_levels = detect_levels_with_neural_network(hist, lookback=100, threshold=0.5)
+        neural_network_levels = [] if filtered_only_active else detect_levels_with_neural_network(hist, lookback=100, threshold=0.5)
         print(f"✓ Neural Network levels detected: {len(neural_network_levels)} levels")
 
         # ML confluence (includes neural network levels)
@@ -9791,6 +9832,7 @@ def get_lstm_forecast():
                 'isolation_forest': len(isolation_forest_levels),
                 'meanshift': len(meanshift_levels)
             },
+            'levels_filtered_only': bool(filtered_only_active),
             'all_levels': sanitize_for_json(sorted(all_levels, key=lambda x: abs(x.get('price', 0) - current_price))[:50]),
             'microstructure_state': sanitize_for_json(microstructure_state) if microstructure_state else None
         }
