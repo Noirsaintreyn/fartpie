@@ -59,6 +59,7 @@ CUTOVER = pd.Timestamp(os.getenv('PM_START', '2026-10-14 09:30'))
 MODEL2 = pd.Timestamp(os.getenv('MODEL2_START', '2026-10-19 09:30'))          # 1h-flip track + profit lock start here
 SLOTS, LOCK_K, LOCK_G = int(os.getenv('SLOTS', '6')), 0.05, 0.5
 SLOT_SWITCH = pd.Timestamp(os.getenv('SLOT_SWITCH', '2026-10-20 09:30'))     # 8 slots (12.5% each) before this, SLOTS after
+STICKY_START = np.datetime64(pd.Timestamp(os.getenv('STICKY_START', '2026-10-20 09:30')))   # sticky 1h mode: once >= +2% with a 1h bull, keep the 1h stop
 slots_at = lambda t0: 8 if pd.Timestamp(t0) < SLOT_SWITCH else SLOTS               # lock: after +5% peak keep >= 50% of the peak gain
 VIRT, INF = np.datetime64('2262-01-01'), np.datetime64('2262-03-01')        # the next (virtual) RTH open / still open   # premarket rule applies to signals from here; earlier positions carried      # QQQ (neg-gamma) slot off by default: no daily options pull needed
 LIVE = 'live'; os.makedirs(LIVE, exist_ok=True)
@@ -214,7 +215,7 @@ def replay_track(H, elig, track='15m', carry=None):
     g = [j for j in range(1, n) if m[j] >= RTH0] + [n]
     KR = [reg[j - 1] for j in g]; KS = [s1[j - 1] for j in g]; EL = [elig[j] if j < n else elig[-1] for j in g]
     PC = [c[g[p - 1]] if p > 0 else np.nan for p in range(len(g))]
-    T = []; inpos, e, px, b1, peak, p0 = False, None, None, False, None, 1
+    T = []; inpos, e, px, b1, peak, p0, hs = False, None, None, False, None, 1, False
     if carry is not None and track == '15m':
         hit = [p for p, j in enumerate(g) if j < n and dts[j] == np.datetime64(carry[0])]
         if hit: inpos, e, px, p0, peak = True, g[hit[0]], carry[1], hit[0], carry[1]
@@ -224,11 +225,12 @@ def replay_track(H, elig, track='15m', carry=None):
             sig = (KS[p] == 1 and KS[p - 1] != 1) if track == '1h' else (KR[p] == 1 and KR[p - 1] != 1)
             if sig and EL[p]:
                 if virt: T.append(dict(status='BUY', e=None, px=None, t0=VIRT, t1=INF, h1=track == '1h', pg=0.0, lock=False)); break
-                inpos, e, px, b1, peak = True, j, o[j], False, o[j]
+                inpos, e, px, b1, peak, hs = True, j, o[j], False, o[j], False
             continue
         if j == e: continue
         if g[p - 1] >= e: peak = max(peak, hi[g[p - 1]])
-        up = PC[p] / px - 1; b1 = b1 or KS[p] == 1; h1 = track == '1h' or (up >= UP_SWITCH and b1)
+        up = PC[p] / px - 1; b1 = b1 or KS[p] == 1; now1 = up >= UP_SWITCH and b1; hs = hs or now1
+        h1 = track == '1h' or now1 or (hs and (virt or dts[j] >= STICKY_START))
         if j < n and dts[j] < np.datetime64(CUTOVER): continue          # carried trade: old rule managed it until the cutover
         ex = (KS[p] == -1) if h1 else (KR[p] == -1)
         pg = peak / px - 1
@@ -239,7 +241,7 @@ def replay_track(H, elig, track='15m', carry=None):
             if virt: break
     if inpos:
         b1 = b1 or s1[-1] == 1
-        T.append(dict(status='HOLD', e=e, px=px, t0=dts[e], t1=INF, h1=track == '1h' or (c[-1] / px - 1 >= UP_SWITCH and b1), pg=peak / px - 1, lock=False))
+        T.append(dict(status='HOLD', e=e, px=px, t0=dts[e], t1=INF, h1=track == '1h' or (c[-1] / px - 1 >= UP_SWITCH and b1) or hs, pg=peak / px - 1, lock=False))
     for t in T: t['track'] = track
     return T
 

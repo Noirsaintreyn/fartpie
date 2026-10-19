@@ -182,10 +182,10 @@ td.r,th.r{text-align:right}
 <section id="tab-backtest" hidden>
 <div style="display:flex;flex-direction:column;gap:20px">
 <div class="tiles">
-<div class="tile"><span class="k">Return</span><span class="v up">+36.1%</span><span class="sub">per year · SPY +15.7% · QQQ +22.6%</span></div>
+<div class="tile"><span class="k">Return</span><span class="v up">+37.0%</span><span class="sub">per year · SPY +15.7% · QQQ +22.6%</span></div>
 <div class="tile"><span class="k">Max drawdown</span><span class="v">−25%</span><span class="sub">SPY −34% · QQQ −36%</span></div>
 <div class="tile"><span class="k">Sharpe</span><span class="v">1.47</span><span class="sub">SPY 0.86 · QQQ 0.97</span></div>
-<div class="tile"><span class="k">Alpha</span><span class="v gold">+14.4%</span><span class="sub">per year over holding the same names (t 3.0)</span></div>
+<div class="tile"><span class="k">Alpha</span><span class="v gold">+14.8%</span><span class="sub">per year over holding the same names (t 2.9)</span></div>
 </div>
 <div class="panel">
 <div class="ptop"><h2>Growth of $1 · log scale</h2><div class="legend"><span><i style="background:var(--gold)"></i>Screener <b id="btB"></b></span><span><i style="background:#5fb3a1"></i>QQQ <b id="btQ"></b></span><span><i style="background:#8d96a8"></i>SPY <b id="btS"></b></span></div></div>
@@ -194,11 +194,11 @@ td.r,th.r{text-align:right}
 <div class="panel scroll">
 <table style="min-width:640px"><thead><tr><th>Return / max drawdown</th><th class="r">2019 – 21</th><th class="r">2022 – 26</th><th class="r">2019 – 26</th></tr></thead>
 <tbody>
-<tr><td class="gold" style="font-weight:600">Screener (options ratio ≥ 2.5, 6 slots)</td><td class="r">+55.4% / −25%</td><td class="r">+25.2% / −22%</td><td class="r">+36.1% / −25%</td></tr>
+<tr><td class="gold" style="font-weight:600">Screener (options ratio ≥ 2.5, 6 slots)</td><td class="r">+58.4% / −25%</td><td class="r">+25.0% / −23%</td><td class="r">+37.0% / −25%</td></tr>
 <tr><td style="color:var(--ink)">QQQ</td><td class="r">+37.0% / −28%</td><td class="r">+14.2% / −35%</td><td class="r">+22.6% / −36%</td></tr>
 <tr><td style="color:var(--ink)">SPY</td><td class="r">+23.8% / −34%</td><td class="r">+10.9% / −25%</td><td class="r">+15.7% / −34%</td></tr>
 </tbody></table>
-<p class="note">Backtest, daily mark-to-market, 6 slots (16.7% each), 2 bp per trade. Universe is today's S&amp;P names and the rules were chosen on this data, so expect less live.</p>
+<p class="note">Backtest, daily mark-to-market, 6 slots (16.7% each), sticky 1h stop, 2 bp per trade. Universe is today's S&amp;P names and the rules were chosen on this data, so expect less live.</p>
 </div>
 </div>
 </section>
