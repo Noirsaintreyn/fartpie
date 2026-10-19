@@ -1,0 +1,7 @@
+discord.py>=2.4
+requests
+matplotlib
+numpy
+python-dotenv
+pyarrow
+tzdata

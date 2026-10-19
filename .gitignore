@@ -11,3 +11,15 @@ credentials.json
 *.pem
 *.key
 .credentials
+
+# discord bot runtime state (lives on the Render disk in production)
+discord_bot/daily_channels.json
+discord_bot/daily_issue.json
+discord_bot/archive/
+discord_bot/users.db
+discord_bot/*.log
+discord_bot/worker/node_modules/
+
+# keep the template (no values) tracked
+!.env.example
+!discord_bot/.env.example

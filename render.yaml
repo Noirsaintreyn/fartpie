@@ -11,3 +11,35 @@ services:
         value: "3.12"
       - key: ENV
         value: production
+
+  # Discord bot (09:30 ET daily THOD/TLOD charts, 16:05 ET "after" charts, slash commands).
+  # Needs these secrets set in the Render dashboard (they are NOT in git): DISCORD_TOKEN, BACKEND_USER, BACKEND_PASSWORD, DISCORD_GUILD_ID.
+  - type: worker
+    name: fartpie-bot
+    runtime: python
+    branch: main
+    autoDeploy: true
+    plan: starter            # 512 MB. If the bot is killed for memory (Events tab shows "out of memory"), raise to standard (2 GB).
+    buildCommand: pip install -r requirements.txt -r discord_bot/requirements.txt
+    startCommand: python -u discord_bot/bot.py
+    disk:
+      name: bot-data         # keeps daily_channels.json (/daily channels), daily_issue.json (09:30 lines for the 16:05 post) and archive/ across deploys
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: DATA_DIR
+        value: /data
+      - key: BACKEND_URL
+        value: https://fartpie.onrender.com
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: DISCORD_GUILD_ID
+        sync: false
+      - key: BACKEND_USER
+        sync: false
+      - key: BACKEND_PASSWORD
+        sync: false
