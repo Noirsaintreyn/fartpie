@@ -43,3 +43,33 @@ services:
         sync: false
       - key: BACKEND_PASSWORD
         sync: false
+
+  # Vector screener (15m/1h flips on the options-activity names): posts BUY/SELL cards and open-positions boards to VECTOR_CHANNEL_ID.
+  # Secrets to set in the Render dashboard: DISCORD_TOKEN, VECTOR_CHANNEL_ID, LSE_API_KEY.  One-time seed + weekly options-ratio sync: see SCREENER_DEPLOY.md.
+  - type: worker
+    name: fartpie-screener
+    runtime: python
+    branch: main
+    autoDeploy: true
+    plan: standard           # measured peak ~420 MB for one scan (+ chart rendering), so 512 MB is too tight; 2 GB
+    buildCommand: pip install -r requirements.txt -r discord_bot/requirements.txt
+    startCommand: python -u screener_service.py
+    disk:
+      name: screener-data
+      mountPath: /data
+      sizeGB: 2
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: DATA_DIR
+        value: /data
+      - key: MID_BOOK
+        value: "0"
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: VECTOR_CHANNEL_ID
+        sync: false
+      - key: LSE_API_KEY
+        sync: false

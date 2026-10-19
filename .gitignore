@@ -23,3 +23,9 @@ discord_bot/worker/node_modules/
 # keep the template (no values) tracked
 !.env.example
 !discord_bot/.env.example
+
+# screener runtime data (lives on the Render disk / this Mac)
+/live/
+/lse_ohlcv_cache/
+/xs/ext/
+/data/

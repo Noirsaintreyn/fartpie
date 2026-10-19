@@ -3,5 +3,5 @@ requests
 matplotlib
 numpy
 python-dotenv
-pyarrow
+pyarrow>=14,<19
 tzdata
