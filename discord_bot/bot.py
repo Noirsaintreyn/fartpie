@@ -377,6 +377,8 @@ async def on_ready():
         asyncio.get_running_loop().create_task(daily_loop())
         asyncio.get_running_loop().create_task(after_loop())
         asyncio.get_running_loop().create_task(gex_prefetch_loop())
+    if getattr(client, '_synced', False): return       # reconnects fire on_ready again: register commands once per process only
+    client._synced = True
     guild = os.environ.get('DISCORD_GUILD_ID')
     if guild:                                   # guild sync is instant; global sync can take up to an hour
         g = discord.Object(id=int(guild))
