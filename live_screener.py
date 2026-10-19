@@ -45,10 +45,11 @@ else:
 import live_cards as LC
 START = LC.START       # positions are only counted from signals at/after this time (SCREENER_START in .env)
 
-CUT, UP_SWITCH, BREAK_ATR, RTH0, RTH1 = float(os.getenv('OPT_CUT', '1.5')), 0.02, 0.35, 570, 960   # OPT_CUT: options-ratio bar
-OPTVOL_FILE = os.getenv('OPTVOL_FILE', 'xs/ext/optvol_ratio.csv')   # xs/ext/optvol_ratio_live.csv = old + overnight S&P pull
-TIE_RATIO = os.getenv('TIE_RATIO', '0') == '1'
-OPT_SWITCH = pd.Timestamp(os.getenv('OPT_SWITCH', '2100-01-01'))           # signals before this date use the old 1.5 bar
+CUT, UP_SWITCH, BREAK_ATR, RTH0, RTH1 = float(os.getenv('OPT_CUT', '2.5')), 0.02, 0.35, 570, 960   # OPT_CUT: options-ratio bar
+OPTVOL_FILE = os.getenv('OPTVOL_FILE', 'live_data/optvol_ratio_live.csv')   # Oct 20 2026: S&P-wide pull, refreshed weekly (tools/weekly_ratio.sh)
+TIE_RATIO = os.getenv('TIE_RATIO', '1') == '1'
+OPT_SWITCH = pd.Timestamp(os.getenv('OPT_SWITCH', '2026-10-20 09:30'))      # from here: S&P universe at ratio >= 2.5; before: the old 8 names at >= 1.5
+OLD_UNIVERSE = set(os.getenv('OLD_UNIVERSE', 'AAPL,ADBE,AMD,COST,NVDA,ORCL,TSLA,UNH').split(','))
 NO_ETF = {'QQQ', 'SPY', 'IWM', 'DIA', 'SMH', 'XLE', 'XLF', 'XLK', 'GLD', 'SLV', 'TLT', 'IEF'}                      # 1: when signals tie, the highest options ratio gets the slot
 INCLUDE_QQQ = os.getenv('INCLUDE_QQQ', '0') == '1'
 MID_BOOK = os.getenv('MID_BOOK', '1') == '1'                 # 0 on Render: the mid/small book needs the xs data pipeline that only lives on the home machine
@@ -139,7 +140,7 @@ def options_ratio():
     R = O.pivot_table(index='date', columns='tk', values='r').sort_index()
     last = O.groupby('tk').date.max(); thru = O.date.max()
     R = R.rolling(252, min_periods=60).median().shift(1)
-    R[list(last[last < thru - pd.Timedelta(days=int(os.getenv('OPT_STALE_DAYS', '30')))].index)] = np.nan       # options history not current -> not eligible
+    R[list(last[last < thru - pd.Timedelta(days=int(os.getenv('OPT_STALE_DAYS', '45')))].index)] = np.nan       # options history not current -> not eligible
     return R, thru
 
 def theta_up():
@@ -252,7 +253,7 @@ def scan(args):
     if args.update_gamma and theta_up(): update_gamma()
     RAT, rat_thru = options_ratio()
     last_ratio = RAT.ffill().iloc[-1]
-    elig_now = sorted(t for t in RAT.columns if t not in NO_ETF and last_ratio.get(t, 0) >= min(CUT, 1.5))
+    elig_now = sorted(t for t in RAT.columns if t not in NO_ETF and (last_ratio.get(t, 0) >= CUT or (t in OLD_UNIVERSE and last_ratio.get(t, 0) >= 1.5)))
     gf = 'xs/ext/gex/QQQ.csv'                                             # only needed for the (off by default) QQQ slot
     G = pd.read_csv(gf, parse_dates=['date']).sort_values('date').set_index('date').net_gex if os.path.exists(gf) else pd.Series([0.0], index=[pd.Timestamp('2000-01-01')])
     slots = SLOTS; out = []; TR = []; HS = {}
@@ -264,7 +265,7 @@ def scan(args):
         if tk == 'QQQ':
             gv = G.reindex(pd.DatetimeIndex(sorted(set(day))).union(G.index)).ffill().shift(1); elig = (day.map(gv) < 0).values
         else:
-            rv = RAT[tk].reindex(pd.DatetimeIndex(sorted(set(day))).union(RAT.index)).ffill(); elig = np.where((H.dt < OPT_SWITCH).values, day.map(rv) >= 1.5, day.map(rv) >= CUT)
+            rv = RAT[tk].reindex(pd.DatetimeIndex(sorted(set(day))).union(RAT.index)).ffill(); elig = np.where((H.dt < OPT_SWITCH).values, (day.map(rv) >= 1.5) & (tk in OLD_UNIVERSE), day.map(rv) >= CUT)
         elig = elig & (H.dt >= START).values                                   # live ledger: nothing before the start date
         carry = None
         if pre:
@@ -327,7 +328,13 @@ def write_site_snapshot(rows, meta):
         key = [pd.Timestamp(z['t1']) if not z['open'] else pd.Timestamp(z['t0']) for z in T]
         order = sorted(range(len(tr)), key=lambda i: (not tr[i]['open'], -key[i].value))
         tr = [tr[i] for i in order]
-        hist = dict(trades=tr, book=round(float(book[-1]) * 100, 2), spy=round(float(spy[-1]) * 100, 2) if spy[-1] == spy[-1] else None,
+        Q = spy_15m(True, 'QQQ'); qs = pd.Series(Q.close.values, index=Q.dt.values); qb = qs[qs.index < np.datetime64(START)]
+        q0 = qb.iloc[-1] if len(qb) else (qs.iloc[0] if len(qs) else np.nan)
+        qq = np.r_[qs.reindex(g[:-1], method='ffill').values / q0 - 1, ((live_px('QQQ') or (qs.iloc[-1] if len(qs) else np.nan)) / q0 - 1)]
+        k = np.unique(np.r_[np.linspace(0, len(g) - 1, min(len(g), 400)).astype(int), len(g) - 1])
+        nz = lambda v: None if v != v else round(float(v) * 100, 3)
+        curve = dict(t=[int(pd.Timestamp(g[i]).timestamp() * 1000) for i in k], book=[nz(book[i]) for i in k], spy=[nz(spy[i]) for i in k], qqq=[nz(qq[i]) for i in k])
+        hist = dict(curve=curve, qqq=nz(qq[-1]), trades=tr, book=round(float(book[-1]) * 100, 2), spy=round(float(spy[-1]) * 100, 2) if spy[-1] == spy[-1] else None,
                     realized=round(sum(z['book'] for z in tr if not z['open']), 2), open=round(sum(z['book'] for z in tr if z['open']), 2), since=f'{pd.Timestamp(START):%a %b %d}')
     except Exception as e: print(f'  ! site history: {str(e)[:80]}')
     snap = dict(asof=t.isoformat(), asof_ms=int(pd.Timestamp(t, tz=ET).timestamp() * 1000), market_open=t.dayofweek < 5 and RTH0 <= m < RTH1,
@@ -440,17 +447,17 @@ def mark_live(rows, fetch):
         r['pnl'] = r['last'] / r['px'] - 1
     return rows
 
-def spy_15m(fetch=True):
-    """SPY 15m RTH closes since the live start: cached in live/SPY_15m.parquet, topped up from yfinance (60-day 15m window) so it keeps growing"""
-    f = f'{LIVE}/SPY_15m.parquet'; C = pd.read_parquet(f) if os.path.exists(f) else pd.DataFrame(columns=['dt', 'close'])
+def spy_15m(fetch=True, tk='SPY'):
+    """SPY (or tk) 15m RTH closes since the live start: cached in live/<tk>_15m.parquet, topped up from yfinance (60-day 15m window) so it keeps growing"""
+    f = f'{LIVE}/{tk}_15m.parquet'; C = pd.read_parquet(f) if os.path.exists(f) else pd.DataFrame(columns=['dt', 'close'])
     if fetch:
         try:
             import yfinance as yf
-            y = yf.Ticker('SPY').history(period='60d', interval='15m')
+            y = yf.Ticker(tk).history(period='60d', interval='15m')
             if len(y):
                 N = pd.DataFrame({'dt': y.index.tz_convert(ET).tz_localize(None), 'close': y.Close.values})
                 C = pd.concat([C, N]).drop_duplicates('dt', keep='last').sort_values('dt'); C.to_parquet(f, index=False)
-        except Exception as e: print(f'  ! SPY fetch failed: {e}')
+        except Exception as e: print(f'  ! {tk} fetch failed: {e}')
     C['dt'] = pd.to_datetime(C.dt); return C[C.dt + pd.Timedelta('15min') <= now_et()]
 
 def history(rows, meta, fetch=True):

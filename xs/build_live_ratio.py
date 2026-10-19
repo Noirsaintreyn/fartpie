@@ -23,7 +23,7 @@ print(f'{out.tk.nunique()} names ({len(new)} new), data through {out.date.max():
 x = out[out.sh > 0].copy(); x['r'] = x.opt_contracts * 100 / x.sh
 med = x.pivot_table(index='date', columns='tk', values='r').sort_index().rolling(252, min_periods=60).median()
 keep = [t for t in med.columns if (med[t] >= 1.0).any()]
-if os.getenv('INCLUDE_NEW') != '1':                                        # universe switch needs Rey's OK: until then only the names already live
+if os.getenv('INCLUDE_NEW', '1') != '1':                                        # universe switch needs Rey's OK: until then only the names already live
     keep = [t for t in keep if t in set(pd.read_csv('xs/ext/optvol_ratio.csv', usecols=['tk']).tk)]
 c = out[out.tk.isin(keep) & (out.date >= out.date.max() - pd.Timedelta(days=460))]
 os.makedirs('live_data', exist_ok=True); c.to_csv('live_data/optvol_ratio_live.csv', index=False)
