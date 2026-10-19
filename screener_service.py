@@ -44,6 +44,9 @@ def setup():
         if os.path.isdir(link) and not os.listdir(link): os.rmdir(link)
         if os.path.exists(link): raise SystemExit(f'{link} exists and is not empty - cannot link it to the persistent disk')
         os.symlink(os.path.join(DATA, target), link)
+    st, seed = os.path.join(DATA, 'live', 'posted.json'), os.path.join(ROOT, 'live_data', 'posted_seed.json')
+    if not os.path.exists(st) and os.path.exists(seed):          # first boot: take over the Mac's 'already posted' list so nothing is re-posted
+        import shutil; shutil.copy(seed, st); log('seeded posted.json from the Mac snapshot')
     log('disk layout ready under', DATA)
 
 
