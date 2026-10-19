@@ -57,7 +57,9 @@ SESSION = os.getenv('SCREENER_SESSION', 'pre')        # 'pre' = vector on premar
 PRE0 = 240                                              # 04:00 ET
 CUTOVER = pd.Timestamp(os.getenv('PM_START', '2026-10-14 09:30'))
 MODEL2 = pd.Timestamp(os.getenv('MODEL2_START', '2026-10-19 09:30'))          # 1h-flip track + profit lock start here
-SLOTS, LOCK_K, LOCK_G = int(os.getenv('SLOTS', '8')), 0.05, 0.5               # lock: after +5% peak keep >= 50% of the peak gain
+SLOTS, LOCK_K, LOCK_G = int(os.getenv('SLOTS', '6')), 0.05, 0.5
+SLOT_SWITCH = pd.Timestamp(os.getenv('SLOT_SWITCH', '2026-10-20 09:30'))     # 8 slots (12.5% each) before this, SLOTS after
+slots_at = lambda t0: 8 if pd.Timestamp(t0) < SLOT_SWITCH else SLOTS               # lock: after +5% peak keep >= 50% of the peak gain
 VIRT, INF = np.datetime64('2262-01-01'), np.datetime64('2262-03-01')        # the next (virtual) RTH open / still open   # premarket rule applies to signals from here; earlier positions carried      # QQQ (neg-gamma) slot off by default: no daily options pull needed
 LIVE = 'live'; os.makedirs(LIVE, exist_ok=True)
 ET = 'America/New_York'
@@ -246,7 +248,7 @@ def allocate(trades):
     trades = sorted(trades, key=lambda t: (t['t0'], -t.get('ratio', 0) if TIE_RATIO else 0, t['track'] != '15m', t['tk'])); op, out = [], []
     for t in trades:
         op = [x for x in op if x > t['t0']]
-        if len(op) < SLOTS: op.append(t['t1']); out.append(t)
+        if len(op) < slots_at(t['t0']): op.append(t['t1']); out.append(t)
     return out
 
 def scan(args):
@@ -324,7 +326,7 @@ def write_site_snapshot(rows, meta):
         T, g, book, spy = history(rows, meta, fetch=True); w = meta['w']
         fmt = lambda d: f'{pd.Timestamp(d):%a %m-%d %H:%M}'
         tr = [dict(name=z['name'], entry=f"{fmt(z['t0'])}  {z['p0']:.2f}", exit=('open  ' + (f"{z['p1']:.2f}" if z['p1'] == z['p1'] else '')) if z['open'] else f"{fmt(z['t1'])}  {z['p1']:.2f}",
-                   ret=round(z['ret'] * 100, 2), peak=round(z['peak'] * 100, 2), book=round(z['ret'] * w * 100, 2), open=bool(z['open']), lock=bool(z['lock'])) for z in T]
+                   ret=round(z['ret'] * 100, 2), peak=round(z['peak'] * 100, 2), book=round(z['ret'] * z['w'] * 100, 2), open=bool(z['open']), lock=bool(z['lock'])) for z in T]
         key = [pd.Timestamp(z['t1']) if not z['open'] else pd.Timestamp(z['t0']) for z in T]
         order = sorted(range(len(tr)), key=lambda i: (not tr[i]['open'], -key[i].value))
         tr = [tr[i] for i in order]
@@ -471,13 +473,13 @@ def history(rows, meta, fetch=True):
         r_ = np.where(g < t['t0'], 0.0, c / t['px'] - 1); lr = R.get((t['tk'], t['track']))
         if t['status'] == 'CLOSED': rx = t['xpx'] / t['px'] - 1; r_ = np.where(g >= t['t1'], rx, r_); xp, xt = t['xpx'], pd.Timestamp(t['t1'])
         else: rx = lr['pnl'] if lr else 0.0; xp, xt = (lr['last'] if lr else np.nan), None
-        book += w * r_
+        wt = 1 / slots_at(t['t0']); book += wt * r_
         rth = ((H.dt.dt.hour * 60 + H.dt.dt.minute) >= RTH0).values; hi_ = H.high.values
         seg = slice(t['e'], t['x'] if t['status'] == 'CLOSED' else len(H))      # RTH highs from the entry bar until the exit open
         pk = np.nanmax(np.r_[hi_[seg][rth[seg]], xp if xp == xp else -np.inf, t['px']]) / t['px'] - 1
-        out.append(dict(peak=pk, name=t['tk'] + ('' if t['track'] == '15m' else ' 1h'), t0=pd.Timestamp(t['t0']), p0=t['px'], t1=xt, p1=xp, ret=rx,
+        out.append(dict(w=wt, peak=pk, name=t['tk'] + ('' if t['track'] == '15m' else ' 1h'), t0=pd.Timestamp(t['t0']), p0=t['px'], t1=xt, p1=xp, ret=rx,
                         open=t['status'] != 'CLOSED', sell=t['status'] == 'SELL', lock=bool(t.get('lock'))))
-    tot = sum(w * z['ret'] for z in out)
+    tot = sum(z['w'] * z['ret'] for z in out)
     S = spy_15m(fetch); sp = pd.Series(S.close.values, index=S.dt.values)
     base = sp[sp.index < np.datetime64(START)]; b0 = base.iloc[-1] if len(base) else (sp.iloc[0] if len(sp) else np.nan)
     spy = sp.reindex(g, method='ffill').values / b0 - 1 if len(sp) else np.full(len(g), np.nan)
@@ -490,7 +492,7 @@ def history_card(rows, meta, path, fetch=True):
     C = sorted([z for z in out if not z['open']], key=lambda z: z['t1'], reverse=True); O = sorted([z for z in out if z['open']], key=lambda z: -z['ret'])
     L = O + C; MAXR = 28; show = L[:MAXR]; nr = len(show)
     H_in = 6.3 + .27 * max(nr, 4); fig = plt.figure(figsize=(10, H_in), facecolor=BG); _frame(fig, BLUE); Y = lambda inch: 1 - inch / H_in
-    tot, real, op = by[-1], sum(w * z['ret'] for z in C), sum(w * z['ret'] for z in O); spy = sy[-1]
+    tot, real, op = by[-1], sum(z['w'] * z['ret'] for z in C), sum(z['w'] * z['ret'] for z in O); spy = sy[-1]
     wins = [z['ret'] for z in C if z['ret'] > 0]; loss = [z['ret'] for z in C if z['ret'] <= 0]
     fig.text(.045, Y(.55), 'Trade history', fontsize=19, fontweight='bold')
     fig.text(.045, Y(.85), f"since {START:%a %b %d} · {len(C)} closed, {len(O)} open · each trade = 1 slot ({w:.1%}) · on-time rule fills, open marked "
@@ -532,7 +534,7 @@ def history_card(rows, meta, path, fetch=True):
         ex = (f"{z['t1']:%a %m-%d %H:%M}  {z['p1']:,.2f}" + ('  lock' if z['lock'] else '')) if not z['open'] else (f"OPEN  {z['p1']:,.2f}" + ('  SELL next open' if z['sell'] else ''))
         fig.text(.42, y, ex, fontsize=8.5, color=(GOOD if z['open'] and not z['sell'] else CRIT if z['sell'] else T2), family='DejaVu Sans Mono')
         fig.text(.69, y, f"{z['ret']:+.2%}", fontsize=9, fontweight='bold', color=col)
-        fig.text(.795, y, f"{z['peak']:+.2%}", fontsize=8.5, color=GOOD if z['peak'] > 0 else MUT); fig.text(.9, y, f"{w * z['ret']:+.2%}", fontsize=8.5, color=col)
+        fig.text(.795, y, f"{z['peak']:+.2%}", fontsize=8.5, color=GOOD if z['peak'] > 0 else MUT); fig.text(.9, y, f"{z['w'] * z['ret']:+.2%}", fontsize=8.5, color=col)
     if len(L) > MAXR: fig.text(.045, y0 - (.3 + .27 * nr) / H_in, f'showing the latest {MAXR} of {len(L)} trades', fontsize=8, color=MUT)
     fig.text(.045, .1 / H_in, 'RETURN = trade return; PEAK = highest return while held (RTH highs); BOOK = its share of the book (1 slot). Book P&L = sum of slot returns (not compounded), before costs.', fontsize=7.5, color=MUT)
     fig.savefig(path, dpi=140, facecolor=BG); plt.close(fig)
