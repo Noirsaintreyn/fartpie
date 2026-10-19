@@ -66,11 +66,12 @@ def site_snapshot():
     if e: return e
     with _lock:
         d = _snap['data']
-        if d is None and os.path.exists(SNAP_FILE):
-            try:
-                d = _snap['data'] = json.load(open(SNAP_FILE))
-            except Exception:
-                d = None
+        for f in (SNAP_FILE, os.path.join(ROOT, 'live_data', 'site_snapshot.json')):   # pushed copy, else the last one shipped in git
+            if d is None and os.path.exists(f):
+                try:
+                    d = _snap['data'] = json.load(open(f))
+                except Exception:
+                    d = None
     return jsonify({'success': True, 'snapshot': d})
 
 
