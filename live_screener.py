@@ -702,11 +702,14 @@ if __name__ == '__main__':
     ap.add_argument('--loop', action='store_true')
     ap.add_argument('--check-card', default=None, help='render the open-positions board to this path (Discord /check)')
     ap.add_argument('--check-ticker', default=None)
+    ap.add_argument('--site-snapshot', action='store_true', help='scan once (live prices) and write live/site_snapshot.json for the website')
     ap.add_argument('--history-card', default=None, help='render every trade since the start + book vs SPY (Discord /history)')
     args = ap.parse_args()
     if not args.loop:
         rows, meta = scan(args); show(rows, meta)
         if args.post_positions: post_positions(rows, meta)
+        if args.site_snapshot:
+            print('site snapshot written'); sys.exit()
         if args.check_card:                                       # Discord /check: open positions with their charts + book P&L
             rows = mark_live(rows, not args.no_fetch)
             R = rows

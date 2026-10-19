@@ -80,6 +80,20 @@ def run_bot():
     threading.Thread(target=loop, daemon=True).start()
 
 
+def run_tail(cmd):
+    """run cmd, stream its output to the log, return (exit code, last ~12 lines) so crashes can be reported to Discord."""
+    from collections import deque
+    p = subprocess.Popen(cmd, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+    last = deque(maxlen=12)
+    for line in p.stdout:
+        sys.stdout.write(line); sys.stdout.flush()
+        if 'possibly delisted' not in line: last.append(line.rstrip()[:180])
+    return p.wait(), '\n'.join(last)[-1500:]
+
+
+SCREENER_RUNNING = {'on': False}
+
+
 def run_site_push():
     """Push live/site_snapshot.json to the website whenever the screener rewrites it (and every 10 min regardless)."""
     import threading, requests
@@ -87,9 +101,15 @@ def run_site_push():
     if not url or not tok: log('site push off (BACKEND_URL / SITE_TOKEN not set)'); return
     f = os.path.join(ROOT, 'live', 'site_snapshot.json')
     def loop():
-        last, sent_at = None, 0
+        last, sent_at, made, err_at = None, 0, 0, 0
         while True:
             try:
+                stale = not os.path.exists(f) or time.time() - os.path.getmtime(f) > 1800
+                if stale and not SCREENER_RUNNING['on'] and time.time() - made > 1800:
+                    made = time.time(); log('building a site snapshot (screener not running)')
+                    rc, tail = run_tail([sys.executable, '-u', 'live_screener.py', '--site-snapshot'])
+                    if rc != 0 and time.time() - err_at > 6 * 3600:
+                        err_at = time.time(); notify(f'⚠️ website snapshot failed (exit {rc}):\n```{tail}```')
                 if os.path.exists(f):
                     m = os.path.getmtime(f)
                     if m != last or time.time() - sent_at > 600:
@@ -113,13 +133,14 @@ def main():
         age, last = optvol_age_days()
         if age is None: notify('⚠️ screener: the options-ratio file is missing - run tools/weekly_ratio.sh on the Mac (it commits + pushes it).')
         elif age > MAX_AGE and warned != now.date(): notify(f'⚠️ screener: the options-ratio file is {age} days old (last row {last}). Run tools/weekly_ratio.sh on the Mac.'); warned = now.date()
-        restarts = 0
+        restarts = 0; SCREENER_RUNNING['on'] = True
         while restarts < 8:
             t0 = time.time(); log('starting live_screener.py', ' '.join(ARGS))
-            rc = subprocess.run([sys.executable, '-u', 'live_screener.py'] + ARGS, cwd=ROOT).returncode
+            rc, tail = run_tail([sys.executable, '-u', 'live_screener.py'] + ARGS)
             if rc == 0: log('screener finished for the day'); break
-            restarts += 1; notify(f'⚠️ screener stopped (exit {rc}) after {(time.time() - t0) / 60:.0f} min - restarting ({restarts}/8)'); time.sleep(30)
+            restarts += 1; notify(f'⚠️ screener stopped (exit {rc}) after {(time.time() - t0) / 60:.0f} min - restarting ({restarts}/8)' + (f'\n```{tail}```' if restarts in (1, 8) else '')); time.sleep(30)
         else: notify('🛑 screener crashed 8 times today - not restarting until tomorrow. Check the Render logs.')
+        SCREENER_RUNNING['on'] = False
         done = dt.datetime.now(ET).date()
         if os.environ.get('SERVICE_ONCE'): return
 
