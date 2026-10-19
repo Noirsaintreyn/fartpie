@@ -32,6 +32,12 @@ except Exception as _e:
     QZ = None; print(f'QR zones disabled: {_e}')
 from backend_client import Backend, BackendDown, TIMEFRAMES, norm_tf, norm_ticker
 
+try:                                                    # local runs: read tokens from discord_bot/.env and ./.env (Render sets real env vars)
+    from dotenv import load_dotenv
+    _here = os.path.dirname(os.path.abspath(__file__)); load_dotenv(os.path.join(_here, '.env')); load_dotenv(os.path.join(_here, '..', '.env'))
+except ImportError: pass
+
+
 bk = Backend()
 intents = discord.Intents.none()
 client = discord.Client(intents=intents)
