@@ -385,14 +385,34 @@ async def on_ready():
         asyncio.get_running_loop().create_task(gex_prefetch_loop())
     if getattr(client, '_synced', False): return       # reconnects fire on_ready again: register commands once per process only
     client._synced = True
-    guild = os.environ.get('DISCORD_GUILD_ID')
+    await sync_commands()
+    asyncio.get_running_loop().create_task(command_guard())
+    import socket
+    print(f'ready as {client.user} on {"render" if ON_RENDER else socket.gethostname()}')
+
+
+async def sync_commands():
+    guild = os.environ.get('DISCORD_GUILD_ID', '').split('#')[0].strip()
     if guild:                                   # guild sync is instant; global sync can take up to an hour
         g = discord.Object(id=int(guild))
         tree.copy_global_to(guild=g)
-        await tree.sync(guild=g)
-    else:
-        await tree.sync()
-    print(f'ready as {client.user}')
+        return await tree.sync(guild=g)
+    return await tree.sync()
+
+
+async def command_guard():
+    """Every 5 min: if Discord's registered command list is missing any of ours (another bot copy with older code
+    overwrote it), put ours back. Logs it so the culprit is visible."""
+    ours = {c.name for c in tree.get_commands()}
+    while True:
+        await asyncio.sleep(300)
+        try:
+            guild = os.environ.get('DISCORD_GUILD_ID', '').split('#')[0].strip()
+            have = {c.name for c in await tree.fetch_commands(guild=discord.Object(id=int(guild)) if guild else None)}
+            if ours - have:
+                print(f'commands missing on Discord {sorted(ours - have)} - another bot copy overwrote them; re-registering')
+                await sync_commands()
+        except Exception as e: print('command guard:', str(e)[:120])
 
 
 if __name__ == '__main__':
