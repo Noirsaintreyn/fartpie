@@ -53,7 +53,8 @@ td.r,th.r{text-align:right}
 .empty{color:var(--muted);font-size:13px;padding:14px 0}
 .legend{display:flex;flex-wrap:wrap;gap:18px;font-size:12px;color:#c9c7c2}
 .legend span{display:inline-flex;align-items:center;gap:8px}.legend i{width:18px;height:2px;display:inline-block}
-.lc{position:relative;height:340px}.lc canvas{width:100%;height:100%;display:block}
+.vsel{background:transparent;border:1px solid rgba(201,162,39,.3);color:var(--gold);font:inherit;font-size:11px;letter-spacing:.12em;padding:2px 4px;margin-left:4px;border-radius:2px}.vsel option{background:#0a0e1a}
+.lc{position:relative;height:340px}.lc canvas{width:100%;height:100%;display:block}.lc[data-empty]::after{content:attr(data-empty);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px}
 .holds{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
 .holds div{border:1px solid var(--line);padding:10px 12px;font-weight:600;letter-spacing:.04em;color:var(--white);font-size:13px}
 .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:18px}
@@ -165,6 +166,11 @@ td.r,th.r{text-align:right}
 <div style="display:flex;flex-direction:column;gap:20px">
 <div class="tiles" id="histTiles"></div>
 <div class="panel">
+<div class="ptop"><h2>Book vs the indexes</h2><div class="legend"><span><i style="background:var(--gold)"></i>Screener book <b id="hcB"></b></span><span><i style="background:#5fb3a1"></i>QQQ <b id="hcQ"></b></span><span><i style="background:#8d96a8"></i>SPY <b id="hcS"></b></span></div></div>
+<div class="lc" style="height:300px"><canvas id="histChart" role="img" aria-label="Live book return versus SPY and QQQ since the start"></canvas></div>
+<p class="note">Book = sum of slot returns (each trade is one slot, 12.5%), at the rule's fills; open trades marked to the last price.</p>
+</div>
+<div class="panel">
 <h2 style="margin-bottom:14px" id="histTitle">Every trade</h2>
 <div class="scroll"><table style="min-width:760px;font-size:13px"><thead><tr><th>Trade</th><th>Entry</th><th>Exit</th><th class="r">Return</th><th class="r">Peak</th><th class="r">Book</th></tr></thead><tbody id="histBody"></tbody></table></div>
 <div class="empty" id="histEmpty" hidden>No trades yet.</div>
@@ -216,6 +222,7 @@ td.r,th.r{text-align:right}
     Object.keys(TITLES).forEach(function (k) { $('tab-' + k).hidden = k !== t; });
     $('title').textContent = TITLES[t][0]; $('subtitle').textContent = TITLES[t][1];
     if (t === 'mid' || t === 'backtest') drawStatic();
+    if (t === 'history') drawHist();
     if (t === 'charts') { if (!CH.data) loadChart(); else draw(); }
   }
   document.querySelectorAll('#nav button').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
@@ -249,7 +256,9 @@ td.r,th.r{text-align:right}
     $('histTiles').innerHTML = tile('Book P&L', pct(H.book, 2), 'realized ' + pct(H.realized, 2) + ' · open ' + pct(H.open, 2), cls(H.book)) +
       tile('Closed trades', String(closed.length), (T.length - closed.length) + ' open') +
       tile('Win rate', closed.length ? Math.round(wins.length / closed.length * 100) + '%' : '–', 'avg win ' + pct(mean(wins)) + ' · avg loss ' + pct(mean(losses))) +
-      tile('vs SPY', H.spy == null ? '–' : pct(H.book - H.spy, 2), 'SPY ' + pct(H.spy, 2) + ' same period', 'gold');
+      '<div class="tile" id="vsTile"></div>';
+    LH = H; renderVs();
+    HC = H.curve || null; drawHist();
     $('histTitle').textContent = H.since ? 'Every trade since ' + H.since : 'Every trade';
     $('histEmpty').hidden = T.length > 0;
     $('histBody').innerHTML = T.map(function (t) {
@@ -257,6 +266,35 @@ td.r,th.r{text-align:right}
     }).join('');
   }
   document.addEventListener('click', function (e) { var b = e.target.closest('[data-tk]'); if (b) openChart(b.dataset.tk); });
+  var HC = null, LH = null, VS = 'spy';
+  try { VS = localStorage.getItem('lap_vs') || 'spy'; } catch (e) {}
+  function renderVs() {
+    var el = $('vsTile'); if (!el || !LH) return;
+    var b = LH[VS], name = VS.toUpperCase();
+    el.innerHTML = '<span class="k"><label for="vsSel">vs</label><select class="vsel" id="vsSel"><option value="spy"' + (VS === 'spy' ? ' selected' : '') + '>SPY</option><option value="qqq"' + (VS === 'qqq' ? ' selected' : '') + '>QQQ</option></select></span>' +
+      '<span class="v gold">' + (b == null ? '–' : pct(LH.book - b, 2)) + '</span><span class="sub">' + name + ' ' + pct(b, 2) + ' same period</span>';
+    $('vsSel').addEventListener('change', function (e) { VS = e.target.value; try { localStorage.setItem('lap_vs', VS); } catch (x) {} renderVs(); });
+  }
+  function drawHist() {
+    if (tab !== 'history') return;
+    var cv = $('histChart');
+    if (!HC || !HC.t || HC.t.length < 2) { var c0 = cv.getContext('2d'); c0.clearRect(0, 0, cv.width, cv.height); cv.parentNode.setAttribute('data-empty', 'Chart appears after the screener\u2019s next update'); return; }
+    cv.parentNode.removeAttribute('data-empty');
+    var box = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1; if (!box.width) return;
+    cv.width = box.width * dpr; cv.height = box.height * dpr; var g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, box.width, box.height);
+    var W = box.width - 56, H = box.height - 26, S = [{ v: HC.spy, c: '#8d96a8', w: 1.6 }, { v: HC.qqq, c: '#5fb3a1', w: 1.6 }, { v: HC.book, c: '#c9a227', w: 2.4 }];
+    var lo = 0, hi = 0; S.forEach(function (s) { s.v.forEach(function (x) { if (x != null) { lo = Math.min(lo, x); hi = Math.max(hi, x); } }); });
+    var pad = Math.max(0.25, (hi - lo) * 0.1); lo -= pad; hi += pad; var n = HC.t.length;
+    var Y = function (v) { return 6 + (H - 12) * (hi - v) / (hi - lo); }, X = function (i) { return i / (n - 1) * W; };
+    var st = Math.pow(10, Math.floor(Math.log10((hi - lo) / 4))); [1, 2, 5, 10].some(function (m) { if ((hi - lo) / (st * m) <= 6) { st *= m; return true; } });
+    g.font = '11px Inter, sans-serif'; g.textBaseline = 'middle';
+    for (var p = Math.ceil(lo / st) * st; p <= hi; p += st) { var y = Y(p); g.strokeStyle = Math.abs(p) < 1e-9 ? 'rgba(201,162,39,0.35)' : 'rgba(201,162,39,0.08)'; g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); g.fillStyle = '#9a9890'; g.fillText((p > 0 ? '+' : '') + p.toFixed(st < 1 ? 1 : 0) + '%', W + 8, y); }
+    g.textBaseline = 'top'; var lastDay = '', lastX = -1e9;
+    HC.t.forEach(function (t, i) { var d = new Date(t + new Date(t).getTimezoneOffset() * 60000), lab = d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }); if (lab !== lastDay && X(i) - lastX > 90) { g.fillStyle = '#9a9890'; g.fillText(lab, X(i), H + 8); lastX = X(i); } lastDay = lab; });
+    S.forEach(function (s) { g.strokeStyle = s.c; g.lineWidth = s.w; g.beginPath(); var on = false; s.v.forEach(function (v, i) { if (v == null) { on = false; return; } if (on) g.lineTo(X(i), Y(v)); else { g.moveTo(X(i), Y(v)); on = true; } }); g.stroke(); });
+    var L = function (a) { for (var i = a.length - 1; i >= 0; i--) if (a[i] != null) return pct(a[i], 2); return '–'; };
+    $('hcB').textContent = L(HC.book); $('hcQ').textContent = L(HC.qqq); $('hcS').textContent = L(HC.spy);
+  }
   function loadSnap() { getJSON('/api/site/snapshot').then(function (j) { renderSnap(j.snapshot); }).catch(function () {}); }
 
   // ---------------------------------------------------------------- static charts (mid book, backtest)
@@ -358,7 +396,7 @@ td.r,th.r{text-align:right}
     v.end = Math.max(v.count, Math.min(CH.data.bars.length + 10, Math.round(drag.end - (e.clientX - drag.x) / per))); draw();
   });
   box.addEventListener('pointerup', function () { drag = null; });
-  window.addEventListener('resize', function () { draw(); drawStatic(); });
+  window.addEventListener('resize', function () { draw(); drawStatic(); drawHist(); });
 
   function draw() {
     tfButtons();
