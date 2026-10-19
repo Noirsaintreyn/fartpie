@@ -9,9 +9,10 @@ for f in glob.glob('data/theta_vol/*.csv'):
     v = pd.read_csv(f)
     tk = v.tk.iloc[0]
     if tk not in fs: continue
+    nm = v.month.nunique()                                                # months fetched (incl. empty pre-listing months)
     v = v.dropna(subset=['date']); v['date'] = pd.to_datetime(v.date)
     if tk in set(old.tk): v = v[v.date > old[old.tk == tk].date.max()]          # refresh: only months after the old pull
-    elif v.month.nunique() < 100: continue
+    elif nm < 100: continue                                              # pull not finished yet
     if not len(v): continue
     H = pd.read_parquet(fs[tk], columns=['datetime', 'volume']); H['dt'] = pd.to_datetime(H.datetime, utc=True).dt.tz_convert('America/New_York').dt.tz_localize(None)
     m = H.dt.dt.hour * 60 + H.dt.dt.minute; H = H[(m >= 570) & (m < 960)]; sh = H.groupby(H.dt.dt.normalize()).volume.sum().rename('sh')
