@@ -80,9 +80,31 @@ def run_bot():
     threading.Thread(target=loop, daemon=True).start()
 
 
+def run_site_push():
+    """Push live/site_snapshot.json to the website whenever the screener rewrites it (and every 10 min regardless)."""
+    import threading, requests
+    url, tok = os.environ.get('BACKEND_URL', '').rstrip('/'), os.environ.get('SITE_TOKEN', '')
+    if not url or not tok: log('site push off (BACKEND_URL / SITE_TOKEN not set)'); return
+    f = os.path.join(ROOT, 'live', 'site_snapshot.json')
+    def loop():
+        last, sent_at = None, 0
+        while True:
+            try:
+                if os.path.exists(f):
+                    m = os.path.getmtime(f)
+                    if m != last or time.time() - sent_at > 600:
+                        r = requests.post(f'{url}/api/site/push', data=open(f, 'rb').read(), headers={'X-Site-Token': tok, 'Content-Type': 'application/json'}, timeout=30)
+                        if r.ok: last, sent_at = m, time.time()
+                        else: log('site push', r.status_code, r.text[:80])
+            except Exception as e: log('site push failed', str(e)[:80])
+            time.sleep(30)
+    threading.Thread(target=loop, daemon=True).start()
+
+
 def main():
     setup(); log('screener worker up; args', ARGS)
     if os.environ.get('RUN_BOT') == '1': run_bot()
+    run_site_push()
     done, warned = None, None
     while True:
         now = dt.datetime.now(ET)

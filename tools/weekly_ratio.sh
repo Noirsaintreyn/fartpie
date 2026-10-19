@@ -11,5 +11,6 @@ START=$(date -v-3m +%Y-%m-01)
 for s in 0 1 2 3; do FORCE=1 PARTIAL=1 START=$START SHARD=$s NSHARD=4 $PY fetch_theta_volume.py $TKS > /tmp/wr_$s.log 2>&1 & done; wait
 $PY xs/build_live_ratio.py || exit 1
 git pull -q --rebase --autostash origin main   # pick up anything pushed from elsewhere first
-git add live_data/optvol_ratio_live.csv
+cp live/mid_book.json live_data/mid_book.json 2>/dev/null
+git add live_data/optvol_ratio_live.csv live_data/mid_book.json
 git commit -m "weekly options-ratio refresh $(date +%F)" -q && git push -q origin main && echo "pushed - Render will redeploy" || echo "nothing changed"

@@ -294,8 +294,45 @@ def scan(args):
                             stop=stop, state15=int(L.reg), state1h=int(L.s1), trig=float(L.trig) if L.reg == -1 else np.nan,
                             ratio=float(last_ratio.get(tk, np.nan)) if tk != 'QQQ' else np.nan, peak=pg,
                             pnl=(L.close / px - 1) if px else np.nan, note=note))
-    meta = dict(trades=AL, HS=HS, slots=slots, w=1 / slots, rat_thru=rat_thru, g_thru=G.index.max(), capital=args.capital)
+    meta = dict(trades=AL, HS=HS, slots=slots, w=1 / slots, rat_thru=rat_thru, g_thru=G.index.max(), capital=args.capital,
+                ratios={t: float(last_ratio.get(t, np.nan)) for t in elig_now})
+    if not args.no_fetch and os.getenv('SITE_SNAPSHOT', '1') == '1':
+        try: write_site_snapshot(out, meta)
+        except Exception as e: print(f'  ! site snapshot: {str(e)[:80]}')
     return out, meta
+
+
+def write_site_snapshot(rows, meta):
+    """live/site_snapshot.json for the website (screener_service pushes it to BACKEND_URL/api/site/push)."""
+    t = now_et(); m = t.hour * 60 + t.minute
+    held = {r['base'] for r in rows if r['action'] in ('HOLD', 'SELL') and r['px']}
+    pos = [dict(name=r['ticker'], base=r['base'], entry=f"{r['px']:.2f}", stop=f"{r['stop']:.2f}", last=f"{r['last']:.2f}",
+                pnl=round(r['pnl'] * 100, 2), peak=round(max(r.get('peak') or 0, r['pnl']) * 100, 2), selling=r['action'] == 'SELL')
+           for r in rows if r['action'] in ('HOLD', 'SELL') and r['px']]
+    sig = []
+    f = f'{LIVE}/signal_log.csv'
+    if os.path.exists(f):
+        L = pd.read_csv(f, parse_dates=['run_at']); L = L[L.run_at.dt.normalize() == t.normalize()]
+        for x in L.itertuples():
+            sig.append(dict(time=f'{x.run_at:%H:%M}', action=x.action, ticker=x.ticker, price=f'{x.price:.2f}',
+                            pnl=round(x.pnl * 100, 2) if (x.action == 'SELL' and x.pnl == x.pnl) else None))
+        seen = set(); sig = [z for z in sig[::-1] if not ((z['time'], z['action'], z['ticker']) in seen or seen.add((z['time'], z['action'], z['ticker'])))]
+    watch = [dict(tk=k, ratio=round(v, 2), held=k in held) for k, v in sorted(meta.get('ratios', {}).items(), key=lambda kv: -kv[1]) if v == v]
+    hist = {}
+    try:
+        T, g, book, spy = history(rows, meta, fetch=True); w = meta['w']
+        fmt = lambda d: f'{pd.Timestamp(d):%a %m-%d %H:%M}'
+        tr = [dict(name=z['name'], entry=f"{fmt(z['t0'])}  {z['p0']:.2f}", exit=('open  ' + (f"{z['p1']:.2f}" if z['p1'] == z['p1'] else '')) if z['open'] else f"{fmt(z['t1'])}  {z['p1']:.2f}",
+                   ret=round(z['ret'] * 100, 2), peak=round(z['peak'] * 100, 2), book=round(z['ret'] * w * 100, 2), open=bool(z['open']), lock=bool(z['lock'])) for z in T]
+        key = [pd.Timestamp(z['t1']) if not z['open'] else pd.Timestamp(z['t0']) for z in T]
+        order = sorted(range(len(tr)), key=lambda i: (not tr[i]['open'], -key[i].value))
+        tr = [tr[i] for i in order]
+        hist = dict(trades=tr, book=round(float(book[-1]) * 100, 2), spy=round(float(spy[-1]) * 100, 2) if spy[-1] == spy[-1] else None,
+                    realized=round(sum(z['book'] for z in tr if not z['open']), 2), open=round(sum(z['book'] for z in tr if z['open']), 2), since=f'{pd.Timestamp(START):%a %b %d}')
+    except Exception as e: print(f'  ! site history: {str(e)[:80]}')
+    snap = dict(asof=t.isoformat(), asof_ms=int(pd.Timestamp(t, tz=ET).timestamp() * 1000), market_open=t.dayofweek < 5 and RTH0 <= m < RTH1,
+                slots=meta['slots'], cutoff=CUT, positions=pos, signals=sig, watch=watch, history=hist)
+    tmp = f'{LIVE}/site_snapshot.json.tmp'; json.dump(snap, open(tmp, 'w')); os.replace(tmp, f'{LIVE}/site_snapshot.json')
 
 # ================================================================ cards
 def _frame(fig, accent):

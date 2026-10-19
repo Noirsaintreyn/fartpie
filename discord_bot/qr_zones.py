@@ -6,7 +6,9 @@ zones(qr_tf, hl, issue_price, tf, color) -> (bands, xlines) for vchart.render: y
 within 0.35 x your 1s->2s spacing, otherwise the QR line is drawn on its own (labelled QR1 / QR2)."""
 import os, json, glob, warnings, numpy as np, pandas as pd
 warnings.filterwarnings('ignore')
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); BARS = f'{ROOT}/xs/ext/qr_bars'
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BARS = os.getenv('QR_BARS') or (f'{ROOT}/xs/ext/qr_bars' if os.path.isdir(f'{ROOT}/xs/ext/qr_bars') else f'{ROOT}/live_data/qr_bars')   # website: git copy
+QR_CACHE = os.getenv('QR_CACHE') or (f'{ROOT}/xs/ext' if os.path.isdir(f'{ROOT}/xs/ext') else '/tmp')
 TK = ['QQQ', 'AAPL', 'AMD', 'MSFT', 'NVDA']; TAUS = [0.50, 0.80, 0.95]; WIN = {'1h': 630, '4h': 810}
 def update_bars():
     """append the last few days of 15m bars (yfinance, incl. premarket) so today's open + premarket are in the history files"""
@@ -14,7 +16,8 @@ def update_bars():
     for tk in TK:
         f = f'{BARS}/{tk}_15m.parquet'; H = pd.read_parquet(f)
         try:
-            y = yf.Ticker(tk).history(period='5d', interval='15m', prepost=True)
+            gap = (pd.Timestamp.utcnow().tz_localize(None) - pd.to_datetime(H.datetime).max()).days
+            y = yf.Ticker(tk).history(period='5d' if gap < 4 else '59d', interval='15m', prepost=True)
             if len(y):
                 y = y.reset_index(); t = pd.to_datetime(y.iloc[:, 0], utc=True).dt.tz_localize(None)
                 N = pd.DataFrame({'datetime': t, 'open': y.Open, 'high': y.High, 'low': y.Low, 'close': y.Close, 'volume': y.Volume.clip(lower=1)})
@@ -37,7 +40,7 @@ def _daily(H, day):
 def predict(day=None, refresh=True):
     import statsmodels.api as sm
     day = pd.Timestamp(day or pd.Timestamp.now(tz='America/New_York').tz_localize(None).normalize()).normalize()
-    cache = f'{ROOT}/xs/ext/qr_win_{day:%Y%m%d}.json'
+    cache = f'{QR_CACHE}/qr_win_{day:%Y%m%d}.json'
     if os.path.exists(cache) and not refresh: return json.load(open(cache))
     BB = {tk: _bars(tk) for tk in TK}; OUT = {}
     for wn, end in WIN.items():

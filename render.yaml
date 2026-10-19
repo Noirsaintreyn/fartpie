@@ -5,12 +5,14 @@ services:
     branch: main
     autoDeploy: true
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn backend:app --bind 0.0.0.0:$PORT --timeout 120 --workers 1
+    startCommand: gunicorn site_app:app --bind 0.0.0.0:$PORT --timeout 120 --workers 1
     envVars:
       - key: PYTHON_VERSION
         value: "3.12"
       - key: ENV
         value: production
+      - key: SITE_TOKEN          # shared secret the screener worker uses to push the site snapshot
+        generateValue: true
 
   # ONE worker: vector screener + Discord bot together (same disk, so /check and /history work).
   # First boot pulls ~14 months of 15m bars from LSE by itself. The options ratio comes from git (live_data/), refreshed weekly by tools/weekly_ratio.sh on the Mac.
@@ -37,6 +39,8 @@ services:
       - {key: OPTVOL_FILE, value: live_data/optvol_ratio_live.csv}
       - {key: OPT_STALE_DAYS, value: "45"}
       - {key: BACKEND_URL, value: https://fartpie.onrender.com}
+      - key: SITE_TOKEN
+        fromService: {type: web, name: fartpie, envVarKey: SITE_TOKEN}
       - {key: DISCORD_TOKEN, sync: false}
       - {key: DISCORD_GUILD_ID, sync: false}
       - {key: VECTOR_CHANNEL_ID, sync: false}
