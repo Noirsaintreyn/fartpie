@@ -154,8 +154,8 @@ SCREENER_PY = os.getenv('SCREENER_PY', '/usr/bin/python3')       # same interpre
 
 async def _screener_card(inter, extra, out):
     """run live_screener.py with the screener's interpreter, send the PNG it writes (live prices during the session)"""
-    if ON_RENDER:
-        return await inter.followup.send("This command needs the screener on the home machine, so it is not available while the bot runs on Render.")
+    if ON_RENDER and os.environ.get('RUN_BOT') != '1':                # RUN_BOT=1: bot shares the screener's worker + disk, so it works on Render too
+        return await inter.followup.send("This command needs the screener's data, which this bot instance can't see.")
     now = datetime.now(NYTZ); live = now.weekday() < 5 and 4 <= now.hour and (now.hour, now.minute) < (16, 15)
     cmd = [SCREENER_PY, 'live_screener.py'] + extra + ([] if live else ['--no-fetch'])
     try:

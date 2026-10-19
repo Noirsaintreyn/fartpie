@@ -1,21 +1,23 @@
-# Running the screener on Render
+# Screener + bot on Render
 
-The screener (`live_screener.py`) runs as the `fartpie-screener` worker (`screener_service.py` starts it at 08:50 ET on weekdays,
-restarts it if it dies and warns in Discord). ThetaData stays on the Mac; once a week you refresh the options ratio there and push the file.
+One Render worker (`fartpie-live`) runs the vector screener and the Discord bot together. Every `git push` to main redeploys it.
 
 ## One-time setup
-1. Render: create the service from the Blueprint (`render.yaml`), set secrets `DISCORD_TOKEN`, `VECTOR_CHANNEL_ID`, `LSE_API_KEY`.
-   Add your SSH public key in Render > Account Settings > SSH Public Keys; the worker's SSH address is under the service's Connect menu.
-2. Cutover (after the close, never while both run):
-   `launchctl unload ~/Library/LaunchAgents/com.rey.vectorscreener.plist`
-   `RENDER_SSH=srv-XXXX@ssh.oregon.render.com tools/seed_screener_to_render.sh`
-   then restart the worker. It starts the next weekday at 08:50 ET (or immediately if you restart it during the session).
+1. `git push`
+2. In Render, choose New → Blueprint, pick the repo, and paste the 6 secrets it asks for (they're in your `.env` / `discord_bot/.env`).
+3. After the close on the day it goes live, stop the Mac copies so nothing posts twice:
+   `launchctl unload ~/Library/LaunchAgents/com.rey.vectorscreener.plist` (and stop the Mac bot if it's running).
+4. Install the two Mac jobs:
+   `cp com.rey.weeklyratio.plist com.rey.midbook.plist ~/Library/LaunchAgents/ && launchctl load ~/Library/LaunchAgents/com.rey.weeklyratio.plist ~/Library/LaunchAgents/com.rey.midbook.plist`
 
-## Every week
-1. Open Theta Terminal and run `python3 xs/options_volume_ratio.py` (rewrites `xs/ext/optvol_ratio.csv`).
-2. `RENDER_SSH=srv-XXXX@ssh.oregon.render.com tools/sync_optvol_to_render.sh` (no restart needed).
-The worker posts a warning to the channel if the file is more than 10 days old.
+## Weekly (automatic)
+- **Saturday 10:00:** `tools/weekly_ratio.sh` runs on the Mac. Open Theta Terminal before then.
+- **What it does:** pulls the latest options volume, rebuilds the ratio file, then commits and pushes, which makes Render redeploy.
+- **If the file gets over 10 days old:** the screener warns in Discord.
+- **To run it by hand:** `tools/weekly_ratio.sh`
 
 ## Notes
-- The Monday/Friday mid/small book card is off on Render (`MID_BOOK=0`); it needs the xs data pipeline on the Mac.
-- To go back to the Mac: `launchctl load ~/Library/LaunchAgents/com.rey.vectorscreener.plist` and suspend the Render worker (one of them at a time).
+- **First boot:** the worker downloads about 14 months of 15m bars from LSE by itself, so it needs no seeding.
+- **Mid/small book:** it stays on the Mac (`com.rey.midbook`). It builds and posts on Friday at 16:45 and re-posts on Monday at 09:00.
+- **New S&P names:** they stay out until you OK the universe switch. To add them, run `INCLUDE_NEW=1 .venv311/bin/python xs/build_live_ratio.py`, then commit and push.
+- **To go back to the Mac:** suspend the worker in Render, then run `launchctl load ~/Library/LaunchAgents/com.rey.vectorscreener.plist`.

@@ -72,6 +72,15 @@ def load_bars(tk, fetch, first=None):
     live_f = f'{LIVE}/{tk}_15m.parquet'
     parts = [pd.read_parquet(f) for f in sorted(glob.glob(f'lse_ohlcv_cache/{tk}_15m_*.parquet'))[-1:]]
     if os.path.exists(live_f): parts.append(pd.read_parquet(live_f))
+    if not parts and fetch:                                              # fresh machine (Render): pull ~14 months of 15m bars from LSE once
+        try:
+            from fetch_lse_ohlcv import _fetch_range
+            end = pd.Timestamp.utcnow().tz_localize(None).normalize() + pd.Timedelta(days=1)
+            rows = _fetch_range(tk, '15m', end - pd.Timedelta(days=430), end)
+            if rows:
+                N = pd.DataFrame(rows); N['datetime'] = pd.to_datetime(N['ts'], utc=True); parts.append(N[['datetime', 'open', 'high', 'low', 'close', 'volume']])
+                print(f'  {tk}: bootstrapped {len(N):,} 15m bars from LSE')
+        except Exception as e: print(f'  ! {tk}: bootstrap failed ({str(e)[:60]})')
     if not parts: return None
     H = pd.concat(parts); H['datetime'] = pd.to_datetime(H.datetime, utc=True)
     H = H.drop_duplicates('datetime', keep='last').sort_values('datetime')
@@ -130,7 +139,7 @@ def options_ratio():
     R = O.pivot_table(index='date', columns='tk', values='r').sort_index()
     last = O.groupby('tk').date.max(); thru = O.date.max()
     R = R.rolling(252, min_periods=60).median().shift(1)
-    R[list(last[last < thru - pd.Timedelta(days=30)].index)] = np.nan       # options history not current -> not eligible
+    R[list(last[last < thru - pd.Timedelta(days=int(os.getenv('OPT_STALE_DAYS', '30')))].index)] = np.nan       # options history not current -> not eligible
     return R, thru
 
 def theta_up():
@@ -244,7 +253,8 @@ def scan(args):
     RAT, rat_thru = options_ratio()
     last_ratio = RAT.ffill().iloc[-1]
     elig_now = sorted(t for t in RAT.columns if t not in NO_ETF and last_ratio.get(t, 0) >= min(CUT, 1.5))
-    G = pd.read_csv('xs/ext/gex/QQQ.csv', parse_dates=['date']).sort_values('date').set_index('date').net_gex
+    gf = 'xs/ext/gex/QQQ.csv'                                             # only needed for the (off by default) QQQ slot
+    G = pd.read_csv(gf, parse_dates=['date']).sort_values('date').set_index('date').net_gex if os.path.exists(gf) else pd.Series([0.0], index=[pd.Timestamp('2000-01-01')])
     slots = SLOTS; out = []; TR = []; HS = {}
     for tk in elig_now + (['QQQ'] if INCLUDE_QQQ else []):
         pre = SESSION == 'pre' and tk != 'QQQ'

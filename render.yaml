@@ -12,64 +12,34 @@ services:
       - key: ENV
         value: production
 
-  # Discord bot (09:30 ET daily THOD/TLOD charts, 16:05 ET "after" charts, slash commands).
-  # Needs these secrets set in the Render dashboard (they are NOT in git): DISCORD_TOKEN, BACKEND_USER, BACKEND_PASSWORD, DISCORD_GUILD_ID.
+  # ONE worker: vector screener + Discord bot together (same disk, so /check and /history work).
+  # First boot pulls ~14 months of 15m bars from LSE by itself. The options ratio comes from git (live_data/), refreshed weekly by tools/weekly_ratio.sh on the Mac.
+  # Secrets to set once in the Render dashboard: DISCORD_TOKEN, DISCORD_GUILD_ID, VECTOR_CHANNEL_ID, LSE_API_KEY, BACKEND_USER, BACKEND_PASSWORD.
   - type: worker
-    name: fartpie-bot
+    name: fartpie-live
     runtime: python
     branch: main
     autoDeploy: true
-    plan: starter            # 512 MB. If the bot is killed for memory (Events tab shows "out of memory"), raise to standard (2 GB).
-    buildCommand: pip install -r requirements.txt -r discord_bot/requirements.txt
-    startCommand: python -u discord_bot/bot.py
-    disk:
-      name: bot-data         # keeps daily_channels.json (/daily channels), daily_issue.json (09:30 lines for the 16:05 post) and archive/ across deploys
-      mountPath: /data
-      sizeGB: 1
-    envVars:
-      - key: PYTHON_VERSION
-        value: "3.12"
-      - key: PYTHONUNBUFFERED
-        value: "1"
-      - key: DATA_DIR
-        value: /data
-      - key: BACKEND_URL
-        value: https://fartpie.onrender.com
-      - key: DISCORD_TOKEN
-        sync: false
-      - key: DISCORD_GUILD_ID
-        sync: false
-      - key: BACKEND_USER
-        sync: false
-      - key: BACKEND_PASSWORD
-        sync: false
-
-  # Vector screener (15m/1h flips on the options-activity names): posts BUY/SELL cards and open-positions boards to VECTOR_CHANNEL_ID.
-  # Secrets to set in the Render dashboard: DISCORD_TOKEN, VECTOR_CHANNEL_ID, LSE_API_KEY.  One-time seed + weekly options-ratio sync: see SCREENER_DEPLOY.md.
-  - type: worker
-    name: fartpie-screener
-    runtime: python
-    branch: main
-    autoDeploy: true
-    plan: standard           # measured peak ~420 MB for one scan (+ chart rendering), so 512 MB is too tight; 2 GB
+    plan: standard           # 2 GB: one scan peaks ~420 MB + bot + charts
     buildCommand: pip install -r requirements.txt -r discord_bot/requirements.txt
     startCommand: python -u screener_service.py
     disk:
-      name: screener-data
+      name: live-data
       mountPath: /data
       sizeGB: 2
     envVars:
-      - key: PYTHON_VERSION
-        value: "3.12"
-      - key: PYTHONUNBUFFERED
-        value: "1"
-      - key: DATA_DIR
-        value: /data
-      - key: MID_BOOK
-        value: "0"
-      - key: DISCORD_TOKEN
-        sync: false
-      - key: VECTOR_CHANNEL_ID
-        sync: false
-      - key: LSE_API_KEY
-        sync: false
+      - {key: PYTHON_VERSION, value: "3.12"}
+      - {key: PYTHONUNBUFFERED, value: "1"}
+      - {key: DATA_DIR, value: /data}
+      - {key: RUN_BOT, value: "1"}
+      - {key: SCREENER_PY, value: python}
+      - {key: MID_BOOK, value: "0"}
+      - {key: OPTVOL_FILE, value: live_data/optvol_ratio_live.csv}
+      - {key: OPT_STALE_DAYS, value: "45"}
+      - {key: BACKEND_URL, value: https://fartpie.onrender.com}
+      - {key: DISCORD_TOKEN, sync: false}
+      - {key: DISCORD_GUILD_ID, sync: false}
+      - {key: VECTOR_CHANNEL_ID, sync: false}
+      - {key: LSE_API_KEY, sync: false}
+      - {key: BACKEND_USER, sync: false}
+      - {key: BACKEND_PASSWORD, sync: false}

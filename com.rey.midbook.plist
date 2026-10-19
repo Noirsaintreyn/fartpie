@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.rey.midbook</string>
+  <!-- mid/small book stays on the Mac: Fri 16:45 build + post, Mon 09:00 re-post -->
+  <key>ProgramArguments</key>
+  <array><string>/bin/zsh</string><string>-lc</string>
+    <string>cd ~/fartpie &amp;&amp; if [ $(date +%u) = 5 ]; then python3 mid_book.py --build --post; else python3 mid_book.py --post; fi >> live/mid_book.log 2>&amp;1</string></array>
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>16</integer><key>Minute</key><integer>45</integer></dict>
+    <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>0</integer></dict>
+  </array>
+</dict>
+</plist>

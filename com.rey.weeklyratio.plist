@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.rey.weeklyratio</string>
+  <!-- Saturday 10:00: refresh the options ratio from Theta, commit + push (Render redeploys) -->
+  <key>ProgramArguments</key>
+  <array><string>/bin/zsh</string><string>-lc</string><string>~/fartpie/tools/weekly_ratio.sh >> ~/fartpie/live/weekly_ratio.log 2>&amp;1</string></array>
+  <key>StartCalendarInterval</key><dict><key>Weekday</key><integer>6</integer><key>Hour</key><integer>10</integer><key>Minute</key><integer>0</integer></dict>
+</dict>
+</plist>

@@ -48,7 +48,7 @@ def setup():
 
 
 def optvol_age_days():
-    f = os.path.join(ROOT, 'xs', 'ext', 'optvol_ratio.csv')
+    f = os.path.join(ROOT, os.environ.get('OPTVOL_FILE', os.path.join('xs', 'ext', 'optvol_ratio.csv')))
     if not os.path.exists(f): return None, None
     import pandas as pd
     last = pd.read_csv(f, usecols=['date'], parse_dates=['date']).date.max()
@@ -64,16 +64,30 @@ def next_start(n):
     return c
 
 
+def run_bot():
+    """Discord bot in the same worker as the screener (same disk), restarted if it exits."""
+    import threading
+    def loop():
+        n = 0
+        while True:
+            t0 = time.time(); log('starting discord_bot/bot.py')
+            rc = subprocess.run([sys.executable, '-u', os.path.join('discord_bot', 'bot.py')], cwd=ROOT).returncode
+            n = n + 1 if time.time() - t0 < 300 else 0
+            log(f'bot exited ({rc}); restarting'); time.sleep(min(600, 15 * 2 ** min(n, 5)))
+    threading.Thread(target=loop, daemon=True).start()
+
+
 def main():
     setup(); log('screener worker up; args', ARGS)
+    if os.environ.get('RUN_BOT') == '1': run_bot()
     done, warned = None, None
     while True:
         now = dt.datetime.now(ET)
         if not (in_window(now) or os.environ.get('FORCE_START')) or done == now.date():
             nxt = next_start(now); log('idle until', nxt.strftime('%a %Y-%m-%d %H:%M ET')); time.sleep(max(30, min(1800, (nxt - now).total_seconds()))); continue
         age, last = optvol_age_days()
-        if age is None: notify('⚠️ screener: xs/ext/optvol_ratio.csv is missing on the Render disk - run the weekly sync (tools/sync_optvol_to_render.sh).')
-        elif age > MAX_AGE and warned != now.date(): notify(f'⚠️ screener: the options-ratio file is {age} days old (last row {last}). Run the weekly ThetaData refresh and tools/sync_optvol_to_render.sh.'); warned = now.date()
+        if age is None: notify('⚠️ screener: the options-ratio file is missing - run tools/weekly_ratio.sh on the Mac (it commits + pushes it).')
+        elif age > MAX_AGE and warned != now.date(): notify(f'⚠️ screener: the options-ratio file is {age} days old (last row {last}). Run tools/weekly_ratio.sh on the Mac.'); warned = now.date()
         restarts = 0
         while restarts < 8:
             t0 = time.time(); log('starting live_screener.py', ' '.join(ARGS))
