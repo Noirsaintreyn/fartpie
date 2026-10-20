@@ -2,6 +2,10 @@
 as live). Stats vs SPY / QQQ, alpha (HAC) vs SPY+QQQ and vs an equal-weight hold of the same eligible names; rebuilds site_series 'scr'."""
 import sys, glob, os, json, numpy as np, pandas as pd, statsmodels.api as sm, warnings; warnings.filterwarnings('ignore'); sys.path.insert(0, 'xs')
 exec(open('xs/dyn_slots.py').read().split("if __name__ == '__main__':")[0])
+PMF = __import__('os').getenv('PMF', '1') == '1'
+if PMF:
+    _mm = Z0.entry.dt.hour * 60 + Z0.entry.dt.minute; Z0 = Z0[~(_mm >= 840).values]
+    E, X, R = Z0.entry.values, Z0.exit.values, Z0.ret.values
 TK = Z0.tk.values
 def taken(brk):
     op = []; out = []; pend = []; real = 0.0; hist = []
@@ -56,5 +60,5 @@ for brk, nm in ((0.0, 'live'), (.08, 'breaker')):
 r = res['breaker']; eq = (1 + r).cumprod()
 S = json.load(open('live_data/site_series.json')); d = pd.PeriodIndex(S['scr']['d'], freq='M')
 lvl = [float(eq[eq.index < p.start_time].iloc[-1]) if (eq.index < p.start_time).any() else 1.0 for p in d]
-S['scr']['b'] = [round(v / lvl[0] * 100, 2) for v in lvl]; S['scr']['note'] = 'live model + 8% drawdown breaker (Oct 20 2026), daily mark-to-market'
+S['scr']['b'] = [round(v / lvl[0] * 100, 2) for v in lvl]; S['scr']['note'] = 'live model + 8% drawdown breaker + no entries after 14:00 (Oct 20 2026), daily mark-to-market'
 json.dump(S, open('live_data/site_series.json', 'w')); print('\nsite_series scr rebuilt, $100 ->', S['scr']['b'][-1])

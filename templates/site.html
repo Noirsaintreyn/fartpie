@@ -182,10 +182,10 @@ td.r,th.r{text-align:right}
 <section id="tab-backtest" hidden>
 <div style="display:flex;flex-direction:column;gap:20px">
 <div class="tiles">
-<div class="tile"><span class="k">Return</span><span class="v up">+40.7%</span><span class="sub">per year · SPY +17.4% · QQQ +23.3%</span></div>
-<div class="tile"><span class="k">Max drawdown</span><span class="v">−23%</span><span class="sub">SPY −34% · QQQ −35%</span></div>
-<div class="tile"><span class="k">Sharpe</span><span class="v">1.69</span><span class="sub">SPY 0.93 · QQQ 1.00</span></div>
-<div class="tile"><span class="k">Alpha</span><span class="v gold">+22.5%</span><span class="sub">per year over SPY + QQQ exposure (t 3.8)</span></div>
+<div class="tile"><span class="k">Return</span><span class="v up">+45.9%</span><span class="sub">per year · SPY +17.4% · QQQ +23.3%</span></div>
+<div class="tile"><span class="k">Max drawdown</span><span class="v">−22%</span><span class="sub">SPY −34% · QQQ −35%</span></div>
+<div class="tile"><span class="k">Sharpe</span><span class="v">1.88</span><span class="sub">SPY 0.93 · QQQ 1.00</span></div>
+<div class="tile"><span class="k">Alpha</span><span class="v gold">+26.1%</span><span class="sub">per year over SPY + QQQ exposure (t 4.4)</span></div>
 </div>
 <div class="panel">
 <div class="ptop"><h2>Growth of $1 · log scale</h2><div class="legend"><span><i style="background:var(--gold)"></i>Screener <b id="btB"></b></span><span><i style="background:#5fb3a1"></i>QQQ <b id="btQ"></b></span><span><i style="background:#8d96a8"></i>SPY <b id="btS"></b></span></div></div>
@@ -194,11 +194,11 @@ td.r,th.r{text-align:right}
 <div class="panel scroll">
 <table style="min-width:640px"><thead><tr><th>Return / max drawdown</th><th class="r">2019 – 21</th><th class="r">2022 – 26</th><th class="r">2019 – 26</th></tr></thead>
 <tbody>
-<tr><td class="gold" style="font-weight:600">Screener (options ratio ≥ 2.5, 6 slots, 8% breaker)</td><td class="r">+63.4% / −16%</td><td class="r">+28.0% / −23%</td><td class="r">+40.7% / −23%</td></tr>
+<tr><td class="gold" style="font-weight:600">Screener (options ratio ≥ 2.5, 6 slots, 8% breaker, no buys after 2pm)</td><td class="r">+72.5% / −13%</td><td class="r">+31.3% / −22%</td><td class="r">+45.9% / −22%</td></tr>
 <tr><td style="color:var(--ink)">QQQ</td><td class="r">+38.1% / −29%</td><td class="r">+14.9% / −35%</td><td class="r">+23.3% / −35%</td></tr>
 <tr><td style="color:var(--ink)">SPY</td><td class="r">+26.0% / −34%</td><td class="r">+12.3% / −24%</td><td class="r">+17.4% / −34%</td></tr>
 </tbody></table>
-<p class="note">Backtest, daily mark-to-market, 6 slots (16.7% each), sticky 1h stop, no new entries while the book is more than 8% below its 20-day high, 2 bp per trade. Benchmarks through Sep 25, 2026. Universe is today's S&amp;P names and the rules were chosen on this data, so expect less live.</p>
+<p class="note">Backtest, daily mark-to-market, 6 slots (16.7% each), sticky 1h stop, no new entries while the book is more than 8% below its 20-day high or from 2pm to the close, 2 bp per trade. Benchmarks through Sep 25, 2026. Universe is today's S&amp;P names and the rules were chosen on this data, so expect less live.</p>
 </div>
 </div>
 </section>
