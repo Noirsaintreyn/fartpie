@@ -207,6 +207,12 @@ def replay_pm(H, elig, carry=None):
     if inpos: return 'HOLD', e, px, (c[-1] / px - 1 >= UP_SWITCH and b1)
     return 'FLAT', None, None, False
 
+NO_PM = pd.Timestamp(os.getenv('NO_PM_START', '2026-10-20 12:45'))            # Oct 20 2026: no new entries at RTH opens from 14:00 to the close
+PM_CUT = int(os.getenv('PM_CUT', '840'))                                            # (afternoon flips: weakest in 2019-26, mostly reverse overnight)
+def pm_blocked(t):
+    t = pd.Timestamp(t); m = t.hour * 60 + t.minute
+    return t >= NO_PM and PM_CUT <= m < RTH1
+
 def replay_track(H, elig, track='15m', carry=None):
     """All trades of one track (15m flips / 1h flips) on premarket+RTH bars, entries/exits at RTH opens only.
     Returns trade dicts: status CLOSED / HOLD / BUY (enter at the next open) / SELL (exit at the next open)."""
@@ -223,6 +229,7 @@ def replay_track(H, elig, track='15m', carry=None):
         j = g[p]; virt = p == len(g) - 1
         if not inpos:
             sig = (KS[p] == 1 and KS[p - 1] != 1) if track == '1h' else (KR[p] == 1 and KR[p - 1] != 1)
+            if sig and EL[p] and pm_blocked(dts[j] if not virt else pd.Timestamp(dts[-1]) + pd.Timedelta('15min')): continue
             if sig and EL[p]:
                 if virt: T.append(dict(status='BUY', e=None, px=None, t0=VIRT, t1=INF, h1=track == '1h', pg=0.0, lock=False)); break
                 inpos, e, px, b1, peak, hs = True, j, o[j], False, o[j], False
@@ -700,7 +707,7 @@ def watch_crosses(rows, st, until):
         cache = {}
         for r in W:
             tk = r['ticker']; key = f"{tk}|CROSS|{bar:%Y-%m-%d %H:%M}"
-            if key in st['signals']: continue
+            if key in st['signals'] or pm_blocked(end): continue
             px = cache.setdefault(r['base'], live_px(r['base']))
             if px and px > r['trig']:
                 if post(f"\u26a1 CROSS {tk} {px:.2f} is above the vector ({r['trig']:.2f}). BUY only if the {end:%H:%M} 15m close holds above.", []):
