@@ -4,6 +4,22 @@ the live file xs/ext/optvol_ratio.csv is NOT touched. Rerun after each monthly f
 import glob, os, pandas as pd
 old = pd.read_csv('xs/ext/optvol_ratio.csv', parse_dates=['date'])[['tk', 'date', 'opt_contracts', 'sh']]
 fs = {os.path.basename(f).split('_15m_')[0]: f for f in sorted(glob.glob('lse_ohlcv_cache/*_15m_2018-01-01_*.parquet'))}
+def shares(tk):
+    """daily RTH share volume: the LSE 15m cache + the screener's live bars (live/<tk>_15m.parquet, refreshed every scan) so the
+    ratio doesn't stop where the research cache stops; days still missing after that (names the screener doesn't watch) from yfinance"""
+    parts = [pd.read_parquet(fs[tk], columns=['datetime', 'volume'])]
+    if os.path.exists(f'live/{tk}_15m.parquet'): parts.append(pd.read_parquet(f'live/{tk}_15m.parquet', columns=['datetime', 'volume']))
+    H = pd.concat(parts); H['dt'] = pd.to_datetime(H.datetime, utc=True).dt.tz_convert('America/New_York').dt.tz_localize(None)
+    H = H.drop_duplicates('dt', keep='last'); m = H.dt.dt.hour * 60 + H.dt.dt.minute; H = H[(m >= 570) & (m < 960)]
+    sh = H.groupby(H.dt.dt.normalize()).volume.sum()
+    if YF and len(sh) and sh.index.max() < pd.Timestamp.today().normalize() - pd.Timedelta(days=3):
+        try:
+            import yfinance as yf
+            y = yf.Ticker(tk.replace('.', '-')).history(start=str((sh.index.max() + pd.Timedelta(days=1)).date()), interval='1d', auto_adjust=False)
+            if len(y): sh = pd.concat([sh, pd.Series(y.Volume.values, index=y.index.tz_localize(None).normalize())])
+        except Exception as e: print(f'  ! {tk}: yfinance volume failed ({str(e)[:50]})')
+    return sh[~sh.index.duplicated(keep='first')].sort_index().rename('sh')
+YF = os.getenv('YF_FILL', '1') == '1'
 new = []
 for f in glob.glob('data/theta_vol/*.csv'):
     v = pd.read_csv(f)
@@ -14,8 +30,7 @@ for f in glob.glob('data/theta_vol/*.csv'):
     if tk in set(old.tk): v = v[v.date > old[old.tk == tk].date.max()]          # refresh: only months after the old pull
     elif nm < 100: continue                                              # pull not finished yet
     if not len(v): continue
-    H = pd.read_parquet(fs[tk], columns=['datetime', 'volume']); H['dt'] = pd.to_datetime(H.datetime, utc=True).dt.tz_convert('America/New_York').dt.tz_localize(None)
-    m = H.dt.dt.hour * 60 + H.dt.dt.minute; H = H[(m >= 570) & (m < 960)]; sh = H.groupby(H.dt.dt.normalize()).volume.sum().rename('sh')
+    sh = shares(tk)
     new.append(v.merge(sh, left_on='date', right_index=True)[['tk', 'date', 'opt_contracts', 'sh']])
 out = pd.concat([old] + new).sort_values(['tk', 'date']); out.to_csv('xs/ext/optvol_ratio_live.csv', index=False)
 print(f'{out.tk.nunique()} names ({len(new)} new), data through {out.date.max():%Y-%m-%d}')

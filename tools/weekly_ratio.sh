@@ -6,7 +6,10 @@ PY=.venv311/bin/python; [ -x $PY ] || PY=python3
 if ! curl -s -m 5 -o /dev/null http://127.0.0.1:25503/v3/option/history/eod; then
   echo "Theta Terminal isn't running - open it (cd ~/ThetaTerminal && java -jar ThetaTerminalv3.jar) and rerun"; exit 1
 fi
-TKS=($(python3 -c "import pandas as pd; print(' '.join(sorted(pd.read_csv('xs/ext/optvol_ratio.csv', usecols=['tk']).tk.unique())))"))
+# every name the live universe can use (the old pull's names + everything in the live ratio file), not just the original ~40
+TKS=($(python3 -c "import pandas as pd; a=set(pd.read_csv('xs/ext/optvol_ratio.csv', usecols=['tk']).tk); b=set(pd.read_csv('live_data/optvol_ratio_live.csv', usecols=['tk']).tk); print(' '.join(sorted((a|b)-{'GLD','SLV','TLT','QQQ','SPY','IWM','IEF'})))"))
+# first weekend of the month: refresh every S&P name with options history, so new names can climb into the universe
+[ $(date +%d) -le 7 ] && TKS=($(ls data/theta_vol | sed 's/.csv$//'))
 START=$(date -v-3m +%Y-%m-01)
 for s in 0 1 2 3; do FORCE=1 PARTIAL=1 START=$START SHARD=$s NSHARD=4 $PY fetch_theta_volume.py $TKS > /tmp/wr_$s.log 2>&1 & done; wait
 $PY xs/build_live_ratio.py || exit 1
