@@ -112,13 +112,16 @@ def _bars(tk, tf):
         return hit[1]
     import yfinance as yf
     interval, period, resample, _ = TF[tf]
-    h = yf.Ticker(_sym(tk)).history(period=period, interval=interval, prepost=False, auto_adjust=False)
+    intraday = interval != '1d'
+    h = yf.Ticker(_sym(tk)).history(period=period, interval=interval, prepost=intraday and tk not in FUT, auto_adjust=False)   # same bars as the bot: 04:00-16:00
     if h is None or not len(h):
         raise RuntimeError(f'no {tf} data for {tk}')
     h = h.reset_index()
     t = pd.to_datetime(h.iloc[:, 0])
     t = t.dt.tz_convert('America/New_York').dt.tz_localize(None) if t.dt.tz is not None else t
     df = pd.DataFrame({'dt': t, 'open': h.Open.values, 'high': h.High.values, 'low': h.Low.values, 'close': h.Close.values}).dropna()
+    if intraday and tk not in FUT:                                           # premarket + RTH (04:00-16:00), like live_screener.py
+        mm = df.dt.dt.hour * 60 + df.dt.dt.minute; df = df[(mm >= 240) & (mm < 960) & (df.dt.dt.dayofweek < 5)]
     if resample:
         x = df.set_index('dt')
         g = x.groupby([x.index.normalize(), pd.Grouper(freq='4h', origin='start_day', offset='9h30min')])
