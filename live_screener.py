@@ -279,6 +279,11 @@ def scan(args):
     RAT, rat_thru = options_ratio()
     last_ratio = RAT.ffill().iloc[-1]
     elig_now = sorted(t for t in RAT.columns if t not in NO_ETF and (last_ratio.get(t, 0) >= CUT or (t in OLD_UNIVERSE and last_ratio.get(t, 0) >= 1.5)))
+    # names that dropped below the cut still get scanned while they could hold a position from the live period (exits keep working;
+    # new entries are gated per day by the ratio below), i.e. anything eligible on some day since the start
+    since = RAT.loc[RAT.index >= max(START.normalize(), RAT.index.max() - pd.Timedelta(days=120)) - pd.Timedelta(days=1)]
+    was = {t for t in since.columns if t not in NO_ETF and ((since[t] >= CUT).any() or (t in OLD_UNIVERSE and (since[t] >= 1.5).any()))}
+    elig_now = sorted(set(elig_now) | was)
     gf = 'xs/ext/gex/QQQ.csv'                                             # only needed for the (off by default) QQQ slot
     G = pd.read_csv(gf, parse_dates=['date']).sort_values('date').set_index('date').net_gex if os.path.exists(gf) else pd.Series([0.0], index=[pd.Timestamp('2000-01-01')])
     slots = SLOTS; out = []; TR = []; HS = {}
