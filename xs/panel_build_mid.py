@@ -24,7 +24,8 @@ os.environ.setdefault('XS_U', 'mid')
 sys.path.insert(0, X)
 from cfg import D, VH, RAW  # noqa: E402
 
-START, END = '2019-03-01', '2026-09-18'
+START = '2019-03-01'
+END = os.getenv('MID_END') or str(pd.Timestamp.today().normalize().date())     # was frozen at 2026-09-18 -> live book never got new weeks
 MIN_PX, MIN_DV = 5.0, 5e6
 FUND_EXCL = {'6221', '6722', '6726', '6792', '6798x'}
 
@@ -57,6 +58,7 @@ def main():
 
     vh = pd.read_csv(VH, usecols=['date', 'act_symbol'])
     vh['date'] = pd.to_datetime(vh['date'])
+    global VH_LAST; VH_LAST = vh.date.max().to_datetime64()
     mem = json.load(open(os.path.join(ROOT, 'sp500_pit_membership.json')))
     sp_month = {(m, t) for m, v in mem.items() for t in v}
 
@@ -80,7 +82,8 @@ def main():
         pr = vh.loc[vh.act_symbol == s, 'date'].sort_values().values
         k = np.searchsorted(pr, out.date.values, 'right') - 1
         last = np.where(k >= 0, pr[np.clip(k, 0, None)], np.datetime64('NaT'))
-        fresh = (out.date.values - last) <= np.timedelta64(10, 'D')
+        asof = np.minimum(out.date.values, VH_LAST)                       # dolt behind -> carry the last known optionable set forward
+        fresh = (asof - last) <= np.timedelta64(10, 'D')
         month = out.date.dt.strftime('%Y-%m')
         not_sp = ~np.array([(m, s) in sp_month or (m, s.replace('-', '.')) in sp_month for m in month])
         out['in_univ'] = fresh & not_sp & (out.px_raw_prev >= MIN_PX) & (out.dv20 >= MIN_DV)
