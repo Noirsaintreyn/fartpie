@@ -591,7 +591,10 @@ def _state():
 def _save(st): st['signals'] = st['signals'][-500:]; json.dump(st, open(STATE, 'w'))
 
 def post_positions(rows, meta):
-    p = f'{LIVE}/card_positions.png'; LC.board_card(rows, meta, p)
+    p = f'{LIVE}/card_positions.png'
+    try: LC.board_card(rows, meta, p)
+    except Exception as e:                                                # board needs research assets that only live on the Mac (not on Render)
+        print(f'  ! board card failed ({str(e)[:80]}); simple positions card'); positions_card(rows, meta, p)
     return post('', [p])
 
 def post_new_signals(rows, meta, st):
@@ -619,7 +622,8 @@ def post_new_signals(rows, meta, st):
         if r['action'] == 'SELL' and now_et().hour * 60 + now_et().minute < RTH0:
             late = f"\u26a0\ufe0f PREMARKET FLIP: {tk} vector turned bearish premarket ({r['bar']:%H:%M} bar, last {r['last']:.2f}). Rule exits at the 09:30 open."
         p = f"{LIVE}/card_{tk.replace(' ', '_')}_{r['action']}.png"
-        LC.signal_dash(r, meta, p) if r['action'] == 'BUY' else signal_card(r, meta, p)
+        try: LC.signal_dash(r, meta, p) if r['action'] == 'BUY' else signal_card(r, meta, p)
+        except Exception as e: print(f'  ! signal dash failed ({str(e)[:80]}); simple card'); signal_card(r, meta, p)
         if post(late, [p]): st['signals'].append(key); _save(st)
         log = f'{LIVE}/signal_log.csv'
         pd.DataFrame([dict(run_at=now_et(), ticker=r['ticker'], action=r['action'], bar=r['bar'], price=r['last'], stop=r['stop'], entry=r['px'], pnl=r['pnl'])]).to_csv(log, mode='a', header=not os.path.exists(log), index=False)
