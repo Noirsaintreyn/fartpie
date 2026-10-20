@@ -245,12 +245,26 @@ def replay_track(H, elig, track='15m', carry=None):
     for t in T: t['track'] = track
     return T
 
+BREAKER = float(os.getenv('BREAKER', '0.08'))                                  # Oct 20 2026: no new entries while the book is > 8% below its 20-day high
+BREAKER_START = pd.Timestamp(os.getenv('BREAKER_START', '2026-10-13 09:30'))   # (realized P&L of closed trades, 28 calendar days; existing positions keep their stops)
+def breaker_on(out, t0):
+    """book drawdown from the trailing 28-day high of realized equity (closed trades only, same as the backtest) is worse than -BREAKER"""
+    if not BREAKER: return False
+    t0 = np.datetime64(pd.Timestamp(t0))
+    cl = sorted((x['t1'], x['r'] / slots_at(x['t0'])) for x in out if x['status'] == 'CLOSED' and 'r' in x and x['t1'] <= t0)
+    if not cl: return False
+    ts = np.array([a for a, _ in cl]); eq = np.cumsum(np.log1p([r for _, r in cl]))
+    k = ts >= t0 - np.timedelta64(28, 'D'); lvl0 = eq[~k][-1] if (~k).any() else 0.0     # equity level at the start of the window counts too
+    return eq[-1] - max(lvl0, eq[k].max() if k.any() else lvl0) < np.log1p(-BREAKER)
+
 def allocate(trades):
     """SLOTS shared by every ticker and both tracks, first come first served (same as the backtest sim, deterministic ties)."""
     trades = sorted(trades, key=lambda t: (t['t0'], -t.get('ratio', 0) if TIE_RATIO else 0, t['track'] != '15m', t['tk'])); op, out = [], []
     for t in trades:
         op = [x for x in op if x > t['t0']]
-        if len(op) < slots_at(t['t0']): op.append(t['t1']); out.append(t)
+        if len(op) < slots_at(t['t0']):
+            if pd.Timestamp(t['t0']) >= BREAKER_START and breaker_on(out, t['t0']): t['blocked'] = True; continue
+            op.append(t['t1']); out.append(t)
     return out
 
 def scan(args):
@@ -282,6 +296,8 @@ def scan(args):
         if tk != 'QQQ': tr += replay_track(H, elig & (H.dt >= MODEL2).values, '1h')
         for t in tr: t['tk'] = tk; t['ratio'] = float(last_ratio.get(tk, 0) or 0)
         TR += tr; HS[tk] = H
+    for t in TR:                                                      # realized return of closed trades (for the drawdown breaker)
+        if t['status'] == 'CLOSED': t['r'] = float(HS[t['tk']].open.values[t['x']]) / t['px'] - 1
     AL = allocate(TR); live = {(t['tk'], t['track']): t for t in AL if t['status'] != 'CLOSED'}
     for t in AL:                                                      # on-time rule prices: entry = open of the entry bar, exit = open of the exit bar
         t['xpx'] = float(HS[t['tk']].open.values[t['x']]) if t['status'] == 'CLOSED' else np.nan
@@ -299,7 +315,9 @@ def scan(args):
                             stop=stop, state15=int(L.reg), state1h=int(L.s1), trig=float(L.trig) if L.reg == -1 else np.nan,
                             ratio=float(last_ratio.get(tk, np.nan)) if tk != 'QQQ' else np.nan, peak=pg,
                             pnl=(L.close / px - 1) if px else np.nan, note=note))
-    meta = dict(trades=AL, HS=HS, slots=slots, w=1 / slots, rat_thru=rat_thru, g_thru=G.index.max(), capital=args.capital,
+    brk = breaker_on(AL, now_et())
+    if brk: print(f'  !! BREAKER: book is more than {BREAKER:.0%} below its 20-day high - no new entries (open positions keep their stops)')
+    meta = dict(breaker=brk, trades=AL, HS=HS, slots=slots, w=1 / slots, rat_thru=rat_thru, g_thru=G.index.max(), capital=args.capital,
                 ratios={t: float(last_ratio.get(t, np.nan)) for t in elig_now})
     if not args.no_fetch and os.getenv('SITE_SNAPSHOT', '1') == '1':
         try: write_site_snapshot(out, meta)
@@ -599,6 +617,10 @@ def post_positions(rows, meta):
 
 def post_new_signals(rows, meta, st):
     held = st.setdefault('held', {}); today = now_et().strftime('%Y-%m-%d')
+    bk = f'breaker|{today}'
+    if meta.get('breaker') and bk not in st['signals']:
+        if post(f"\U0001f6d1 BREAKER ON: the book is more than {BREAKER:.0%} below its 20-day high. No new buys until it recovers; open positions keep their stops.", []):
+            st['signals'].append(bk); _save(st)
     for r in rows:
         tk = r['ticker']; late = ''
         if r['action'] == 'HOLD' and r['e'] is not None:            # entry the scan never caught on its flip bar (late bar, skipped scan)
