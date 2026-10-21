@@ -305,7 +305,7 @@ def scan(args):
     RAT, rat_thru = options_ratio()
     last_ratio = RAT.attrs.get('now', RAT.ffill().iloc[-1])
     cut_now = CUT2 if now_et() >= CUT2_SWITCH else CUT
-    elig_now = sorted(t for t in RAT.columns if t not in NO_ETF and ((last_ratio.get(t, 0) >= cut_now and in_sp(t, now_et())) or (t in OLD_UNIVERSE and last_ratio.get(t, 0) >= 1.5)))
+    elig_now = sorted(t for t in RAT.columns if t not in NO_ETF and ((last_ratio.get(t, 0) >= min(cut_now, CUT2) and in_sp(t, now_et())) or (t in OLD_UNIVERSE and last_ratio.get(t, 0) >= 1.5)))   # scan the >= 1.5 list now; entries are gated per bar
     # names that dropped below the cut still get scanned while they could hold a position from the live period (exits keep working;
     # new entries are gated per day by the ratio below), i.e. anything eligible on some day since the start
     since = RAT.loc[RAT.index >= max(START.normalize(), RAT.index.max() - pd.Timedelta(days=120)) - pd.Timedelta(days=1)]
@@ -417,7 +417,7 @@ def write_site_snapshot(rows, meta):
             sig.append(dict(time=f'{x.run_at:%H:%M}', action=x.action, ticker=x.ticker, price=f'{x.price:.2f}',
                             pnl=round(x.pnl * 100, 2) if (x.action == 'SELL' and x.pnl == x.pnl) else None))
         seen = set(); sig = [z for z in sig[::-1] if not ((z['time'], z['action'], z['ticker']) in seen or seen.add((z['time'], z['action'], z['ticker'])))]
-    watch = [dict(tk=k, ratio=round(v, 2), held=k in held) for k, v in sorted(meta.get('ratios', {}).items(), key=lambda kv: -kv[1]) if v == v]
+    watch = [dict(tk=k, ratio=round(v, 2), held=k in held) for k, v in sorted(meta.get('ratios', {}).items(), key=lambda kv: -kv[1]) if v == v and (v >= min(CUT, CUT2) or k in held)]
     hist = {}
     try:
         T, g, book, spy = history(rows, meta, fetch=True); w = meta['w']
@@ -437,7 +437,7 @@ def write_site_snapshot(rows, meta):
                     realized=round(sum(z['book'] for z in tr if not z['open']), 2), open=round(sum(z['book'] for z in tr if z['open']), 2), since=f'{pd.Timestamp(START):%a %b %d}')
     except Exception as e: print(f'  ! site history: {str(e)[:80]}')
     snap = dict(asof=t.isoformat(), asof_ms=int(pd.Timestamp(t, tz=ET).timestamp() * 1000), market_open=t.dayofweek < 5 and RTH0 <= m < RTH1,
-                slots=meta['slots'], cutoff=CUT, positions=pos, signals=sig, watch=watch, history=hist)
+                slots=meta['slots'], cutoff=CUT2 if now_et() >= CUT2_SWITCH else CUT, positions=pos, signals=sig, watch=watch, history=hist)
     tmp = f'{LIVE}/site_snapshot.json.tmp'; json.dump(snap, open(tmp, 'w')); os.replace(tmp, f'{LIVE}/site_snapshot.json')
 
 # ================================================================ cards
