@@ -36,4 +36,8 @@ nearness to the 52-week high (George & Hwang), lottery/MAX (Bali-Cakici-Whitelaw
 Also rejected Oct 21: volatility-managed sizing (market vol, the screener's own trade vol, per-stock risk parity), residual-momentum tie-break,
 sector-momentum tie-break / skip (xs/equity_models.py). Watch item: trades in names whose sector ETF is down over 60d averaged more per trade
 in 7 of 8 years (22-26: +0.40% vs +0.13%), but sizing them up only adds exposure (exposure-neutral 1.25x/0.75x = same as live). Not adopted.
+Also rejected Oct 21 (xs/exit_lab2.py, xs/earn_tests.py): time stops (1/2/3/5 days), selling half at +3/5/8%, flat weekends when VIX > 25/30,
+skipping entries before earnings, selling before earnings, post-earnings-drift tie-breaks. Holding through earnings is GOOD for this model
+(selling before earnings: 22-26 +18.3% vs +28.5%). Candidate, not adopted: tie-break 'earnings within 1 trading day first'
+(+60.8/-11, +30.9/-20, 2019-26 +42.1/-20 vs live +38.5/-16): beats both halves on return but inside slot-order noise and with a deeper drawdown.
 
