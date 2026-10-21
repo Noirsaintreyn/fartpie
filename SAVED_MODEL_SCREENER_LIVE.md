@@ -30,3 +30,6 @@ position (LLY 10-21) or invent a past one (AVGO 10-13).
 More slots (7-16), ETFs in the basket, lower ratio cuts, VWAP Bollinger exits, QR exits, after-hours bars, intl ADRs (no gate), non-equity sleeve, shorts on bear flips, options-flow (put-heavy call-share z) across the full universe: only helps in names with ratio >= 1; not adopted.
 Also rejected Oct 20: tighter profit locks, buying the intrabar cross, volume confirmation (entry or exit), Hawkes sell-pressure exits, Kalman filters, stretched-entry / resistance filters, VIX short switch, gold/oil in the rotation (with or without VIX), low-beta long/short, fewer slots in bad markets (breaker alone did better).
 Open candidate: flat into weekends when VIX > 30.
+Also rejected Oct 21 (full-S&P universe, ratio >= 1.5): meta-labeling (gradient boosting on 14 entry features, walk-forward; AUC 0.52-0.56, worse than live as tie-break / skip / sizing),
+and four published effects as skip rules and tie-breaks: abnormal option-volume spike (Johnson & So), smooth vs jumpy trends (Da-Gurun-Warachka frog-in-the-pan),
+nearness to the 52-week high (George & Hwang), lottery/MAX (Bali-Cakici-Whitelaw). None beat live in 2022-26 (xs/meta_label.py, xs/paper_tests.py).
