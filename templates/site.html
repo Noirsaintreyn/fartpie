@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>L'Argent Parle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0a0e1a;--ink:#e8e6e3;--white:#fff;--gold:#c9a227;--gold-2:#b39a52;--muted:#9a9890;--line:rgba(201,162,39,.15);--line-2:rgba(201,162,39,.1);--panel:rgba(201,162,39,.03);--up:#6fcf97;--dn:#eb5757;--bull:#5b8def;--bull-2:#3a62b0;--bear:#ef6f8a;--bear-2:#b24b63}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -74,6 +74,8 @@ td.r,th.r{text-align:right}
 .chartmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;pointer-events:none;text-align:center;padding:20px}
 .readout{display:flex;flex-wrap:wrap;gap:24px;font-size:13px;color:#c9c7c2}.readout b{color:var(--gold-2);font-weight:500;letter-spacing:.06em;margin-right:6px}
 .note{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.5}
+.brand{font-family:'Pinyon Script',cursive;font-size:36px;line-height:1;letter-spacing:.01em;text-transform:none;color:var(--gold)}
+.chip b{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:600;font-size:18px;color:var(--gold);letter-spacing:.02em}
 [hidden]{display:none!important}
 @media (max-width:900px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.holds{grid-template-columns:repeat(3,minmax(0,1fr))}.hwrap,main{padding-left:16px;padding-right:16px}.ph h1{font-size:40px}.chartbox{height:420px}}
 </style>
