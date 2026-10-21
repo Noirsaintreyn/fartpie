@@ -112,7 +112,7 @@ def run_site_push():
                         err_at = time.time(); notify(f'⚠️ website snapshot failed (exit {rc}):\n```{tail}```')
                 if os.path.exists(f):
                     m = os.path.getmtime(f)
-                    if m != last or time.time() - sent_at > 600:
+                    if m != last or time.time() - sent_at > 120:          # re-send often: a website redeploy forgets the pushed copy
                         r = requests.post(f'{url}/api/site/push', data=open(f, 'rb').read(), headers={'X-Site-Token': tok, 'Content-Type': 'application/json'}, timeout=30)
                         if r.ok: last, sent_at = m, time.time()
                         else: log('site push', r.status_code, r.text[:80])
