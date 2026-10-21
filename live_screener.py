@@ -150,6 +150,12 @@ def options_ratio():
     last = O.groupby('tk').date.max(); thru = O.date.max()
     R = R.rolling(252, min_periods=60).median().shift(1)
     R[list(last[last < thru - pd.Timedelta(days=int(os.getenv('OPT_STALE_DAYS', '45')))].index)] = np.nan       # options history not current -> not eligible
+    ff = os.getenv('RATIO_FROZEN', 'live_data/optvol_ratio_frozen_20261021.csv')        # the ratios the bot actually used before the Oct 22
+    if os.path.exists(ff):                                                             # data refresh: past eligibility (and the ledger) stays as traded
+        F = pd.read_csv(ff, parse_dates=['date']); F = F[F.sh > 0]; F['r'] = F.opt_contracts * 100 / F.sh
+        RF = F.pivot_table(index='date', columns='tk', values='r').sort_index().rolling(252, min_periods=60).median().shift(1)
+        cut = CUT2_SWITCH.normalize(); R = R.reindex(columns=R.columns.union(RF.columns))
+        old_rows = R.index < cut; R.loc[old_rows] = RF.reindex(index=R.index[old_rows], columns=R.columns).ffill().values
     return R, thru
 
 def theta_up():
