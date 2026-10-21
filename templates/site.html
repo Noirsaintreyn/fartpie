@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>L'Argent Parle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Pinyon+Script&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0a0e1a;--ink:#e8e6e3;--white:#fff;--gold:#c9a227;--gold-2:#b39a52;--muted:#9a9890;--line:rgba(201,162,39,.15);--line-2:rgba(201,162,39,.1);--panel:rgba(201,162,39,.03);--up:#6fcf97;--dn:#eb5757;--bull:#5b8def;--bull-2:#3a62b0;--bear:#ef6f8a;--bear-2:#b24b63}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -76,6 +76,9 @@ td.r,th.r{text-align:right}
 .note{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.5}
 .brand{font-family:'Pinyon Script',cursive;font-size:36px;line-height:1;letter-spacing:.01em;text-transform:none;color:var(--gold)}
 .chip b{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:600;font-size:18px;color:var(--gold);letter-spacing:.02em}
+body,button,input,select,table,th,td{font-style:italic}
+.inprof{color:#8ecbff!important}
+#posBody td{color:#d8c48e}#posBody .tk{color:#ecd28a;text-decoration-color:rgba(236,210,138,.45)}
 [hidden]{display:none!important}
 @media (max-width:900px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.holds{grid-template-columns:repeat(3,minmax(0,1fr))}.hwrap,main{padding-left:16px;padding-right:16px}.ph h1{font-size:40px}.chartbox{height:420px}}
 </style>
@@ -244,8 +247,10 @@ td.r,th.r{text-align:right}
     var avg = P.length ? P.reduce(function (a, p) { return a + (p.pnl || 0); }, 0) / P.length : null;
     $('scrTiles').innerHTML = tile('Slots', used + ' / ' + slots) + tile('Invested', Math.round(used / slots * 100) + '%') + tile('Avg open P&L', avg == null ? '–' : pct(avg), '', cls(avg)) + tile('Options cutoff', '≥ ' + (S.cutoff || 1.5), '', 'gold');
     $('posEmpty').hidden = P.length > 0;
+    P = P.slice().sort(function (a, b) { return (b.pnl == null ? -1e9 : b.pnl) - (a.pnl == null ? -1e9 : a.pnl); });   // best return on top
     $('posBody').innerHTML = P.map(function (p) {
-      return '<tr><td><button class="tk" data-tk="' + esc(p.base) + '">' + esc(p.name) + '</button></td><td>' + esc(p.entry) + '</td><td class="dn">' + esc(p.stop) + '</td><td>' + esc(p.last) + '</td><td class="r ' + cls(p.pnl) + '" style="font-weight:600">' + pct(p.pnl) + '</td><td class="r">' + pct(p.peak) + '</td></tr>';
+      var lockd = parseFloat(p.stop) > parseFloat(p.entry);   // stop above entry = profit locked in
+      return '<tr><td><button class="tk" data-tk="' + esc(p.base) + '">' + esc(p.name) + '</button></td><td>' + esc(p.entry) + '</td><td class="' + (lockd ? 'inprof' : 'dn') + '"' + (lockd ? ' title="stop is above entry: profit locked"' : '') + '>' + esc(p.stop) + '</td><td>' + esc(p.last) + '</td><td class="r ' + cls(p.pnl) + '" style="font-weight:600">' + pct(p.pnl) + '</td><td class="r">' + pct(p.peak) + '</td></tr>';
     }).join('');
     var G = S.signals || [];
     $('sigList').innerHTML = G.length ? G.map(function (s) {
