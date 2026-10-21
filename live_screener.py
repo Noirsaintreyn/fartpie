@@ -77,6 +77,7 @@ plt.rcParams.update({'font.family': 'DejaVu Sans', 'text.color': T1, 'xtick.colo
 def now_et(): return pd.Timestamp.now(tz=ET).tz_localize(None)
 
 # ================================================================ data
+LSE_SYM = {'BRKB': 'BRK.B'}; YF_SYM = {'BRKB': 'BRK-B'}                   # feed symbols for tickers stored without the class dot
 def load_bars(tk, fetch, first=None):
     first = RTH0 if first is None else first
     live_f = f'{LIVE}/{tk}_15m.parquet'
@@ -86,7 +87,7 @@ def load_bars(tk, fetch, first=None):
         try:
             from fetch_lse_ohlcv import _fetch_range
             end = pd.Timestamp.utcnow().tz_localize(None).normalize() + pd.Timedelta(days=1)
-            rows = _fetch_range(tk, '15m', end - pd.Timedelta(days=430), end)
+            rows = _fetch_range(LSE_SYM.get(tk, tk), '15m', end - pd.Timedelta(days=430), end)
             if rows:
                 N = pd.DataFrame(rows); N['datetime'] = pd.to_datetime(N['ts'], utc=True); parts.append(N[['datetime', 'open', 'high', 'low', 'close', 'volume']])
                 print(f'  {tk}: bootstrapped {len(N):,} 15m bars from LSE')
@@ -99,7 +100,7 @@ def load_bars(tk, fetch, first=None):
             from fetch_lse_ohlcv import _fetch_range
             start = (H.datetime.max() - pd.Timedelta(days=4)).tz_localize(None)
             end = pd.Timestamp.utcnow().tz_localize(None).normalize() + pd.Timedelta(days=1)
-            rows = _fetch_range(tk, '15m', start, end)
+            rows = _fetch_range(LSE_SYM.get(tk, tk), '15m', start, end)
             if rows:
                 N = pd.DataFrame(rows); N['datetime'] = pd.to_datetime(N['ts'], utc=True)
                 H = pd.concat([H, N[['datetime', 'open', 'high', 'low', 'close', 'volume']]]).drop_duplicates('datetime', keep='last').sort_values('datetime')
@@ -107,7 +108,7 @@ def load_bars(tk, fetch, first=None):
             print(f'  ! {tk}: LSE fetch failed ({str(e)[:40]}); trying yfinance')
             try:                                                           # fallback feed so a rate-limited LSE never blinds the screener
                 import yfinance as yf
-                Y = yf.Ticker(tk).history(period='5d', interval='15m', prepost=True)
+                Y = yf.Ticker(YF_SYM.get(tk, tk)).history(period='5d', interval='15m', prepost=True)
                 if len(Y):
                     Y = Y.reset_index(); t = pd.to_datetime(Y.pop(Y.columns[0]), utc=True)
                     Y = Y.rename(columns=str.lower)[['open', 'high', 'low', 'close', 'volume']]; Y.insert(0, 'datetime', t.values)
@@ -154,8 +155,10 @@ def options_ratio():
     if os.path.exists(ff):                                                             # data refresh: past eligibility (and the ledger) stays as traded
         F = pd.read_csv(ff, parse_dates=['date']); F = F[F.sh > 0]; F['r'] = F.opt_contracts * 100 / F.sh
         RF = F.pivot_table(index='date', columns='tk', values='r').sort_index().rolling(252, min_periods=60).median().shift(1)
-        cut = CUT2_SWITCH.normalize(); R = R.reindex(columns=R.columns.union(RF.columns))
+        cut = CUT2_SWITCH.normalize(); R = R.reindex(columns=R.columns.union(RF.columns)); NEW = R.ffill().iloc[-1].copy()
         old_rows = R.index < cut; R.loc[old_rows] = RF.reindex(index=R.index[old_rows], columns=R.columns).ffill().values
+        if R.index.max() < cut: R.loc[cut] = NEW                                       # from the switch on, the rebuilt (full S&P) ratios apply
+        R.attrs['now'] = NEW                                                           # today's ratios from the rebuilt file (universe list, tie-break)
     return R, thru
 
 def theta_up():
@@ -300,7 +303,7 @@ def allocate(trades):
 def scan(args):
     if args.update_gamma and theta_up(): update_gamma()
     RAT, rat_thru = options_ratio()
-    last_ratio = RAT.ffill().iloc[-1]
+    last_ratio = RAT.attrs.get('now', RAT.ffill().iloc[-1])
     cut_now = CUT2 if now_et() >= CUT2_SWITCH else CUT
     elig_now = sorted(t for t in RAT.columns if t not in NO_ETF and ((last_ratio.get(t, 0) >= cut_now and in_sp(t, now_et())) or (t in OLD_UNIVERSE and last_ratio.get(t, 0) >= 1.5)))
     # names that dropped below the cut still get scanned while they could hold a position from the live period (exits keep working;
@@ -746,7 +749,7 @@ def live_px(tk):
         except Exception: pass
     try:
         import yfinance as yf
-        y = yf.Ticker(tk).history(period='1d', interval='1m', prepost=True)
+        y = yf.Ticker(YF_SYM.get(tk, tk)).history(period='1d', interval='1m', prepost=True)
         if len(y): return float(y.Close.iloc[-1])
     except Exception: pass
     return None
