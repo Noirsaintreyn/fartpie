@@ -375,16 +375,22 @@ async def daily_cmd(inter: discord.Interaction, action: app_commands.Choice[str]
         await inter.response.send_message('Off for this channel.')
 
 
+SCREENER_ONLY = os.getenv('SCREENER_ONLY', '1') == '1'
+
+
 @client.event
 async def on_ready():
     if not getattr(client, '_warm_started', False):
         client._warm_started = True
-        asyncio.get_running_loop().create_task(keep_warm())
-        asyncio.get_running_loop().create_task(daily_loop())
-        asyncio.get_running_loop().create_task(after_loop())
-        asyncio.get_running_loop().create_task(gex_prefetch_loop())
+        asyncio.get_running_loop().create_task(keep_warm())                # keeps the website awake
+        if not SCREENER_ONLY:
+            asyncio.get_running_loop().create_task(daily_loop())
+            asyncio.get_running_loop().create_task(after_loop())
+            asyncio.get_running_loop().create_task(gex_prefetch_loop())
     if getattr(client, '_synced', False): return       # reconnects fire on_ready again: register commands once per process only
     client._synced = True
+    if SCREENER_ONLY:                                  # Oct 21 2026: THOD/TLOD / levels / GEX bot retired - Discord is the screener only (/check, /history)
+        for name in ('levels', 'chart', 'daily'): tree.remove_command(name)
     await sync_commands()
     asyncio.get_running_loop().create_task(command_guard())
     import socket

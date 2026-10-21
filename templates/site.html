@@ -173,7 +173,7 @@ body,button,input,select,table,th,td{font-style:italic}
 <div class="panel">
 <div class="ptop"><h2>Book vs the indexes</h2><div class="legend"><span><i style="background:var(--gold)"></i>Screener book <b id="hcB"></b></span><span><i style="background:#5fb3a1"></i>QQQ <b id="hcQ"></b></span><span><i style="background:#8d96a8"></i>SPY <b id="hcS"></b></span></div></div>
 <div class="lc" style="height:300px"><canvas id="histChart" role="img" aria-label="Live book return versus SPY and QQQ since the start"></canvas></div>
-<p class="note">Book = sum of slot returns (each trade is one slot, 12.5%), at the rule's fills; open trades marked to the last price.</p>
+<p class="note">Book = sum of slot returns (each trade is one slot: 16.7% from Oct 20, 12.5% before), at the rule's fills; open trades marked to the last price.</p>
 </div>
 <div class="panel">
 <h2 style="margin-bottom:14px" id="histTitle">Every trade</h2>
@@ -381,7 +381,7 @@ body,button,input,select,table,th,td{font-style:italic}
     CH.hl = null; CH.qr = null; CH.err = '';
     if (CH.ov === 'thod') {
       var tf = CH.otf.thod === 'D' ? '1d' : CH.otf.thod;
-      getJSON('/api/level-constrained-hod-lod?ticker=' + encodeURIComponent(CH.tk) + '&timeframe=' + tf).then(function (j) { if (j.success) CH.hl = j; else CH.err = j.error || 'THOD/TLOD unavailable'; draw(); }).catch(function () { CH.err = 'THOD/TLOD unavailable'; draw(); });
+      getJSON('/api/level-constrained-hod-lod?ticker=' + encodeURIComponent(/^(NQ|ES|YM|RTY|GC|SI|CL|NG|ZB|ZN)$/.test(CH.tk) ? CH.tk + '=F' : CH.tk) + '&timeframe=' + tf).then(function (j) { if (j.success) CH.hl = j; else CH.err = j.error || 'THOD/TLOD unavailable'; draw(); }).catch(function () { CH.err = 'THOD/TLOD unavailable'; draw(); });
     } else if (CH.ov === 'qr') {
       getJSON('/api/site/qr?ticker=' + encodeURIComponent(CH.tk)).then(function (j) { if (j.success) CH.qr = j; else CH.err = j.error || 'QR unavailable'; draw(); }).catch(function () { CH.err = 'QR unavailable'; draw(); });
     }

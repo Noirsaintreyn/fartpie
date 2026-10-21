@@ -102,6 +102,7 @@ _bar_cache = {}
 
 def _sym(tk):
     tk = tk.strip().upper()
+    tk = {'BRKB': 'BRK-B', 'BRK.B': 'BRK-B', 'BFB': 'BF-B'}.get(tk, tk)    # class shares: Yahoo uses a dash
     return tk + '=F' if tk in FUT else tk
 
 
