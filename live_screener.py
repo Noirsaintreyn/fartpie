@@ -48,6 +48,12 @@ START = LC.START       # positions are only counted from signals at/after this t
 CUT, UP_SWITCH, BREAK_ATR, RTH0, RTH1 = float(os.getenv('OPT_CUT', '2.5')), 0.02, 0.35, 570, 960   # OPT_CUT: options-ratio bar
 OPTVOL_FILE = os.getenv('OPTVOL_FILE', 'live_data/optvol_ratio_live.csv')   # Oct 20 2026: S&P-wide pull, refreshed weekly (tools/weekly_ratio.sh)
 TIE_RATIO = os.getenv('TIE_RATIO', '1') == '1'
+CUT2 = float(os.getenv('OPT_CUT2', '1.5'))                                       # Oct 22 2026: ratio bar lowered to 1.5 (full S&P options data)
+CUT2_SWITCH = pd.Timestamp(os.getenv('CUT2_SWITCH', '2026-10-22 09:30'))
+_SPM = json.load(open('sp500_pit_membership.json')); _SPK = sorted(_SPM); _SPS = {k: {'META' if t == 'FB' else t.replace('.', '') if t == 'BRK.B' else t for t in v} for k, v in _SPM.items()}
+def in_sp(tk, t):
+    """S&P 500 member in that month (point-in-time list; months after the list's last month use the last month)"""
+    k = f'{pd.Timestamp(t):%Y-%m}'; k = k if k in _SPS else (_SPK[-1] if k > _SPK[-1] else _SPK[0]); return tk in _SPS[k]
 OPT_SWITCH = pd.Timestamp(os.getenv('OPT_SWITCH', '2026-10-20 09:30'))      # from here: S&P universe at ratio >= 2.5; before: the old 8 names at >= 1.5
 OLD_UNIVERSE = set(os.getenv('OLD_UNIVERSE', 'AAPL,ADBE,AMD,COST,NVDA,ORCL,TSLA,UNH').split(','))
 NO_ETF = {'QQQ', 'SPY', 'IWM', 'DIA', 'SMH', 'XLE', 'XLF', 'XLK', 'GLD', 'SLV', 'TLT', 'IEF'}                      # 1: when signals tie, the highest options ratio gets the slot
@@ -278,11 +284,12 @@ def scan(args):
     if args.update_gamma and theta_up(): update_gamma()
     RAT, rat_thru = options_ratio()
     last_ratio = RAT.ffill().iloc[-1]
-    elig_now = sorted(t for t in RAT.columns if t not in NO_ETF and (last_ratio.get(t, 0) >= CUT or (t in OLD_UNIVERSE and last_ratio.get(t, 0) >= 1.5)))
+    cut_now = CUT2 if now_et() >= CUT2_SWITCH else CUT
+    elig_now = sorted(t for t in RAT.columns if t not in NO_ETF and ((last_ratio.get(t, 0) >= cut_now and in_sp(t, now_et())) or (t in OLD_UNIVERSE and last_ratio.get(t, 0) >= 1.5)))
     # names that dropped below the cut still get scanned while they could hold a position from the live period (exits keep working;
     # new entries are gated per day by the ratio below), i.e. anything eligible on some day since the start
     since = RAT.loc[RAT.index >= max(START.normalize(), RAT.index.max() - pd.Timedelta(days=120)) - pd.Timedelta(days=1)]
-    was = {t for t in since.columns if t not in NO_ETF and ((since[t] >= CUT).any() or (t in OLD_UNIVERSE and (since[t] >= 1.5).any()))}
+    was = {t for t in since.columns if t not in NO_ETF and (((since[t] >= min(CUT, CUT2)).any() and in_sp(t, now_et())) or (t in OLD_UNIVERSE and (since[t] >= 1.5).any()))}
     elig_now = sorted(set(elig_now) | was)
     gf = 'xs/ext/gex/QQQ.csv'                                             # only needed for the (off by default) QQQ slot
     G = pd.read_csv(gf, parse_dates=['date']).sort_values('date').set_index('date').net_gex if os.path.exists(gf) else pd.Series([0.0], index=[pd.Timestamp('2000-01-01')])
@@ -295,7 +302,9 @@ def scan(args):
         if tk == 'QQQ':
             gv = G.reindex(pd.DatetimeIndex(sorted(set(day))).union(G.index)).ffill().shift(1); elig = (day.map(gv) < 0).values
         else:
-            rv = RAT[tk].reindex(pd.DatetimeIndex(sorted(set(day))).union(RAT.index)).ffill(); elig = np.where((H.dt < OPT_SWITCH).values, (day.map(rv) >= 1.5) & (tk in OLD_UNIVERSE), day.map(rv) >= CUT)
+            rv = RAT[tk].reindex(pd.DatetimeIndex(sorted(set(day))).union(RAT.index)).ffill(); rr = day.map(rv); sp_ok = day.map(lambda x: in_sp(tk, x)).values.astype(bool)
+            elig = np.where((H.dt < OPT_SWITCH).values, (rr >= 1.5) & (tk in OLD_UNIVERSE),
+                            np.where((H.dt < CUT2_SWITCH).values, (rr >= CUT) & sp_ok, (rr >= CUT2) & sp_ok))
         elig = elig & (H.dt >= START).values                                   # live ledger: nothing before the start date
         carry = None
         if pre:
