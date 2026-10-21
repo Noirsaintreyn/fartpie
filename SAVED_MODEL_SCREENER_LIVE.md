@@ -33,3 +33,7 @@ Open candidate: flat into weekends when VIX > 30.
 Also rejected Oct 21 (full-S&P universe, ratio >= 1.5): meta-labeling (gradient boosting on 14 entry features, walk-forward; AUC 0.52-0.56, worse than live as tie-break / skip / sizing),
 and four published effects as skip rules and tie-breaks: abnormal option-volume spike (Johnson & So), smooth vs jumpy trends (Da-Gurun-Warachka frog-in-the-pan),
 nearness to the 52-week high (George & Hwang), lottery/MAX (Bali-Cakici-Whitelaw). None beat live in 2022-26 (xs/meta_label.py, xs/paper_tests.py).
+Also rejected Oct 21: volatility-managed sizing (market vol, the screener's own trade vol, per-stock risk parity), residual-momentum tie-break,
+sector-momentum tie-break / skip (xs/equity_models.py). Watch item: trades in names whose sector ETF is down over 60d averaged more per trade
+in 7 of 8 years (22-26: +0.40% vs +0.13%), but sizing them up only adds exposure (exposure-neutral 1.25x/0.75x = same as live). Not adopted.
+
