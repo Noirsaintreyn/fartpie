@@ -60,6 +60,6 @@ J.to_parquet('xs/ext/site_wide_daily.parquet')
 if os.getenv('WRITE', '0') == '1':
     S = json.load(open('live_data/site_series.json')); d = pd.PeriodIndex(S['scr']['d'], freq='M')
     lvl = [float(eq[eq.index < p.start_time].iloc[-1]) if (eq.index < p.start_time).any() else 1.0 for p in d]
-    S['scr']['b'] = [round(v / lvl[0] * 100, 2) for v in lvl]
+    S['scr']['b'] = [round(v / lvl[0], 4) for v in lvl]               # growth of $1 (same scale as spy / qqq)
     S['scr']['note'] = f'point-in-time S&P 500, options ratio >= {CUT}, 6 slots, 8% breaker, no buys after 14:00, daily mark-to-market'
-    json.dump(S, open('live_data/site_series.json', 'w')); print('site_series scr rebuilt, $100 ->', S['scr']['b'][-1])
+    json.dump(S, open('live_data/site_series.json', 'w')); print('site_series scr rebuilt, $1 ->', S['scr']['b'][-1])
