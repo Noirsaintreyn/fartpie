@@ -437,7 +437,7 @@ def write_site_snapshot(rows, meta):
                     realized=round(sum(z['book'] for z in tr if not z['open']), 2), open=round(sum(z['book'] for z in tr if z['open']), 2), since=f'{pd.Timestamp(START):%a %b %d}')
     except Exception as e: print(f'  ! site history: {str(e)[:80]}')
     snap = dict(asof=t.isoformat(), asof_ms=int(pd.Timestamp(t, tz=ET).timestamp() * 1000), market_open=t.dayofweek < 5 and RTH0 <= m < RTH1,
-                slots=meta['slots'], cutoff=CUT2 if now_et() >= CUT2_SWITCH else CUT, positions=pos, signals=sig, watch=watch, history=hist)
+                slots=meta['slots'], cutoff=CUT2, positions=pos, signals=sig, watch=watch, history=hist)
     tmp = f'{LIVE}/site_snapshot.json.tmp'; json.dump(snap, open(tmp, 'w')); os.replace(tmp, f'{LIVE}/site_snapshot.json')
 
 # ================================================================ cards
