@@ -234,7 +234,7 @@ def replay_track(H, elig, track='15m', carry=None):
     KR = [reg[j - 1] for j in g]; KS = [s1[j - 1] for j in g]; EL = [elig[j] if j < n else elig[-1] for j in g]
     PC = [c[g[p - 1]] if p > 0 else np.nan for p in range(len(g))]
     T = []; inpos, e, px, b1, peak, p0, hs = False, None, None, False, None, 1, False
-    if carry is not None and track == '15m':
+    if carry is not None:
         hit = [p for p, j in enumerate(g) if j < n and dts[j] == np.datetime64(carry[0])]
         if hit: inpos, e, px, p0, peak = True, g[hit[0]], carry[1], hit[0], carry[1]
     for p in range(max(1, p0), len(g)):
@@ -276,11 +276,22 @@ def breaker_on(out, t0):
     k = ts >= t0 - np.timedelta64(28, 'D'); lvl0 = eq[~k][-1] if (~k).any() else 0.0     # equity level at the start of the window counts too
     return eq[-1] - max(lvl0, eq[k].max() if k.any() else lvl0) < np.log1p(-BREAKER)
 
+LEDGER = os.getenv('LEDGER', f'{LIVE}/ledger.json')                                                   # Oct 21 2026: every trade recorded when taken, never recomputed
+def _lkey(tk, track, t0): return f"{tk}|{track}|{pd.Timestamp(t0):%Y-%m-%d %H:%M}"
+def ledger_load():
+    if not os.path.exists(LEDGER) and os.path.exists('live_data/ledger_seed.json'):
+        import shutil; shutil.copy('live_data/ledger_seed.json', LEDGER)
+    try: return json.load(open(LEDGER))
+    except Exception: return {}
+def ledger_save(L):
+    tmp = LEDGER + '.tmp'; json.dump(L, open(tmp, 'w'), indent=0, default=str); os.replace(tmp, LEDGER)
+
 def allocate(trades):
     """SLOTS shared by every ticker and both tracks, first come first served (same as the backtest sim, deterministic ties)."""
     trades = sorted(trades, key=lambda t: (t['t0'], -t.get('ratio', 0) if TIE_RATIO else 0, t['track'] != '15m', t['tk'])); op, out = [], []
     for t in trades:
         op = [x for x in op if x > t['t0']]
+        if t.get('forced'): op.append(t['t1']); out.append(t); continue           # open position already in the ledger: it holds its slot
         if len(op) < slots_at(t['t0']):
             if pd.Timestamp(t['t0']) >= BREAKER_START and breaker_on(out, t['t0']): t['blocked'] = True; continue
             op.append(t['t1']); out.append(t)
@@ -296,7 +307,8 @@ def scan(args):
     # new entries are gated per day by the ratio below), i.e. anything eligible on some day since the start
     since = RAT.loc[RAT.index >= max(START.normalize(), RAT.index.max() - pd.Timedelta(days=120)) - pd.Timedelta(days=1)]
     was = {t for t in since.columns if t not in NO_ETF and (((since[t] >= min(CUT, CUT2)).any() and in_sp(t, now_et())) or (t in OLD_UNIVERSE and (since[t] >= 1.5).any()))}
-    elig_now = sorted(set(elig_now) | was)
+    LG = ledger_load(); lg_open = {v['tk'] for k, v in LG.items() if not k.startswith('__') and v.get('status') == 'open'}
+    elig_now = sorted(set(elig_now) | was | (lg_open & set(RAT.columns)))
     gf = 'xs/ext/gex/QQQ.csv'                                             # only needed for the (off by default) QQQ slot
     G = pd.read_csv(gf, parse_dates=['date']).sort_values('date').set_index('date').net_gex if os.path.exists(gf) else pd.Series([0.0], index=[pd.Timestamp('2000-01-01')])
     slots = SLOTS; out = []; TR = []; HS = {}
@@ -325,9 +337,44 @@ def scan(args):
         TR += tr; HS[tk] = H
     for t in TR:                                                      # realized return of closed trades (for the drawdown breaker)
         if t['status'] == 'CLOSED': t['r'] = float(HS[t['tk']].open.values[t['x']]) / t['px'] - 1
+    # ---- trade ledger (Oct 21 2026): a trade is written down when it is taken and never recomputed after that.
+    #      bar revisions / ratio rebuilds can't erase a real position (LLY 10-21) or invent a past one (AVGO 10-13).
+    asof = pd.Timestamp(LG.get('__asof__', '2000-01-01')); LT = {k: v for k, v in LG.items() if not k.startswith('__')}
+    have = {_lkey(t['tk'], t['track'], t['t0']): t for t in TR if t['px']}
+    for k, v in LT.items():
+        if k in have: have[k]['forced'] = True; continue                       # recorded trade: it keeps its slot whatever the re-sort says
+        if v['tk'] not in HS: continue
+        H = HS[v['tk']]; d = H.dt.values; t0 = np.datetime64(pd.Timestamp(v['t0']))
+        if v['status'] == 'open':                                              # replay lost it: keep managing it from the recorded entry
+            o = [o for o in replay_track(H, np.ones(len(H), bool), v['track'], carry=(pd.Timestamp(v['t0']), float(v['px']))) if o['px'] and o['t0'] == t0][:1]
+            if not o: continue
+            o = o[0]
+        else:                                                                  # closed and gone from the replay: keep it as recorded
+            t1 = np.datetime64(pd.Timestamp(v['t1']))
+            o = dict(status='CLOSED', px=float(v['px']), t0=t0, t1=t1, e=int(min(np.searchsorted(d, t0), len(d) - 1)),
+                     x=int(min(np.searchsorted(d, t1), len(d) - 1)), h1=v['track'] == '1h', pg=0.0, lock=bool(v.get('lock')), ledger_only=True)
+        o.update(tk=v['tk'], track=v['track'], ratio=99.0, forced=True)
+        TR = [t for t in TR if not (t['tk'] == o['tk'] and t['track'] == o['track'] and t['t0'] >= o['t0'] and t['t0'] < o['t1'])] + [o]
+    cut_old = np.datetime64(asof - pd.Timedelta('30min'))                     # trades that start before the last scan but were never recorded = phantoms
+    TR = [t for t in TR if t.get('forced') or not t['px'] or t['t0'] >= cut_old or pd.Timestamp(t['t0']) < START]
+    for t in TR:
+        if t['status'] == 'CLOSED':
+            k = _lkey(t['tk'], t['track'], t['t0']); v = LT.get(k)
+            t['r'] = (float(v['xpx']) / float(v['px']) - 1) if v and v['status'] == 'closed' else float(HS[t['tk']].open.values[t['x']]) / t['px'] - 1
     AL = allocate(TR); live = {(t['tk'], t['track']): t for t in AL if t['status'] != 'CLOSED'}
     for t in AL:                                                      # on-time rule prices: entry = open of the entry bar, exit = open of the exit bar
+        if t.get('ledger_only'): continue
         t['xpx'] = float(HS[t['tk']].open.values[t['x']]) if t['status'] == 'CLOSED' else np.nan
+    for t in AL:                                                      # ledger sync: record new trades / exits once; recorded values win
+        if not t['px'] or t['status'] not in ('HOLD', 'SELL', 'CLOSED') or pd.Timestamp(t['t0']) < START: continue
+        k = _lkey(t['tk'], t['track'], t['t0']); v = LG.get(k)
+        if v is None: v = LG[k] = dict(tk=t['tk'], track=t['track'], t0=str(pd.Timestamp(t['t0'])), px=float(t['px']), status='open')
+        if v['status'] == 'open' and t['status'] == 'CLOSED':
+            v.update(status='closed', t1=str(pd.Timestamp(t['t1'])), xpx=float(t['xpx']), lock=bool(t.get('lock')))
+        t['px'] = float(v['px'])
+        if v['status'] == 'closed': t['xpx'] = float(v['xpx']); t['t1'] = np.datetime64(pd.Timestamp(v['t1'])); t['lock'] = bool(v.get('lock'))
+    LG['__asof__'] = str(pd.Timestamp(max(H.dt.iloc[-1] for H in HS.values())))
+    if not getattr(args, 'no_ledger', False): ledger_save(LG)
     for tk, H in HS.items():
         L = H.iloc[-1]
         for track in (('15m',) if tk == 'QQQ' else ('15m', '1h')):
@@ -761,6 +808,7 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('--capital', type=float, default=None)
     ap.add_argument('--no-fetch', action='store_true')
+    ap.add_argument('--no-ledger', action='store_true', help='do not write the trade ledger (tests)')
     ap.add_argument('--update-gamma', action='store_true')
     ap.add_argument('--post-positions', action='store_true')
     ap.add_argument('--loop', action='store_true')
