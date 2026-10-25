@@ -345,7 +345,7 @@ body,button,input,select,table,th,td{font-style:italic}
     // the market
     h += '<div class="essay"><h3>The market</h3><p class="dropcap">' + esc(A.market) + '</p><div class="mkt-grid"><div class="scroll"><table class="mini"><thead><tr><th>Sector</th><th>Daily</th><th>Weekly</th><th class="r">5 days</th><th class="r">1 month</th></tr></thead><tbody>' +
       (A.sectors || []).map(function (s) { return '<tr><td class="' + (s.mine ? 'mine' : '') + '">' + esc(s.name) + (s.mine ? ' ·' : '') + '</td><td class="' + (s.d === 'up' ? 'up' : 'dn') + '">' + esc(s.d) + '</td><td class="' + (s.w === 'up' ? 'up' : 'dn') + '">' + esc(s.w) + '</td><td class="r ' + cls(s.r5) + '">' + pct(s.r5) + '</td><td class="r ' + cls(s.r21) + '">' + pct(s.r21) + '</td></tr>'; }).join('') +
-      '</tbody></table></div><div><h3>Calendar</h3><ul class="side-list">' + ((A.calendar || []).length ? A.calendar.map(function (e) { return '<li class="' + (e.impact === 'High' ? 'dn' : '') + '">' + esc(e.t) + ' · ' + esc(e.title) + (e.prev ? '<small>previous ' + esc(e.prev) + '</small>' : '') + '</li>'; }).join('') : '<li>No high-impact US releases.</li>') +
+      '</tbody></table></div><div><h3>Calendar</h3><ul class="side-list">' + ((A.calendar || []).length ? A.calendar.map(function (e) { return '<li class="' + (e.impact === 'High' && !/auction/i.test(e.title) ? 'dn' : '') + '">' + esc(e.t) + ' · ' + esc(e.title) + (e.prev ? '<small>previous ' + esc(e.prev) + '</small>' : '') + '</li>'; }).join('') : '<li>No high-impact US releases.</li>') +
       '</ul>' + ((A.headlines || []).length ? '<h3 style="margin-top:20px">Headlines</h3><ul class="side-list">' + A.headlines.map(function (n) { return '<li>' + esc(n.title) + (n.read ? '<small>' + esc(n.read) + '</small>' : '') + '</li>'; }).join('') + '</ul>' : '') + '</div></div></div>';
     // the book
     var pn = order.map(function (t) { return live[t].pnl || 0; }), avg = pn.length ? pn.reduce(function (a, b) { return a + b; }, 0) / pn.length : 0;
@@ -362,10 +362,11 @@ body,button,input,select,table,th,td{font-style:italic}
       if (p) {
         h += '<p><span class="lead">Why we hold.</span>' + esc(p.why) + '</p><p><span class="lead">What we want to see.</span>' + esc(p.want) + '</p><p><span class="lead">Why it would fail.</span>' + esc(p.fail) + '</p>';
         var c = p.counts || {};
-        if ((p.news || []).length) h += '<ul class="news" aria-label="Recent news on ' + esc(t) + '">' + p.news.map(function (n) {
+        var NW = (p.news || []).filter(function (n) { return n.pub !== 'sector'; });
+        if (NW.length) h += '<ul class="news" aria-label="Recent news on ' + esc(t) + '">' + NW.map(function (n) {
           var head = n.url ? '<a href="' + esc(n.url) + '" target="_blank" rel="noopener">' + esc(n.title) + '</a>' : esc(n.title);
           return '<li class="' + (n.sent === 'positive' ? 'pos' : n.sent === 'negative' ? 'neg' : '') + '">' + head + '<small>' + esc(n.t) + (n.pub ? ' · ' + esc(n.pub) : '') + (n.why ? ' — ' + esc(n.why) : '') + '</small></li>';
-        }).join('') + '</ul><p class="read">Five-day coverage: ' + (c.pos || 0) + ' positive, ' + (c.neg || 0) + ' negative, ' + (c.neu || 0) + ' neutral.</p>';
+        }).join('') + '</ul><div class="read">Five-day coverage: ' + (c.pos || 0) + ' positive, ' + (c.neg || 0) + ' negative, ' + (c.neu || 0) + ' neutral.</div>';
       } else h += '<p class="closed-note">Opened after this morning’s note; its write-up arrives with tomorrow’s.</p>';
       h += '</article>';
     });
