@@ -29,7 +29,7 @@ Discord (either one, in ~/fartpie/.env):
   VECTOR_CHANNEL_ID=<channel id>   posts as your bot, using DISCORD_TOKEN from discord_bot/.env
   DISCORD_WEBHOOK_URL=<url>        or posts through a channel webhook
 """
-import argparse, glob, json, os, socket, subprocess, sys, time
+import argparse, glob, json, os, shutil, socket, subprocess, sys, time
 sys.stdout.reconfigure(line_buffering=True)   # log lines appear in live/screener.log immediately
 import numpy as np, pandas as pd, requests
 from dotenv import load_dotenv
@@ -476,6 +476,25 @@ def scan(args):
     return out, meta
 
 
+def site_ranges(rows):
+    """adaptive expected high / low per held name for the website, recomputed on every scan from today's extremes so far"""
+    out = {}
+    for r in rows:
+        if r['action'] not in ('HOLD', 'SELL') or not r['px'] or r['base'] in out: continue
+        try:
+            rl = range_levels(r['H']); x = extreme_info(r['H']) or {}
+            if not rl: continue
+            f2 = lambda v: round(float(v), 2)
+            z = dict(budget=round(rl['budget'] * 100, 2), wide=round(2.4 * rl['sig'] * 100, 2), lo=f2(rl['lo']), hi=f2(rl['hi']), last=f2(r['last']), pre=bool(rl['pre']),
+                     used=round(rl['used'] / 1.7 * 100), hi_typ=f2(rl['hi_typ']), hi_wide=f2(rl['hi_wide']), lo_typ=f2(rl['lo_typ']), lo_wide=f2(rl['lo_wide']),
+                     bar=f"{pd.Timestamp(r['H'].dt.iloc[-1]) + pd.Timedelta('15min'):%a %H:%M}")
+            for side in ('low', 'high'):
+                e = x.get(side) if x.get('live') else None
+                z[side + '_in'] = dict(p=round(e['p'] * 100), typ=f2(e['tgt'][0]), b80=f2(e['tgt'][1])) if e else None
+            out[r['base']] = z
+        except Exception as e: print(f'  ! site range {r["base"]}: {str(e)[:60]}')
+    return out
+
 def write_site_snapshot(rows, meta):
     """live/site_snapshot.json for the website (screener_service pushes it to BACKEND_URL/api/site/push)."""
     t = now_et(); m = t.hour * 60 + t.minute
@@ -511,7 +530,9 @@ def write_site_snapshot(rows, meta):
                     realized=round(sum(z['book'] for z in tr if not z['open']), 2), open=round(sum(z['book'] for z in tr if z['open']), 2), since=f'{pd.Timestamp(START):%a %b %d}')
     except Exception as e: print(f'  ! site history: {str(e)[:80]}')
     snap = dict(asof=t.isoformat(), asof_ms=int(pd.Timestamp(t, tz=ET).timestamp() * 1000), market_open=t.dayofweek < 5 and RTH0 <= m < RTH1,
-                slots=meta['slots'], cutoff=CUT2, positions=pos, signals=sig, watch=watch, history=hist)
+                slots=meta['slots'], cutoff=CUT2, positions=pos, signals=sig, watch=watch, history=hist, ranges=site_ranges(rows))
+    try: snap['analysis'] = json.load(open(f'{LIVE}/analysis.json'))                 # the 09:00 write-up (frozen); ranges above refresh every scan
+    except Exception: snap['analysis'] = None
     tmp = f'{LIVE}/site_snapshot.json.tmp'; json.dump(snap, open(tmp, 'w')); os.replace(tmp, f'{LIVE}/site_snapshot.json')
 
 # ================================================================ cards
@@ -983,7 +1004,7 @@ def stock_news(tk, since=None, limit=20, ttl=1800, until=None):
     for it in res:
         ins = next((i for i in it.get('insights') or [] if i.get('ticker') == tk), None)
         out.append(dict(t=it.get('published_utc'), title=it.get('title', ''), pub=(it.get('publisher') or {}).get('name', ''), n=len(it.get('tickers') or []),
-                        sent=(ins or {}).get('sentiment'), why=(ins or {}).get('sentiment_reasoning', '')))
+                        sent=(ins or {}).get('sentiment'), why=(ins or {}).get('sentiment_reasoning', ''), url=it.get('article_url', '')))
     if not ok: return out
     C[ck] = dict(t=time.time(), j=out)
     try: json.dump(C, open(cf, 'w'))
@@ -1172,6 +1193,7 @@ if __name__ == '__main__':
     ap.add_argument('--pro', default=None, help='text: vector, volatility regime and high/low-in status for one ticker (Discord /pro)')
     ap.add_argument('--brief', action='store_true', help='text: book, universe, sectors')
     ap.add_argument('--report-dir', default=None, help='render the morning report (cover + one page per position) as PNGs into this folder (Discord /brief)')
+    ap.add_argument('--analysis', action='store_true', help='write the morning write-up to live/analysis.json now (website Daily Analysis tab) and refresh the site snapshot')
     ap.add_argument('--hm-card', default=None, help='render the honorable mentions (flips skipped because slots were full) to this path (Discord /hm)')
     ap.add_argument('--check-card', default=None, help='render the open-positions board to this path (Discord /check)')
     ap.add_argument('--check-ticker', default=None)
@@ -1186,6 +1208,10 @@ if __name__ == '__main__':
             import daily_report as DR
             for p in DR.build(sys.modules[__name__], mark_live(rows, not args.no_fetch), meta, args.report_dir, True): print('FILE:', p)
             sys.exit()
+        if args.analysis:
+            import daily_report as DR
+            rows = mark_live(rows, not args.no_fetch); A = DR.analysis(sys.modules[__name__], rows, meta, not args.no_fetch)[0]
+            DR.save(A, f'{LIVE}/analysis.json'); write_site_snapshot(rows, meta); print(f"analysis written: {len(A['positions'])} positions"); sys.exit()
         if args.brief:
             print('<<<OUT'); print(brief_text(mark_live(rows, not args.no_fetch), meta, not args.no_fetch)); print('OUT>>>'); sys.exit()
         if args.post_positions: post_positions(rows, meta)
@@ -1229,6 +1255,9 @@ if __name__ == '__main__':
                 try:
                     import daily_report as DR
                     fs = DR.build(sys.modules[__name__], mark_live(rows, True), meta, f'{LIVE}/report_{today}', True)
+                    try:                                                        # the website's Daily Analysis tab
+                        shutil.copy(f'{LIVE}/report_{today}/analysis.json', f'{LIVE}/analysis.json'); write_site_snapshot(rows, meta)
+                    except Exception as ex: print(f'  ! site analysis: {str(ex)[:80]}')
                     if post(f"\U0001f4f0 Morning report · {now_et():%a %b %d}", fs[:10], channel=os.getenv('BRIEF_CHANNEL_ID')): st['brief'] = today; _save(st)
                 except Exception as ex: print(f'  ! daily brief: {str(ex)[:80]}')
         elif 9 * 60 + 15 <= mins < RTH0:                                        # ~09:16 pre-open recheck

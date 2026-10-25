@@ -80,6 +80,38 @@ body,button,input,select,table,th,td{font-style:italic}
 .inprof{color:#8ecbff!important}
 #posBody td{color:#c2a25a}#posBody .tk{color:#d4ad4f;text-decoration-color:rgba(212,173,79,.45)}
 [hidden]{display:none!important}
+/* daily analysis */
+.note-wrap{max-width:900px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:34px}
+.tnr,.tnr *{font-family:'Times New Roman',Times,'Liberation Serif',serif;font-style:italic}
+.dateline{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;border-top:1px solid var(--gold);border-bottom:1px solid var(--line);padding:10px 0;font-size:15px;color:var(--gold-2);letter-spacing:.04em}
+.essay p{font-size:19px;line-height:1.72;color:#ddd9d0;text-align:justify;hyphens:auto}
+.essay p+p{margin-top:14px}
+.essay h3{font-weight:400;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.essay .lead{font-variant:small-caps;letter-spacing:.06em;color:var(--gold);font-size:19px;margin-right:6px}
+.dropcap::first-letter{float:left;font-size:64px;line-height:.82;padding:6px 10px 0 0;color:var(--gold)}
+.mkt-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px;margin-top:22px}
+.mini{width:100%;border-collapse:collapse;font-size:15px}.mini td,.mini th{padding:6px 8px;border-top:1px solid var(--line-2)}.mini th{font-size:11px;padding:6px 8px}
+.mini td{color:#cfcbc2}.mini .mine{color:var(--gold)}
+.side-list{list-style:none;display:flex;flex-direction:column;gap:10px;font-size:15px;line-height:1.45;color:#cfcbc2}.side-list small{display:block;color:var(--muted);font-size:13px}
+.pos-art{border-top:1px solid var(--line);padding-top:26px}
+.pos-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 22px}
+.cur{font-family:'Pinyon Script',cursive;font-style:normal;font-weight:400;background:none;border:none;padding:0;font-size:54px;line-height:1;color:var(--gold)}
+.pos-pnl{font-size:30px}
+.pos-meta{font-size:15px;color:var(--muted);margin-top:6px;letter-spacing:.02em}
+.read{font-size:14px;color:#a9a59c;margin-top:8px;letter-spacing:.02em}
+.rng{margin:20px 0 18px;padding:18px 20px;border:1px solid var(--line);background:rgba(201,162,39,.035)}
+.rng-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;font-size:14px;color:var(--gold-2);letter-spacing:.06em}
+.rng svg{width:100%;height:46px;display:block;margin:12px 0 6px}
+.rng-cells{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;font-size:13px;color:var(--muted)}
+.rng-cells b{display:block;font-size:20px;font-weight:400;color:var(--white)}.rng-cells .r{text-align:right}
+.rng-cells i{display:block;font-size:12px;color:var(--muted)}
+.rng-note{font-size:15px;line-height:1.55;color:#cfcbc2;margin-top:12px}
+.news{list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:9px;font-size:15px;line-height:1.45;color:#cfcbc2}
+.news li{padding-left:16px;position:relative}.news li::before{content:'';position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.news li.pos::before{background:var(--up)}.news li.neg::before{background:var(--dn)}.news small{display:block;color:var(--muted);font-size:13px}
+.news a{color:#e8e2cf;text-decoration:none;border-bottom:1px solid rgba(201,162,39,.3)}
+.closed-note{font-size:16px;color:var(--muted)}
+@media (max-width:700px){.mkt-grid{grid-template-columns:1fr}.essay p{font-size:17px;text-align:left}.cur{font-size:44px}.rng-cells{grid-template-columns:repeat(2,minmax(0,1fr))}.rng-cells .r{text-align:left}}
 @media (max-width:900px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.holds{grid-template-columns:repeat(3,minmax(0,1fr))}.hwrap,main{padding-left:16px;padding-right:16px}.ph h1{font-size:40px}.chartbox{height:420px}}
 </style>
 </head>
@@ -89,6 +121,7 @@ body,button,input,select,table,th,td{font-style:italic}
 <div class="brand">L'Argent Parle</div>
 <nav aria-label="Main" id="nav">
 <button data-tab="screener">Screener</button>
+<button data-tab="analysis">Daily Analysis</button>
 <button data-tab="mid">Mid / Small Book</button>
 <button data-tab="charts">Charts</button>
 <button data-tab="history">History</button>
@@ -125,6 +158,11 @@ body,button,input,select,table,th,td{font-style:italic}
 <div class="chips" id="watch"></div>
 </div>
 </div>
+</section>
+
+<!-- DAILY ANALYSIS -->
+<section id="tab-analysis" hidden>
+<div class="note-wrap tnr" id="anWrap"><div class="empty">Loading…</div></div>
 </section>
 
 <!-- MID / SMALL -->
@@ -218,7 +256,7 @@ body,button,input,select,table,th,td{font-style:italic}
   var getJSON = function (u) { return fetch(u, { credentials: 'same-origin' }).then(function (r) { if (r.status === 401) { location.href = '/login'; throw new Error('login'); } return r.json(); }); };
 
   // ---------------------------------------------------------------- tabs
-  var TITLES = { screener: ['Screener', 'Vector flips on the names the options market is watching.'], mid: ['Mid / Small Book', 'Thirty names, rebalanced every four weeks.'],
+  var TITLES = { screener: ['Screener', 'Vector flips on the names the options market is watching.'], analysis: ['Daily Analysis', 'Written before the open; each expected range moves with the session.'], mid: ['Mid / Small Book', 'Thirty names, rebalanced every four weeks.'],
     charts: ['Charts', 'Vector, THOD / TLOD and quantile bands, each on its own timeframe.'], history: ['History', 'Every live trade, at the rule’s fills.'], backtest: ['Backtest', 'The screener against the indexes, 2019 – 2026.'] };
   var tab = 'screener';
   function setTab(t) {
@@ -238,7 +276,7 @@ body,button,input,select,table,th,td{font-style:italic}
   function renderSnap(S) {
     if (!S) {
       $('stext').textContent = 'Waiting for the screener'; $('scrTiles').innerHTML = tile('Status', '–', 'no data pushed yet'); $('posEmpty').hidden = false; $('posBody').innerHTML = '';
-      $('sigList').innerHTML = '<div class="empty">No data yet.</div>'; $('histEmpty').hidden = false; return;
+      $('sigList').innerHTML = '<div class="empty">No data yet.</div>'; $('histEmpty').hidden = false; renderAnalysis(null); return;
     }
     var asof = new Date(S.asof_ms || Date.now());
     $('stext').textContent = (S.market_open ? 'Market open · ' : 'Market closed · ') + 'updated ' + asof.toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' });
@@ -257,6 +295,7 @@ body,button,input,select,table,th,td{font-style:italic}
       return '<div class="sig"><span class="t">' + esc(s.time) + '</span><span class="a ' + (s.action === 'BUY' ? 'up' : 'dn') + '">' + esc(s.action) + '</span><span class="n">' + esc(s.ticker) + '</span><span>' + esc(s.price) + '</span><span class="x">' + (s.pnl == null ? '' : pct(s.pnl)) + '</span></div>';
     }).join('') : '<div class="empty">No signals yet today.</div>';
     $('watch').innerHTML = (S.watch || []).map(function (w) { return '<button class="chip' + (w.held ? ' held' : '') + '" data-tk="' + esc(w.tk) + '"><b>' + esc(w.tk) + '</b><span>' + Number(w.ratio).toFixed(1) + '</span></button>'; }).join('');
+    renderAnalysis(S);
     var H = S.history || {}, T = H.trades || [];
     var closed = T.filter(function (t) { return !t.open; }), wins = closed.filter(function (t) { return t.ret > 0; }), losses = closed.filter(function (t) { return t.ret <= 0; });
     var mean = function (a) { return a.length ? a.reduce(function (x, t) { return x + t.ret; }, 0) / a.length : null; };
@@ -273,6 +312,68 @@ body,button,input,select,table,th,td{font-style:italic}
     }).join('');
   }
   document.addEventListener('click', function (e) { var b = e.target.closest('[data-tk]'); if (b) openChart(b.dataset.tk); });
+
+  // ---------------------------------------------------------------- daily analysis (written 09:00 ET; ranges refresh every scan)
+  var f2 = function (v) { return v == null ? '–' : Number(v).toFixed(2); };
+  function rangeBlock(z) {
+    if (!z) return '';
+    var lo = Math.min(z.lo_wide, z.lo, z.last), hi = Math.max(z.hi_wide, z.hi, z.last), pad = (hi - lo) * 0.04; lo -= pad; hi += pad;
+    var X = function (v) { return ((v - lo) / (hi - lo) * 100).toFixed(2) + '%'; };
+    var tick = function (v, c, w, h) { return '<line x1="' + X(v) + '" x2="' + X(v) + '" y1="' + (23 - h) + '" y2="' + (23 + h) + '" stroke="' + c + '" stroke-width="' + w + '"/>'; };
+    var svg = '<svg role="img" aria-label="Session range so far against the expected low and high"><line x1="0" x2="100%" y1="23" y2="23" stroke="rgba(201,162,39,.18)" stroke-width="1"/>' +
+      '<rect x="' + X(z.lo_wide) + '" width="' + ((z.hi_wide - z.lo_wide) / (hi - lo) * 100).toFixed(2) + '%" y="17" height="12" fill="rgba(201,162,39,.06)"/>' +
+      '<rect x="' + X(z.lo) + '" width="' + Math.max(0.4, (z.hi - z.lo) / (hi - lo) * 100).toFixed(2) + '%" y="19" height="8" fill="rgba(201,162,39,.75)"/>' +
+      tick(z.lo_wide, 'rgba(235,87,87,.45)', 1, 9) + tick(z.hi_wide, 'rgba(111,207,151,.45)', 1, 9) + tick(z.lo_typ, '#eb5757', 2, 13) + tick(z.hi_typ, '#6fcf97', 2, 13) +
+      '<circle cx="' + X(z.last) + '" cy="23" r="4.5" fill="#fff" stroke="#0a0e1a" stroke-width="1.5"/></svg>';
+    var note = 'The day’s range budget is about ' + z.budget.toFixed(1) + '% (' + z.wide.toFixed(1) + '% on a wide day). ' +
+      (z.pre ? 'Measured from the premarket so far, ' : 'Measured from the session so far, ') + 'a further low lowers the expected high by the same amount, and a further high lifts the expected low. ' +
+      (z.used >= 100 && !z.pre ? 'The session has already covered ' + z.used + '% of a typical day, so the extremes in place are more likely than not to hold.' : 'So far the ' + (z.pre ? 'premarket' : 'session') + ' has used ' + z.used + '% of that budget.');
+    ['low', 'high'].forEach(function (sd) { var e = z[sd + '_in']; if (e) note += ' The ' + sd + ' looks to be in (it holds about ' + e.p + '% of the time from here); the other side projects to ' + f2(e.typ) + ', with 80% of days ' + (sd === 'low' ? 'under ' : 'above ') + f2(e.b80) + '.'; });
+    return '<div class="rng"><div class="rng-top"><span>Expected range today</span><span>as of ' + esc(z.bar) + ' ET · last ' + f2(z.last) + '</span></div>' + svg +
+      '<div class="rng-cells"><div><i>Expected low</i><b class="dn">' + f2(z.lo_typ) + '</b>wide ' + f2(z.lo_wide) + '</div><div><i>' + (z.pre ? 'Premarket' : 'Session') + ' low</i><b>' + f2(z.lo) + '</b>&nbsp;</div>' +
+      '<div class="r"><i>' + (z.pre ? 'Premarket' : 'Session') + ' high</i><b>' + f2(z.hi) + '</b>&nbsp;</div><div class="r"><i>Expected high</i><b class="up">' + f2(z.hi_typ) + '</b>wide ' + f2(z.hi_wide) + '</div></div>' +
+      '<p class="rng-note">' + esc(note) + '</p></div>';
+  }
+  function renderAnalysis(S) {
+    var el = $('anWrap'), A = S && S.analysis, R = (S && S.ranges) || {}, P = (S && S.positions) || [];
+    if (!A) { el.innerHTML = '<div class="empty">The first note is written at 09:00 ET on the next trading day.</div>'; return; }
+    var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), stale = (A.asof || '').slice(0, 10) !== today;
+    var byTk = {}; (A.positions || []).forEach(function (p) { byTk[p.tk] = p; });
+    var live = {}, order = []; P.slice().sort(function (a, b) { return (b.pnl || 0) - (a.pnl || 0); }).forEach(function (p) { if (!live[p.base]) { live[p.base] = p; order.push(p.base); } });
+    var h = '<div class="dateline"><span>' + esc(A.date) + ' · written ' + esc(A.time) + ' ET</span><span>' + order.length + ' of ' + (S.slots || A.slots) + ' slots held</span></div>';
+    if (stale) h += '<p class="closed-note">This note was written on ' + esc(A.date) + '. The next one arrives at 09:00 ET; the expected ranges below still follow the latest session.</p>';
+    // the market
+    h += '<div class="essay"><h3>The market</h3><p class="dropcap">' + esc(A.market) + '</p><div class="mkt-grid"><div class="scroll"><table class="mini"><thead><tr><th>Sector</th><th>Daily</th><th>Weekly</th><th class="r">5 days</th><th class="r">1 month</th></tr></thead><tbody>' +
+      (A.sectors || []).map(function (s) { return '<tr><td class="' + (s.mine ? 'mine' : '') + '">' + esc(s.name) + (s.mine ? ' ·' : '') + '</td><td class="' + (s.d === 'up' ? 'up' : 'dn') + '">' + esc(s.d) + '</td><td class="' + (s.w === 'up' ? 'up' : 'dn') + '">' + esc(s.w) + '</td><td class="r ' + cls(s.r5) + '">' + pct(s.r5) + '</td><td class="r ' + cls(s.r21) + '">' + pct(s.r21) + '</td></tr>'; }).join('') +
+      '</tbody></table></div><div><h3>Calendar</h3><ul class="side-list">' + ((A.calendar || []).length ? A.calendar.map(function (e) { return '<li class="' + (e.impact === 'High' ? 'dn' : '') + '">' + esc(e.t) + ' · ' + esc(e.title) + (e.prev ? '<small>previous ' + esc(e.prev) + '</small>' : '') + '</li>'; }).join('') : '<li>No high-impact US releases.</li>') +
+      '</ul>' + ((A.headlines || []).length ? '<h3 style="margin-top:20px">Headlines</h3><ul class="side-list">' + A.headlines.map(function (n) { return '<li>' + esc(n.title) + (n.read ? '<small>' + esc(n.read) + '</small>' : '') + '</li>'; }).join('') + '</ul>' : '') + '</div></div></div>';
+    // the book
+    var pn = order.map(function (t) { return live[t].pnl || 0; }), avg = pn.length ? pn.reduce(function (a, b) { return a + b; }, 0) / pn.length : 0;
+    var intro = order.length ? 'The book holds ' + order.length + ' position' + (order.length > 1 ? 's' : '') + ', averaging ' + pct(avg) + ' since entry' +
+      (order.length > 1 ? ', led by ' + order[0] + ' (' + pct(live[order[0]].pnl) + ') with ' + order[order.length - 1] + ' (' + pct(live[order[order.length - 1]].pnl) + ') the weakest' : '') +
+      '. Every exit is set by rule; what follows explains each holding, what would confirm it, and what would end it.' : 'The book is flat: no position is open.';
+    h += '<div class="essay"><h3>The book</h3><p>' + esc(intro) + '</p></div>';
+    order.forEach(function (t) {
+      var p = byTk[t], L = live[t];
+      h += '<article class="pos-art essay"><div class="pos-head"><button class="cur tk" style="text-decoration:none;min-height:0" data-tk="' + esc(t) + '">' + esc(t) + '</button><span class="pos-pnl ' + cls(L.pnl) + '">' + pct(L.pnl) + '</span></div>' +
+        '<div class="pos-meta">' + (p ? esc(p.sector) + ' · ' : '') + 'entry ' + esc(L.entry) + ' · stop ' + esc(L.stop) + (p ? ' on ' + (p.basis === 'hourly' ? 'an hourly' : 'a 15-minute') + ' close' : '') + ' · best ' + pct(L.peak) + (L.selling ? ' · <span class="dn">sells at the next open</span>' : '') + '</div>';
+      if (p) { var rd = p.read; h += '<div class="read">15-minute ' + rd.t15 + ' · hourly ' + rd.t1h + ' · daily ' + rd.td + (p.etf ? ' · ' + esc(p.etf) + ' ' + rd.sec_d + ' daily, ' + rd.sec_w + ' weekly' : '') + ' · volatility ' + rd.vol + ' (' + rd.vol_pct + 'th percentile)' + (rd.earnings ? ' · earnings ' + esc(rd.earnings) : '') + '</div>'; }
+      h += rangeBlock(R[t]);
+      if (p) {
+        h += '<p><span class="lead">Why we hold.</span>' + esc(p.why) + '</p><p><span class="lead">What we want to see.</span>' + esc(p.want) + '</p><p><span class="lead">Why it would fail.</span>' + esc(p.fail) + '</p>';
+        var c = p.counts || {};
+        if ((p.news || []).length) h += '<ul class="news" aria-label="Recent news on ' + esc(t) + '">' + p.news.map(function (n) {
+          var head = n.url ? '<a href="' + esc(n.url) + '" target="_blank" rel="noopener">' + esc(n.title) + '</a>' : esc(n.title);
+          return '<li class="' + (n.sent === 'positive' ? 'pos' : n.sent === 'negative' ? 'neg' : '') + '">' + head + '<small>' + esc(n.t) + (n.pub ? ' · ' + esc(n.pub) : '') + (n.why ? ' — ' + esc(n.why) : '') + '</small></li>';
+        }).join('') + '</ul><p class="read">Five-day coverage: ' + (c.pos || 0) + ' positive, ' + (c.neg || 0) + ' negative, ' + (c.neu || 0) + ' neutral.</p>';
+      } else h += '<p class="closed-note">Opened after this morning’s note; its write-up arrives with tomorrow’s.</p>';
+      h += '</article>';
+    });
+    var gone = (A.positions || []).filter(function (p) { return !live[p.tk]; }).map(function (p) { return p.tk; });
+    if (gone.length && !stale) h += '<p class="closed-note">Closed since the note: ' + gone.map(esc).join(', ') + '.</p>';
+    h += '<p class="note">Rules decide every buy and sell; this note is context. Expected ranges come from a volatility forecast and refresh every 15 minutes with the session’s extremes.</p>';
+    el.innerHTML = h;
+  }
   var HC = null, LH = null, VS = 'spy';
   try { VS = localStorage.getItem('lap_vs') || 'spy'; } catch (e) {}
   function renderVs() {
