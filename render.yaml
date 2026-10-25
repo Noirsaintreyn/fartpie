@@ -44,7 +44,8 @@ services:
       - {key: DISCORD_TOKEN, sync: false}
       - {key: DISCORD_GUILD_ID, sync: false}
       - {key: VECTOR_CHANNEL_ID, sync: false}
-      - {key: HM_CHANNEL_ID, sync: false}      # optional: honorable-mention alerts go here (else the main channel)
+      - {key: HM_CHANNEL_ID, sync: false}
+      - {key: HELIOUS_API_KEY, sync: false}    # helious.io news for /brief (free account key)      # optional: honorable-mention alerts go here (else the main channel)
       - {key: LSE_API_KEY, sync: false}
       - {key: BACKEND_USER, sync: false}
       - {key: BACKEND_PASSWORD, sync: false}

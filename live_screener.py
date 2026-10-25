@@ -912,6 +912,71 @@ def pro_text(tk, fetch=True):
                        f"80% {word} {e['tgt'][1]:.2f}, 95% {word} {e['tgt'][2]:.2f}.")
         elif x['tier']: out.append(f"{side.capitalize()} not confirmed yet ({side} so far {ext:.2f} at {t_ // 60}:{t_ % 60:02d}).")
     return '\n'.join(out)
+HEL_NAMES = {'AAPL': 'Apple', 'MSFT': 'Microsoft', 'NVDA': 'Nvidia', 'AMD': 'AMD', 'AMZN': 'Amazon', 'META': 'Meta', 'GOOGL': 'Alphabet|Google', 'TSLA': 'Tesla',
+             'AVGO': 'Broadcom', 'MU': 'Micron', 'ORCL': 'Oracle', 'ADBE': 'Adobe', 'COST': 'Costco', 'UNH': 'UnitedHealth', 'LLY': 'Lilly', 'GS': 'Goldman',
+             'JPM': 'JPMorgan|JP Morgan', 'BA': 'Boeing', 'CAT': 'Caterpillar', 'NFLX': 'Netflix', 'PLTR': 'Palantir', 'CRWD': 'CrowdStrike', 'COIN': 'Coinbase',
+             'HOOD': 'Robinhood', 'APP': 'AppLovin', 'CVNA': 'Carvana', 'BRKB': 'Berkshire'}
+SECTOR_WORDS = {'Information Technology': r'chip|semiconductor|software|\bAI\b|cloud|data cent', 'Health Care': r'health|drug|pharma|FDA|insur',
+                'Financials': r'bank|lender|brokerage|crypto|bitcoin', 'Consumer Discretionary': r'retail|consumer spend|auto|EV\b',
+                'Communication Services': r'advertis|streaming|social media', 'Consumer Staples': r'grocer|staples|consumer prices', 'Industrials': r'aerospace|defen[cs]e|freight|airline'}
+def helious(path, params, ttl=900):
+    """GET api.helious.io with the key from .env (HELIOUS_API_KEY), cached for ttl seconds to save credits"""
+    key = os.getenv('HELIOUS_API_KEY', ''); cf = f'{LIVE}/helious_cache.json'; ck = path + '?' + '&'.join(f'{k}={v}' for k, v in sorted(params.items()))
+    try: C = json.load(open(cf))
+    except Exception: C = {}
+    if ck in C and time.time() - C[ck]['t'] < ttl: return C[ck]['j']
+    r = requests.get('https://api.helious.io' + path, params=params, headers={'X-Api-Key': key} if key.startswith('hel_') else {}, timeout=20)
+    if r.status_code != 200: raise RuntimeError(f'helious {r.status_code}: {r.text[:120]}')
+    j = r.json(); C[ck] = dict(t=time.time(), j=j)
+    try: json.dump(C, open(cf, 'w'))
+    except Exception: pass
+    return j
+def news_text(held, universe):
+    import re
+    out = []
+    try:
+        items = helious('/v1/feed', dict(limit=100)).get('data', {}).get('items', [])
+    except Exception as ex: return [f'_News unavailable: {str(ex)[:80]}_']
+    secs = {sector_of(t) for t in held}
+    def hit(t, it):
+        txt = f"{it.get('title', '')} {it.get('text', '')}"
+        return re.search(rf'\b{t}\b' + (f"|{HEL_NAMES[t]}" if t in HEL_NAMES else ''), txt, re.I) is not None
+    mine = [(t, it) for it in items for t in held if hit(t, it)]
+    watch = [(t, it) for it in items for t in universe if t not in held and hit(t, it) and abs(it.get('score', 0) or 0) >= 2]
+    sect = [(sc, it) for it in items for sc in secs if sc in SECTOR_WORDS and abs(it.get('score', 0) or 0) >= 1 and re.search(SECTOR_WORDS[sc], f"{it.get('title', '')} {it.get('text', '')}", re.I)
+            and not any(hit(t, it) for t in held)]
+    def line(tag, it):
+        when = pd.Timestamp(it['created_at']).tz_convert('America/New_York').strftime('%a %H:%M')
+        d = it.get('direction', ''); sc = it.get('score')
+        return f"  {tag}: {it['title'][:140]} ({when}" + (f", {d.lower()}" if d and d != 'NEUTRAL' else '') + (f", score {sc:+g}" if sc else '') + ')' + (f" - {it['helious_read'][:120]}" if it.get('helious_read') else '')
+    seen = set()
+    if mine:
+        out.append('**News on your positions**')
+        for t, it in mine:
+            if it['id'] in seen: continue
+            seen.add(it['id']); out.append(line(t, it))
+            if len(seen) >= 8: break
+    if sect:
+        out.append('**Sector news for what you hold**')
+        for sc, it in sorted(sect, key=lambda z: -abs(z[1].get('score', 0) or 0))[:4]:
+            if it['id'] in seen: continue
+            seen.add(it['id']); out.append(line({'Information Technology': 'Tech', 'Consumer Discretionary': 'Discretionary', 'Communication Services': 'Comms', 'Consumer Staples': 'Staples', 'Health Care': 'Health'}.get(sc, sc), it))
+    if watch:
+        out.append('**Market-moving news on the universe**')
+        for t, it in sorted(watch, key=lambda z: -abs(z[1].get('score', 0) or 0))[:4]:
+            if it['id'] in seen: continue
+            seen.add(it['id']); out.append(line(t, it))
+    top = [it for it in sorted(items, key=lambda it: -abs(it.get('score', 0) or 0)) if it['id'] not in seen][:3]
+    if top: out.append('**Top market news**'); out += [line(it.get('category', 'news'), it) for it in top]
+    try:
+        cal = helious('/v1/calendar', dict(days_back=0, days_ahead=1, country='US', limit=10), ttl=3600).get('data', {})
+        ev = [e for e in (cal.get('events') or []) if e.get('impact') in ('High', 'Medium') and e.get('type') != 'auction' or e.get('impact') == 'High']
+        if ev: out.append('**Calendar (US, today/tomorrow, medium/high impact)**: ' + '; '.join(
+            f"{pd.Timestamp(e['datetime_utc']).tz_convert('America/New_York'):%a %H:%M} {e.get('title', '')}" + (f" (prev {e['previous']})" if e.get('previous') else '') +
+            (f" = {e['actual']}" if e.get('actual') else '') for e in ev[:6]))
+    except Exception: pass
+    if not items: out.append('_No news on the tape right now (weekend / feed delayed 60 min on the free plan)._')
+    return out
 def brief_text(rows, meta, fetch=True):
     U = [r for r in rows if r['track'] == '15m' and r['base'] != 'QQQ']; held = [r for r in rows if r['action'] in ('HOLD', 'SELL') and r['px']]
     out = [f"**Screener brief** · {now_et():%a %b %d %H:%M} ET"]
@@ -945,7 +1010,8 @@ def brief_text(rows, meta, fetch=True):
             out.append('**Sector ETFs** 5d (1d): ' + ', '.join(f"{v} {r5[v]:+.1%} ({r1[v]:+.1%})" for k, v in lead[:4]) + ' … weakest: ' + ', '.join(f"{v} {r5[v]:+.1%}" for k, v in lead[-2:]))
             out.append(f"SPY 5d {r5['SPY']:+.1%} · QQQ 5d {r5['QQQ']:+.1%}")
         except Exception as ex: out.append(f'(sector ETFs unavailable: {str(ex)[:60]})')
-    if not os.getenv('HELIOUS_API_KEY'): out.append('_News: add HELIOUS_API_KEY (and the API docs) to wire in headlines for your positions._')
+    if fetch or os.getenv('BRIEF_NEWS', '1') == '1':
+        out += news_text(sorted({r['base'] for r in held}), sorted({r['base'] for r in U}))
     return '\n'.join(out)
 
 # ================================================================ console
