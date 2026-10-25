@@ -61,4 +61,8 @@ Oct 25 batch (xs/batch_oct25.py, xs/lod_hod.py, xs/max_pain.py):
 - Correlation rules with a reason (xs/corr_rules.py) all rejected: skip crowded flips (corr > 0.6/0.7/0.8 with 1-2 open), skip after a correlated
   peer lost (much worse: 2022-26 +9..17%), sell correlated peers when one loses, prefer flips whose peers are winning, correlation-aware sizing.
   => the 'max 1 chip' result was luck, not a correlation effect. Not adopted.
+- Options sister model (xs/options_model.py, xs/put_sell_prob.py): capped calls don't work - take-profits lift the win rate to 41-48% at most
+  (losers hit the vector stop before +1.5%), and a rough 30-day ATM call model loses on average in every variant; higher ratio (>= 3) doesn't fix it.
+  Short-put proxy has an edge: after a flip, P(stock ends above entry - 0.5 sigma in 5 days) 81.6% vs 76.8% on random days (19-21), 77.8% vs 72.6% (22-26);
+  -1 sigma: 91.2 vs 87.8, 89.0 vs 85.9. Needs real option prices to confirm.
 
