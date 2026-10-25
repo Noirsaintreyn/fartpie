@@ -4,6 +4,10 @@
 - **Earnings guard (live from Mon 2026-10-26):** the day before a report (after-close today or pre-open tomorrow), if a position is up >= +3%
   but by less than its typical earnings move (mean |gap| of the last 8 reports, from the bot's own bars), it is sold at that day's close.
   Discord warns after the 15:30 bar ("sell at the close, market-on-close"), then confirms after the close. Report dates from Yahoo (cached daily). EARN_GUARD=0 turns it off.
+- **Day-extreme alerts (from Mon 2026-10-26):** for held names, from 12:00 ET, when the day's low (or high) looks in (set >= 30 min earlier, price
+  >= 0.5 daily sigma off it), Discord posts the odds it holds (~87-89% from 12:00, ~95-96% from 14:00) and the projected other extreme
+  (typical / 80% / 95%). Vol = HAR on the daily high/low range (pooled fit) - bands ~8-10% narrower than 20-day std at the same coverage
+  (xs/range_models.py). Once per name per side per day. EXTREME_CHANNEL_ID to route them; EXTREME_ALERTS=0 turns them off. Information only - not a trade rule.
 - **Honorable mentions:** flips skipped because all slots are full are alerted (HM_CHANNEL_ID or the main channel) and shown in /hm; never traded.
 - **Universe:** S&P 500 names (point-in-time membership) whose options ratio (option contracts x100 / shares, trailing 252-day median, lagged 1 day) is >= 1.5 (from Oct 22 09:30; 2.5 Oct 20-21). Ratio file: live_data/optvol_ratio_live.csv, refreshed Saturdays by tools/weekly_ratio.sh (needs Theta running).
 - **Signal:** 15m pivot-ratchet vector built on premarket + RTH bars (04:00-16:00 ET). Long on a bull flip; entries and exits fill at RTH opens.

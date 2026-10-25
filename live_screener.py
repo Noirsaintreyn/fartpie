@@ -767,7 +767,42 @@ def post_positions(rows, meta):
         print(f'  ! board card failed ({str(e)[:80]}); simple positions card'); positions_card(rows, meta, p)
     return post('', [p])
 
+# ---- day-extreme alerts (Oct 25 2026, xs/lod_hod.py + xs/range_models.py): once a held name's low (or high) of the day looks in - set >= 30 min
+#      earlier and price >= 0.5 daily sigma off it - post how far the other side should go. Vol = HAR on the daily high/low range (pooled fit),
+#      bands fit 2019-21, checked 2022-26 (80% band held 80-83%, 95% band 95.5-96.3%). From 12:00 the extreme holds ~87-89%, from 14:00 ~95-96%.
+XQ = {('low', 720): (.870, 1.756, 2.409, 3.448), ('low', 840): (.948, 1.778, 2.446, 3.500),
+      ('high', 720): (.891, 1.827, 2.550, 3.524), ('high', 840): (.958, 1.846, 2.556, 3.531)}
+def day_extremes(rows, st):
+    now = now_et(); mins = now.hour * 60 + now.minute
+    if not (12 * 60 <= mins < RTH1) or os.getenv('EXTREME_ALERTS', '1') != '1': return
+    tier = 840 if mins >= 14 * 60 else 720; today = f'{now:%Y-%m-%d}'; done = set()
+    for r in rows:
+        if r['action'] not in ('HOLD', 'SELL') or r['base'] in done: continue
+        done.add(r['base']); H = r['H']; m = H.dt.dt.hour * 60 + H.dt.dt.minute; R_ = H[(m >= RTH0) & (m < RTH1)]
+        D = R_.groupby(R_.dt.dt.normalize()).agg(h=('high', 'max'), l=('low', 'min'), c=('close', 'last'))
+        if len(D) < 30 or D.index[-1] != now.normalize(): continue
+        P_ = D.iloc[:-1]; x = np.log(np.log(P_.h / P_.l).clip(lower=1e-5))          # log of the daily log-range (HAR input)
+        sig = float(np.exp(-0.6186 + 0.2939 * x.iloc[-1] + 0.3661 * x.iloc[-5:].mean() + 0.1783 * x.iloc[-22:].mean()) / 1.665)
+        s20 = float(np.log(P_.c).diff().iloc[-20:].std())
+        g = R_[R_.dt.dt.normalize() == now.normalize()]; gm = g.dt.dt.hour * 60 + g.dt.dt.minute
+        lo, hi, last = g.low.min(), g.high.max(), float(g.close.iloc[-1]); tl, th = gm[g.low.idxmin()], gm[g.high.idxmax()]
+        for side, ok, ext, t_ in (('low', mins - (tl + 15) >= 30 and last >= lo * (1 + .5 * s20), lo, tl), ('high', mins - (th + 15) >= 30 and last <= hi * (1 - .5 * s20), hi, th)):
+            key = f"{r['base']}|XT|{side}|{today}"
+            if not ok or key in st['signals']: continue
+            p, q50, q80, q95 = XQ[(side, tier)]
+            if side == 'low':
+                tgt = [lo * (1 + q * sig) for q in (q50, q80, q95)]
+                msg = (f"\U0001f4cd LOW LIKELY IN - {r['base']}: today's low {lo:.2f} ({t_ // 60}:{t_ % 60:02d}) holds into the close ~{p:.0%} of the time from here. "
+                       f"Projected high: ~{tgt[0]:.2f} typical, 80% stay under {tgt[1]:.2f}, 95% under {tgt[2]:.2f}. Now {last:.2f}, high so far {hi:.2f}.")
+            else:
+                tgt = [hi * (1 - q * sig) for q in (q50, q80, q95)]
+                msg = (f"\U0001f4cd HIGH LIKELY IN - {r['base']}: today's high {hi:.2f} ({t_ // 60}:{t_ % 60:02d}) holds into the close ~{p:.0%} of the time from here. "
+                       f"Projected low: ~{tgt[0]:.2f} typical, 80% stay above {tgt[1]:.2f}, 95% above {tgt[2]:.2f}. Now {last:.2f}, low so far {lo:.2f}.")
+            if post(msg, [], channel=os.getenv('EXTREME_CHANNEL_ID')): st['signals'].append(key); _save(st)
+
 def post_new_signals(rows, meta, st):
+    try: day_extremes(rows, st)
+    except Exception as ex: print(f'  ! day extremes: {str(ex)[:80]}')
     held = st.setdefault('held', {}); today = now_et().strftime('%Y-%m-%d')
     bk = f'breaker|{today}'
     if meta.get('breaker') and bk not in st['signals']:
