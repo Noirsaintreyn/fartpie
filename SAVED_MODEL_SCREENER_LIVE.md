@@ -55,4 +55,7 @@ Oct 25 batch (xs/batch_oct25.py, xs/lod_hod.py, xs/max_pain.py):
 - Options ratio: tools/ibkr_optvol.py + tools/daily_ratio.sh (weekdays 16:20) replace the Theta pull once checked against Theta.
 - News exit (xs/news_exit.py): selling in extended hours after a bad earnings reaction is neutral overall; best 'sell 30 min after the
   report if down >= 2% and the trade was up >= 3%': +56.0/-11, +29.8/-16, 2019-26 +39.7/-16 (live +38.5/-16). Small, needs extended-hours orders.
+- Correlation caps (xs/sector_cap.py): CANDIDATE 'max 1 semiconductor at a time': +59.6/-10, +31.4/-16, 2019-26 +41.3/-22, 2026 +47.8/-9
+  (live +55.1/-11, +28.5/-16, +38.5/-16, +35.6/-10); better in 5 of 8 years, but the full-run drawdown is deeper (-22 vs -16). Max 2 per GICS sector: split halves.
+  Max 1 per sector: much worse.
 
