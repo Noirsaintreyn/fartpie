@@ -279,6 +279,48 @@ def breaker_on(out, t0):
     k = ts >= t0 - np.timedelta64(28, 'D'); lvl0 = eq[~k][-1] if (~k).any() else 0.0     # equity level at the start of the window counts too
     return eq[-1] - max(lvl0, eq[k].max() if k.any() else lvl0) < np.log1p(-BREAKER)
 
+# ---- earnings guard (Oct 25 2026): the day before a report, if a position is up >= +3% but by less than the stock's typical earnings move
+#      (mean |gap| over its last 8 reports), sell at that day's close - one normal gap could erase the gain. Backtest (xs/batch_oct25.py):
+#      2019-21 +59.3/-11, 2022-26 +28.9/-16, 2019-26 +40.2/-16 vs live +55.1/-11, +28.5/-16, +38.5/-16.
+EG_ON, EG_MIN, EG_K, EG_START = os.getenv('EARN_GUARD', '1') == '1', 0.03, 1.0, pd.Timestamp(os.getenv('EG_START', '2026-10-26 09:30'))
+EARN_CACHE = f'{LIVE}/earn_cache.json'
+def earn_events(tk):
+    """[(report time ET, after close?, reported?)] from Yahoo, cached per name per day"""
+    try: C = json.load(open(EARN_CACHE))
+    except Exception: C = {}
+    today = f'{now_et():%Y-%m-%d}'
+    if C.get(tk, {}).get('day') != today:
+        try:
+            import yfinance as yf
+            e = yf.Ticker(YF_SYM.get(tk, tk)).get_earnings_dates(limit=16)
+            ev = [] if e is None else [[str(pd.Timestamp(t).tz_convert('America/New_York').tz_localize(None)), bool(r == r)] for t, r in zip(e.index, e['Reported EPS'])]
+            C[tk] = dict(day=today, ev=ev)
+            tmp = EARN_CACHE + '.tmp'; json.dump(C, open(tmp, 'w')); os.replace(tmp, EARN_CACHE)
+        except Exception as ex: print(f'  ! earnings dates {tk}: {str(ex)[:60]}'); C.setdefault(tk, dict(day='', ev=[]))
+    return [(pd.Timestamp(t), pd.Timestamp(t).hour >= 12, rep) for t, rep in C[tk]['ev']]
+def earn_guard_check(tk, H, px):
+    """-> None, or dict(up, move, gap_day) when tonight / tomorrow morning's report triggers the guard for a position entered at px"""
+    ev = earn_events(tk)
+    if not ev: return None
+    rth = H[(H.dt.dt.hour * 60 + H.dt.dt.minute >= RTH0) & (H.dt.dt.hour * 60 + H.dt.dt.minute < RTH1)]
+    days = pd.DatetimeIndex(sorted(rth.dt.dt.normalize().unique()))
+    today = now_et().normalize()
+    if not len(days) or days[-1] != today: return None
+    nxt = pd.bdate_range(today + pd.Timedelta(days=1), periods=1)[0]
+    up_next = [t for t, ac, rep in ev if not rep and ((ac and t.normalize() == today) or (not ac and t.normalize() == nxt))]
+    if not up_next: return None
+    O = rth.groupby(rth.dt.dt.normalize()).open.first(); C_ = rth.groupby(rth.dt.dt.normalize()).close.last(); gaps = []
+    for t, ac, rep in sorted(ev):
+        if not rep: continue
+        g = t.normalize() if not ac else (days[days > t.normalize()][0] if (days > t.normalize()).any() else None)
+        if g is None or g not in O.index: continue
+        k = C_.index.get_loc(g)
+        if k > 0: gaps.append(abs(O[g] / C_.iloc[k - 1] - 1))
+    gaps = gaps[-8:]
+    if len(gaps) < 4: return None
+    up = float(rth.close.iloc[-1]) / px - 1; mv = float(np.mean(gaps))
+    return dict(up=up, move=mv, n=len(gaps), report=up_next[0], fire=EG_MIN <= up < EG_K * mv)
+
 LEDGER = os.getenv('LEDGER', f'{LIVE}/ledger.json')                                                   # Oct 21 2026: every trade recorded when taken, never recomputed
 def _lkey(tk, track, t0): return f"{tk}|{track}|{pd.Timestamp(t0):%Y-%m-%d %H:%M}"
 def ledger_load():
@@ -385,6 +427,21 @@ def scan(args):
             if t['status'] != 'CLOSED':                                  # replay revived a trade the ledger already closed (bar revision): keep it closed
                 d = HS[t['tk']].dt.values; t['status'] = 'CLOSED'; t['x'] = int(min(np.searchsorted(d, t['t1']), len(d) - 1))
                 live.pop((t['tk'], t['track']), None)
+    EG = []                                                               # earnings guard: warn from 15:30, sell at the 15:45 bar's close
+    if EG_ON and now_et() >= EG_START:
+        for t in AL:
+            if t['status'] != 'HOLD' or not t['px'] or t['tk'] == 'QQQ': continue
+            H = HS[t['tk']]; lb = H.dt.iloc[-1]
+            if lb.normalize() != now_et().normalize() or lb.hour * 60 + lb.minute < 15 * 60 + 15: continue
+            try: g = earn_guard_check(t['tk'], H, float(t['px']))
+            except Exception as ex: print(f"  ! earnings guard {t['tk']}: {str(ex)[:60]}"); continue
+            if not g: continue
+            g.update(tk=t['tk'], track=t['track'], px=float(t['px']), last=float(H.close.iloc[-1]), bar=lb, final=lb.hour * 60 + lb.minute >= 15 * 60 + 45)
+            EG.append(g)
+            k = _lkey(t['tk'], t['track'], t['t0']); v = LG.get(k)
+            if g['fire'] and g['final'] and v is not None and v['status'] == 'open':      # close at the 15:45 bar's close (= the 16:00 close)
+                v.update(status='closed', t1=str(lb), xpx=float(H.close.iloc[-1]), lock=False, note='earnings guard')
+                t.update(status='CLOSED', t1=np.datetime64(lb), xpx=float(H.close.iloc[-1]), x=len(H) - 1, eg=True); live.pop((t['tk'], t['track']), None)
     LG['__asof__'] = str(pd.Timestamp(max(H.dt.iloc[-1] for H in HS.values())))
     if not getattr(args, 'no_ledger', False): ledger_save(LG)
     def mk_row(tk, H, track, t):
@@ -411,7 +468,7 @@ def scan(args):
     hm_rows = [mk_row(tk, HS[tk], track, t) for (tk, track), t in hm.items()]
     brk = breaker_on(AL, now_et())
     if brk: print(f'  !! BREAKER: book is more than {BREAKER:.0%} below its 20-day high - no new entries (open positions keep their stops)')
-    meta = dict(breaker=brk, trades=AL, HS=HS, hm=hm_rows, slots=slots, w=1 / slots, rat_thru=rat_thru, g_thru=G.index.max(), capital=args.capital,
+    meta = dict(breaker=brk, trades=AL, HS=HS, hm=hm_rows, eg=EG, slots=slots, w=1 / slots, rat_thru=rat_thru, g_thru=G.index.max(), capital=args.capital,
                 ratios={t: float(last_ratio.get(t, np.nan)) for t in elig_now})
     if not args.no_fetch and os.getenv('SITE_SNAPSHOT', '1') == '1':
         try: write_site_snapshot(out, meta)
@@ -716,6 +773,18 @@ def post_new_signals(rows, meta, st):
     if meta.get('breaker') and bk not in st['signals']:
         if post(f"\U0001f6d1 BREAKER ON: the book is more than {BREAKER:.0%} below its 20-day high. No new buys until it recovers; open positions keep their stops.", []):
             st['signals'].append(bk); _save(st)
+    for g in meta.get('eg', []):                                       # earnings guard alerts
+        tk = g['tk'] if g['track'] == '15m' else f"{g['tk']} 1h"; day = f"{g['bar']:%Y-%m-%d}"
+        when = f"{g['report']:%a %H:%M}" if g['report'].hour else f"{g['report']:%a}"
+        if not g['final'] and g['fire'] and f'{tk}|EGW|{day}' not in st['signals']:
+            if post(f"\u26a0\ufe0f EARNINGS GUARD: {tk} reports {when}. Up {g['up']:+.1%} from {g['px']:.2f}, under its typical earnings move ({g['move']:.1%}, last {g['n']} reports). "
+                    f"The rule SELLS AT TODAY'S CLOSE - use a market-on-close order (last {g['last']:.2f}).", []): st['signals'].append(f'{tk}|EGW|{day}'); _save(st)
+        if g['final'] and g['fire']: st.setdefault('held', {}).pop(tk, None); _save(st)          # the guard's own SOLD post replaces the late-SELL post
+        if g['final'] and f'{tk}|EGF|{day}' not in st['signals']:
+            msg = (f"\U0001f6aa SOLD {tk} at the close {g['last']:.2f} (earnings guard): P&L {g['last'] / g['px'] - 1:+.1%} before {when}'s report." if g['fire'] else
+                   f"\u2705 {tk} holds through earnings: closed {g['up']:+.1%}, " + ("above its typical move." if g['up'] >= g['move'] else "under the +3% guard line."))
+            if (g['fire'] or f'{tk}|EGW|{day}' in st['signals']) and post(msg, []): st['signals'].append(f'{tk}|EGF|{day}'); _save(st)
+            elif not g['fire']: st['signals'].append(f'{tk}|EGF|{day}'); _save(st)
     for r in meta.get('hm', []):                                       # honorable mention: flipped, but every slot is full -> alert to the HM channel, no trade
         if r['action'] != 'BUY': continue
         tk = r['ticker']; key = f"{tk}|HM|{r['bar']:%Y-%m-%d %H:%M}" if now_et().hour * 60 + now_et().minute >= RTH0 else f"{tk}|HM|pre|{today}"

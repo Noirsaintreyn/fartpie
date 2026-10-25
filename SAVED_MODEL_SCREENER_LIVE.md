@@ -1,6 +1,10 @@
 # Saved model: live vector screener (locked 2026-10-19, live from Tue 2026-10-20 09:30 ET; breaker added 2026-10-20 12:00)
 
 ## Rules
+- **Earnings guard (live from Mon 2026-10-26):** the day before a report (after-close today or pre-open tomorrow), if a position is up >= +3%
+  but by less than its typical earnings move (mean |gap| of the last 8 reports, from the bot's own bars), it is sold at that day's close.
+  Discord warns after the 15:30 bar ("sell at the close, market-on-close"), then confirms after the close. Report dates from Yahoo (cached daily). EARN_GUARD=0 turns it off.
+- **Honorable mentions:** flips skipped because all slots are full are alerted (HM_CHANNEL_ID or the main channel) and shown in /hm; never traded.
 - **Universe:** S&P 500 names (point-in-time membership) whose options ratio (option contracts x100 / shares, trailing 252-day median, lagged 1 day) is >= 1.5 (from Oct 22 09:30; 2.5 Oct 20-21). Ratio file: live_data/optvol_ratio_live.csv, refreshed Saturdays by tools/weekly_ratio.sh (needs Theta running).
 - **Signal:** 15m pivot-ratchet vector built on premarket + RTH bars (04:00-16:00 ET). Long on a bull flip; entries and exits fill at RTH opens.
 - **Exit:** 15m bear flip. Once a trade is >= +2% and the 1h vector has been bull, it switches to the 1h stop and **stays there** (sticky). LOCK5/0.5 profit lock. 1h track runs alongside.
