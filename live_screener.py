@@ -738,6 +738,14 @@ def signal_card(r, meta, path):
     fig.savefig(path, dpi=140, facecolor=BG); plt.close(fig)
 
 # ================================================================ discord
+def post_long(text, channel=None):
+    """post text over several messages (Discord's 2000-character limit), split on line breaks"""
+    chunk, ok = '', True
+    for line in text.splitlines():
+        if len(chunk) + len(line) > 1900: ok = post(chunk, [], channel=channel) and ok; chunk = ''
+        chunk += line + '\n'
+    return (post(chunk, [], channel=channel) if chunk.strip() else True) and ok
+
 def post(text, files, channel=None):
     ch, tok, hook = channel or os.getenv('VECTOR_CHANNEL_ID'), os.getenv('DISCORD_TOKEN'), os.getenv('DISCORD_WEBHOOK_URL')
     if ch and tok: url, hdr = f'https://discord.com/api/v10/channels/{ch}/messages', {'Authorization': f'Bot {tok}'}
@@ -984,7 +992,8 @@ def brief_text(rows, meta, fetch=True):
         out.append(f"**Book** ({len({r['base'] for r in held})} of {meta['slots']} slots)")
         for r in sorted(held, key=lambda r: -r['pnl']):
             x = extreme_info(r['H']) or {}
-            out.append(f"  {r['ticker']}: {r['pnl']:+.1%} · stop {r['stop']:.2f} ({(r['last'] / r['stop'] - 1):.1%} room) · vol {vol_word(x.get('pct', .5))}"
+            room = r['last'] / r['stop'] - 1
+            out.append(f"  {r['ticker']}: {r['pnl']:+.1%} · stop {r['stop']:.2f} " + (f"(BELOW the stop: sells at the 09:30 open)" if room < 0 or r['action'] == 'SELL' else f"({room:.1%} room)") + f" · vol {vol_word(x.get('pct', .5))}"
                        + (' · low in' if x.get('low') else '') + (' · high in' if x.get('high') else ''))
     bull = [r for r in U if r['state15'] == 1]; bull1 = [r for r in U if r['state1h'] == 1]
     out.append(f"**Universe** ({len(U)} names): {len(bull)} bull on 15m, {len(bull1)} on 1h")
@@ -1004,7 +1013,8 @@ def brief_text(rows, meta, fetch=True):
     if fetch:
         try:
             import yfinance as yf
-            Y = yf.download(list(SECTOR_ETF.values()) + ['SPY', 'QQQ'], period='1mo', interval='1d', progress=False, auto_adjust=True)['Close']
+            Y = yf.download(list(SECTOR_ETF.values()) + ['SPY', 'QQQ'], period='3mo', interval='1d', progress=False, auto_adjust=True)['Close']
+            Y = Y[Y.index.tz_localize(None) < now_et().normalize()] if now_et().hour * 60 + now_et().minute < RTH1 else Y   # before the close: completed sessions only
             r1, r5 = Y.iloc[-1] / Y.iloc[-2] - 1, Y.iloc[-1] / Y.iloc[-6] - 1
             lead = sorted(SECTOR_ETF.items(), key=lambda kv: -r5.get(kv[1], -9))
             out.append('**Sector ETFs** 5d (1d): ' + ', '.join(f"{v} {r5[v]:+.1%} ({r1[v]:+.1%})" for k, v in lead[:4]) + ' … weakest: ' + ', '.join(f"{v} {r5[v]:+.1%}" for k, v in lead[-2:]))
@@ -1159,6 +1169,10 @@ if __name__ == '__main__':
             args.update_gamma = INCLUDE_QQQ; rows, meta = scan(args); args.update_gamma = False; show(rows, meta)
             if post_positions(rows, meta): st['morning'] = today; _save(st)
             check_stale(rows, st); post_new_signals(rows, meta, st)             # premarket flips on held names -> exit-at-open alert
+            if os.getenv('DAILY_BRIEF', '1') == '1' and st.get('brief') != today:  # 09:00 ET: the /brief, posted every weekday
+                try:
+                    if post_long(brief_text(mark_live(rows, True), meta, True), channel=os.getenv('BRIEF_CHANNEL_ID')): st['brief'] = today; _save(st)
+                except Exception as ex: print(f'  ! daily brief: {str(ex)[:80]}')
         elif 9 * 60 + 15 <= mins < RTH0:                                        # ~09:16 pre-open recheck
             rows, meta = scan(args); show(rows, meta); check_stale(rows, st); post_new_signals(rows, meta, st)
         elif RTH0 + 1 <= mins <= RTH1 + 5:                                    # 9:31 (premarket flips) then after each 15m close

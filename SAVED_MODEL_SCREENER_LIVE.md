@@ -11,7 +11,8 @@
 - **/pro <ticker>** (any stock): vector state (15m/1h, stop or flip trigger), volatility regime (HAR expected range and its 1-year percentile),
   and whether today's high/low is in with the projected other side. **/brief**: book (P&L, room to stop, vol regime, high/low in),
   universe bull counts, names within 0.6% of a bull flip, sector leadership (universe 5d + sector ETFs), and Helious news (api.helious.io /v1/feed + /v1/calendar, key HELIOUS_API_KEY in .env / Render,
-  cached 15 min; free plan = 100 credits/month, 2 per fresh /brief): headlines on held names, sector news for what you hold, market-moving
+  cached 15 min; free plan = 100 credits/month, 2 per fresh /brief). The brief also posts itself every weekday at 09:00 ET
+  (BRIEF_CHANNEL_ID to route it, DAILY_BRIEF=0 to stop): headlines on held names, sector news for what you hold, market-moving
   universe news, top market news, US calendar.
 - **Honorable mentions:** flips skipped because all slots are full are alerted (HM_CHANNEL_ID or the main channel) and shown in /hm; never traded.
 - **Universe:** S&P 500 names (point-in-time membership) whose options ratio (option contracts x100 / shares, trailing 252-day median, lagged 1 day) is >= 1.5 (from Oct 22 09:30; 2.5 Oct 20-21). Ratio file: live_data/optvol_ratio_live.csv, refreshed Saturdays by tools/weekly_ratio.sh (needs Theta running).
