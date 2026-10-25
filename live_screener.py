@@ -345,7 +345,12 @@ def scan(args):
     asof = pd.Timestamp(LG.get('__asof__', '2000-01-01')); LT = {k: v for k, v in LG.items() if not k.startswith('__')}
     have = {_lkey(t['tk'], t['track'], t['t0']): t for t in TR if t['px']}
     for k, v in LT.items():
-        if k in have: have[k]['forced'] = True; continue                       # recorded trade: it keeps its slot whatever the re-sort says
+        if k in have:                                                          # recorded trade: it keeps its slot whatever the re-sort says
+            t = have[k]; t['forced'] = True
+            if v['status'] == 'closed' and t['status'] != 'CLOSED':             # replay revived a trade the ledger closed: close it before the slot count
+                d = HS[t['tk']].dt.values; t1 = np.datetime64(pd.Timestamp(v['t1']))
+                t.update(status='CLOSED', t1=t1, x=int(min(np.searchsorted(d, t1), len(d) - 1)), lock=bool(v.get('lock')))
+            continue
         if v['tk'] not in HS: continue
         H = HS[v['tk']]; d = H.dt.values; t0 = np.datetime64(pd.Timestamp(v['t0']))
         if v['status'] == 'open':                                              # replay lost it: keep managing it from the recorded entry
@@ -382,23 +387,31 @@ def scan(args):
                 live.pop((t['tk'], t['track']), None)
     LG['__asof__'] = str(pd.Timestamp(max(H.dt.iloc[-1] for H in HS.values())))
     if not getattr(args, 'no_ledger', False): ledger_save(LG)
+    def mk_row(tk, H, track, t):
+        L = H.iloc[-1]; act = t['status'] if t else 'FLAT'
+        e, px, h1, pg = (t['e'], t['px'], t['h1'], t['pg']) if t else (None, None, track == '1h', 0.0)
+        stop = float(L.stop1 if h1 else L['stop'])
+        if px and pg >= LOCK_K: stop = max(stop, px * (1 + (1 - LOCK_G) * pg))       # profit-lock floor
+        note = '' if tk != 'QQQ' else ('QQQ neg gamma' if G.iloc[-1] < 0 else 'QQQ pos gamma: no new entries')
+        if t and t['lock']: note = f"profit lock: gave back half of the +{pg:.1%} peak"
+        elif track == '1h' and act == 'BUY': note = '1h vector flip'
+        return dict(ticker=tk if track == '15m' else f'{tk} 1h', base=tk, track=track, action=act, H=H, e=e, px=px, h1=h1, last=float(L.close), bar=L['dt'],
+                    stop=stop, state15=int(L.reg), state1h=int(L.s1), trig=float(L.trig) if L.reg == -1 else np.nan,
+                    ratio=float(last_ratio.get(tk, np.nan)) if tk != 'QQQ' else np.nan, peak=pg,
+                    pnl=(L.close / px - 1) if px else np.nan, note=note)
     for tk, H in HS.items():
-        L = H.iloc[-1]
-        for track in (('15m',) if tk == 'QQQ' else ('15m', '1h')):
-            t = live.get((tk, track)); act = t['status'] if t else 'FLAT'
-            e, px, h1, pg = (t['e'], t['px'], t['h1'], t['pg']) if t else (None, None, track == '1h', 0.0)
-            stop = float(L.stop1 if h1 else L['stop'])
-            if px and pg >= LOCK_K: stop = max(stop, px * (1 + (1 - LOCK_G) * pg))       # profit-lock floor
-            note = '' if tk != 'QQQ' else ('QQQ neg gamma' if G.iloc[-1] < 0 else 'QQQ pos gamma: no new entries')
-            if t and t['lock']: note = f"profit lock: gave back half of the +{pg:.1%} peak"
-            elif track == '1h' and act == 'BUY': note = '1h vector flip'
-            out.append(dict(ticker=tk if track == '15m' else f'{tk} 1h', base=tk, track=track, action=act, H=H, e=e, px=px, h1=h1, last=float(L.close), bar=L['dt'],
-                            stop=stop, state15=int(L.reg), state1h=int(L.s1), trig=float(L.trig) if L.reg == -1 else np.nan,
-                            ratio=float(last_ratio.get(tk, np.nan)) if tk != 'QQQ' else np.nan, peak=pg,
-                            pnl=(L.close / px - 1) if px else np.nan, note=note))
+        for track in (('15m',) if tk == 'QQQ' else ('15m', '1h')): out.append(mk_row(tk, H, track, live.get((tk, track))))
+    # honorable mentions (Oct 25 2026): flips the book skipped because every slot was full - alerted and tracked, never traded
+    taken = {id(t) for t in AL}
+    hm = {}
+    for t in TR:
+        if id(t) in taken or t.get('blocked') or t['tk'] == 'QQQ' or t['status'] not in ('BUY', 'HOLD', 'SELL'): continue
+        if t['status'] != 'BUY' and (not t['px'] or pd.Timestamp(t['t0']) < max(START, now_et() - pd.Timedelta(days=30))): continue
+        hm[(t['tk'], t['track'])] = t
+    hm_rows = [mk_row(tk, HS[tk], track, t) for (tk, track), t in hm.items()]
     brk = breaker_on(AL, now_et())
     if brk: print(f'  !! BREAKER: book is more than {BREAKER:.0%} below its 20-day high - no new entries (open positions keep their stops)')
-    meta = dict(breaker=brk, trades=AL, HS=HS, slots=slots, w=1 / slots, rat_thru=rat_thru, g_thru=G.index.max(), capital=args.capital,
+    meta = dict(breaker=brk, trades=AL, HS=HS, hm=hm_rows, slots=slots, w=1 / slots, rat_thru=rat_thru, g_thru=G.index.max(), capital=args.capital,
                 ratios={t: float(last_ratio.get(t, np.nan)) for t in elig_now})
     if not args.no_fetch and os.getenv('SITE_SNAPSHOT', '1') == '1':
         try: write_site_snapshot(out, meta)
@@ -506,14 +519,15 @@ def slot_wheel(ax, rows, meta):
     ax.text(.5, .53, f'{inv:.0%}', transform=ax.transAxes, ha='center', va='center', fontsize=20, fontweight='bold', color=T1)
     ax.text(.5, .38, 'invested', transform=ax.transAxes, ha='center', va='center', fontsize=8, color=MUT)
 
-def positions_card(rows, meta, path):
+def positions_card(rows, meta, path, title='Open positions', hm=False):
     P = sorted([r for r in rows if r['action'] in ('HOLD', 'SELL')], key=lambda r: -r['pnl'])
     ncol = 3; nrow = max(1, int(np.ceil(len(P) / ncol))); HDR = 2.6
     H_in = HDR + 3.0 * nrow; fig = plt.figure(figsize=(10, H_in), facecolor=BG); _frame(fig, BLUE)
     asof = pd.Series([r['bar'] for r in rows if r['ticker'] != 'QQQ'] or [r['bar'] for r in rows]).max() + pd.Timedelta('15min')
-    fig.text(0.045, 1 - 0.55 / H_in, 'Open positions', fontsize=19, fontweight='bold')
+    fig.text(0.045, 1 - 0.55 / H_in, title, fontsize=19, fontweight='bold')
     cap = f" · ${meta['capital'] * meta['w']:,.0f} each" if meta['capital'] else ''
-    fig.text(0.045, 1 - 0.90 / H_in, f"{len(P)} of {meta['slots']} slots · {meta['w']:.1%} each{cap}", fontsize=10.5, color=T2)
+    sub = (f"{len(P)} flips skipped because all {meta['slots']} slots were full · tracked, not traded" if hm else f"{len(P)} of {meta['slots']} slots · {meta['w']:.1%} each{cap}")
+    fig.text(0.045, 1 - 0.90 / H_in, sub, fontsize=10.5, color=T2)
     fig.text(0.045, 1 - 1.18 / H_in, f"as of {asof:%a %b %d %H:%M} ET · Vector screener", fontsize=9, color=MUT)
     if P:
         tot = np.mean([r['pnl'] for r in P]); best = P[0]; worst = P[-1]
@@ -667,8 +681,8 @@ def signal_card(r, meta, path):
     fig.savefig(path, dpi=140, facecolor=BG); plt.close(fig)
 
 # ================================================================ discord
-def post(text, files):
-    ch, tok, hook = os.getenv('VECTOR_CHANNEL_ID'), os.getenv('DISCORD_TOKEN'), os.getenv('DISCORD_WEBHOOK_URL')
+def post(text, files, channel=None):
+    ch, tok, hook = channel or os.getenv('VECTOR_CHANNEL_ID'), os.getenv('DISCORD_TOKEN'), os.getenv('DISCORD_WEBHOOK_URL')
     if ch and tok: url, hdr = f'https://discord.com/api/v10/channels/{ch}/messages', {'Authorization': f'Bot {tok}'}
     elif hook: url, hdr = hook, {}
     else: print('  ! no Discord target: set VECTOR_CHANNEL_ID (bot) or DISCORD_WEBHOOK_URL in .env'); return False
@@ -702,6 +716,16 @@ def post_new_signals(rows, meta, st):
     if meta.get('breaker') and bk not in st['signals']:
         if post(f"\U0001f6d1 BREAKER ON: the book is more than {BREAKER:.0%} below its 20-day high. No new buys until it recovers; open positions keep their stops.", []):
             st['signals'].append(bk); _save(st)
+    for r in meta.get('hm', []):                                       # honorable mention: flipped, but every slot is full -> alert to the HM channel, no trade
+        if r['action'] != 'BUY': continue
+        tk = r['ticker']; key = f"{tk}|HM|{r['bar']:%Y-%m-%d %H:%M}" if now_et().hour * 60 + now_et().minute >= RTH0 else f"{tk}|HM|pre|{today}"
+        if key in st['signals']: continue
+        p = f"{LIVE}/card_{tk.replace(' ', '_')}_HM.png"
+        try: signal_card(r, meta, p); files = [p]
+        except Exception as e: print(f'  ! HM card failed ({str(e)[:60]})'); files = []
+        msg = (f"\u2b50 HONORABLE MENTION - {tk} flipped bullish ({r['bar']:%H:%M} bar, last {r['last']:.2f}, stop {r['stop']:.2f}) "
+               f"but all {meta['slots']} slots are full, so the book is NOT buying it. Tracked in /hm.")
+        if post(msg, files, channel=os.getenv('HM_CHANNEL_ID')): st['signals'].append(key); _save(st)
     for r in rows:
         tk = r['ticker']; late = ''
         if r['action'] == 'HOLD' and r['e'] is not None:            # entry the scan never caught on its flip bar (late bar, skipped scan)
@@ -830,6 +854,7 @@ if __name__ == '__main__':
     ap.add_argument('--update-gamma', action='store_true')
     ap.add_argument('--post-positions', action='store_true')
     ap.add_argument('--loop', action='store_true')
+    ap.add_argument('--hm-card', default=None, help='render the honorable mentions (flips skipped because slots were full) to this path (Discord /hm)')
     ap.add_argument('--check-card', default=None, help='render the open-positions board to this path (Discord /check)')
     ap.add_argument('--check-ticker', default=None)
     ap.add_argument('--site-snapshot', action='store_true', help='scan once (live prices) and write live/site_snapshot.json for the website')
@@ -847,6 +872,10 @@ if __name__ == '__main__':
                 R = [r for r in rows if r['base'] == args.check_ticker.upper() and r['action'] in ('HOLD', 'SELL')]
                 if not R: print(f'FLAT: no open position in {args.check_ticker.upper()}'); sys.exit()
             positions_card(R, meta, args.check_card); print(f'card -> {args.check_card}')
+        if args.hm_card:                                          # Discord /hm: honorable mentions
+            R = mark_live(meta['hm'], not args.no_fetch)
+            if not [r for r in R if r['action'] in ('HOLD', 'SELL')]: print('FLAT: no honorable mentions right now (no flips were skipped for full slots in the last 30 days that are still open)'); sys.exit()
+            positions_card(R, meta, args.hm_card, title='Honorable mentions', hm=True); print(f'card -> {args.hm_card}')
         if args.history_card:
             rows = mark_live(rows, not args.no_fetch); history_card(rows, meta, args.history_card, not args.no_fetch); print(f'card -> {args.history_card}')
         sys.exit()

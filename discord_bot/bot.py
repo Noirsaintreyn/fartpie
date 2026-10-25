@@ -194,6 +194,13 @@ async def history_cmd(inter: discord.Interaction):
     await _screener_card(inter, ['--history-card', out], out)
 
 
+@tree.command(name='hm', description='Honorable mentions: flips the screener skipped because every slot was full (tracked, not traded)')
+async def hm_cmd(inter: discord.Interaction):
+    await inter.response.defer(thinking=True)
+    out = os.path.join(ROOT, 'live', f'hm_{inter.id}.png')
+    await _screener_card(inter, ['--hm-card', out], out)
+
+
 DATA_DIR = os.environ.get('DATA_DIR') or os.path.dirname(os.path.abspath(__file__))       # /data on Render (persistent disk), this folder locally
 os.makedirs(DATA_DIR, exist_ok=True)
 DAILY_FILE = os.path.join(DATA_DIR, 'daily_channels.json')

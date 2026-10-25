@@ -44,6 +44,7 @@ services:
       - {key: DISCORD_TOKEN, sync: false}
       - {key: DISCORD_GUILD_ID, sync: false}
       - {key: VECTOR_CHANNEL_ID, sync: false}
+      - {key: HM_CHANNEL_ID, sync: false}      # optional: honorable-mention alerts go here (else the main channel)
       - {key: LSE_API_KEY, sync: false}
       - {key: BACKEND_USER, sync: false}
       - {key: BACKEND_PASSWORD, sync: false}
