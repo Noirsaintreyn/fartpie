@@ -49,4 +49,6 @@ Oct 25 batch (xs/batch_oct25.py, xs/lod_hod.py, xs/max_pain.py):
   low, 80% band 1.9, 95% band 2.8 (fit 2019-21; 2022-26 coverage 83% / 96%). Mirror for the high. The low holds 77% / 87% / 95% at 10:30 / 12:00 / 14:00.
 - Live fixes Oct 25: one SELL alert per position, signal log only for posted alerts, ledger keeps closed trades closed, cross/no-buy reasons.
 - Options ratio: tools/ibkr_optvol.py + tools/daily_ratio.sh (weekdays 16:20) replace the Theta pull once checked against Theta.
+- News exit (xs/news_exit.py): selling in extended hours after a bad earnings reaction is neutral overall; best 'sell 30 min after the
+  report if down >= 2% and the trade was up >= 3%': +56.0/-11, +29.8/-16, 2019-26 +39.7/-16 (live +38.5/-16). Small, needs extended-hours orders.
 
