@@ -65,4 +65,8 @@ Oct 25 batch (xs/batch_oct25.py, xs/lod_hod.py, xs/max_pain.py):
   (losers hit the vector stop before +1.5%), and a rough 30-day ATM call model loses on average in every variant; higher ratio (>= 3) doesn't fix it.
   Short-put proxy has an edge: after a flip, P(stock ends above entry - 0.5 sigma in 5 days) 81.6% vs 76.8% on random days (19-21), 77.8% vs 72.6% (22-26);
   -1 sigma: 91.2 vs 87.8, 89.0 vs 85.9. Needs real option prices to confirm.
+- Stock-specific targets (xs/adaptive_tp.py): typical winner peak ranges from ~3% (LMT, MCD, WMT) to ~9% (MU, APP); AAPL 4.9%, ORCL 7.8%.
+  Tightening once a trade reaches its stock's target (vol-scaled or its own median winner peak) lost in almost every version; the only
+  near-tie: 2x weekly vol then give back 40% (+58.0/-11, +30.5/-16, 2019-26 +40.2/-19) - deeper full-run drawdown, not adopted.
+  Day-range 80% band exit: worse.
 
