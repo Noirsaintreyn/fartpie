@@ -40,4 +40,13 @@ Also rejected Oct 21 (xs/exit_lab2.py, xs/earn_tests.py): time stops (1/2/3/5 da
 skipping entries before earnings, selling before earnings, post-earnings-drift tie-breaks. Holding through earnings is GOOD for this model
 (selling before earnings: 22-26 +18.3% vs +28.5%). Candidate, not adopted: tie-break 'earnings within 1 trading day first'
 (+60.8/-11, +30.9/-20, 2019-26 +42.1/-20 vs live +38.5/-16): beats both halves on return but inside slot-order noise and with a deeper drawdown.
+Oct 25 batch (xs/batch_oct25.py, xs/lod_hod.py, xs/max_pain.py):
+- CANDIDATE (passes both halves): implied-move earnings guard - sell at the close before a report when the trade is up >= 3% but less than
+  1x the name's typical earnings move (mean |gap| of its last 8 reports): +59.3/-11, +28.9/-16, 2019-26 +40.2/-16, 2026 +40.7/-7 (live +38.5/-16, 2026 +35.6/-10).
+- Rejected: flip type skips / tie-breaks (continuation-first +40.4 but DD -20), separate 15m/1h slot pools, pullback limit entries
+  (-0.25%/4 bars skip: 19-21 -8.6, 22-26 +8.4 - split), max pain on QQQ 2019-25 (hit rate 42-49%, no pull).
+- LOD/HOD: once the low is in (set >= 30 min earlier, price >= 0.5 sigma off it), the day's high lands a median 1.34 daily sigma above the
+  low, 80% band 1.9, 95% band 2.8 (fit 2019-21; 2022-26 coverage 83% / 96%). Mirror for the high. The low holds 77% / 87% / 95% at 10:30 / 12:00 / 14:00.
+- Live fixes Oct 25: one SELL alert per position, signal log only for posted alerts, ledger keeps closed trades closed, cross/no-buy reasons.
+- Options ratio: tools/ibkr_optvol.py + tools/daily_ratio.sh (weekdays 16:20) replace the Theta pull once checked against Theta.
 
