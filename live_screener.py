@@ -784,14 +784,29 @@ def har_sigma(D):
     """next-day sigma from the HAR range model (pooled fit) for a daily frame with h/l, using rows up to the last one"""
     x = np.log(np.log(D.h / D.l).clip(lower=1e-5))
     return float(np.exp(-0.6186 + 0.2939 * x.iloc[-1] + 0.3661 * x.iloc[-5:].mean() + 0.1783 * x.iloc[-22:].mean()) / 1.665)
+def range_levels(H, now=None):
+    """adaptive day range: a constant range budget (HAR forecast) anchored on today's extremes so far - if the low drops $5, the expected
+    high drops $5. Typical = 1.7 daily sigma (median low-to-high), wide = 2.4 sigma (80% of days stay inside), from xs/range_models.py."""
+    now = now or now_et(); m = H.dt.dt.hour * 60 + H.dt.dt.minute; R_ = H[(m >= RTH0) & (m < RTH1)]
+    D = R_.groupby(R_.dt.dt.normalize()).agg(h=('high', 'max'), l=('low', 'min'), c=('close', 'last'))
+    if len(D) < 30: return None
+    today = H[H.dt.dt.normalize() == H.dt.iloc[-1].normalize()]; tm = today.dt.dt.hour * 60 + today.dt.dt.minute
+    rth = today[tm >= RTH0]; src = rth if len(rth) else today                           # before the open: premarket so far
+    hist = D[D.index < H.dt.iloc[-1].normalize()]
+    sig = har_sigma(hist); lo, hi, last = float(src.low.min()), float(src.high.max()), float(src.close.iloc[-1])
+    return dict(sig=sig, pct=sig, lo=lo, hi=hi, last=last, pre=not len(rth), budget=1.7 * sig, hi_typ=lo * (1 + 1.7 * sig), hi_wide=lo * (1 + 2.4 * sig),
+                lo_typ=hi * (1 - 1.7 * sig), lo_wide=hi * (1 - 2.4 * sig), used=(hi / lo - 1) / sig)
+
 def extreme_info(H, now=None):
     """today's (or the last session's) high/low status for 15m bars H: is the low / high 'in', odds it holds, projected other side"""
     now = now or now_et(); m = H.dt.dt.hour * 60 + H.dt.dt.minute; R_ = H[(m >= RTH0) & (m < RTH1)]
     D = R_.groupby(R_.dt.dt.normalize()).agg(h=('high', 'max'), l=('low', 'min'), c=('close', 'last'))
     if len(D) < 30: return None
     day = D.index[-1]; live = day == now.normalize() and now.hour * 60 + now.minute < RTH1 + 5
-    P_ = D.iloc[:-1]; sig = har_sigma(P_); s20 = float(np.log(P_.c).diff().iloc[-20:].std())
-    hist = [har_sigma(D.iloc[:k]) for k in range(max(30, len(D) - 252), len(D))]; pct = float(np.mean(np.array(hist) <= sig))
+    P_ = D[D.index < min(day, now.normalize())] if live else D[D.index < now.normalize()]     # completed sessions before today
+    P_ = P_ if len(P_) >= 25 else D.iloc[:-1]
+    sig = har_sigma(P_); s20 = float(np.log(P_.c).diff().iloc[-20:].std())
+    hist = [har_sigma(D.iloc[:k]) for k in range(max(30, len(D) - 252), len(D) + 1)]; pct = float(np.mean(np.array(hist) <= sig))
     g = R_[R_.dt.dt.normalize() == day]; gm = g.dt.dt.hour * 60 + g.dt.dt.minute
     mins = (now.hour * 60 + now.minute) if live else RTH1
     lo, hi, last = float(g.low.min()), float(g.high.max()), float(g.close.iloc[-1]); tl, th = int(gm[g.low.idxmin()]), int(gm[g.high.idxmax()])
@@ -905,12 +920,18 @@ def pro_text(tk, fetch=True):
     if H is None or len(H) < 500: return f'{tk}: no price data.'
     H = add_1h(vec(H)); L = H.iloc[-1]; x = extreme_info(H)
     if not x: return f'{tk}: not enough daily history.'
-    out = [f"**{tk}** {L.close:.2f} · last bar {L['dt']:%a %H:%M} ET" + ('' if x['live'] else ' (market closed: last session)'),
+    pre = L['dt'].normalize() == now_et().normalize() and L['dt'].hour * 60 + L['dt'].minute < RTH0
+    out = [f"**{tk}** {L.close:.2f} · last bar {L['dt']:%a %H:%M} ET" + (' (before the open)' if pre else '' if x['live'] else ' (market closed: last session)'),
            f"Vector: {vec_line(L)}",
            f"Volatility: expected day range ~{1.665 * x['sig']:.1%} ({vol_word(x['pct'])}, {x['pct']:.0%} percentile of the last year)"]
+    rl = range_levels(H)
     if not x['live']:
         out.append(f"Last session: high {x['hi']:.2f} ({x['th'] // 60}:{x['th'] % 60:02d}), low {x['lo']:.2f} ({x['tl'] // 60}:{x['tl'] % 60:02d}), close {x['last']:.2f}.")
-        return '\n'.join(out)
+        if not (pre and rl): return '\n'.join(out)
+    if rl:
+        out.append(f"Range budget today: ~{rl['budget']:.1%} (wide {2.4 * rl['sig']:.1%}); {'premarket' if rl['pre'] else 'session'} so far {rl['lo']:.2f}-{rl['hi']:.2f} uses {rl['used'] / 1.7:.0%} of it." + (" Already past the typical range: odds favor the high and low so far holding." if rl['used'] > 1.7 and not rl['pre'] else ''))
+        out.append(f"From the low so far {rl['lo']:.2f}: expected high ~{rl['hi_typ']:.2f} (wide {rl['hi_wide']:.2f}). From the high so far {rl['hi']:.2f}: expected low ~{rl['lo_typ']:.2f} (wide {rl['lo_wide']:.2f}). Levels move with each new extreme.")
+    if pre: return '\n'.join(out)
     if x['tier'] is None: out.append(f"Too early to call (before 10:30). High so far {x['hi']:.2f}, low so far {x['lo']:.2f}.")
     for side in ('low', 'high'):
         e = x[side]; ext = x['lo'] if side == 'low' else x['hi']; t_ = x['tl'] if side == 'low' else x['th']; other = 'high' if side == 'low' else 'low'

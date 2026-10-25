@@ -160,9 +160,15 @@ def build(LS, rows, meta, outdir, fetch=True):
         y = 0.87; bg.text(0.66, y, 'MODEL READ', fontsize=10, color=GOLD, fontweight='bold', va='top'); y -= 0.035
         lines = [f"Short-term trend (15-min): {_state_word(int(H.reg.iloc[-1]))}", f"Hourly trend: {_state_word(int(H.s1.iloc[-1]))}", f"Daily trend: {_state_word(dstate)}",
                  f"Sector {etf}: daily {_state_word(es.get('d'))}, weekly {_state_word(es.get('w'))}" if etf else 'Sector ETF: n/a',
-                 f"Expected day range: ~{1.665 * sig:.1%} ({LS.vol_word(x.get('pct', .5))} vol, {x.get('pct', .5):.0%} pct)" if sig == sig else 'Expected range: n/a',
+                 f"Volatility: {LS.vol_word(x.get('pct', .5))} ({x.get('pct', .5):.0%} percentile of the last year)" if sig == sig else 'Volatility: n/a',
                  f"Next earnings: {nxt:%a %b %d %H:%M}" if nxt is not None else 'Next earnings: none in the calendar']
         for ln in lines: y = _wrap(bg, 0.66, y, ln, 44, size=9.5, color=T1)
+        rl = LS.range_levels(H)
+        if rl:
+            y = _wrap(bg, 0.66, y, f"Range budget today: ~{rl['budget']:.1%} (wide {2.4 * rl['sig']:.1%}), {'premarket' if rl['pre'] else 'today'} so far {rl['lo']:.2f} - {rl['hi']:.2f}", 44, size=9, color=T1)
+            y = _wrap(bg, 0.66, y, f"From the low so far: expected high ~{rl['hi_typ']:.2f} (wide {rl['hi_wide']:.2f})", 44, size=9, color=GOOD)
+            y = _wrap(bg, 0.66, y, f"From the high so far: expected low ~{rl['lo_typ']:.2f} (wide {rl['lo_wide']:.2f})", 44, size=9, color=CRIT)
+            y = _wrap(bg, 0.66, y, "(the range stays the same size: a lower low moves the expected high down by the same amount)", 50, size=7.5, color=MUT)
         if x.get('live') and (x.get('low') or x.get('high')):
             for side in ('low', 'high'):
                 e_ = x.get(side)
