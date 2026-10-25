@@ -194,6 +194,36 @@ async def history_cmd(inter: discord.Interaction):
     await _screener_card(inter, ['--history-card', out], out)
 
 
+async def _screener_text(inter, extra):
+    """run live_screener.py and send the text it prints between <<<OUT and OUT>>> (split to Discord's 2000-char limit)"""
+    now = datetime.now(NYTZ); live = now.weekday() < 5 and 4 <= now.hour and (now.hour, now.minute) < (16, 15)
+    cmd = [SCREENER_PY, 'live_screener.py'] + extra + ([] if live else ['--no-fetch'])
+    try:
+        p = await asyncio.wait_for(asyncio.create_subprocess_exec(*cmd, cwd=ROOT, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT), 10)
+        so, _ = await asyncio.wait_for(p.communicate(), 300); so = so.decode(errors='ignore')
+    except Exception as e:
+        return await inter.followup.send(f'Could not run the screener: {e}')
+    if '<<<OUT' not in so: return await inter.followup.send(f"Screener failed:\n```\n{so[-1500:]}\n```")
+    txt = so.split('<<<OUT', 1)[1].split('OUT>>>', 1)[0].strip(); chunk = ''
+    for line in txt.splitlines():
+        if len(chunk) + len(line) > 1900: await inter.followup.send(chunk); chunk = ''
+        chunk += line + '\n'
+    if chunk: await inter.followup.send(chunk)
+
+
+@tree.command(name='pro', description="One stock: vector state, volatility regime, and whether today's high or low is in (with the projected other side)")
+@app_commands.describe(ticker='e.g. AAPL')
+async def pro_cmd(inter: discord.Interaction, ticker: str):
+    await inter.response.defer(thinking=True)
+    await _screener_text(inter, ['--pro', ticker.strip().upper()])
+
+
+@tree.command(name='brief', description='Market brief: your book, the universe, flips on deck, sector leadership')
+async def brief_cmd(inter: discord.Interaction):
+    await inter.response.defer(thinking=True)
+    await _screener_text(inter, ['--brief'])
+
+
 @tree.command(name='hm', description='Honorable mentions: flips the screener skipped because every slot was full (tracked, not traded)')
 async def hm_cmd(inter: discord.Interaction):
     await inter.response.defer(thinking=True)

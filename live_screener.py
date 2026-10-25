@@ -770,34 +770,46 @@ def post_positions(rows, meta):
 # ---- day-extreme alerts (Oct 25 2026, xs/lod_hod.py + xs/range_models.py): once a held name's low (or high) of the day looks in - set >= 30 min
 #      earlier and price >= 0.5 daily sigma off it - post how far the other side should go. Vol = HAR on the daily high/low range (pooled fit),
 #      bands fit 2019-21, checked 2022-26 (80% band held 80-83%, 95% band 95.5-96.3%). From 12:00 the extreme holds ~87-89%, from 14:00 ~95-96%.
-XQ = {('low', 720): (.870, 1.756, 2.409, 3.448), ('low', 840): (.948, 1.778, 2.446, 3.500),
-      ('high', 720): (.891, 1.827, 2.550, 3.524), ('high', 840): (.958, 1.846, 2.556, 3.531)}
+XQ = {('low', 630): (.774, 1.725, 2.395, 3.440), ('low', 720): (.870, 1.756, 2.409, 3.448), ('low', 840): (.948, 1.778, 2.446, 3.500),
+      ('high', 630): (.780, 1.740, 2.507, 3.473), ('high', 720): (.891, 1.827, 2.550, 3.524), ('high', 840): (.958, 1.846, 2.556, 3.531)}
+def har_sigma(D):
+    """next-day sigma from the HAR range model (pooled fit) for a daily frame with h/l, using rows up to the last one"""
+    x = np.log(np.log(D.h / D.l).clip(lower=1e-5))
+    return float(np.exp(-0.6186 + 0.2939 * x.iloc[-1] + 0.3661 * x.iloc[-5:].mean() + 0.1783 * x.iloc[-22:].mean()) / 1.665)
+def extreme_info(H, now=None):
+    """today's (or the last session's) high/low status for 15m bars H: is the low / high 'in', odds it holds, projected other side"""
+    now = now or now_et(); m = H.dt.dt.hour * 60 + H.dt.dt.minute; R_ = H[(m >= RTH0) & (m < RTH1)]
+    D = R_.groupby(R_.dt.dt.normalize()).agg(h=('high', 'max'), l=('low', 'min'), c=('close', 'last'))
+    if len(D) < 30: return None
+    day = D.index[-1]; live = day == now.normalize() and now.hour * 60 + now.minute < RTH1 + 5
+    P_ = D.iloc[:-1]; sig = har_sigma(P_); s20 = float(np.log(P_.c).diff().iloc[-20:].std())
+    hist = [har_sigma(D.iloc[:k]) for k in range(max(30, len(D) - 252), len(D))]; pct = float(np.mean(np.array(hist) <= sig))
+    g = R_[R_.dt.dt.normalize() == day]; gm = g.dt.dt.hour * 60 + g.dt.dt.minute
+    mins = (now.hour * 60 + now.minute) if live else RTH1
+    lo, hi, last = float(g.low.min()), float(g.high.max()), float(g.close.iloc[-1]); tl, th = int(gm[g.low.idxmin()]), int(gm[g.high.idxmax()])
+    tier = 840 if mins >= 840 else 720 if mins >= 720 else 630 if mins >= 630 else None
+    out = dict(day=day, live=live, sig=sig, pct=pct, lo=lo, hi=hi, last=last, tl=tl, th=th, tier=tier, bar=g.dt.iloc[-1])
+    for side, ok, ext in (('low', mins - (tl + 15) >= 30 and last >= lo * (1 + .5 * s20), lo), ('high', mins - (th + 15) >= 30 and last <= hi * (1 - .5 * s20), hi)):
+        if live and ok and tier:
+            p, q50, q80, q95 = XQ[(side, tier)]
+            out[side] = dict(p=p, tgt=[ext * (1 + q * sig) if side == 'low' else ext * (1 - q * sig) for q in (q50, q80, q95)])
+        else: out[side] = None
+    return out
 def day_extremes(rows, st):
     now = now_et(); mins = now.hour * 60 + now.minute
     if not (12 * 60 <= mins < RTH1) or os.getenv('EXTREME_ALERTS', '1') != '1': return
-    tier = 840 if mins >= 14 * 60 else 720; today = f'{now:%Y-%m-%d}'; done = set()
+    today = f'{now:%Y-%m-%d}'; done = set()
     for r in rows:
         if r['action'] not in ('HOLD', 'SELL') or r['base'] in done: continue
-        done.add(r['base']); H = r['H']; m = H.dt.dt.hour * 60 + H.dt.dt.minute; R_ = H[(m >= RTH0) & (m < RTH1)]
-        D = R_.groupby(R_.dt.dt.normalize()).agg(h=('high', 'max'), l=('low', 'min'), c=('close', 'last'))
-        if len(D) < 30 or D.index[-1] != now.normalize(): continue
-        P_ = D.iloc[:-1]; x = np.log(np.log(P_.h / P_.l).clip(lower=1e-5))          # log of the daily log-range (HAR input)
-        sig = float(np.exp(-0.6186 + 0.2939 * x.iloc[-1] + 0.3661 * x.iloc[-5:].mean() + 0.1783 * x.iloc[-22:].mean()) / 1.665)
-        s20 = float(np.log(P_.c).diff().iloc[-20:].std())
-        g = R_[R_.dt.dt.normalize() == now.normalize()]; gm = g.dt.dt.hour * 60 + g.dt.dt.minute
-        lo, hi, last = g.low.min(), g.high.max(), float(g.close.iloc[-1]); tl, th = gm[g.low.idxmin()], gm[g.high.idxmax()]
-        for side, ok, ext, t_ in (('low', mins - (tl + 15) >= 30 and last >= lo * (1 + .5 * s20), lo, tl), ('high', mins - (th + 15) >= 30 and last <= hi * (1 - .5 * s20), hi, th)):
-            key = f"{r['base']}|XT|{side}|{today}"
-            if not ok or key in st['signals']: continue
-            p, q50, q80, q95 = XQ[(side, tier)]
-            if side == 'low':
-                tgt = [lo * (1 + q * sig) for q in (q50, q80, q95)]
-                msg = (f"\U0001f4cd LOW LIKELY IN - {r['base']}: today's low {lo:.2f} ({t_ // 60}:{t_ % 60:02d}) holds into the close ~{p:.0%} of the time from here. "
-                       f"Projected high: ~{tgt[0]:.2f} typical, 80% stay under {tgt[1]:.2f}, 95% under {tgt[2]:.2f}. Now {last:.2f}, high so far {hi:.2f}.")
-            else:
-                tgt = [hi * (1 - q * sig) for q in (q50, q80, q95)]
-                msg = (f"\U0001f4cd HIGH LIKELY IN - {r['base']}: today's high {hi:.2f} ({t_ // 60}:{t_ % 60:02d}) holds into the close ~{p:.0%} of the time from here. "
-                       f"Projected low: ~{tgt[0]:.2f} typical, 80% stay above {tgt[1]:.2f}, 95% above {tgt[2]:.2f}. Now {last:.2f}, low so far {lo:.2f}.")
+        done.add(r['base']); x = extreme_info(r['H'], now)
+        if not x or not x['live']: continue
+        for side in ('low', 'high'):
+            e = x[side]; key = f"{r['base']}|XT|{side}|{today}"
+            if not e or key in st['signals']: continue
+            t_ = x['tl'] if side == 'low' else x['th']; ext = x['lo'] if side == 'low' else x['hi']; other = 'high' if side == 'low' else 'low'
+            word = 'stay under' if side == 'low' else 'stay above'
+            msg = (f"\U0001f4cd {side.upper()} LIKELY IN - {r['base']}: today's {side} {ext:.2f} ({t_ // 60}:{t_ % 60:02d}) holds into the close ~{e['p']:.0%} of the time from here. "
+                   f"Projected {other}: ~{e['tgt'][0]:.2f} typical, 80% {word} {e['tgt'][1]:.2f}, 95% {word} {e['tgt'][2]:.2f}. Now {x['last']:.2f}, {other} so far {x['hi'] if side == 'low' else x['lo']:.2f}.")
             if post(msg, [], channel=os.getenv('EXTREME_CHANNEL_ID')): st['signals'].append(key); _save(st)
 
 def post_new_signals(rows, meta, st):
@@ -863,6 +875,78 @@ def post_new_signals(rows, meta, st):
         st['signals'].append(key); _save(st)
         log = f'{LIVE}/signal_log.csv'
         pd.DataFrame([dict(run_at=now_et(), ticker=r['ticker'], action=r['action'], bar=r['bar'], price=r['last'], stop=r['stop'], entry=r['px'], pnl=r['pnl'])]).to_csv(log, mode='a', header=not os.path.exists(log), index=False)
+
+# ================================================================ /pro and /brief (Oct 25 2026): text analysis for Discord
+SECTOR_OF = {'GOOG': 'Communication Services', 'GOOGL': 'Communication Services', 'META': 'Communication Services', 'NFLX': 'Communication Services',
+             'TSLA': 'Consumer Discretionary', 'AMZN': 'Consumer Discretionary', 'CVNA': 'Consumer Discretionary', 'BRKB': 'Financials', 'COIN': 'Financials',
+             'HOOD': 'Financials', 'PLTR': 'Information Technology', 'CRWD': 'Information Technology', 'APP': 'Information Technology'}
+SECTOR_ETF = {'Information Technology': 'XLK', 'Financials': 'XLF', 'Health Care': 'XLV', 'Consumer Discretionary': 'XLY', 'Consumer Staples': 'XLP',
+              'Industrials': 'XLI', 'Utilities': 'XLU', 'Real Estate': 'XLRE', 'Materials': 'XLB', 'Energy': 'XLE', 'Communication Services': 'XLC'}
+def sector_of(tk):
+    try: S = json.load(open('sp500_sectors.json'))
+    except Exception: S = {}
+    return SECTOR_OF.get(tk) or S.get(tk, 'Other')
+def vol_word(p): return 'high' if p >= .8 else 'elevated' if p >= .6 else 'low' if p <= .2 else 'normal'
+def vec_line(L):
+    a = f"15m {'bull' if L.reg == 1 else 'bear'}" + (f" (stop {L['stop']:.2f})" if L.reg == 1 else f" (flips bull on a close > {L.trig:.2f})")
+    b = f"1h {'bull' if L.s1 == 1 else 'bear'}" + (f" (stop {L.stop1:.2f})" if L.s1 == 1 and L.stop1 == L.stop1 else '')
+    return a + ' · ' + b
+def pro_text(tk, fetch=True):
+    tk = tk.upper().replace('.', '').replace('-', '')
+    H = load_bars(tk, fetch, PRE0 if SESSION == 'pre' else RTH0)
+    if H is None or len(H) < 500: return f'{tk}: no price data.'
+    H = add_1h(vec(H)); L = H.iloc[-1]; x = extreme_info(H)
+    if not x: return f'{tk}: not enough daily history.'
+    out = [f"**{tk}** {L.close:.2f} · last bar {L['dt']:%a %H:%M} ET" + ('' if x['live'] else ' (market closed: last session)'),
+           f"Vector: {vec_line(L)}",
+           f"Volatility: expected day range ~{1.665 * x['sig']:.1%} ({vol_word(x['pct'])}, {x['pct']:.0%} percentile of the last year)"]
+    if not x['live']:
+        out.append(f"Last session: high {x['hi']:.2f} ({x['th'] // 60}:{x['th'] % 60:02d}), low {x['lo']:.2f} ({x['tl'] // 60}:{x['tl'] % 60:02d}), close {x['last']:.2f}.")
+        return '\n'.join(out)
+    if x['tier'] is None: out.append(f"Too early to call (before 10:30). High so far {x['hi']:.2f}, low so far {x['lo']:.2f}.")
+    for side in ('low', 'high'):
+        e = x[side]; ext = x['lo'] if side == 'low' else x['hi']; t_ = x['tl'] if side == 'low' else x['th']; other = 'high' if side == 'low' else 'low'
+        if e:
+            word = 'under' if side == 'low' else 'above'
+            out.append(f"\U0001f4cd {side.upper()} IS IN: {ext:.2f} ({t_ // 60}:{t_ % 60:02d}) holds ~{e['p']:.0%} of the time from here. Projected {other}: ~{e['tgt'][0]:.2f} typical, "
+                       f"80% {word} {e['tgt'][1]:.2f}, 95% {word} {e['tgt'][2]:.2f}.")
+        elif x['tier']: out.append(f"{side.capitalize()} not confirmed yet ({side} so far {ext:.2f} at {t_ // 60}:{t_ % 60:02d}).")
+    return '\n'.join(out)
+def brief_text(rows, meta, fetch=True):
+    U = [r for r in rows if r['track'] == '15m' and r['base'] != 'QQQ']; held = [r for r in rows if r['action'] in ('HOLD', 'SELL') and r['px']]
+    out = [f"**Screener brief** · {now_et():%a %b %d %H:%M} ET"]
+    if held:
+        out.append(f"**Book** ({len({r['base'] for r in held})} of {meta['slots']} slots)")
+        for r in sorted(held, key=lambda r: -r['pnl']):
+            x = extreme_info(r['H']) or {}
+            out.append(f"  {r['ticker']}: {r['pnl']:+.1%} · stop {r['stop']:.2f} ({(r['last'] / r['stop'] - 1):.1%} room) · vol {vol_word(x.get('pct', .5))}"
+                       + (' · low in' if x.get('low') else '') + (' · high in' if x.get('high') else ''))
+    bull = [r for r in U if r['state15'] == 1]; bull1 = [r for r in U if r['state1h'] == 1]
+    out.append(f"**Universe** ({len(U)} names): {len(bull)} bull on 15m, {len(bull1)} on 1h")
+    near = sorted([r for r in U if r['state15'] == -1 and r['trig'] == r['trig'] and r['last'] / r['trig'] - 1 > -.006], key=lambda r: r['last'] / r['trig'], reverse=True)
+    if near: out.append('  On deck (within 0.6% of a bull flip): ' + ', '.join(f"{r['base']} {r['last'] / r['trig'] - 1:+.1%}" for r in near[:8]))
+    flips = [r for r in rows if r['action'] == 'BUY']
+    if flips: out.append('  Flipping now: ' + ', '.join(r['ticker'] for r in flips))
+    sec = {}
+    for r in U:
+        H = r['H']; m = H.dt.dt.hour * 60 + H.dt.dt.minute; c = H[(m >= RTH0) & (m < RTH1)].groupby(H.dt.dt.normalize()).close.last()
+        r5 = float(c.iloc[-1] / c.iloc[-6] - 1) if len(c) > 6 else np.nan
+        sec.setdefault(sector_of(r['base']), []).append((r['state15'] == 1, r5))
+    lines = []
+    for k, v in sec.items():
+        lines.append((np.nanmean([q for _, q in v]), f"{k}: {sum(b for b, _ in v)}/{len(v)} bull, 5d {np.nanmean([q for _, q in v]):+.1%}"))
+    out.append('**Sectors in the universe** (5-day avg, best first)'); out += ['  ' + t for _, t in sorted(lines, key=lambda z: -(z[0] if z[0] == z[0] else -9))]
+    if fetch:
+        try:
+            import yfinance as yf
+            Y = yf.download(list(SECTOR_ETF.values()) + ['SPY', 'QQQ'], period='1mo', interval='1d', progress=False, auto_adjust=True)['Close']
+            r1, r5 = Y.iloc[-1] / Y.iloc[-2] - 1, Y.iloc[-1] / Y.iloc[-6] - 1
+            lead = sorted(SECTOR_ETF.items(), key=lambda kv: -r5.get(kv[1], -9))
+            out.append('**Sector ETFs** 5d (1d): ' + ', '.join(f"{v} {r5[v]:+.1%} ({r1[v]:+.1%})" for k, v in lead[:4]) + ' … weakest: ' + ', '.join(f"{v} {r5[v]:+.1%}" for k, v in lead[-2:]))
+            out.append(f"SPY 5d {r5['SPY']:+.1%} · QQQ 5d {r5['QQQ']:+.1%}")
+        except Exception as ex: out.append(f'(sector ETFs unavailable: {str(ex)[:60]})')
+    if not os.getenv('HELIOUS_API_KEY'): out.append('_News: add HELIOUS_API_KEY (and the API docs) to wire in headlines for your positions._')
+    return '\n'.join(out)
 
 # ================================================================ console
 def show(rows, meta):
@@ -958,14 +1042,20 @@ if __name__ == '__main__':
     ap.add_argument('--update-gamma', action='store_true')
     ap.add_argument('--post-positions', action='store_true')
     ap.add_argument('--loop', action='store_true')
+    ap.add_argument('--pro', default=None, help='text: vector, volatility regime and high/low-in status for one ticker (Discord /pro)')
+    ap.add_argument('--brief', action='store_true', help='text: book, universe, sectors (Discord /brief)')
     ap.add_argument('--hm-card', default=None, help='render the honorable mentions (flips skipped because slots were full) to this path (Discord /hm)')
     ap.add_argument('--check-card', default=None, help='render the open-positions board to this path (Discord /check)')
     ap.add_argument('--check-ticker', default=None)
     ap.add_argument('--site-snapshot', action='store_true', help='scan once (live prices) and write live/site_snapshot.json for the website')
     ap.add_argument('--history-card', default=None, help='render every trade since the start + book vs SPY (Discord /history)')
     args = ap.parse_args()
+    if args.pro:                                                    # no scan needed: one ticker
+        print('<<<OUT'); print(pro_text(args.pro, not args.no_fetch)); print('OUT>>>'); sys.exit()
     if not args.loop:
         rows, meta = scan(args); show(rows, meta)
+        if args.brief:
+            print('<<<OUT'); print(brief_text(mark_live(rows, not args.no_fetch), meta, not args.no_fetch)); print('OUT>>>'); sys.exit()
         if args.post_positions: post_positions(rows, meta)
         if args.site_snapshot:
             print('site snapshot written'); sys.exit()
