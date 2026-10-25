@@ -69,6 +69,7 @@ def _when(it):
 
 def _state_word(s): return 'up' if s == 1 else 'down' if s == -1 else 'n/a'
 def _trend(s): return 'rising' if s == 1 else 'falling' if s == -1 else 'unclear'
+def _clip(t, n): return t if len(t) <= n else t[:n].rsplit(' ', 1)[0].rstrip(',;:') + '…'
 def _pc(v): return f"{v:+.1%}".replace('-', '−')
 
 
@@ -78,7 +79,10 @@ def _market_text(E, mine, cal, top, have_news):
     s, q = E.get('SPY'), E.get('QQQ'); p = []
     if s and q:
         both = s['d'] == q['d'] == s['w'] == q['w']
-        if both: p.append(f"The broad market is {'trending higher' if s['d'] == 1 else 'under pressure'} on both the daily and weekly charts: the S&P 500 is {_pc(s['r5'])} over five sessions and the Nasdaq 100 {_pc(q['r5'])}.")
+        if both:
+            soft = (s['d'] == 1 and s['r5'] < 0) or (s['d'] == -1 and s['r5'] > 0)
+            p.append(f"The broad market is {'trending higher' if s['d'] == 1 else 'under pressure'} on both the daily and weekly charts" + (", though the past five sessions ran the other way" if soft else '')
+                     + f": the S&P 500 is {_pc(s['r5'])} over that stretch and the Nasdaq 100 {_pc(q['r5'])}.")
         else: p.append(f"The S&P 500 is {_trend(s['d'])} on the daily chart and {_trend(s['w'])} on the weekly ({_pc(s['r5'])} over five sessions); the Nasdaq 100 is {_trend(q['d'])} daily and {_trend(q['w'])} weekly ({_pc(q['r5'])}).")
     sec = sorted([t for t in ETFS if t in E], key=lambda t: -E[t]['r5'])
     if len(sec) >= 4:
@@ -87,8 +91,15 @@ def _market_text(E, mine, cal, top, have_news):
         p.append(f"Over the past week leadership has come from {lead}, while {lag} have lagged; {up} of {len(sec)} sectors are in a daily uptrend.")
     held = [t for t in mine if t in E]
     if held:
-        p.append('Among the sectors we are exposed to, ' + '; '.join(f"{ETF_NAME[t].lower()} is {_trend(E[t]['d'])} on the daily and {_trend(E[t]['w'])} on the weekly" for t in held) + '.')
-    hi = [e for e in cal if e.get('impact') == 'High']
+        grp = {}
+        for t in held: grp.setdefault((E[t]['d'], E[t]['w']), []).append(ETF_NAME[t].lower())
+        def names(v): return v[0] if len(v) == 1 else ', '.join(v[:-1]) + ' and ' + v[-1]
+        parts = []
+        for (d, w), v in grp.items():
+            verb = 'is' if len(v) == 1 else 'are'
+            parts.append(f"{names(v)} {verb} {_trend(d)} on both timeframes" if d == w else f"{names(v)} {verb} {_trend(d)} on the daily chart but {_trend(w)} on the weekly")
+        txt = '; '.join(parts); p.append('Of the sectors we hold, ' + txt + '.')
+    hi = [e for e in cal if e.get('impact') == 'High' and e.get('type') != 'auction']
     if hi: p.append('The calendar carries ' + ', '.join(f"{e.get('title', '')} at {pd.Timestamp(e['datetime_utc']).tz_convert('America/New_York'):%H:%M}" for e in hi[:4]) + ', any of which can move the whole tape.')
     elif have_news: p.append('There are no high-impact US releases on the calendar today.')
     return ' '.join(p)
@@ -127,11 +138,11 @@ def _position(LS, r, x, E, per, sec, cal, now, fetch):
     warn = ["the 15-minute trend rolling over while the hourly holds", "the daily trend turning lower"]
     if etf: warn.append(f"{etf} turning down on the daily chart")
     warn.append('negative news on the name')
-    hi = [e.get('title', '')[:40] for e in cal if e.get('impact') == 'High']
+    hi = [e.get('title', '')[:40] for e in cal if e.get('impact') == 'High' and e.get('type') != 'auction']
     if hi: warn.append(f"today's high-impact releases ({', '.join(hi[:3])}), which can gap the whole market")
     if nxt is not None and (nxt - now).days <= 10: warn.append(f"earnings on {nxt:%B %d}; if the stock is up 3% or more but by less than its usual earnings move, it is sold at the prior close")
     fail += ' Earlier warning signs would be ' + ', '.join(warn[:-1]) + (', and ' if len(warn) > 1 else '') + warn[-1] + '.'
-    news = [dict(t=f"{pd.Timestamp(a_['t']).tz_convert('America/New_York'):%a %H:%M}", title=a_['title'], pub=a_.get('pub', ''), sent=a_['sent'], why=(a_.get('why') or '')[:220],
+    news = [dict(t=f"{pd.Timestamp(a_['t']).tz_convert('America/New_York'):%a %H:%M}", title=a_['title'], pub=a_.get('pub', ''), sent=a_['sent'], why=_clip(a_.get('why') or '', 230),
                  url=a_.get('url', '')) for a_ in sn[:4]]
     news += [dict(t=_when(it), title=it.get('title', ''), pub='sector' if it in sec.get(t, []) else 'name', sent='negative' if (it.get('score') or 0) <= -3 else None, why=it.get('helious_read', '') or '', url='')
              for it in (per.get(t, []) + sec.get(t, []))[:2]]
