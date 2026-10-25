@@ -84,4 +84,7 @@ Oct 25 batch (xs/batch_oct25.py, xs/lod_hod.py, xs/max_pain.py):
   Day-range 80% band exit: worse.
 - Sector / market vector (xs/sector_vector.py): skip flips when the sector ETF's daily vector is bear: 2022-26 +6.1% (live +28.5%); skip when SPY's
   daily vector is bear: worse; sector-bull-first tie-break: worse. Flips in sectors with a bear daily vector averaged slightly MORE per trade. Context only.
+- Sector ETF vector by timeframe (xs/sector_vector_tf.py): no timeframe works as a filter (skip-if-bear, Nov24-Oct26: 1h -2.3%, 4h -6.4%, daily +14.7%,
+  weekly -5.7% vs live +31.2%). It runs the other way: flips while the sector's WEEKLY vector is bear average more per trade in both halves
+  (19-21 +1.00% vs +0.57%, 22-26 +0.69% vs +0.13%) - relative strength against a weak sector. Trading only those: 19-21 +14.9%, 22-26 +39.6%/-13 (split). Watch item.
 
