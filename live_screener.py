@@ -939,6 +939,36 @@ def helious(path, params, ttl=900):
     try: json.dump(C, open(cf, 'w'))
     except Exception: pass
     return j
+def stock_news(tk, since=None, limit=20, ttl=1800, until=None):
+    """recent articles on one ticker from Massive (Polygon) news, with the per-ticker sentiment + reasoning; cached"""
+    key = os.getenv('MASSIVE_API_KEY', '')
+    if not key: return []
+    since = pd.Timestamp(since or (now_et() - pd.Timedelta(days=7))).strftime('%Y-%m-%dT%H:%M:%SZ')
+    until = pd.Timestamp(until or now_et()).tz_localize('America/New_York').tz_convert('UTC').strftime('%Y-%m-%dT%H:%M:%SZ') if pd.Timestamp(until or now_et()).tzinfo is None else pd.Timestamp(until).strftime('%Y-%m-%dT%H:%M:%SZ')
+    cf = f'{LIVE}/stock_news_cache.json'; ck = f'{tk}|{since[:13]}|{until[:13]}'
+    try: C = json.load(open(cf))
+    except Exception: C = {}
+    if ck in C and time.time() - C[ck]['t'] < ttl: return C[ck]['j']
+    res, ok = [], False
+    for attempt in range(3):                                              # free plan: 5 calls a minute -> wait and retry on 429
+        try:
+            r = requests.get('https://api.massive.com/v2/reference/news', params={'ticker': YF_SYM.get(tk, tk).replace('-', '.'), 'published_utc.gte': since, 'published_utc.lte': until,
+                             'order': 'desc', 'sort': 'published_utc', 'limit': limit, 'apiKey': key}, timeout=20)
+            if r.status_code == 429: time.sleep(13); continue
+            res = r.json().get('results', []) if r.status_code == 200 else []; ok = r.status_code == 200
+        except Exception: pass
+        break
+    out = []
+    for it in res:
+        ins = next((i for i in it.get('insights') or [] if i.get('ticker') == tk), None)
+        out.append(dict(t=it.get('published_utc'), title=it.get('title', ''), pub=(it.get('publisher') or {}).get('name', ''), n=len(it.get('tickers') or []),
+                        sent=(ins or {}).get('sentiment'), why=(ins or {}).get('sentiment_reasoning', '')))
+    if not ok: return out
+    C[ck] = dict(t=time.time(), j=out)
+    try: json.dump(C, open(cf, 'w'))
+    except Exception: pass
+    return out
+
 def news_text(held, universe):
     import re
     out = []
