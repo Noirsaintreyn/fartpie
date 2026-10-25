@@ -96,7 +96,8 @@ body,button,input,select,table,th,td{font-style:italic}
 .pos-art{border-top:1px solid var(--line);padding-top:26px}
 .pos-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 22px}
 .cur{font-family:'Pinyon Script',cursive;font-style:normal;font-weight:400;background:none;border:none;padding:0;font-size:54px;line-height:1;color:var(--gold)}
-.pos-pnl{font-size:30px}
+.dollar{font-size:15px;letter-spacing:.08em;color:var(--gold-2);margin-left:-14px;align-self:flex-end;padding-bottom:6px}
+.pos-pnl{font-size:30px;margin-left:auto}
 .pos-meta{font-size:15px;color:var(--muted);margin-top:6px;letter-spacing:.02em}
 .read{font-size:14px;color:#a9a59c;margin-top:8px;letter-spacing:.02em}
 .rng{margin:20px 0 18px;padding:18px 20px;border:1px solid var(--line);background:rgba(201,162,39,.035)}
@@ -120,8 +121,8 @@ body,button,input,select,table,th,td{font-style:italic}
 <div class="hwrap">
 <div class="brand">L'Argent Parle</div>
 <nav aria-label="Main" id="nav">
-<button data-tab="screener">Screener</button>
 <button data-tab="analysis">Daily Analysis</button>
+<button data-tab="screener">Screener</button>
 <button data-tab="mid">Mid / Small Book</button>
 <button data-tab="charts">Charts</button>
 <button data-tab="history">History</button>
@@ -355,7 +356,7 @@ body,button,input,select,table,th,td{font-style:italic}
     h += '<div class="essay"><h3>The book</h3><p>' + esc(intro) + '</p></div>';
     order.forEach(function (t) {
       var p = byTk[t], L = live[t];
-      h += '<article class="pos-art essay"><div class="pos-head"><button class="cur tk" style="text-decoration:none;min-height:0" data-tk="' + esc(t) + '">' + esc(t) + '</button><span class="pos-pnl ' + cls(L.pnl) + '">' + pct(L.pnl) + '</span></div>' +
+      h += '<article class="pos-art essay"><div class="pos-head"><button class="cur tk" style="text-decoration:none;min-height:0" data-tk="' + esc(t) + '">' + esc(t) + '</button><span class="dollar">$' + esc(t) + '</span><span class="pos-pnl ' + cls(L.pnl) + '">' + pct(L.pnl) + '</span></div>' +
         '<div class="pos-meta">' + (p ? esc(p.sector) + ' · ' : '') + 'entry ' + esc(L.entry) + ' · stop ' + esc(L.stop) + (p ? ' on ' + (p.basis === 'hourly' ? 'an hourly' : 'a 15-minute') + ' close' : '') + ' · best ' + pct(L.peak) + (L.selling ? ' · <span class="dn">sells at the next open</span>' : '') + '</div>';
       if (p) { var rd = p.read; h += '<div class="read">15-minute ' + rd.t15 + ' · hourly ' + rd.t1h + ' · daily ' + rd.td + (p.etf ? ' · ' + esc(p.etf) + ' ' + rd.sec_d + ' daily, ' + rd.sec_w + ' weekly' : '') + ' · volatility ' + rd.vol + ' (' + rd.vol_pct + 'th percentile)' + (rd.earnings ? ' · earnings ' + esc(rd.earnings) : '') + '</div>'; }
       h += rangeBlock(R[t]);
@@ -573,7 +574,7 @@ body,button,input,select,table,th,td{font-style:italic}
   }
 
   // ---------------------------------------------------------------- boot
-  var t0 = 'screener'; try { t0 = localStorage.getItem('lap_tab') || t0; } catch (e) {}
+  var t0 = 'analysis'; try { t0 = localStorage.getItem('lap_tab') || t0; } catch (e) {}
   tfButtons(); setTab(TITLES[t0] ? t0 : 'screener'); loadSnap(); setInterval(loadSnap, 60000);
 })();
 </script>
