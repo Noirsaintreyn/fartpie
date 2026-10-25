@@ -1119,7 +1119,8 @@ if __name__ == '__main__':
     ap.add_argument('--post-positions', action='store_true')
     ap.add_argument('--loop', action='store_true')
     ap.add_argument('--pro', default=None, help='text: vector, volatility regime and high/low-in status for one ticker (Discord /pro)')
-    ap.add_argument('--brief', action='store_true', help='text: book, universe, sectors (Discord /brief)')
+    ap.add_argument('--brief', action='store_true', help='text: book, universe, sectors')
+    ap.add_argument('--report-dir', default=None, help='render the morning report (cover + one page per position) as PNGs into this folder (Discord /brief)')
     ap.add_argument('--hm-card', default=None, help='render the honorable mentions (flips skipped because slots were full) to this path (Discord /hm)')
     ap.add_argument('--check-card', default=None, help='render the open-positions board to this path (Discord /check)')
     ap.add_argument('--check-ticker', default=None)
@@ -1130,6 +1131,10 @@ if __name__ == '__main__':
         print('<<<OUT'); print(pro_text(args.pro, not args.no_fetch)); print('OUT>>>'); sys.exit()
     if not args.loop:
         rows, meta = scan(args); show(rows, meta)
+        if args.report_dir:
+            import daily_report as DR
+            for p in DR.build(sys.modules[__name__], mark_live(rows, not args.no_fetch), meta, args.report_dir, True): print('FILE:', p)
+            sys.exit()
         if args.brief:
             print('<<<OUT'); print(brief_text(mark_live(rows, not args.no_fetch), meta, not args.no_fetch)); print('OUT>>>'); sys.exit()
         if args.post_positions: post_positions(rows, meta)
@@ -1171,7 +1176,9 @@ if __name__ == '__main__':
             check_stale(rows, st); post_new_signals(rows, meta, st)             # premarket flips on held names -> exit-at-open alert
             if os.getenv('DAILY_BRIEF', '1') == '1' and st.get('brief') != today:  # 09:00 ET: the /brief, posted every weekday
                 try:
-                    if post_long(brief_text(mark_live(rows, True), meta, True), channel=os.getenv('BRIEF_CHANNEL_ID')): st['brief'] = today; _save(st)
+                    import daily_report as DR
+                    fs = DR.build(sys.modules[__name__], mark_live(rows, True), meta, f'{LIVE}/report_{today}', True)
+                    if post(f"\U0001f4f0 Morning report · {now_et():%a %b %d}", fs[:10], channel=os.getenv('BRIEF_CHANNEL_ID')): st['brief'] = today; _save(st)
                 except Exception as ex: print(f'  ! daily brief: {str(ex)[:80]}')
         elif 9 * 60 + 15 <= mins < RTH0:                                        # ~09:16 pre-open recheck
             rows, meta = scan(args); show(rows, meta); check_stale(rows, st); post_new_signals(rows, meta, st)

@@ -11,7 +11,10 @@
 - **/pro <ticker>** (any stock): vector state (15m/1h, stop or flip trigger), volatility regime (HAR expected range and its 1-year percentile),
   and whether today's high/low is in with the projected other side. **/brief**: book (P&L, room to stop, vol regime, high/low in),
   universe bull counts, names within 0.6% of a bull flip, sector leadership (universe 5d + sector ETFs), and Helious news (api.helious.io /v1/feed + /v1/calendar, key HELIOUS_API_KEY in .env / Render,
-  cached 15 min; free plan = 100 credits/month, 2 per fresh /brief). The brief also posts itself every weekday at 09:00 ET
+  cached 15 min; free plan = 100 credits/month, 2 per fresh /brief). The 09:00 ET post is now the MORNING REPORT (daily_report.py): a cover (book table, sector ETFs + SPY/QQQ with daily and weekly vector,
+  US calendar, top news) and one page per position (15m chart with stop, model read: 15m/1h/daily vector, sector ETF vector, HAR range,
+  earnings; why we hold / what we want to see / what would say it failed; news on the name and its sector). /brief sends the same pages.
+  It posts every weekday at 09:00 ET
   (BRIEF_CHANNEL_ID to route it, DAILY_BRIEF=0 to stop): headlines on held names, sector news for what you hold, market-moving
   universe news, top market news, US calendar.
 - **Honorable mentions:** flips skipped because all slots are full are alerted (HM_CHANNEL_ID or the main channel) and shown in /hm; never traded.
@@ -79,4 +82,6 @@ Oct 25 batch (xs/batch_oct25.py, xs/lod_hod.py, xs/max_pain.py):
   Tightening once a trade reaches its stock's target (vol-scaled or its own median winner peak) lost in almost every version; the only
   near-tie: 2x weekly vol then give back 40% (+58.0/-11, +30.5/-16, 2019-26 +40.2/-19) - deeper full-run drawdown, not adopted.
   Day-range 80% band exit: worse.
+- Sector / market vector (xs/sector_vector.py): skip flips when the sector ETF's daily vector is bear: 2022-26 +6.1% (live +28.5%); skip when SPY's
+  daily vector is bear: worse; sector-bull-first tie-break: worse. Flips in sectors with a bear daily vector averaged slightly MORE per trade. Context only.
 
