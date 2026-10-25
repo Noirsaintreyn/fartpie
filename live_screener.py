@@ -375,7 +375,11 @@ def scan(args):
         if v['status'] == 'open' and t['status'] == 'CLOSED':
             v.update(status='closed', t1=str(pd.Timestamp(t['t1'])), xpx=float(t['xpx']), lock=bool(t.get('lock')))
         t['px'] = float(v['px'])
-        if v['status'] == 'closed': t['xpx'] = float(v['xpx']); t['t1'] = np.datetime64(pd.Timestamp(v['t1'])); t['lock'] = bool(v.get('lock'))
+        if v['status'] == 'closed':
+            t['xpx'] = float(v['xpx']); t['t1'] = np.datetime64(pd.Timestamp(v['t1'])); t['lock'] = bool(v.get('lock'))
+            if t['status'] != 'CLOSED':                                  # replay revived a trade the ledger already closed (bar revision): keep it closed
+                d = HS[t['tk']].dt.values; t['status'] = 'CLOSED'; t['x'] = int(min(np.searchsorted(d, t['t1']), len(d) - 1))
+                live.pop((t['tk'], t['track']), None)
     LG['__asof__'] = str(pd.Timestamp(max(H.dt.iloc[-1] for H in HS.values())))
     if not getattr(args, 'no_ledger', False): ledger_save(LG)
     for tk, H in HS.items():
@@ -716,6 +720,10 @@ def post_new_signals(rows, meta, st):
             continue
         elif r['action'] not in ('BUY', 'SELL'): continue
         key = f"{tk}|{r['action']}|{r['bar']:%Y-%m-%d %H:%M}"
+        if r['action'] == 'SELL' and r['e'] is not None:                 # Oct 25 2026: one SELL per position (premarket re-scans used to repost it every bar)
+            key = f"{tk}|SELL|trade|{r['H'].dt.iloc[r['e']]:%Y-%m-%d %H:%M}"
+        elif r['action'] == 'BUY' and now_et().hour * 60 + now_et().minute < RTH0:   # one premarket BUY per name per day
+            key = f"{tk}|BUY|pre|{today}"
         if r['action'] == 'SELL': held.pop(tk, None); _save(st)
         if key in st['signals']: continue
         if r['action'] == 'SELL' and now_et().hour * 60 + now_et().minute < RTH0:
@@ -723,7 +731,8 @@ def post_new_signals(rows, meta, st):
         p = f"{LIVE}/card_{tk.replace(' ', '_')}_{r['action']}.png"
         try: LC.signal_dash(r, meta, p) if r['action'] == 'BUY' else signal_card(r, meta, p)
         except Exception as e: print(f'  ! signal dash failed ({str(e)[:80]}); simple card'); signal_card(r, meta, p)
-        if post(late, [p]): st['signals'].append(key); _save(st)
+        if not post(late, [p]): continue
+        st['signals'].append(key); _save(st)
         log = f'{LIVE}/signal_log.csv'
         pd.DataFrame([dict(run_at=now_et(), ticker=r['ticker'], action=r['action'], bar=r['bar'], price=r['last'], stop=r['stop'], entry=r['px'], pnl=r['pnl'])]).to_csv(log, mode='a', header=not os.path.exists(log), index=False)
 
@@ -780,7 +789,9 @@ def watch_crosses(rows, st, until):
             if key in st['signals'] or pm_blocked(end): continue
             px = cache.setdefault(r['base'], live_px(r['base']))
             if px and px > r['trig']:
-                if post(f"\u26a1 CROSS {tk} {px:.2f} is above the vector ({r['trig']:.2f}). BUY only if the {end:%H:%M} 15m close holds above.", []):
+                full = len({q['base'] for q in rows if q['action'] == 'HOLD' and q['px']}) >= slots_at(now_et())
+                tail = f" Slots are full ({slots_at(now_et())}/{slots_at(now_et())}): no buy even if it holds." if full else f" BUY only if the {end:%H:%M} 15m close holds above."
+                if post(f"\u26a1 CROSS {tk} {px:.2f} is above the vector ({r['trig']:.2f}).{tail}", []):
                     st['signals'].append(key); xp[tk] = [f'{bar:%Y-%m-%d %H:%M}', r['trig']]; _save(st)
         if RTH0 <= now_et().hour * 60 + now_et().minute < RTH1:
             for r in P:
@@ -794,6 +805,10 @@ def check_failed(rows, st):
         if pd.Timestamp(b) + pd.Timedelta('15min') > now_et(): continue          # cross bar still open
         r = R.get(tk); xp.pop(tk); _save(st)
         if r is None or r['action'] in ('BUY', 'HOLD'): continue                  # confirmed: the BUY card covers it
+        if r['state15'] == 1 or r['last'] > trig:                                # it held, but the book didn't take it: say why
+            full = len({q['base'] for q in rows if q['action'] == 'HOLD' and q['px']}) >= slots_at(now_et())
+            why = 'slots are full' if full else ('no buys after 2pm' if pm_blocked(now_et()) else 'not eligible right now (breaker or options ratio)')
+            post(f"\u2139\ufe0f {tk} closed {r['last']:.2f}, above the vector ({trig:.2f}), but no buy: {why}.", []); continue
         post(f"\u2717 {tk} cross failed: closed {r['last']:.2f}, below the vector ({trig:.2f}). No trade.", [])
 
 def check_stale(rows, st):
