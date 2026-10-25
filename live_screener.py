@@ -476,24 +476,55 @@ def scan(args):
     return out, meta
 
 
-def site_ranges(rows):
-    """adaptive expected high / low per held name for the website, recomputed on every scan from today's extremes so far"""
-    out = {}
-    for r in rows:
-        if r['action'] not in ('HOLD', 'SELL') or not r['px'] or r['base'] in out: continue
+def range_path(H, day, note_t=None):
+    """one session's adaptive expected high / low, bar by bar (premarket from its own extremes, RTH from the RTH extremes so far):
+    what the model assumed at each point vs what the day realized. Website Daily Analysis chart."""
+    m = H.dt.dt.hour * 60 + H.dt.dt.minute; R_ = H[(m >= RTH0) & (m < RTH1)]
+    D = R_.groupby(R_.dt.dt.normalize()).agg(h=('high', 'max'), l=('low', 'min'), c=('close', 'last'))
+    hist = D[D.index < day]
+    if len(hist) < 30: return None
+    sig = har_sigma(hist); b, w = 1.7 * sig, 2.4 * sig
+    g = H[(H.dt.dt.normalize() == day) & (m < RTH1)]
+    if not len(g): return None
+    gm = (g.dt.dt.hour * 60 + g.dt.dt.minute).values
+    bars, plo, phi, rlo, rhi, at = [], np.inf, -np.inf, np.inf, -np.inf, None
+    for k, (mm, o, h, l, c) in enumerate(zip(gm, g.open.values, g.high.values, g.low.values, g.close.values)):
+        if mm < RTH0: plo, phi = min(plo, l), max(phi, h); lo, hi = plo, phi
+        else: rlo, rhi = min(rlo, l), max(rhi, h); lo, hi = rlo, rhi
+        r2 = lambda v: round(float(v), 2)
+        bars.append([int(mm), r2(o), r2(h), r2(l), r2(c), r2(lo * (1 + b)), r2(hi * (1 - b)), r2(lo * (1 + w)), r2(hi * (1 - w))])
+        if note_t is not None and mm + 15 <= note_t: at = k
+    rth = [x for x in bars if x[0] >= RTH0]
+    return dict(day=f'{day:%a %b %d}', budget=round(b * 100, 2), wide=round(w * 100, 2), bars=bars, note_i=at,
+                hi=max(x[2] for x in rth) if rth else None, lo=min(x[3] for x in rth) if rth else None,
+                done=bool(rth) and rth[-1][0] >= RTH1 - 15, last=bars[-1][4], asof=f"{(bars[-1][0] + 15) // 60}:{(bars[-1][0] + 15) % 60:02d}")
+
+def site_ranges(rows, meta, note=None):
+    """expected-range charts for the note's names (+ anything held now), all on the note's session; live while that session runs"""
+    HS = meta.get('HS', {}); out = {}
+    names = [p['tk'] for p in (note or {}).get('positions', [])] + [r['base'] for r in rows if r['action'] in ('HOLD', 'SELL') and r['px']]
+    nd = pd.Timestamp(note['asof']) if note else None
+    for tk in dict.fromkeys(names):
+        H = HS.get(tk)
+        if H is None or not len(H): continue
         try:
-            rl = range_levels(r['H']); x = extreme_info(r['H']) or {}
-            if not rl: continue
-            f2 = lambda v: round(float(v), 2)
-            z = dict(budget=round(rl['budget'] * 100, 2), wide=round(2.4 * rl['sig'] * 100, 2), lo=f2(rl['lo']), hi=f2(rl['hi']), last=f2(r['last']), pre=bool(rl['pre']),
-                     used=round(rl['used'] / 1.7 * 100), hi_typ=f2(rl['hi_typ']), hi_wide=f2(rl['hi_wide']), lo_typ=f2(rl['lo_typ']), lo_wide=f2(rl['lo_wide']),
-                     bar=f"{pd.Timestamp(r['H'].dt.iloc[-1]) + pd.Timedelta('15min'):%a %H:%M}")
+            day = nd.normalize() if nd is not None else H.dt.iloc[-1].normalize()
+            z = range_path(H, day, nd.hour * 60 + nd.minute if nd is not None else None)
+            if not z: continue
+            x = extreme_info(H) or {}
             for side in ('low', 'high'):
-                e = x.get(side) if x.get('live') else None
-                z[side + '_in'] = dict(p=round(e['p'] * 100), typ=f2(e['tgt'][0]), b80=f2(e['tgt'][1])) if e else None
-            out[r['base']] = z
-        except Exception as e: print(f'  ! site range {r["base"]}: {str(e)[:60]}')
+                e = x.get(side) if x.get('live') and day == now_et().normalize() else None
+                z[side + '_in'] = dict(p=round(e['p'] * 100), typ=round(float(e['tgt'][0]), 2), b80=round(float(e['tgt'][1]), 2)) if e else None
+            out[tk] = z
+        except Exception as e: print(f'  ! site range {tk}: {str(e)[:60]}')
     return out
+
+def latest_note():
+    """the most recent morning note: today's once written, else the previous one (Friday's over the weekend)"""
+    for fa in (f'{LIVE}/analysis.json', 'live_data/analysis.json'):
+        try: return json.load(open(fa))
+        except Exception: pass
+    return None
 
 def write_site_snapshot(rows, meta):
     """live/site_snapshot.json for the website (screener_service pushes it to BACKEND_URL/api/site/push)."""
@@ -530,11 +561,9 @@ def write_site_snapshot(rows, meta):
                     realized=round(sum(z['book'] for z in tr if not z['open']), 2), open=round(sum(z['book'] for z in tr if z['open']), 2), since=f'{pd.Timestamp(START):%a %b %d}')
     except Exception as e: print(f'  ! site history: {str(e)[:80]}')
     snap = dict(asof=t.isoformat(), asof_ms=int(pd.Timestamp(t, tz=ET).timestamp() * 1000), market_open=t.dayofweek < 5 and RTH0 <= m < RTH1,
-                slots=meta['slots'], cutoff=CUT2, positions=pos, signals=sig, watch=watch, history=hist, ranges=site_ranges(rows))
-    snap['analysis'] = None                                                         # the 09:00 write-up (frozen); ranges above refresh every scan
-    for fa in (f'{LIVE}/analysis.json', 'live_data/analysis.json'):                # live copy, else the seed shipped in git
-        try: snap['analysis'] = json.load(open(fa)); break
-        except Exception: pass
+                slots=meta['slots'], cutoff=CUT2, positions=pos, signals=sig, watch=watch, history=hist)
+    note = latest_note()                                                            # the 09:00 write-up (frozen) + its session's range chart, live every scan
+    snap['analysis'] = note; snap['ranges'] = site_ranges(rows, meta, note)
     tmp = f'{LIVE}/site_snapshot.json.tmp'; json.dump(snap, open(tmp, 'w')); os.replace(tmp, f'{LIVE}/site_snapshot.json')
 
 # ================================================================ cards
@@ -1258,7 +1287,8 @@ if __name__ == '__main__':
                     import daily_report as DR
                     fs = DR.build(sys.modules[__name__], mark_live(rows, True), meta, f'{LIVE}/report_{today}', True)
                     try:                                                        # the website's Daily Analysis tab
-                        shutil.copy(f'{LIVE}/report_{today}/analysis.json', f'{LIVE}/analysis.json'); write_site_snapshot(rows, meta)
+                        shutil.copy(f'{LIVE}/report_{today}/analysis.json', f'{LIVE}/analysis.json'); os.makedirs(f'{LIVE}/notes', exist_ok=True)
+                        shutil.copy(f'{LIVE}/analysis.json', f'{LIVE}/notes/{today}.json'); write_site_snapshot(rows, meta)
                     except Exception as ex: print(f'  ! site analysis: {str(ex)[:80]}')
                     if post(f"\U0001f4f0 Morning report · {now_et():%a %b %d}", fs[:10], channel=os.getenv('BRIEF_CHANNEL_ID')): st['brief'] = today; _save(st)
                 except Exception as ex: print(f'  ! daily brief: {str(ex)[:80]}')

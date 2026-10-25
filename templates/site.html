@@ -102,7 +102,8 @@ body,button,input,select,table,th,td{font-style:italic}
 .read{font-size:14px;color:#a9a59c;margin-top:8px;letter-spacing:.02em}
 .rng{margin:20px 0 18px;padding:18px 20px;border:1px solid var(--line);background:rgba(201,162,39,.035)}
 .rng-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;font-size:14px;color:var(--gold-2);letter-spacing:.06em}
-.rng svg{width:100%;height:46px;display:block;margin:12px 0 6px}
+.rng svg{width:100%;height:auto;display:block;margin:12px 0 6px;font-family:Inter,sans-serif;font-style:normal}
+.rng-key{display:flex;flex-wrap:wrap;gap:16px;font-size:12px;color:var(--muted);margin-bottom:12px}.rng-key i{display:inline-block;width:18px;border-top:2px dashed;margin-right:6px;vertical-align:middle}
 .rng-cells{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;font-size:13px;color:var(--muted)}
 .rng-cells b{display:block;font-size:20px;font-weight:400;color:var(--white)}.rng-cells .r{text-align:right}
 .rng-cells i{display:block;font-size:12px;color:var(--muted)}
@@ -316,64 +317,86 @@ body,button,input,select,table,th,td{font-style:italic}
 
   // ---------------------------------------------------------------- daily analysis (written 09:00 ET; ranges refresh every scan)
   var f2 = function (v) { return v == null ? '–' : Number(v).toFixed(2); };
+  var hm = function (m) { return Math.floor(m / 60) + ':' + ('0' + m % 60).slice(-2); };
   function rangeBlock(z) {
-    if (!z) return '';
-    var lo = Math.min(z.lo_wide, z.lo, z.last), hi = Math.max(z.hi_wide, z.hi, z.last), pad = (hi - lo) * 0.04; lo -= pad; hi += pad;
-    var X = function (v) { return ((v - lo) / (hi - lo) * 100).toFixed(2) + '%'; };
-    var tick = function (v, c, w, h) { return '<line x1="' + X(v) + '" x2="' + X(v) + '" y1="' + (23 - h) + '" y2="' + (23 + h) + '" stroke="' + c + '" stroke-width="' + w + '"/>'; };
-    var svg = '<svg role="img" aria-label="Session range so far against the expected low and high"><line x1="0" x2="100%" y1="23" y2="23" stroke="rgba(201,162,39,.18)" stroke-width="1"/>' +
-      '<rect x="' + X(z.lo_wide) + '" width="' + ((z.hi_wide - z.lo_wide) / (hi - lo) * 100).toFixed(2) + '%" y="17" height="12" fill="rgba(201,162,39,.06)"/>' +
-      '<rect x="' + X(z.lo) + '" width="' + Math.max(0.4, (z.hi - z.lo) / (hi - lo) * 100).toFixed(2) + '%" y="19" height="8" fill="rgba(201,162,39,.75)"/>' +
-      tick(z.lo_wide, 'rgba(235,87,87,.45)', 1, 9) + tick(z.hi_wide, 'rgba(111,207,151,.45)', 1, 9) + tick(z.lo_typ, '#eb5757', 2, 13) + tick(z.hi_typ, '#6fcf97', 2, 13) +
-      '<circle cx="' + X(z.last) + '" cy="23" r="4.5" fill="#fff" stroke="#0a0e1a" stroke-width="1.5"/></svg>';
-    var note = 'The day’s range budget is about ' + z.budget.toFixed(1) + '% (' + z.wide.toFixed(1) + '% on a wide day). ' +
-      (z.pre ? 'Measured from the premarket so far, ' : 'Measured from the session so far, ') + 'a further low lowers the expected high by the same amount, and a further high lifts the expected low. ' +
-      (z.used >= 100 && !z.pre ? 'The session has already covered ' + z.used + '% of a typical day, so the extremes in place are more likely than not to hold.' : 'So far the ' + (z.pre ? 'premarket' : 'session') + ' has used ' + z.used + '% of that budget.');
-    ['low', 'high'].forEach(function (sd) { var e = z[sd + '_in']; if (e) note += ' The ' + sd + ' looks to be in (it holds about ' + e.p + '% of the time from here); the other side projects to ' + f2(e.typ) + ', with 80% of days ' + (sd === 'low' ? 'under ' : 'above ') + f2(e.b80) + '.'; });
-    return '<div class="rng"><div class="rng-top"><span>Expected range today</span><span>as of ' + esc(z.bar) + ' ET · last ' + f2(z.last) + '</span></div>' + svg +
-      '<div class="rng-cells"><div><i>Expected low</i><b class="dn">' + f2(z.lo_typ) + '</b>wide ' + f2(z.lo_wide) + '</div><div><i>' + (z.pre ? 'Premarket' : 'Session') + ' low</i><b>' + f2(z.lo) + '</b>&nbsp;</div>' +
-      '<div class="r"><i>' + (z.pre ? 'Premarket' : 'Session') + ' high</i><b>' + f2(z.hi) + '</b>&nbsp;</div><div class="r"><i>Expected high</i><b class="up">' + f2(z.hi_typ) + '</b>wide ' + f2(z.hi_wide) + '</div></div>' +
-      '<p class="rng-note">' + esc(note) + '</p></div>';
+    if (!z || !z.bars || !z.bars.length) return '';
+    var B = z.bars.filter(function (b) { return b[0] >= 420; }); if (!B.length) B = z.bars;
+    var at = z.note_i != null ? z.bars[z.note_i] : null, last = z.bars[z.bars.length - 1], live = !z.done;
+    var W = Math.max(320, Math.min(820, window.innerWidth - 80)), H = W < 600 ? 200 : 230, L = 8, R = W < 600 ? 84 : 92, T = 12, Bt = 26, m0 = B[0][0], m1 = 960;
+    var lo = Infinity, hi = -Infinity; B.forEach(function (b) { lo = Math.min(lo, b[3]); hi = Math.max(hi, b[2]); });
+    var ref = [at ? at[5] : null, at ? at[6] : null, last[5], last[6]]; ref.forEach(function (v) { if (v != null) { lo = Math.min(lo, v); hi = Math.max(hi, v); } });
+    var pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+    var X = function (m) { return L + (m - m0) / (m1 - m0) * (W - L - R); }, Y = function (p) { return T + (hi - p) / (hi - lo) * (H - T - Bt); }, bw = (W - L - R) / ((m1 - m0) / 15);
+    var sv = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Session price against the expected high and low the model assumed through the day">';
+    if (m0 < 570) sv += '<rect x="' + X(m0) + '" y="' + T + '" width="' + (X(570) - X(m0)) + '" height="' + (H - T - Bt) + '" fill="rgba(255,255,255,.025)"/>';
+    [570, 720, 840, 960].forEach(function (m) { if (m >= m0) sv += '<text x="' + X(m) + '" y="' + (H - 8) + '" fill="#9a9890" font-size="11" text-anchor="' + (m === 960 ? 'end' : 'middle') + '">' + hm(m) + '</text>'; });
+    var step = function (k, col, dash, wd) {
+      var d = ''; B.forEach(function (b, i) { var x0 = X(b[0]), x1 = X(b[0] + 15), y = Y(b[k]); d += (i ? 'L' : 'M') + x0.toFixed(1) + ' ' + y.toFixed(1) + 'L' + x1.toFixed(1) + ' ' + y.toFixed(1); });
+      return '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + wd + '" stroke-dasharray="' + dash + '" vector-effect="non-scaling-stroke"/>';
+    };
+    sv += step(7, 'rgba(111,207,151,.35)', '2 4', 1) + step(8, 'rgba(235,87,87,.35)', '2 4', 1) + step(5, '#6fcf97', '6 4', 1.6) + step(6, '#eb5757', '6 4', 1.6);
+    B.forEach(function (b) { var x = X(b[0]) + bw / 2, up = b[4] >= b[1], c = b[0] < 570 ? 'rgba(201,162,39,.45)' : (up ? '#d4ad4f' : '#8a7536');
+      sv += '<line x1="' + x + '" x2="' + x + '" y1="' + Y(b[2]) + '" y2="' + Y(b[3]) + '" stroke="' + c + '" vector-effect="non-scaling-stroke"/><rect x="' + (x - bw * 0.3) + '" width="' + (bw * 0.6) + '" y="' + Y(Math.max(b[1], b[4])) + '" height="' + Math.max(1, Math.abs(Y(b[1]) - Y(b[4]))) + '" fill="' + c + '"/>'; });
+    var hl = function (v, lab, col) { if (v == null) return ''; var y = Y(v); return '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y + '" y2="' + y + '" stroke="' + col + '" stroke-width="1" vector-effect="non-scaling-stroke"/><text x="' + (W - R + 6) + '" y="' + (y + 4) + '" fill="' + col + '" font-size="11">' + lab + ' ' + f2(v) + '</text>'; };
+    sv += hl(z.hi, z.done ? 'high' : 'high so far', '#e8e6e3') + hl(z.lo, z.done ? 'low' : 'low so far', '#e8e6e3');
+    if (at) { var xn = X(at[0] + 15); sv += '<line x1="' + xn + '" x2="' + xn + '" y1="' + T + '" y2="' + (H - Bt) + '" stroke="rgba(201,162,39,.7)" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/><text x="' + (xn + 4) + '" y="' + (T + 10) + '" fill="#c9a227" font-size="11">note ' + hm(at[0] + 15) + '</text>'; }
+    sv += '</svg>';
+    var pc = function (a, b) { return ((a / b - 1) * 100).toFixed(1) + '%'; }, t = '';
+    if (at) t += 'At ' + hm(at[0] + 15) + ' the model assumed a high near ' + f2(at[5]) + ' (wide ' + f2(at[7]) + ') and a low near ' + f2(at[6]) + ' (wide ' + f2(at[8]) + '), a range budget of ' + z.budget.toFixed(1) + '%. ';
+    if (z.hi != null) {
+      t += (z.done ? 'The session made a high of ' : 'So far the session has made a high of ') + f2(z.hi) + ' and a low of ' + f2(z.lo) + ', a range of ' + pc(z.hi, z.lo) + ' (' + Math.round((z.hi / z.lo - 1) / z.budget * 10000) + '% of the budget). ';
+      if (at && z.done) t += 'The high finished ' + (z.hi <= at[5] ? pc(at[5], z.hi) + ' short of' : pc(z.hi, at[5]) + ' beyond') + ' the 09:00 assumption and the low ' + (z.lo >= at[6] ? pc(z.lo, at[6]) + ' above' : pc(at[6], z.lo) + ' below') + ' it. ';
+      if (live) t += 'As the extremes move, the expected high now sits at ' + f2(last[5]) + ' and the expected low at ' + f2(last[6]) + '.';
+      else t += 'The dashed lines show how the expectation adapted as each new extreme printed.';
+    } else t += 'Before the open the levels follow the premarket high and low.';
+    ['low', 'high'].forEach(function (sd) { var e = z[sd + '_in']; if (e) t += ' The ' + sd + ' looks to be in (it holds about ' + e.p + '% of the time from here); the other side projects to ' + f2(e.typ) + ', with 80% of days ' + (sd === 'low' ? 'under ' : 'above ') + f2(e.b80) + '.'; });
+    var lab = z.done ? 'realized' : 'so far';
+    return '<div class="rng"><div class="rng-top"><span>Expected vs realized range · ' + esc(z.day) + '</span><span>' + (z.done ? 'session complete' : 'live · as of ' + esc(z.asof) + ' ET') + ' · last ' + f2(z.last) + '</span></div>' + sv +
+      '<div class="rng-key"><span><i style="border-color:#6fcf97"></i>expected high</span><span><i style="border-color:#eb5757"></i>expected low</span><span><i style="border-color:rgba(201,162,39,.5);border-style:dotted"></i>wide day</span><span><i style="border-color:#e8e6e3;border-style:solid"></i>' + lab + ' high / low</span></div>' +
+      '<div class="rng-cells"><div><i>Assumed low' + (at ? ' · ' + hm(at[0] + 15) : '') + '</i><b class="dn">' + f2(at ? at[6] : last[6]) + '</b>wide ' + f2(at ? at[8] : last[8]) + '</div><div><i>Low ' + lab + '</i><b>' + f2(z.lo) + '</b>&nbsp;</div>' +
+      '<div class="r"><i>High ' + lab + '</i><b>' + f2(z.hi) + '</b>&nbsp;</div><div class="r"><i>Assumed high' + (at ? ' · ' + hm(at[0] + 15) : '') + '</i><b class="up">' + f2(at ? at[5] : last[5]) + '</b>wide ' + f2(at ? at[7] : last[7]) + '</div></div>' +
+      '<p class="rng-note">' + esc(t) + '</p></div>';
   }
   function renderAnalysis(S) {
     var el = $('anWrap'), A = S && S.analysis, R = (S && S.ranges) || {}, P = (S && S.positions) || [];
     if (!A) { el.innerHTML = '<div class="empty">The first note is written at 09:00 ET on the next trading day.</div>'; return; }
-    var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), stale = (A.asof || '').slice(0, 10) !== today;
-    var byTk = {}; (A.positions || []).forEach(function (p) { byTk[p.tk] = p; });
-    var live = {}, order = []; P.slice().sort(function (a, b) { return (b.pnl || 0) - (a.pnl || 0); }).forEach(function (p) { if (!live[p.base]) { live[p.base] = p; order.push(p.base); } });
-    var h = '<div class="dateline"><span>' + esc(A.date) + ' · written ' + esc(A.time) + ' ET</span><span>' + order.length + ' of ' + (S.slots || A.slots) + ' slots held</span></div>';
-    if (stale) h += '<p class="closed-note">This note was written on ' + esc(A.date) + '. The next one arrives at 09:00 ET; the expected ranges below still follow the latest session.</p>';
-    // the market
+    var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), isToday = (A.asof || '').slice(0, 10) === today;
+    var live = {}; P.forEach(function (p) { if (!live[p.base]) live[p.base] = p; });
+    var NP = (A.positions || []).slice().sort(function (a, b) { return b.pnl - a.pnl; }), inNote = {};
+    NP.forEach(function (p) { inNote[p.tk] = true; });
+    var extra = isToday ? Object.keys(live).filter(function (t) { return !inNote[t]; }) : [];
+    var h = '<div class="dateline"><span>' + esc(A.date) + ' · written ' + esc(A.time) + ' ET</span><span>' + NP.length + ' of ' + (A.slots || S.slots) + ' slots held at the note</span></div>';
+    if (!isToday) h += '<p class="closed-note">The latest note, from ' + esc(A.date) + '. The next one is written at 09:00 ET on the next trading day; until then each chart shows that session in full, the model’s assumed range against what the day realized.</p>';
     h += '<div class="essay"><h3>The market</h3><p class="dropcap">' + esc(A.market) + '</p><div class="mkt-grid"><div class="scroll"><table class="mini"><thead><tr><th>Sector</th><th>Daily</th><th>Weekly</th><th class="r">5 days</th><th class="r">1 month</th></tr></thead><tbody>' +
       (A.sectors || []).map(function (s) { return '<tr><td class="' + (s.mine ? 'mine' : '') + '">' + esc(s.name) + (s.mine ? ' ·' : '') + '</td><td class="' + (s.d === 'up' ? 'up' : 'dn') + '">' + esc(s.d) + '</td><td class="' + (s.w === 'up' ? 'up' : 'dn') + '">' + esc(s.w) + '</td><td class="r ' + cls(s.r5) + '">' + pct(s.r5) + '</td><td class="r ' + cls(s.r21) + '">' + pct(s.r21) + '</td></tr>'; }).join('') +
       '</tbody></table></div><div><h3>Calendar</h3><ul class="side-list">' + ((A.calendar || []).length ? A.calendar.map(function (e) { return '<li class="' + (e.impact === 'High' && !/auction/i.test(e.title) ? 'dn' : '') + '">' + esc(e.t) + ' · ' + esc(e.title) + (e.prev ? '<small>previous ' + esc(e.prev) + '</small>' : '') + '</li>'; }).join('') : '<li>No high-impact US releases.</li>') +
       '</ul>' + ((A.headlines || []).length ? '<h3 style="margin-top:20px">Headlines</h3><ul class="side-list">' + A.headlines.map(function (n) { return '<li>' + esc(n.title) + (n.read ? '<small>' + esc(n.read) + '</small>' : '') + '</li>'; }).join('') + '</ul>' : '') + '</div></div></div>';
-    // the book
-    var pn = order.map(function (t) { return live[t].pnl || 0; }), avg = pn.length ? pn.reduce(function (a, b) { return a + b; }, 0) / pn.length : 0;
-    var intro = order.length ? 'The book holds ' + order.length + ' position' + (order.length > 1 ? 's' : '') + ', averaging ' + pct(avg) + ' since entry' +
-      (order.length > 1 ? ', led by ' + order[0] + ' (' + pct(live[order[0]].pnl) + ') with ' + order[order.length - 1] + ' (' + pct(live[order[order.length - 1]].pnl) + ') the weakest' : '') +
-      '. Every exit is set by rule; what follows explains each holding, what would confirm it, and what would end it.' : 'The book is flat: no position is open.';
+    var pn = NP.map(function (p) { return p.pnl || 0; }), avg = pn.length ? pn.reduce(function (a, b) { return a + b; }, 0) / pn.length : 0;
+    var intro = NP.length ? 'At the note the book held ' + NP.length + ' position' + (NP.length > 1 ? 's' : '') + ', averaging ' + pct(avg) + ' since entry' +
+      (NP.length > 1 ? ', led by ' + NP[0].tk + ' (' + pct(NP[0].pnl) + ') with ' + NP[NP.length - 1].tk + ' (' + pct(NP[NP.length - 1].pnl) + ') the weakest' : '') +
+      '. Every exit is set by rule; what follows explains each holding, what would confirm it, and what would end it.' : 'The book was flat at the note.';
     h += '<div class="essay"><h3>The book</h3><p>' + esc(intro) + '</p></div>';
-    order.forEach(function (t) {
-      var p = byTk[t], L = live[t];
-      h += '<article class="pos-art essay"><div class="pos-head"><button class="cur tk" style="text-decoration:none;min-height:0" data-tk="' + esc(t) + '">' + esc(t) + '</button><span class="dollar">$' + esc(t) + '</span><span class="pos-pnl ' + cls(L.pnl) + '">' + pct(L.pnl) + '</span></div>' +
-        '<div class="pos-meta">' + (p ? esc(p.sector) + ' · ' : '') + 'entry ' + esc(L.entry) + ' · stop ' + esc(L.stop) + (p ? ' on ' + (p.basis === 'hourly' ? 'an hourly' : 'a 15-minute') + ' close' : '') + ' · best ' + pct(L.peak) + (L.selling ? ' · <span class="dn">sells at the next open</span>' : '') + '</div>';
-      if (p) { var rd = p.read; h += '<div class="read">15-minute ' + rd.t15 + ' · hourly ' + rd.t1h + ' · daily ' + rd.td + (p.etf ? ' · ' + esc(p.etf) + ' ' + rd.sec_d + ' daily, ' + rd.sec_w + ' weekly' : '') + ' · volatility ' + rd.vol + ' (' + rd.vol_pct + 'th percentile)' + (rd.earnings ? ' · earnings ' + esc(rd.earnings) : '') + '</div>'; }
+    NP.concat(extra.map(function (t) { return null; })).forEach(function (p, k) {
+      var t = p ? p.tk : extra[k - NP.length], L = live[t];
+      var now = L ? '<span class="pos-pnl ' + cls(L.pnl) + '">' + pct(L.pnl) + '</span>' : '<span class="pos-pnl" style="color:var(--muted);font-size:20px">closed</span>';
+      h += '<article class="pos-art essay"><div class="pos-head"><button class="cur tk" style="text-decoration:none;min-height:0" data-tk="' + esc(t) + '">' + esc(t) + '</button><span class="dollar">$' + esc(t) + '</span>' + now + '</div>';
+      if (p) {
+        h += '<div class="pos-meta">' + esc(p.sector) + ' · entry ' + f2(p.entry) + ' · stop ' + f2(p.stop) + ' on ' + (p.basis === 'hourly' ? 'an hourly' : 'a 15-minute') + ' close · ' + pct(p.pnl) + ' at the note, best ' + pct(p.peak) +
+          (L && !isToday ? ' · now ' + pct(L.pnl) + ', stop ' + esc(L.stop) : '') + (L && L.selling ? ' · <span class="dn">sells at the next open</span>' : '') + '</div>';
+        var rd = p.read; h += '<div class="read">15-minute ' + rd.t15 + ' · hourly ' + rd.t1h + ' · daily ' + rd.td + (p.etf ? ' · ' + esc(p.etf) + ' ' + rd.sec_d + ' daily, ' + rd.sec_w + ' weekly' : '') + ' · volatility ' + rd.vol + ' (' + rd.vol_pct + 'th percentile)' + (rd.earnings ? ' · earnings ' + esc(rd.earnings) : '') + '</div>';
+      } else h += '<div class="pos-meta">entry ' + esc(L.entry) + ' · stop ' + esc(L.stop) + ' · best ' + pct(L.peak) + '</div>';
       h += rangeBlock(R[t]);
       if (p) {
         h += '<p><span class="lead">Why we hold.</span>' + esc(p.why) + '</p><p><span class="lead">What we want to see.</span>' + esc(p.want) + '</p><p><span class="lead">Why it would fail.</span>' + esc(p.fail) + '</p>';
-        var c = p.counts || {};
-        var NW = (p.news || []).filter(function (n) { return n.pub !== 'sector'; });
+        var c = p.counts || {}, NW = (p.news || []).filter(function (n) { return n.pub !== 'sector'; });
         if (NW.length) h += '<ul class="news" aria-label="Recent news on ' + esc(t) + '">' + NW.map(function (n) {
           var head = n.url ? '<a href="' + esc(n.url) + '" target="_blank" rel="noopener">' + esc(n.title) + '</a>' : esc(n.title);
           return '<li class="' + (n.sent === 'positive' ? 'pos' : n.sent === 'negative' ? 'neg' : '') + '">' + head + '<small>' + esc(n.t) + (n.pub ? ' · ' + esc(n.pub) : '') + (n.why ? ' — ' + esc(n.why) : '') + '</small></li>';
         }).join('') + '</ul><div class="read">Five-day coverage: ' + (c.pos || 0) + ' positive, ' + (c.neg || 0) + ' negative, ' + (c.neu || 0) + ' neutral.</div>';
-      } else h += '<p class="closed-note">Opened after this morning’s note; its write-up arrives with tomorrow’s.</p>';
+      } else h += '<p class="closed-note">Opened after this morning’s note; its write-up arrives with the next one.</p>';
       h += '</article>';
     });
-    var gone = (A.positions || []).filter(function (p) { return !live[p.tk]; }).map(function (p) { return p.tk; });
-    if (gone.length && !stale) h += '<p class="closed-note">Closed since the note: ' + gone.map(esc).join(', ') + '.</p>';
-    h += '<p class="note">Rules decide every buy and sell; this note is context. Expected ranges come from a volatility forecast and refresh every 15 minutes with the session’s extremes.</p>';
+    h += '<p class="note">Rules decide every buy and sell; this note is context. The expected high is the session low so far plus the day’s range budget (a volatility forecast) and the expected low is the high so far minus it, so both move as new extremes print.</p>';
     el.innerHTML = h;
   }
   var HC = null, LH = null, VS = 'spy';
