@@ -58,4 +58,7 @@ Oct 25 batch (xs/batch_oct25.py, xs/lod_hod.py, xs/max_pain.py):
 - Correlation caps (xs/sector_cap.py): CANDIDATE 'max 1 semiconductor at a time': +59.6/-10, +31.4/-16, 2019-26 +41.3/-22, 2026 +47.8/-9
   (live +55.1/-11, +28.5/-16, +38.5/-16, +35.6/-10); better in 5 of 8 years, but the full-run drawdown is deeper (-22 vs -16). Max 2 per GICS sector: split halves.
   Max 1 per sector: much worse.
+- Correlation rules with a reason (xs/corr_rules.py) all rejected: skip crowded flips (corr > 0.6/0.7/0.8 with 1-2 open), skip after a correlated
+  peer lost (much worse: 2022-26 +9..17%), sell correlated peers when one loses, prefer flips whose peers are winning, correlation-aware sizing.
+  => the 'max 1 chip' result was luck, not a correlation effect. Not adopted.
 
