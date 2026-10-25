@@ -531,8 +531,10 @@ def write_site_snapshot(rows, meta):
     except Exception as e: print(f'  ! site history: {str(e)[:80]}')
     snap = dict(asof=t.isoformat(), asof_ms=int(pd.Timestamp(t, tz=ET).timestamp() * 1000), market_open=t.dayofweek < 5 and RTH0 <= m < RTH1,
                 slots=meta['slots'], cutoff=CUT2, positions=pos, signals=sig, watch=watch, history=hist, ranges=site_ranges(rows))
-    try: snap['analysis'] = json.load(open(f'{LIVE}/analysis.json'))                 # the 09:00 write-up (frozen); ranges above refresh every scan
-    except Exception: snap['analysis'] = None
+    snap['analysis'] = None                                                         # the 09:00 write-up (frozen); ranges above refresh every scan
+    for fa in (f'{LIVE}/analysis.json', 'live_data/analysis.json'):                # live copy, else the seed shipped in git
+        try: snap['analysis'] = json.load(open(fa)); break
+        except Exception: pass
     tmp = f'{LIVE}/site_snapshot.json.tmp'; json.dump(snap, open(tmp, 'w')); os.replace(tmp, f'{LIVE}/site_snapshot.json')
 
 # ================================================================ cards
