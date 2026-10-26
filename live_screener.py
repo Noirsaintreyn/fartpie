@@ -616,11 +616,28 @@ def refresh_site_prices():
     S['asof'] = t.isoformat(); S['asof_ms'] = int(pd.Timestamp(t, tz=ET).timestamp() * 1000); S['market_open'] = t.dayofweek < 5 and RTH0 <= m < RTH1
     tmp = f + '.tmp'; json.dump(S, open(tmp, 'w')); os.replace(tmp, f)
 
+def refresh_site_ext():
+    """outside the session: add premarket / after-hours prices to the website's open positions (the close-based P&L stays the official one)"""
+    f = f'{LIVE}/site_snapshot.json'
+    try: S = json.load(open(f))
+    except Exception: return
+    ch = False
+    for p in S.get('positions', []):
+        if p.get('selling'): continue
+        e = ext_px(p['base'])
+        if not e: continue
+        p['ext'], p['ext_lab'], p['ext_pnl'] = f'{e[0]:.2f}', e[1], round((e[0] / float(p['entry']) - 1) * 100, 2); ch = True
+    if not ch: return
+    t = now_et(); S['ext_asof'] = t.isoformat()
+    tmp = f + '.tmp'; json.dump(S, open(tmp, 'w')); os.replace(tmp, f)
+
 def _site_refresher():
+    k = 0
     while True:
         try:
-            t = now_et(); m = t.hour * 60 + t.minute
+            t = now_et(); m = t.hour * 60 + t.minute; k += 1
             if t.dayofweek < 5 and RTH0 <= m < RTH1 + 5 and os.getenv('SITE_SNAPSHOT', '1') == '1': refresh_site_prices()
+            elif t.dayofweek < 5 and (240 <= m < RTH0 or RTH1 + 5 <= m < 1200) and k % 5 == 0 and os.getenv('EXT_PX', '1') == '1': refresh_site_ext()
         except Exception as e: print(f'  ! site refresh: {str(e)[:80]}')
         time.sleep(60)
 
@@ -738,6 +755,10 @@ def positions_card(rows, meta, path, title='Open positions', hm=False):
     fig.text(0.045, 1 - 1.18 / H_in, f"as of {asof:%a %b %d %H:%M} ET · Vector screener", fontsize=9, color=MUT)
     if P:
         tot = np.mean([r['pnl'] for r in P]); best = P[0]; worst = P[-1]
+        EX = [r for r in P if r.get('ext') and r['action'] != 'SELL']
+        if EX:
+            ext_tot = np.mean([r['ext_pnl'] if r.get('ext') and r['action'] != 'SELL' else r['pnl'] for r in P])
+            fig.text(0.045 + 0.012 + 0.098, 1 - 2.05 / H_in, f"{EX[0]['ext_lab']}\n{ext_tot:+.1%}", fontsize=7.5, color=GOOD if ext_tot >= 0 else CRIT, va='bottom', linespacing=1.1)
         for k, (h, v, cc) in enumerate((('AVG OPEN P&L', f'{tot:+.1%}', GOOD if tot >= 0 else CRIT), ('BEST', f"{best['ticker']} {best['pnl']:+.1%}", GOOD if best['pnl'] >= 0 else CRIT),
                                         ('WEAKEST', f"{worst['ticker']} {worst['pnl']:+.1%}", GOOD if worst['pnl'] >= 0 else CRIT))):
             x0 = 0.045 + k * 0.205
@@ -754,7 +775,9 @@ def positions_card(rows, meta, path, title='Open positions', hm=False):
             ax.text(0, 1.24, r['ticker'], transform=ax.transAxes, fontsize=13, fontweight='bold', va='bottom')
             ax.text(1, 1.24, f"{r['pnl']:+.1%}", transform=ax.transAxes, fontsize=13, fontweight='bold', va='bottom', ha='right', color=GOOD if r['pnl'] >= 0 else CRIT)
             cu = _room(r); how = 'SELL at next open' if r['action'] == 'SELL' else f"{'1h' if r['h1'] else '15m'} stop · {cu:.1%} room"
-            ax.text(0, 1.06, f"{r['last']:.2f} now  ·  {how}", transform=ax.transAxes, fontsize=8, va='bottom', color=CRIT if r['action'] == 'SELL' else MUT)
+            if r.get('ext') and r['action'] != 'SELL':
+                ax.text(0, 1.06, f"{r['last']:.2f} close  ·  {'AH' if r['ext_lab'] == 'after hours' else 'pre'} {r['ext']:.2f} ({r['ext_pnl']:+.1%})  ·  {how}", transform=ax.transAxes, fontsize=7, va='bottom', color=MUT)
+            else: ax.text(0, 1.06, f"{r['last']:.2f} now  ·  {how}", transform=ax.transAxes, fontsize=8, va='bottom', color=CRIT if r['action'] == 'SELL' else MUT)
             # room meter: 0..6% above the stop
             ax.add_patch(plt.Rectangle((0, -0.17), 1, 0.035, transform=ax.transAxes, color=GRID, clip_on=False, lw=0))
             fr = float(np.clip(cu / .06, 0, 1)) if np.isfinite(cu) else 0
@@ -769,6 +792,9 @@ def mark_live(rows, fetch):
         px = live_px(r['base']) if fetch else None
         if px: r['last'], r['live'] = px, True
         r['pnl'] = r['last'] / r['px'] - 1
+        if outside_rth() and os.getenv('EXT_PX', '1') == '1':                  # premarket / after-hours mark, shown beside the close
+            e = ext_px(r['base'])
+            if e: r['ext'], r['ext_lab'], r['ext_pnl'] = e[0], e[1], e[0] / r['px'] - 1
     return rows
 
 def spy_15m(fetch=True, tk='SPY'):
@@ -1282,6 +1308,22 @@ def live_px(tk):
         if len(y): return float(y.Close.iloc[-1])
     except Exception: pass
     return None
+
+def ext_px(tk):
+    """latest extended-hours trade (premarket / after hours) from yfinance 1m bars with prepost: (price, 'premarket' | 'after hours') or None.
+    Context only: the screener marks, stops and trades on regular-hours bars."""
+    try:
+        import yfinance as yf
+        y = yf.Ticker(YF_SYM.get(tk, tk)).history(period='2d', interval='1m', prepost=True)
+        if not len(y): return None
+        t = y.index[-1].tz_convert(ET); m = t.hour * 60 + t.minute
+        if RTH0 <= m < RTH1: return None
+        return float(y.Close.iloc[-1]), ('premarket' if m < RTH0 else 'after hours')
+    except Exception: return None
+
+def outside_rth(t=None):
+    t = t or now_et(); m = t.hour * 60 + t.minute
+    return not (t.dayofweek < 5 and RTH0 <= m < RTH1)
 
 def check_milestone(r, px, st):
     """post once each time an open position makes a new whole-percent high (+1%, +2%, ...), with the profit-lock level"""

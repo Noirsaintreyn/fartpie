@@ -286,12 +286,13 @@ body,button,input,select,table,th,td{font-style:italic}
     $('sdot').style.background = S.market_open ? 'var(--up)' : 'var(--muted)';
     var P = S.positions || [], used = P.length, slots = S.slots || 8;
     var avg = P.length ? P.reduce(function (a, p) { return a + (p.pnl || 0); }, 0) / P.length : null;
-    $('scrTiles').innerHTML = tile('Slots', used + ' / ' + slots) + tile('Invested', Math.round(used / slots * 100) + '%') + tile('Avg open P&L', avg == null ? '–' : pct(avg), '', cls(avg)) + tile('Options cutoff', '≥ ' + (S.cutoff || 1.5), '', 'gold');
+    var EX = P.filter(function (p) { return p.ext != null && !p.selling; }), xavg = EX.length ? P.reduce(function (a, p) { return a + (p.ext != null && !p.selling ? p.ext_pnl : (p.pnl || 0)); }, 0) / P.length : null;
+    $('scrTiles').innerHTML = tile('Slots', used + ' / ' + slots) + tile('Invested', Math.round(used / slots * 100) + '%') + tile('Avg open P&L', avg == null ? '–' : pct(avg), xavg == null ? '' : EX[0].ext_lab + ' ' + pct(xavg), cls(avg)) + tile('Options cutoff', '≥ ' + (S.cutoff || 1.5), '', 'gold');
     $('posEmpty').hidden = P.length > 0;
     P = P.slice().sort(function (a, b) { return (b.pnl == null ? -1e9 : b.pnl) - (a.pnl == null ? -1e9 : a.pnl); });   // best return on top
     $('posBody').innerHTML = P.map(function (p) {
       var lockd = parseFloat(p.stop) > parseFloat(p.entry);   // stop above entry = profit locked in
-      return '<tr><td><button class="tk" data-tk="' + esc(p.base) + '">' + esc(p.name) + '</button>' + (p.selling ? ' <span class="dn" style="font-size:11px;letter-spacing:.08em">SELL SIGNAL · OUT AT THIS BAR&rsquo;S OPEN</span>' : '') + '</td><td>' + esc(p.entry) + '</td><td class="' + (lockd ? 'inprof' : 'dn') + '"' + (lockd ? ' title="stop is above entry: profit locked"' : '') + '>' + esc(p.stop) + '</td><td>' + esc(p.last) + '</td><td class="r ' + cls(p.pnl) + '" style="font-weight:600">' + pct(p.pnl) + '</td><td class="r">' + pct(p.peak) + '</td></tr>';
+      return '<tr><td><button class="tk" data-tk="' + esc(p.base) + '">' + esc(p.name) + '</button>' + (p.selling ? ' <span class="dn" style="font-size:11px;letter-spacing:.08em">SELL SIGNAL · OUT AT THIS BAR&rsquo;S OPEN</span>' : '') + '</td><td>' + esc(p.entry) + '</td><td class="' + (lockd ? 'inprof' : 'dn') + '"' + (lockd ? ' title="stop is above entry: profit locked"' : '') + '>' + esc(p.stop) + '</td><td>' + esc(p.last) + (p.ext != null && !p.selling ? '<br><small style="color:var(--muted)">' + esc(p.ext_lab) + ' ' + esc(p.ext) + '</small>' : '') + '</td><td class="r ' + cls(p.pnl) + '" style="font-weight:600">' + pct(p.pnl) + (p.ext != null && !p.selling ? '<br><small class="' + cls(p.ext_pnl) + '" style="font-weight:400">' + pct(p.ext_pnl) + '</small>' : '') + '</td><td class="r">' + pct(p.peak) + '</td></tr>';
     }).join('');
     var G = S.signals || [];
     $('sigList').innerHTML = G.length ? G.map(function (s) {
