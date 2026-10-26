@@ -462,17 +462,28 @@ async def sync_commands():
     return await tree.sync()
 
 
+_warned = {'t': 0.0}
+async def notify_owner(text):
+    """post at most once every 6 hours to the screener channel"""
+    import time as _t
+    if _t.time() - _warned['t'] < 6 * 3600: return
+    ch = client.get_channel(int(os.environ.get('VECTOR_CHANNEL_ID', '0').split('#')[0].strip() or 0))
+    if ch: await ch.send(text); _warned['t'] = _t.time()
+
+
 async def command_guard():
     """Every 5 min: if Discord's registered command list is missing any of ours (another bot copy with older code
     overwrote it), put ours back. Logs it so the culprit is visible."""
     ours = {c.name for c in tree.get_commands()}
     while True:
-        await asyncio.sleep(300)
+        await asyncio.sleep(60)                                       # Oct 26: every minute (was 5) - commands kept vanishing between checks
         try:
             guild = os.environ.get('DISCORD_GUILD_ID', '').split('#')[0].strip()
             have = {c.name for c in await tree.fetch_commands(guild=discord.Object(id=int(guild)) if guild else None)}
             if ours - have:
-                print(f'commands missing on Discord {sorted(ours - have)} - another bot copy overwrote them; re-registering')
+                print(f'commands missing on Discord {sorted(ours - have)}; the other bot copy registered {sorted(have)} - re-registering')
+                try: await notify_owner(f"⚠️ Another copy of the bot overwrote the slash commands (it registered: {', '.join(sorted(have)) or 'nothing'}). Restored /{', /'.join(sorted(ours - have))}. Find and stop the other copy (old Mac launchd job, another Render service, or another computer using the same bot token).")
+                except Exception: pass
                 await sync_commands()
         except Exception as e: print('command guard:', str(e)[:120])
 
