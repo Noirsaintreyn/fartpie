@@ -243,7 +243,7 @@ async def hm_cmd(inter: discord.Interaction):
     await _screener_card(inter, ['--hm-card', out], out)
 
 
-@tree.command(name='hh', description='Honorable-mention history: every flip skipped for full slots since the start, as if traded, vs the real book')
+@tree.command(name='hh', description='Honorable-mention history: every flip skipped for full slots, as if traded, vs the book')
 async def hh_cmd(inter: discord.Interaction):
     await inter.response.defer(thinking=True)
     out = os.path.join(ROOT, 'live', f'hh_{inter.id}.png')
