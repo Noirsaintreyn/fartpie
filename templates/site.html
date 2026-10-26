@@ -324,7 +324,7 @@ body,button,input,select,table,th,td{font-style:italic}
     var B = z.bars.filter(function (b) { return b[0] >= 420; }); if (!B.length) B = z.bars;
     var at = z.note_i != null ? z.bars[z.note_i] : null, last = z.bars[z.bars.length - 1], live = !z.done;
     var W = Math.max(320, Math.min(820, window.innerWidth - 80)), H = W < 600 ? 200 : 230, L = 8, R = W < 600 ? 84 : 92, T = 12, Bt = 26, m0 = B[0][0], m1 = 960;
-    var lo = Infinity, hi = -Infinity; B.forEach(function (b) { lo = Math.min(lo, b[3], b[6]); hi = Math.max(hi, b[2], b[5]); });
+    var lo = Infinity, hi = -Infinity; B.forEach(function (b) { lo = Math.min(lo, b[3], b[6]); hi = Math.max(hi, b[2], b[5]); if (b.length > 9) { lo = Math.min(lo, b[11]); hi = Math.max(hi, b[9]); } });
     var ref = [at ? at[5] : null, at ? at[6] : null, last[5], last[6]]; ref.forEach(function (v) { if (v != null) { lo = Math.min(lo, v); hi = Math.max(hi, v); } });
     var pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
     var X = function (m) { return L + (m - m0) / (m1 - m0) * (W - L - R); }, Y = function (p) { return T + (hi - p) / (hi - lo) * (H - T - Bt); }, bw = (W - L - R) / ((m1 - m0) / 15);
@@ -335,7 +335,11 @@ body,button,input,select,table,th,td{font-style:italic}
       var d = ''; B.forEach(function (b, i) { var x0 = X(b[0]), x1 = X(b[0] + 15), y = Y(b[k]); d += (i ? 'L' : 'M') + x0.toFixed(1) + ' ' + y.toFixed(1) + 'L' + x1.toFixed(1) + ' ' + y.toFixed(1); });
       return '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + wd + '" stroke-dasharray="' + dash + '" vector-effect="non-scaling-stroke"/>';
     };
-    sv += step(7, 'rgba(111,207,151,.35)', '2 4', 1) + step(8, 'rgba(235,87,87,.35)', '2 4', 1) + step(5, '#6fcf97', '6 4', 1.6) + step(6, '#eb5757', '6 4', 1.6);
+    var step2 = function (k, col, wd) {
+      var d = '', i = 0; B.forEach(function (b) { if (b.length <= k) return; var x0 = X(b[0]), x1 = X(b[0] + 15), y = Y(b[k]); d += (i++ ? 'L' : 'M') + x0.toFixed(1) + ' ' + y.toFixed(1) + 'L' + x1.toFixed(1) + ' ' + y.toFixed(1); });
+      return d ? '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + wd + '" vector-effect="non-scaling-stroke"/>' : '';
+    };
+    sv += step(7, 'rgba(111,207,151,.35)', '2 4', 1) + step(8, 'rgba(235,87,87,.35)', '2 4', 1) + step(5, '#6fcf97', '6 4', 1.6) + step(6, '#eb5757', '6 4', 1.6) + step2(9, 'rgba(111,207,151,.75)', 1.2) + step2(11, 'rgba(235,87,87,.75)', 1.2);
     B.forEach(function (b) { var x = X(b[0]) + bw / 2, up = b[4] >= b[1], c = b[0] < 570 ? 'rgba(201,162,39,.45)' : (up ? '#d4ad4f' : '#8a7536');
       sv += '<line x1="' + x + '" x2="' + x + '" y1="' + Y(b[2]) + '" y2="' + Y(b[3]) + '" stroke="' + c + '" vector-effect="non-scaling-stroke"/><rect x="' + (x - bw * 0.3) + '" width="' + (bw * 0.6) + '" y="' + Y(Math.max(b[1], b[4])) + '" height="' + Math.max(1, Math.abs(Y(b[1]) - Y(b[4]))) + '" fill="' + c + '"/>'; });
     var hl = function (v, lab, col) { if (v == null) return ''; var y = Y(v); return '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y + '" y2="' + y + '" stroke="' + col + '" stroke-width="1" vector-effect="non-scaling-stroke"/><text x="' + (W - R + 6) + '" y="' + (y + 4) + '" fill="' + col + '" font-size="11">' + lab + ' ' + f2(v) + '</text>'; };
@@ -350,7 +354,10 @@ body,button,input,select,table,th,td{font-style:italic}
       if (live) t += 'As the extremes move, the expected high now sits at ' + f2(last[5]) + ' and the expected low at ' + f2(last[6]) + '.';
       else t += 'The dashed lines show how the expectation adapted as each new extreme printed.';
     } else t += 'Before the open the levels follow the premarket high and low.';
-    ['low', 'high'].forEach(function (sd) { var e = z[sd + '_in']; if (e) t += ' The ' + sd + ' looks to be in (it holds about ' + e.p + '% of the time from here); the other side projects to ' + f2(e.typ) + ', with 80% of days ' + (sd === 'low' ? 'under ' : 'above ') + f2(e.b80) + '.'; });
+    var RB = z.bars.filter(function (b) { return b.length > 9; }), lb = RB.length ? RB[RB.length - 1] : null;
+    var CX = { both: 'the 15-minute and hourly vectors both flipped after it', '15m': 'the 15-minute vector flipped after it', '1h': 'the hourly vector flipped after it', old: 'set 45+ minutes ago, no vector flip yet', fresh: 'only just printed' };
+    if (lb && z.ctx) t += ' ' + (z.done ? 'At the close the' : 'Now the') + ' low looked ' + lb[13] + '% likely to hold (' + CX[z.ctx[0]] + ') and the high ' + lb[14] + '% (' + CX[z.ctx[1]] + '). Adjusted for time of day and the vectors, the high projects to ' + f2(lb[9]) + ' (90% of days under ' + f2(lb[10]) + ') and the low to ' + f2(lb[11]) + ' (90% above ' + f2(lb[12]) + ').';
+    var wk = z.week; if (wk) t += ' This week: range ' + f2(wk.lo) + '–' + f2(wk.hi) + ', ' + wk.used + '% of a ' + wk.budget.toFixed(1) + '% weekly budget; week low ' + wk.low_in + '% likely in' + (wk.up ? ' (hourly vector flipped up after it)' : '') + ', week high ' + wk.high_in + '%' + (wk.dn ? ' (hourly flipped down after it)' : '') + '; projected week high ' + f2(wk.proj_hi) + ' (90% under ' + f2(wk.proj_hi90) + '), low ' + f2(wk.proj_lo) + ' (90% above ' + f2(wk.proj_lo90) + ').';
     var lab = z.done ? 'realized' : 'so far', pre = z.lo == null;
     var PB = z.bars.filter(function (b) { return b[0] < 570; });
     var lo = pre ? (PB.length ? Math.min.apply(null, PB.map(function (b) { return b[3]; })) : null) : z.lo;
@@ -360,7 +367,7 @@ body,button,input,select,table,th,td{font-style:italic}
     var aL = at ? at[6] : last[6], aH = at ? at[5] : last[5], aLw = at ? at[8] : last[8], aHw = at ? at[7] : last[7], tm = at ? ' · ' + hm(at[0] + 15) : '';
     var lab2 = pre ? 'premarket' : lab;
     return '<div class="rng"><div class="rng-top"><span>Expected vs realized range · ' + esc(z.day) + '</span><span>' + (z.done ? 'session complete' : 'live · as of ' + esc(z.asof) + ' ET') + ' · last ' + f2(z.last) + '</span></div>' + sv +
-      '<div class="rng-key"><span><i style="border-color:#6fcf97"></i>expected high</span><span><i style="border-color:#eb5757"></i>expected low</span><span><i style="border-color:rgba(201,162,39,.5);border-style:dotted"></i>wide day</span><span><i style="border-color:#e8e6e3;border-style:solid"></i>' + lab + ' high / low</span></div>' +
+      '<div class="rng-key"><span><i style="border-color:#6fcf97"></i>expected high</span><span><i style="border-color:#eb5757"></i>expected low</span><span><i style="border-color:rgba(201,162,39,.5);border-style:dotted"></i>wide day</span><span><i style="border-color:rgba(111,207,151,.75);border-style:solid"></i>projected (time of day + vector)</span><span><i style="border-color:#e8e6e3;border-style:solid"></i>' + lab + ' high / low</span></div>' +
       '<div class="rng-cells rng7">' +
         '<div><i>Assumed low' + tm + '</i><b class="dn">' + f2(aL) + '</b>wide ' + f2(aLw) + '</div>' +
         '<div><i>Low ' + lab2 + '</i><b>' + f2(lo) + '</b>&nbsp;</div>' +
@@ -410,7 +417,7 @@ body,button,input,select,table,th,td{font-style:italic}
       } else h += '<p class="closed-note">Opened after this morning’s note; its write-up arrives with the next one.</p>';
       h += '</article>';
     });
-    h += '<p class="note">Rules decide every buy and sell; this note is context. The expected high is the session low so far plus the day’s range budget (a volatility forecast) and the expected low is the high so far minus it, so both move as new extremes print.</p>';
+    h += '<p class="note">Rules decide every buy and sell; this note is context. The expected high is the session low so far plus the day’s range budget (a volatility forecast) and the expected low is the high so far minus it, so both move as new extremes print. The solid projected lines adjust that for the time of day and for whether the vector has flipped after the extreme (a flip after the low makes it 75–90% likely the low of day is in).</p>';
     el.innerHTML = h;
   }
   var HC = null, LH = null, VS = 'spy';

@@ -491,6 +491,41 @@ def scan(args):
     return out, meta
 
 
+# Oct 26 2026 (xs/range_vector.py, 55 names 2019-26, held out of sample): the extreme so far is 'confirmed' when the vector flips after it.
+# key = time bucket (0 10-11, 1 11-13, 2 13-15, 3 15-16) + context -> (P the extreme holds, remaining move beyond the other extreme so far,
+# median and 90th pct, in budget units). Context: 'both' 15m+1h flipped after it, '15m', '1h', 'old' set 45m+ ago, 'fresh'.
+RNG_Q = {'0both': (.90, .17, .69), '015m': (.75, .15, .68), '01h': (.83, .17, .65), '0old': (.61, .07, .56), '0fresh': (.34, 0, .49),
+         '1both': (.94, .06, .48), '115m': (.87, .05, .45), '11h': (.88, .05, .44), '1old': (.69, 0, .34), '1fresh': (.25, 0, 0),
+         '2both': (.97, 0, .30), '215m': (.94, 0, .26), '21h': (.94, 0, .27), '2old': (.80, 0, .16), '2fresh': (.27, 0, 0),
+         '3both': (.99, 0, .16), '315m': (.98, 0, .13), '31h': (.98, 0, .13), '3old': (.89, 0, .04), '3fresh': (.36, 0, 0)}
+WK_Q = {(0, 0): (.33, .26, 1.04), (0, 1): (.48, .36, 1.12), (1, 0): (.44, .08, .76), (1, 1): (.68, .23, .92),     # (weekday, 1h flipped after
+        (2, 0): (.56, 0, .49), (2, 1): (.81, .11, .65), (3, 0): (.70, 0, .23), (3, 1): (.91, 0, .37)}            # the week's extreme day)
+def _tb(mm): return 0 if mm < 660 else 1 if mm < 780 else 2 if mm < 900 else 3
+
+def range_states(H):
+    """15m vector state per bar and the 1h state known at each 15m bar's close"""
+    V = vec(H); r15 = V.reg.values
+    try:
+        h1 = vec(resample_1h(H)); s = pd.DataFrame({'k': h1.dt + pd.Timedelta('1h'), 'r': h1.reg.values}).sort_values('k')
+        r1 = pd.merge_asof(pd.DataFrame({'t': H.dt + pd.Timedelta('15min')}), s, left_on='t', right_on='k', direction='backward').r.fillna(0).values
+    except Exception: r1 = np.zeros(len(H))
+    return r15, r1
+
+def week_range(H, D, r1):
+    """this week's range so far against a weekly HAR budget; is the week's low / high confirmed by a 1h flip on or after its day"""
+    wk = D.index.to_period('W'); Wk = D.groupby(wk).agg(h=('h', 'max'), l=('l', 'min'))
+    if len(Wk) < 30: return None
+    x = np.log(np.log(Wk.h / Wk.l).clip(lower=1e-5)); cur = wk[-1]; hist = x[Wk.index < cur]
+    b = 1.7 * float(np.exp(-0.6186 + 0.2939 * hist.iloc[-1] + 0.3661 * hist.iloc[-5:].mean() + 0.1783 * hist.iloc[-22:].mean()) / 1.665)
+    g = D[wk == cur]; lo, hi = float(g.l.min()), float(g.h.max()); dl, dh = g.l.idxmin(), g.h.idxmax(); dow = min(int(g.index[-1].dayofweek), 3)
+    t = H.dt.values; f1 = np.r_[False, (r1[1:] == 1) & (r1[:-1] != 1)]; f1d = np.r_[False, (r1[1:] == -1) & (r1[:-1] != -1)]
+    up = bool(r1[-1] == 1 and f1[t >= np.datetime64(dl)].any()); dn = bool(r1[-1] == -1 and f1d[t >= np.datetime64(dh)].any())
+    pl, qh, qh9 = WK_Q[(dow, int(up))]; ph, ql, ql9 = WK_Q[(dow, int(dn))]
+    r2 = lambda v: round(float(v), 2)
+    return dict(budget=round(b * 100, 2), lo=r2(lo), hi=r2(hi), low_in=round(pl * 100), high_in=round(ph * 100), up=up, dn=dn,
+                proj_hi=r2(hi * np.exp(qh * b)), proj_hi90=r2(hi * np.exp(qh9 * b)),
+                proj_lo=r2(lo * np.exp(-ql * b)), proj_lo90=r2(lo * np.exp(-ql9 * b)), used=round(np.log(hi / lo) / b * 100))
+
 def range_path(H, day, note_t=None):
     """one session's adaptive expected high / low, bar by bar (premarket from its own extremes, RTH from the RTH extremes so far):
     what the model assumed at each point vs what the day realized. Website Daily Analysis chart."""
@@ -502,17 +537,37 @@ def range_path(H, day, note_t=None):
     g = H[(H.dt.dt.normalize() == day) & (m < RTH1)]
     if not len(g): return None
     gm = (g.dt.dt.hour * 60 + g.dt.dt.minute).values
+    H = H.reset_index(drop=True); r15, r1 = range_states(H); ix = H.index[H.dt.isin(g.dt)].values; g15, g1 = r15[ix], r1[ix]
     bars, plo, phi, rlo, rhi, at = [], np.inf, -np.inf, np.inf, -np.inf, None
+    tl = th = None; fu15 = fd15 = fu1 = fd1 = -1; ctx = None
     for k, (mm, o, h, l, c) in enumerate(zip(gm, g.open.values, g.high.values, g.low.values, g.close.values)):
-        if mm < RTH0: plo, phi = min(plo, l), max(phi, h); lo, hi = plo, phi
-        else: rlo, rhi = min(rlo, l), max(rhi, h); lo, hi = rlo, rhi
         r2 = lambda v: round(float(v), 2)
-        bars.append([int(mm), r2(o), r2(h), r2(l), r2(c), r2(lo * (1 + b)), r2(hi * (1 - b)), r2(lo * (1 + w)), r2(hi * (1 - w))])
+        if mm < RTH0: plo, phi = min(plo, l), max(phi, h); lo, hi = plo, phi
+        else:
+            if l < rlo: rlo, tl = l, k
+            if h > rhi: rhi, th = h, k
+            lo, hi = rlo, rhi
+            pv15 = g15[k - 1] if k else 0; pv1 = g1[k - 1] if k else 0
+            if g15[k] == 1 and pv15 != 1: fu15 = k
+            if g15[k] == -1 and pv15 != -1: fd15 = k
+            if g1[k] == 1 and pv1 != 1: fu1 = k
+            if g1[k] == -1 and pv1 != -1: fd1 = k
+        row = [int(mm), r2(o), r2(h), r2(l), r2(c), r2(lo * (1 + b)), r2(hi * (1 - b)), r2(lo * (1 + w)), r2(hi * (1 - w))]
+        if mm >= RTH0:
+            def cx(s15, s1, f15, f1, t0):
+                a, z1 = s15 == 1 and f15 >= t0, s1 == 1 and f1 >= t0
+                return 'both' if a and z1 else '15m' if a else '1h' if z1 else ('old' if k - t0 >= 3 else 'fresh')
+            tb = _tb(mm + 15); cl = cx(g15[k], g1[k], fu15, fu1, tl); ch = cx(-g15[k], -g1[k], fd15, fd1, th)
+            pl, qh, qh9 = RNG_Q[f'{tb}{cl}']; ph, ql, ql9 = RNG_Q[f'{tb}{ch}']
+            row += [r2(hi * np.exp(qh * b)), r2(hi * np.exp(qh9 * b)), r2(lo * np.exp(-ql * b)), r2(lo * np.exp(-ql9 * b)), round(pl * 100), round(ph * 100)]
+            ctx = (cl, ch)
+        bars.append(row)
         if note_t is not None and mm + 15 <= note_t: at = k
     rth = [x for x in bars if x[0] >= RTH0]
     return dict(day=f'{day:%a %b %d}', budget=round(b * 100, 2), wide=round(w * 100, 2), bars=bars, note_i=at,
                 hi=max(x[2] for x in rth) if rth else None, lo=min(x[3] for x in rth) if rth else None,
-                done=bool(rth) and rth[-1][0] >= RTH1 - 15, last=bars[-1][4], asof=f"{(bars[-1][0] + 15) // 60}:{(bars[-1][0] + 15) % 60:02d}")
+                done=bool(rth) and rth[-1][0] >= RTH1 - 15, last=bars[-1][4], asof=f"{(bars[-1][0] + 15) // 60}:{(bars[-1][0] + 15) % 60:02d}",
+                ctx=ctx, week=week_range(H[H.dt < day + pd.Timedelta(days=1)], D[D.index <= day], r1[:int((H.dt < day + pd.Timedelta(days=1)).sum())]))
 
 def site_ranges(rows, meta, note=None):
     """expected-range charts for the note's names (+ anything held now), all on the note's session; live while that session runs"""
