@@ -211,7 +211,7 @@ async def _screener_text(inter, extra):
     if chunk: await inter.followup.send(chunk)
 
 
-@tree.command(name='pro', description="One stock: vector state, volatility regime, and whether today's high or low is in (with the projected other side)")
+@tree.command(name='pro', description="One stock: vector state, volatility regime, and whether today's high or low is in")
 @app_commands.describe(ticker='e.g. AAPL')
 async def pro_cmd(inter: discord.Interaction, ticker: str):
     await inter.response.defer(thinking=True)
