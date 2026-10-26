@@ -291,7 +291,7 @@ body,button,input,select,table,th,td{font-style:italic}
     P = P.slice().sort(function (a, b) { return (b.pnl == null ? -1e9 : b.pnl) - (a.pnl == null ? -1e9 : a.pnl); });   // best return on top
     $('posBody').innerHTML = P.map(function (p) {
       var lockd = parseFloat(p.stop) > parseFloat(p.entry);   // stop above entry = profit locked in
-      return '<tr><td><button class="tk" data-tk="' + esc(p.base) + '">' + esc(p.name) + '</button>' + (p.selling ? ' <span class="dn" style="font-size:11px;letter-spacing:.08em">SELLING AT NEXT OPEN</span>' : '') + '</td><td>' + esc(p.entry) + '</td><td class="' + (lockd ? 'inprof' : 'dn') + '"' + (lockd ? ' title="stop is above entry: profit locked"' : '') + '>' + esc(p.stop) + '</td><td>' + esc(p.last) + '</td><td class="r ' + cls(p.pnl) + '" style="font-weight:600">' + pct(p.pnl) + '</td><td class="r">' + pct(p.peak) + '</td></tr>';
+      return '<tr><td><button class="tk" data-tk="' + esc(p.base) + '">' + esc(p.name) + '</button>' + (p.selling ? ' <span class="dn" style="font-size:11px;letter-spacing:.08em">SELL SIGNAL · OUT AT THIS BAR&rsquo;S OPEN</span>' : '') + '</td><td>' + esc(p.entry) + '</td><td class="' + (lockd ? 'inprof' : 'dn') + '"' + (lockd ? ' title="stop is above entry: profit locked"' : '') + '>' + esc(p.stop) + '</td><td>' + esc(p.last) + '</td><td class="r ' + cls(p.pnl) + '" style="font-weight:600">' + pct(p.pnl) + '</td><td class="r">' + pct(p.peak) + '</td></tr>';
     }).join('');
     var G = S.signals || [];
     $('sigList').innerHTML = G.length ? G.map(function (s) {
