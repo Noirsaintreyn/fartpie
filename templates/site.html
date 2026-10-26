@@ -107,13 +107,14 @@ body,button,input,select,table,th,td{font-style:italic}
 .rng-cells{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;font-size:13px;color:var(--muted)}
 .rng-cells b{display:block;font-size:20px;font-weight:400;color:var(--white)}.rng-cells .r{text-align:right}
 .rng-cells i{display:block;font-size:12px;color:var(--muted)}
+.rng7{grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}.rng7 b{font-size:18px}.rng7 .mid{text-align:center;border-left:1px solid var(--line);border-right:1px solid var(--line)}
 .rng-note{font-size:15px;line-height:1.55;color:#cfcbc2;margin-top:12px}
 .news{list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:9px;font-size:15px;line-height:1.45;color:#cfcbc2}
 .news li{padding-left:16px;position:relative}.news li::before{content:'';position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--muted)}
 .news li.pos::before{background:var(--up)}.news li.neg::before{background:var(--dn)}.news small{display:block;color:var(--muted);font-size:13px}
 .news a{color:#e8e2cf;text-decoration:none;border-bottom:1px solid rgba(201,162,39,.3)}
 .closed-note{font-size:16px;color:var(--muted)}
-@media (max-width:700px){.mkt-grid{grid-template-columns:1fr}.essay p{font-size:17px;text-align:left}.cur{font-size:44px}.rng-cells{grid-template-columns:repeat(2,minmax(0,1fr))}.rng-cells .r{text-align:left}}
+@media (max-width:700px){.mkt-grid{grid-template-columns:1fr}.essay p{font-size:17px;text-align:left}.cur{font-size:44px}.rng-cells{grid-template-columns:repeat(2,minmax(0,1fr))}.rng-cells .r{text-align:left}.rng7 .mid{grid-column:1 / -1;order:-1;border:none;border-bottom:1px solid var(--line);padding-bottom:6px}}
 @media (max-width:900px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.holds{grid-template-columns:repeat(3,minmax(0,1fr))}.hwrap,main{padding-left:16px;padding-right:16px}.ph h1{font-size:40px}.chartbox{height:420px}}
 </style>
 </head>
@@ -318,7 +319,7 @@ body,button,input,select,table,th,td{font-style:italic}
   // ---------------------------------------------------------------- daily analysis (written 09:00 ET; ranges refresh every scan)
   var f2 = function (v) { return v == null ? '–' : Number(v).toFixed(2); };
   var hm = function (m) { return Math.floor(m / 60) + ':' + ('0' + m % 60).slice(-2); };
-  function rangeBlock(z) {
+  function rangeBlock(z, fill) {
     if (!z || !z.bars || !z.bars.length) return '';
     var B = z.bars.filter(function (b) { return b[0] >= 420; }); if (!B.length) B = z.bars;
     var at = z.note_i != null ? z.bars[z.note_i] : null, last = z.bars[z.bars.length - 1], live = !z.done;
@@ -350,11 +351,24 @@ body,button,input,select,table,th,td{font-style:italic}
       else t += 'The dashed lines show how the expectation adapted as each new extreme printed.';
     } else t += 'Before the open the levels follow the premarket high and low.';
     ['low', 'high'].forEach(function (sd) { var e = z[sd + '_in']; if (e) t += ' The ' + sd + ' looks to be in (it holds about ' + e.p + '% of the time from here); the other side projects to ' + f2(e.typ) + ', with 80% of days ' + (sd === 'low' ? 'under ' : 'above ') + f2(e.b80) + '.'; });
-    var lab = z.done ? 'realized' : 'so far';
+    var lab = z.done ? 'realized' : 'so far', pre = z.lo == null;
+    var PB = z.bars.filter(function (b) { return b[0] < 570; });
+    var lo = pre ? (PB.length ? Math.min.apply(null, PB.map(function (b) { return b[3]; })) : null) : z.lo;
+    var hi = pre ? (PB.length ? Math.max.apply(null, PB.map(function (b) { return b[2]; })) : null) : z.hi;
+    var fp = fill == null || isNaN(fill) ? null : Number(fill), rr = function (v) { return fp && v != null ? pct((v / fp - 1) * 100, 2) : '–'; };
+    var rc = function (v) { return fp && v != null ? cls(v / fp - 1) : ''; };
+    var aL = at ? at[6] : last[6], aH = at ? at[5] : last[5], aLw = at ? at[8] : last[8], aHw = at ? at[7] : last[7], tm = at ? ' · ' + hm(at[0] + 15) : '';
+    var lab2 = pre ? 'premarket' : lab;
     return '<div class="rng"><div class="rng-top"><span>Expected vs realized range · ' + esc(z.day) + '</span><span>' + (z.done ? 'session complete' : 'live · as of ' + esc(z.asof) + ' ET') + ' · last ' + f2(z.last) + '</span></div>' + sv +
       '<div class="rng-key"><span><i style="border-color:#6fcf97"></i>expected high</span><span><i style="border-color:#eb5757"></i>expected low</span><span><i style="border-color:rgba(201,162,39,.5);border-style:dotted"></i>wide day</span><span><i style="border-color:#e8e6e3;border-style:solid"></i>' + lab + ' high / low</span></div>' +
-      '<div class="rng-cells"><div><i>Assumed low' + (at ? ' · ' + hm(at[0] + 15) : '') + '</i><b class="dn">' + f2(at ? at[6] : last[6]) + '</b>wide ' + f2(at ? at[8] : last[8]) + '</div><div><i>Low ' + lab + '</i><b>' + f2(z.lo) + '</b>&nbsp;</div>' +
-      '<div class="r"><i>High ' + lab + '</i><b>' + f2(z.hi) + '</b>&nbsp;</div><div class="r"><i>Assumed high' + (at ? ' · ' + hm(at[0] + 15) : '') + '</i><b class="up">' + f2(at ? at[5] : last[5]) + '</b>wide ' + f2(at ? at[7] : last[7]) + '</div></div>' +
+      '<div class="rng-cells rng7">' +
+        '<div><i>Assumed low' + tm + '</i><b class="dn">' + f2(aL) + '</b>wide ' + f2(aLw) + '</div>' +
+        '<div><i>Low ' + lab2 + '</i><b>' + f2(lo) + '</b>&nbsp;</div>' +
+        '<div><i>Return at low</i><b class="' + rc(lo) + '">' + rr(lo) + '</b>vs fill</div>' +
+        '<div class="mid"><i>Fill price</i><b class="gold">' + (fp ? f2(fp) : '–') + '</b>last ' + rr(z.last) + '</div>' +
+        '<div class="r"><i>Return at high</i><b class="' + rc(hi) + '">' + rr(hi) + '</b>vs fill</div>' +
+        '<div class="r"><i>High ' + lab2 + '</i><b>' + f2(hi) + '</b>&nbsp;</div>' +
+        '<div class="r"><i>Assumed high' + tm + '</i><b class="up">' + f2(aH) + '</b>wide ' + f2(aHw) + '</div></div>' +
       '<p class="rng-note">' + esc(t) + '</p></div>';
   }
   function renderAnalysis(S) {
@@ -385,7 +399,7 @@ body,button,input,select,table,th,td{font-style:italic}
           (L && !isToday ? ' · now ' + pct(L.pnl) + ', stop ' + esc(L.stop) : '') + (L && L.selling ? ' · <span class="dn">sells at the next open</span>' : '') + '</div>';
         var rd = p.read; h += '<div class="read">15-minute ' + rd.t15 + ' · hourly ' + rd.t1h + ' · daily ' + rd.td + (p.etf ? ' · ' + esc(p.etf) + ' ' + rd.sec_d + ' daily, ' + rd.sec_w + ' weekly' : '') + ' · volatility ' + rd.vol + ' (' + rd.vol_pct + 'th percentile)' + (rd.earnings ? ' · earnings ' + esc(rd.earnings) : '') + '</div>';
       } else h += '<div class="pos-meta">entry ' + esc(L.entry) + ' · stop ' + esc(L.stop) + ' · best ' + pct(L.peak) + '</div>';
-      h += rangeBlock(R[t]);
+      h += rangeBlock(R[t], p ? p.entry : (L ? parseFloat(L.entry) : null));
       if (p) {
         h += '<p><span class="lead">Why we hold.</span>' + esc(p.why) + '</p><p><span class="lead">What we want to see.</span>' + esc(p.want) + '</p><p><span class="lead">Why it would fail.</span>' + esc(p.fail) + '</p>';
         var c = p.counts || {}, NW = (p.news || []).filter(function (n) { return n.pub !== 'sector'; });

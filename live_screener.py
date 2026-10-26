@@ -405,6 +405,7 @@ def scan(args):
                      x=int(min(np.searchsorted(d, t1), len(d) - 1)), h1=v['track'] == '1h', pg=0.0, lock=bool(v.get('lock')), ledger_only=True)
         o.update(tk=v['tk'], track=v['track'], ratio=99.0, forced=True)
         TR = [t for t in TR if not (t['tk'] == o['tk'] and t['track'] == o['track'] and t['t0'] >= o['t0'] and t['t0'] < o['t1'])] + [o]
+    TR_all = list(TR)                                                           # every replayed trade (honorable-mention history uses them)
     cut_old = np.datetime64(asof - pd.Timedelta('30min'))                     # trades that start before the last scan but were never recorded = phantoms
     TR = [t for t in TR if t.get('forced') or not t['px'] or t['t0'] >= cut_old or pd.Timestamp(t['t0']) < START]
     for t in TR:
@@ -466,9 +467,20 @@ def scan(args):
         if t['status'] != 'BUY' and (not t['px'] or pd.Timestamp(t['t0']) < max(START, now_et() - pd.Timedelta(days=30))): continue
         hm[(t['tk'], t['track'])] = t
     hm_rows = [mk_row(tk, HS[tk], track, t) for (tk, track), t in hm.items()]
+    # honorable-mention HISTORY (Oct 26 2026, Discord /hh): every flip since the start that was skipped while every slot was full
+    akeys = {(t['tk'], t['track'], pd.Timestamp(t['t0'])) for t in AL}
+    def n_open(ts): return sum(1 for a in AL if pd.Timestamp(a['t0']) <= ts and (a['status'] != 'CLOSED' or pd.Timestamp(a['t1']) > ts))
+    hm_all = []
+    for t in TR_all:
+        ts = pd.Timestamp(t['t0'])
+        if t['tk'] == 'QQQ' or not t.get('px') or t.get('blocked') or ts < START or (t['tk'], t['track'], ts) in akeys: continue
+        if t['status'] not in ('HOLD', 'SELL', 'CLOSED') or n_open(ts) < slots_at(t['t0']): continue
+        h = dict(t)
+        if h['status'] == 'CLOSED' and 'xpx' not in h: h['xpx'] = float(HS[h['tk']].open.values[min(h['x'], len(HS[h['tk']]) - 1)])
+        hm_all.append(h)
     brk = breaker_on(AL, now_et())
     if brk: print(f'  !! BREAKER: book is more than {BREAKER:.0%} below its 20-day high - no new entries (open positions keep their stops)')
-    meta = dict(breaker=brk, trades=AL, HS=HS, hm=hm_rows, eg=EG, slots=slots, w=1 / slots, rat_thru=rat_thru, g_thru=G.index.max(), capital=args.capital,
+    meta = dict(breaker=brk, trades=AL, HS=HS, hm=hm_rows, hm_all=hm_all, eg=EG, slots=slots, w=1 / slots, rat_thru=rat_thru, g_thru=G.index.max(), capital=args.capital,
                 ratios={t: float(last_ratio.get(t, np.nan)) for t in elig_now})
     if not args.no_fetch and os.getenv('SITE_SNAPSHOT', '1') == '1':
         try: write_site_snapshot(out, meta)
@@ -686,17 +698,18 @@ def spy_15m(fetch=True, tk='SPY'):
         except Exception as e: print(f'  ! {tk} fetch failed: {e}')
     C['dt'] = pd.to_datetime(C.dt); return C[C.dt + pd.Timedelta('15min') <= now_et()]
 
-def history(rows, meta, fetch=True):
-    """every live trade (closed at the rule's on-time fills = open of the exit bar; open marked live) + the book P&L path on the 15m grid"""
+def history(rows, meta, fetch=True, trades=None):
+    """every live trade (closed at the rule's on-time fills = open of the exit bar; open marked live) + the book P&L path on the 15m grid.
+    trades=meta['hm_all'] -> the same for the honorable mentions (as if each had taken a slot)"""
     w = meta['w']; HS = meta['HS']; R = {(r['base'], r['track']): r for r in rows}
-    T = [t for t in meta['trades'] if t['status'] in ('CLOSED', 'HOLD', 'SELL') and t['px']]
+    T = [t for t in (meta['trades'] if trades is None else trades) if t['status'] in ('CLOSED', 'HOLD', 'SELL') and t['px']]
     ref = max(HS.values(), key=len); g = ref.dt[(ref.dt >= START) & ((ref.dt.dt.hour * 60 + ref.dt.dt.minute) >= RTH0)].values
     now = np.datetime64(now_et().floor('min')); book = np.zeros(len(g)); out = []
     for t in T:
         H = HS[t['tk']]; c = pd.Series(H.close.values, index=H.dt.values).reindex(g, method='ffill').values
         r_ = np.where(g < t['t0'], 0.0, c / t['px'] - 1); lr = R.get((t['tk'], t['track']))
         if t['status'] == 'CLOSED': rx = t['xpx'] / t['px'] - 1; r_ = np.where(g >= t['t1'], rx, r_); xp, xt = t['xpx'], pd.Timestamp(t['t1'])
-        else: rx = lr['pnl'] if lr else 0.0; xp, xt = (lr['last'] if lr else np.nan), None
+        else: rx = (lr['last'] / t['px'] - 1) if lr else 0.0; xp, xt = (lr['last'] if lr else np.nan), None
         wt = 1 / slots_at(t['t0']); book += wt * r_
         rth = ((H.dt.dt.hour * 60 + H.dt.dt.minute) >= RTH0).values; hi_ = H.high.values
         seg = slice(t['e'], t['x'] if t['status'] == 'CLOSED' else len(H))      # RTH highs from the entry bar until the exit open
@@ -710,20 +723,29 @@ def history(rows, meta, fetch=True):
     spy_now = (live_px('SPY') if fetch else None) or (sp.iloc[-1] if len(sp) else np.nan)
     return out, np.r_[g, now], np.r_[book, tot], np.r_[spy, spy_now / b0 - 1]
 
-def history_card(rows, meta, path, fetch=True):
-    """Discord /history: every trade since the start with its return, the whole book P&L, and the book vs SPY."""
-    out, gx, by, sy = history(rows, meta, fetch); w = meta['w']
+def history_card(rows, meta, path, fetch=True, hm=False):
+    """Discord /history: every trade since the start with its return, the whole book P&L, and the book vs SPY.
+    hm=True (Discord /hh): every honorable mention since the start (skipped because all slots were full), as if traded, vs the real book."""
+    out, gx, by, sy = history(rows, meta, fetch, trades=meta.get('hm_all', []) if hm else None); w = meta['w']
+    if hm:
+        bout, _, bb, _ = history(rows, meta, fetch); n = min(len(bb), len(by)); sy = np.r_[np.full(len(by) - n, np.nan), bb[-n:]]
+        bwin = [z['ret'] for z in bout if not z['open']]
     C = sorted([z for z in out if not z['open']], key=lambda z: z['t1'], reverse=True); O = sorted([z for z in out if z['open']], key=lambda z: -z['ret'])
     L = O + C; MAXR = 28; show = L[:MAXR]; nr = len(show)
     H_in = 6.3 + .27 * max(nr, 4); fig = plt.figure(figsize=(10, H_in), facecolor=BG); _frame(fig, BLUE); Y = lambda inch: 1 - inch / H_in
     tot, real, op = by[-1], sum(z['w'] * z['ret'] for z in C), sum(z['w'] * z['ret'] for z in O); spy = sy[-1]
     wins = [z['ret'] for z in C if z['ret'] > 0]; loss = [z['ret'] for z in C if z['ret'] <= 0]
-    fig.text(.045, Y(.55), 'Trade history', fontsize=19, fontweight='bold')
+    fig.text(.045, Y(.55), 'Honorable mentions history' if hm else 'Trade history', fontsize=19, fontweight='bold')
     fig.text(.045, Y(.85), f"since {START:%a %b %d} · {len(C)} closed, {len(O)} open · each trade = 1 slot ({w:.1%}) · on-time rule fills, open marked "
              + ('live' if any(r.get('live') for r in rows) else 'at the last close') + f" · {pd.Timestamp(gx[-1]):%a %b %d %H:%M} ET", fontsize=8.5, color=MUT)
     kp = [('BOOK P&L', f'{tot:+.2%}', f'realized {real:+.2%} · open {op:+.2%}', tot), ('SPY', f'{spy:+.2%}' if spy == spy else '—', 'same period', spy),
           ('VS SPY', f'{tot - spy:+.2%}' if spy == spy else '—', 'book minus SPY', tot - spy if spy == spy else 0),
           ('WIN RATE', f'{len(wins) / max(1, len(C)):.0%}', (f'avg win {np.mean(wins):+.1%} · loss {np.mean(loss):+.1%}' if wins and loss else f'{len(C)} closed'), None)]
+    if hm:
+        avg_h = np.mean([z['ret'] for z in C]) if C else np.nan; avg_b = np.mean(bwin) if bwin else np.nan
+        kp = [('IF TRADED', f'{tot:+.2%}', f'realized {real:+.2%} · open {op:+.2%}', tot), ('REAL BOOK', f'{spy:+.2%}' if spy == spy else '—', 'trades actually taken', spy),
+              ('AVG CLOSED', f'{avg_h:+.2%}' if avg_h == avg_h else '—', f'taken trades {avg_b:+.2%}' if avg_b == avg_b else 'taken: —', (avg_h - avg_b) if avg_h == avg_h and avg_b == avg_b else None),
+              ('WIN RATE', f'{len(wins) / max(1, len(C)):.0%}', f'taken {np.mean([r > 0 for r in bwin]):.0%}' if bwin else f'{len(C)} closed', None)]
     for k, (h, v, sub, val) in enumerate(kp):
         x0 = .045 + k * .228
         fig.patches.append(FancyBboxPatch((x0, Y(2.05)), .215, 1.0 / H_in, boxstyle='round,pad=0,rounding_size=0.008', transform=fig.transFigure, fc=PANEL, ec='none', zorder=-8))
@@ -736,11 +758,11 @@ def history_card(rows, meta, path, fetch=True):
         k_ = pd.Series(range(len(xs)), index=xs).groupby(xs.normalize()).max().values; xs, by_, sy_ = xs[k_], by[k_], sy[k_]
     else: by_, sy_ = by, sy
     xi = np.arange(len(xs)); ax.axhline(0, color=MUT, lw=.7)
-    ax.plot(xi, sy_ * 100, color='#9aa6b8', lw=1.4, alpha=.9, label='SPY')
+    ax.plot(xi, sy_ * 100, color='#9aa6b8', lw=1.4, alpha=.9, label='book' if hm else 'SPY')
     for lw_, a in ((6, .07), (3.5, .14), (1.8, 1)): ax.plot(xi, by_ * 100, color=BLUE, lw=lw_, alpha=a, label='book' if a == 1 else None)
     ax.scatter([xi[-1]], [by_[-1] * 100], s=36, color=BLUE, zorder=5); ax.scatter([xi[-1]], [sy_[-1] * 100], s=24, color='#9aa6b8', zorder=5)
-    ax.text(xi[-1] + 1, by_[-1] * 100, f' book {by_[-1]:+.2%}', color=BLUE, fontsize=8.5, va='center', fontweight='bold')
-    ax.text(xi[-1] + 1, sy_[-1] * 100, f' SPY {sy_[-1]:+.2%}', color='#9aa6b8', fontsize=8.5, va='center')
+    ax.text(xi[-1] + 1, by_[-1] * 100, f" {'mentions' if hm else 'book'} {by_[-1]:+.2%}", color=BLUE, fontsize=8.5, va='center', fontweight='bold')
+    ax.text(xi[-1] + 1, sy_[-1] * 100, f" {'book' if hm else 'SPY'} {sy_[-1]:+.2%}", color='#9aa6b8', fontsize=8.5, va='center')
     dd = xs.normalize(); tk_ = [i for i in range(1, len(xs)) if dd[i] != dd[i - 1]]
     if daily: tk_ = tk_[::max(1, len(tk_) // 8)]
     ax.set_xticks(tk_); ax.set_xticklabels([f'{xs[i]:%b %d}' if daily else f'{xs[i]:%a %d}' for i in tk_], fontsize=7.5)
@@ -760,6 +782,7 @@ def history_card(rows, meta, path, fetch=True):
         fig.text(.69, y, f"{z['ret']:+.2%}", fontsize=9, fontweight='bold', color=col)
         fig.text(.795, y, f"{z['peak']:+.2%}", fontsize=8.5, color=GOOD if z['peak'] > 0 else MUT); fig.text(.9, y, f"{z['w'] * z['ret']:+.2%}", fontsize=8.5, color=col)
     if len(L) > MAXR: fig.text(.045, y0 - (.3 + .27 * nr) / H_in, f'showing the latest {MAXR} of {len(L)} trades', fontsize=8, color=MUT)
+    if hm: fig.text(.045, .26 / H_in, 'Mentions are flips the screener skipped because every slot was full; never traded. IF TRADED = what they would have added at 1 slot each.', fontsize=7.5, color=MUT)
     fig.text(.045, .1 / H_in, 'RETURN = trade return; PEAK = highest return while held (RTH highs); BOOK = its share of the book (1 slot). Book P&L = sum of slot returns (not compounded), before costs.', fontsize=7.5, color=MUT)
     fig.savefig(path, dpi=140, facecolor=BG); plt.close(fig)
 
@@ -1229,6 +1252,7 @@ if __name__ == '__main__':
     ap.add_argument('--check-card', default=None, help='render the open-positions board to this path (Discord /check)')
     ap.add_argument('--check-ticker', default=None)
     ap.add_argument('--site-snapshot', action='store_true', help='scan once (live prices) and write live/site_snapshot.json for the website')
+    ap.add_argument('--hh-card', default=None, help='render the honorable-mention history (every skipped flip since the start, as if traded) (Discord /hh)')
     ap.add_argument('--history-card', default=None, help='render every trade since the start + book vs SPY (Discord /history)')
     args = ap.parse_args()
     if args.pro:                                                    # no scan needed: one ticker
@@ -1259,6 +1283,9 @@ if __name__ == '__main__':
             R = mark_live(meta['hm'], not args.no_fetch)
             if not [r for r in R if r['action'] in ('HOLD', 'SELL')]: print('FLAT: no honorable mentions right now (no flips were skipped for full slots in the last 30 days that are still open)'); sys.exit()
             positions_card(R, meta, args.hm_card, title='Honorable mentions', hm=True); print(f'card -> {args.hm_card}')
+        if args.hh_card:
+            if not meta.get('hm_all'): print('FLAT: no honorable mentions since the start (no flip has been skipped for full slots yet)'); sys.exit()
+            rows = mark_live(rows, not args.no_fetch); history_card(rows, meta, args.hh_card, not args.no_fetch, hm=True); print(f'card -> {args.hh_card}')
         if args.history_card:
             rows = mark_live(rows, not args.no_fetch); history_card(rows, meta, args.history_card, not args.no_fetch); print(f'card -> {args.history_card}')
         sys.exit()
