@@ -78,6 +78,7 @@ def now_et(): return pd.Timestamp.now(tz=ET).tz_localize(None)
 
 # ================================================================ data
 LSE_SYM = {'BRKB': 'BRK.B'}; YF_SYM = {'BRKB': 'BRK-B'}                   # feed symbols for tickers stored without the class dot
+LSE_DOWN = {'on': False}
 def load_bars(tk, fetch, first=None):
     first = RTH0 if first is None else first
     live_f = f'{LIVE}/{tk}_15m.parquet'
@@ -97,6 +98,7 @@ def load_bars(tk, fetch, first=None):
     H = H.drop_duplicates('datetime', keep='last').sort_values('datetime')
     if fetch:
         try:
+            if LSE_DOWN['on']: raise RuntimeError('LSE marked down this session')
             from fetch_lse_ohlcv import _fetch_range
             start = (H.datetime.max() - pd.Timedelta(days=4)).tz_localize(None)
             end = pd.Timestamp.utcnow().tz_localize(None).normalize() + pd.Timedelta(days=1)
@@ -105,7 +107,8 @@ def load_bars(tk, fetch, first=None):
                 N = pd.DataFrame(rows); N['datetime'] = pd.to_datetime(N['ts'], utc=True)
                 H = pd.concat([H, N[['datetime', 'open', 'high', 'low', 'close', 'volume']]]).drop_duplicates('datetime', keep='last').sort_values('datetime')
         except Exception as e:
-            print(f'  ! {tk}: LSE fetch failed ({str(e)[:40]}); trying yfinance')
+            if '410' in str(e) or '401' in str(e) or '403' in str(e): LSE_DOWN['on'] = True        # Oct 26 2026: LSE API retired -> stop paying for it on every bar
+            if not LSE_DOWN.get('said'): print(f'  ! {tk}: LSE fetch failed ({str(e)[:40]}); trying yfinance'); LSE_DOWN['said'] = LSE_DOWN['on']
             try:                                                           # fallback feed so a rate-limited LSE never blinds the screener
                 import yfinance as yf
                 Y = yf.Ticker(YF_SYM.get(tk, tk)).history(period='5d', interval='15m', prepost=True)
@@ -537,6 +540,34 @@ def latest_note():
         try: return json.load(open(fa))
         except Exception: pass
     return None
+
+def refresh_site_prices():
+    """between scans (every minute in the session): re-mark the website's open positions at live prices so P&L isn't up to 15 min old.
+    Signals, entries and exits still change only on the 15-minute scans."""
+    f = f'{LIVE}/site_snapshot.json'
+    try: S = json.load(open(f))
+    except Exception: return
+    t = now_et(); m = t.hour * 60 + t.minute; ch = False
+    for p in S.get('positions', []):
+        if p.get('selling'): continue                                          # already out at the open after its sell signal
+        px = live_px(p['base'])
+        if not px: continue
+        e = float(p['entry']); p['last'] = f'{px:.2f}'; p['pnl'] = round((px / e - 1) * 100, 2); p['peak'] = round(max(p.get('peak') or 0, p['pnl']), 2); ch = True
+    rg = S.get('ranges') or {}
+    for k, z in rg.items():
+        px = next((float(p['last']) for p in S.get('positions', []) if p['base'] == k), None)
+        if px: z['last'] = round(px, 2)
+    if not ch: return
+    S['asof'] = t.isoformat(); S['asof_ms'] = int(pd.Timestamp(t, tz=ET).timestamp() * 1000); S['market_open'] = t.dayofweek < 5 and RTH0 <= m < RTH1
+    tmp = f + '.tmp'; json.dump(S, open(tmp, 'w')); os.replace(tmp, f)
+
+def _site_refresher():
+    while True:
+        try:
+            t = now_et(); m = t.hour * 60 + t.minute
+            if t.dayofweek < 5 and RTH0 <= m < RTH1 + 5 and os.getenv('SITE_SNAPSHOT', '1') == '1': refresh_site_prices()
+        except Exception as e: print(f'  ! site refresh: {str(e)[:80]}')
+        time.sleep(60)
 
 def write_site_snapshot(rows, meta):
     """live/site_snapshot.json for the website (screener_service pushes it to BACKEND_URL/api/site/push)."""
@@ -1165,11 +1196,12 @@ def show(rows, meta):
 def live_px(tk):
     from fetch_lse_ohlcv import _fetch_range
     s0 = pd.Timestamp.utcnow().tz_localize(None) - pd.Timedelta(hours=6)
-    for tf in ('1m', '15m'):
+    for tf in (() if LSE_DOWN['on'] else ('1m', '15m')):
         try:
             rows = _fetch_range(tk, tf, s0, s0 + pd.Timedelta(hours=8))
             if rows: return float(max(rows, key=lambda x: x['ts'])['close'])
-        except Exception: pass
+        except Exception as e:
+            if '410' in str(e) or '401' in str(e) or '403' in str(e): LSE_DOWN['on'] = True; break
     try:
         import yfinance as yf
         y = yf.Ticker(YF_SYM.get(tk, tk)).history(period='1d', interval='1m', prepost=True)
@@ -1290,6 +1322,7 @@ if __name__ == '__main__':
             rows = mark_live(rows, not args.no_fetch); history_card(rows, meta, args.history_card, not args.no_fetch); print(f'card -> {args.history_card}')
         sys.exit()
     st = _state()
+    import threading; threading.Thread(target=_site_refresher, daemon=True).start()     # website prices every minute between scans
     while True:
         t = now_et(); mins = t.hour * 60 + t.minute; today = f'{t:%Y-%m-%d}'
         if t.dayofweek < 5 and mins > RTH1 + 10 and st.get('close') != today and st.get('morning') == today:   # ~16:10: closing positions board
