@@ -890,6 +890,20 @@ def har_sigma(D):
     """next-day sigma from the HAR range model (pooled fit) for a daily frame with h/l, using rows up to the last one"""
     x = np.log(np.log(D.h / D.l).clip(lower=1e-5))
     return float(np.exp(-0.6186 + 0.2939 * x.iloc[-1] + 0.3661 * x.iloc[-5:].mean() + 0.1783 * x.iloc[-22:].mean()) / 1.665)
+def range_context(H):
+    """Oct 26 2026: where a BUY sits in today's expected range (HAR). Context only - skipping or shrinking stretched entries did not help
+    the book (xs/stop_book.py / rangez test), but the most stretched fifth of entries (> ~107% of the range used) averaged +0.13% vs +0.31%."""
+    m = H.dt.dt.hour * 60 + H.dt.dt.minute; R_ = H[(m >= RTH0) & (m < RTH1)]
+    if not len(R_): return ''
+    day = R_.dt.iloc[-1].normalize(); g = R_[R_.dt.dt.normalize() == day]
+    D = R_.groupby(R_.dt.dt.normalize()).agg(h=('high', 'max'), l=('low', 'min'), c=('close', 'last')); hist = D[D.index < day]
+    if len(hist) < 30 or day != now_et().normalize(): return ''
+    ex = 1.665 * har_sigma(hist); o = float(g.open.iloc[0]); last = float(g.close.iloc[-1])
+    z = (last / o - 1) / ex; used = np.log(g.high.max() / g.low.min()) / ex
+    txt = f"\U0001f4cf Range: {z:+.1f} expected ranges from the open, {used:.0%} of today's expected range ({ex:.1%}) used"
+    if used > 1.07: txt += ' - stretched: entries this extended historically averaged +0.13% vs +0.31% (context, not a rule)'
+    return txt
+
 def range_levels(H, now=None):
     """adaptive day range: a constant range budget (HAR forecast) anchored on today's extremes so far - if the low drops $5, the expected
     high drops $5. Typical = 1.7 daily sigma (median low-to-high), wide = 2.4 sigma (80% of days stay inside), from xs/range_models.py."""
@@ -1000,6 +1014,11 @@ def post_new_signals(rows, meta, st):
         p = f"{LIVE}/card_{tk.replace(' ', '_')}_{r['action']}.png"
         try: LC.signal_dash(r, meta, p) if r['action'] == 'BUY' else signal_card(r, meta, p)
         except Exception as e: print(f'  ! signal dash failed ({str(e)[:80]}); simple card'); signal_card(r, meta, p)
+        if r['action'] == 'BUY':
+            try:
+                ctx = range_context(r['H'])
+                if ctx: late = (late + '\n' if late else '') + ctx
+            except Exception as e: print(f'  ! range context: {str(e)[:60]}')
         if not post(late, [p]): continue
         st['signals'].append(key); _save(st)
         log = f'{LIVE}/signal_log.csv'
