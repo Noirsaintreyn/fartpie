@@ -1116,22 +1116,69 @@ def extreme_info(H, now=None):
             out[side] = dict(p=p, tgt=[ext * (1 + q * sig) if side == 'low' else ext * (1 - q * sig) for q in (q50, q80, q95)])
         else: out[side] = None
     return out
+XT_P = float(os.getenv('XT_P', '0.85'))
+CXW = {'both': 'the 15m and 1h vectors both flipped after it', '15m': 'the 15m vector flipped after it', '1h': 'the 1h vector flipped after it',
+       'old': 'set 45+ min ago, no vector flip yet', 'fresh': 'only just printed'}
+def extreme_chart(tk, H, z, side, path):
+    """today's 15m candles (vector colored), the extreme that is in, its vector flip, and the projected other side (time of day x vector)"""
+    from matplotlib.patches import FancyBboxPatch as _FB
+    day = now_et().normalize(); m = H.dt.dt.hour * 60 + H.dt.dt.minute
+    r15, r1 = range_states(H); k = (H.dt.dt.normalize() == day) & (m >= RTH0) & (m < RTH1); g = H[k].reset_index(drop=True); s15, s1 = r15[k.values], r1[k.values]
+    RB = [b for b in z['bars'] if len(b) > 9]; lb = RB[-1]
+    fig = plt.figure(figsize=(10, 5.6), facecolor=BG); _frame(fig, GOOD if side == 'low' else CRIT)
+    ax = fig.add_axes([0.06, 0.13, 0.74, 0.62], facecolor=PANEL); xt = np.arange(len(g))
+    for i, (o, h, l, c) in enumerate(zip(g.open, g.high, g.low, g.close)):
+        col = BLUE if s15[i] == 1 else CRIT; ax.plot([i, i], [l, h], color=col, lw=1); ax.add_patch(plt.Rectangle((i - .32, min(o, c)), .64, max(abs(c - o), 1e-6), color=col, lw=0))
+    lo, hi = float(g.low.min()), float(g.high.max()); il, ih = int(g.low.values.argmin()), int(g.high.values.argmax())
+    p_in = lb[13] if side == 'low' else lb[14]; ext, iext = (lo, il) if side == 'low' else (hi, ih)
+    proj, proj90 = (lb[9], lb[10]) if side == 'low' else (lb[11], lb[12]); budget = lo * (1 + z['budget'] / 100) if side == 'low' else hi * (1 - z['budget'] / 100)
+    n_end = len(g) + max(2, int((RTH1 - (int(g.dt.iloc[-1].hour) * 60 + int(g.dt.iloc[-1].minute)) - 15) / 15))
+    ax.axhline(ext, color=T1, lw=1.2); ax.scatter([iext], [ext], s=120, color=GOOD if side == 'low' else CRIT, zorder=5, edgecolor=BG, lw=1.5)
+    ax.text(iext, ext, f"  {side.upper()} IN  {ext:.2f}  ({p_in}%)", color=T1, fontsize=9, fontweight='bold', va='top' if side == 'low' else 'bottom')
+    other = hi if side == 'low' else lo; ax.axhline(other, color=T2, lw=.8, ls=':'); ax.text(0, other, f"{'high' if side == 'low' else 'low'} so far {other:.2f}", color=T2, fontsize=8, va='bottom' if side == 'low' else 'top')
+    pc = GOOD if side == 'low' else CRIT
+    ax.plot([len(g) - 1, n_end], [proj, proj], color=pc, lw=2); ax.text(n_end, proj, f' projected {proj:.2f}', color=pc, fontsize=9, va='center', fontweight='bold')
+    ax.plot([len(g) - 1, n_end], [proj90, proj90], color=pc, lw=1.2, ls='--'); ax.text(n_end, proj90, f' 90% {"under" if side == "low" else "above"} {proj90:.2f}', color=pc, fontsize=8, va='center')
+    ax.plot([0, n_end], [budget, budget], color='#c9a227', lw=.9, ls=(0, (2, 3))); ax.text(n_end, budget, f' range budget {budget:.2f}', color='#c9a227', fontsize=8, va='center')
+    f15 = [i for i in range(1, len(g)) if s15[i] != s15[i - 1] and i > iext]; f1 = [i for i in range(1, len(g)) if s1[i] != s1[i - 1] and i > iext]
+    for i in f15[:1]: ax.axvline(i, color=BLUE, lw=1, ls='--', alpha=.8); ax.text(i, ax.get_ylim()[1], ' 15m flip', color=BLUE, fontsize=8, va='top')
+    for i in f1[:1]: ax.axvline(i + .5, color='#9b7bff', lw=1, ls='--', alpha=.8); ax.text(i + .5, ax.get_ylim()[1], ' 1h flip', color='#9b7bff', fontsize=8, va='top', ha='left')
+    ticks = [i for i in range(len(g)) if g.dt.iloc[i].minute == 30]
+    ax.set_xticks(ticks); ax.set_xticklabels([f'{g.dt.iloc[i]:%H:%M}' for i in ticks], fontsize=8); ax.set_xlim(-1, n_end + 1); ax.tick_params(length=0)
+    lo_y, hi_y = min(lo, proj90 if side == 'high' else lo, budget) , max(hi, proj90 if side == 'low' else hi, budget); pad = (hi_y - lo_y) * .08; ax.set_ylim(lo_y - pad, hi_y + pad)
+    for sp in ax.spines.values(): sp.set_visible(False)
+    ctx = z['ctx'][0] if side == 'low' else z['ctx'][1]; now = g.dt.iloc[-1] + pd.Timedelta('15min')
+    fig.text(.045, .91, f"{tk}  \u00b7  {side.upper()} LIKELY IN", fontsize=18, fontweight='bold', color=T1)
+    fig.text(.045, .86, f"{ext:.2f} holds into the close {p_in}% of the time from here ({CXW.get(ctx, ctx)}, {now:%H:%M})", fontsize=10.5, color=T2)
+    fig.text(.045, .82, f"Projected {'high' if side == 'low' else 'low'}: {proj:.2f} typical, 90% of days {'under' if side == 'low' else 'above'} {proj90:.2f}  \u00b7  last {g.close.iloc[-1]:.2f}  \u00b7  range budget {z['budget']:.1f}%", fontsize=10.5, color=T2)
+    fig.text(.045, .045, 'candles: blue = 15m vector bull, red = bear  \u00b7  odds and projection from time of day x vector context (55 names, 2019-26, out of sample)  \u00b7  context, not a trade signal', fontsize=7.5, color=MUT)
+    fig.savefig(path, dpi=140, facecolor=BG); plt.close(fig)
+
 def day_extremes(rows, st):
+    """Oct 27 2026: chart when the day's low / high is likely in, by the time-of-day x vector model (range_path), for held names"""
     now = now_et(); mins = now.hour * 60 + now.minute
-    if not (12 * 60 <= mins < RTH1) or os.getenv('EXTREME_ALERTS', '1') != '1': return
+    if not (10 * 60 + 15 <= mins < RTH1) or os.getenv('EXTREME_ALERTS', '1') != '1': return
     today = f'{now:%Y-%m-%d}'; done = set()
     for r in rows:
         if r['action'] not in ('HOLD', 'SELL') or r['base'] in done: continue
-        done.add(r['base']); x = extreme_info(r['H'], now)
-        if not x or not x['live']: continue
-        for side in ('low', 'high'):
-            e = x[side]; key = f"{r['base']}|XT|{side}|{today}"
-            if not e or key in st['signals']: continue
-            t_ = x['tl'] if side == 'low' else x['th']; ext = x['lo'] if side == 'low' else x['hi']; other = 'high' if side == 'low' else 'low'
-            word = 'stay under' if side == 'low' else 'stay above'
-            msg = (f"\U0001f4cd {side.upper()} LIKELY IN - {r['base']}: today's {side} {ext:.2f} ({t_ // 60}:{t_ % 60:02d}) holds into the close ~{e['p']:.0%} of the time from here. "
-                   f"Projected {other}: ~{e['tgt'][0]:.2f} typical, 80% {word} {e['tgt'][1]:.2f}, 95% {word} {e['tgt'][2]:.2f}. Now {x['last']:.2f}, {other} so far {x['hi'] if side == 'low' else x['lo']:.2f}.")
-            if post(msg, [], channel=os.getenv('EXTREME_CHANNEL_ID')): st['signals'].append(key); _save(st)
+        done.add(r['base'])
+        try: z = range_path(r['H'], now.normalize())
+        except Exception as e: print(f"  ! extreme {r['base']}: {str(e)[:60]}"); continue
+        if not z or not z.get('ctx'): continue
+        RB = [b for b in z['bars'] if len(b) > 9]
+        if not RB: continue
+        lb = RB[-1]
+        for side, p in (('low', lb[13]), ('high', lb[14])):
+            key = f"{r['base']}|XT|{side}|{today}"
+            if p < XT_P * 100 or key in st['signals']: continue
+            ctx = z['ctx'][0] if side == 'low' else z['ctx'][1]
+            if ctx in ('fresh',): continue
+            path = f"{LIVE}/xt_{r['base']}_{side}.png"
+            try: extreme_chart(r['base'], r['H'], z, side, path); files = [path]
+            except Exception as e: print(f'  ! extreme chart: {str(e)[:80]}'); files = []
+            proj, proj90 = (lb[9], lb[10]) if side == 'low' else (lb[11], lb[12])
+            msg = f"\U0001f4cd {side.upper()} LIKELY IN - {r['base']} ({p}%, {CXW.get(ctx, ctx)}): projected {'high' if side == 'low' else 'low'} {proj:.2f}, 90% {'under' if side == 'low' else 'above'} {proj90:.2f}"
+            if post(msg, files, channel=os.getenv('EXTREME_CHANNEL_ID')): st['signals'].append(key); _save(st)
 
 def post_new_signals(rows, meta, st):
     try: day_extremes(rows, st)
