@@ -292,7 +292,7 @@ body,button,input,select,table,th,td{font-style:italic}
     P = P.slice().sort(function (a, b) { return (b.pnl == null ? -1e9 : b.pnl) - (a.pnl == null ? -1e9 : a.pnl); });   // best return on top
     $('posBody').innerHTML = P.map(function (p) {
       var lockd = parseFloat(p.stop) > parseFloat(p.entry);   // stop above entry = profit locked in
-      return '<tr><td><button class="tk" data-tk="' + esc(p.base) + '">' + esc(p.name) + '</button>' + (p.selling ? ' <span class="dn" style="font-size:11px;letter-spacing:.08em">SELL SIGNAL · OUT AT THIS BAR&rsquo;S OPEN</span>' : '') + '</td><td>' + esc(p.entry) + '</td><td class="' + (lockd ? 'inprof' : 'dn') + '"' + (lockd ? ' title="stop is above entry: profit locked"' : '') + '>' + esc(p.stop) + '</td><td>' + esc(p.last) + (p.ext != null && !p.selling ? '<br><small style="color:var(--muted)">' + esc(p.ext_lab) + ' ' + esc(p.ext) + '</small>' : '') + '</td><td class="r ' + cls(p.pnl) + '" style="font-weight:600">' + pct(p.pnl) + (p.ext != null && !p.selling ? '<br><small class="' + cls(p.ext_pnl) + '" style="font-weight:400">' + pct(p.ext_pnl) + '</small>' : '') + '</td><td class="r">' + pct(p.peak) + '</td></tr>';
+      return '<tr><td><button class="tk" data-tk="' + esc(p.base) + '">' + esc(p.name) + '</button>' + (!p.selling && S.ranges && S.ranges[p.base] && !S.ranges[p.base].done ? '<br>' + xtBadge(S.ranges[p.base]) : '') + (p.selling ? ' <span class="dn" style="font-size:11px;letter-spacing:.08em">SELL SIGNAL · OUT AT THIS BAR&rsquo;S OPEN</span>' : '') + '</td><td>' + esc(p.entry) + '</td><td class="' + (lockd ? 'inprof' : 'dn') + '"' + (lockd ? ' title="stop is above entry: profit locked"' : '') + '>' + esc(p.stop) + '</td><td>' + esc(p.last) + (p.ext != null && !p.selling ? '<br><small style="color:var(--muted)">' + esc(p.ext_lab) + ' ' + esc(p.ext) + '</small>' : '') + '</td><td class="r ' + cls(p.pnl) + '" style="font-weight:600">' + pct(p.pnl) + (p.ext != null && !p.selling ? '<br><small class="' + cls(p.ext_pnl) + '" style="font-weight:400">' + pct(p.ext_pnl) + '</small>' : '') + '</td><td class="r">' + pct(p.peak) + '</td></tr>';
     }).join('');
     var G = S.signals || [];
     $('sigList').innerHTML = G.length ? G.map(function (s) {
@@ -320,6 +320,16 @@ body,button,input,select,table,th,td{font-style:italic}
   // ---------------------------------------------------------------- daily analysis (written 09:00 ET; ranges refresh every scan)
   var f2 = function (v) { return v == null ? '–' : Number(v).toFixed(2); };
   var hm = function (m) { return Math.floor(m / 60) + ':' + ('0' + m % 60).slice(-2); };
+  function xtInfo(z) {                                   // expected high / low once one side is likely in (time of day x vector model)
+    if (!z || !z.bars) return null; var RB = z.bars.filter(function (b) { return b.length > 9; }); if (!RB.length) return null;
+    var b = RB[RB.length - 1], lo = { side: 'low', p: b[13], other: 'high', proj: b[9], p90: b[10], w: 'under' }, hi = { side: 'high', p: b[14], other: 'low', proj: b[11], p90: b[12], w: 'above' };
+    var x = lo.p >= hi.p ? lo : hi; return x.p >= 85 ? x : null;
+  }
+  function xtBadge(z, big) {
+    var x = xtInfo(z); if (!x) return '';
+    return '<span class="xt ' + (x.side === 'low' ? 'up' : 'dn') + '" style="display:inline-block;margin-' + (big ? 'left:10px' : 'top:3px') + ';font-size:' + (big ? '12px' : '11px') + ';letter-spacing:.06em" title="the day\'s ' + x.side + ' holds into the close ' + x.p + '% of the time from here (time of day x vector context); context only">' +
+      x.side.toUpperCase() + ' IN ' + x.p + '% \u00b7 ' + x.other + ' \u2192 ' + f2(x.proj) + ' (90% ' + x.w + ' ' + f2(x.p90) + ')</span>';
+  }
   function rangeBlock(z, fill) {
     if (!z || !z.bars || !z.bars.length) return '';
     var B = z.bars.filter(function (b) { return b[0] >= 420; }); if (!B.length) B = z.bars;
@@ -367,7 +377,7 @@ body,button,input,select,table,th,td{font-style:italic}
     var rc = function (v) { return fp && v != null ? cls(v / fp - 1) : ''; };
     var aL = at ? at[6] : last[6], aH = at ? at[5] : last[5], aLw = at ? at[8] : last[8], aHw = at ? at[7] : last[7], tm = at ? ' · ' + hm(at[0] + 15) : '';
     var lab2 = pre ? 'premarket' : lab;
-    return '<div class="rng"><div class="rng-top"><span>Expected vs realized range · ' + esc(z.day) + '</span><span>' + (z.done ? 'session complete' : 'live · as of ' + esc(z.asof) + ' ET') + ' · last ' + f2(z.last) + '</span></div>' + sv +
+    return '<div class="rng"><div class="rng-top"><span>Expected vs realized range · ' + esc(z.day) + xtBadge(z, true) + '</span><span>' + (z.done ? 'session complete' : 'live · as of ' + esc(z.asof) + ' ET') + ' · last ' + f2(z.last) + '</span></div>' + sv +
       '<div class="rng-key"><span><i style="border-color:#6fcf97"></i>expected high</span><span><i style="border-color:#eb5757"></i>expected low</span><span><i style="border-color:rgba(201,162,39,.5);border-style:dotted"></i>wide day</span><span><i style="border-color:rgba(111,207,151,.75);border-style:solid"></i>projected (time of day + vector)</span><span><i style="border-color:#e8e6e3;border-style:solid"></i>' + lab + ' high / low</span></div>' +
       '<div class="rng-cells rng7">' +
         '<div><i>Assumed low' + tm + '</i><b class="dn">' + f2(aL) + '</b>wide ' + f2(aLw) + '</div>' +
