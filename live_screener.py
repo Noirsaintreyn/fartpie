@@ -1072,6 +1072,14 @@ def spy_downtrend():
         v = dict(down=reg == -1 and s200 < 0, reg=reg, s200=s200)
     except Exception as e: print(f'  ! SPY downtrend: {str(e)[:80]}')
     _DOWN.update(day=day, v=v); return v
+def grade_line(rank=None):
+    """Oct 27 2026 (xs/trade_grade.py): the only grade that held up on the trades the book takes, in both periods and every year it fired:
+    A+ = flipped up while SPY is in a downtrend (+1.12% avg 2019-21, +1.13% 2022-26) vs Standard (+0.1-0.3%). Display only."""
+    d = spy_downtrend(); rk = f" (#{rank[0]} of {rank[1]} buys this bar)" if rank and rank[1] > 1 else ''
+    if d and d['down']:
+        return (f"\U0001F3C5 Grade A+{rk} - flipped UP while SPY is in a downtrend (daily vector bear, {d['s200']:+.1%} vs its 200-day). "
+                f"These were the best entries in every period: +1.1% avg trade 2019-21 and 2022-26 (others +0.1-0.3%). Same size as always.")
+    return f"Grade: Standard{rk} - the system's normal entry (avg +0.1-0.3% a trade; its edge is in the few big winners). Same size as always."
 def down_line():
     d = spy_downtrend()
     if not d or not d['down']: return ''
@@ -1234,19 +1242,10 @@ def post_new_signals(rows, meta, st):
         msg = (f"\u2b50 HONORABLE MENTION - {tk} flipped bullish ({r['bar']:%H:%M} bar, last {r['last']:.2f}, stop {r['stop']:.2f}) "
                f"but all {meta['slots']} slots are full, so the book is NOT buying it. Tracked in /hm.")
         try:
-            zh = signal_score(r['base'], r['H']) if os.getenv('SIGNAL_SCORE', '1') == '1' else None
-            if zh: msg += '\n' + score_line(zh)
-            dl = down_line()
-            if dl: msg += '\n' + dl
+            msg += '\n' + grade_line()
         except Exception as e: print(f'  ! HM score: {str(e)[:60]}')
         if post(msg, files, channel=os.getenv('HM_CHANNEL_ID')): st['signals'].append(key); _save(st)
-    SC = {}
-    for r in rows:
-        if r['action'] == 'BUY' and os.getenv('SIGNAL_SCORE', '1') == '1':
-            try: SC[r['ticker']] = signal_score(r['base'], r['H'])
-            except Exception as e: print(f"  ! score {r['ticker']}: {str(e)[:60]}")
-    ranked = sorted([t for t, z in SC.items() if z], key=lambda t: -SC[t]['score'])
-    rows = sorted(rows, key=lambda r: -SC[r['ticker']]['score'] if (r['action'] == 'BUY' and SC.get(r['ticker'])) else 0)
+    ranked = [r['ticker'] for r in sorted([r for r in rows if r['action'] == 'BUY'], key=lambda r: -(meta.get('ratios', {}).get(r['base'], 0) or 0))]   # system priority
     for r in rows:
         tk = r['ticker']; late = ''
         if r['action'] == 'HOLD' and r['e'] is not None:            # entry the scan never caught on its flip bar (late bar, skipped scan)
@@ -1282,14 +1281,9 @@ def post_new_signals(rows, meta, st):
                 if ctx: late = (late + '\n' if late else '') + ctx
             except Exception as e: print(f'  ! range context: {str(e)[:60]}')
             try:
-                dl = down_line()
-                if dl: late = (late + '\n' if late else '') + dl
-            except Exception as e: print(f'  ! down line: {str(e)[:60]}')
-            z = SC.get(tk)
-            if z:
-                late = (late + '\n' if late else '') + score_line(z, (ranked.index(tk) + 1, len(ranked)) if tk in ranked else None)
-                try: save_score(tk, z)
-                except Exception: pass
+                late = (late + '\n' if late else '') + grade_line((ranked.index(tk) + 1, len(ranked)) if tk in ranked else None)
+                d_ = spy_downtrend(); save_score(tk, dict(grade='A+' if (d_ and d_['down']) else 'STD', score=0.0))
+            except Exception as e: print(f'  ! grade: {str(e)[:60]}')
         if not post(late, [p]): continue
         st['signals'].append(key); _save(st)
         log = f'{LIVE}/signal_log.csv'
