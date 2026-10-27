@@ -303,11 +303,11 @@ body,button,input,select,table,th,td{font-style:italic}
     var H = S.history || {}, T = H.trades || [];
     var closed = T.filter(function (t) { return !t.open; }), wins = closed.filter(function (t) { return t.ret > 0; }), losses = closed.filter(function (t) { return t.ret <= 0; });
     var mean = function (a) { return a.length ? a.reduce(function (x, t) { return x + t.ret; }, 0) / a.length : null; };
-    $('histTiles').innerHTML = tile('Book P&L', pct(H.book, 2), 'realized ' + pct(H.realized, 2) + ' · open ' + pct(H.open, 2), cls(H.book)) +
+    $('histTiles').innerHTML = '<div class="tile" id="bkTile"></div>' +
       tile('Closed trades', String(closed.length), (T.length - closed.length) + ' open') +
       tile('Win rate', closed.length ? Math.round(wins.length / closed.length * 100) + '%' : '–', 'avg win ' + pct(mean(wins)) + ' · avg loss ' + pct(mean(losses))) +
       '<div class="tile" id="vsTile"></div>';
-    LH = H; renderVs();
+    LH = H; renderVs(); renderBk();
     HC = H.curve || null; drawHist();
     $('histTitle').textContent = H.since ? 'Every trade since ' + H.since : 'Every trade';
     $('histEmpty').hidden = T.length > 0;
@@ -423,6 +423,19 @@ body,button,input,select,table,th,td{font-style:italic}
   }
   var HC = null, LH = null, VS = 'spy';
   try { VS = localStorage.getItem('lap_vs') || 'spy'; } catch (e) {}
+  var BK = 'book';
+  try { BK = localStorage.getItem('lap_bk') || 'book'; } catch (e) {}
+  function renderBk() {
+    var el = $('bkTile'); if (!el || !LH) return;
+    var T = LH.trades || [], op = T.filter(function (t) { return t.open; }), cl = T.filter(function (t) { return !t.open; });
+    var avg = function (a) { return a.length ? a.reduce(function (x, t) { return x + t.ret; }, 0) / a.length : null; };
+    var v = BK === 'open' ? LH.open : BK === 'closed' ? LH.realized : LH.book;
+    var sub = BK === 'open' ? op.length + ' open · avg trade ' + pct(avg(op), 2) : BK === 'closed' ? cl.length + ' closed · avg trade ' + pct(avg(cl), 2) : 'realized ' + pct(LH.realized, 2) + ' · open ' + pct(LH.open, 2);
+    var o = function (k, lab) { return '<option value="' + k + '"' + (BK === k ? ' selected' : '') + '>' + lab + '</option>'; };
+    el.innerHTML = '<span class="k"><select class="vsel" id="bkSel" aria-label="Book P&L view">' + o('book', 'Book return') + o('open', 'Open return') + o('closed', 'Closed return') + '</select></span>' +
+      '<span class="v ' + cls(v) + '">' + pct(v, 2) + '</span><span class="sub">' + sub + '</span>';
+    $('bkSel').addEventListener('change', function (e) { BK = e.target.value; try { localStorage.setItem('lap_bk', BK); } catch (x) {} renderBk(); });
+  }
   function renderVs() {
     var el = $('vsTile'); if (!el || !LH) return;
     var b = LH[VS], name = VS.toUpperCase();
