@@ -157,6 +157,12 @@ body,button,input,select,table,th,td{font-style:italic}
 </div>
 </div>
 <div class="panel">
+<div class="ptop"><h2>Expected high / low alerts</h2><span class="sub">When the day's low or high is likely in (time of day × vector model) on a held name · select a row for its chart</span></div>
+<div class="tiles" id="xtTiles" style="margin-bottom:14px"></div>
+<div class="scroll"><table style="min-width:640px"><thead><tr><th>When</th><th>Ticker</th><th>Signal</th><th>At</th><th>Projected</th><th>Held?</th><th class="r">Best move</th><th class="r">To close</th></tr></thead><tbody id="xtBody"></tbody></table></div>
+<div class="empty" id="xtEmpty" hidden>No alerts yet.</div>
+</div>
+<div class="panel">
 <div class="ptop"><h2>Universe</h2><span class="sub">Eligible names by options ratio · held names outlined in gold</span></div>
 <div class="chips" id="watch"></div>
 </div>
@@ -292,8 +298,9 @@ body,button,input,select,table,th,td{font-style:italic}
     P = P.slice().sort(function (a, b) { return (b.pnl == null ? -1e9 : b.pnl) - (a.pnl == null ? -1e9 : a.pnl); });   // best return on top
     $('posBody').innerHTML = P.map(function (p) {
       var lockd = parseFloat(p.stop) > parseFloat(p.entry);   // stop above entry = profit locked in
-      return '<tr><td><button class="tk" data-tk="' + esc(p.base) + '">' + esc(p.name) + '</button>' + (!p.selling && S.ranges && S.ranges[p.base] && !S.ranges[p.base].done ? '<br>' + xtBadge(S.ranges[p.base]) : '') + (p.selling ? ' <span class="dn" style="font-size:11px;letter-spacing:.08em">SELL SIGNAL · OUT AT THIS BAR&rsquo;S OPEN</span>' : '') + '</td><td>' + esc(p.entry) + '</td><td class="' + (lockd ? 'inprof' : 'dn') + '"' + (lockd ? ' title="stop is above entry: profit locked"' : '') + '>' + esc(p.stop) + '</td><td>' + esc(p.last) + (p.ext != null && !p.selling ? '<br><small style="color:var(--muted)">' + esc(p.ext_lab) + ' ' + esc(p.ext) + '</small>' : '') + '</td><td class="r ' + cls(p.pnl) + '" style="font-weight:600">' + pct(p.pnl) + (p.ext != null && !p.selling ? '<br><small class="' + cls(p.ext_pnl) + '" style="font-weight:400">' + pct(p.ext_pnl) + '</small>' : '') + '</td><td class="r">' + pct(p.peak) + '</td></tr>';
+      return '<tr><td><button class="tk" data-tk="' + esc(p.base) + '">' + esc(p.name) + '</button>' + (function () { var e = (S.xt || []).filter(function (x) { return x.tk === p.base && x.date === (S.xt[0] || {}).date; })[0]; return e && !p.selling ? '<br>' + xtTag(e) + ' <span class="sub" style="font-size:11px">' + esc(e.time) + ' · ' + (e.side === 'low' ? 'high' : 'low') + ' \u2192 ' + f2(e.proj) + '</span>' : ''; })() + (p.selling ? ' <span class="dn" style="font-size:11px;letter-spacing:.08em">SELL SIGNAL · OUT AT THIS BAR&rsquo;S OPEN</span>' : '') + '</td><td>' + esc(p.entry) + '</td><td class="' + (lockd ? 'inprof' : 'dn') + '"' + (lockd ? ' title="stop is above entry: profit locked"' : '') + '>' + esc(p.stop) + '</td><td>' + esc(p.last) + (p.ext != null && !p.selling ? '<br><small style="color:var(--muted)">' + esc(p.ext_lab) + ' ' + esc(p.ext) + '</small>' : '') + '</td><td class="r ' + cls(p.pnl) + '" style="font-weight:600">' + pct(p.pnl) + (p.ext != null && !p.selling ? '<br><small class="' + cls(p.ext_pnl) + '" style="font-weight:400">' + pct(p.ext_pnl) + '</small>' : '') + '</td><td class="r">' + pct(p.peak) + '</td></tr>';
     }).join('');
+    try { renderXt(S); } catch (ex) { console.log(ex); }
     var G = S.signals || [];
     $('sigList').innerHTML = G.length ? G.map(function (s) {
       return '<div class="sig"><span class="t">' + esc(s.time) + '</span><span class="a ' + (s.action === 'BUY' ? 'up' : 'dn') + '">' + esc(s.action) + '</span><span class="n">' + esc(s.ticker) + '</span><span>' + esc(s.price) + (s.grade ? ' <small class="' + (s.grade === 'A+' || s.grade === 'HIGH' ? 'up' : s.grade === 'LOW' ? 'dn' : '') + '" title="' + (s.grade === 'A+' ? 'Grade A+: flipped up while SPY is in a downtrend - the best entries historically. ' : '') + 'Context only, every signal is taken at the same size">' + esc(s.grade) + '</small>' : '') + '</span><span class="x">' + (s.pnl == null ? '' : pct(s.pnl)) + '</span></div>';
@@ -330,6 +337,48 @@ body,button,input,select,table,th,td{font-style:italic}
     return '<span class="xt ' + (x.side === 'low' ? 'up' : 'dn') + '" style="display:inline-block;margin-' + (big ? 'left:10px' : 'top:3px') + ';font-size:' + (big ? '12px' : '11px') + ';letter-spacing:.06em" title="the day\'s ' + x.side + ' holds into the close ' + x.p + '% of the time from here (time of day x vector context); context only">' +
       x.side.toUpperCase() + ' IN ' + x.p + '% \u00b7 ' + x.other + ' \u2192 ' + f2(x.proj) + ' (90% ' + x.w + ' ' + f2(x.p90) + ')</span>';
   }
+  var XCX = { both: '15m + 1h flipped', '15m': '15m flipped', '1h': '1h flipped', old: 'set 45m+ ago', fresh: 'fresh' };
+  function xtChart(e) {
+    var B = e.bars, W = Math.max(320, Math.min(820, window.innerWidth - 80)), H = 210, L = 8, R = 92, T = 12, Bt = 24, m0 = 570, m1 = 960, k = e.side === 'low' ? 9 : 11;
+    var lo = Infinity, hi = -Infinity; B.forEach(function (b) { lo = Math.min(lo, b[3]); hi = Math.max(hi, b[2]); }); [e.proj, e.p90, e.level].forEach(function (v) { lo = Math.min(lo, v); hi = Math.max(hi, v); });
+    var pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+    var X = function (m) { return L + (m - m0) / (m1 - m0) * (W - L - R); }, Y = function (p) { return T + (hi - p) / (hi - lo) * (H - T - Bt); }, bw = (W - L - R) / 26;
+    var sv = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(e.tk) + ' session with the projected ' + (e.side === 'low' ? 'high' : 'low') + ' after the alert">';
+    [570, 720, 840, 960].forEach(function (m) { sv += '<text x="' + X(m) + '" y="' + (H - 7) + '" fill="#9a9890" font-size="11" text-anchor="' + (m === 960 ? 'end' : m === 570 ? 'start' : 'middle') + '">' + hm(m) + '</text>'; });
+    var d = '', n = 0; B.forEach(function (b, i) { if (i < e.i || b.length <= k) return; d += (n++ ? 'L' : 'M') + X(b[0]).toFixed(1) + ' ' + Y(b[k]).toFixed(1) + 'L' + X(b[0] + 15).toFixed(1) + ' ' + Y(b[k]).toFixed(1); });
+    var col = e.side === 'low' ? '#6fcf97' : '#eb5757';
+    if (d) sv += '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-opacity=".55" stroke-width="1.2" vector-effect="non-scaling-stroke"/>';
+    var xa = X(B[e.i][0] + 15);
+    var ly = []; var hl = function (v, lab, c, dash) { var y = Y(v), t = y + 4; ly.forEach(function (q) { if (Math.abs(t - q) < 12) t = q + (t >= q ? 12 : -12); }); ly.push(t); return '<line x1="' + xa + '" x2="' + (W - R) + '" y1="' + y + '" y2="' + y + '" stroke="' + c + '" stroke-dasharray="' + dash + '" vector-effect="non-scaling-stroke"/><text x="' + (W - R + 6) + '" y="' + t + '" fill="' + c + '" font-size="11">' + lab + ' ' + f2(v) + '</text>'; };
+    sv += hl(e.proj, 'proj', col, '6 4') + hl(e.p90, '90%', e.side === 'low' ? 'rgba(111,207,151,.5)' : 'rgba(235,87,87,.5)', '2 4') + hl(e.level, e.side, '#e8e6e3', '3 3');
+    B.forEach(function (b) { var x = X(b[0]) + bw / 2, c = b[4] >= b[1] ? '#d4ad4f' : '#8a7536';
+      sv += '<line x1="' + x + '" x2="' + x + '" y1="' + Y(b[2]) + '" y2="' + Y(b[3]) + '" stroke="' + c + '" vector-effect="non-scaling-stroke"/><rect x="' + (x - bw * 0.3) + '" width="' + (bw * 0.6) + '" y="' + Y(Math.max(b[1], b[4])) + '" height="' + Math.max(1, Math.abs(Y(b[1]) - Y(b[4]))) + '" fill="' + c + '"/>'; });
+    sv += '<line x1="' + xa + '" x2="' + xa + '" y1="' + T + '" y2="' + (H - Bt) + '" stroke="rgba(201,162,39,.8)" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/><text x="' + (xa - 4) + '" y="' + (T + 10) + '" fill="#c9a227" font-size="11" text-anchor="end">alert ' + esc(e.time) + '</text></svg>';
+    return '<div class="rng" style="margin:6px 0 10px">' + sv + '</div>';
+  }
+  function xtTag(e) { return '<span class="' + (e.side === 'low' ? 'up' : 'dn') + '" style="font-size:11px;letter-spacing:.06em">' + e.side.toUpperCase() + ' IN ' + e.p + '%</span>'; }
+  var XTD = null;
+  function renderXt(S) {
+    var X = S.xt || []; $('xtEmpty').hidden = X.length > 0;
+    var D = X.filter(function (e) { return e.held != null && e.done; }), n = D.length, avg = function (f) { return n ? D.reduce(function (a, e) { return a + f(e); }, 0) / n : null; };
+    $('xtTiles').innerHTML = tile('Alerts (closed days)', String(n)) + tile('Extreme held', n ? Math.round(avg(function (e) { return e.held ? 1 : 0; }) * 100) + '%' : '–') +
+      tile('Reached projection', n ? Math.round(avg(function (e) { return e.hit ? 1 : 0; }) * 100) + '%' : '–') + tile('Avg to close', pct(avg(function (e) { return e.close; }), 2), '', cls(avg(function (e) { return e.close; })));
+    $('xtBody').innerHTML = X.map(function (e, i) {
+      var live = !e.done;
+      return '<tr class="xtr" data-xt="' + i + '" style="cursor:pointer"><td>' + esc(e.date.slice(5)) + ' ' + esc(e.time) + '</td><td>' + esc(e.tk) + '</td><td>' + xtTag(e) + ' <span class="sub" style="font-size:11px">' + esc(XCX[e.ctx] || e.ctx) + '</span></td><td>' + f2(e.px) + '</td>' +
+        '<td>' + (e.side === 'low' ? 'high ' : 'low ') + f2(e.proj) + (e.hit ? ' <span class="up">✓</span>' : '') + '</td>' +
+        '<td>' + (e.held == null ? '–' : (e.held ? '<span class="up">yes</span>' : '<span class="dn">broke</span>') + (live ? ' <span class="sub" style="font-size:11px">so far</span>' : '')) + '</td>' +
+        '<td class="r ' + cls(e.move) + '">' + pct(e.move, 2) + '</td><td class="r ' + cls(e.close) + '">' + pct(e.close, 2) + (live ? '*' : '') + '</td></tr>' +
+        '<tr class="xtc" id="xtc' + i + '" hidden><td colspan="8"></td></tr>';
+    }).join('');
+    XTD = X;
+  }
+  document.addEventListener('click', function (ev) {
+    var r = ev.target.closest('tr.xtr'); if (!r || !XTD) return;
+    var i = +r.dataset.xt, c = $('xtc' + i); if (!c) return;
+    if (c.hidden) { c.firstChild.innerHTML = xtChart(XTD[i]) + '<div class="sub" style="font-size:12px;margin-bottom:8px">' + esc(XTD[i].tk) + ' ' + esc(XTD[i].day) + ': ' + XTD[i].side + ' ' + f2(XTD[i].level) + ' looked ' + XTD[i].p + '% likely in at ' + esc(XTD[i].time) + ' (' + esc(XCX[XTD[i].ctx] || XTD[i].ctx) + '). Projected ' + (XTD[i].side === 'low' ? 'high ' : 'low ') + f2(XTD[i].proj) + ', 90% ' + (XTD[i].side === 'low' ? 'under ' : 'above ') + f2(XTD[i].p90) + '. Best move = from the alert price to the best ' + (XTD[i].side === 'low' ? 'high' : 'low') + ' after it.</div>'; c.hidden = false; }
+    else c.hidden = true;
+  });
   function rangeBlock(z, fill) {
     if (!z || !z.bars || !z.bars.length) return '';
     var B = z.bars.filter(function (b) { return b[0] >= 420; }); if (!B.length) B = z.bars;

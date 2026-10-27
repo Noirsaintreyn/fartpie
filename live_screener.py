@@ -551,7 +551,7 @@ def range_path(H, day, note_t=None):
     gm = (g.dt.dt.hour * 60 + g.dt.dt.minute).values
     H = H.reset_index(drop=True); r15, r1 = range_states(H); ix = H.index[H.dt.isin(g.dt)].values; g15, g1 = r15[ix], r1[ix]
     bars, plo, phi, rlo, rhi, at = [], np.inf, -np.inf, np.inf, -np.inf, None
-    tl = th = None; fu15 = fd15 = fu1 = fd1 = -1; ctx = None
+    tl = th = None; fu15 = fd15 = fu1 = fd1 = -1; ctx = None; cxs = []
     for k, (mm, o, h, l, c) in enumerate(zip(gm, g.open.values, g.high.values, g.low.values, g.close.values)):
         r2 = lambda v: round(float(v), 2)
         if mm < RTH0: plo, phi = min(plo, l), max(phi, h); lo, hi = plo, phi
@@ -573,10 +573,10 @@ def range_path(H, day, note_t=None):
             pl, qh, qh9 = RNG_Q[f'{tb}{cl}']; ph, ql, ql9 = RNG_Q[f'{tb}{ch}']
             row += [r2(hi * np.exp(qh * b)), r2(hi * np.exp(qh9 * b)), r2(lo * np.exp(-ql * b)), r2(lo * np.exp(-ql9 * b)), round(pl * 100), round(ph * 100)]
             ctx = (cl, ch)
-        bars.append(row)
+        bars.append(row); cxs.append(list(ctx) if mm >= RTH0 else None)
         if note_t is not None and mm + 15 <= note_t: at = k
     rth = [x for x in bars if x[0] >= RTH0]
-    return dict(day=f'{day:%a %b %d}', budget=round(b * 100, 2), wide=round(w * 100, 2), bars=bars, note_i=at,
+    return dict(cxs=cxs, day=f'{day:%a %b %d}', budget=round(b * 100, 2), wide=round(w * 100, 2), bars=bars, note_i=at,
                 hi=max(x[2] for x in rth) if rth else None, lo=min(x[3] for x in rth) if rth else None,
                 done=bool(rth) and rth[-1][0] >= RTH1 - 15, last=bars[-1][4], asof=f"{(bars[-1][0] + 15) // 60}:{(bars[-1][0] + 15) % 60:02d}",
                 ctx=ctx, week=week_range(H[H.dt < day + pd.Timedelta(days=1)], D[D.index <= day], r1[:int((H.dt < day + pd.Timedelta(days=1)).sum())]))
@@ -600,6 +600,58 @@ def site_ranges(rows, meta, note=None):
             out[tk] = z
         except Exception as e: print(f'  ! site range {tk}: {str(e)[:60]}')
     return out
+
+XT_LOG = f'{LIVE}/xt_log.json'
+
+def xt_alerts(z):
+    """the bars where day_extremes fires: first completed RTH bar from 10:00 (posted 10:15) to 15:30 with p >= XT_P and context not 'fresh', per side"""
+    out = {}
+    for k, b in enumerate(z['bars']):
+        if len(b) <= 9 or b[0] < 600 or b[0] >= RTH1 - 15 or not z['cxs'][k]: continue
+        for side, p, c in (('low', b[13], z['cxs'][k][0]), ('high', b[14], z['cxs'][k][1])):
+            if side not in out and p >= XT_P * 100 and c != 'fresh': out[side] = k
+    return out
+
+def xt_record(tk, day, z, side, k):
+    B = z['bars']; b = B[k]; R = [x for x in B if x[0] >= RTH0]; i0 = next(i for i, x in enumerate(B) if x[0] >= RTH0)
+    pre, post = B[i0:k + 1], B[k + 1:]
+    lvl = min(x[3] for x in pre) if side == 'low' else max(x[2] for x in pre)
+    proj, p90 = (b[9], b[10]) if side == 'low' else (b[11], b[12])
+    e = dict(tk=tk, date=f'{day:%Y-%m-%d}', day=z['day'], time=f"{(b[0] + 15) // 60}:{(b[0] + 15) % 60:02d}", side=side, p=b[13] if side == 'low' else b[14],
+             ctx=z['cxs'][k][0 if side == 'low' else 1], px=b[4], level=lvl, proj=proj, p90=p90, done=z['done'],
+             bars=[x[:15] for x in R], i=k - i0)
+    if post:
+        ext = max(x[2] for x in post) if side == 'low' else min(x[3] for x in post)
+        brk = min(x[3] for x in post) < lvl if side == 'low' else max(x[2] for x in post) > lvl
+        e.update(held=not brk, hit=bool(ext >= proj if side == 'low' else ext <= proj), move=round((ext / b[4] - 1) * 100 * (1 if side == 'low' else -1), 2),
+                 close=round((R[-1][4] / b[4] - 1) * 100 * (1 if side == 'low' else -1), 2))
+    return e
+
+def xt_history(meta):
+    """every expected-low/high alert on names the book held since START (backfilled by replaying the model; past days cached in xt_log.json)"""
+    try: C = json.load(open(XT_LOG))
+    except Exception: C = {}
+    today = now_et().normalize(); HS = meta['HS']; ch = False
+    for t in meta['trades']:
+        if t['status'] not in ('CLOSED', 'HOLD', 'SELL') or not t['px'] or t['tk'] not in HS: continue
+        t0 = pd.Timestamp(t['t0']); t1 = pd.Timestamp(t['t1']) if t['status'] == 'CLOSED' and t.get('t1') is not None else now_et().tz_localize(None)
+        for d in pd.bdate_range(t0.normalize(), t1.normalize()):
+            key = f"{t['tk']}|{d:%Y-%m-%d}"
+            if key in C and d < today: continue
+            try:
+                z = range_path(HS[t['tk']], d)
+                C[key] = [xt_record(t['tk'], d, z, s, k) for s, k in xt_alerts(z).items()] if z else []
+                C[key] = [e for e in C[key] if t0 <= pd.Timestamp(f"{e['date']} {e['time']}") <= t1]
+                if d < today and z and not z['done']: C.pop(key)
+                ch = True
+            except Exception as ex: print(f"  ! xt {key}: {str(ex)[:60]}")
+    if ch:
+        try: tmp = XT_LOG + '.tmp'; json.dump(C, open(tmp, 'w')); os.replace(tmp, XT_LOG)
+        except Exception: pass
+    seen = {}
+    for v in C.values():
+        for e in v: seen[(e['tk'], e['date'], e['side'])] = e
+    return sorted(seen.values(), key=lambda e: (e['date'], e['time']), reverse=True)[:60]
 
 def latest_note():
     """the most recent morning note: today's once written, else the previous one (Friday's over the weekend)"""
@@ -694,6 +746,8 @@ def write_site_snapshot(rows, meta):
                 slots=meta['slots'], cutoff=CUT2, positions=pos, signals=sig, watch=watch, history=hist)
     note = latest_note()                                                            # the 09:00 write-up (frozen) + its session's range chart, live every scan
     snap['analysis'] = note; snap['ranges'] = site_ranges(rows, meta, note)
+    try: snap['xt'] = xt_history(meta)
+    except Exception as e: print(f'  ! site xt: {str(e)[:80]}')
     tmp = f'{LIVE}/site_snapshot.json.tmp'; json.dump(snap, open(tmp, 'w')); os.replace(tmp, f'{LIVE}/site_snapshot.json')
 
 # ================================================================ cards
