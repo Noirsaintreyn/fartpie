@@ -296,7 +296,7 @@ body,button,input,select,table,th,td{font-style:italic}
     }).join('');
     var G = S.signals || [];
     $('sigList').innerHTML = G.length ? G.map(function (s) {
-      return '<div class="sig"><span class="t">' + esc(s.time) + '</span><span class="a ' + (s.action === 'BUY' ? 'up' : 'dn') + '">' + esc(s.action) + '</span><span class="n">' + esc(s.ticker) + '</span><span>' + esc(s.price) + '</span><span class="x">' + (s.pnl == null ? '' : pct(s.pnl)) + '</span></div>';
+      return '<div class="sig"><span class="t">' + esc(s.time) + '</span><span class="a ' + (s.action === 'BUY' ? 'up' : 'dn') + '">' + esc(s.action) + '</span><span class="n">' + esc(s.ticker) + '</span><span>' + esc(s.price) + (s.grade ? ' <small class="' + (s.grade === 'HIGH' ? 'up' : s.grade === 'LOW' ? 'dn' : '') + '" title="signal score: context only, every signal is taken">' + esc(s.grade) + '</small>' : '') + '</span><span class="x">' + (s.pnl == null ? '' : pct(s.pnl)) + '</span></div>';
     }).join('') : '<div class="empty">No signals yet today.</div>';
     $('watch').innerHTML = (S.watch || []).map(function (w) { return '<button class="chip' + (w.held ? ' held' : '') + '" data-tk="' + esc(w.tk) + '"><b>' + esc(w.tk) + '</b><span>' + Number(w.ratio).toFixed(1) + '</span></button>'; }).join('');
     renderAnalysis(S);

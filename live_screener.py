@@ -650,11 +650,14 @@ def write_site_snapshot(rows, meta):
            for r in rows if r['action'] in ('HOLD', 'SELL') and r['px']]
     sig = []
     f = f'{LIVE}/signal_log.csv'
+    try: SCS = json.load(open(f'{LIVE}/signal_scores.json'))
+    except Exception: SCS = {}
     if os.path.exists(f):
         L = pd.read_csv(f, parse_dates=['run_at']); L = L[L.run_at.dt.normalize() == t.normalize()]
         for x in L.itertuples():
             sig.append(dict(time=f'{x.run_at:%H:%M}', action=x.action, ticker=x.ticker, price=f'{x.price:.2f}',
-                            pnl=round(x.pnl * 100, 2) if (x.action == 'SELL' and x.pnl == x.pnl) else None))
+                            pnl=round(x.pnl * 100, 2) if (x.action == 'SELL' and x.pnl == x.pnl) else None,
+                            grade=(SCS.get(f"{x.ticker}|{x.run_at:%Y-%m-%d %H:%M}") or {}).get('grade') if x.action == 'BUY' else None))
         seen = set(); sig = [z for z in sig[::-1] if not ((z['time'], z['action'], z['ticker']) in seen or seen.add((z['time'], z['action'], z['ticker'])))]
     watch = [dict(tk=k, ratio=round(v, 2), held=k in held) for k, v in sorted(meta.get('ratios', {}).items(), key=lambda kv: -kv[1]) if v == v and (v >= min(CUT, CUT2) or k in held)]
     hist = {}
@@ -971,6 +974,91 @@ def har_sigma(D):
     """next-day sigma from the HAR range model (pooled fit) for a daily frame with h/l, using rows up to the last one"""
     x = np.log(np.log(D.h / D.l).clip(lower=1e-5))
     return float(np.exp(-0.6186 + 0.2939 * x.iloc[-1] + 0.3661 * x.iloc[-5:].mean() + 0.1783 * x.iloc[-22:].mean()) / 1.665)
+# ---- signal score (Oct 26 2026, xs/score_ref.py): ranks each BUY by conditions that held up out of sample on the trades the book takes.
+#      Context only - every signal is still taken. 2022-26 (unseen when the score was built): high third +0.47% avg trade, low third +0.24%.
+SCORE_REF = 'live_data/score_ref.json'; _MKT = {}
+SCORE_TXT = {'es_am': ('asset managers not crowded', 'asset managers crowded long'), 'breadth': ('breadth improving', 'breadth weakening'),
+             'spy200': ('SPY not stretched', 'SPY stretched over its 200-day'), 'dse': ('late in the earnings quarter', 'early in the earnings quarter'),
+             'dage': ('young daily uptrend', 'old daily uptrend'), 'mkt20': ('market not running hot', 'market running hot')}
+def _cot_es_index():
+    """CFTC Traders in Financial Futures, E-mini S&P (13874A): asset managers' net long / open interest as a 3-year percentile, from the
+    latest report usable today (Tuesday data, used from the next Monday). Yearly files cached in LIVE."""
+    import zipfile, io, requests
+    rows = []; y0 = now_et().year
+    for y in range(y0 - 3, y0 + 1):
+        f = f'{LIVE}/cot_fin_{y}.csv'
+        if not os.path.exists(f) or (y == y0 and time.time() - os.path.getmtime(f) > 86400):
+            r = requests.get(f'https://www.cftc.gov/files/dea/history/fut_fin_txt_{y}.zip', timeout=60); r.raise_for_status()
+            z = zipfile.ZipFile(io.BytesIO(r.content)); d = pd.read_csv(z.open(z.namelist()[0]), low_memory=False)
+            d = d[d.CFTC_Contract_Market_Code.astype(str) == '13874A'][['Report_Date_as_YYYY-MM-DD', 'Open_Interest_All', 'Asset_Mgr_Positions_Long_All', 'Asset_Mgr_Positions_Short_All']]
+            d.to_csv(f, index=False)
+        rows.append(pd.read_csv(f))
+    d = pd.concat(rows); d['rd'] = pd.to_datetime(d['Report_Date_as_YYYY-MM-DD']); d = d.groupby('rd').sum(numeric_only=True).sort_index()
+    net = (d.Asset_Mgr_Positions_Long_All - d.Asset_Mgr_Positions_Short_All) / d.Open_Interest_All
+    net = net[net.index + pd.Timedelta(days=6) <= now_et().normalize()]
+    a = net.values[-156:]; return float((a[:-1] < a[-1]).mean()) if len(a) >= 52 else None
+def market_inputs():
+    """market-level score inputs as of the prior session, once a day"""
+    day = f'{now_et():%Y-%m-%d}'
+    if _MKT.get('day') == day: return _MKT['v']
+    v = {}
+    try:
+        import yfinance as yf
+        d = yf.download(['SPY', 'RSP'], period='2y', interval='1d', auto_adjust=True, progress=False)['Close'].dropna()
+        d = d[d.index.tz_localize(None).normalize() < now_et().normalize()] if d.index.tz is not None else d[d.index.normalize() < now_et().normalize()]
+        spy, rat = d.SPY, d.RSP / d.SPY
+        v['spy200'] = float(spy.iloc[-1] / spy.rolling(200).mean().iloc[-1] - 1); v['mkt20'] = float(np.log(spy).diff().iloc[-20:].sum()); v['breadth'] = float(rat.iloc[-1] / rat.iloc[-51] - 1)
+    except Exception as e: print(f'  ! score market inputs: {str(e)[:80]}')
+    try: v['es_am'] = _cot_es_index()
+    except Exception as e: print(f'  ! COT: {str(e)[:80]}')
+    _MKT.update(day=day, v=v); return v
+def name_inputs(tk, H):
+    """per-name inputs as of the prior session: trading days since the last earnings report, daily vector uptrend age"""
+    out = {}; m = H.dt.dt.hour * 60 + H.dt.dt.minute; R_ = H[(m >= RTH0) & (m < RTH1)]
+    D = R_.groupby(R_.dt.dt.normalize()).agg(open=('open', 'first'), high=('high', 'max'), low=('low', 'min'), close=('close', 'last'))
+    D = D[D.index < now_et().normalize()]
+    if len(D) < 60: return out
+    try:
+        sd = vec(D.reset_index().rename(columns={D.index.name or 'index': 'dt'})).reg.values; k = 0
+        for x in sd[::-1]:
+            if x != 1: break
+            k += 1
+        out['dage'] = k
+    except Exception as e: print(f'  ! score dage {tk}: {str(e)[:60]}')
+    try:
+        ev = [t for t, ac, rep in earn_events(tk) if rep and t < now_et()]
+        if ev:
+            le = max(ev); days = D.index; before = days[days < le.normalize()]
+            if len(before): out['dse'] = int(((days > before[-1]) & (days <= days[-1])).sum())
+    except Exception as e: print(f'  ! score dse {tk}: {str(e)[:60]}')
+    return out
+def signal_score(tk, H):
+    try: R = json.load(open(SCORE_REF))
+    except Exception: return None
+    v = dict(market_inputs()); v.update(name_inputs(tk, H)); parts = {}
+    for c, sg in R['signs'].items():
+        x = v.get(c)
+        if x is None or x != x: continue
+        ref = R['ref'][c]; p = float(np.searchsorted(ref, x)) / len(ref); parts[c] = p if sg > 0 else 1 - p
+    if len(parts) < 3: return None
+    sc = float(np.mean(list(parts.values()))); t1, t2 = R['cuts']; grade = 'HIGH' if sc > t2 else 'LOW' if sc < t1 else 'MID'
+    lo, hi = (sc - t1) / max(t2 - t1, 1e-9), None
+    pct = int(round(100 * np.mean([sc > q for q in np.linspace(.3, .7, 41)])))
+    return dict(score=round(sc, 3), grade=grade, pct=pct, parts=parts, stats=R.get('stats', {}))
+def score_line(z, rank=None):
+    if not z: return ''
+    st = z['stats']; g = z['grade'].lower(); avg = st.get(g, {}).get('22-26')
+    good = [SCORE_TXT[c][0] for c, p in z['parts'].items() if p >= .5]; bad = [SCORE_TXT[c][1] for c, p in z['parts'].items() if p < .5]
+    head = f"🏅 Score {z['grade']}" + (f" (#{rank[0]} of {rank[1]} buys this bar)" if rank and rank[1] > 1 else '')
+    base = f" - {z['grade'].lower()}-score trades averaged {avg:+.2f}% in 2022-26 (high {st.get('high', {}).get('22-26', 0):+.2f}%, low {st.get('low', {}).get('22-26', 0):+.2f}%); context only, the trade is taken either way" if avg is not None else ''
+    return head + base + '\n   \u2713 ' + ', '.join(good or ['-']) + ('\n   \u2717 ' + ', '.join(bad) if bad else '')
+def save_score(tk, z):
+    f = f'{LIVE}/signal_scores.json'
+    try: S = json.load(open(f))
+    except Exception: S = {}
+    S[f"{tk}|{now_et():%Y-%m-%d %H:%M}"] = dict(grade=z['grade'], score=z['score']) if z else None
+    S = dict(list(S.items())[-400:]); tmp = f + '.tmp'; json.dump(S, open(tmp, 'w')); os.replace(tmp, f)
+
 def range_context(H):
     """Oct 26 2026: where a BUY sits in today's expected range (HAR). Context only - skipping or shrinking stretched entries did not help
     the book (xs/stop_book.py / rangez test), but the most stretched fifth of entries (> ~107% of the range used) averaged +0.13% vs +0.31%."""
@@ -1065,7 +1153,18 @@ def post_new_signals(rows, meta, st):
         except Exception as e: print(f'  ! HM card failed ({str(e)[:60]})'); files = []
         msg = (f"\u2b50 HONORABLE MENTION - {tk} flipped bullish ({r['bar']:%H:%M} bar, last {r['last']:.2f}, stop {r['stop']:.2f}) "
                f"but all {meta['slots']} slots are full, so the book is NOT buying it. Tracked in /hm.")
+        try:
+            zh = signal_score(r['base'], r['H']) if os.getenv('SIGNAL_SCORE', '1') == '1' else None
+            if zh: msg += '\n' + score_line(zh)
+        except Exception as e: print(f'  ! HM score: {str(e)[:60]}')
         if post(msg, files, channel=os.getenv('HM_CHANNEL_ID')): st['signals'].append(key); _save(st)
+    SC = {}
+    for r in rows:
+        if r['action'] == 'BUY' and os.getenv('SIGNAL_SCORE', '1') == '1':
+            try: SC[r['ticker']] = signal_score(r['base'], r['H'])
+            except Exception as e: print(f"  ! score {r['ticker']}: {str(e)[:60]}")
+    ranked = sorted([t for t, z in SC.items() if z], key=lambda t: -SC[t]['score'])
+    rows = sorted(rows, key=lambda r: -SC[r['ticker']]['score'] if (r['action'] == 'BUY' and SC.get(r['ticker'])) else 0)
     for r in rows:
         tk = r['ticker']; late = ''
         if r['action'] == 'HOLD' and r['e'] is not None:            # entry the scan never caught on its flip bar (late bar, skipped scan)
@@ -1100,6 +1199,11 @@ def post_new_signals(rows, meta, st):
                 ctx = range_context(r['H'])
                 if ctx: late = (late + '\n' if late else '') + ctx
             except Exception as e: print(f'  ! range context: {str(e)[:60]}')
+            z = SC.get(tk)
+            if z:
+                late = (late + '\n' if late else '') + score_line(z, (ranked.index(tk) + 1, len(ranked)) if tk in ranked else None)
+                try: save_score(tk, z)
+                except Exception: pass
         if not post(late, [p]): continue
         st['signals'].append(key); _save(st)
         log = f'{LIVE}/signal_log.csv'
