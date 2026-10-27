@@ -118,6 +118,7 @@ def load_bars(tk, fetch, first=None):
                     Y['datetime'] = pd.to_datetime(Y.datetime, utc=True); Y.loc[Y.volume <= 0, 'volume'] = 1
                     H = pd.concat([H, Y]).drop_duplicates('datetime', keep='last').sort_values('datetime')
             except Exception as e2: print(f'  ! {tk}: yfinance fallback failed too ({str(e2)[:60]}); using bars on disk')
+    H = H[pd.to_datetime(H.datetime, utc=True) + pd.Timedelta('15min') <= pd.Timestamp.now(tz='UTC')]   # Oct 27 2026: never store a bar still forming
     H[['datetime', 'open', 'high', 'low', 'close', 'volume']].to_parquet(live_f, index=False)
     H['dt'] = H.datetime.dt.tz_convert(ET).dt.tz_localize(None)
     m = H.dt.dt.hour * 60 + H.dt.dt.minute
@@ -425,6 +426,14 @@ def scan(args):
         if v is None: v = LG[k] = dict(tk=t['tk'], track=t['track'], t0=str(pd.Timestamp(t['t0'])), px=float(t['px']), status='open')
         if v['status'] == 'open' and t['status'] == 'CLOSED':
             v.update(status='closed', t1=str(pd.Timestamp(t['t1'])), xpx=float(t['xpx']), lock=bool(t.get('lock')))
+        if v['status'] == 'open' and t['status'] in ('HOLD', 'SELL') and t.get('e') is not None:   # Oct 27 2026: an entry recorded from a
+            try:                                                                                     # partial / revised bar -> the settled open
+                eb = HS[t['tk']]; e_ = int(t['e']); ok = 0 <= e_ < len(eb) and eb.dt.iloc[e_] == pd.Timestamp(v['t0'])
+                if ok and pd.Timestamp(v['t0']) >= now_et().normalize() - pd.Timedelta(days=5):
+                    o_ = float(eb.open.iloc[e_])
+                    if o_ > 0 and abs(o_ / float(v['px']) - 1) > .001:
+                        print(f"  ledger: {t['tk']} entry {float(v['px']):.2f} -> {o_:.2f} (settled open of the {pd.Timestamp(v['t0']):%m-%d %H:%M} bar)"); v['px'] = o_; v['px_fix'] = True
+            except Exception as ex: print(f"  ! entry check {t['tk']}: {str(ex)[:60]}")
         t['px'] = float(v['px'])
         if v['status'] == 'closed':
             t['xpx'] = float(v['xpx']); t['t1'] = np.datetime64(pd.Timestamp(v['t1'])); t['lock'] = bool(v.get('lock'))
