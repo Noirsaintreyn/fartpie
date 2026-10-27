@@ -481,12 +481,15 @@ def scan(args):
     hm_rows = [mk_row(tk, HS[tk], track, t) for (tk, track), t in hm.items()]
     # honorable-mention HISTORY (Oct 26 2026, Discord /hh): every flip since the start that was skipped while every slot was full
     akeys = {(t['tk'], t['track'], pd.Timestamp(t['t0'])) for t in AL}
+    def held_at(tk, ts): return any(a['tk'] == tk and pd.Timestamp(a['t0']) <= ts and (a['status'] != 'CLOSED' or pd.Timestamp(a['t1']) > ts) for a in AL)
     def n_open(ts): return sum(1 for a in AL if pd.Timestamp(a['t0']) <= ts and (a['status'] != 'CLOSED' or pd.Timestamp(a['t1']) > ts))
     hm_all = []
     for t in TR_all:
         ts = pd.Timestamp(t['t0'])
         if t['tk'] == 'QQQ' or not t.get('px') or t.get('blocked') or ts < START or (t['tk'], t['track'], ts) in akeys: continue
         if t['status'] not in ('HOLD', 'SELL', 'CLOSED') or n_open(ts) < slots_at(t['t0']): continue
+        if held_at(t['tk'], ts): continue                                     # Oct 27 2026: the book already owns this name - not a missed trade
+        if any(x['tk'] == t['tk'] and pd.Timestamp(x['t0']) == ts for x in hm_all): continue    # same name + same entry on both tracks: count once
         h = dict(t)
         if h['status'] == 'CLOSED' and 'xpx' not in h: h['xpx'] = float(HS[h['tk']].open.values[min(h['x'], len(HS[h['tk']]) - 1)])
         hm_all.append(h)
@@ -869,7 +872,7 @@ def history_card(rows, meta, path, fetch=True, hm=False):
         avg_h = np.mean([z['ret'] for z in C]) if C else np.nan; avg_b = np.mean(bwin) if bwin else np.nan
         kp = [('IF TRADED', f'{tot:+.2%}', f'realized {real:+.2%} · open {op:+.2%}', tot), ('REAL BOOK', f'{spy:+.2%}' if spy == spy else '—', 'trades actually taken', spy),
               ('AVG CLOSED', f'{avg_h:+.2%}' if avg_h == avg_h else '—', f'taken trades {avg_b:+.2%}' if avg_b == avg_b else 'taken: —', (avg_h - avg_b) if avg_h == avg_h and avg_b == avg_b else None),
-              ('WIN RATE', f'{len(wins) / max(1, len(C)):.0%}', f'taken {np.mean([r > 0 for r in bwin]):.0%}' if bwin else f'{len(C)} closed', None)]
+              ('WIN RATE', f'{len(wins) / max(1, len(C)):.0%}', f'{len(wins)} of {len(C)} closed won · taken {np.mean([r > 0 for r in bwin]):.0%}' if bwin else f'{len(wins)} of {len(C)} closed won', None)]
     for k, (h, v, sub, val) in enumerate(kp):
         x0 = .045 + k * .228
         fig.patches.append(FancyBboxPatch((x0, Y(2.05)), .215, 1.0 / H_in, boxstyle='round,pad=0,rounding_size=0.008', transform=fig.transFigure, fc=PANEL, ec='none', zorder=-8))
