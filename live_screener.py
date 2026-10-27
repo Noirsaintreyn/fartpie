@@ -1054,6 +1054,30 @@ def signal_score(tk, H):
     lo, hi = (sc - t1) / max(t2 - t1, 1e-9), None
     pct = int(round(100 * np.mean([sc > q for q in np.linspace(.3, .7, 41)])))
     return dict(score=round(sc, 3), grade=grade, pct=pct, parts=parts, stats=R.get('stats', {}))
+_DOWN = {}
+def spy_downtrend():
+    """Oct 27 2026 (xs/market_gate.py, xs/downtrend_tf.py): SPY's daily vector bear AND SPY under its 200-day, as of the prior close.
+    Flips that come in while SPY is in this state were the strongest entries in every period (admitted trades avg +1.12% 2019-21,
+    +1.13% 2022-26 vs +0.57% / +0.18% otherwise). Shown on BUY alerts as context; sizing is unchanged."""
+    day = f'{now_et():%Y-%m-%d}'
+    if _DOWN.get('day') == day: return _DOWN['v']
+    v = None
+    try:
+        import yfinance as yf
+        y = yf.Ticker('SPY').history(period='3y', interval='1d', auto_adjust=True)
+        y.index = y.index.tz_localize(None) if y.index.tz is None else y.index.tz_convert(ET).tz_localize(None)
+        y = y[y.index.normalize() < now_et().normalize()]
+        D = pd.DataFrame({'dt': y.index, 'open': y.Open.values, 'high': y.High.values, 'low': y.Low.values, 'close': y.Close.values})
+        reg = int(vec(D).reg.iloc[-1]); s200 = float(y.Close.iloc[-1] / y.Close.rolling(200).mean().iloc[-1] - 1)
+        v = dict(down=reg == -1 and s200 < 0, reg=reg, s200=s200)
+    except Exception as e: print(f'  ! SPY downtrend: {str(e)[:80]}')
+    _DOWN.update(day=day, v=v); return v
+def down_line():
+    d = spy_downtrend()
+    if not d or not d['down']: return ''
+    return (f"\U0001F4C8 GROWTH SETUP: SPY is in a downtrend (daily vector bear, {d['s200']:+.1%} vs its 200-day) and this name flipped UP against it. "
+            f"Flips like this were the strongest entries in every period: +1.1% avg trade in 2019-21 and 2022-26, vs +0.2-0.6% otherwise. Same size as always.")
+
 def score_line(z, rank=None):
     if not z: return ''
     st = z['stats']; g = z['grade'].lower(); avg = st.get(g, {}).get('22-26')
@@ -1212,6 +1236,8 @@ def post_new_signals(rows, meta, st):
         try:
             zh = signal_score(r['base'], r['H']) if os.getenv('SIGNAL_SCORE', '1') == '1' else None
             if zh: msg += '\n' + score_line(zh)
+            dl = down_line()
+            if dl: msg += '\n' + dl
         except Exception as e: print(f'  ! HM score: {str(e)[:60]}')
         if post(msg, files, channel=os.getenv('HM_CHANNEL_ID')): st['signals'].append(key); _save(st)
     SC = {}
@@ -1255,6 +1281,10 @@ def post_new_signals(rows, meta, st):
                 ctx = range_context(r['H'])
                 if ctx: late = (late + '\n' if late else '') + ctx
             except Exception as e: print(f'  ! range context: {str(e)[:60]}')
+            try:
+                dl = down_line()
+                if dl: late = (late + '\n' if late else '') + dl
+            except Exception as e: print(f'  ! down line: {str(e)[:60]}')
             z = SC.get(tk)
             if z:
                 late = (late + '\n' if late else '') + score_line(z, (ranked.index(tk) + 1, len(ranked)) if tk in ranked else None)
