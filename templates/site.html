@@ -125,6 +125,7 @@ body,button,input,select,table,th,td{font-style:italic}
 <nav aria-label="Main" id="nav">
 <button data-tab="analysis">Daily Analysis</button>
 <button data-tab="screener">Screener</button>
+<button data-tab="extremes">Highs / Lows</button>
 <button data-tab="mid">Mid / Small Book</button>
 <button data-tab="charts">Charts</button>
 <button data-tab="history">History</button>
@@ -157,14 +158,21 @@ body,button,input,select,table,th,td{font-style:italic}
 </div>
 </div>
 <div class="panel">
-<div class="ptop"><h2>Expected high / low alerts</h2><span class="sub">When the day's low or high is likely in (time of day × vector model) on a held name · select a row for its chart</span></div>
-<div class="tiles" id="xtTiles" style="margin-bottom:14px"></div>
-<div class="scroll"><table style="min-width:640px"><thead><tr><th>When</th><th>Ticker</th><th>Signal</th><th>At</th><th>Projected</th><th>Held?</th><th class="r">Best move</th><th class="r">To close</th></tr></thead><tbody id="xtBody"></tbody></table></div>
-<div class="empty" id="xtEmpty" hidden>No alerts yet.</div>
-</div>
-<div class="panel">
 <div class="ptop"><h2>Universe</h2><span class="sub">Eligible names by options ratio · held names outlined in gold</span></div>
 <div class="chips" id="watch"></div>
+</div>
+</div>
+</section>
+
+<!-- HIGHS / LOWS -->
+<section id="tab-extremes" hidden>
+<div style="display:flex;flex-direction:column;gap:20px">
+<div class="panel">
+<div class="ptop"><h2>Alerts</h2><span class="sub">When the day's low or high is likely in (time of day × vector model) on a held name · select a row for its chart</span></div>
+<div class="tiles" id="xtTiles" style="margin-bottom:14px"></div>
+<div id="xtChartBox"></div>
+<div class="scroll"><table style="min-width:640px"><thead><tr><th>When</th><th>Ticker</th><th>Signal</th><th>At</th><th>Projected</th><th>Held?</th><th class="r">Best move</th><th class="r">To close</th></tr></thead><tbody id="xtBody"></tbody></table></div>
+<div class="empty" id="xtEmpty" hidden>No alerts yet.</div>
 </div>
 </div>
 </section>
@@ -265,7 +273,7 @@ body,button,input,select,table,th,td{font-style:italic}
   var getJSON = function (u) { return fetch(u, { credentials: 'same-origin' }).then(function (r) { if (r.status === 401) { location.href = '/login'; throw new Error('login'); } return r.json(); }); };
 
   // ---------------------------------------------------------------- tabs
-  var TITLES = { screener: ['Screener', 'Vector flips on the names the options market is watching.'], analysis: ['Daily Analysis', 'Written before the open; each expected range moves with the session.'], mid: ['Mid / Small Book', 'Thirty names, rebalanced every four weeks.'],
+  var TITLES = { extremes: ['Highs / Lows', 'When the day\'s low or high is likely in, from the time of day × vector model. Context, not a signal.'], screener: ['Screener', 'Vector flips on the names the options market is watching.'], analysis: ['Daily Analysis', 'Written before the open; each expected range moves with the session.'], mid: ['Mid / Small Book', 'Thirty names, rebalanced every four weeks.'],
     charts: ['Charts', 'Vector, THOD / TLOD and quantile bands, each on its own timeframe.'], history: ['History', 'Every live trade, at the rule’s fills.'], backtest: ['Backtest', 'The screener against the indexes, 2019 – 2026.'] };
   var tab = 'screener';
   function setTab(t) {
@@ -339,7 +347,7 @@ body,button,input,select,table,th,td{font-style:italic}
   }
   var XCX = { both: '15m + 1h flipped', '15m': '15m flipped', '1h': '1h flipped', old: 'set 45m+ ago', fresh: 'fresh' };
   function xtChart(e) {
-    var B = e.bars, W = Math.max(320, Math.min(820, window.innerWidth - 80)), H = 210, L = 8, R = 92, T = 12, Bt = 24, m0 = 570, m1 = 960, k = e.side === 'low' ? 9 : 11;
+    var B = e.bars, W = Math.max(300, Math.min(820, window.innerWidth - 80)), H = 210, L = 8, R = W < 600 ? 74 : 92, T = 12, Bt = 24, m0 = 570, m1 = 960, k = e.side === 'low' ? 9 : 11;
     var lo = Infinity, hi = -Infinity; B.forEach(function (b) { lo = Math.min(lo, b[3]); hi = Math.max(hi, b[2]); }); [e.proj, e.p90, e.level].forEach(function (v) { lo = Math.min(lo, v); hi = Math.max(hi, v); });
     var pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
     var X = function (m) { return L + (m - m0) / (m1 - m0) * (W - L - R); }, Y = function (p) { return T + (hi - p) / (hi - lo) * (H - T - Bt); }, bw = (W - L - R) / 26;
@@ -368,16 +376,18 @@ body,button,input,select,table,th,td{font-style:italic}
       return '<tr class="xtr" data-xt="' + i + '" style="cursor:pointer"><td>' + esc(e.date.slice(5)) + ' ' + esc(e.time) + '</td><td>' + esc(e.tk) + '</td><td>' + xtTag(e) + ' <span class="sub" style="font-size:11px">' + esc(XCX[e.ctx] || e.ctx) + '</span></td><td>' + f2(e.px) + '</td>' +
         '<td>' + (e.side === 'low' ? 'high ' : 'low ') + f2(e.proj) + (e.hit ? ' <span class="up">✓</span>' : '') + '</td>' +
         '<td>' + (e.held == null ? '–' : (e.held ? '<span class="up">yes</span>' : '<span class="dn">broke</span>') + (live ? ' <span class="sub" style="font-size:11px">so far</span>' : '')) + '</td>' +
-        '<td class="r ' + cls(e.move) + '">' + pct(e.move, 2) + '</td><td class="r ' + cls(e.close) + '">' + pct(e.close, 2) + (live ? '*' : '') + '</td></tr>' +
-        '<tr class="xtc" id="xtc' + i + '" hidden><td colspan="8"></td></tr>';
+        '<td class="r ' + cls(e.move) + '">' + pct(e.move, 2) + '</td><td class="r ' + cls(e.close) + '">' + pct(e.close, 2) + (live ? '*' : '') + '</td></tr>';
     }).join('');
-    XTD = X;
+    XTD = X; if (X.length && !$('xtChartBox').innerHTML) xtShow(0);
+  }
+  function xtShow(i) {
+    var e = XTD[i]; if (!e) return;
+    document.querySelectorAll('tr.xtr').forEach(function (r) { r.style.background = +r.dataset.xt === i ? 'rgba(201,162,39,.08)' : ''; });
+    $('xtChartBox').innerHTML = '<div style="font-size:13px;margin:4px 0 2px">' + esc(e.tk) + ' · ' + esc(e.day) + ' · ' + xtTag(e) + '</div>' + xtChart(e) + '<div class="sub" style="font-size:12px;margin-bottom:12px">' + e.side + ' ' + f2(e.level) + ' looked ' + e.p + '% likely in at ' + esc(e.time) + ' (' + esc(XCX[e.ctx] || e.ctx) + '). Projected ' + (e.side === 'low' ? 'high ' : 'low ') + f2(e.proj) + ', 90% ' + (e.side === 'low' ? 'under ' : 'above ') + f2(e.p90) + '. Best move = from the alert price to the best ' + (e.side === 'low' ? 'high' : 'low') + ' after it.</div>';
   }
   document.addEventListener('click', function (ev) {
     var r = ev.target.closest('tr.xtr'); if (!r || !XTD) return;
-    var i = +r.dataset.xt, c = $('xtc' + i); if (!c) return;
-    if (c.hidden) { c.firstChild.innerHTML = xtChart(XTD[i]) + '<div class="sub" style="font-size:12px;margin-bottom:8px">' + esc(XTD[i].tk) + ' ' + esc(XTD[i].day) + ': ' + XTD[i].side + ' ' + f2(XTD[i].level) + ' looked ' + XTD[i].p + '% likely in at ' + esc(XTD[i].time) + ' (' + esc(XCX[XTD[i].ctx] || XTD[i].ctx) + '). Projected ' + (XTD[i].side === 'low' ? 'high ' : 'low ') + f2(XTD[i].proj) + ', 90% ' + (XTD[i].side === 'low' ? 'under ' : 'above ') + f2(XTD[i].p90) + '. Best move = from the alert price to the best ' + (XTD[i].side === 'low' ? 'high' : 'low') + ' after it.</div>'; c.hidden = false; }
-    else c.hidden = true;
+    xtShow(+r.dataset.xt); $('xtChartBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
   function rangeBlock(z, fill) {
     if (!z || !z.bars || !z.bars.length) return '';
