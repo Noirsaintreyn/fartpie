@@ -101,7 +101,7 @@ def run_site_push():
     if not url or not tok: log('site push off (BACKEND_URL / SITE_TOKEN not set)'); return
     f = os.path.join(ROOT, 'live', 'site_snapshot.json')
     def loop():
-        last, sent_at, made, err_at = None, 0, 0, 0
+        last, sent_at, made, err_at, ext_at = None, 0, 0, 0, 0
         while True:
             try:
                 stale = not os.path.exists(f) or time.time() - os.path.getmtime(f) > 1800
@@ -110,6 +110,10 @@ def run_site_push():
                     rc, tail = run_tail([sys.executable, '-u', 'live_screener.py', '--site-snapshot'])
                     if rc != 0 and time.time() - err_at > 6 * 3600:
                         err_at = time.time(); notify(f'⚠️ website snapshot failed (exit {rc}):\n```{tail}```')
+                n = dt.datetime.now(ET); nm = n.hour * 60 + n.minute          # Oct 28 2026: the screener exits at 16:10, so after-hours / premarket prices come from here
+                if not SCREENER_RUNNING['on'] and n.weekday() < 5 and (240 <= nm < 570 or 965 <= nm < 1200) and time.time() - ext_at > 300 and os.path.exists(f):
+                    ext_at = time.time(); rc, tail = run_tail([sys.executable, '-u', 'live_screener.py', '--ext-refresh'])
+                    if rc != 0: log('ext refresh failed', tail[-200:])
                 if os.path.exists(f):
                     m = os.path.getmtime(f)
                     if m != last or time.time() - sent_at > 120:          # re-send often: a website redeploy forgets the pushed copy

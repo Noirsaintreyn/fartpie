@@ -1640,10 +1640,12 @@ if __name__ == '__main__':
     ap.add_argument('--hm-card', default=None, help='render the honorable mentions (flips skipped because slots were full) to this path (Discord /hm)')
     ap.add_argument('--check-card', default=None, help='render the open-positions board to this path (Discord /check)')
     ap.add_argument('--check-ticker', default=None)
+    ap.add_argument('--ext-refresh', action='store_true', help='add premarket / after-hours prices to live/site_snapshot.json and exit (screener_service, outside the session)')
     ap.add_argument('--site-snapshot', action='store_true', help='scan once (live prices) and write live/site_snapshot.json for the website')
     ap.add_argument('--hh-card', default=None, help='render the honorable-mention history (every skipped flip since the start, as if traded) (Discord /hh)')
     ap.add_argument('--history-card', default=None, help='render every trade since the start + book vs SPY (Discord /history)')
     args = ap.parse_args()
+    if args.ext_refresh: refresh_site_ext(); print('ext prices refreshed'); sys.exit()
     if args.pro:                                                    # no scan needed: one ticker
         print('<<<OUT'); print(pro_text(args.pro, not args.no_fetch)); print('OUT>>>'); sys.exit()
     if not args.loop:
