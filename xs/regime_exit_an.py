@@ -5,10 +5,12 @@ calm bull = Garg 'Bull' state and not stress.
  3 calm leash        in calm bull, exit if not up +2% after 2 sessions
  combos of the winners. 40 matched runs, return per drawdown vs live."""
 exec(open('/home/claude/fartpie/xs/stress_budget.py').read().split("rng = np.random.default_rng(43)")[0].replace("print(", "(lambda *a, **k: None)("))
+_W = pd.read_parquet('/mnt/user-data/uploads/fartpie/xs/ext/wide_T.parquet'); _W['d'] = _W.entry.dt.normalize()
+RT = _W.groupby(['tk', 'd']).agg(ratio=('ratio', 'first'), sp=('sp', 'first')).reset_index().sort_values('d')
 def prep2(fs, cut):
     S_ = pd.concat(pd.read_parquet(f) for f in fs); S_['d'] = S_.entry.dt.normalize()
     S_ = S_[(S_.entry >= '2019-01-01') & ((S_.entry.dt.hour * 60 + S_.entry.dt.minute) < 840)].sort_values('d')
-    S_ = pd.merge_asof(S_, R, on='d', by='tk', direction='nearest', tolerance=pd.Timedelta(days=5)); S_ = S_[(S_.sp == True) & (S_.ratio >= cut)]; S_['w'] = 1.0; return S_.reset_index(drop=True)
+    S_ = pd.merge_asof(S_, RT, on='d', by='tk', direction='nearest', tolerance=pd.Timedelta(days=5)); S_ = S_[(S_.sp == True) & (S_.ratio >= cut)]; S_['w'] = 1.0; return S_.reset_index(drop=True)
 RX = prep2(glob.glob('rx/*.parquet'), 1.0)
 d = RX.entry.dt.normalize()
 dn = mk.dn.reindex(d.values, method='ffill').fillna(False).astype(bool).values
