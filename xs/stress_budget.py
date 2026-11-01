@@ -27,6 +27,10 @@ def simb(Z, stress, mode, brk=.08):
     s = pd.Series([h for _, h in hist], index=pd.DatetimeIndex([t for t, _ in hist])).sort_index(); return s.groupby(s.index.normalize()).last()
 rng = np.random.default_rng(43); DR = [rng.random(len(Ls)) < .05 if i else np.zeros(len(Ls), bool) for i in range(41)]
 def ev(stress, mode): return np.array([[v for cd in stat(dret(simb(Ls[~dl], stress[~dl], mode)).cumsum()) for v in (cd[0], cd[1], cd[0] / -cd[1])] for dl in DR])
+def line(nm, a, b=None):
+    m = np.median(a[1:], axis=0); s = f'  {nm:<40} ret {m[0]:+.1%} / {m[3]:+.1%}   DD {m[1]:.0%} / {m[4]:.0%}   ret/DD {m[2]:.2f} / {m[5]:.2f}'
+    if b is not None: s += f'   beats live {(a[1:, 2] > b[1:, 2]).mean():.0%} / {(a[1:, 5] > b[1:, 5]).mean():.0%}'
+    print(s, flush=True)
 B0 = ev(np.zeros(len(Ls), bool), 'live'); line('live (6 x 1/6)', B0)
 for nm, s in ST2.items():
     print(f'\n{nm}  (on for {s.mean():.0%} of signals)')
