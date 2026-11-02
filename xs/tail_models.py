@@ -9,8 +9,9 @@ import lightgbm as lgb
 from sklearn.linear_model import LogisticRegression
 exec(open('/home/claude/fartpie/xs/flip_move_model.py').read().split("X_ = ['ratio'")[0].replace("print(", "(lambda *a, **k: None)("))
 FQ = pd.read_parquet('/tmp/claude-0/ml/flipq.parquet')[['tk', 'entry', 'h1', 'clv', 'beyond', 'relvol', 'dur', 'width', 'nb', 'v1h', 'v4h', 'vD']]
-FQ['h1'] = FQ.h1.astype(float); Ls = Ls.merge(FQ, on=['tk', 'entry', 'h1'], how='left')
+FQ['h1'] = FQ.h1.astype(float); Ls['h1'] = Ls.h1.astype(float); Ls = Ls.merge(FQ, on=['tk', 'entry', 'h1'], how='left')
 X_ = ['ratio', 'on_share', 'on_har', 'on_mom', 'on_abs5', 'vrv', 'vgap', 'vhar', 'dn', 'reb', 'jm0', 'h1', 'clv', 'beyond', 'relvol', 'dur', 'width', 'nb', 'v1h', 'v4h', 'vD']
+for c in X_: Ls[c] = pd.to_numeric(Ls[c], errors='coerce').astype(float)
 y = Ls.ret.clip(-.15, .3)
 for q in (.1, .9):
     Ls[f'q{int(q * 100)}'] = np.nan
