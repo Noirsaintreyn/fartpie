@@ -34,7 +34,7 @@ OF['iv'] = OF[['iv_c50', 'iv_p50']].mean(axis=1); OF['ivf'] = OF[['iv_c50_far', 
 def asof(df, key, col, lag_days):
     out = np.full(len(X), np.nan)
     for tk, g in X.groupby('tk'):
-        s = df[df[key] == tk].set_index('date')[col].dropna()
+        s = df[df[key] == tk].set_index('date')[col].dropna(); s = s[~s.index.duplicated(keep='last')]
         if s.empty: continue
         v = s.reindex(s.index.union(g.d)).ffill().shift(lag_days); out[g.index] = v.reindex(g.d).values
     return out
