@@ -64,10 +64,10 @@ fb = X.tod == 570
 print(f'  first-bar entries {fb.mean():.0%}; corr(entry strength, session gap) first-bar {X[fb].margin.corr(X[fb].gap, method="spearman"):+.2f}, later {X[~fb].margin.corr(X[~fb].gap, method="spearman"):+.2f}')
 top = X.groupby(np.where(X.yr <= 2021, 0, 1)).ret.transform(lambda s: s >= s.quantile(.95))
 print('  cross-tab: avg trade (big-winner ratio), rows = session-gap tercile, cols = entry-strength tercile, later-session entries only')
-L = X[~fb].copy(); L['gt'] = L.groupby('yr').gap.transform(lambda s: pd.qcut(s.rank(method='first'), 3, labels=False)); L['mt'] = L.groupby('yr').margin.transform(lambda s: pd.qcut(s.rank(method='first'), 3, labels=False))
+L = X[~fb].copy(); L["gT"] = L.groupby('yr').gap.transform(lambda s: pd.qcut(s.rank(method='first'), 3, labels=False)); L['mt'] = L.groupby('yr').margin.transform(lambda s: pd.qcut(s.rank(method='first'), 3, labels=False))
 for h, nm in ((L.yr <= 2021, '2019-21'), (L.yr >= 2022, '2022-26')):
     Lh = L[h]; tt = top[Lh.index]; base = tt.mean()
-    print(f'   {nm}: ' + ' | '.join('gap t%d: ' % g + ' '.join(f'{Lh[(Lh.gt == g) & (Lh.mt == m)].ret.mean():+.2%}({tt[(Lh.gt == g) & (Lh.mt == m)].mean() / base:.1f})' for m in range(3)) for g in range(3)))
+    print(f'   {nm}: ' + ' | '.join('gap t%d: ' % g + ' '.join(f'{Lh[(Lh.gT == g) & (Lh.mt == m)].ret.mean():+.2%}({tt[(Lh.gT == g) & (Lh.mt == m)].mean() / base:.1f})' for m in range(3)) for g in range(3)))
 B0, Y0 = runs(None)
 print('\nbook replay, 40 matched runs; 2019-21 / 2022-26')
 m = np.median(B0[1:], axis=0); print(f'  live (ratio)                                 ret {m[0]:+.1%} / {m[3]:+.1%}   DD {m[1]:.0%} / {m[4]:.0%}   ret/DD {m[2]:.2f} / {m[5]:.2f}')
