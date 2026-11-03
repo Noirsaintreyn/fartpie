@@ -10,8 +10,9 @@ from collections import deque
 src = open('/home/claude/fartpie/xs/vec_state.py').read(); exec(src.split("if __name__ == '__main__':")[0])
 X = pd.read_parquet('/tmp/claude-0/ml/noise_X.parquet').sort_values('entry').reset_index(drop=True); BA_ = BASE['BREAK_ATR']
 # --- stop distance at entry (vector level after the bullish flip)
-SD = np.full(len(X), np.nan)
-for tk, g in X.groupby('tk'):
+CACHE = '/tmp/claude-0/ml/opt3_stopd.npy'
+SD = np.load(CACHE) if os.path.exists(CACHE) else np.full(len(X), np.nan)
+for tk, g in ([] if os.path.exists(CACHE) else X.groupby('tk')):
     H = load(glob.glob(f'/mnt/user-data/uploads/fartpie/lse_clean/{tk}_15m_*.parquet')[0]); S15 = vec_i(H[['dt', 'open', 'high', 'low', 'close']])
     r = agg(H, '1h', '9h30min'); S1h = vec_i(r); kn1 = (r.dt + pd.Timedelta('1h')).values; t = H.dt.values; op = H.open.values
     for i, x in g.iterrows():
@@ -26,7 +27,7 @@ for tk, g in X.groupby('tk'):
             while k > 0 and not (S1h.reg.values[k] == 1 and S1h.reg.values[k - 1] == -1): k -= 1
             S = S1h
         if k + 1 < len(S) and pd.notna(S.lvl.values[k + 1]): SD[i] = (op[j] - S.lvl.values[k + 1]) / op[j]
-X['stopd'] = SD
+X['stopd'] = SD; np.save(CACHE, SD)
 print('stop distance located for', f'{np.isfinite(SD).mean():.0%}', 'of trades; median', f'{np.nanmedian(SD):.1%}', flush=True)
 # --- options features
 OF = pd.read_csv('/mnt/user-data/uploads/fartpie/xs/ext/opt_features.csv', parse_dates=['date']).sort_values('date')
@@ -36,7 +37,7 @@ def asof(df, key, col, lag_days):
     for tk, g in X.groupby('tk'):
         s = df[df[key] == tk].set_index('date')[col].dropna(); s = s[~s.index.duplicated(keep='last')]
         if s.empty: continue
-        v = s.reindex(s.index.union(g.d)).ffill().shift(lag_days); out[g.index] = v.reindex(g.d).values
+        v = s.reindex(s.index.union(pd.DatetimeIndex(g.d.unique()))).ffill().shift(lag_days); out[g.index] = v.reindex(g.d).values
     return out
 X['iv'] = asof(OF, 'sym', 'iv', 1); X['term'] = asof(OF, 'sym', 'term', 1)
 X['reach'] = (X.iv / np.sqrt(252)) / X.stopd.where(X.stopd > 0)
