@@ -20,14 +20,14 @@ for i, (tk, e, x) in enumerate(zip(X.tk, X.entry.values, X.exit.values)):
     t = B[tk][0]; a, b = np.searchsorted(t, e), np.searchsorted(t, x)
     if a < len(t) and b < len(t) and b > a and t[a] == e: A[i], Bb[i], ok[i] = a, b, True
 X = X[ok].reset_index(drop=True); A, Bb = A[ok], Bb[ok]; NB = Bb - A
-X['q'] = X.entry.dt.to_period('Q'); QT = X.groupby('q').tk.unique().to_dict()
+X['q'] = X.entry.dt.to_period('Q').astype(str); QT = {k: list(v) for k, v in X.groupby('q').tk.unique().items()}; QV = X.q.values; TKV = X.tk.values
 print(f'{len(X)} trades; live avg trade {X.ret.mean():+.3%}', flush=True)
 def draw(kind, rng):
-    E, Xx, R = X.entry.values.copy(), X.exit.values.copy(), X.ret.values.copy()
+    E, Xx, R = X.entry.values.copy(), X.exit.values.copy(), X.ret.values.copy(); EV = X.entry.values
     for i in range(len(X)):
-        tk = X.tk.values[i]; nb = NB[i]
+        tk = TKV[i]; nb = NB[i]
         if kind in ('C3', 'C4'):
-            pool = [p for p in QT[X.q.values[i]] if p != tk]
+            pool = [p for p in QT[QV[i]] if p != tk]
             if not pool: continue
             tk = pool[rng.integers(len(pool))]
         t, o, m, dy = B[tk]
@@ -87,5 +87,6 @@ def line(nm, a, av, b=None):
     if b is not None: s += f'   beats live {(a[:, 2] > b[:, 2]).mean():.0%} / {(a[:, 5] > b[:, 5]).mean():.0%}'
     print(s, flush=True)
 line('live', L0, la)
-for kind, nm in (('C1', 'C1 random bar same day, same exit'), ('C2', 'C2 same name, random time +-60d'), ('C3', 'C3 random universe name, same times'), ('C4', 'C4 random name + random time')):
+import os
+for kind, nm in [t for t in (('C1', 'C1 random bar same day, same exit'), ('C2', 'C2 same name, random time +-60d'), ('C3', 'C3 random universe name, same times'), ('C4', 'C4 random name + random time')) if t[0] in os.getenv('ONLY', 'C1,C2,C3,C4').split(',')]:
     a, av, _ = run(kind); line(nm, a, av, L0)
