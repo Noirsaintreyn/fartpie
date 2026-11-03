@@ -10,7 +10,7 @@ import sys, os, glob, zlib, numpy as np, pandas as pd, warnings; warnings.filter
 from collections import deque
 HERE = '/home/claude/fartpie/xs'; sys.path.insert(0, HERE); _a = sys.argv; sys.argv = sys.argv[:1] + ['x']
 exec(open(os.path.join(HERE, 'signal_lab.py')).read().split("if sys.argv[1] == '1':")[0]); sys.argv = _a
-def run2(H, reg, s1, mode='L', hard=.03, grace=0):
+def run2(H, reg, s1, mode='L', hard=.03, grace=0, final=False):
     o, c, hi, d, m = H.open.values, H.close.values, H.high.values, H.dt.values, H.m.values
     g = [j for j in range(1, len(H)) if 570 <= m[j] < 960]; T = []; pos = False; rearm = None
     KR = [reg[j - 1] for j in g]; KS = [s1[j - 1] for j in g]
@@ -33,6 +33,7 @@ def run2(H, reg, s1, mode='L', hard=.03, grace=0):
         pg = peak / px - 1; lock = False
         if pg >= .05 and cur <= .5 * pg: ex = True
         if ex: T.append((d[e], d[j], o[j] / px - 1 - C2)); pos = False
+    if final and pos: T.append((d[e], 'open', px))
     return T
 if __name__ == '__main__':
     VAR = {'L': dict(), 'A3': dict(mode='A', hard=.03), 'A5': dict(mode='A', hard=.05), 'Ainf': dict(mode='A', hard=None),
