@@ -62,10 +62,12 @@ if __name__ == '__main__':
         for _, x in live.iterrows():
             e = np.datetime64(x.entry)
             if not x.h1:
-                j = np.searchsorted(H.dt.values, e); fb = j - 1; S = S15; tt = H.dt.values
+                j = np.searchsorted(H.dt.values, e); k = j - 1
+                while k > j - 120 and k > 0 and not (S15.reg.values[k] == 1 and S15.reg.values[k - 1] == -1): k -= 1
+                fb = k; S = S15; tt = H.dt.values
             else:
                 k = np.searchsorted(kn1, e + np.timedelta64(15, 'm') - np.timedelta64(15, 'm'), side='right') - 1
-                while k > 0 and not (S1h.reg.values[k] == 1 and S1h.reg.values[k - 1] != 1): k -= 1
+                while k > 0 and not (S1h.reg.values[k] == 1 and S1h.reg.values[k - 1] == -1): k -= 1
                 fb = k; S = S1h; tt = r.dt.values
             if fb < C + 2 or not (S.reg.values[fb] == 1 and S.reg.values[fb - 1] == -1): rows.append(dict(i=x.name, ok=False)); continue
             f_ = fb - C + 1; p = f_ - 1                                             # first bar of the break run, and the bar before it
