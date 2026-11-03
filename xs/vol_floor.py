@@ -5,8 +5,8 @@ cut here could remove losers without removing jumps. Chosen after seeing both pe
  F2 same idea with 20d realized vol (covers every trade, not only the 56% with IV)
  F3 drop tight-stop trades in a QQQ uptrend (stopd t1 & qqq bull)"""
 import os, numpy as np, pandas as pd, warnings; warnings.filterwarnings('ignore')
-src = open('/home/claude/fartpie/xs/opt_three.py').read(); exec(src.split("X['h'] = np.where")[0].replace("print(", "(lambda *a, **k: None)("))
-exec(src[src.index("HSH = np.array"):src.index("pr = lambda s")])
+OPT3 = open("/home/claude/fartpie/xs/opt_three.py").read(); exec(OPT3.split("X['h'] = np.where")[0].replace("print(", "(lambda *a, **k: None)("))
+exec(OPT3[OPT3.index("HSH = np.array"):OPT3.index("pr = lambda s")])
 X['h'] = np.where(X.entry.dt.year <= 2021, '2019-21', '2022-26'); X['yr'] = X.entry.dt.year
 RV = {}
 for tk in X.tk.unique():
