@@ -1,0 +1,18 @@
+
+== TP fixed 75
+  base (all signals, 1 NQ)           trades/mo  5.9 win 47% avg  +4.5 pts | months passed 22% lost 41% neither 36% | month P&L mean +597 worst -2,588 | 2026 passed 4/10 lost 4
+      coin-flip direction, same entries: months passed 13%
+  A1 aligned only                    trades/mo  2.9 win 49% avg  +7.6 pts | months passed 7% lost 24% neither 69% | month P&L mean +302 worst -2,000 | 2026 passed 0/10 lost 3
+      coin-flip direction, same entries: months passed 6%
+  A2 aligned 1 / others 0.5          trades/mo  5.9 win 47% avg  +4.5 pts | months passed 14% lost 19% neither 67% | month P&L mean +563 worst -2,510 | 2026 passed 0/10 lost 2
+  A3 skip against                    trades/mo  4.7 win 48% avg  +5.4 pts | months passed 19% lost 38% neither 43% | month P&L mean +520 worst -2,000 | 2026 passed 1/10 lost 5
+      coin-flip direction, same entries: months passed 14%
+
+== TP AMT prior POC/VAH/VAL
+  base (all signals, 1 NQ)           trades/mo  5.9 win 48% avg  +4.6 pts | months passed 21% lost 36% neither 43% | month P&L mean +629 worst -2,401 | 2026 passed 2/10 lost 3
+      coin-flip direction, same entries: months passed 12%
+  A1 aligned only                    trades/mo  2.9 win 49% avg  +7.6 pts | months passed 7% lost 24% neither 69% | month P&L mean +302 worst -2,000 | 2026 passed 0/10 lost 3
+      coin-flip direction, same entries: months passed 6%
+  A2 aligned 1 / others 0.5          trades/mo  5.9 win 48% avg  +4.6 pts | months passed 14% lost 19% neither 67% | month P&L mean +560 worst -2,510 | 2026 passed 0/10 lost 2
+  A3 skip against                    trades/mo  4.7 win 49% avg  +6.1 pts | months passed 19% lost 38% neither 43% | month P&L mean +574 worst -2,000 | 2026 passed 1/10 lost 5
+      coin-flip direction, same entries: months passed 14%
