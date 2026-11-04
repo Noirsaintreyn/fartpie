@@ -1,0 +1,53 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+
+by context, fixed 75/50, 2022-26: avg pts per trade
+  bad     n  29 win 41% avg -3.3 (22-23 -14.2 / 24-26 +2.5)
+  good    n 191 win 46% avg +3.4 (22-23 +11.0 / 24-26 -3.5)
+  normal  n 122 win 49% avg +8.1 (22-23 -2.9 / 24-26 +13.2)
+
+AMT states, fixed 75/50, 2022-26
+  open_loc  open above value   n 130 win 45% avg +3.8 (22-23 +7.4 / 24-26 +1.9)
+  open_loc  open below value   n 105 win 49% avg +8.0 (22-23 +8.8 / 24-26 +7.3)
+  open_loc  open inside value  n 107 win 47% avg +1.9 (22-23 -0.3 / 24-26 +3.6)
+  aligned   False              n 179 win 45% avg +1.6 (22-23 +1.8 / 24-26 +1.5)
+  aligned   True               n 163 win 48% avg +7.7 (22-23 +8.5 / 24-26 +7.0)
+  against   False              n 270 win 48% avg +5.4 (22-23 +5.1 / 24-26 +5.6)
+  against   True               n  72 win 43% avg +1.1 (22-23 +6.8 / 24-26 -1.0)
+  ibx       False              n 265 win 46% avg +4.1 (22-23 +6.1 / 24-26 +2.9)
+  ibx       True               n  77 win 49% avg +5.7 (22-23 +3.3 / 24-26 +8.1)
+
+== TP fixed 75
+  K0 flat                            trades/mo  5.9 win 47% avg  +4.5 pts | months passed 22% lost 41% neither 36% | month P&L mean +597 worst -2,588 | 2026 passed 4/10 lost 4
+  K1 bad 0.5                         trades/mo  5.9 win 47% avg  +4.5 pts | months passed 19% lost 38% neither 43% | month P&L mean +609 worst -2,588 | 2026 passed 2/10 lost 4
+  K2 bad 0.5 / good 1.5              trades/mo  5.9 win 47% avg  +4.5 pts | months passed 14% lost 36% neither 50% | month P&L mean +1,130 worst -2,401 | 2026 passed 2/10 lost 4
+  K3 skip bad / good 1.5             trades/mo  5.4 win 47% avg  +4.5 pts | months passed 14% lost 36% neither 50% | month P&L mean +1,099 worst -2,401 | 2026 passed 2/10 lost 4
+  K4 bad 0.5 / good 2                trades/mo  5.9 win 47% avg  +4.5 pts | months passed 12% lost 31% neither 57% | month P&L mean +1,747 worst -2,401 | 2026 passed 1/10 lost 3
+
+== TP nearest liquidity
+  K0 flat                            trades/mo  5.9 win 50% avg  +4.4 pts | months passed 17% lost 36% neither 47% | month P&L mean +634 worst -2,401 | 2026 passed 2/10 lost 5
+  K1 bad 0.5                         trades/mo  5.9 win 50% avg  +4.4 pts | months passed 17% lost 33% neither 50% | month P&L mean +667 worst -2,401 | 2026 passed 2/10 lost 5
+  K2 bad 0.5 / good 1.5              trades/mo  5.9 win 50% avg  +4.4 pts | months passed 16% lost 31% neither 53% | month P&L mean +1,295 worst -2,401 | 2026 passed 2/10 lost 5
+  K3 skip bad / good 1.5             trades/mo  5.4 win 50% avg  +4.4 pts | months passed 14% lost 31% neither 55% | month P&L mean +1,258 worst -2,401 | 2026 passed 2/10 lost 5
+  K4 bad 0.5 / good 2                trades/mo  5.9 win 50% avg  +4.4 pts | months passed 14% lost 28% neither 59% | month P&L mean +1,914 worst -2,666 | 2026 passed 1/10 lost 5
+
+== TP nearest liquidity - 5
+  K0 flat                            trades/mo  5.9 win 51% avg  +4.6 pts | months passed 17% lost 36% neither 47% | month P&L mean +621 worst -2,401 | 2026 passed 2/10 lost 5
+  K1 bad 0.5                         trades/mo  5.9 win 51% avg  +4.6 pts | months passed 17% lost 34% neither 48% | month P&L mean +643 worst -2,401 | 2026 passed 2/10 lost 5
+  K2 bad 0.5 / good 1.5              trades/mo  5.9 win 51% avg  +4.6 pts | months passed 10% lost 28% neither 62% | month P&L mean +1,289 worst -2,401 | 2026 passed 1/10 lost 5
+  K3 skip bad / good 1.5             trades/mo  5.4 win 51% avg  +4.6 pts | months passed 10% lost 28% neither 62% | month P&L mean +1,267 worst -2,401 | 2026 passed 1/10 lost 5
+  K4 bad 0.5 / good 2                trades/mo  5.9 win 51% avg  +4.6 pts | months passed 14% lost 28% neither 59% | month P&L mean +1,876 worst -2,866 | 2026 passed 1/10 lost 5
+
+== TP second liquidity level
+  K0 flat                            trades/mo  5.9 win 46% avg  +4.7 pts | months passed 17% lost 41% neither 41% | month P&L mean +577 worst -2,401 | 2026 passed 2/10 lost 4
+  K1 bad 0.5                         trades/mo  5.9 win 46% avg  +4.7 pts | months passed 16% lost 38% neither 47% | month P&L mean +608 worst -2,401 | 2026 passed 1/10 lost 4
+  K2 bad 0.5 / good 1.5              trades/mo  5.9 win 46% avg  +4.7 pts | months passed 14% lost 36% neither 50% | month P&L mean +1,178 worst -2,511 | 2026 passed 2/10 lost 4
+  K3 skip bad / good 1.5             trades/mo  5.4 win 46% avg  +4.7 pts | months passed 14% lost 36% neither 50% | month P&L mean +1,103 worst -2,511 | 2026 passed 2/10 lost 4
+  K4 bad 0.5 / good 2                trades/mo  5.9 win 46% avg  +4.7 pts | months passed 12% lost 33% neither 55% | month P&L mean +1,841 worst -2,650 | 2026 passed 1/10 lost 4
+
+== TP AMT prior POC/VAH/VAL
+  K0 flat                            trades/mo  5.9 win 48% avg  +4.6 pts | months passed 21% lost 36% neither 43% | month P&L mean +629 worst -2,401 | 2026 passed 2/10 lost 3
+  K1 bad 0.5                         trades/mo  5.9 win 48% avg  +4.6 pts | months passed 19% lost 33% neither 48% | month P&L mean +619 worst -2,401 | 2026 passed 1/10 lost 3
+  K2 bad 0.5 / good 1.5              trades/mo  5.9 win 48% avg  +4.6 pts | months passed 14% lost 36% neither 50% | month P&L mean +1,049 worst -2,401 | 2026 passed 1/10 lost 4
+  K3 skip bad / good 1.5             trades/mo  5.4 win 48% avg  +4.6 pts | months passed 12% lost 36% neither 52% | month P&L mean +994 worst -2,401 | 2026 passed 1/10 lost 4
+  K4 bad 0.5 / good 2                trades/mo  5.9 win 48% avg  +4.6 pts | months passed 12% lost 34% neither 53% | month P&L mean +1,587 worst -2,401 | 2026 passed 1/10 lost 4
