@@ -40,6 +40,13 @@ def _stock_daily_state(LS, H):
     if len(D) < 60: return None
     return int(LS.vec(D).reg.iloc[-1])
 
+def _moves(LS, H):
+    """last-session and 5-session % move of a stock, from regular-hours daily closes"""
+    try:
+        m = H.dt.dt.hour * 60 + H.dt.dt.minute; R = H[(m >= LS.RTH0) & (m < LS.RTH1)]; c = R.groupby(R.dt.dt.normalize())['close'].last()
+        return (float(c.iloc[-1] / c.iloc[-2] - 1) * 100, float(c.iloc[-1] / c.iloc[-6] - 1) * 100) if len(c) >= 6 else (None, None)
+    except Exception: return (None, None)
+
 def _news(LS, held):
     """Helious feed once: items per held ticker, per held sector, top market items, US calendar"""
     try: items = LS.helious('/v1/feed', dict(limit=100)).get('data', {}).get('items', [])
@@ -148,7 +155,7 @@ def _position(LS, r, x, E, per, sec, cal, now, fetch):
              for it in (per.get(t, []) + sec.get(t, []))[:2]]
     return dict(tk=t, pnl=round(float(r['pnl']) * 100, 2), last=round(float(r['last']), 2), entry=round(float(r['px']), 2), stop=round(float(r['stop']), 2),
                 basis=basis, peak=round(pk * 100, 2), sector=LS.sector_of(t), etf=etf, entered=f'{et:%a %b %d %H:%M}' if et is not None else '', entered_ts=str(et) if et is not None else '', track='1h' if r['h1'] else '15m',
-                selling=bool(below), lock=bool(pk >= LS.LOCK_K),
+                selling=bool(below), lock=bool(pk >= LS.LOCK_K), day=_moves(LS, H)[0], wk=_moves(LS, H)[1],
                 read=dict(t15=_state_word(int(H.reg.iloc[-1])), t1h=_state_word(int(H.s1.iloc[-1])), td=_state_word(dstate),
                           sec_d=_state_word(es.get('d')), sec_w=_state_word(es.get('w')), vol=LS.vol_word(x.get('pct', .5)), vol_pct=round(float(x.get('pct', .5)) * 100),
                           day_range=round(1.665 * sig * 100, 2) if sig == sig else None, earnings=f'{nxt:%a %b %d}' if nxt is not None else None),
@@ -290,9 +297,10 @@ def analysis(LS, rows, meta, fetch=True):
     except Exception as ex: A['expect'] = dict(error=str(ex)[:120])
     try: A['day'] = _dayread(LS, A, rows, meta, E, top, cal, fetch)
     except Exception as ex: A['day'] = None; print(f'  ! day read: {str(ex)[:80]}')
-    try: A['why'] = _why(A, E, P, _macro(fetch), top)
+    _mc = _macro(fetch)
+    try: A['why'] = _why(A, E, P, _mc, top)
     except Exception as ex: A['why'] = None; print(f'  ! why: {str(ex)[:80]}')
-    try: A['brief'] = _brief(A)
+    try: A['brief'] = _brief(A, E, _mc)
     except Exception as ex: A['brief'] = None; print(f'  ! brief: {str(ex)[:80]}')
     return A, held, X, E, cal, top, have_news
 
@@ -312,6 +320,8 @@ def _wrap(ax, x, y, text, width, size=9.5, color=None, weight='normal', lh=1.45,
 
 # ================================================================ the day (Nov 4 2026): a short read of what is happening to the book, built from the same scan
 DEAL = re.compile(r'acqui|merger|buyout|takeover|to buy |bid for|stake|spin-?off|divest|buyback|share repurchase|offering|activist|deal', re.I)
+EVENT = re.compile(r'investor day|analyst day|conference|shareholder|guidance|buyback|dividend|stock split|offering|FDA|approval|press release|announces', re.I)
+
 def _short(t, n=64): t = (t or '').strip(); return t if len(t) <= n else t[:n].rsplit(' ', 1)[0].rstrip(',;:-') + '…'
 
 def _dayread(LS, A, rows, meta, E, top, cal, fetch=True):
@@ -441,31 +451,57 @@ def _page_why(LS, A, outdir, colors):
         y -= h + 0.14
     fp = os.path.join(outdir, '0b_why.png'); fig.savefig(fp, dpi=130, facecolor=BG); plt.close(fig); return fp
 
-def _brief(A):
-    """one page, one story: what is happening, why, what we want, what we do not want, what is coming. Built from the day read, the why read and the outlook."""
-    D = A.get('day') or {}; W = dict(A.get('why') or []); X = A.get('expect') or {}; XP = {x['tk']: x for x in X.get('positions', [])}; H = D.get('holding', [])
-    hl = [l for l in D.get('headline', []) if l]
-    out = [('WHAT IS HAPPENING', ' '.join(hl[:2]) + ' ' + W.get('THE MARKET', ''))]
-    out.append(('WHY', ' '.join(x for x in (W.get('SECTORS UP'), W.get('SECTORS DOWN'), W.get('YOUR BOOK')) if x)))
-    nw = D.get('news', [])
-    if nw: out.append(('NEWS AND DEALS', ' '.join(f"{n['tk']}: " + ('deal, ' if n.get('deal') else '') + n['title'] + '.' for n in nw[:4])))
-    look = [f"{u['tk']} ({u['why']}, options ratio {u['ratio']:.1f})" for u in D.get('up', [])[:4]]; g = [h['tk'] for h in H if any(f[1] == 'good' for f in h['flags'])]
-    want = []
-    if look: want.append('Next in line: ' + ', '.join(look) + '.' + (' Slots are full, so these only enter if one frees up.' if X.get('full') else ''))
-    if g: want.append(f"Stops moving above entry on {', '.join(g[:5])}: that is how the book locks gains.")
-    aged = [t for t, x in XP.items() if x.get('age_days') is not None and x['age_days'] >= 3]
-    if aged: want.append(f"{', '.join(aged[:4])} past 3 days: positions open 3+ days finish green 64% of the time, 7+ days 84%.")
-    want.append('The state that has paid in both backtest halves is a bull market with stress (S&P above its 200-day, VIX curve inverted).')
-    out.append(('WHAT WE ARE LOOKING FOR', ' '.join(want)))
+def _brief(A, E=None, macro=None):
+    """one page: one paragraph on the tape and the book, held-stock news, what we do not want, what we look for, what is coming"""
+    D = A.get('day') or {}; X = A.get('expect') or {}; P = A.get('positions', []); H = D.get('holding', []); E = E or {}; m = macro or {}; sec = A.get('sectors', [])
+    f = lambda v: 'n/a' if v is None else f"{v:+.1f}%"
+    dv = [p['day'] for p in P if p.get('day') is not None]; wv = [p['wk'] for p in P if p.get('wk') is not None]
+    book = f"Your book (equal-weighted, {len(P)} stocks) is {f(sum(dv) / len(dv) if dv else None)} on the day and {f(sum(wv) / len(wv) if wv else None)} on the week."
+    ix = ' '.join(f"{n} {f(E.get(t, {}).get('r1', 0) * 100)} day, {f(E.get(t, {}).get('r5', 0) * 100)} week." for t, n in (('SPY', 'S&P 500'), ('QQQ', 'Nasdaq')) if t in E)
+    ss = sorted([s_ for s_ in sec if s_['etf'] not in ('SPY', 'QQQ')], key=lambda s_: -s_['r1'])
+    sectors = 'Sectors, day / week: ' + '; '.join(f"{s_['name']} {s_['r1']:+.1f}% / {s_['r5']:+.1f}%" for s_ in ss) + '.' if ss else ''
+    why = []
+    for s_ in ss[:2] + ss[-2:]:
+        sg = 1 if s_['r1'] > 0 else -1
+        w = next((w.format(**m) for t_, g_, fn, w in _DRV if t_ == s_['etf'] and g_ == sg and m and fn(m)), None)
+        if w and s_['name'] + ': ' not in ' '.join(why): why.append(f"{s_['name']}: {w}")
+    macro_line = ''
+    if m:
+        bits = []
+        if abs(m['yield_bp']) >= 3: bits.append(f"the 10-year yield {'rose' if m['yield_bp'] > 0 else 'fell'} {abs(m['yield_bp']):.0f} bp")
+        if abs(m['oil']) >= 1.5: bits.append(f"oil {m['oil']:+.1f}%")
+        if abs(m['dollar']) >= .4: bits.append(f"the dollar {m['dollar']:+.1f}%")
+        if abs(m['vix_chg']) >= 5: bits.append(f"VIX {'jumped' if m['vix_chg'] > 0 else 'dropped'} to {m['vix']:.0f}")
+        macro_line = ('Macro: ' + ', '.join(bits) + '.') if bits else 'Rates, oil, dollar and VIX were quiet.'
+    hl = (A.get('headlines') or [None])[0]
+    news = ('Top headline: ' + _short(hl['title'], 100) + ('. ' + _short(hl['read'], 120) if hl.get('read') else '.')) if hl else ''
+    cause = ('Explained by ' + '; '.join(why) + '. The other sector moves have no news or macro driver, likely rotation.') if why else 'No news or macro driver explains the sector moves, likely rotation.'
+    out = [('WHAT IS HAPPENING', ' '.join(x for x in (book, ix, sectors, macro_line, cause, news) if x))]
+    nw = D.get('news', []); held = [n for n in nw if n['tk'] != 'MKT']
+    out.append(('NEWS AND DEALS ON YOUR STOCKS', ' '.join(f"{n['tk']}: " + ('DEAL, ' if n.get('deal') else '') + n['title'] + '.' for n in held[:5]) if held else 'No deals or opinionated news on the stocks you hold.'))
     bad = []
-    pb = [d for d in D.get('down', []) if ':' in d]
-    if pb: bad.append('Risk on the book: ' + '; '.join(pb[:4]) + '.')
-    fl = [t for t, e in [(h['tk'], 1) for h in H if any(f[0].endswith('falling') for f in h['flags'])]]
-    if fl: bad.append(f"{', '.join(fl[:4])} sit in a falling sector, which is the setup that tends to take the stop out.")
-    bad.append('A 1.1-day trade loses 64% of the time, so small stop-outs are normal. What would matter: a position closing under its stop, a drawdown toward the 8% breaker, or earnings gaps against a name inside the earnings guard.')
+    neg = [h['tk'] for h in H if any(f_[0] == 'news −' for f_ in h['flags'])]
+    if neg: bad.append(f"News: negative coverage on {', '.join(neg)}.")
+    if m and m['yield_bp'] > 4: bad.append(f"Economy: yields rising ({m['yield_bp']:+.0f} bp) pressure growth stocks.")
+    if m and m['vix_chg'] > 5: bad.append(f"Economy: VIX jumped to {m['vix']:.0f}, risk gets sold first.")
+    hi = [c.split('  ', 1)[-1].split(' (')[0] for c in D.get('coming', []) if ':' not in c and 'reports' not in c][:2]
+    if hi: bad.append('A surprise in ' + ' or '.join(hi) + ' would gap the whole market.')
+    nst = [h['tk'] for h in H if any(f_[0] == 'near stop' for f_ in h['flags'])]; fall = [h['tk'] for h in H if any(f_[0].endswith('falling') for f_ in h['flags'])]
+    if nst: bad.append(f"Price: {', '.join(nst)} within a normal day's range of the stop.")
+    if fall: bad.append(f"Price: {', '.join(fall)} sit in a falling sector.")
+    bad.append('Anything that closes a position under its stop, or a drawdown toward the 8% breaker, ends the trade. Small stop-outs are normal: a 1.1-day trade loses 64% of the time.')
     out.append(('WHAT WE DO NOT WANT', ' '.join(bad)))
-    cm = D.get('coming', [])
-    out.append(('COMING', ' '.join(c.split(' — ')[0] + '.' for c in cm[:5]) if cm else 'No scheduled catalyst that touches the book.'))
+    XP = {x['tk']: x for x in X.get('positions', [])}; look = [f"{u['tk']} ({u['why']}, options ratio {u['ratio']:.1f})" for u in D.get('up', [])[:3]]; g = [h['tk'] for h in H if any(f_[1] == 'good' and f_[0].startswith('locked') for f_ in h['flags'])]
+    want = []
+    if look: want.append('Next in line: ' + ', '.join(look) + '.' + (' Slots are full, so they enter only if one frees up.' if X.get('full') else ''))
+    if g: want.append(f"Gains locked on {', '.join(g[:5])}.")
+    want.append('Edge: positions open 3+ days finish green 64% of the time and 7+ days 84%; a few long holds carry the profit. Best regime so far is a bull market under stress (S&P above its 200-day, VIX curve inverted).')
+    out.append(('WHAT WE ARE LOOKING FOR', ' '.join(want)))
+    cm = [c.split(' — ')[0] for c in D.get('coming', [])]; ev = []
+    for p in P:
+        for a_ in p.get('news', [])[:4]:
+            if EVENT.search(a_.get('title', '')): ev.append(f"{p['tk']}: {_short(a_['title'], 80)}")
+    out.append(('COMING', ' '.join(c + '.' for c in cm[:5]) + (' Company events in the news: ' + '; '.join(ev[:3]) + '.' if ev else '') if cm or ev else 'No scheduled release or earnings that touches the book.'))
     return out
 
 def _page_brief(LS, A, outdir, colors):
