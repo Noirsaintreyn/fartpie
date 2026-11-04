@@ -1,0 +1,7 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+  ALLx2  Z0: pass 20% fail 39% (coin-flip 11%) | month $ mean +669 median +573 up 62% worst -3,150
+  ALLx2  Z5: pass 20% fail 38% (coin-flip 12%) | month $ mean +1,106 median +948 up 65% worst -3,961
+  ALLx2  Z6: pass 23% fail 37% (coin-flip 15%) | month $ mean +1,163 median +1,158 up 65% worst -4,080
+  S0x2   Z0: pass 15% fail 31% (coin-flip 6%) | month $ mean +517 median +203 up 52% worst -3,150
+  S0x2   Z5: pass 16% fail 31% (coin-flip 7%) | month $ mean +867 median +203 up 52% worst -3,780
+  S0x2   Z6: pass 16% fail 29% (coin-flip 7%) | month $ mean +918 median +503 up 56% worst -5,100
