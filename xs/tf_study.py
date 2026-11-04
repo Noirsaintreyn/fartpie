@@ -15,12 +15,13 @@ def aggm(H, mins):
 def ha(r):
     c = (r.open + r.high + r.low + r.close) / 4; o = np.zeros(len(r)); o[0] = (r.open[0] + r.close[0]) / 2
     for i in range(1, len(r)): o[i] = (o[i - 1] + c[i - 1]) / 2
-    out = r.copy(); out['open'] = o; out['close'] = c; out['high'] = np.maximum(r.high, np.maximum(o, c)); out['low'] = np.minimum(r.low, np.minimum(o, c)); return out
-VAR = [('5m', 5, 0, {}), ('10m', 10, 0, {}), ('15m', 15, 0, {}), ('20m', 20, 0, {}), ('30m', 30, 0, {}), ('45m', 45, 0, {}), ('60m', 60, 0, {}),
+    out = r.copy(); out['ropen'] = r.open.values; out['open'] = o; out['close'] = c; out['high'] = np.maximum(r.high, np.maximum(o, c)); out['low'] = np.minimum(r.low, np.minimum(o, c)); return out
+VAR_ALL = [('5m', 5, 0, {}), ('10m', 10, 0, {}), ('15m', 15, 0, {}), ('20m', 20, 0, {}), ('30m', 30, 0, {}), ('45m', 45, 0, {}), ('60m', 60, 0, {}),
        ('HA15', 15, 1, {}), ('HA30', 30, 1, {}), ('5m piv=15min', 5, 0, dict(PIVOT_LEN=9)), ('30m piv=15min', 30, 0, dict(PIVOT_LEN=3))]  # base PIVOT_LEN=VC.PIVOT_LEN
+VAR = [v for v in VAR_ALL if v[0] in ('15m','30m','HA15','HA30')]
 def trades(r, st, mins):
     # RTH bar opens only; state from last completed bar
-    d = r.dt.values; m = (r.dt.dt.hour * 60 + r.dt.dt.minute).values; o = r.open.values
+    d = r.dt.values; m = (r.dt.dt.hour * 60 + r.dt.dt.minute).values; o = (r.ropen if 'ropen' in r else r.open).values
     idx = [i for i in range(1, len(r)) if 570 <= m[i] < 960]; T = []; pos = False; prev = 0
     for i in idx:
         s = st[i - 1]
@@ -40,7 +41,7 @@ def one(f):
 if __name__ == '__main__':
     fs = sorted(glob.glob(f'{D}/*_5m_2018-01-01_*.parquet')); fs = [f for f in fs if os.path.basename(f).split('_5m_')[0] not in ('SPY', 'QQQ')]
     with Pool(8) as p: R = sum(p.map(one, fs), [])
-    T = pd.DataFrame(R, columns=['v', 'tk', 'entry', 'exit', 'ret']); T.to_parquet('/tmp/claude-0/ml/tf_trades.parquet')
+    T = pd.DataFrame(R, columns=['v', 'tk', 'entry', 'exit', 'ret']); T.to_parquet('/tmp/claude-0/ml/tf_trades2.parquet')
     T['per'] = np.where(T.entry.dt.year <= 2021, '19-21', '22-26'); nt = T.tk.nunique(); yrs = {'19-21': 3, '22-26': 4.8}
     print('tickers', nt)
     print(f'{"variant":<16}' + ''.join(f'| {p}: avg  win  >=15%  tr/tk-yr  ret/tk-yr(sum)  ' for p in yrs))
