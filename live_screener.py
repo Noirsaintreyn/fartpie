@@ -330,6 +330,7 @@ def _lkey(tk, track, t0): return f"{tk}|{track}|{pd.Timestamp(t0):%Y-%m-%d %H:%M
 def ledger_load():
     if not os.path.exists(LEDGER) and os.path.exists('live_data/ledger_seed.json'):
         import shutil; shutil.copy('live_data/ledger_seed.json', LEDGER)
+        print(f'  !! LEDGER RESET: {LEDGER} did not exist, seeded from the Oct 21 seed. Trades since then are replayed, not recorded, so this host\'s book can differ from the real one. Point LEDGER at a persistent disk.')
     try: return json.load(open(LEDGER))
     except Exception: return {}
 def ledger_save(L):
