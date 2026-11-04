@@ -1,0 +1,30 @@
+parity: live-rebuilt trades 17447 vs stored 17447  mean ret +0.3119% vs +0.3119%
+names: S&P 54  NDX 26  both 24  NDX-only ['MSTR', 'SHOP']  Dow 15
+  LIVE book: 3714 trades taken of 17447; simple P&L by exit year (sum of ret/6): 2019:+38% 2020:+68% 2021:+29% 2022:+0% 2023:+55% 2024:+22% 2025:+16% 2026:+32%
+  NDX book: 3517 trades taken of 10801; simple P&L by exit year (sum of ret/6): 2019:+34% 2020:+97% 2021:+39% 2022:-12% 2023:+75% 2024:+41% 2025:+16% 2026:+29%
+  DOW book: 3409 trades taken of 6920; simple P&L by exit year (sum of ret/6): 2019:+29% 2020:+56% 2021:+29% 2022:-10% 2023:+46% 2024:+29% 2025:+14% 2026:+14%
+
+  P&L by ticker group (sum of slot-weighted returns, 2019-26):
+   LIVE             S&P only +122% | both S&P+NDX +137% | total +259% (19-21 +135%, 22-26 +125%)
+   S&P+NDX split    NDX only +18% | S&P only +61% | both S&P+NDX +210% | total +290% (19-21 +152%, 22-26 +137%)
+   NDX+Dow split    NDX only +18% | S&P only +26% | both S&P+NDX +220% | total +264% (19-21 +142%, 22-26 +122%)
+   S&P+NDX split minus LIVE, by ticker: top + TSLA +33 SHOP +18 NVDA +11 CRWD +7 APP +5 COST +5 PLTR +4 META +3  | top - CMG -15 BA -11 FDX -7 GS -6 TGT -6 COIN -4
+   S&P+NDX split minus LIVE, by exit year: 2019:-2 2020:+14 2021:+5 2022:-6 2023:+10 2024:+10 2025:+0 2026:-1
+   NDX+Dow split minus LIVE, by ticker: top + TSLA +31 NVDA +31 SHOP +18 COST +9 AAPL +7 CRWD +7 APP +5 PENN +4  | top - CMG -29 FDX -15 TGT -11 BA -11 COIN -9 AMD -8
+   NDX+Dow split minus LIVE, by exit year: 2019:-6 2020:+8 2021:+6 2022:-11 2023:+5 2024:+13 2025:-1 2026:-10
+
+PART B mechanisms (40 matched runs)
+  L live S&P 6 slots                                   ret +53.2% / +21.5%   DD -10% / -20%   ret/DD 5.08 / 1.13   beats live 0% / 0%
+  ref: 50% S&P + 50% NDX (split)                       ret +63.2% / +26.0%   DD -9% / -19%   ret/DD 6.76 / 1.35   beats live 100% / 72%  PASS
+  ref: 50% NDX + 50% Dow (split)                       ret +59.8% / +26.0%   DD -9% / -17%   ret/DD 6.28 / 1.47   beats live 92% / 82%  PASS
+  B1 S&P only, 12 slots                                ret +43.7% / +21.7%   DD -10% / -19%   ret/DD 4.37 / 1.11   beats live 2% / 45%
+  B2 S&P + NDX merged, ONE 12-slot book                ret +63.6% / +23.6%   DD -9% / -20%   ret/DD 6.88 / 1.19   beats live 95% / 50%
+   (NDX-only trades 471, overlap trades 10330)
+  B3 split: S&P + NDX-only-names book                  ret +36.4% / +17.2%   DD -8% / -16%   ret/DD 4.49 / 1.19   beats live 0% / 50%
+  B4 split: S&P + overlap-names book (doubles them)    ret +57.1% / +25.3%   DD -9% / -19%   ret/DD 6.17 / 1.34   beats live 92% / 85%  PASS
+  B5 split: S&P + S&P twin (sanity, = live)            ret +53.2% / +21.5%   DD -10% / -20%   ret/DD 5.08 / 1.13   beats live 0% / 0%
+
+PART C extract into the current 6-slot S&P book
+  C1 NDX members first in the tie-break                ret +49.3% / +21.2%   DD -11% / -20%   ret/DD 4.64 / 1.09   beats live 5% / 42%
+  C2 NDX members ratio x 1.5                           ret +50.2% / +24.0%   DD -11% / -20%   ret/DD 4.78 / 1.18   beats live 15% / 60%
+  C3 8 slots + NDX members first                       ret +44.9% / +22.7%   DD -10% / -17%   ret/DD 4.41 / 1.34   beats live 10% / 62%
