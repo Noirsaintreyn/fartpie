@@ -224,7 +224,10 @@ def _expect(LS, P, held, meta, E, now, regime, rows=None, A_market=None):
         else: nxt.append(f"profit lock is on: it closes the trade if price falls to {px * (1 + LS.LOCK_G * pk):.2f} (half the peak gain)")
         e = p['read'].get('earnings'); ed = None
         if e:
-            try: ed = (pd.Timestamp(e + f' {now.year}') - now.normalize()).days
+            try:
+                md = e.split(' ', 1)[-1]; d0 = pd.Timestamp(f'{md} {now.year}')                       # 'Thu Jan 28' has no year: next occurrence
+                if d0 < now.normalize() - pd.Timedelta(days=1): d0 = pd.Timestamp(f'{md} {now.year + 1}')
+                ed = (d0 - now.normalize()).days
             except Exception: ed = None
         ec = None if ed is None else ('<=3d to report' if ed <= 3 else '4-10d' if ed <= 10 else None)
         pos.append(dict(tk=p['tk'], track=p['track'], entry=px, lock_px=(px * (1 + LS.LOCK_G * pk) if pk >= LS.LOCK_K else None), age_days=round(age, 1), pnl=p['pnl'], peak=p['peak'], stop=p['stop'], last=p['last'], stop_gap_pct=round(stop_gap * 100, 2),
@@ -304,8 +307,17 @@ def analysis(LS, rows, meta, fetch=True):
     except Exception as ex: A['brief'] = None; print(f'  ! brief: {str(ex)[:80]}')
     return A, held, X, E, cal, top, have_news
 
+def _nn(o):
+    """NaN / inf -> None all the way down (the site parses this JSON in the browser, which rejects NaN)"""
+    if isinstance(o, float): return o if np.isfinite(o) else None
+    if isinstance(o, (np.floating,)): return float(o) if np.isfinite(o) else None
+    if isinstance(o, (np.integer,)): return int(o)
+    if isinstance(o, dict): return {k: _nn(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)): return [_nn(v) for v in o]
+    return o
+
 def save(A, path):
-    clean = dict(A, positions=[{k: v for k, v in p.items() if not k.startswith('_')} for p in A['positions']])
+    clean = _nn(dict(A, positions=[{k: v for k, v in p.items() if not k.startswith('_')} for p in A['positions']]))
     tmp = path + '.tmp'; json.dump(clean, open(tmp, 'w'), default=str); os.replace(tmp, path)
 
 
@@ -754,7 +766,7 @@ def build(LS, rows, meta, outdir, fetch=True):
     ax.text(0.06, 0.95, 'Morning report', fontsize=24, fontweight='bold', va='top', color=T1)
     ax.text(0.06, 0.905, f"{now:%A %B %d, %Y} · {now:%H:%M} ET · screener · {len(held)} of {meta['slots']} slots", fontsize=10.5, color=T2, va='top')
     lg = A.get('ledger') or {}
-    if lg.get('ok') is False or lg.get('is_seed'): ax.text(0.06, 0.885, '! ' + lg.get('note', '') + (' · in ledger, not in this book: ' + ', '.join(lg.get('in_ledger_not_book', [])) if lg.get('in_ledger_not_book') else '') + (' · in this book, not in ledger: ' + ', '.join(lg.get('in_book_not_ledger', [])) if lg.get('in_book_not_ledger') else ''), fontsize=8.6, color=CRIT, va='top', fontweight='bold')
+    if lg.get('ok') is False or lg.get('is_seed'): ax.text(0.06, 0.885, _short('! ' + lg.get('note', '') + (' · in ledger, not in this book: ' + ', '.join(lg.get('in_ledger_not_book', [])) if lg.get('in_ledger_not_book') else '') + (' · in this book, not in ledger: ' + ', '.join(lg.get('in_book_not_ledger', [])) if lg.get('in_book_not_ledger') else ''), 150), fontsize=8.6, color=CRIT, va='top', fontweight='bold')
     y = 0.85; ax.text(0.06, y, 'THE BOOK', fontsize=10, color=GOLD, fontweight='bold', va='top'); y -= 0.035
     hdr = ['Ticker', 'P&L', 'Price', 'Entry', 'Stop', 'Stop basis', 'Vol regime', 'Note']; xs = [0.06, 0.14, 0.22, 0.31, 0.40, 0.49, 0.59, 0.70]
     for h_, x_ in zip(hdr, xs): ax.text(x_, y, h_, fontsize=8.5, color=MUT, va='top')
