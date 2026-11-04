@@ -1,0 +1,11 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+  ^VIX 1h bars 9976 (2024-01-18 - 2026-11-04), NY AM flips 23
+  ^VXN 1h bars 4851 (2024-01-17 - 2026-11-04), NY AM flips 69
+one-month eval, 1 NQ 75/50, up to 2 a day | pass rate for starts 2022-26 and 2026 only, coin flip in brackets
+  BASE (15m flip, any day)               trades 2022+  342 (first 2018-01) win 47% avg  +4.5 | pass 2022-26 23% (13%) | pass 2026 38% (17%), 2026 trades 60 avg -1.1 | month $ mean +530 up 60%
+  VIXD (against the daily VIX vector)    trades 2022+  175 (first 2018-01) win 47% avg  +3.6 | pass 2022-26 8% (5%) | pass 2026 3% (5%), 2026 trades 30 avg -5.2 | month $ mean +216 up 50%
+  VXND (against the daily VXN vector)    trades 2022+  169 (first 2018-01) win 47% avg  +4.0 | pass 2022-26 6% (6%) | pass 2026 2% (5%), 2026 trades 30 avg +3.2 | month $ mean +232 up 57%
+  VIX1H trigger (opposite)               trades 2022+   23 (first 2024-04) win 26% avg -14.0 | pass 2022-26 0% (0%) | pass 2026 0% (0%), 2026 trades 8 avg -13.6 | month $ mean -111 up 10%
+  VXN1H trigger (opposite)               trades 2022+   67 (first 2024-01) win 34% avg -11.0 | pass 2022-26 1% (2%) | pass 2026 0% (6%), 2026 trades 24 avg -24.2 | month $ mean -255 up 21%
+  EMA 9/21 cross trigger                 trades 2022+  557 (first 2018-01) win 44% avg  -0.9 | pass 2022-26 27% (21%) | pass 2026 15% (13%), 2026 trades 92 avg -12.2 | month $ mean -181 up 45%
+  EMAF (BASE with EMA50 side)            trades 2022+  301 (first 2018-01) win 48% avg  +4.2 | pass 2022-26 18% (13%) | pass 2026 24% (4%), 2026 trades 52 avg -3.1 | month $ mean +440 up 59%
