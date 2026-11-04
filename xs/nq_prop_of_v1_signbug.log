@@ -1,0 +1,33 @@
+MNQ sessions 235  (2024-12-18 - 2025-11-17), neg-gamma sessions 50%
+
+== target 75 / stop 40 pts, 1 NQ, one trade a day
+  S0 15m flip, neg gamma                 n  36 (0.8/wk) win 42% avg   +8.1 pts (coin-flip +5.6, 90% -9.4..+20.7) total   +290 | eval pass 58% median 42 sessions
+  S1 S0 + CVD 30m agrees                 n   1 (0.0/wk) win 100% avg  +74.0 pts (coin-flip +74.0, 90% -41.0..+74.0) total    +74 | eval pass nan% median nan sessions
+  S2 S0 + flip-bar delta agrees          n   2 (0.0/wk) win 50% avg  +16.5 pts (coin-flip +16.5, 90% -41.0..+74.0) total    +33 | eval pass nan% median nan sessions
+  S3 5m flip with 15m state, neg gamma   n  40 (0.9/wk) win 32% avg   -4.3 pts (coin-flip -6.4, 90% -19.6..+2.6) total   -173 | eval pass 5% median 14 sessions
+  S4 S3 + CVD 30m agrees                 n  12 (0.3/wk) win 42% avg   +0.7 pts (coin-flip -3.4, 90% -21.2..+15.0) total     +8 | eval pass 0% median nan sessions
+  S5 S3, all days                        n  80 (1.7/wk) win 39% avg   -2.2 pts (coin-flip -2.2, 90% -12.4..+9.4) total   -173 | eval pass 8% median 24 sessions
+
+== target 75 / stop 50 pts, 1 NQ, one trade a day
+  S0 15m flip, neg gamma                 n  36 (0.8/wk) win 50% avg  +11.6 pts (coin-flip +4.4, 90% -7.3..+16.6) total   +418 | eval pass 26% median 18 sessions
+  S1 S0 + CVD 30m agrees                 n   1 (0.0/wk) win 100% avg  +74.0 pts (coin-flip -51.0, 90% -51.0..+74.0) total    +74 | eval pass nan% median nan sessions
+  S2 S0 + flip-bar delta agrees          n   2 (0.0/wk) win 50% avg  +11.5 pts (coin-flip +11.5, 90% -51.0..+74.0) total    +23 | eval pass nan% median nan sessions
+  S3 5m flip with 15m state, neg gamma   n  40 (0.9/wk) win 42% avg   -1.6 pts (coin-flip -2.4, 90% -20.4..+9.0) total    -65 | eval pass 10% median 16 sessions
+  S4 S3 + CVD 30m agrees                 n  12 (0.3/wk) win 58% avg  +15.7 pts (coin-flip -5.3, 90% -14.8..+26.5) total   +188 | eval pass 31% median 46 sessions
+  S5 S3, all days                        n  80 (1.7/wk) win 46% avg   -0.9 pts (coin-flip -1.2, 90% -8.0..+7.5) total    -71 | eval pass 11% median 15 sessions
+
+== target 100 / stop 50 pts, 1 NQ, one trade a day
+  S0 15m flip, neg gamma                 n  36 (0.8/wk) win 47% avg  +19.9 pts (coin-flip +11.5, 90% -11.1..+28.1) total   +717 | eval pass 30% median 18 sessions
+  S1 S0 + CVD 30m agrees                 n   1 (0.0/wk) win 100% avg  +99.0 pts (coin-flip +99.0, 90% -51.0..+99.0) total    +99 | eval pass nan% median nan sessions
+  S2 S0 + flip-bar delta agrees          n   2 (0.0/wk) win 50% avg  +24.0 pts (coin-flip +24.0, 90% -51.0..+99.0) total    +48 | eval pass nan% median nan sessions
+  S3 5m flip with 15m state, neg gamma   n  40 (0.9/wk) win 30% avg  -12.4 pts (coin-flip -6.1, 90% -23.5..+3.2) total   -498 | eval pass 4% median 7 sessions
+  S4 S3 + CVD 30m agrees                 n  12 (0.3/wk) win 42% avg   +1.1 pts (coin-flip -10.0, 90% -39.4..+13.2) total    +13 | eval pass 0% median nan sessions
+  S5 S3, all days                        n  80 (1.7/wk) win 40% avg   -6.1 pts (coin-flip -2.4, 90% -8.8..+6.0) total   -491 | eval pass 2% median 4 sessions
+
+== target 150 / stop 75 pts, 1 NQ, one trade a day
+  S0 15m flip, neg gamma                 n  36 (0.8/wk) win 50% avg  +16.4 pts (coin-flip +4.3, 90% -12.5..+24.6) total   +590 | eval pass 30% median 22 sessions
+  S1 S0 + CVD 30m agrees                 n   1 (0.0/wk) win 100% avg +149.0 pts (coin-flip +36.5, 90% -76.0..+149.0) total   +149 | eval pass nan% median nan sessions
+  S2 S0 + flip-bar delta agrees          n   2 (0.0/wk) win 50% avg  +36.5 pts (coin-flip +36.5, 90% -76.0..+149.0) total    +73 | eval pass nan% median nan sessions
+  S3 5m flip with 15m state, neg gamma   n  40 (0.9/wk) win 42% avg  -12.8 pts (coin-flip -8.6, 90% -20.2..+15.0) total   -513 | eval pass 19% median 100 sessions
+  S4 S3 + CVD 30m agrees                 n  12 (0.3/wk) win 58% avg   +9.2 pts (coin-flip -6.8, 90% -28.0..+24.9) total   +111 | eval pass nan% median nan sessions
+  S5 S3, all days                        n  80 (1.7/wk) win 46% avg  -10.3 pts (coin-flip -1.6, 90% -13.5..+10.3) total   -823 | eval pass 19% median 17 sessions
