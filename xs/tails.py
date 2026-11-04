@@ -19,7 +19,7 @@ T = XL.merge(C[['tk', 'entry', 'h1'] + ctxc], on=['tk', 'entry', 'h1'], how='lef
 # ---- bar features
 VOL = {}
 for tk in BAR:
-    H = pd.read_parquet(glob.glob(f'/mnt/user-data/uploads/fartpie/lse_clean/{tk}_15m_*.parquet')[0]); m = H.datetime.dt.hour * 60 + H.datetime.dt.minute; R = H[(m >= 570) & (m < 960)]
+    H = pd.read_parquet(glob.glob(f'/mnt/user-data/uploads/fartpie/lse_clean/{tk}_15m_*.parquet')[0]); H['datetime'] = pd.to_datetime(H.datetime, utc=True).dt.tz_convert('America/New_York').dt.tz_localize(None); m = H.datetime.dt.hour * 60 + H.datetime.dt.minute; R = H[(m >= 570) & (m < 960)]
     v = R.groupby(R.datetime.dt.normalize()).volume.sum(); c = R.groupby(R.datetime.dt.normalize()).close.last()
     bb = (c.rolling(20).std() * 4 / c.rolling(20).mean()); VOL[tk] = pd.DataFrame({'rvol': v / v.rolling(20).mean(), 'bbw': bb.rolling(252, min_periods=120).rank(pct=True),
                                                                                     'dd_days': c.rolling(80).apply(lambda a: len(a) - 1 - np.argmax(a), raw=True)})

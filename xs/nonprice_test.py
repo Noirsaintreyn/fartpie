@@ -6,6 +6,7 @@ All features use only what is known at the entry: prior RTH close for price feat
   O  options ratio    dratio = ratio at entry / ratio ~30 calendar days earlier - 1
 PART A: per-trade avg return, win rate, runner rate (ret >= 15%) by feature bucket, 2019-21 / 2022-26.
 PART B: book on the 40-run yardstick vs live (6 slots, ratio tie-break). Rank variants drop nothing: K = ratio x (1 + w x good), w = .25 and 1.0. One drop-filter per feature.
+Bar times are UTC in lse_clean; converted to ET (fixed Nov 4 16:40 after a first run that grouped days in UTC).
 PASS = beats live ret/DD in >= 70% of runs in BOTH periods. In-sample; a pass is paper-track only."""
 import glob
 src = open('xs/stop_1h_ev.py').read(); exec(src[:src.index("B0 = ev(XL)")])
@@ -15,7 +16,7 @@ ETF = dict(cons='XLY', tech='XLK', semi='SMH', indu='XLI', comm='XLC', fin='XLF'
 EC = {e: pd.read_parquet(f'/mnt/user-data/uploads/fartpie/etf_daily/{e}_yf.parquet')['Close'].squeeze().rename(e) for e in set(ETF.values())}
 feat = []
 for tk, g in XL.groupby('tk'):
-    H = pd.read_parquet(glob.glob(f'/mnt/user-data/uploads/fartpie/lse_clean/{tk}_15m_*.parquet')[0]); m = H.datetime.dt.hour * 60 + H.datetime.dt.minute; R = H[(m >= 570) & (m < 960)]
+    H = pd.read_parquet(glob.glob(f'/mnt/user-data/uploads/fartpie/lse_clean/{tk}_15m_*.parquet')[0]); H['datetime'] = pd.to_datetime(H.datetime, utc=True).dt.tz_convert('America/New_York').dt.tz_localize(None); m = H.datetime.dt.hour * 60 + H.datetime.dt.minute; R = H[(m >= 570) & (m < 960)]
     D = R.groupby(R.datetime.dt.normalize()).agg(o=('open', 'first'), c=('close', 'last')); days = D.index.values
     sec = g.sec.dropna().iloc[0] if g.sec.notna().any() else None; ec = EC.get(ETF.get(sec)) if sec else None
     if ec is not None: ec.index = pd.to_datetime(ec.index).normalize(); ec = ec.reindex(D.index).ffill()
