@@ -456,13 +456,13 @@ def _perf(tks, fetch=True, now=None):
     if not fetch or not tks: return {}
     try:
         import yfinance as yf
-        c = yf.download(sorted(set(tks)), period='14mo', interval='1d', progress=False, auto_adjust=True)['Close'].dropna(how='all').ffill()
+        al = {'BRKB': 'BRK-B', 'BFB': 'BF-B'}; c = yf.download(sorted({al.get(t, t) for t in tks}), period='14mo', interval='1d', progress=False, auto_adjust=True)['Close'].dropna(how='all').ffill(); c = c.rename(columns={v: k for k, v in al.items()})
         yr = pd.Timestamp(now).year if now is not None else c.index[-1].year; out = {}
         for t in c.columns:
             v = c[t].dropna()
             if len(v) < 130: continue
             pr = v[v.index.year < yr]; g = lambda k: float(v.iloc[-1] / v.iloc[-1 - k] - 1) * 100
-            out[t] = (g(1), g(5), g(21), g(126), float(v.iloc[-1] / pr.iloc[-1] - 1) * 100 if len(pr) else None)
+            out[t] = (g(1), g(5), g(21), g(126), float(v.iloc[-1] / pr.iloc[-1] - 1) * 100 if len(pr) else None, float(v.iloc[-1]))
         return out
     except Exception as ex: print(f'  ! perf: {str(ex)[:60]}'); return {}
 
@@ -493,16 +493,17 @@ def _brief(LS, A, E, macro, rows, meta, perf):
         rws = []
         for t in tks + peers:
             isH = t in held; h = H.get(t, {}); r = RW.get(t, {}); xp = XP.get(t, {})
-            if isH: vec = ('held ' + next((p['track'] for p in P if p['tk'] == t), '')) + (f", locked {xp['locked_pct']:+.1f}%" if xp.get('locked_pct', -1) >= 0 else '') + (', near stop' if any(f[0] == 'near stop' for f in h.get('flags', [])) else '')
+            if isH: vec = (next((p['track'] for p in P if p['tk'] == t), '')) + (f", locked {xp['locked_pct']:+.1f}%" if xp.get('locked_pct', -1) >= 0 else '') + (', near stop' if any(f[0] == 'near stop' for f in h.get('flags', [])) else '')
             elif r.get('action') == 'BUY': vec = 'flipped today'
             elif r.get('track', '15m') == '15m' and r.get('action') == 'FLAT' and r.get('state15') == -1 and r.get('trig') == r.get('trig') and r.get('last') and 0 < r['trig'] / r['last'] - 1 <= .02: vec = f"{r['trig'] / r['last'] - 1:.1%} under trigger"
             else: vec = 'flat' if r else '—'
             ed = xp.get('earn_days') if isH else None
             if not isH and r:
                 ed = None
-            rws.append(dict(tk=t, held=isH, perf=perf.get(t), ratio=ratios.get(t), vec=vec, earn=ed)); listed.append(t)
+            pp = next((p for p in P if p['tk'] == t), None); pf = perf.get(t); last = pf[5] if pf and len(pf) > 5 else (pp.get('last') if pp else None)
+            rws.append(dict(tk=t, held=isH, perf=pf[:5] if pf else None, ratio=ratios.get(t), vec=vec, earn=ed, entry=pp.get('entry') if pp else None, last=last, pnl=(last / pp['entry'] - 1) * 100 if pp and last and pp.get('entry') else None)); listed.append(t)
             if ed is not None and ed <= 14: earn.append((t, ed))
-        ep = perf.get(etf); sm = []
+        ep = (perf.get(etf) or (None,))[:5] if perf.get(etf) else None; sm = []
         if ep:
             rel = ep[1] - ((perf.get('SPY') or (0, sp_w))[1]); drv = next((w.format(**m) for t_, g_, fn, w in _DRV if t_ == etf and g_ == (1 if ep[0] > 0 else -1) and m and fn(m)), None)
             sm.append([(f"{name} ({etf})", True), (f" is {ep[0]:+.1f}% today and {ep[1]:+.1f}% on the week, {'ahead of' if rel > 0 else 'behind'} the S&P by {abs(rel):.1f} points over the week" + (f"; {drv}." if drv else '. No news or macro driver found for today\'s move.'), False)])
@@ -585,22 +586,23 @@ def _page_brief(LS, A, outdir, colors):
     for i, (n, lv, mv) in enumerate(B['macro']): T(5.8, r - 0.28 * i, n, 9.4, WH, True); T(8.6, r - 0.28 * i, lv, 9.4, T2, ha='right'); T(9.7, r - 0.28 * i, mv, 9.4, T2, ha='right')
     y -= h + 0.18
     # ---- one block per sector we hold
-    cols = [(0.85, 'Stock', 'left'), (2.7, 'Day', 'right'), (3.55, 'Week', 'right'), (4.4, '1M', 'right'), (5.25, '6M', 'right'), (6.1, 'YTD', 'right'), (6.95, 'Opt ratio', 'right'), (7.15, 'Vector', 'left'), (10.8, 'Earnings', 'right')]
+    cols = [(0.85, 'Stock', 'left'), (2.45, 'Entry', 'right'), (3.2, 'Last', 'right'), (3.95, 'P&L', 'right'), (4.7, 'Day', 'right'), (5.45, 'Week', 'right'), (6.2, '1M', 'right'), (6.95, '6M', 'right'), (7.7, 'YTD', 'right'), (8.4, 'Opt', 'right'), (8.6, 'Vector', 'left'), (11.65, 'Earn', 'right')]
     for blk in B['blocks']:
         rd = blk['read']; h = 0.95 + 0.28 * len(blk['rows']) + 0.1 + bh(rd)
         card(y, h, ''); ep = blk['ep'] or (None,) * 5
         T(0.85, y - 0.3, blk['name'] + ' sector', 12, WH, True); T(3.9, y - 0.3, f"{blk['etf']}", 8.5, MUT)
         for cx, v in ((5.25 + 0, None),): pass
-        T(10.9, y - 0.3, ' '.join(f"{lab} {fv(v)}" for lab, v in (('Day', ep[0]), ('Wk', ep[1]), ('1M', ep[2]))), 8.8, ink(ep[1]), ha='right')
+        T(11.6, y - 0.3, ' '.join(f"{lab} {fv(v)}" for lab, v in (('Day', ep[0]), ('Wk', ep[1]), ('1M', ep[2]))), 8.8, ink(ep[1]), ha='right')
         r = y - 0.66
         for cx, t, ha in cols: T(cx, r, t, 8, MUT, ha=ha)
         r -= 0.28
         for w_ in blk['rows']:
             T(0.85, r, ('● ' if w_['held'] else '   ') + w_['tk'], 9.4, WH if w_['held'] else T1, w_['held'])
-            p_ = w_['perf'] or (None,) * 5
-            for (cx, _, _), v in zip(cols[1:6], p_): T(cx, r, fv(v), 9.4, ink(v), ha='right')
-            T(6.95, r, '—' if w_['ratio'] is None else f"{w_['ratio']:.1f}", 9.4, T2, ha='right'); T(7.15, r, w_['vec'], 9.0, GOLD if 'trigger' in w_['vec'] or 'flipped' in w_['vec'] or 'near' in w_['vec'] else T2)
-            T(10.8, r, '' if w_['earn'] is None else f"{w_['earn']}d", 9.4, GOLD, ha='right'); r -= 0.28
+            p_ = w_['perf'] or (None,) * 5; px = lambda v: '' if v is None else (f"{v:,.2f}")
+            T(2.45, r, px(w_['entry']), 9.4, T2, ha='right'); T(3.2, r, px(w_['last']), 9.4, T1, ha='right'); T(3.95, r, '' if w_['pnl'] is None else fv(w_['pnl']), 9.4, ink(w_['pnl']), True, ha='right')
+            for (cx, _, _), v in zip(cols[4:9], p_): T(cx, r, fv(v), 9.4, ink(v), ha='right')
+            T(8.4, r, '—' if w_['ratio'] is None else f"{w_['ratio']:.1f}", 9.4, T2, ha='right'); T(8.6, r, w_['vec'], 9.0, GOLD if 'trigger' in w_['vec'] or 'flipped' in w_['vec'] or 'near' in w_['vec'] else T2)
+            T(11.65, r, '' if w_['earn'] is None else f"{w_['earn']}d", 9.4, GOLD, ha='right'); r -= 0.28
         bullets(r - 0.1, rd); y -= h + 0.15
     # ---- rotation
     h = 0.5 + bh(B['rotation']); card(y, h, 'CROSS-SECTOR ROTATION AND THEMES'); bullets(y - 0.58, B['rotation']); y -= h + 0.15
