@@ -1,0 +1,56 @@
+
+== 100/50: all S0 trades n386 win 46% avg +5.9 pts (H1 +6.2 / H2 +5.6)
+  DIR    long              n 230 win 47% avg   +4.2 | H1 n113   +9.0 / H2 n117   -0.4
+  DIR    short             n 156 win 46% avg   +8.4 | H1 n 72   +1.8 / H2 n 84  +14.1
+  REG    bear calm         n  78 win 47% avg   +8.2 | H1 n 14   +0.5 / H2 n 64   +9.9
+  REG    bear stress       n  22 win 41% avg   +7.6 | H1 n 16  +10.8 / H2 n  6   -1.0
+  REG    bull calm         n 275 win 46% avg   +4.7 | H1 n147   +5.8 / H2 n128   +3.4
+  REG    bull stress       n  11 win 64% avg  +15.6 | H1 n  8  +13.9 / H2 n  3  +20.2
+  Z20    normal            n 309 win 48% avg   +8.3 | H1 n151   +6.6 / H2 n158   +9.9   <- both halves
+  Z20    stretched down    n  42 win 40% avg   +2.7 | H1 n 14   +6.5 / H2 n 28   +0.8
+  Z20    stretched up      n  35 win 37% avg  -11.6 | H1 n 20   +2.6 / H2 n 15  -30.5
+  MKT20  SPY 20d down      n 166 win 42% avg   +1.1 | H1 n 69   +2.7 / H2 n 97   -0.1
+  MKT20  SPY 20d up        n 220 win 50% avg   +9.5 | H1 n116   +8.3 / H2 n104  +10.9   <- both halves
+  VIXP   VIX high          n 170 win 44% avg   +4.8 | H1 n 77   +3.8 / H2 n 93   +5.6
+  VIXP   VIX low           n 103 win 55% avg  +13.2 | H1 n 45  +16.3 / H2 n 58  +10.9   <- both halves
+  VIXP   VIX mid           n 113 win 42% avg   +0.8 | H1 n 63   +1.9 / H2 n 50   -0.5
+  GEXQ   gamma deepest     n 129 win 43% avg   +5.0 | H1 n 30  +17.1 / H2 n 99   +1.3
+  GEXQ   gamma mid         n 128 win 48% avg   +5.5 | H1 n 72   +0.0 / H2 n 56  +12.7
+  GEXQ   gamma shallow     n 129 win 48% avg   +7.1 | H1 n 83   +7.6 / H2 n 46   +6.3   <- both halves
+  PCR    put/call <= 1.5   n 175 win 43% avg   +3.2 | H1 n 39   +6.7 / H2 n136   +2.3
+  PCR    put/call > 1.5    n 211 win 49% avg   +8.1 | H1 n146   +6.0 / H2 n 65  +12.7
+  GAP    against the gap   n  63 win 49% avg   +9.2 | H1 n 25   +4.2 / H2 n 38  +12.5
+  GAP    with the gap      n 323 win 46% avg   +5.2 | H1 n160   +6.5 / H2 n163   +4.0
+    eval Z20=normal: n309 (0.70/wk) pass 36% vs coin-flip median 23%
+    eval MKT20=SPY 20d up: n220 (0.50/wk) pass 51% vs coin-flip median 28%
+    eval VIXP=VIX low: n103 (0.23/wk) pass 52% vs coin-flip median 37%
+    eval GEXQ=gamma shallow: n129 (0.29/wk) pass 36% vs coin-flip median 18%
+
+== 150/75: all S0 trades n386 win 49% avg +7.5 pts (H1 +6.9 / H2 +8.1)
+  DIR    long              n 230 win 50% avg   +6.3 | H1 n113   +9.2 / H2 n117   +3.5
+  DIR    short             n 156 win 47% avg   +9.3 | H1 n 72   +3.3 / H2 n 84  +14.4
+  REG    bear calm         n  78 win 53% avg  +13.7 | H1 n 14   +7.6 / H2 n 64  +15.0
+  REG    bear stress       n  22 win 45% avg  +12.7 | H1 n 16  +16.4 / H2 n  6   +2.6
+  REG    bull calm         n 275 win 48% avg   +5.1 | H1 n147   +5.6 / H2 n128   +4.6
+  REG    bull stress       n  11 win 64% avg  +12.4 | H1 n  8   +9.9 / H2 n  3  +19.2
+  Z20    normal            n 309 win 51% avg  +10.0 | H1 n151   +7.1 / H2 n158  +12.8   <- both halves
+  Z20    stretched down    n  42 win 45% avg   +3.2 | H1 n 14   +8.9 / H2 n 28   +0.4
+  Z20    stretched up      n  35 win 40% avg   -9.7 | H1 n 20   +3.9 / H2 n 15  -27.7
+  MKT20  SPY 20d down      n 166 win 45% avg   +2.2 | H1 n 69   +4.8 / H2 n 97   +0.2
+  MKT20  SPY 20d up        n 220 win 52% avg  +11.5 | H1 n116   +8.1 / H2 n104  +15.3   <- both halves
+  VIXP   VIX high          n 170 win 46% avg   +3.7 | H1 n 77   +6.5 / H2 n 93   +1.3
+  VIXP   VIX low           n 103 win 57% avg  +14.0 | H1 n 45   +9.1 / H2 n 58  +17.8   <- both halves
+  VIXP   VIX mid           n 113 win 47% avg   +7.4 | H1 n 63   +5.8 / H2 n 50   +9.4
+  GEXQ   gamma deepest     n 129 win 42% avg   -2.1 | H1 n 30   +7.5 / H2 n 99   -4.9
+  GEXQ   gamma mid         n 128 win 52% avg   +8.3 | H1 n 72   +5.1 / H2 n 56  +12.4
+  GEXQ   gamma shallow     n 129 win 54% avg  +16.2 | H1 n 83   +8.2 / H2 n 46  +30.7   <- both halves
+  PCR    put/call <= 1.5   n 175 win 47% avg   +6.0 | H1 n 39   +6.5 / H2 n136   +5.9
+  PCR    put/call > 1.5    n 211 win 51% avg   +8.7 | H1 n146   +7.0 / H2 n 65  +12.5   <- both halves
+  GAP    against the gap   n  63 win 46% avg   +5.3 | H1 n 25   +4.8 / H2 n 38   +5.6
+  GAP    with the gap      n 323 win 50% avg   +7.9 | H1 n160   +7.2 / H2 n163   +8.6   <- both halves
+    eval Z20=normal: n309 (0.70/wk) pass 47% vs coin-flip median 31%
+    eval MKT20=SPY 20d up: n220 (0.50/wk) pass 60% vs coin-flip median 37%
+    eval VIXP=VIX low: n103 (0.23/wk) pass 67% vs coin-flip median 29%
+    eval GEXQ=gamma shallow: n129 (0.29/wk) pass 69% vs coin-flip median 35%
+    eval PCR=put/call > 1.5: n211 (0.48/wk) pass 47% vs coin-flip median 30%
+    eval GAP=with the gap: n323 (0.73/wk) pass 46% vs coin-flip median 29%
