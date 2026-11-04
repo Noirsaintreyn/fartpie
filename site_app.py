@@ -75,6 +75,26 @@ def site_snapshot():
     return jsonify({'success': True, 'snapshot': d})
 
 
+@app.route('/api/site/book')
+def site_book():
+    """the open book the site shows, for the worker's morning report (token, no login)"""
+    tok = os.getenv('SITE_TOKEN', '')
+    if not tok or request.headers.get('X-Site-Token', '') != tok:
+        return jsonify({'success': False, 'error': 'forbidden'}), 403
+    with _lock:
+        d = _snap['data']
+        for f in (SNAP_FILE, os.path.join(ROOT, 'live_data', 'site_snapshot.json')):
+            if d is None and os.path.exists(f):
+                try:
+                    d = _snap['data'] = json.load(open(f))
+                except Exception:
+                    d = None
+    if not d:
+        return jsonify({'success': False, 'error': 'no snapshot'})
+    tr = [z for z in ((d.get('history') or {}).get('trades') or []) if z.get('open')]
+    return jsonify({'success': True, 'asof': d.get('asof'), 'positions': d.get('positions', []), 'open_trades': tr})
+
+
 @app.route('/api/site/static')
 def site_static():
     e = _need_login()

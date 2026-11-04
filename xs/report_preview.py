@@ -28,6 +28,11 @@ for t in names:
     else:
         r.update(action='FLAT', px=None, e=None, h1=False, stop=float(L['stop']), peak=0.0, pnl=0.0)
     rows.append(r)
+if os.getenv('WRONG_BOOK') == '1':                      # simulate a host whose scan holds the wrong names; the website book must win
+    for r in rows:
+        if r['action'] == 'HOLD': r.update(action='FLAT', px=None, e=None, pnl=0.0)
+        if r['base'] in ('JPM', 'LLY', 'GS'): r.update(action='HOLD', px=r['last'] * .97, e=len(r['H']) - 60, h1=False, stop=r['last'] * .95, peak=.03, pnl=.03)
+    DR._site_book = lambda LS, fetch=True: [(b[0], b[1], pd.Timestamp(b[2]), b[3]) for b in BOOK]
 meta = dict(slots=6, ratios={t: float(last_ratio.get(t, np.nan)) for t in names}, w=1 / 6)
 print('rows', len(rows), 'held', [r['base'] for r in rows if r['action'] == 'HOLD'], flush=True)
 fs = DR.build(LS, rows, meta, OUT, True)
