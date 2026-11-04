@@ -288,6 +288,8 @@ def analysis(LS, rows, meta, fetch=True):
              positions=P)
     try: A['expect'] = _expect(LS, P, held, meta, E, now, _regime_now(fetch), rows); A['expect']['lines'] = _expect_lines(A['expect'])
     except Exception as ex: A['expect'] = dict(error=str(ex)[:120])
+    try: A['day'] = _dayread(LS, A, rows, meta, E, top, cal, fetch)
+    except Exception as ex: A['day'] = None; print(f'  ! day read: {str(ex)[:80]}')
     return A, held, X, E, cal, top, have_news
 
 def save(A, path):
@@ -303,6 +305,104 @@ def _wrap(ax, x, y, text, width, size=9.5, color=None, weight='normal', lh=1.45,
     for ln in lines:
         ax.text(x, y, ln, fontsize=size, color=color, fontweight=weight, va='top', transform=ax.transAxes, **kw); y -= lh * size / 520
     return y
+
+# ================================================================ the day (Nov 4 2026): a short read of what is happening to the book, built from the same scan
+DEAL = re.compile(r'acqui|merger|buyout|takeover|to buy |bid for|stake|spin-?off|divest|buyback|share repurchase|offering|activist|deal', re.I)
+def _short(t, n=64): t = (t or '').strip(); return t if len(t) <= n else t[:n].rsplit(' ', 1)[0].rstrip(',;:-') + '…'
+
+def _dayread(LS, A, rows, meta, E, top, cal, fetch=True):
+    """headline + holding / looking up / under pressure / coming / news-and-deals. Every line comes from data the scan already holds; no forecasts beyond the backtest tables."""
+    X = A.get('expect') or {}; P = A.get('positions', []); XP = {x['tk']: x for x in X.get('positions', [])}; bk = X.get('book') or {}; reg = X.get('regime') or {}; T = _tables()
+    ratios = {k: v for k, v in (meta.get('ratios') or {}).items() if v == v}; held = {p['tk'] for p in P}; sec_down = [t for t, e in E.items() if t not in ('SPY', 'QQQ') and e.get('d') == -1 and e.get('w') == -1]
+    sec_up = [t for t, e in E.items() if t not in ('SPY', 'QQQ') and e.get('d') == 1 and e.get('w') == 1 and e.get('r5', 0) > 0]
+    # ---- holding
+    hold = []
+    for p in sorted(P, key=lambda q: -q['pnl']):
+        x = XP.get(p['tk'], {}); rd = p.get('read', {}); flags = []
+        if p.get('selling'): flags.append(('SELLS AT OPEN', 'bad'))
+        elif x.get('stop_gap_ranges') is not None and x['stop_gap_ranges'] < 1: flags.append(('near stop', 'bad'))
+        elif x.get('locked_pct', -1) >= 0: flags.append((f"locked {x['locked_pct']:+.1f}%", 'good'))
+        if rd.get('sec_d') == 'down' and rd.get('sec_w') == 'down': flags.append((f"{p.get('etf')} falling", 'bad'))
+        elif rd.get('sec_d') == 'up' and rd.get('sec_w') == 'up': flags.append((f"{p.get('etf')} rising", 'good'))
+        if p.get('earn_days') is None and rd.get('earnings'): flags.append((f"earnings {rd['earnings']}", 'warn'))
+        elif x.get('earn_days') is not None and x['earn_days'] <= 10: flags.append((f"earnings in {x['earn_days']}d", 'warn'))
+        c = p.get('counts') or {}
+        if c.get('neg', 0) > c.get('pos', 0): flags.append(('news −', 'bad'))
+        elif c.get('pos', 0) > c.get('neg', 0): flags.append(('news +', 'good'))
+        hold.append(dict(tk=p['tk'], pnl=p['pnl'], track=p.get('track', ''), flags=flags[:3]))
+    # ---- looking up: flips waiting + names close to a flip + rising sectors
+    up = []
+    for r in rows or []:
+        if r.get('action') == 'BUY' and r['base'] not in held and r['base'] in ratios: up.append((ratios[r['base']], r['base'], 'flipped today'))
+        elif r.get('track', '15m') == '15m' and r.get('action') == 'FLAT' and r.get('state15') == -1 and r.get('trig') == r.get('trig') and 'no new entries' not in str(r.get('note', '')) and r['base'] in ratios and r['base'] not in held and r.get('last'):
+            d = r['trig'] / r['last'] - 1
+            if 0 < d <= .02: up.append((ratios[r['base']], r['base'], f'{d:.1%} under its trigger'))
+    up = [dict(tk=b, why=c, ratio=round(a, 1)) for a, b, c in sorted(set(up), key=lambda z: -z[0])[:5]]
+    # ---- under pressure
+    down = [f"{ETF_NAME.get(t, t)} ({t}) down on the daily and weekly chart" for t in sec_down[:4]]
+    for h in hold:
+        if any(f[1] == 'bad' for f in h['flags']): down.append(f"{h['tk']}: " + ', '.join(f[0] for f in h['flags'] if f[1] == 'bad'))
+    # ---- coming
+    coming = [f"{e['t']}  {e['title']}" + (f" (prev {e['prev']})" if e.get('prev') else '') for e in A.get('calendar', []) if e.get('impact') == 'High'][:3]
+    ed = sorted([(x['earn_days'], t) for t, x in XP.items() if x.get('earn_days') is not None and x['earn_days'] <= 10])
+    for d, t in ed[:3]: coming.append(f"{t} reports in {d} day{'s' if d != 1 else ''}" + (" — earnings guard: sold at the prior close if up 3%+ but short of its usual earnings move" if d <= 3 else ''))
+    # ---- news and deals touching the book
+    news = []
+    for p in P:
+        for a_ in p.get('news', [])[:4]:
+            tag = 'DEAL' if DEAL.search(a_.get('title', '')) else None
+            if tag or a_.get('sent') in ('positive', 'negative'): news.append((0 if tag else 1, p['tk'], a_.get('sent'), tag, _short(a_.get('title', ''), 70)))
+    seen = set(); news = [n for n in sorted(news) if not (n[4] in seen or seen.add(n[4]))][:4]
+    for it in (A.get('headlines') or [])[:2]: news.append((2, 'MKT', None, None, _short(it.get('title', ''), 70)))
+    # ---- headline
+    best, worst = (hold[0], hold[-1]) if hold else (None, None); prot = sum(1 for h in hold if any(f[0].startswith('locked') for f in h['flags']))
+    l1 = (f"{bk.get('n', len(P))} of {bk.get('slots', 6)} slots, {bk.get('open_pnl', 0):+.1f}% open. " + (f"{best['tk']} leads at {best['pnl']:+.1f}%, {worst['tk']} trails at {worst['pnl']:+.1f}%. " if best else '') + f"{prot} of {len(hold)} stops sit above entry.") if hold else 'No open positions.'
+    qq = E.get('QQQ', {}); sp = E.get('SPY', {}); l2 = ''
+    if sp:
+        l2 = f"Tape: S&P {sp.get('r5', 0) * 100:+.1f}% and Nasdaq {qq.get('r5', 0) * 100:+.1f}% over 5 days; " + (f"{len(sec_down)} sector{'s' if len(sec_down) != 1 else ''} falling on both charts" if sec_down else 'no sector falling on both charts') + (f", {len(sec_up)} rising" if sec_up else '') + '.'
+    if reg.get('name'): l2 += f" Regime: {reg['name']}" + (' (the one state that paid in both halves of the backtest).' if reg['name'] == 'bull+stress' else '.')
+    l3 = ('Next catalyst: ' + coming[0].split('  ', 1)[-1].split(' — ')[0] + '.') if coming else 'No scheduled catalyst on held names today.'
+    if X.get('full'): l3 += ' Slots are full, so new flips are tracked only.'
+    return dict(headline=[l1, l2.strip(), l3], holding=hold, up=up, down=down[:5], coming=coming[:5], news=[dict(tk=a, sent=b, deal=c, title=d) for _, a, b, c, d in news])
+
+def _page_day(LS, A, outdir, colors):
+    from matplotlib.patches import FancyBboxPatch
+    BG, T1, T2, MUT, GOOD, CRIT, GOLD = colors; D = A.get('day')
+    if not D: return None
+    CARD, EDGE = '#0a1322', '#1a2638'; fig = plt.figure(figsize=(12, 8), facecolor=BG); ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 12); ax.set_ylim(0, 8); ax.axis('off')
+    def tx(x, y, s, size=10, color=T1, w='normal', ha='left', va='center'): ax.text(x, y, s, fontsize=size, color=color, fontweight=w, ha=ha, va=va)
+    def card(x, y, w, h, title, hot=None):
+        ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle='round,pad=0,rounding_size=0.12', fc=CARD, ec=hot or EDGE, lw=1.2)); tx(x + 0.22, y + h - 0.28, title, 8.4, GOLD, 'bold')
+    ax.add_patch(plt.Rectangle((0.6, 7.38), 0.55, 0.045, color=GOLD, lw=0)); tx(0.6, 7.62, 'The day', 26, T1, 'bold'); tx(11.4, 7.62, A.get('date', ''), 10.5, T2, ha='right')
+    card(0.6, 5.7, 11.2, 1.4, 'READ'); y = 6.52
+    for ln in D['headline']:
+        if not ln: continue
+        words = ln.split(' '); out = ['']; 
+        for w_ in words:
+            if len(out[-1]) + len(w_) > 150: out.append('')
+            out[-1] += w_ + ' '
+        for o in out: tx(0.85, y, o.strip(), 10.2, T1); y -= 0.25
+        y -= 0.06
+    col = {'good': GOOD, 'bad': CRIT, 'warn': GOLD}
+    card(0.6, 2.9, 5.5, 2.65, 'HOLDING'); y = 5.0
+    for h in D['holding'][:6]:
+        tx(0.85, y, h['tk'], 10.5, T1, 'bold'); tx(1.75, y, f"{h['pnl']:+.1f}%", 10, GOOD if h['pnl'] >= 0 else CRIT, 'bold'); x = 2.55
+        for f, k in h['flags']: tx(x, y, f, 8, col.get(k, T2)); x += 0.082 * len(f) + 0.3
+        y -= 0.37
+    card(6.3, 2.9, 5.5, 2.65, 'LOOKING UP'); y = 5.0
+    for u in D['up'][:5]: tx(6.52, y, u['tk'], 10.5, T1, 'bold'); tx(7.45, y, f"ratio {u['ratio']:.1f}", 8.4, MUT); tx(8.55, y, u['why'], 8.8, GOOD); y -= 0.37
+    if not D['up']: tx(6.52, y, 'No flips or near-flips among the universe.', 9, MUT)
+    card(0.6, 0.35, 5.5, 2.35, 'UNDER PRESSURE'); y = 2.15
+    for d in D['down'][:5]: tx(0.85, y, _short(d, 66), 9, CRIT); y -= 0.36
+    if not D['down']: tx(0.85, y, 'No sector falling on both charts and no stop in danger.', 9, GOOD)
+    card(6.3, 1.78, 5.5, 0.92, 'COMING'); y = 2.24
+    for c in D['coming'][:2]: tx(6.52, y, _short(c.split(' — ')[0], 70), 8.8, T1); y -= 0.3
+    if not D['coming']: tx(6.52, y, 'Nothing scheduled that touches the book.', 9, MUT)
+    card(6.3, 0.3, 5.5, 1.35, 'NEWS AND DEALS'); y = 1.08
+    for n in D['news'][:3]:
+        c_ = GOLD if n.get('deal') else (GOOD if n.get('sent') == 'positive' else CRIT if n.get('sent') == 'negative' else T2); tx(6.52, y, n['tk'], 8.4, T1, 'bold'); tx(7.1, y, ('DEAL · ' if n.get('deal') else '') + _short(n['title'], 56), 8.2, c_); y -= 0.29
+    if not D['news']: tx(6.52, y, 'No deal or opinionated news on the book.', 9, MUT)
+    fp = os.path.join(outdir, '0a_day.png'); fig.savefig(fp, dpi=130, facecolor=BG); plt.close(fig); return fp
 
 def _page_expect(LS, A, outdir, colors):
     """page 2: a one-screen outlook. Tiles, a gauge per position, hold-length odds, what takes the next slot. Short on purpose."""
@@ -441,6 +541,8 @@ def build(LS, rows, meta, outdir, fetch=True):
     ax.text(0.06, 0.04, 'Rules decide every buy and sell; this report is context. Sources: screener price data, HAR range model, Yahoo daily ETFs, Massive + Helious news.', fontsize=7.5, color=MUT)
     f0 = os.path.join(outdir, '0_cover.png'); fig.savefig(f0, dpi=110, facecolor=BG); plt.close(fig); files.append(f0)
     try:
+        fd = _page_day(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
+        if fd: files.append(fd)
         fx = _page_expect(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
         if fx: files.append(fx)
         fc = _page_context(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
