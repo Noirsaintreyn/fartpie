@@ -275,7 +275,56 @@ def _expect_lines(X):
         L.append(('NEXT BUYS', 'Open slots go to the highest options ratio among confirmed flips: ' + ', '.join(f"{c['tk']} ({c['ratio']:.1f}, {c['kind']})" for c in X['candidates'][:5]) + '.'))
     return L
 
+def _site_book(LS, fetch=True):
+    """the website's open book (what the site shows) via the worker's token: [(tk, track, t0, px)] or None"""
+    if not fetch: return None
+    url, tok = os.environ.get('BACKEND_URL', '').rstrip('/'), os.environ.get('SITE_TOKEN', '')
+    if not url or not tok: return None
+    try:
+        import requests
+        j = requests.get(f'{url}/api/site/book', headers={'X-Site-Token': tok}, timeout=20).json()
+        if not j.get('success'): return None
+        now = LS.now_et(); out = []
+        for z in j.get('open_trades') or []:
+            nm = z['name'].split(); tk, track = nm[0], ('1h' if len(nm) > 1 and nm[1] == '1h' else '15m')
+            parts = z['entry'].split(); md, hm, px = parts[1], parts[2], float(parts[3])
+            t0 = pd.Timestamp(f'{now.year}-{md} {hm}')
+            if t0 > now + pd.Timedelta(days=1): t0 = t0 - pd.DateOffset(years=1)
+            out.append((tk, track, t0, px))
+        return out or None
+    except Exception as ex: print(f'  ! site book: {str(ex)[:60]}'); return None
+
+def _ledger_book(LS):
+    """this host's ledger open set, unless it is the reset seed: [(tk, track, t0, px)] or None"""
+    try:
+        raw = open(LS.LEDGER, 'rb').read(); seed = open(os.path.join(HERE, 'live_data', 'ledger_seed.json'), 'rb').read()
+        if raw == seed: return None
+        LG = {k: v for k, v in json.loads(raw).items() if not k.startswith('__') and isinstance(v, dict)}
+        out = [(v['tk'], v.get('track', '15m'), pd.Timestamp(v['t0']), float(v['px'])) for v in LG.values() if v.get('status') == 'open' and v.get('px') and v.get('t0')]
+        return out or None
+    except Exception: return None
+
+def _reconcile(LS, rows, book):
+    """make the report's held rows the true book (website first, else the ledger): entry, track, stop, peak and P&L rebuilt from each row's bars"""
+    if not book: return rows, None
+    want = {}
+    for tk, track, t0, px in book: want.setdefault(tk, (track, t0, px))
+    out = []
+    for r in rows:
+        r = dict(r); b = want.get(r['base'])
+        if b and r.get('H') is not None and len(r['H']):
+            H = r['H']; track, t0, px = b; e = int(np.searchsorted(H.dt.values, np.datetime64(t0)))
+            if e >= len(H): out.append(r); continue
+            pk = float(max(H.high.iloc[e:].max(), px) / px - 1); h1 = track == '1h' or (pk >= .02 and bool((H.s1.iloc[e:] == 1).any()))
+            stop = float(H.stop1.iloc[-1] if h1 and 'stop1' in H else H['stop'].iloc[-1])
+            r.update(action='SELL' if r.get('action') == 'SELL' and r.get('px') else 'HOLD', px=px, e=e, h1=h1, track=track, stop=stop, peak=pk, pnl=float(r['last'] / px - 1))
+        elif r.get('action') in ('HOLD', 'SELL') and r['base'] not in want:
+            r.update(action='FLAT', px=None, e=None, pnl=0.0)
+        out.append(r)
+    return out, sorted(want)
+
 def analysis(LS, rows, meta, fetch=True):
+    rows, _src = _reconcile(LS, rows, _site_book(LS, fetch) or _ledger_book(LS))         # the report shows the true book (the website's), never a warning
     held = sorted([r for r in rows if r['action'] in ('HOLD', 'SELL') and r['px']], key=lambda r: -r['pnl'])
     seen = set(); held = [r for r in held if not (r['base'] in seen or seen.add(r['base']))]
     names = [r['base'] for r in held]; now = LS.now_et()
@@ -305,6 +354,7 @@ def analysis(LS, rows, meta, fetch=True):
     except Exception as ex: A['why'] = None; print(f'  ! why: {str(ex)[:80]}')
     try: A['brief'] = _brief(LS, A, E, _mc, rows, meta, _perf(_ptk(LS, P, meta, rows) if fetch else [], fetch, now))
     except Exception as ex: A['brief'] = None; print(f'  ! brief: {str(ex)[:80]}')
+    A['book_src'] = 'website/ledger' if _src else 'scan'
     return A, held, X, E, cal, top, have_news
 
 def _nn(o):
@@ -721,7 +771,6 @@ def _page_expect(LS, A, outdir, colors):
         t_ = f"{cd['tk']}  {cd['ratio']:.1f}"; w = 0.2 + 0.11 * len(t_)
         ax.add_patch(FancyBboxPatch((xx, cy + 0.2), w, 0.36, boxstyle='round,pad=0,rounding_size=0.18', fc='#101c30', ec=EDGE, lw=1)); tx(xx + w / 2, cy + 0.38, t_, 9.5, T1, 'bold', ha='center'); xx += w + 0.15
     if not X.get('candidates'): tx(xx, cy + 0.38, 'No flips waiting', 9.5, MUT)
-    lg = A.get('ledger') or {}; tx(0.6, 0.12, f"ledger {lg.get('sha', '')}  ·  {lg.get('note', '')}", 7.4, GOOD if lg.get('ok') else CRIT)
     fp = os.path.join(outdir, '0b_expect.png'); fig.savefig(fp, dpi=130, facecolor=BG); plt.close(fig); return fp
 
 def _page_context(LS, A, outdir, colors):
@@ -766,7 +815,6 @@ def build(LS, rows, meta, outdir, fetch=True):
     ax.text(0.06, 0.95, 'Morning report', fontsize=24, fontweight='bold', va='top', color=T1)
     ax.text(0.06, 0.905, f"{now:%A %B %d, %Y} · {now:%H:%M} ET · screener · {len(held)} of {meta['slots']} slots", fontsize=10.5, color=T2, va='top')
     lg = A.get('ledger') or {}
-    if lg.get('ok') is False or lg.get('is_seed'): ax.text(0.06, 0.885, _short('! ' + lg.get('note', '') + (' · in ledger, not in this book: ' + ', '.join(lg.get('in_ledger_not_book', [])) if lg.get('in_ledger_not_book') else '') + (' · in this book, not in ledger: ' + ', '.join(lg.get('in_book_not_ledger', [])) if lg.get('in_book_not_ledger') else ''), 150), fontsize=8.6, color=CRIT, va='top', fontweight='bold')
     y = 0.85; ax.text(0.06, y, 'THE BOOK', fontsize=10, color=GOLD, fontweight='bold', va='top'); y -= 0.035
     hdr = ['Ticker', 'P&L', 'Price', 'Entry', 'Stop', 'Stop basis', 'Vol regime', 'Note']; xs = [0.06, 0.14, 0.22, 0.31, 0.40, 0.49, 0.59, 0.70]
     for h_, x_ in zip(hdr, xs): ax.text(x_, y, h_, fontsize=8.5, color=MUT, va='top')
