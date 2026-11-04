@@ -1,0 +1,13 @@
+PROP with 5 MNQ ($10/pt) and coin-flip baseline (same trades, random direction, 30 draws: median pass rate)
+  15m long NEG     20$/pt pass 58% med 37d | 10$/pt pass 55% med 94d | coin-flip 1 NQ pass median 52% (range 32%-65%)
+  15m both NEG     20$/pt pass 66% med 25d | 10$/pt pass 64% med 58d | coin-flip 1 NQ pass median 52% (range 39%-68%)
+  5m long NEG      20$/pt pass 50% med 20d | 10$/pt pass 38% med 40d | coin-flip 1 NQ pass median 49% (range 42%-67%)
+  5m both NEG      20$/pt pass 66% med 14d | 10$/pt pass 45% med 25d | coin-flip 1 NQ pass median 53% (range 42%-65%)
+
+CHECK on real MNQ 1-min prints, 15m bars
+  long ALL        MNQ: n42 +455 pts avg +10.8 win 57% | QQQ proxy same months: n32 +338 pts
+  long NEG gamma  MNQ: n25 +86 pts avg +3.5 win 56% | QQQ proxy same months: n19 +536 pts
+  both ALL        MNQ: n92 +921 pts avg +10.0 win 52% | QQQ proxy same months: n61 +508 pts
+  both NEG gamma  MNQ: n43 +621 pts avg +14.4 win 51% | QQQ proxy same months: n28 +572 pts
+
+15m both NEG by year (pts): {2018: -307.0, 2019: -329.0, 2020: 133.0, 2021: 1229.0, 2022: 1630.0, 2023: 779.0, 2024: -303.0, 2025: 500.0, 2026: -77.0}

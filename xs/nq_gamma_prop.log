@@ -1,0 +1,57 @@
+QQQ 5m bars 178,337, days 2204, gex coverage 2018-01-02 - 2026-10-08, neg-gamma days 64%
+
+[5m long]
+  5m long ALL                              n  924 win 43% avg   -1.3 pts | 2018-21     -782 / 2022-26     -387 pts | per yr    -133 pts  maxDD   -1951 pts  Sharpe -0.17
+  5m long NEG gamma                        n  632 win 43% avg   +1.5 pts | 2018-21     -137 / 2022-26    +1101 pts | per yr    +110 pts  maxDD   -1427 pts  Sharpe 0.16
+  5m long POS gamma                        n  292 win 42% avg   -7.3 pts | 2018-21     -645 / 2022-26    -1488 pts | per yr    -243 pts  maxDD   -2564 pts  Sharpe -0.68
+  coin-flip direction, same NEG trades     total -673 pts (90% -3479 .. +2866); vector +964
+
+[5m both]
+  5m both ALL                              n 1812 win 41% avg   +0.9 pts | 2018-21    -1136 / 2022-26    +2685 pts | per yr    +177 pts  maxDD   -2509 pts  Sharpe 0.14
+  5m both NEG gamma                        n 1177 win 42% avg   +2.2 pts | 2018-21      -96 / 2022-26    +2736 pts | per yr    +301 pts  maxDD   -1943 pts  Sharpe 0.28
+  5m both POS gamma                        n  635 win 39% avg   -1.7 pts | 2018-21    -1040 / 2022-26      -51 pts | per yr    -124 pts  maxDD   -2651 pts  Sharpe -0.20
+  coin-flip direction, same NEG trades     total -1169 pts (90% -5680 .. +4457); vector +2640
+
+[15m long]
+  15m long ALL                             n  339 win 51% avg   +5.6 pts | 2018-21     +919 / 2022-26     +996 pts | per yr    +218 pts  maxDD    -898 pts  Sharpe 0.47
+  15m long NEG gamma                       n  268 win 52% avg   +7.8 pts | 2018-21     +929 / 2022-26    +1156 pts | per yr    +238 pts  maxDD    -906 pts  Sharpe 0.55
+  15m long POS gamma                       n   71 win 45% avg   -2.4 pts | 2018-21      -10 / 2022-26     -160 pts | per yr     -19 pts  maxDD    -305 pts  Sharpe -0.11
+  coin-flip direction, same NEG trades     total -153 pts (90% -2472 .. +2165); vector +2085
+
+[15m both]
+  15m both ALL                             n  675 win 49% avg   +5.3 pts | 2018-21     +893 / 2022-26    +2662 pts | per yr    +406 pts  maxDD   -1265 pts  Sharpe 0.55
+  15m both NEG gamma                       n  477 win 50% avg   +6.8 pts | 2018-21     +725 / 2022-26    +2529 pts | per yr    +371 pts  maxDD   -1024 pts  Sharpe 0.59
+  15m both POS gamma                       n  198 win 47% avg   +1.5 pts | 2018-21     +167 / 2022-26     +133 pts | per yr     +34 pts  maxDD    -787 pts  Sharpe 0.09
+  coin-flip direction, same NEG trades     total -708 pts (90% -3861 .. +1961); vector +3254
+
+PROP 50K (target $3,000, $2,000 EOD trailing max loss, $1,000 daily loss): pass rate among finished attempts | median days to pass | attempts
+  5m long    ALL        1 NQ   pass 45%  median 14 days  n 2191
+  5m long    ALL        2 MNQ  pass 8%  median 106 days  n 2174
+  5m long    NEG gamma  1 NQ   pass 50%  median 20 days  n 2149
+  5m long    NEG gamma  2 MNQ  pass 30%  median 169 days  n 2126
+  5m long    POS gamma  1 NQ   pass 20%  median 41 days  n 2191
+  5m long    POS gamma  2 MNQ  pass 0%  median nan days  n 2160
+  5m both    ALL        1 NQ   pass 59%  median 9 days  n 2191
+  5m both    ALL        2 MNQ  pass 28%  median 52 days  n 2175
+  5m both    NEG gamma  1 NQ   pass 66%  median 14 days  n 2182
+  5m both    NEG gamma  2 MNQ  pass 40%  median 84 days  n 2134
+  5m both    POS gamma  1 NQ   pass 43%  median 36 days  n 2191
+  5m both    POS gamma  2 MNQ  pass 5%  median 55 days  n 2174
+  15m long   ALL        1 NQ   pass 62%  median 33 days  n 2193
+  15m long   ALL        2 MNQ  pass 56%  median 242 days  n 2062
+  15m long   NEG gamma  1 NQ   pass 58%  median 37 days  n 2186
+  15m long   NEG gamma  2 MNQ  pass 62%  median 270 days  n 2024
+  15m long   POS gamma  1 NQ   pass 75%  median 478 days  n 2168
+  15m long   POS gamma  2 MNQ  pass nan%  median nan days  n 0
+  15m both   ALL        1 NQ   pass 64%  median 19 days  n 2199
+  15m both   ALL        2 MNQ  pass 48%  median 156 days  n 2145
+  15m both   NEG gamma  1 NQ   pass 66%  median 25 days  n 2186
+  15m both   NEG gamma  2 MNQ  pass 77%  median 225 days  n 2002
+  15m both   POS gamma  1 NQ   pass 48%  median 76 days  n 2179
+  15m both   POS gamma  2 MNQ  pass 80%  median 1158 days  n 2104
+
+CHECK on real MNQ 1-min prints (Dec 2024 - Nov 2025), 5m bars
+  long ALL        MNQ: n126 +344 pts win 43% | QQQ proxy same months: n98 -270 pts
+  long NEG gamma  MNQ: n64 +502 pts win 41% | QQQ proxy same months: n52 +386 pts
+  both ALL        MNQ: n247 +419 pts win 41% | QQQ proxy same months: n190 -454 pts
+  both NEG gamma  MNQ: n118 -124 pts win 37% | QQQ proxy same months: n89 +119 pts
