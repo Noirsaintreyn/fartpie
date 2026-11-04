@@ -1,0 +1,24 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+REALISTIC MONTHS 2022 - Aug 2026 (fresh eval each calendar month)
+
+WINDOWS, NQ 1 NQ 75/50
+  PRE 08:00-09:15 any day                      trades/mo  0.2 win 54% avg  -2.4 (22-23  +nan / 24-26  -2.4) | months: passed 0% lost 0% neither 100%, P&L mean +8 worst -1,877 | 2026: passed 0/10 lost 0
+  PRE 08:00-09:15 negative gamma               trades/mo  0.1 win 33% avg -20.3 (22-23  +nan / 24-26 -20.3) | months: passed 0% lost 0% neither 100%, P&L mean -23 worst -1,000 | 2026: passed 0/10 lost 0
+  AM 09:30-11:30 any day                       trades/mo  5.9 win 47% avg  +4.5 (22-23  +5.3 / 24-26  +3.9) | months: passed 22% lost 41% neither 36%, P&L mean +597 worst -2,588 | 2026: passed 4/10 lost 4
+  AM 09:30-11:30 negative gamma                trades/mo  4.0 win 49% avg  +7.1 (22-23  +5.2 / 24-26  +9.3) | months: passed 16% lost 28% neither 57%, P&L mean +584 worst -2,588 | 2026: passed 2/10 lost 2
+  MID 11:30-13:30 any day                      trades/mo  1.9 win 39% avg  -8.2 (22-23  -8.2 / 24-26  -8.1) | months: passed 2% lost 12% neither 86%, P&L mean -237 worst -2,000 | 2026: passed 0/10 lost 1
+  MID 11:30-13:30 negative gamma               trades/mo  1.2 win 45% avg  -1.9 (22-23  -4.3 / 24-26  +1.9) | months: passed 2% lost 9% neither 90%, P&L mean +3 worst -2,000 | 2026: passed 0/10 lost 1
+  PM 13:30-15:15 any day                       trades/mo  1.8 win 37% avg  -7.6 (22-23  -8.1 / 24-26  -7.2) | months: passed 0% lost 16% neither 84%, P&L mean -137 worst -2,434 | 2026: passed 0/10 lost 0
+  PM 13:30-15:15 negative gamma                trades/mo  1.2 win 36% avg  -8.1 (22-23 -11.0 / 24-26  -3.8) | months: passed 0% lost 7% neither 93%, P&L mean -86 worst -2,044 | 2026: passed 0/10 lost 0
+
+RSI / Z-SCORE, NQ AM, any day
+  base (AM any day)                            trades/mo  5.9 win 47% avg  +4.5 (22-23  +5.3 / 24-26  +3.9) | months: passed 22% lost 41% neither 36%, P&L mean +597 worst -2,588 | 2026: passed 4/10 lost 4
+  RSI filter (no longs > 70, no shorts < 30)   trades/mo  4.6 win 46% avg  +3.8 (22-23  +2.8 / 24-26  +4.5) | months: passed 16% lost 34% neither 50%, P&L mean +423 worst -2,401 | 2026: passed 4/10 lost 4
+  RSI with the trend (longs > 50, shorts < 50) trades/mo  5.4 win 47% avg  +4.2 (22-23  +3.3 / 24-26  +4.9) | months: passed 21% lost 45% neither 34%, P&L mean +436 worst -2,000 | 2026: passed 4/10 lost 4
+  |z20| < 2 filter                             trades/mo  2.1 win 46% avg  +4.1 (22-23  +9.0 / 24-26  +1.0) | months: passed 2% lost 17% neither 81%, P&L mean +216 worst -2,253 | 2026: passed 0/10 lost 4
+  RSI 30/70 reversal trigger (mean reversion)  trades/mo  8.2 win 44% avg  -1.5 (22-23  -4.6 / 24-26  +0.7) | months: passed 21% lost 53% neither 26%, P&L mean +204 worst -2,688 | 2026: passed 3/10 lost 4
+
+ES (SPY 15m proxy), NY AM, 1 ES 30/20 ES pts ($50/pt)
+  ES AM any day                                trades/mo  5.4 win 46% avg  -1.0 (22-23  -0.2 / 24-26  -1.5) | months: passed 9% lost 24% neither 67%, P&L mean +211 worst -2,213 | 2026: passed 2/10 lost 2
+  ES AM negative gamma                         trades/mo  3.7 win 47% avg  -0.8 (22-23  +0.4 / 24-26  -2.1) | months: passed 7% lost 14% neither 79%, P&L mean +198 worst -2,213 | 2026: passed 1/10 lost 2
+  NQ + ES together (1 NQ + 1 ES, same account) trades/mo 11.3 win 47% avg  +1.2 (22-23  +2.4 / 24-26  +0.3) | months: passed 14% lost 45% neither 41%, P&L mean +771 worst -2,698 | 2026: passed 3/10 lost 4
