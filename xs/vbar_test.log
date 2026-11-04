@@ -1,0 +1,64 @@
+AAPL
+ABNB
+ADBE
+AMD
+AMZN
+APP
+AVGO
+BA
+BKNG
+C
+CAT
+CMG
+COIN
+COST
+CRM
+CRWD
+CVNA
+DIS
+DLTR
+ENPH
+FDX
+GEV
+GOOGL
+GS
+HD
+HOOD
+IBM
+JPM
+LLY
+LMT
+LRCX
+LULU
+MCD
+META
+MSFT
+MU
+NFLX
+NVDA
+ORCL
+OXY
+PANW
+PENN
+PLTR
+PYPL
+QCOM
+SBUX
+SMCI
+TGT
+TSLA
+UBER
+UNH
+UPS
+WMT
+WYNN
+volume bars per 15m bar: {48: 0.51, 24: 0.34, 96: 0.63}
+parity: live-rebuilt trades 17447 vs stored 17447  mean ret +0.3119% vs +0.3119%
+40 matched runs, 2019-21 / 2022-26
+  L live (rebuilt)                   ret +53.1% / +21.8%   DD -10% / -20%   ret/DD 5.13 / 1.13
+  VB48: trades 12213, 15m-track avg +0.361% (live +0.259%), win 33% (live 31%), runners>=15% 112 (live 136)
+  VB48                               ret +44.6% / +23.7%   DD -11% / -25%   ret/DD 4.01 / 0.98   beats live 0% / 28%
+  VB24: trades 10608, 15m-track avg +0.357% (live +0.259%), win 35% (live 31%), runners>=15% 90 (live 136)
+  VB24                               ret +32.6% / +9.9%   DD -11% / -29%   ret/DD 2.94 / 0.35   beats live 0% / 5%
+  VB96: trades 13466, 15m-track avg +0.301% (live +0.259%), win 31% (live 31%), runners>=15% 114 (live 136)
+  VB96                               ret +48.2% / +19.2%   DD -11% / -24%   ret/DD 4.69 / 0.78   beats live 20% / 10%
