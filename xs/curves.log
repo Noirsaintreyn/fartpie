@@ -1,0 +1,18 @@
+parity: live-rebuilt trades 17447 vs stored 17447  mean ret +0.3119% vs +0.3119%
+    window                    series  total  cagr  maxdd
+since 2019 Current book (S&P 6-slot)  825.5  33.0  -20.0
+since 2019     S&P + NDX split 50/50 1205.1  39.0  -20.2
+since 2019     NDX + Dow split 50/50 1120.3  37.8  -17.7
+since 2019                       SPY  244.8  17.2  -33.7
+since 2019                       QQQ  387.7  22.5  -35.1
+ 2019-2023 Current book (S&P 6-slot)  434.2  39.9  -20.0
+ 2019-2023     S&P + NDX split 50/50  580.4  46.8  -20.2
+ 2019-2023     NDX + Dow split 50/50  533.6  44.8  -17.7
+ 2019-2023                       SPY  106.4  15.6  -33.7
+ 2019-2023                       QQQ  174.4  22.4  -35.1
+since 2023 Current book (S&P 6-slot)  186.2  31.9  -17.6
+since 2023     S&P + NDX split 50/50  235.8  37.6  -18.3
+since 2023     NDX + Dow split 50/50  226.0  36.5  -15.2
+since 2023                       SPY  110.8  21.7  -18.8
+since 2023                       QQQ  175.3  30.6  -22.8
+weekly points {'since 2019': 408, '2019-2023': 261, 'since 2023': 199}
