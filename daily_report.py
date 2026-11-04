@@ -360,6 +360,35 @@ def _page_expect(LS, A, outdir, colors):
     lg = A.get('ledger') or {}; tx(0.6, 0.12, f"ledger {lg.get('sha', '')}  ·  {lg.get('note', '')}", 7.4, GOOD if lg.get('ok') else CRIT)
     fp = os.path.join(outdir, '0b_expect.png'); fig.savefig(fp, dpi=130, facecolor=BG); plt.close(fig); return fp
 
+def _page_context(LS, A, outdir, colors):
+    """page 3: all the context per position as chips, plus a status label from the stop (risk, not a forecast)"""
+    from matplotlib.patches import FancyBboxPatch
+    BG, T1, T2, MUT, GOOD, CRIT, GOLD = colors; X = A.get('expect') or {}; PP = {p['tk']: p for p in A.get('positions', [])}
+    if not X or 'positions' not in X: return None
+    CARD, EDGE = '#0a1322', '#1a2638'; fig = plt.figure(figsize=(12, 8), facecolor=BG); ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 12); ax.set_ylim(0, 8); ax.axis('off')
+    def tx(x, y, s, size=10, color=T1, w='normal', ha='left', va='center'): ax.text(x, y, s, fontsize=size, color=color, fontweight=w, ha=ha, va=va)
+    def chip(x, y, label, val, col=T1, w=1.55):
+        ax.add_patch(FancyBboxPatch((x, y - 0.2), w, 0.42, boxstyle='round,pad=0,rounding_size=0.12', fc='#101c30', ec=EDGE, lw=1)); tx(x + 0.12, y + 0.1, label, 6.8, MUT); tx(x + 0.12, y - 0.09, val, 9, col, 'bold'); return x + w + 0.1
+    ax.add_patch(plt.Rectangle((0.6, 7.38), 0.55, 0.045, color=GOLD, lw=0)); tx(0.6, 7.62, 'Context', 26, T1, 'bold'); tx(11.4, 7.62, A.get('date', ''), 10.5, T2, ha='right')
+    tx(0.6, 7.2, 'What surrounds each position. Status is about the stop, not a forecast.', 10, MUT)
+    P = X['positions']; rh = 0.88; y0 = 6.75
+    for k, p in enumerate(P):
+        a = PP.get(p['tk'], {}); rd = a.get('read', {}); yc = y0 - k * (rh + 0.07) - rh / 2
+        ax.add_patch(FancyBboxPatch((0.6, yc - rh / 2), 11.2, rh, boxstyle='round,pad=0,rounding_size=0.1', fc=CARD, ec=EDGE, lw=1.1))
+        st, sc = (('SELLING', CRIT) if p.get('selling') else ('NEAR STOP', CRIT) if (p.get('stop_gap_ranges') is not None and p['stop_gap_ranges'] < 1) else ('PROTECTED', GOOD) if p['locked_pct'] >= 0 else ('ROOM', GOLD))
+        tx(0.85, yc + 0.17, p['tk'], 14, T1, 'bold'); tx(0.85, yc - 0.12, f"{p['track']} · {p['pnl']:+.1f}%", 8.6, GOOD if p['pnl'] >= 0 else CRIT)
+        ax.add_patch(FancyBboxPatch((1.95, yc - 0.13), 1.05, 0.28, boxstyle='round,pad=0,rounding_size=0.14', fc='none', ec=sc, lw=1.3)); tx(2.475, yc + 0.01, st, 7.8, sc, 'bold', ha='center')
+        x = 3.2; sec = f"{a.get('etf') or '—'} {'▲' if rd.get('sec_d') == 'up' else '▼' if rd.get('sec_d') == 'down' else '·'}{'▲' if rd.get('sec_w') == 'up' else '▼' if rd.get('sec_w') == 'down' else '·'}"
+        x = chip(x, yc, 'SECTOR  d / w', sec, GOOD if rd.get('sec_d') == 'up' else CRIT if rd.get('sec_d') == 'down' else T1, 1.25)
+        x = chip(x, yc, 'VOLATILITY', f"{rd.get('vol', '—')} · {rd.get('vol_pct', '—')}th", T1, 1.4)
+        x = chip(x, yc, 'DAY RANGE', f"±{(rd.get('day_range') or 0) / 2:.1f}%" if rd.get('day_range') else '—', T1, 1.05)
+        x = chip(x, yc, 'OPTIONS RATIO', f"{p['ratio']:.1f}  (#{p['ratio_rank']})" if p.get('ratio') is not None else '—', T1, 1.4)
+        e = rd.get('earnings'); x = chip(x, yc, 'EARNINGS', e or 'none soon', CRIT if (p.get('earn_days') is not None and p['earn_days'] <= 3) else T1, 1.2)
+        c = a.get('counts') or {}; x = chip(x, yc, 'NEWS 5D', f"+{c.get('pos', 0)}  −{c.get('neg', 0)}", GOOD if c.get('pos', 0) > c.get('neg', 0) else CRIT if c.get('neg', 0) > c.get('pos', 0) else T1, 1.1)
+    ax.add_patch(FancyBboxPatch((0.6, 0.3), 11.2, 0.72, boxstyle='round,pad=0,rounding_size=0.1', fc=CARD, ec=EDGE, lw=1.1)); tx(0.85, 0.82, 'TESTED, NOT PREDICTIVE', 8.3, GOLD, 'bold')
+    tx(0.85, 0.52, 'Macro levels · sector trend · EMA / SMA crosses · a position\'s own P&L and drawdown. None of them rated what happens next out of sample, so none is used to score a position.', 8.6, T2)
+    fp = os.path.join(outdir, '0c_context.png'); fig.savefig(fp, dpi=130, facecolor=BG); plt.close(fig); return fp
+
 def build(LS, rows, meta, outdir, fetch=True):
     os.makedirs(outdir, exist_ok=True)
     BG, PANEL, T1, T2, MUT, GOOD, CRIT, GOLD = LS.BG, LS.PANEL, LS.T1, LS.T2, LS.MUT, LS.GOOD, LS.CRIT, '#c9a227'
@@ -414,6 +443,8 @@ def build(LS, rows, meta, outdir, fetch=True):
     try:
         fx = _page_expect(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
         if fx: files.append(fx)
+        fc = _page_context(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
+        if fc: files.append(fc)
     except Exception as ex: print(f'  ! expectations page: {str(ex)[:80]}')
     # ---------------------------------------------------------------- one page per position
     for k, (r, p) in enumerate(zip(held, A['positions'])):
