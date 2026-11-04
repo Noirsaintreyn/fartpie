@@ -1,0 +1,14 @@
+
+== S0 (negative gamma): 386 trades, 150/75
+  1 NQ   $20/pt  pass 50% (coin-flip 35%)  median 55 sessions to pass | expected 106 sessions per pass incl. restarts = 5.1 months, fees ~$248
+  5 MNQ  $10/pt  pass 39% (coin-flip 21%)  median 69 sessions to pass | expected 216 sessions per pass incl. restarts = 10.3 months, fees ~$505
+  3 MNQ  $ 6/pt  pass 59% (coin-flip 27%)  median 156 sessions to pass | expected 299 sessions per pass incl. restarts = 14.2 months, fees ~$697
+  2 MNQ  $ 4/pt  pass 71% (coin-flip 28%)  median 358 sessions to pass | expected 446 sessions per pass incl. restarts = 21.3 months, fees ~$1,041
+  1 MNQ  $ 2/pt  pass 100% (coin-flip 0%)  median 942 sessions to pass | expected 930 sessions per pass incl. restarts = 44.3 months, fees ~$2,169
+
+== S0 + SPY 20d up: 220 trades, 150/75
+  1 NQ   $20/pt  pass 60% (coin-flip 35%)  median 98 sessions to pass | expected 150 sessions per pass incl. restarts = 7.2 months, fees ~$350
+  5 MNQ  $10/pt  pass 55% (coin-flip 21%)  median 118 sessions to pass | expected 227 sessions per pass incl. restarts = 10.8 months, fees ~$529
+  3 MNQ  $ 6/pt  pass 70% (coin-flip 26%)  median 248 sessions to pass | expected 338 sessions per pass incl. restarts = 16.1 months, fees ~$790
+  2 MNQ  $ 4/pt  pass 72% (coin-flip 15%)  median 442 sessions to pass | expected 580 sessions per pass incl. restarts = 27.6 months, fees ~$1,354
+  1 MNQ  $ 2/pt  pass 100% (coin-flip nan%)  median 1052 sessions to pass | expected 1030 sessions per pass incl. restarts = 49.0 months, fees ~$2,402

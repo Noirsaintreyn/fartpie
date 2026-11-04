@@ -1,0 +1,47 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+2022 - 2026-10: 1196 sessions, 58 months
+
+== S0: 201 signal days (3.5 per month)
+  A 1 NQ 75/40     trades  201 win 44% avg  +6.5 pts | 1-month eval: pass 14% fail 22% expire 64% (coin-flip pass 7%) | month $: mean   +452 median   +427 up 53% worst  -4,260 best  +6,580
+  B 1 NQ 75/50     trades  201 win 49% avg  +5.9 pts | 1-month eval: pass 15% fail 37% expire 49% (coin-flip pass 8%) | month $: mean   +408 median   +460 up 55% worst  -5,090 best  +6,380
+  C 5 MNQ 150/75   trades  201 win 49% avg  +7.9 pts | 1-month eval: pass 5% fail 9% expire 85% (coin-flip pass 4%) | month $: mean   +272 median   +250 up 55% worst  -3,048 best  +4,369
+  D 7 MNQ 100/50   trades  201 win 45% avg  +5.4 pts | 1-month eval: pass 11% fail 23% expire 66% (coin-flip pass 5%) | month $: mean   +263 median    +87 up 50% worst  -3,577 best  +4,816
+
+== S0 + SPY agrees: 139 signal days (2.4 per month)
+  A 1 NQ 75/40     trades  139 win 45% avg  +8.1 pts | 1-month eval: pass 9% fail 13% expire 79% (coin-flip pass 4%) | month $: mean   +386 median   +229 up 52% worst  -3,440 best  +5,100
+  B 1 NQ 75/50     trades  139 win 51% avg  +7.9 pts | 1-month eval: pass 9% fail 24% expire 68% (coin-flip pass 5%) | month $: mean   +377 median   +273 up 53% worst  -4,080 best  +4,900
+  C 5 MNQ 150/75   trades  139 win 50% avg +11.8 pts | 1-month eval: pass 3% fail 4% expire 93% (coin-flip pass 2%) | month $: mean   +283 median    +56 up 50% worst  -3,048 best  +4,369
+  D 7 MNQ 100/50   trades  139 win 46% avg  +6.8 pts | 1-month eval: pass 7% fail 11% expire 83% (coin-flip pass 2%) | month $: mean   +228 median     +0 up 47% worst  -2,867 best  +3,985
+
+== S0 + SPY 20d up: 104 signal days (1.8 per month)
+  A 1 NQ 75/40     trades  104 win 48% avg +10.8 pts | 1-month eval: pass 7% fail 10% expire 84% (coin-flip pass 3%) | month $: mean   +386 median     +0 up 43% worst  -3,280 best  +6,580
+  B 1 NQ 75/50     trades  104 win 53% avg +10.0 pts | 1-month eval: pass 8% fail 15% expire 78% (coin-flip pass 3%) | month $: mean   +358 median     +0 up 41% worst  -4,080 best  +6,380
+  C 5 MNQ 150/75   trades  104 win 54% avg +15.1 pts | 1-month eval: pass 3% fail 5% expire 92% (coin-flip pass 0%) | month $: mean   +271 median     +0 up 48% worst  -3,048 best  +4,464
+  D 7 MNQ 100/50   trades  104 win 50% avg +10.7 pts | 1-month eval: pass 6% fail 9% expire 84% (coin-flip pass 2%) | month $: mean   +269 median     +0 up 41% worst  -2,867 best  +4,150
+
+== S0, 2 a day: 201 signal days (3.5 per month)
+  A 1 NQ 75/40     trades  233 win 44% avg  +6.8 pts | 1-month eval: pass 17% fail 19% expire 64% (coin-flip pass 8%) | month $: mean   +546 median   +427 up 55% worst  -3,853 best  +6,580
+  B 1 NQ 75/50     trades  231 win 50% avg  +7.1 pts | 1-month eval: pass 18% fail 28% expire 54% (coin-flip pass 7%) | month $: mean   +568 median   +358 up 53% worst  -4,080 best  +6,380
+  C 5 MNQ 150/75   trades  228 win 50% avg  +8.9 pts | 1-month eval: pass 5% fail 9% expire 85% (coin-flip pass 2%) | month $: mean   +350 median   +250 up 57% worst  -3,048 best  +4,369
+  D 7 MNQ 100/50   trades  231 win 47% avg  +7.0 pts | 1-month eval: pass 12% fail 17% expire 71% (coin-flip pass 5%) | month $: mean   +393 median    +87 up 50% worst  -3,380 best  +4,816
+
+== ALL15 (any gamma): 293 signal days (5.1 per month)
+  A 1 NQ 75/40     trades  293 win 42% avg  +4.7 pts | 1-month eval: pass 19% fail 31% expire 50% (coin-flip pass 11%) | month $: mean   +471 median   +738 up 64% worst  -5,740 best  +6,580
+  B 1 NQ 75/50     trades  293 win 47% avg  +3.9 pts | 1-month eval: pass 21% fail 51% expire 28% (coin-flip pass 15%) | month $: mean   +389 median   +499 up 59% worst  -5,090 best  +6,380
+  C 5 MNQ 150/75   trades  293 win 47% avg  +3.4 pts | 1-month eval: pass 7% fail 18% expire 75% (coin-flip pass 8%) | month $: mean   +171 median    +85 up 59% worst  -2,395 best  +4,369
+  D 7 MNQ 100/50   trades  293 win 43% avg  +3.2 pts | 1-month eval: pass 15% fail 29% expire 56% (coin-flip pass 10%) | month $: mean   +224 median   +446 up 59% worst  -5,018 best  +4,816
+
+== ALL15, 2 a day: 293 signal days (5.1 per month)
+  A 1 NQ 75/40     trades  345 win 43% avg  +4.9 pts | 1-month eval: pass 21% fail 25% expire 54% (coin-flip pass 9%) | month $: mean   +580 median   +570 up 62% worst  -5,740 best  +6,580
+  B 1 NQ 75/50     trades  342 win 47% avg  +4.5 pts | 1-month eval: pass 23% fail 40% expire 37% (coin-flip pass 13%) | month $: mean   +530 median   +573 up 60% worst  -4,640 best  +6,380
+  C 5 MNQ 150/75   trades  338 win 47% avg  +3.4 pts | 1-month eval: pass 8% fail 13% expire 79% (coin-flip pass 8%) | month $: mean   +197 median    +76 up 53% worst  -3,612 best  +4,369
+  D 7 MNQ 100/50   trades  342 win 44% avg  +3.9 pts | 1-month eval: pass 15% fail 22% expire 64% (coin-flip pass 8%) | month $: mean   +321 median   +446 up 59% worst  -5,018 best  +4,816
+
+== ENSEMBLE: gradient-boosted trees on all context, walk-forward by year (train on every earlier year, score the next), S0 trades, 150/75
+  2022-26 scored trades 201: AUC 0.513 | top half (p >= median) n101 win 50% avg +11.5 pts | bottom half win 46% avg +4.5 | all win 48% avg +8.1
+    2022: AUC 0.52  top-half avg +9.0 vs bottom +7.6 (n 64)
+    2023: AUC 0.48  top-half avg +14.8 vs bottom -0.9 (n 42)
+    2024: AUC 0.60  top-half avg +13.4 vs bottom -17.5 (n 36)
+    2025: AUC 0.45  top-half avg -5.4 vs bottom +7.1 (n 27)
+    2026: AUC 0.43  top-half avg +19.4 vs bottom +12.4 (n 32)
+  model top half, C 5 MNQ 150/75: trades 101 | 1-month eval pass 1% fail 2% expire 97% | month $ mean +197 up 45%

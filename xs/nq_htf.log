@@ -1,0 +1,18 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+
+FILTERS on S0 (150/75, 1 NQ)
+  S0                                           n 386 (0.88/wk) win 49% avg   +7.5 (coin-flip -0.5) | H1   +6.9 / H2   +8.1 | eval pass 50% vs coin-flip 32%, median 55 sessions
+  S0 + H1 agrees                               n 157 (0.36/wk) win 48% avg   +5.3 (coin-flip +1.0) | H1   -5.0 / H2  +17.2 | eval pass 47% vs coin-flip 42%, median 140 sessions
+  S0 + H1 DISagrees                            n 229 (0.52/wk) win 50% avg   +9.0 (coin-flip -0.9) | H1  +16.8 / H2   +2.8 | eval pass 50% vs coin-flip 34%, median 79 sessions
+  S0 + H4 agrees                               n 206 (0.47/wk) win 50% avg   +3.2 (coin-flip -4.8) | H1   +0.5 / H2   +5.9 | eval pass 46% vs coin-flip 25%, median 86 sessions
+  S0 + H4 DISagrees                            n 180 (0.41/wk) win 49% avg  +12.4 (coin-flip +1.6) | H1  +14.8 / H2  +10.3 | eval pass 51% vs coin-flip 37%, median 100 sessions
+  S0 + SPY agrees                              n 254 (0.58/wk) win 52% avg  +10.5 (coin-flip -3.3) | H1   +8.8 / H2  +12.0 | eval pass 53% vs coin-flip 31%, median 71 sessions
+  S0 + SPY DISagrees                           n 132 (0.30/wk) win 45% avg   +1.6 (coin-flip +3.2) | H1   +3.8 / H2   -0.8 | eval pass 38% vs coin-flip 38%, median 273 sessions
+  S0 + MEGA agrees                             n 268 (0.61/wk) win 50% avg   +4.6 (coin-flip -2.6) | H1   +7.0 / H2   +2.6 | eval pass 36% vs coin-flip 30%, median 72 sessions
+  S0 + MEGA DISagrees                          n 118 (0.27/wk) win 47% avg  +14.1 (coin-flip +3.0) | H1   +6.6 / H2  +22.6 | eval pass 59% vs coin-flip 35%, median 137 sessions
+  S0 + ALL4 agrees                             n  58 (0.13/wk) win 47% avg   -4.8 (coin-flip +3.1) | H1  -16.3 / H2   +6.8 | eval pass 27% vs coin-flip 55%, median 274 sessions
+  S0 + ALL4 DISagrees                          n 328 (0.74/wk) win 50% avg   +9.7 (coin-flip -2.9) | H1  +11.2 / H2   +8.3 | eval pass 51% vs coin-flip 33%, median 58 sessions
+
+TRIGGERS (negative gamma, first of the day)
+  T1H QQQ 1h flip                              n 150 (0.34/wk) win 51% avg   +2.6 (coin-flip -1.8) | H1   +8.0 / H2   -2.5 | eval pass 69% vs coin-flip 28%, median 288 sessions
+  TMEGA megacap breadth crosses 5 of 8         n 382 (0.87/wk) win 51% avg   +2.9 (coin-flip +1.1) | H1   +3.4 / H2   +2.4 | eval pass 45% vs coin-flip 32%, median 76 sessions

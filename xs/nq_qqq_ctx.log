@@ -1,0 +1,54 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+
+== S0x2 (neg gamma, 2 a day), B 1 NQ 75/50: trades 231 avg +7.1 pts (22-23 +5.2 / 24-26 +9.3) | 1-month pass 18% | month $ mean +568 up 53%
+  QQQ200  QQQ < 200d           n  81 win 52% avg   +8.2 | 22-23 n 71   +4.2 / 24-26 n 10  +36.5
+  QQQ200  QQQ > 200d           n 150 win 49% avg   +6.6 | 22-23 n 49   +6.6 / 24-26 n101   +6.6
+  QZ20    QQQ normal           n 191 win 50% avg   +6.8 | 22-23 n 96   +6.5 / 24-26 n 95   +7.1
+  QZ20    QQQ stretched down   n  28 win 50% avg  +11.6 | 22-23 n 14   +8.2 / 24-26 n 14  +15.0
+  QZ20    QQQ stretched up     n  12 win 50% avg   +2.7 | 22-23 n 10  -11.6 / 24-26 n  2  +74.0
+  QR20    QQQ 20d down         n 120 win 48% avg   +4.9 | 22-23 n 65   +2.1 / 24-26 n 55   +8.2
+  QR20    QQQ 20d up           n 111 win 52% avg   +9.5 | 22-23 n 55   +8.7 / 24-26 n 56  +10.3   <- both
+  VXNP    VXN high             n 111 win 50% avg   +7.1 | 22-23 n 47   -1.1 / 24-26 n 64  +13.1
+  VXNP    VXN low              n  59 win 54% avg  +12.5 | 22-23 n 41  +18.2 / 24-26 n 18   -0.6
+  VXNP    VXN mid              n  61 win 46% avg   +2.0 | 22-23 n 32   -2.4 / 24-26 n 29   +7.0
+  VXNTR   VXN falling >10%     n  20 win 35% avg   -9.0 | 22-23 n 20   -9.0 / 24-26 n  0   +nan
+  VXNTR   VXN flat             n 170 win 54% avg  +11.4 | 22-23 n 87  +11.4 / 24-26 n 83  +11.4   <- both
+  VXNTR   VXN rising >10%      n  41 win 41% avg   -2.7 | 22-23 n 13  -15.0 / 24-26 n 28   +3.0
+  VXNVIX  VXN/VIX <= 1.25      n 116 win 53% avg  +11.3 | 22-23 n 58   +4.4 / 24-26 n 58  +18.3
+  VXNVIX  VXN/VIX > 1.25       n 115 win 47% avg   +2.9 | 22-23 n 62   +5.9 / 24-26 n 53   -0.6
+    QR20=QQQ 20d up: trades 111 (1.9/month) | 1-month pass 8% fail 12% expire 81% (coin-flip 2%) | month $ mean +364 median +0 up 36% worst -3,060
+    VXNTR=VXN flat: trades 170 (2.9/month) | 1-month pass 14% fail 17% expire 69% (coin-flip 5%) | month $ mean +668 median +382 up 53% worst -3,060
+
+== ALLx2 (any day, 2 a day), B 1 NQ 75/50: trades 342 avg +4.5 pts (22-23 +5.3 / 24-26 +3.9) | 1-month pass 23% | month $ mean +530 up 60%
+  QQQ200  QQQ < 200d           n  87 win 53% avg  +10.1 | 22-23 n 73   +4.4 / 24-26 n 14  +40.0
+  QQQ200  QQQ > 200d           n 255 win 45% avg   +2.6 | 22-23 n 67   +6.3 / 24-26 n188   +1.3
+  QZ20    QQQ normal           n 267 win 47% avg   +4.3 | 22-23 n112   +7.0 / 24-26 n155   +2.4
+  QZ20    QQQ stretched down   n  28 win 50% avg  +11.6 | 22-23 n 14   +8.2 / 24-26 n 14  +15.0
+  QZ20    QQQ stretched up     n  47 win 47% avg   +1.1 | 22-23 n 14  -11.2 / 24-26 n 33   +6.4
+  QR20    QQQ 20d down         n 126 win 46% avg   +3.6 | 22-23 n 65   +2.1 / 24-26 n 61   +5.1
+  QR20    QQQ 20d up           n 216 win 48% avg   +5.0 | 22-23 n 75   +8.1 / 24-26 n141   +3.4
+  VXNP    VXN high             n 132 win 48% avg   +5.9 | 22-23 n 47   -1.1 / 24-26 n 85   +9.8
+  VXNP    VXN low              n 116 win 52% avg   +8.3 | 22-23 n 60  +15.4 / 24-26 n 56   +0.7
+  VXNP    VXN mid              n  94 win 41% avg   -2.2 | 22-23 n 33   -3.9 / 24-26 n 61   -1.3
+  VXNTR   VXN falling >10%     n  47 win 47% avg   +6.0 | 22-23 n 22  -11.8 / 24-26 n 25  +21.7
+  VXNTR   VXN flat             n 254 win 48% avg   +5.4 | 22-23 n105  +11.4 / 24-26 n149   +1.1
+  VXNTR   VXN rising >10%      n  41 win 41% avg   -2.7 | 22-23 n 13  -15.0 / 24-26 n 28   +3.0
+  VXNVIX  VXN/VIX <= 1.25      n 169 win 49% avg   +7.9 | 22-23 n 62   +3.5 / 24-26 n107  +10.4
+  VXNVIX  VXN/VIX > 1.25       n 173 win 46% avg   +1.2 | 22-23 n 78   +6.7 / 24-26 n 95   -3.3
+
+== VOLATILITY MODELS (S0x2 trades, 2022-26, 1 NQ 75/50): forecast tercile at the prior close -> win, avg, avg |pts| (size of moves)
+  HAR  low   n  67 win 60% avg  +18.1 | |move|  54.5 | 22-23  +19.9 / 24-26  +15.6
+  HAR  mid   n  67 win 45% avg   -0.2 | |move|  54.1 | 22-23   -4.9 / 24-26   +6.7
+  HAR  high  n  97 win 46% avg   +4.6 | |move|  56.9 | 22-23   +1.0 / 24-26   +7.3
+  GK   low   n  77 win 56% avg  +13.0 | |move|  55.0 | 22-23  +16.7 / 24-26   +7.6
+  GK   mid   n  65 win 51% avg   +7.7 | |move|  54.9 | 22-23   +0.8 / 24-26  +14.8
+  GK   high  n  89 win 44% avg   +1.6 | |move|  56.1 | 22-23   -4.2 / 24-26   +6.6
+  GJR  low   n  56 win 52% avg  +10.4 | |move|  53.4 | 22-23  +13.2 / 24-26   +4.8
+  GJR  mid   n  78 win 51% avg   +7.5 | |move|  55.8 | 22-23   +7.1 / 24-26   +7.8
+  GJR  high  n  97 win 47% avg   +5.0 | |move|  56.2 | 22-23   -3.4 / 24-26  +11.9
+
+  ADAPTIVE targets from HAR (target = a x forecast daily range in NQ pts, stop = 2/3 target), same S0x2 signals, 1 NQ
+  HAR expected daily range, 2022-26: median 250 NQ pts (10%-90% 183-394)
+  a=0.25: median target 63 pts | trades 233 win 47% avg +4.9 pts (22-23 +3.8 / 24-26 +6.0) | 1-month pass 15% | month $ mean +392 up 47%
+  a=0.4: median target 101 pts | trades 231 win 49% avg +6.9 pts (22-23 +6.1 / 24-26 +7.7) | 1-month pass 16% | month $ mean +548 up 53%
+  a=0.6: median target 150 pts | trades 219 win 55% avg +8.2 pts (22-23 +13.8 / 24-26 +1.9) | 1-month pass 12% | month $ mean +616 up 60%
