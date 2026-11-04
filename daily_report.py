@@ -300,7 +300,7 @@ def analysis(LS, rows, meta, fetch=True):
     _mc = _macro(fetch)
     try: A['why'] = _why(A, E, P, _mc, top)
     except Exception as ex: A['why'] = None; print(f'  ! why: {str(ex)[:80]}')
-    try: A['brief'] = _brief(A, E, _mc)
+    try: A['brief'] = _brief(LS, A, E, _mc, rows, meta, _perf(_ptk(LS, P, meta, rows) if fetch else [], fetch, now))
     except Exception as ex: A['brief'] = None; print(f'  ! brief: {str(ex)[:80]}')
     return A, held, X, E, cal, top, have_news
 
@@ -451,74 +451,168 @@ def _page_why(LS, A, outdir, colors):
         y -= h + 0.14
     fp = os.path.join(outdir, '0b_why.png'); fig.savefig(fp, dpi=130, facecolor=BG); plt.close(fig); return fp
 
-def _brief(A, E=None, macro=None):
-    """one page: one paragraph on the tape and the book, held-stock news, what we do not want, what we look for, what is coming"""
-    D = A.get('day') or {}; X = A.get('expect') or {}; P = A.get('positions', []); H = D.get('holding', []); E = E or {}; m = macro or {}; sec = A.get('sectors', [])
-    f = lambda v: 'n/a' if v is None else f"{v:+.1f}%"
+def _perf(tks, fetch=True, now=None):
+    """{ticker: (day, week, month, 6-month, year-to-date) in %} from Yahoo daily closes; {} when the feed is down"""
+    if not fetch or not tks: return {}
+    try:
+        import yfinance as yf
+        c = yf.download(sorted(set(tks)), period='14mo', interval='1d', progress=False, auto_adjust=True)['Close'].dropna(how='all').ffill()
+        yr = pd.Timestamp(now).year if now is not None else c.index[-1].year; out = {}
+        for t in c.columns:
+            v = c[t].dropna()
+            if len(v) < 130: continue
+            pr = v[v.index.year < yr]; g = lambda k: float(v.iloc[-1] / v.iloc[-1 - k] - 1) * 100
+            out[t] = (g(1), g(5), g(21), g(126), float(v.iloc[-1] / pr.iloc[-1] - 1) * 100 if len(pr) else None)
+        return out
+    except Exception as ex: print(f'  ! perf: {str(ex)[:60]}'); return {}
+
+_GROW, _DEF = ('XLK', 'XLC', 'XLY'), ('XLP', 'XLU', 'XLV', 'XLRE')
+def _ptk(LS, P, meta, rows):
+    held = {p['tk'] for p in P}; ratios = {k: v for k, v in (meta.get('ratios') or {}).items() if v == v}; out = ['SPY'] + [p['tk'] for p in P]
+    for p in P:
+        etf = p.get('etf')
+        if etf: out.append(etf); out += sorted([t for t in ratios if t not in held and LS.SECTOR_ETF.get(LS.sector_of(t)) == etf], key=lambda t: -ratios[t])[:2]
+    return out
+
+def _brief(LS, A, E, macro, rows, meta, perf):
+    """newsletter layout: per sector a table (held stock + two peers) and a short read, then rotation, then upcoming for the names listed. Segments are (text, bold)."""
+    D = A.get('day') or {}; X = A.get('expect') or {}; P = A.get('positions', []); H = {h['tk']: h for h in D.get('holding', [])}; XP = {x['tk']: x for x in X.get('positions', [])}; m = macro or {}; sec = {s_['etf']: s_ for s_ in A.get('sectors', [])}
+    ratios = {k: v for k, v in (meta.get('ratios') or {}).items() if v == v}; RW = {r['base']: r for r in rows or []}; held = {p['tk'] for p in P}; avg = lambda L: sum(L) / len(L) if L else None
+    B = dict(date=A.get('date', ''))
     dv = [p['day'] for p in P if p.get('day') is not None]; wv = [p['wk'] for p in P if p.get('wk') is not None]
-    book = f"Your book (equal-weighted, {len(P)} stocks) is {f(sum(dv) / len(dv) if dv else None)} on the day and {f(sum(wv) / len(wv) if wv else None)} on the week."
-    ix = ' '.join(f"{n} {f(E.get(t, {}).get('r1', 0) * 100)} day, {f(E.get(t, {}).get('r5', 0) * 100)} week." for t, n in (('SPY', 'S&P 500'), ('QQQ', 'Nasdaq')) if t in E)
-    ss = sorted([s_ for s_ in sec if s_['etf'] not in ('SPY', 'QQQ')], key=lambda s_: -s_['r1'])
-    sectors = 'Sectors, day / week: ' + '; '.join(f"{s_['name']} {s_['r1']:+.1f}% / {s_['r5']:+.1f}%" for s_ in ss) + '.' if ss else ''
-    why = []
-    for s_ in ss[:2] + ss[-2:]:
-        sg = 1 if s_['r1'] > 0 else -1
-        w = next((w.format(**m) for t_, g_, fn, w in _DRV if t_ == s_['etf'] and g_ == sg and m and fn(m)), None)
-        if w and s_['name'] + ': ' not in ' '.join(why): why.append(f"{s_['name']}: {w}")
-    macro_line = ''
+    B['market'] = [('Your book', avg(dv), avg(wv), None)] + [(n, E[t]['r1'] * 100, E[t]['r5'] * 100, E[t].get('r21', 0) * 100) for t, n in (('SPY', 'S&P 500'), ('QQQ', 'Nasdaq')) if t in E]
+    B['macro'] = [('10-year yield', f"{m['y']:.2f}%", f"{m['yield_bp']:+.0f} bp"), ('Oil', '', f"{m['oil']:+.1f}%"), ('Dollar', '', f"{m['dollar']:+.1f}%"), ('VIX', f"{m['vix']:.1f}", f"{m['vix_chg']:+.1f}%")] if m else []
+    sp_w = (E.get('SPY') or {}).get('r5', 0) * 100
+    # ---- sectors we hold, biggest first, each with two peers from the options-ratio universe
+    groups = {}
+    for p in P: groups.setdefault(p.get('etf'), []).append(p['tk'])
+    blocks = []; listed = []; earn = []
+    for etf, tks in sorted(groups.items(), key=lambda kv: -len(kv[1])):
+        if not etf: continue
+        name = ETF_NAME.get(etf, etf); peers = sorted([t for t, v in ratios.items() if t not in held and LS.SECTOR_ETF.get(LS.sector_of(t)) == etf], key=lambda t: -ratios[t])[:2]
+        rws = []
+        for t in tks + peers:
+            isH = t in held; h = H.get(t, {}); r = RW.get(t, {}); xp = XP.get(t, {})
+            if isH: vec = ('held ' + next((p['track'] for p in P if p['tk'] == t), '')) + (f", locked {xp['locked_pct']:+.1f}%" if xp.get('locked_pct', -1) >= 0 else '') + (', near stop' if any(f[0] == 'near stop' for f in h.get('flags', [])) else '')
+            elif r.get('action') == 'BUY': vec = 'flipped today'
+            elif r.get('track', '15m') == '15m' and r.get('action') == 'FLAT' and r.get('state15') == -1 and r.get('trig') == r.get('trig') and r.get('last') and 0 < r['trig'] / r['last'] - 1 <= .02: vec = f"{r['trig'] / r['last'] - 1:.1%} under trigger"
+            else: vec = 'flat' if r else '—'
+            ed = xp.get('earn_days') if isH else None
+            if not isH and r:
+                ed = None
+            rws.append(dict(tk=t, held=isH, perf=perf.get(t), ratio=ratios.get(t), vec=vec, earn=ed)); listed.append(t)
+            if ed is not None and ed <= 14: earn.append((t, ed))
+        ep = perf.get(etf); sm = []
+        if ep:
+            rel = ep[1] - ((perf.get('SPY') or (0, sp_w))[1]); drv = next((w.format(**m) for t_, g_, fn, w in _DRV if t_ == etf and g_ == (1 if ep[0] > 0 else -1) and m and fn(m)), None)
+            sm.append([(f"{name} ({etf})", True), (f" is {ep[0]:+.1f}% today and {ep[1]:+.1f}% on the week, {'ahead of' if rel > 0 else 'behind'} the S&P by {abs(rel):.1f} points over the week" + (f"; {drv}." if drv else '. No news or macro driver found for today\'s move.'), False)])
+        pr = [(r['perf'][1], r['tk']) for r in rws if r['perf']]
+        if len(pr) >= 2: pr.sort(); sm.append([('Best this week: ', True), (f"{pr[-1][1]} ({pr[-1][0]:+.1f}%); ", False), ('worst: ', True), (f"{pr[0][1]} ({pr[0][0]:+.1f}%).", False)])
+        for t in tks:
+            for a_ in next((p for p in P if p['tk'] == t), {}).get('news', [])[:4]:
+                if DEAL.search(a_.get('title', '')) or a_.get('sent') in ('positive', 'negative'): sm.append([(t, True), (' DEAL: ' if DEAL.search(a_.get('title', '')) else ': ', bool(DEAL.search(a_.get('title', '')))), (_short(a_['title'], 100), False)]); break
+        blocks.append(dict(name=name, etf=etf, ep=ep, rows=rws, read=sm))
+    B['blocks'] = blocks
+    # ---- rotation
+    sv = [(s_['name'], s_['etf'], s_['r1'], s_['r5']) for s_ in sec.values() if s_['etf'] not in ('SPY', 'QQQ')]; rot = []
+    if sv:
+        nup = sum(1 for x in sv if x[2] > 0); gd = avg([s_['r1'] for t, s_ in sec.items() if t in _GROW]); dd = avg([s_['r1'] for t, s_ in sec.items() if t in _DEF]); gw = avg([s_['r5'] for t, s_ in sec.items() if t in _GROW]); dw = avg([s_['r5'] for t, s_ in sec.items() if t in _DEF])
+        if nup >= len(sv) - 2 or nup <= 2: rot.append([('Breadth', True), (f": {nup} of {len(sv)} sectors up today. Almost every sector moving the same way is a market-wide move (rates, risk appetite, flows), not money switching sectors.", False)])
+        else: rot.append([('Breadth', True), (f": {nup} of {len(sv)} sectors up today, {len(sv) - nup} down, so money is moving between sectors. Leaders: {', '.join(x[0] for x in sorted(sv, key=lambda z: -z[2])[:2])}. Laggards: {', '.join(x[0] for x in sorted(sv, key=lambda z: z[2])[:2])}.", False)])
+        if None not in (gd, dd, gw, dw):
+            rot.append([('Growth vs defensives', True), (f": growth (tech, communication, discretionary) {gd:+.1f}% today and {gw:+.1f}% on the week; defensives (staples, utilities, health care, real estate) {dd:+.1f}% and {dw:+.1f}%. ", False), ((('Risk is being bought.' if gw > dw else 'Money is hiding in defensives.') if abs(gw - dw) >= 1 else 'Neither side is clearly leading.') + (' Both sides rising means a broad bid, not a rotation.' if gw > 0 and dw > 0 else ''), False)])
     if m:
-        bits = []
-        if abs(m['yield_bp']) >= 3: bits.append(f"the 10-year yield {'rose' if m['yield_bp'] > 0 else 'fell'} {abs(m['yield_bp']):.0f} bp")
-        if abs(m['oil']) >= 1.5: bits.append(f"oil {m['oil']:+.1f}%")
-        if abs(m['dollar']) >= .4: bits.append(f"the dollar {m['dollar']:+.1f}%")
-        if abs(m['vix_chg']) >= 5: bits.append(f"VIX {'jumped' if m['vix_chg'] > 0 else 'dropped'} to {m['vix']:.0f}")
-        macro_line = ('Macro: ' + ', '.join(bits) + '.') if bits else 'Rates, oil, dollar and VIX were quiet.'
+        bits = [b_ for b_ in (f"the 10-year yield {'rose' if m['yield_bp'] > 0 else 'fell'} {abs(m['yield_bp']):.0f} bp" if abs(m['yield_bp']) >= 3 else '', f"oil {m['oil']:+.1f}%" if abs(m['oil']) >= 1.5 else '', f"the dollar {m['dollar']:+.1f}%" if abs(m['dollar']) >= .4 else '', f"VIX {'jumped' if m['vix_chg'] > 0 else 'dropped'} to {m['vix']:.0f}" if abs(m['vix_chg']) >= 5 else '') if b_]
+        rot.append([('Macro', True), (': ' + (', '.join(bits) + '.' if bits else 'rates, oil, dollar and VIX were quiet, so no macro shock is behind the move.'), False)])
     hl = (A.get('headlines') or [None])[0]
-    news = ('Top headline: ' + _short(hl['title'], 100) + ('. ' + _short(hl['read'], 120) if hl.get('read') else '.')) if hl else ''
-    cause = ('Explained by ' + '; '.join(why) + '. The other sector moves have no news or macro driver, likely rotation.') if why else 'No news or macro driver explains the sector moves, likely rotation.'
-    out = [('WHAT IS HAPPENING', ' '.join(x for x in (book, ix, sectors, macro_line, cause, news) if x))]
-    nw = D.get('news', []); held = [n for n in nw if n['tk'] != 'MKT']
-    out.append(('NEWS AND DEALS ON YOUR STOCKS', ' '.join(f"{n['tk']}: " + ('DEAL, ' if n.get('deal') else '') + n['title'] + '.' for n in held[:5]) if held else 'No deals or opinionated news on the stocks you hold.'))
-    bad = []
-    neg = [h['tk'] for h in H if any(f_[0] == 'news −' for f_ in h['flags'])]
-    if neg: bad.append(f"News: negative coverage on {', '.join(neg)}.")
-    if m and m['yield_bp'] > 4: bad.append(f"Economy: yields rising ({m['yield_bp']:+.0f} bp) pressure growth stocks.")
-    if m and m['vix_chg'] > 5: bad.append(f"Economy: VIX jumped to {m['vix']:.0f}, risk gets sold first.")
-    hi = [c.split('  ', 1)[-1].split(' (')[0] for c in D.get('coming', []) if ':' not in c and 'reports' not in c][:2]
-    if hi: bad.append('A surprise in ' + ' or '.join(hi) + ' would gap the whole market.')
-    nst = [h['tk'] for h in H if any(f_[0] == 'near stop' for f_ in h['flags'])]; fall = [h['tk'] for h in H if any(f_[0].endswith('falling') for f_ in h['flags'])]
-    if nst: bad.append(f"Price: {', '.join(nst)} within a normal day's range of the stop.")
-    if fall: bad.append(f"Price: {', '.join(fall)} sit in a falling sector.")
-    bad.append('Anything that closes a position under its stop, or a drawdown toward the 8% breaker, ends the trade. Small stop-outs are normal: a 1.1-day trade loses 64% of the time.')
-    out.append(('WHAT WE DO NOT WANT', ' '.join(bad)))
-    XP = {x['tk']: x for x in X.get('positions', [])}; look = [f"{u['tk']} ({u['why']}, options ratio {u['ratio']:.1f})" for u in D.get('up', [])[:3]]; g = [h['tk'] for h in H if any(f_[1] == 'good' and f_[0].startswith('locked') for f_ in h['flags'])]
-    want = []
-    if look: want.append('Next in line: ' + ', '.join(look) + '.' + (' Slots are full, so they enter only if one frees up.' if X.get('full') else ''))
-    if g: want.append(f"Gains locked on {', '.join(g[:5])}.")
-    want.append('Edge: positions open 3+ days finish green 64% of the time and 7+ days 84%; a few long holds carry the profit. Best regime so far is a bull market under stress (S&P above its 200-day, VIX curve inverted).')
-    out.append(('WHAT WE ARE LOOKING FOR', ' '.join(want)))
-    cm = [c.split(' — ')[0] for c in D.get('coming', [])]; ev = []
+    if hl: rot.append([('Headline', True), (': ' + _short(hl['title'], 110) + ('. ' + _short(hl['read'], 130) if hl.get('read') else '.'), False)])
+    up_, dn_ = [t for t in groups if t in sec and sec[t]['r1'] > 0], [t for t in groups if t in sec and sec[t]['r1'] < 0]
+    rot.append([('Our book', True), (f": {len(up_)} of its {len(groups)} sectors up today" + (f" ({', '.join(up_)})" if up_ else '') + (f", {len(dn_)} down ({', '.join(dn_)})" if dn_ else '') + '. Vector trades the stock, not the sector, so this is context.', False)])
+    B['rotation'] = rot
+    # ---- watch: only names listed above + macro that hits every stock
+    up = []
+    for t, d in sorted(earn, key=lambda z: z[1]): up.append((t, 'Earnings' + (' (guard: sold at prior close if up 3%+, short of usual move)' if d <= 3 else ''), f"in {d} day{'s' if d != 1 else ''}"))
     for p in P:
         for a_ in p.get('news', [])[:4]:
-            if EVENT.search(a_.get('title', '')): ev.append(f"{p['tk']}: {_short(a_['title'], 80)}")
-    out.append(('COMING', ' '.join(c + '.' for c in cm[:5]) + (' Company events in the news: ' + '; '.join(ev[:3]) + '.' if ev else '') if cm or ev else 'No scheduled release or earnings that touches the book.'))
-    return out
+            if EVENT.search(a_.get('title', '')): up.append((p['tk'], 'News', _short(a_['title'], 70))); break
+    for e in A.get('calendar', []):
+        if e.get('impact') == 'High' and re.search(r'FOMC|Fed (Chair|Interest)|Interest Rate|CPI|Nonfarm|PCE|GDP|Payroll', e.get('title', ''), re.I): up.append(('ALL', e['title'], e['t']))
+    B['upcoming'] = up[:7]
+    return B
 
 def _page_brief(LS, A, outdir, colors):
     from matplotlib.patches import FancyBboxPatch
-    import textwrap
     BG, T1, T2, MUT, GOOD, CRIT, GOLD = colors; B = A.get('brief')
     if not B: return None
-    blocks = [(h, textwrap.wrap(t, 130) or ['']) for h, t in B]; H = 1.25 + sum(0.45 + 0.24 * len(l) + 0.14 for _, l in blocks)
-    fig = plt.figure(figsize=(12, H), facecolor=BG); ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 12); ax.set_ylim(0, H); ax.axis('off')
-    ax.add_patch(plt.Rectangle((0.6, H - 0.62), 0.55, 0.045, color=GOLD, lw=0)); ax.text(0.6, H - 0.38, 'The day', fontsize=26, color=T1, fontweight='bold', va='center'); ax.text(11.4, H - 0.38, A.get('date', ''), fontsize=10.5, color=T2, ha='right', va='center')
-    y = H - 0.95; edge = {'WHAT WE ARE LOOKING FOR': GOOD, 'WHAT WE DO NOT WANT': CRIT}
-    for head, lines in blocks:
-        h = 0.45 + 0.24 * len(lines)
-        ax.add_patch(FancyBboxPatch((0.6, y - h), 11.2, h, boxstyle='round,pad=0,rounding_size=0.12', fc='#0a1322', ec=edge.get(head, '#1a2638'), lw=1.4 if head in edge else 1.2))
-        ax.text(0.85, y - 0.24, head, fontsize=8.4, color=edge.get(head, GOLD), fontweight='bold', va='center')
-        for i, ln in enumerate(lines): ax.text(0.85, y - 0.52 - 0.24 * i, ln, fontsize=9.4, color=T1, va='center')
-        y -= h + 0.14
+    CARD, EDGE, HT = '#0a1322', '#1a2638', 40; fig = plt.figure(figsize=(12, HT), facecolor=BG); ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 12); ax.set_ylim(0, HT); ax.axis('off')
+    rend = fig.canvas.get_renderer(); PX = 1.0 / fig.dpi; WH = '#ffffff'
+    def wid(t, size, bold):
+        o = ax.text(0, 0, t, fontsize=size, fontweight='bold' if bold else 'normal'); w = o.get_window_extent(rend).width * PX; o.remove(); return w
+    def layout(segs, maxw, size=9.4):
+        lines = [[]]; x = 0; sp = wid('a a', size, False) - wid('aa', size, False)
+        for t, bd in segs:
+            t = t.strip()
+            if not t: continue
+            if lines[-1] and t[0] in ':.,;)': x -= sp
+            for wd in t.split(' '):
+                if wd == '': continue
+                w = wid(wd, size, bd)
+                if x + w > maxw and lines[-1]: lines.append([]); x = 0
+                lines[-1].append((wd, bd, x)); x += w + sp
+        return lines
+    ink = lambda v: T2 if v is None else (GOOD if v > 0.05 else CRIT if v < -0.05 else T2); fv = lambda v: '—' if v is None else f"{v:+.1f}%"
+    def T(x, y, s, size=9.4, color=T1, bold=False, ha='left'): ax.text(x, y, s, fontsize=size, color=color, fontweight='bold' if bold else 'normal', ha=ha, va='center')
+    def bullets(y, items, x0=0.88):
+        for segs in items:
+            ls = layout(segs, 10.4 - (x0 - 0.88)); T(x0, y, '•', 10, GOLD)
+            for i, ln in enumerate(ls):
+                for wd, bd, x in ln: T(x0 + 0.24 + x, y - 0.24 * i, wd, 9.4, WH if bd else T1, bd)
+            y -= 0.24 * len(ls) + 0.07
+        return y
+    def card(y, h, title, hot=None):
+        ax.add_patch(FancyBboxPatch((0.6, y - h), 11.2, h, boxstyle='round,pad=0,rounding_size=0.12', fc=CARD, ec=hot or EDGE, lw=1.3)); T(0.85, y - 0.26, title, 8.4, hot or GOLD, True)
+    def bh(items, w=10.4): return sum(0.24 * len(layout(s, w)) + 0.07 for s in items)
+    ax.add_patch(plt.Rectangle((0.6, HT - 0.62), 0.55, 0.045, color=GOLD, lw=0)); T(0.6, HT - 0.38, 'The day', 26, T1, True); T(11.4, HT - 0.38, B.get('date', ''), 10.5, T2, ha='right')
+    y = HT - 0.95
+    # ---- market strip
+    nm = max(len(B['market']), len(B['macro'])); h = 0.5 + 0.28 * (nm + 1); card(y, h, 'MARKET'); r = y - 0.55
+    for cx, t in ((3.0, 'Day'), (3.9, 'Week'), (4.8, '1M')): T(cx, r, t, 8, MUT, ha='right')
+    for cx, t in ((8.6, 'Level'), (9.7, 'Move')): T(cx, r, t, 8, MUT, ha='right')
+    r -= 0.28
+    for i, (n, d, w, mo) in enumerate(B['market']):
+        T(0.85, r - 0.28 * i, n, 9.4, WH, True)
+        for cx, v in ((3.0, d), (3.9, w), (4.8, mo)): T(cx, r - 0.28 * i, fv(v), 9.4, ink(v), ha='right')
+    for i, (n, lv, mv) in enumerate(B['macro']): T(5.8, r - 0.28 * i, n, 9.4, WH, True); T(8.6, r - 0.28 * i, lv, 9.4, T2, ha='right'); T(9.7, r - 0.28 * i, mv, 9.4, T2, ha='right')
+    y -= h + 0.18
+    # ---- one block per sector we hold
+    cols = [(0.85, 'Stock', 'left'), (2.7, 'Day', 'right'), (3.55, 'Week', 'right'), (4.4, '1M', 'right'), (5.25, '6M', 'right'), (6.1, 'YTD', 'right'), (6.95, 'Opt ratio', 'right'), (7.15, 'Vector', 'left'), (10.8, 'Earnings', 'right')]
+    for blk in B['blocks']:
+        rd = blk['read']; h = 0.95 + 0.28 * len(blk['rows']) + 0.1 + bh(rd)
+        card(y, h, ''); ep = blk['ep'] or (None,) * 5
+        T(0.85, y - 0.3, blk['name'] + ' sector', 12, WH, True); T(3.9, y - 0.3, f"{blk['etf']}", 8.5, MUT)
+        for cx, v in ((5.25 + 0, None),): pass
+        T(10.9, y - 0.3, ' '.join(f"{lab} {fv(v)}" for lab, v in (('Day', ep[0]), ('Wk', ep[1]), ('1M', ep[2]))), 8.8, ink(ep[1]), ha='right')
+        r = y - 0.66
+        for cx, t, ha in cols: T(cx, r, t, 8, MUT, ha=ha)
+        r -= 0.28
+        for w_ in blk['rows']:
+            T(0.85, r, ('● ' if w_['held'] else '   ') + w_['tk'], 9.4, WH if w_['held'] else T1, w_['held'])
+            p_ = w_['perf'] or (None,) * 5
+            for (cx, _, _), v in zip(cols[1:6], p_): T(cx, r, fv(v), 9.4, ink(v), ha='right')
+            T(6.95, r, '—' if w_['ratio'] is None else f"{w_['ratio']:.1f}", 9.4, T2, ha='right'); T(7.15, r, w_['vec'], 9.0, GOLD if 'trigger' in w_['vec'] or 'flipped' in w_['vec'] or 'near' in w_['vec'] else T2)
+            T(10.8, r, '' if w_['earn'] is None else f"{w_['earn']}d", 9.4, GOLD, ha='right'); r -= 0.28
+        bullets(r - 0.1, rd); y -= h + 0.15
+    # ---- rotation
+    h = 0.5 + bh(B['rotation']); card(y, h, 'CROSS-SECTOR ROTATION AND THEMES'); bullets(y - 0.58, B['rotation']); y -= h + 0.15
+    # ---- upcoming (only the names above, plus macro that hits everything)
+    up = B['upcoming']; h = 0.5 + (0.28 * (len(up) + 1) if up else 0.3); card(y, h, 'COMING UP FOR THESE NAMES'); r = y - 0.58
+    if up:
+        for cx, t in ((0.85, 'Name'), (2.0, 'Event'), (8.6, 'When')): T(cx, r, t, 8, MUT)
+        r -= 0.28
+        for tk, ev, wh in up: T(0.85, r, tk, 9.4, WH, True); T(2.0, r, _short(ev, 72), 9.4, T1); T(8.6, r, _short(wh, 40), 9.4, T2); r -= 0.28
+    else: T(0.85, r, 'Nothing scheduled for the stocks above.', 9.4, MUT)
+    y -= h
+    ax.set_ylim(y - 0.3, HT); fig.set_size_inches(12, HT - (y - 0.3))
     fp = os.path.join(outdir, '0a_day.png'); fig.savefig(fp, dpi=130, facecolor=BG); plt.close(fig); return fp
 
 def _page_day(LS, A, outdir, colors):
