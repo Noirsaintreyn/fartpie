@@ -1,0 +1,86 @@
+parity: live-rebuilt trades 17447 vs stored 17447  mean ret +0.3119% vs +0.3119%
+AAPL
+ABNB
+ADBE
+AMD
+AMZN
+APP
+AVGO
+BA
+BKNG
+C
+CAT
+CMG
+COIN
+COST
+CRM
+CRWD
+CVNA
+DIS
+DLTR
+ENPH
+FDX
+GEV
+GOOGL
+GS
+HD
+HOOD
+IBM
+JPM
+LLY
+LMT
+LRCX
+LULU
+MCD
+META
+MSFT
+MU
+NFLX
+NVDA
+ORCL
+OXY
+PANW
+PENN
+PLTR
+PYPL
+QCOM
+SBUX
+SMCI
+TGT
+TSLA
+UBER
+UNH
+UPS
+WMT
+WYNN
+
+A. per trade by state at entry (avg / win / runner rate), coverage 100%
+  VB     | 19-21 bull n 2040 +0.67% w35% r2.0% | 19-21 bear n 1905 +0.53% w34% r1.4% | 22-26 bull n 6724 +0.24% w33% r1.3% | 22-26 bear n 6778 +0.21% w31% r1.1%
+  30m    | 19-21 bull n 2083 +0.66% w36% r2.0% | 19-21 bear n 1862 +0.53% w34% r1.3% | 22-26 bull n 6906 +0.22% w33% r1.4% | 22-26 bear n 6596 +0.24% w31% r1.0%
+  4h     | 19-21 bull n 1958 +0.52% w34% r1.4% | 19-21 bear n 1987 +0.68% w35% r2.0% | 22-26 bull n 5528 +0.30% w32% r1.3% | 22-26 bear n 7974 +0.18% w32% r1.2%
+  daily  | 19-21 bull n 2459 +0.53% w33% r1.5% | 19-21 bear n 1486 +0.71% w37% r2.0% | 22-26 bull n 6672 +0.26% w31% r1.1% | 22-26 bear n 6830 +0.20% w33% r1.3%
+  PM     | 19-21 bull n 1789 +0.62% w35% r2.0% | 19-21 bear n 2156 +0.59% w35% r1.4% | 22-26 bull n 5842 +0.26% w33% r1.3% | 22-26 bear n 7660 +0.20% w32% r1.2%
+  AM     | 19-21 bull n 1698 +0.59% w36% r1.8% | 19-21 bear n 2247 +0.61% w34% r1.6% | 22-26 bull n 5540 +0.22% w32% r1.3% | 22-26 bear n 7962 +0.23% w32% r1.2%
+  VBx    | 19-21 bull n  911 +0.71% w38% r1.5% | 19-21 bear n 3034 +0.57% w34% r1.7% | 22-26 bull n 3100 +0.17% w34% r1.7% | 22-26 bear n10402 +0.24% w32% r1.1%
+  n_bull 19-21: 0:+0.47%(n325) 1:+0.38%(n518) 2:+0.88%(n684) 3:+0.70%(n772) 4:+0.50%(n736) 5:+0.69%(n579) 6:+0.35%(n331)
+  n_bull 22-26: 0:+0.16%(n1581) 1:+0.23%(n2051) 2:+0.21%(n2421) 3:+0.16%(n2673) 4:+0.22%(n2378) 5:+0.63%(n1600) 6:-0.14%(n798)
+
+40 matched runs, 2019-21 / 2022-26
+  L live                             ret +53.1% / +21.8%   DD -10% / -20%   ret/DD 5.13 / 1.13
+  rank ratio x (1 + .1 n_bull)       ret +50.1% / +23.8%   DD -10% / -21%   ret/DD 4.88 / 1.06   beats live 12% / 65%
+  rank ratio x (1 + .25 n_bull)      ret +49.0% / +20.1%   DD -10% / -21%   ret/DD 4.78 / 0.95   beats live 12% / 38%
+  filter VB bull (drops 50%)         ret +28.2% / +6.4%   DD -10% / -30%   ret/DD 2.86 / 0.21   beats live 0% / 0%
+  filter daily bull (drops 48%)      ret +46.9% / +21.4%   DD -10% / -18%   ret/DD 4.87 / 1.20   beats live 28% / 50%
+  filter PM bull (drops 56%)         ret +32.5% / +15.4%   DD -9% / -24%   ret/DD 3.53 / 0.71   beats live 0% / 15%
+  filter AM bull (drops 59%)         ret +37.7% / +21.9%   DD -9% / -24%   ret/DD 4.44 / 0.91   beats live 12% / 22%
+  filter n_bull >= 4 (drops 63%)     ret +28.3% / +19.4%   DD -8% / -33%   ret/DD 3.48 / 0.57   beats live 0% / 30%
+  filter VB cross (flipped bull <= 8 bars ago) (drops 77%) ret +24.6% / +6.1%   DD -5% / -29%   ret/DD 4.64 / 0.21   beats live 20% / 0%
+parity: live-rebuilt trades 17447 vs stored 17447  mean ret +0.3119% vs +0.3119%
+
+B. ATR variants (15m vector)
+  P1: trades 17131, 15m avg +0.219% (live +0.259%), runners 123 (live 136)
+  P1                                 ret +48.9% / +8.0%   DD -11% / -30%   ret/DD 4.44 / 0.28   beats live 10% / 0%
+  P2: trades 17509, 15m avg +0.249% (live +0.259%), runners 132 (live 136)
+  P2                                 ret +51.2% / +14.7%   DD -10% / -21%   ret/DD 4.96 / 0.69   beats live 28% / 10%
+  P3: trades 17461, 15m avg +0.268% (live +0.259%), runners 135 (live 136)
+  P3                                 ret +58.8% / +23.2%   DD -10% / -17%   ret/DD 5.89 / 1.31   beats live 85% / 68%
