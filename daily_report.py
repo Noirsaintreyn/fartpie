@@ -290,6 +290,8 @@ def analysis(LS, rows, meta, fetch=True):
     except Exception as ex: A['expect'] = dict(error=str(ex)[:120])
     try: A['day'] = _dayread(LS, A, rows, meta, E, top, cal, fetch)
     except Exception as ex: A['day'] = None; print(f'  ! day read: {str(ex)[:80]}')
+    try: A['why'] = _why(A, E, P, _macro(fetch), top)
+    except Exception as ex: A['why'] = None; print(f'  ! why: {str(ex)[:80]}')
     return A, held, X, E, cal, top, have_news
 
 def save(A, path):
@@ -364,6 +366,78 @@ def _dayread(LS, A, rows, meta, E, top, cal, fetch=True):
     l3 = ('Next catalyst: ' + coming[0].split('  ', 1)[-1].split(' — ')[0] + '.') if coming else 'No scheduled catalyst on held names today.'
     if X.get('full'): l3 += ' Slots are full, so new flips are tracked only.'
     return dict(headline=[l1, l2.strip(), l3], holding=hold, up=up, down=down[:5], coming=coming[:5], news=[dict(tk=a, sent=b, deal=c, title=d) for _, a, b, c, d in news])
+
+def _macro(fetch=True):
+    """one-day moves in the cross-asset drivers: 10y yield (bp), dollar, oil, gold, VIX. {} when the feed is down."""
+    if not fetch: return {}
+    try:
+        import yfinance as yf
+        d = yf.download(['^TNX', 'DX-Y.NYB', 'CL=F', 'GC=F', '^VIX'], period='10d', interval='1d', progress=False, auto_adjust=True)['Close'].ffill().dropna(how='all')
+        l, p = d.iloc[-1], d.iloc[-2]; return dict(yield_bp=float(l['^TNX'] - p['^TNX']) * 10, y=float(l['^TNX']) / 10 if l['^TNX'] > 20 else float(l['^TNX']), dollar=float(l['DX-Y.NYB'] / p['DX-Y.NYB'] - 1) * 100, oil=float(l['CL=F'] / p['CL=F'] - 1) * 100, gold=float(l['GC=F'] / p['GC=F'] - 1) * 100, vix=float(l['^VIX']), vix_chg=float(l['^VIX'] / p['^VIX'] - 1) * 100)
+    except Exception as ex: print(f'  ! macro: {str(ex)[:60]}'); return {}
+
+# which cross-asset move explains which sector move; (sector, sign of sector move it explains, test on macro dict, wording)
+_DRV = [('XLE', 1, lambda m: m['oil'] > 1.5, 'oil is up {oil:+.1f}%'), ('XLE', -1, lambda m: m['oil'] < -1.5, 'oil is down {oil:+.1f}%'),
+        ('XLU', -1, lambda m: m['yield_bp'] > 4, 'the 10-year yield rose {yield_bp:+.0f} bp, which makes bond-like payers less attractive'), ('XLU', 1, lambda m: m['yield_bp'] < -4, 'the 10-year yield fell {yield_bp:+.0f} bp'),
+        ('XLRE', -1, lambda m: m['yield_bp'] > 4, 'the 10-year yield rose {yield_bp:+.0f} bp and real estate is rate-sensitive'), ('XLRE', 1, lambda m: m['yield_bp'] < -4, 'the 10-year yield fell {yield_bp:+.0f} bp'),
+        ('XLK', -1, lambda m: m['yield_bp'] > 4, 'yields rose {yield_bp:+.0f} bp, which hits long-duration growth'), ('XLK', 1, lambda m: m['yield_bp'] < -4, 'yields fell {yield_bp:+.0f} bp, which helps growth'),
+        ('XLC', -1, lambda m: m['yield_bp'] > 4, 'yields rose {yield_bp:+.0f} bp, which hits growth'), ('XLC', 1, lambda m: m['yield_bp'] < -4, 'yields fell {yield_bp:+.0f} bp'),
+        ('XLF', 1, lambda m: m['yield_bp'] > 4, 'higher yields widen bank margins'), ('XLY', -1, lambda m: m['oil'] > 2, 'fuel costs are rising ({oil:+.1f}% oil)'), ('XLY', 1, lambda m: m['oil'] < -2, 'cheaper fuel ({oil:+.1f}% oil) helps spending'),
+        ('XLI', -1, lambda m: m['oil'] > 2, 'fuel costs are rising'), ('XLI', 1, lambda m: m['oil'] < -2, 'cheaper fuel helps transport'),
+        ('XLB', -1, lambda m: m['dollar'] > .4, 'the dollar rose {dollar:+.1f}%, which weighs on commodities'), ('XLB', 1, lambda m: m['dollar'] < -.4, 'the dollar fell {dollar:+.1f}%'),
+        ('XLP', 1, lambda m: m['vix_chg'] > 5, 'fear is up (VIX {vix:.0f}) and money moves to defensives'), ('XLV', 1, lambda m: m['vix_chg'] > 5, 'fear is up (VIX {vix:.0f}) and money moves to defensives'),
+        ('XLK', -1, lambda m: m['vix_chg'] > 8, 'fear is up (VIX {vix:.0f}) and risk is sold first'), ('XLK', 1, lambda m: m['vix_chg'] < -6, 'fear is easing (VIX {vix:.0f}) and risk is bought')]
+
+def _why(A, E, P, macro, top):
+    """plain-language explanation of why the tape and the book moved. Causes are only named when a measured driver or a headline backs them; otherwise it says 'rotation, no clear driver'."""
+    out = []; m = macro or {}; sp = E.get('SPY', {}); qq = E.get('QQQ', {})
+    s1 = sp.get('r1', 0) * 100; q1 = qq.get('r1', 0) * 100
+    # market
+    parts = [f"S&P {s1:+.1f}%, Nasdaq {q1:+.1f}% today."]
+    if m:
+        bits = []
+        if abs(m['yield_bp']) >= 3: bits.append(f"the 10-year yield {'rose' if m['yield_bp'] > 0 else 'fell'} {abs(m['yield_bp']):.0f} bp")
+        if abs(m['oil']) >= 1.5: bits.append(f"oil {m['oil']:+.1f}%")
+        if abs(m['dollar']) >= .4: bits.append(f"the dollar {m['dollar']:+.1f}%")
+        if abs(m['vix_chg']) >= 5: bits.append(f"VIX {'jumped' if m['vix_chg'] > 0 else 'dropped'} to {m['vix']:.0f}")
+        parts.append(('Drivers: ' + ', '.join(bits) + '.') if bits else 'Rates, oil, dollar and VIX were quiet, so no macro shock is behind the move.')
+    else: parts.append('Macro feed is down, so no driver is named.')
+    if top: parts.append('Headline: ' + _short((top[0].get('title') or ''), 90) + (' — ' + _short(top[0].get('helious_read') or '', 110) if top[0].get('helious_read') else ''))
+    out.append(('THE MARKET', ' '.join(parts)))
+    # sectors
+    sec = sorted([(e.get('r1', 0), t) for t, e in E.items() if t not in ('SPY', 'QQQ')]); lo, hi = sec[:2], sec[-2:][::-1]
+    def one(r, t, sign):
+        name = ETF_NAME.get(t, t); why = next((w.format(**m) for s_, sg, f, w in _DRV if s_ == t and sg == sign and m and f(m)), None)
+        return f"{name} {r * 100:+.1f}%: " + (why + '.' if why else 'no measured driver, so treat it as rotation.')
+    out.append(('SECTORS UP', ' '.join(one(r, t, 1) for r, t in hi if r > 0) or 'No sector is meaningfully up.'))
+    out.append(('SECTORS DOWN', ' '.join(one(r, t, -1) for r, t in lo if r < 0) or 'No sector is meaningfully down.'))
+    # book
+    bk = []
+    for p in sorted(P, key=lambda q: -abs(q['pnl']))[:4]:
+        e = E.get(p.get('etf'), {}); r1 = e.get('r1')
+        ln = f"{p['tk']} {p['pnl']:+.1f}% since entry" + (f", sector {r1 * 100:+.1f}% today" if r1 is not None else '')
+        nw = next((a for a in p.get('news', []) if DEAL.search(a.get('title', '')) or a.get('sent') in ('positive', 'negative')), None)
+        ln += (': ' + _short(nw['title'], 70) + '.') if nw else ('; moving with its sector, no stock news.' if r1 is not None and r1 * p['pnl'] > 0 else '; no news explains it.')
+        bk.append(ln)
+    out.append(('YOUR BOOK', ' '.join(bk) or 'No open positions.'))
+    out.append(('EDGE', 'Vector holds the winners. Losses are cut quickly and a few long holds pay for the rest (open 3+ days finish green 64% of the time), so one red day on a sector is not a reason to act.'))
+    return out
+
+def _page_why(LS, A, outdir, colors):
+    from matplotlib.patches import FancyBboxPatch
+    BG, T1, T2, MUT, GOOD, CRIT, GOLD = colors; W = A.get('why')
+    if not W: return None
+    fig = plt.figure(figsize=(12, 8), facecolor=BG); ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 12); ax.set_ylim(0, 8); ax.axis('off')
+    ax.add_patch(plt.Rectangle((0.6, 7.38), 0.55, 0.045, color=GOLD, lw=0)); ax.text(0.6, 7.62, 'Why it moved', fontsize=26, color=T1, fontweight='bold', va='center'); ax.text(11.4, 7.62, A.get('date', ''), fontsize=10.5, color=T2, ha='right', va='center')
+    import textwrap
+    y = 7.0
+    for head, body in W:
+        lines = textwrap.wrap(body, 128); h = 0.42 + 0.25 * len(lines)
+        ax.add_patch(FancyBboxPatch((0.6, y - h), 11.2, h, boxstyle='round,pad=0,rounding_size=0.12', fc='#0a1322', ec='#1a2638', lw=1.2))
+        ax.text(0.85, y - 0.26, head, fontsize=8.4, color=GOLD, fontweight='bold', va='center')
+        for i, ln in enumerate(lines): ax.text(0.85, y - 0.55 - 0.25 * i, ln, fontsize=9.6, color=T1, va='center')
+        y -= h + 0.14
+    fp = os.path.join(outdir, '0b_why.png'); fig.savefig(fp, dpi=130, facecolor=BG); plt.close(fig); return fp
 
 def _page_day(LS, A, outdir, colors):
     from matplotlib.patches import FancyBboxPatch
@@ -543,6 +617,8 @@ def build(LS, rows, meta, outdir, fetch=True):
     try:
         fd = _page_day(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
         if fd: files.append(fd)
+        fw = _page_why(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
+        if fw: files.append(fw)
         fx = _page_expect(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
         if fx: files.append(fx)
         fc = _page_context(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
