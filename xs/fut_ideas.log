@@ -1,0 +1,11 @@
+(A) MNQ order flow: 235 sessions, 5640 5m bars 09:35-11:30; forward 30m |move| median 32.0 pts
+  D5   IC Dec-May +0.007 / Jun-Nov -0.010 | top fifth fwd -0.3 pts, bottom fifth +2.4
+  CVD  IC Dec-May +0.060 / Jun-Nov -0.001 | top fifth fwd +2.1 pts, bottom fifth -4.1
+  DIV  IC Dec-May -0.008 / Jun-Nov +0.050 | +1: +5.0 pts (n391), -1: -0.5 (n164)
+  IMB  IC Dec-May -0.032 / Jun-Nov -0.008 | top fifth fwd -1.1 pts, bottom fifth +3.2
+  ABS  IC Dec-May +0.010 / Jun-Nov +0.014 | +1: +1.1 pts (n7), -1: -13.0 (n13)
+  TR   IC Dec-May -0.021 / Jun-Nov +0.038 | top fifth fwd +3.1 pts, bottom fifth +0.6
+
+(B) intraday momentum, QQQ proxy -> NQ points, 2185 days
+  every day                            n2185 win 49% avg -1.4 pts | 2018-21 -1.0 / 2022-26 -1.9 | by year {2018: -26, 2019: -289, 2020: 835, 2021: -1474, 2022: -1349, 2023: -769, 2024: -265, 2025: -792, 2026: 978}
+  |first window| above its 1y median   n1049 win 48% avg -1.5 pts | 2018-21 -1.8 / 2022-26 -1.4 | by year {2018: -92, 2019: -221, 2020: 878, 2021: -1333, 2022: -471, 2023: -258, 2024: -402, 2025: -357, 2026: 646}
