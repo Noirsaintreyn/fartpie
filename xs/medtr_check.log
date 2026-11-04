@@ -1,0 +1,65 @@
+AAPL
+ABNB
+ADBE
+AMD
+AMZN
+APP
+AVGO
+BA
+BKNG
+C
+CAT
+CMG
+COIN
+COST
+CRM
+CRWD
+CVNA
+DIS
+DLTR
+ENPH
+FDX
+GEV
+GOOGL
+GS
+HD
+HOOD
+IBM
+JPM
+LLY
+LMT
+LRCX
+LULU
+MCD
+META
+MSFT
+MU
+NFLX
+NVDA
+ORCL
+OXY
+PANW
+PENN
+PLTR
+PYPL
+QCOM
+SBUX
+SMCI
+TGT
+TSLA
+UBER
+UNH
+UPS
+WMT
+WYNN
+parity: live-rebuilt trades 17447 vs stored 17447  mean ret +0.3119% vs +0.3119%
+40 matched runs, 2019-21 / 2022-26
+  L live (rebuilt)                   ret +53.1% / +21.8%   DD -10% / -20%   ret/DD 5.13 / 1.13
+  P3: trades 17461, runners 135
+  P3                                 ret +58.8% / +23.2%   DD -10% / -17%   ret/DD 5.89 / 1.31   beats live 85% / 68%
+  P5: trades 17495, runners 134
+  P5                                 ret +52.8% / +21.8%   DD -10% / -17%   ret/DD 5.14 / 1.31   beats live 52% / 57%
+  P3raw: trades 17606, runners 135
+  P3raw                              ret +57.8% / +19.8%   DD -10% / -18%   ret/DD 5.62 / 1.12   beats live 85% / 45%
+  P3both: trades 17489
+  P3both (15m + 1h vectors)          ret +58.1% / +19.9%   DD -10% / -17%   ret/DD 5.72 / 1.12   beats live 85% / 50%
