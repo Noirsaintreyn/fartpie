@@ -114,6 +114,15 @@ body,button,input,select,table,th,td{font-style:italic}
 .news li.pos::before{background:var(--up)}.news li.neg::before{background:var(--dn)}.news small{display:block;color:var(--muted);font-size:13px}
 .news a{color:#e8e2cf;text-decoration:none;border-bottom:1px solid rgba(201,162,39,.3)}
 .closed-note{font-size:16px;color:var(--muted)}
+/* the day (newsletter brief, Nov 2026) */
+.brief .scroll{overflow-x:auto}.brief .mini td,.brief .mini th{white-space:nowrap}.brief .mini .r{text-align:right}.brief .mini b{color:var(--gold);font-weight:600}
+.sec-blk{border-top:1px solid var(--line);padding-top:18px;margin-top:22px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 18px;margin-bottom:10px}
+.sec-name{font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;color:var(--gold)}
+.brief-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:12px;font-size:15px;line-height:1.5;color:#cfcbc2}
+.brief-list li{padding-left:16px;position:relative}.brief-list li::before{content:'';position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--gold)}
+.brief-list b{color:#ece6d4;font-weight:600}
+.brief .held td:first-child{color:var(--gold)}
 @media (max-width:700px){.mkt-grid{grid-template-columns:1fr}.essay p{font-size:17px;text-align:left}.cur{font-size:44px}.rng-cells{grid-template-columns:repeat(2,minmax(0,1fr))}.rng-cells .r{text-align:left}.rng7 .mid{grid-column:1 / -1;order:-1;border:none;border-bottom:1px solid var(--line);padding-bottom:6px}}
 @media (max-width:900px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.holds{grid-template-columns:repeat(3,minmax(0,1fr))}.hwrap,main{padding-left:16px;padding-right:16px}.ph h1{font-size:40px}.chartbox{height:420px}}
 </style>
@@ -448,6 +457,29 @@ body,button,input,select,table,th,td{font-style:italic}
         '<div class="r"><i>Assumed high' + tm + '</i><b class="up">' + f2(aH) + '</b>wide ' + f2(aHw) + '</div></div>' +
       '<p class="rng-note">' + esc(t) + '</p></div>';
   }
+  function renderBrief(B) {                              // 'The day' newsletter (daily_report._brief): tables for numbers, bullets for reasons
+    if (!B || !B.blocks) return '';
+    var segs = function (L) { return (L || []).map(function (s) { return s[1] ? '<b>' + esc(s[0]) + '</b>' : esc(s[0]); }).join(''); };
+    var li = function (L) { return '<ul class="brief-list">' + (L || []).map(function (x) { return '<li>' + segs(x) + '</li>'; }).join('') + '</ul>'; };
+    var pc = function (v) { return '<span class="' + cls(v) + '">' + pct(v, 1) + '</span>'; }, px = function (v) { return v == null ? '' : Number(v).toFixed(2); };
+    var h = '<div class="essay brief"><h3>The day</h3><div class="mkt-grid"><div class="scroll"><table class="mini"><thead><tr><th></th><th class="r">Day</th><th class="r">Week</th><th class="r">1 month</th></tr></thead><tbody>' +
+      (B.market || []).map(function (m) { return '<tr><td>' + esc(m[0]) + '</td><td class="r">' + pc(m[1]) + '</td><td class="r">' + pc(m[2]) + '</td><td class="r">' + (m[3] == null ? '–' : pc(m[3])) + '</td></tr>'; }).join('') +
+      '</tbody></table></div><div class="scroll"><table class="mini"><thead><tr><th>Macro</th><th class="r">Level</th><th class="r">Move</th></tr></thead><tbody>' +
+      (B.macro || []).map(function (m) { return '<tr><td>' + esc(m[0]) + '</td><td class="r">' + esc(m[1]) + '</td><td class="r">' + esc(m[2]) + '</td></tr>'; }).join('') + '</tbody></table></div></div>';
+    B.blocks.forEach(function (b) {
+      var ep = b.ep || [];
+      h += '<div class="sec-blk"><div class="sec-head"><span class="sec-name">' + esc(b.name) + '</span><span class="sub">' + esc(b.etf) + ' · day ' + pct(ep[0]) + ' · week ' + pct(ep[1]) + ' · 1 month ' + pct(ep[2]) + '</span></div>' +
+        '<div class="scroll"><table class="mini"><thead><tr><th>Stock</th><th class="r">Entry</th><th class="r">Last</th><th class="r">P&amp;L</th><th class="r">Day</th><th class="r">Week</th><th class="r">1M</th><th class="r">6M</th><th class="r">YTD</th><th class="r">Opt ratio</th><th>Vector</th><th class="r">Earnings</th></tr></thead><tbody>' +
+        (b.rows || []).map(function (r) { var p = r.perf || [];
+          return '<tr class="' + (r.held ? 'held' : '') + '"><td>' + (r.held ? '● ' : '') + esc(r.tk) + '</td><td class="r">' + px(r.entry) + '</td><td class="r">' + px(r.last) + '</td><td class="r">' + (r.pnl == null ? '' : '<b>' + pc(r.pnl) + '</b>') + '</td>' +
+            [0, 1, 2, 3, 4].map(function (i) { return '<td class="r">' + pc(p[i]) + '</td>'; }).join('') + '<td class="r">' + (r.ratio == null ? '–' : Number(r.ratio).toFixed(1)) + '</td><td>' + esc(r.vec) + '</td><td class="r">' + (r.earn == null ? '' : esc(r.earn) + 'd') + '</td></tr>'; }).join('') +
+        '</tbody></table></div>' + li(b.read) + '</div>';
+    });
+    if ((B.rotation || []).length) h += '<div class="sec-blk"><h3>Cross-sector rotation and themes</h3>' + li(B.rotation) + '</div>';
+    h += '<div class="sec-blk"><h3>Coming up for these names</h3>' + ((B.upcoming || []).length ? '<div class="scroll"><table class="mini"><thead><tr><th>Name</th><th>Event</th><th>When</th></tr></thead><tbody>' +
+      B.upcoming.map(function (u) { return '<tr><td>' + esc(u[0]) + '</td><td>' + esc(u[1]) + '</td><td>' + esc(u[2]) + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="sub">Nothing scheduled for the stocks above.</p>') + '</div>';
+    return h + '</div>';
+  }
   function renderAnalysis(S) {
     var el = $('anWrap'), A = S && S.analysis, R = (S && S.ranges) || {}, P = (S && S.positions) || [];
     if (!A) { el.innerHTML = '<div class="empty">The first note is written at 09:00 ET on the next trading day.</div>'; return; }
@@ -458,6 +490,7 @@ body,button,input,select,table,th,td{font-style:italic}
     var extra = isToday ? Object.keys(live).filter(function (t) { return !inNote[t]; }) : [];
     var h = '<div class="dateline"><span>' + esc(A.date) + ' · written ' + esc(A.time) + ' ET</span><span>' + NP.length + ' of ' + (A.slots || S.slots) + ' slots held at the note</span></div>';
     if (!isToday) h += '<p class="closed-note">The latest note, from ' + esc(A.date) + '. The next one is written at 09:00 ET on the next trading day; until then each chart shows that session in full, the model’s assumed range against what the day realized.</p>';
+    h += renderBrief(A.brief);
     h += '<div class="essay"><h3>The market</h3><p class="dropcap">' + esc(A.market) + '</p><div class="mkt-grid"><div class="scroll"><table class="mini"><thead><tr><th>Sector</th><th>Daily</th><th>Weekly</th><th class="r">5 days</th><th class="r">1 month</th></tr></thead><tbody>' +
       (A.sectors || []).map(function (s) { return '<tr><td class="' + (s.mine ? 'mine' : '') + '">' + esc(s.name) + (s.mine ? ' ·' : '') + '</td><td class="' + (s.d === 'up' ? 'up' : 'dn') + '">' + esc(s.d) + '</td><td class="' + (s.w === 'up' ? 'up' : 'dn') + '">' + esc(s.w) + '</td><td class="r ' + cls(s.r5) + '">' + pct(s.r5) + '</td><td class="r ' + cls(s.r21) + '">' + pct(s.r21) + '</td></tr>'; }).join('') +
       '</tbody></table></div><div><h3>Calendar</h3><ul class="side-list">' + ((A.calendar || []).length ? A.calendar.map(function (e) { return '<li class="' + (e.impact === 'High' && !/auction/i.test(e.title) ? 'dn' : '') + '">' + esc(e.t) + ' · ' + esc(e.title) + (e.prev ? '<small>previous ' + esc(e.prev) + '</small>' : '') + '</li>'; }).join('') : '<li>No high-impact US releases.</li>') +
