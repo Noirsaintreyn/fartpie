@@ -292,6 +292,8 @@ def analysis(LS, rows, meta, fetch=True):
     except Exception as ex: A['day'] = None; print(f'  ! day read: {str(ex)[:80]}')
     try: A['why'] = _why(A, E, P, _macro(fetch), top)
     except Exception as ex: A['why'] = None; print(f'  ! why: {str(ex)[:80]}')
+    try: A['brief'] = _brief(A)
+    except Exception as ex: A['brief'] = None; print(f'  ! brief: {str(ex)[:80]}')
     return A, held, X, E, cal, top, have_news
 
 def save(A, path):
@@ -438,6 +440,50 @@ def _page_why(LS, A, outdir, colors):
         for i, ln in enumerate(lines): ax.text(0.85, y - 0.55 - 0.25 * i, ln, fontsize=9.6, color=T1, va='center')
         y -= h + 0.14
     fp = os.path.join(outdir, '0b_why.png'); fig.savefig(fp, dpi=130, facecolor=BG); plt.close(fig); return fp
+
+def _brief(A):
+    """one page, one story: what is happening, why, what we want, what we do not want, what is coming. Built from the day read, the why read and the outlook."""
+    D = A.get('day') or {}; W = dict(A.get('why') or []); X = A.get('expect') or {}; XP = {x['tk']: x for x in X.get('positions', [])}; H = D.get('holding', [])
+    hl = [l for l in D.get('headline', []) if l]
+    out = [('WHAT IS HAPPENING', ' '.join(hl[:2]) + ' ' + W.get('THE MARKET', ''))]
+    out.append(('WHY', ' '.join(x for x in (W.get('SECTORS UP'), W.get('SECTORS DOWN'), W.get('YOUR BOOK')) if x)))
+    nw = D.get('news', [])
+    if nw: out.append(('NEWS AND DEALS', ' '.join(f"{n['tk']}: " + ('deal, ' if n.get('deal') else '') + n['title'] + '.' for n in nw[:4])))
+    look = [f"{u['tk']} ({u['why']}, options ratio {u['ratio']:.1f})" for u in D.get('up', [])[:4]]; g = [h['tk'] for h in H if any(f[1] == 'good' for f in h['flags'])]
+    want = []
+    if look: want.append('Next in line: ' + ', '.join(look) + '.' + (' Slots are full, so these only enter if one frees up.' if X.get('full') else ''))
+    if g: want.append(f"Stops moving above entry on {', '.join(g[:5])}: that is how the book locks gains.")
+    aged = [t for t, x in XP.items() if x.get('age_days') is not None and x['age_days'] >= 3]
+    if aged: want.append(f"{', '.join(aged[:4])} past 3 days: positions open 3+ days finish green 64% of the time, 7+ days 84%.")
+    want.append('The state that has paid in both backtest halves is a bull market with stress (S&P above its 200-day, VIX curve inverted).')
+    out.append(('WHAT WE ARE LOOKING FOR', ' '.join(want)))
+    bad = []
+    pb = [d for d in D.get('down', []) if ':' in d]
+    if pb: bad.append('Risk on the book: ' + '; '.join(pb[:4]) + '.')
+    fl = [t for t, e in [(h['tk'], 1) for h in H if any(f[0].endswith('falling') for f in h['flags'])]]
+    if fl: bad.append(f"{', '.join(fl[:4])} sit in a falling sector, which is the setup that tends to take the stop out.")
+    bad.append('A 1.1-day trade loses 64% of the time, so small stop-outs are normal. What would matter: a position closing under its stop, a drawdown toward the 8% breaker, or earnings gaps against a name inside the earnings guard.')
+    out.append(('WHAT WE DO NOT WANT', ' '.join(bad)))
+    cm = D.get('coming', [])
+    out.append(('COMING', ' '.join(c.split(' — ')[0] + '.' for c in cm[:5]) if cm else 'No scheduled catalyst that touches the book.'))
+    return out
+
+def _page_brief(LS, A, outdir, colors):
+    from matplotlib.patches import FancyBboxPatch
+    import textwrap
+    BG, T1, T2, MUT, GOOD, CRIT, GOLD = colors; B = A.get('brief')
+    if not B: return None
+    blocks = [(h, textwrap.wrap(t, 130) or ['']) for h, t in B]; H = 1.25 + sum(0.45 + 0.24 * len(l) + 0.14 for _, l in blocks)
+    fig = plt.figure(figsize=(12, H), facecolor=BG); ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 12); ax.set_ylim(0, H); ax.axis('off')
+    ax.add_patch(plt.Rectangle((0.6, H - 0.62), 0.55, 0.045, color=GOLD, lw=0)); ax.text(0.6, H - 0.38, 'The day', fontsize=26, color=T1, fontweight='bold', va='center'); ax.text(11.4, H - 0.38, A.get('date', ''), fontsize=10.5, color=T2, ha='right', va='center')
+    y = H - 0.95; edge = {'WHAT WE ARE LOOKING FOR': GOOD, 'WHAT WE DO NOT WANT': CRIT}
+    for head, lines in blocks:
+        h = 0.45 + 0.24 * len(lines)
+        ax.add_patch(FancyBboxPatch((0.6, y - h), 11.2, h, boxstyle='round,pad=0,rounding_size=0.12', fc='#0a1322', ec=edge.get(head, '#1a2638'), lw=1.4 if head in edge else 1.2))
+        ax.text(0.85, y - 0.24, head, fontsize=8.4, color=edge.get(head, GOLD), fontweight='bold', va='center')
+        for i, ln in enumerate(lines): ax.text(0.85, y - 0.52 - 0.24 * i, ln, fontsize=9.4, color=T1, va='center')
+        y -= h + 0.14
+    fp = os.path.join(outdir, '0a_day.png'); fig.savefig(fp, dpi=130, facecolor=BG); plt.close(fig); return fp
 
 def _page_day(LS, A, outdir, colors):
     from matplotlib.patches import FancyBboxPatch
@@ -615,10 +661,8 @@ def build(LS, rows, meta, outdir, fetch=True):
     ax.text(0.06, 0.04, 'Rules decide every buy and sell; this report is context. Sources: screener price data, HAR range model, Yahoo daily ETFs, Massive + Helious news.', fontsize=7.5, color=MUT)
     f0 = os.path.join(outdir, '0_cover.png'); fig.savefig(f0, dpi=110, facecolor=BG); plt.close(fig); files.append(f0)
     try:
-        fd = _page_day(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
+        fd = _page_brief(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
         if fd: files.append(fd)
-        fw = _page_why(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
-        if fw: files.append(fw)
         fx = _page_expect(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
         if fx: files.append(fx)
         fc = _page_context(LS, A, outdir, (BG, T1, T2, MUT, GOOD, CRIT, GOLD))
