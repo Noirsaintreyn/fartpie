@@ -220,7 +220,7 @@ def _expect(LS, P, held, meta, E, now, regime, rows=None, A_market=None):
             try: ed = (pd.Timestamp(e + f' {now.year}') - now.normalize()).days
             except Exception: ed = None
         ec = None if ed is None else ('<=3d to report' if ed <= 3 else '4-10d' if ed <= 10 else None)
-        pos.append(dict(tk=p['tk'], track=p['track'], age_days=round(age, 1), pnl=p['pnl'], peak=p['peak'], stop=p['stop'], last=p['last'], stop_gap_pct=round(stop_gap * 100, 2),
+        pos.append(dict(tk=p['tk'], track=p['track'], entry=px, lock_px=(px * (1 + LS.LOCK_G * pk) if pk >= LS.LOCK_K else None), age_days=round(age, 1), pnl=p['pnl'], peak=p['peak'], stop=p['stop'], last=p['last'], stop_gap_pct=round(stop_gap * 100, 2),
                         stop_gap_ranges=round(stop_gap / dr, 2) if dr else None, locked_pct=round(locked * 100, 2), ratio=round(ratios.get(p['tk'], float('nan')), 2) if p['tk'] in ratios else None,
                         ratio_rank=rank.get(p['tk']), age_bucket=b, age_stats=c, next_steps=nxt, earn_days=ed, earn_cell=(T.get('earn', {}) or {}).get(ec) if ec else None,
                         sector_cell=(T.get('sector', {}) or {}).get('semi') if p['tk'] in SEMI else None, selling=p['selling']))
@@ -305,31 +305,60 @@ def _wrap(ax, x, y, text, width, size=9.5, color=None, weight='normal', lh=1.45,
     return y
 
 def _page_expect(LS, A, outdir, colors):
+    """page 2: a one-screen outlook. Tiles, a gauge per position, hold-length odds, what takes the next slot. Short on purpose."""
+    from matplotlib.patches import FancyBboxPatch
     BG, T1, T2, MUT, GOOD, CRIT, GOLD = colors; X = A.get('expect') or {}
     if not X or 'positions' not in X: return None
-    fig = plt.figure(figsize=(11, 8.5), facecolor=BG); ax = fig.add_axes([0, 0, 1, 1]); ax.axis('off')
-    ax.add_patch(plt.Rectangle((0.03, 0.03), 0.004, 0.94, color=GOLD, transform=ax.transAxes))
-    ax.text(0.06, 0.95, 'What to expect today', fontsize=22, fontweight='bold', va='top', color=T1)
-    ax.text(0.06, 0.893, 'Every figure is from the 17,447-trade backtest of these exact rules (S&P, options ratio >= 1.5, 2019-26). Context, not a signal: the rules still decide every buy and sell.', fontsize=8.3, color=T2, va='top')
-    y = 0.855
-    for head, body in X.get('lines', []):
-        ax.text(0.06, y, head, fontsize=8.8, color=GOLD, fontweight='bold', va='top'); y = _wrap(ax, 0.17, y, body, 112, size=8.6, color=T1, lh=1.34) - 0.011
-    y -= 0.008; ax.text(0.06, y, 'EACH POSITION', fontsize=10, color=GOLD, fontweight='bold', va='top'); y -= 0.03
-    hdr = ['Position', 'Age', 'P&L', 'Stop gap', 'If stopped', 'Ratio (rank)', 'Green at this age', 'Earnings']; xs = [0.06, 0.14, 0.20, 0.26, 0.42, 0.51, 0.60, 0.85]
-    for h_, x_ in zip(hdr, xs): ax.text(x_, y, h_, fontsize=8, color=MUT, va='top')
-    y -= 0.026
-    for p in X['positions']:
-        c = p.get('age_stats'); g = f"{c['win']:.0f}% (avg {c['avg']:+.1f}%, n {c['n']:,})" if c else 'n/a'
-        gap = f"{p['stop_gap_pct']:.1f}%" + (f" ({p['stop_gap_ranges']:.1f} day-ranges)" if p.get('stop_gap_ranges') is not None else '')
-        vals = [f"{p['tk']} {p['track']}", f"{p['age_days']:.1f}d", f"{p['pnl']:+.1f}%", gap, f"{p['locked_pct']:+.1f}%", f"{p['ratio']:.1f} (#{p['ratio_rank']})" if p.get('ratio') is not None else 'n/a', g,
-                (f"in {p['earn_days']}d" if p.get('earn_days') is not None and p['earn_days'] <= 10 else 'none <=10d')]
-        for k, (v, x_) in enumerate(zip(vals, xs)):
-            ax.text(x_, y, v, fontsize=8.4, va='top', fontweight='bold' if k == 0 else 'normal', color=(GOOD if p['pnl'] >= 0 else CRIT) if k == 2 else (CRIT if (k == 3 and p['selling']) else T1))
-        y -= 0.026
-        yy = y; ax.text(0.07, yy, 'next: ' + '; '.join(p['next_steps']), fontsize=7.5, color=MUT, va='top'); y -= 0.024
-    y -= 0.005
-    _wrap(ax, 0.06, y, f"Ledger: {(A.get('ledger') or {}).get('note', 'n/a')}" + (f" · {(A.get('ledger') or {}).get('n_open')} open of {(A.get('ledger') or {}).get('n')} recorded · sha {(A.get('ledger') or {}).get('sha')}" if (A.get('ledger') or {}).get('n') else ''), 150, size=7.5, color=GOOD if (A.get('ledger') or {}).get('ok') else CRIT)
-    fp = os.path.join(outdir, '0b_expect.png'); fig.savefig(fp, dpi=110, facecolor=BG); plt.close(fig); return fp
+    CARD, EDGE = '#0a1322', '#1a2638'; T = X.get('tables') or {}; bk = X['book']; reg = X.get('regime') or {}
+    fig = plt.figure(figsize=(12, 8), facecolor=BG); ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 12); ax.set_ylim(0, 8); ax.axis('off')
+    def card(x, y, w, h, hot=None):
+        ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle='round,pad=0,rounding_size=0.12', fc=CARD, ec=hot or EDGE, lw=1.2))
+    def tx(x, y, s, size=10, color=T1, w='normal', ha='left', va='center', **k): ax.text(x, y, s, fontsize=size, color=color, fontweight=w, ha=ha, va=va, **k)
+    ax.add_patch(plt.Rectangle((0.6, 7.38), 0.55, 0.045, color=GOLD, lw=0))
+    tx(0.6, 7.62, "Today's outlook", 26, T1, 'bold'); tx(11.4, 7.62, A.get('date', ''), 10.5, T2, ha='right'); tx(0.6, 7.2, 'Context from the backtest. The rules still decide every buy and sell.', 10, MUT)
+    # ---- tiles
+    c = reg.get('cell') or {}; a_ = T.get('all') or {}; ag = (T.get('age') or {}).get('7') or {}
+    tiles = [('MARKET', (reg.get('name') or 'n/a').title(), T1, (f"avg trade {c['avg']:+.2f}%  ·  {c['win']:.0f}% win" if c else ''), GOLD),
+             ('BOOK TODAY', f"{bk['open_pnl']:+.1f}%", GOOD if bk['open_pnl'] >= 0 else CRIT, f"{bk['n']} of {bk['slots']} slots", GOOD if bk['open_pnl'] >= 0 else CRIT),
+             ('IF EVERY STOP HITS', f"{bk['locked_if_all_stop']:+.1f}%", GOOD if bk['locked_if_all_stop'] >= 0 else CRIT, f"gives back {bk['giveback']:.1f}%", None),
+             ('OPEN 7+ DAYS', f"{ag.get('win', 0):.0f}% green", GOOD, f"avg {ag.get('avg', 0):+.1f}%  ·  vs {a_.get('win', 0):.0f}% overall", None)]
+    for i, (h, big, col, sub, hot) in enumerate(tiles):
+        x = 0.6 + i * 2.85; card(x, 5.55, 2.65, 1.3); tx(x + 0.22, 6.6, h, 8.3, MUT, 'bold'); tx(x + 0.22, 6.12, big, 21, col, 'bold'); tx(x + 0.22, 5.77, sub, 8.8, T2)
+        if hot: ax.add_patch(plt.Rectangle((x + 0.22, 6.78 - 0.02), 0.35, 0.025, color=hot, lw=0))
+    # ---- positions card with gauges
+    px0, py0, pw, ph = 0.6, 1.6, 7.25, 3.7; card(px0, py0, pw, ph); tx(px0 + 0.25, py0 + ph - 0.32, 'POSITIONS', 8.8, GOLD, 'bold')
+    tx(px0 + 5.95, py0 + ph - 0.32, 'P&L', 7.8, MUT, ha='right'); tx(px0 + 6.95, py0 + ph - 0.32, 'green at age', 7.8, MUT, ha='right')
+    P = X['positions']; lo = min([-2.0] + [x_['locked_pct'] for x_ in P]) - 0.8; hi = max([8.0] + [x_['peak'] for x_ in P] + [x_['pnl'] for x_ in P]) + 1.0; gx0, gx1 = px0 + 1.75, px0 + 4.85
+    X2 = lambda v: gx0 + (v - lo) / (hi - lo) * (gx1 - gx0); rh = (ph - 1.2) / max(len(P), 1)
+    for k, p in enumerate(P):
+        yc = py0 + ph - 0.7 - k * rh - rh / 2
+        tx(px0 + 0.25, yc + 0.09, p['tk'], 11, T1, 'bold'); tx(px0 + 0.25, yc - 0.11, f"{p['track']} · day {int(p['age_days']) + 1}", 7.2, MUT)
+        ax.plot([gx0, gx1], [yc, yc], color=EDGE, lw=5, solid_capstyle='round', zorder=1); ax.plot([X2(0), X2(0)], [yc - 0.13, yc + 0.13], color=MUT, lw=1, zorder=2)
+        col = GOOD if p['pnl'] >= 0 else CRIT; ax.plot([X2(0), X2(p['pnl'])], [yc, yc], color=col, lw=5, solid_capstyle='round', alpha=.85, zorder=3)
+        ax.plot([X2(p['locked_pct'])] * 2, [yc - 0.16, yc + 0.16], color=CRIT, lw=2.2, zorder=4)
+        if p.get('peak', 0) > p['pnl'] + 0.4: ax.scatter([X2(p['peak'])], [yc], s=22, facecolors='none', edgecolors=T2, linewidths=1.1, zorder=5)
+        ax.scatter([X2(p['pnl'])], [yc], s=46, color=col, edgecolors=BG, linewidths=1.4, zorder=6)
+        tx(px0 + 5.95, yc, f"{p['pnl']:+.1f}%", 11, col, 'bold', ha='right'); c_ = p.get('age_stats'); tx(px0 + 6.95, yc, f"{c_['win']:.0f}%" if c_ else '—', 11, T1, ha='right')
+        if k < len(P) - 1: ax.plot([px0 + 0.25, px0 + pw - 0.25], [yc - rh / 2 + 0.02] * 2, color=EDGE, lw=0.6, zorder=0)
+    tx(px0 + 0.25, py0 + 0.24, 'grey tick = entry    red tick = stop    ● now    ○ best so far', 7.6, MUT)
+    # ---- hold odds card
+    hx, hy, hw, hh = 8.05, 1.6, 3.75, 3.7; card(hx, hy, hw, hh); tx(hx + 0.25, hy + hh - 0.32, 'WHY HOLDING PAYS', 8.8, GOLD, 'bold'); tx(hx + 0.25, hy + hh - 0.6, 'trades finishing green, by days open', 8, MUT); tx(hx + 0.25, hy + hh - 0.82, 'gold = where your positions are', 7.6, GOLD)
+    ages = [('all', '0'), ('1d', '1'), ('3d', '3'), ('7d', '7'), ('15d', '15')]; bw = 0.46; base = hy + 0.95; top_ = hy + hh - 1.15; here = {str(x_.get('age_bucket')) for x_ in P}
+    for i, (lab, key) in enumerate(ages):
+        v = ((T.get('age') or {}).get(key) or {}).get('win'); 
+        if v is None: continue
+        x = hx + 0.38 + i * 0.68; h = (top_ - base) * v / 100; hot = key in here
+        ax.add_patch(FancyBboxPatch((x, base), bw, h, boxstyle='round,pad=0,rounding_size=0.06', fc=GOLD if hot else '#26364f', ec='none')); tx(x + bw / 2, base + h + 0.14, f"{v:.0f}%", 9, T1, 'bold', ha='center'); tx(x + bw / 2, base - 0.17, lab, 8, MUT, ha='center')
+    R = T.get('runners') or {}; tx(hx + 0.25, hy + 0.5, f"{R.get('share_ge15', 1.3):.1f}% of trades run +15%", 9.5, T1, 'bold'); tx(hx + 0.25, hy + 0.27, f"and make ~{R.get('share_of_pnl', 24):.0f}% of the profit", 8.6, T2)
+    # ---- next slot chips
+    cx, cy, cw, ch = 0.6, 0.3, 11.2, 1.05; card(cx, cy, cw, ch); lab = 'IF A SLOT OPENS' if X.get('full') else 'NEXT BUYS'; tx(cx + 0.25, cy + ch - 0.3, lab, 8.8, GOLD, 'bold'); tx(cx + 0.25 + 1.55, cy + ch - 0.3, 'highest options ratio takes it', 8.2, MUT)
+    xx = cx + 0.25
+    for cd in X.get('candidates', [])[:6]:
+        t_ = f"{cd['tk']}  {cd['ratio']:.1f}"; w = 0.2 + 0.11 * len(t_)
+        ax.add_patch(FancyBboxPatch((xx, cy + 0.2), w, 0.36, boxstyle='round,pad=0,rounding_size=0.18', fc='#101c30', ec=EDGE, lw=1)); tx(xx + w / 2, cy + 0.38, t_, 9.5, T1, 'bold', ha='center'); xx += w + 0.15
+    if not X.get('candidates'): tx(xx, cy + 0.38, 'No flips waiting', 9.5, MUT)
+    lg = A.get('ledger') or {}; tx(0.6, 0.12, f"ledger {lg.get('sha', '')}  ·  {lg.get('note', '')}", 7.4, GOOD if lg.get('ok') else CRIT)
+    fp = os.path.join(outdir, '0b_expect.png'); fig.savefig(fp, dpi=130, facecolor=BG); plt.close(fig); return fp
 
 def build(LS, rows, meta, outdir, fetch=True):
     os.makedirs(outdir, exist_ok=True)
