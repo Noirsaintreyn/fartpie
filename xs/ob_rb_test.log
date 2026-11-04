@@ -1,0 +1,107 @@
+stocks instruments 33 ['AAPL', 'ADBE', 'AMD', 'AMZN', 'BA', 'CAT']
+  AAPL
+  ADBE
+  AMD
+  AMZN
+  BA
+  CAT
+  COST
+  CRM
+  CSCO
+  CVX
+  DIS
+  GE
+  GOOGL
+  HD
+  IBM
+  JPM
+  LLY
+  MCD
+  META
+  MMM
+  MSFT
+  NKE
+  NVDA
+  ORCL
+  PEP
+  PFE
+  SBUX
+  TGT
+  TSLA
+  UNH
+  UPS
+  V
+  WMT
+Crumb fetch rate-limited (HTTP 429), continuing without crumb
+futures instruments 5 ['MNQ (1-min prints)', 'NQ=F', 'ES=F', 'GC=F', 'CL=F']
+  MNQ (1-min prints)
+  NQ=F
+  ES=F
+  GC=F
+  CL=F
+
+events 4,619,594
+
+==== STOCKS  (cells: n | SYM win% vs placebo | ICT mean R vs placebo | D10 ATR vs placebo; per half H1 / H2)
+  [5m] random entries: SYM win 49.5% (n 561,774), D10 +0.000 ATR
+    OB bull | H1 n79,511 SYM 48.2% vs rnd 49.3% (z-4.9) ICT +0.017R vs matched rnd +0.003R (z+1.9) [placebo zone -0.197R] risk 0.96ATR | H2 n94,334 SYM 46.9% vs rnd 49.7% (z-13.5) ICT -0.017R vs matched rnd +0.006R (z-3.6) [placebo zone -0.193R] risk 0.96ATR
+    OB bear | H1 n77,748 SYM 47.5% vs rnd 49.7% (z-9.7) ICT -0.031R vs matched rnd -0.007R (z-3.4) [placebo zone -0.187R] risk 0.96ATR | H2 n92,706 SYM 46.1% vs rnd 49.4% (z-15.8) ICT -0.045R vs matched rnd -0.008R (z-5.8) [placebo zone -0.206R] risk 0.95ATR
+    RB bull | H1 n103,319 SYM 49.1% vs rnd 49.3% (z-1.2) ICT +0.002R vs matched rnd -0.004R (z+1.0) [placebo zone -0.093R] risk 0.64ATR | H2 n120,900 SYM 48.3% vs rnd 49.7% (z-7.3) ICT -0.033R vs matched rnd -0.008R (z-4.4) [placebo zone -0.133R] risk 0.64ATR
+    RB bear | H1 n98,882 SYM 49.1% vs rnd 49.7% (z-3.0) ICT -0.001R vs matched rnd -0.017R (z+2.6) [placebo zone -0.096R] risk 0.62ATR | H2 n115,169 SYM 47.7% vs rnd 49.4% (z-8.4) ICT -0.049R vs matched rnd -0.012R (z-6.3) [placebo zone -0.143R] risk 0.62ATR
+  [15m] random entries: SYM win 48.7% (n 187,250), D10 +0.000 ATR
+    OB bull | H1 n26,881 SYM 48.2% vs rnd 49.5% (z-3.3) ICT +0.004R vs matched rnd +0.021R (z-1.5) [placebo zone -0.176R] risk 0.92ATR | H2 n31,013 SYM 46.2% vs rnd 49.2% (z-8.2) ICT -0.036R vs matched rnd +0.037R (z-6.4) [placebo zone -0.173R] risk 0.91ATR
+    OB bear | H1 n25,589 SYM 47.0% vs rnd 47.9% (z-2.4) ICT -0.058R vs matched rnd -0.043R (z-1.2) [placebo zone -0.197R] risk 0.91ATR | H2 n31,238 SYM 45.6% vs rnd 48.2% (z-7.3) ICT -0.053R vs matched rnd -0.039R (z-1.3) [placebo zone -0.202R] risk 0.89ATR
+    RB bull | H1 n34,547 SYM 48.4% vs rnd 49.5% (z-3.0) ICT -0.010R vs matched rnd -0.013R (z+0.3) [placebo zone -0.127R] risk 0.63ATR | H2 n39,060 SYM 47.2% vs rnd 49.2% (z-5.9) ICT -0.054R vs matched rnd +0.005R (z-5.8) [placebo zone -0.169R] risk 0.62ATR
+    RB bear | H1 n32,457 SYM 46.7% vs rnd 47.9% (z-3.3) ICT -0.073R vs matched rnd -0.044R (z-2.7) [placebo zone -0.162R] risk 0.60ATR | H2 n37,342 SYM 45.7% vs rnd 48.2% (z-7.4) ICT -0.098R vs matched rnd -0.030R (z-6.7) [placebo zone -0.201R] risk 0.60ATR
+  [30m] random entries: SYM win 48.3% (n 93,558), D10 +0.000 ATR
+    OB bull | H1 n15,101 SYM 48.9% vs rnd 50.3% (z-2.5) ICT +0.013R vs matched rnd +0.032R (z-1.2) [placebo zone -0.150R] risk 0.85ATR | H2 n17,257 SYM 46.9% vs rnd 48.1% (z-2.4) ICT -0.025R vs matched rnd +0.041R (z-4.3) [placebo zone -0.165R] risk 0.82ATR
+    OB bear | H1 n13,612 SYM 46.1% vs rnd 46.6% (z-1.0) ICT -0.081R vs matched rnd -0.051R (z-1.8) [placebo zone -0.210R] risk 0.84ATR | H2 n17,013 SYM 45.5% vs rnd 48.4% (z-5.8) ICT -0.071R vs matched rnd -0.027R (z-2.9) [placebo zone -0.223R] risk 0.81ATR
+    RB bull | H1 n16,837 SYM 49.3% vs rnd 50.3% (z-1.9) ICT +0.015R vs matched rnd -0.000R (z+1.0) [placebo zone -0.147R] risk 0.64ATR | H2 n18,995 SYM 47.2% vs rnd 48.1% (z-1.8) ICT -0.052R vs matched rnd +0.013R (z-4.5) [placebo zone -0.198R] risk 0.63ATR
+    RB bear | H1 n15,748 SYM 45.9% vs rnd 46.6% (z-1.4) ICT -0.092R vs matched rnd -0.031R (z-3.9) [placebo zone -0.203R] risk 0.60ATR | H2 n18,301 SYM 45.9% vs rnd 48.4% (z-5.2) ICT -0.099R vs matched rnd -0.041R (z-4.0) [placebo zone -0.233R] risk 0.61ATR
+  [1h] random entries: SYM win 48.5% (n 50,286), D10 +0.000 ATR
+    OB bull | H1 n 8,545 SYM 48.4% vs rnd 50.5% (z-3.0) ICT -0.029R vs matched rnd +0.073R (z-4.7) [placebo zone -0.133R] risk 0.75ATR | H2 n 9,876 SYM 46.1% vs rnd 49.9% (z-5.8) ICT -0.051R vs matched rnd +0.065R (z-5.7) [placebo zone -0.199R] risk 0.74ATR
+    OB bear | H1 n 7,735 SYM 45.8% vs rnd 46.6% (z-1.1) ICT -0.077R vs matched rnd -0.090R (z+0.6) [placebo zone -0.273R] risk 0.77ATR | H2 n10,137 SYM 45.9% vs rnd 47.0% (z-1.8) ICT -0.081R vs matched rnd -0.080R (z-0.1) [placebo zone -0.252R] risk 0.74ATR
+    RB bull | H1 n 8,665 SYM 49.8% vs rnd 50.5% (z-1.0) ICT +0.034R vs matched rnd +0.056R (z-1.0) [placebo zone -0.138R] risk 0.69ATR | H2 n 9,834 SYM 46.8% vs rnd 49.9% (z-4.7) ICT -0.042R vs matched rnd +0.056R (z-4.9) [placebo zone -0.187R] risk 0.68ATR
+    RB bear | H1 n 8,049 SYM 45.8% vs rnd 46.6% (z-1.2) ICT -0.091R vs matched rnd -0.080R (z-0.5) [placebo zone -0.206R] risk 0.65ATR | H2 n 9,794 SYM 45.3% vs rnd 47.0% (z-2.6) ICT -0.117R vs matched rnd -0.060R (z-2.9) [placebo zone -0.229R] risk 0.66ATR
+  [4h] random entries: SYM win 49.6% (n 14,244), D10 +0.000 ATR
+    OB bull | H1 n 2,690 SYM 49.9% vs rnd 51.6% (z-1.4) ICT +0.021R vs matched rnd +0.139R (z-3.0) [placebo zone -0.132R] risk 0.78ATR | H2 n 3,118 SYM 48.5% vs rnd 50.7% (z-1.8) ICT +0.020R vs matched rnd +0.156R (z-3.7) [placebo zone -0.162R] risk 0.81ATR
+    OB bear | H1 n 2,561 SYM 47.1% vs rnd 47.5% (z-0.3) ICT -0.070R vs matched rnd -0.053R (z-0.5) [placebo zone -0.256R] risk 0.84ATR | H2 n 3,022 SYM 47.0% vs rnd 48.5% (z-1.3) ICT -0.073R vs matched rnd -0.094R (z+0.6) [placebo zone -0.239R] risk 0.77ATR
+    RB bull | H1 n 2,015 SYM 50.3% vs rnd 51.6% (z-1.0) ICT +0.024R vs matched rnd +0.092R (z-1.5) [placebo zone -0.150R] risk 0.71ATR | H2 n 2,391 SYM 49.4% vs rnd 50.7% (z-0.9) ICT +0.020R vs matched rnd +0.150R (z-3.1) [placebo zone -0.196R] risk 0.71ATR
+    RB bear | H1 n 2,012 SYM 45.1% vs rnd 47.5% (z-1.6) ICT -0.097R vs matched rnd -0.007R (z-2.0) [placebo zone -0.235R] risk 0.67ATR | H2 n 2,397 SYM 44.3% vs rnd 48.5% (z-3.3) ICT -0.116R vs matched rnd -0.102R (z-0.3) [placebo zone -0.225R] risk 0.70ATR
+  [D] random entries: SYM win 49.8% (n 6,996), D10 +0.000 ATR
+    OB bull | H1 n 1,380 SYM 52.2% vs rnd 52.6% (z-0.2) ICT +0.122R vs matched rnd +0.203R (z-1.5) [placebo zone -0.050R] risk 0.89ATR | H2 n 1,694 SYM 49.6% vs rnd 52.4% (z-1.7) ICT +0.044R vs matched rnd +0.341R (z-5.9) [placebo zone -0.134R] risk 0.90ATR
+    OB bear | H1 n 1,253 SYM 47.6% vs rnd 47.2% (z+0.3) ICT -0.103R vs matched rnd -0.180R (z+1.4) [placebo zone -0.285R] risk 0.91ATR | H2 n 1,557 SYM 45.3% vs rnd 47.0% (z-1.0) ICT -0.070R vs matched rnd -0.261R (z+4.0) [placebo zone -0.280R] risk 0.88ATR
+    RB bull | H1 n   980 SYM 52.1% vs rnd 52.6% (z-0.2) ICT +0.084R vs matched rnd +0.214R (z-2.0) [placebo zone -0.154R] risk 0.63ATR | H2 n 1,249 SYM 46.8% vs rnd 52.4% (z-3.1) ICT -0.049R vs matched rnd +0.297R (z-6.0) [placebo zone -0.199R] risk 0.63ATR
+    RB bear | H1 n 1,018 SYM 42.0% vs rnd 47.2% (z-2.6) ICT -0.204R vs matched rnd -0.144R (z-1.0) [placebo zone -0.231R] risk 0.59ATR | H2 n 1,209 SYM 45.2% vs rnd 47.0% (z-1.0) ICT -0.127R vs matched rnd -0.208R (z+1.5) [placebo zone -0.246R] risk 0.60ATR
+
+==== FUTURES  (cells: n | SYM win% vs placebo | ICT mean R vs placebo | D10 ATR vs placebo; per half H1 / H2)
+  [5m] random entries: SYM win 49.8% (n 6,460), D10 +0.000 ATR
+    OB bull | H1 n 1,546 SYM 38.5% vs rnd 50.9% (z-7.0) ICT -0.229R vs matched rnd +0.107R (z-6.8) [placebo zone -0.223R] risk 0.75ATR | H2 n 1,460 SYM 41.2% vs rnd 51.3% (z-5.6) ICT -0.154R vs matched rnd +0.106R (z-5.0) [placebo zone -0.133R] risk 0.78ATR
+    OB bear | H1 n 1,645 SYM 40.0% vs rnd 48.6% (z-5.0) ICT -0.130R vs matched rnd +0.025R (z-3.2) [placebo zone -0.186R] risk 0.75ATR | H2 n 1,471 SYM 39.4% vs rnd 48.2% (z-4.9) ICT -0.196R vs matched rnd +0.107R (z-5.9) [placebo zone -0.217R] risk 0.78ATR
+    RB bull | H1 n   858 SYM 40.2% vs rnd 50.9% (z-5.1) ICT -0.182R vs matched rnd +0.110R (z-4.3) [placebo zone -0.348R] risk 0.58ATR | H2 n   846 SYM 44.8% vs rnd 51.3% (z-3.1) ICT -0.018R vs matched rnd +0.098R (z-1.7) [placebo zone -0.318R] risk 0.60ATR
+    RB bear | H1 n   827 SYM 38.5% vs rnd 48.6% (z-4.8) ICT -0.265R vs matched rnd +0.008R (z-4.1) [placebo zone -0.379R] risk 0.53ATR | H2 n   883 SYM 42.6% vs rnd 48.2% (z-2.7) ICT -0.215R vs matched rnd -0.034R (z-2.8) [placebo zone -0.319R] risk 0.52ATR
+  [15m] random entries: SYM win 49.5% (n 2,150), D10 +0.000 ATR
+    OB bull | H1 n   422 SYM 41.7% vs rnd 55.2% (z-4.2) ICT -0.110R vs matched rnd +0.139R (z-2.6) [placebo zone -0.094R] risk 0.89ATR | H2 n   479 SYM 39.7% vs rnd 48.4% (z-2.8) ICT -0.225R vs matched rnd +0.084R (z-3.5) [placebo zone -0.189R] risk 0.92ATR
+    OB bear | H1 n   464 SYM 39.9% vs rnd 43.7% (z-1.2) ICT -0.098R vs matched rnd +0.035R (z-1.5) [placebo zone -0.196R] risk 0.93ATR | H2 n   443 SYM 39.3% vs rnd 50.7% (z-3.6) ICT -0.183R vs matched rnd -0.048R (z-1.5) [placebo zone -0.422R] risk 0.89ATR
+    RB bull | H1 n   355 SYM 40.6% vs rnd 55.2% (z-4.3) ICT -0.111R vs matched rnd +0.089R (z-1.9) [placebo zone -0.381R] risk 0.61ATR | H2 n   373 SYM 46.1% vs rnd 48.4% (z-0.7) ICT -0.061R vs matched rnd +0.049R (z-1.1) [placebo zone -0.217R] risk 0.67ATR
+    RB bear | H1 n   349 SYM 43.6% vs rnd 43.7% (z-0.0) ICT -0.110R vs matched rnd +0.173R (z-2.6) [placebo zone -0.409R] risk 0.59ATR | H2 n   362 SYM 45.6% vs rnd 50.7% (z-1.5) ICT -0.244R vs matched rnd +0.028R (z-2.7) [placebo zone -0.384R] risk 0.56ATR
+  [30m] random entries: SYM win 49.3% (n 1,072), D10 +0.000 ATR
+    OB bull | H1 n   201 SYM 41.3% vs rnd 50.2% (z-1.9) ICT -0.060R vs matched rnd +0.194R (z-1.8) [placebo zone -0.089R] risk 0.97ATR | H2 n   233 SYM 36.9% vs rnd 52.8% (z-3.6) ICT -0.241R vs matched rnd +0.066R (z-2.4) [placebo zone -0.131R] risk 0.93ATR
+    OB bear | H1 n   252 SYM 42.5% vs rnd 48.0% (z-1.3) ICT -0.039R vs matched rnd -0.125R (z+0.7) [placebo zone -0.196R] risk 0.89ATR | H2 n   227 SYM 36.6% vs rnd 46.1% (z-2.1) ICT -0.215R vs matched rnd +0.004R (z-1.7) [placebo zone -0.386R] risk 0.94ATR
+    RB bull | H1 n   202 SYM 41.6% vs rnd 50.2% (z-1.9) ICT -0.025R vs matched rnd -0.153R (z+0.9) [placebo zone -0.349R] risk 0.67ATR | H2 n   210 SYM 43.8% vs rnd 52.8% (z-2.0) ICT -0.129R vs matched rnd +0.000R (z-1.0) [placebo zone -0.342R] risk 0.71ATR
+    RB bear | H1 n   189 SYM 47.6% vs rnd 48.0% (z-0.1) ICT -0.107R vs matched rnd -0.032R (z-0.5) [placebo zone -0.318R] risk 0.57ATR | H2 n   191 SYM 40.3% vs rnd 46.1% (z-1.2) ICT -0.026R vs matched rnd -0.058R (z+0.2) [placebo zone -0.452R] risk 0.55ATR
+  [1h] random entries: SYM win 49.1% (n 5,974), D10 +0.000 ATR
+    OB bull | H1 n 1,115 SYM 43.7% vs rnd 49.6% (z-3.0) ICT -0.056R vs matched rnd +0.003R (z-1.0) [placebo zone -0.180R] risk 1.04ATR | H2 n 1,190 SYM 44.4% vs rnd 49.9% (z-2.9) ICT -0.084R vs matched rnd +0.049R (z-2.3) [placebo zone -0.255R] risk 0.98ATR
+    OB bear | H1 n 1,087 SYM 42.3% vs rnd 48.1% (z-2.9) ICT -0.157R vs matched rnd -0.025R (z-2.2) [placebo zone -0.239R] risk 0.96ATR | H2 n 1,061 SYM 45.9% vs rnd 48.6% (z-1.3) ICT -0.060R vs matched rnd -0.121R (z+1.0) [placebo zone -0.269R] risk 0.96ATR
+    RB bull | H1 n 1,391 SYM 49.4% vs rnd 49.6% (z-0.1) ICT -0.044R vs matched rnd +0.005R (z-0.9) [placebo zone -0.322R] risk 0.75ATR | H2 n 1,347 SYM 48.7% vs rnd 49.9% (z-0.7) ICT -0.051R vs matched rnd +0.011R (z-1.2) [placebo zone -0.181R] risk 0.72ATR
+    RB bear | H1 n 1,060 SYM 44.7% vs rnd 48.1% (z-1.7) ICT -0.168R vs matched rnd -0.142R (z-0.4) [placebo zone -0.270R] risk 0.56ATR | H2 n 1,150 SYM 44.5% vs rnd 48.6% (z-2.1) ICT -0.105R vs matched rnd +0.058R (z-2.8) [placebo zone -0.223R] risk 0.59ATR
+  [4h] random entries: SYM win 48.6% (n 1,596), D10 +0.000 ATR
+    OB bull | H1 n   296 SYM 46.3% vs rnd 49.3% (z-0.8) ICT -0.128R vs matched rnd +0.149R (z-2.4) [placebo zone -0.248R] risk 0.84ATR | H2 n   316 SYM 44.6% vs rnd 46.7% (z-0.6) ICT -0.077R vs matched rnd -0.028R (z-0.4) [placebo zone -0.257R] risk 0.85ATR
+    OB bear | H1 n   276 SYM 46.7% vs rnd 48.5% (z-0.5) ICT -0.107R vs matched rnd -0.041R (z-0.6) [placebo zone -0.154R] risk 0.87ATR | H2 n   315 SYM 42.5% vs rnd 50.0% (z-2.0) ICT -0.192R vs matched rnd +0.048R (z-2.2) [placebo zone -0.307R] risk 0.77ATR
+    RB bull | H1 n   396 SYM 45.5% vs rnd 49.3% (z-1.1) ICT -0.091R vs matched rnd +0.121R (z-2.1) [placebo zone -0.192R] risk 0.83ATR | H2 n   385 SYM 46.5% vs rnd 46.7% (z-0.1) ICT -0.001R vs matched rnd -0.018R (z+0.2) [placebo zone -0.262R] risk 0.83ATR
+    RB bear | H1 n   255 SYM 48.2% vs rnd 48.5% (z-0.1) ICT -0.118R vs matched rnd -0.071R (z-0.4) [placebo zone -0.270R] risk 0.63ATR | H2 n   288 SYM 45.5% vs rnd 50.0% (z-1.2) ICT -0.141R vs matched rnd -0.109R (z-0.3) [placebo zone -0.221R] risk 0.67ATR
+  [D] random entries: SYM win 49.9% (n 1,672), D10 +0.000 ATR
+    OB bull | H1 n   343 SYM 47.8% vs rnd 48.1% (z-0.1) ICT -0.048R vs matched rnd -0.027R (z-0.2) [placebo zone -0.140R] risk 0.97ATR | H2 n   359 SYM 47.4% vs rnd 55.5% (z-2.3) ICT -0.097R vs matched rnd +0.038R (z-1.3) [placebo zone -0.219R] risk 0.98ATR
+    OB bear | H1 n   346 SYM 38.7% vs rnd 51.9% (z-3.6) ICT -0.185R vs matched rnd -0.150R (z-0.3) [placebo zone -0.340R] risk 0.92ATR | H2 n   314 SYM 42.4% vs rnd 44.0% (z-0.4) ICT -0.022R vs matched rnd -0.092R (z+0.6) [placebo zone -0.317R] risk 1.00ATR
+    RB bull | H1 n   352 SYM 47.7% vs rnd 48.1% (z-0.1) ICT +0.023R vs matched rnd +0.212R (z-1.7) [placebo zone -0.168R] risk 0.74ATR | H2 n   292 SYM 54.1% vs rnd 55.5% (z-0.4) ICT +0.094R vs matched rnd +0.157R (z-0.5) [placebo zone -0.190R] risk 0.70ATR
+    RB bear | H1 n   240 SYM 42.1% vs rnd 51.9% (z-2.4) ICT -0.150R vs matched rnd +0.062R (z-1.7) [placebo zone -0.145R] risk 0.56ATR | H2 n   257 SYM 44.0% vs rnd 44.0% (z-0.0) ICT -0.248R vs matched rnd +0.004R (z-2.1) [placebo zone -0.323R] risk 0.58ATR

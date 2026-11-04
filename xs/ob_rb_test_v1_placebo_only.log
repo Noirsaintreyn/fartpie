@@ -1,0 +1,107 @@
+stocks instruments 33 ['AAPL', 'ADBE', 'AMD', 'AMZN', 'BA', 'CAT']
+  AAPL
+  ADBE
+  AMD
+  AMZN
+  BA
+  CAT
+  COST
+  CRM
+  CSCO
+  CVX
+  DIS
+  GE
+  GOOGL
+  HD
+  IBM
+  JPM
+  LLY
+  MCD
+  META
+  MMM
+  MSFT
+  NKE
+  NVDA
+  ORCL
+  PEP
+  PFE
+  SBUX
+  TGT
+  TSLA
+  UNH
+  UPS
+  V
+  WMT
+Crumb fetch rate-limited (HTTP 429), continuing without crumb
+futures instruments 5 ['MNQ (1-min prints)', 'NQ=F', 'ES=F', 'GC=F', 'CL=F']
+  MNQ (1-min prints)
+  NQ=F
+  ES=F
+  GC=F
+  CL=F
+
+events 4,619,594
+
+==== STOCKS  (cells: n | SYM win% vs placebo | ICT mean R vs placebo | D10 ATR vs placebo; per half H1 / H2)
+  [5m] random entries: SYM win 49.5% (n 561,774), D10 +0.000 ATR
+    OB bull | H1 n79,511 SYM 48.2% vs 45.3% (z+13.3) ICT +0.017 vs -0.197R (z+35.1) D10 +0.144 vs -0.061 | H2 n94,334 SYM 46.9% vs 45.7% (z+5.9) ICT -0.017 vs -0.193R (z+31.8) D10 +0.115 vs -0.084   PASS
+    OB bear | H1 n77,748 SYM 47.5% vs 45.8% (z+7.7) ICT -0.031 vs -0.187R (z+25.7) D10 -0.074 vs -0.194 | H2 n92,706 SYM 46.1% vs 45.4% (z+3.3) ICT -0.045 vs -0.206R (z+29.1) D10 -0.026 vs -0.164   PASS
+    RB bull | H1 n103,319 SYM 49.1% vs 48.4% (z+3.5) ICT +0.002 vs -0.093R (z+17.5) D10 +0.126 vs +0.117 | H2 n120,900 SYM 48.3% vs 47.8% (z+2.7) ICT -0.033 vs -0.133R (z+20.1) D10 +0.086 vs +0.046   PASS
+    RB bear | H1 n98,882 SYM 49.1% vs 48.1% (z+5.2) ICT -0.001 vs -0.096R (z+17.3) D10 -0.073 vs -0.085 | H2 n115,169 SYM 47.7% vs 47.4% (z+2.0) ICT -0.049 vs -0.143R (z+18.7) D10 -0.047 vs -0.049   PASS
+  [15m] random entries: SYM win 48.7% (n 187,250), D10 +0.000 ATR
+    OB bull | H1 n26,881 SYM 48.2% vs 46.0% (z+6.0) ICT +0.004 vs -0.176R (z+17.2) D10 +0.061 vs -0.016 | H2 n31,013 SYM 46.2% vs 45.5% (z+2.1) ICT -0.036 vs -0.173R (z+14.2) D10 -0.008 vs -0.072   PASS
+    OB bear | H1 n25,589 SYM 47.0% vs 44.2% (z+7.3) ICT -0.058 vs -0.197R (z+13.1) D10 -0.023 vs -0.250 | H2 n31,238 SYM 45.6% vs 44.3% (z+3.7) ICT -0.053 vs -0.202R (z+15.5) D10 +0.030 vs -0.182   PASS
+    RB bull | H1 n34,547 SYM 48.4% vs 48.1% (z+1.1) ICT -0.010 vs -0.127R (z+12.4) D10 +0.138 vs +0.120 | H2 n39,060 SYM 47.2% vs 46.7% (z+1.7) ICT -0.054 vs -0.169R (z+13.3) D10 +0.050 vs +0.022
+    RB bear | H1 n32,457 SYM 46.7% vs 45.8% (z+2.7) ICT -0.073 vs -0.162R (z+9.5) D10 -0.074 vs -0.120 | H2 n37,342 SYM 45.7% vs 45.3% (z+1.2) ICT -0.098 vs -0.201R (z+12.0) D10 -0.036 vs -0.073
+  [30m] random entries: SYM win 48.3% (n 93,558), D10 +0.000 ATR
+    OB bull | H1 n15,101 SYM 48.9% vs 46.5% (z+4.7) ICT +0.013 vs -0.150R (z+11.3) D10 +0.095 vs +0.024 | H2 n17,257 SYM 46.9% vs 45.4% (z+3.2) ICT -0.025 vs -0.165R (z+10.5) D10 +0.018 vs -0.076   PASS
+    OB bear | H1 n13,612 SYM 46.1% vs 43.3% (z+5.1) ICT -0.081 vs -0.210R (z+8.8) D10 -0.056 vs -0.258 | H2 n17,013 SYM 45.5% vs 43.7% (z+3.8) ICT -0.071 vs -0.223R (z+11.6) D10 -0.032 vs -0.184   PASS
+    RB bull | H1 n16,837 SYM 49.3% vs 47.8% (z+3.1) ICT +0.015 vs -0.147R (z+12.0) D10 +0.171 vs +0.088 | H2 n18,995 SYM 47.2% vs 46.5% (z+1.7) ICT -0.052 vs -0.198R (z+11.9) D10 +0.005 vs +0.018
+    RB bear | H1 n15,748 SYM 45.9% vs 44.5% (z+2.8) ICT -0.092 vs -0.203R (z+8.4) D10 -0.143 vs -0.134 | H2 n18,301 SYM 45.9% vs 44.7% (z+2.6) ICT -0.099 vs -0.233R (z+10.9) D10 -0.030 vs -0.080   PASS
+  [1h] random entries: SYM win 48.5% (n 50,286), D10 +0.000 ATR
+    OB bull | H1 n 8,545 SYM 48.4% vs 47.6% (z+1.2) ICT -0.029 vs -0.133R (z+5.4) D10 +0.143 vs +0.047 | H2 n 9,876 SYM 46.1% vs 44.3% (z+2.7) ICT -0.051 vs -0.199R (z+8.4) D10 +0.025 vs -0.097
+    OB bear | H1 n 7,735 SYM 45.8% vs 41.6% (z+6.0) ICT -0.077 vs -0.273R (z+10.1) D10 -0.094 vs -0.305 | H2 n10,137 SYM 45.9% vs 42.8% (z+4.9) ICT -0.081 vs -0.252R (z+9.9) D10 -0.125 vs -0.233   PASS
+    RB bull | H1 n 8,665 SYM 49.8% vs 49.2% (z+1.0) ICT +0.034 vs -0.138R (z+9.2) D10 +0.170 vs +0.220 | H2 n 9,834 SYM 46.8% vs 46.9% (z-0.2) ICT -0.042 vs -0.187R (z+8.6) D10 +0.065 vs -0.003
+    RB bear | H1 n 8,049 SYM 45.8% vs 44.7% (z+1.6) ICT -0.091 vs -0.206R (z+6.3) D10 -0.105 vs -0.149 | H2 n 9,794 SYM 45.3% vs 44.2% (z+1.8) ICT -0.117 vs -0.229R (z+6.8) D10 -0.045 vs -0.098
+  [4h] random entries: SYM win 49.6% (n 14,244), D10 +0.000 ATR
+    OB bull | H1 n 2,690 SYM 49.9% vs 47.5% (z+1.8) ICT +0.021 vs -0.132R (z+4.3) D10 +0.151 vs +0.163 | H2 n 3,118 SYM 48.5% vs 46.3% (z+1.9) ICT +0.020 vs -0.162R (z+5.5) D10 +0.117 vs +0.062
+    OB bear | H1 n 2,561 SYM 47.1% vs 42.4% (z+3.6) ICT -0.070 vs -0.256R (z+5.3) D10 -0.099 vs -0.304 | H2 n 3,022 SYM 47.0% vs 42.4% (z+3.8) ICT -0.073 vs -0.239R (z+5.2) D10 -0.106 vs -0.237   PASS
+    RB bull | H1 n 2,015 SYM 50.3% vs 51.3% (z-0.7) ICT +0.024 vs -0.150R (z+4.6) D10 +0.271 vs +0.219 | H2 n 2,391 SYM 49.4% vs 47.8% (z+1.4) ICT +0.020 vs -0.196R (z+6.3) D10 +0.087 vs +0.140
+    RB bear | H1 n 2,012 SYM 45.1% vs 43.9% (z+0.9) ICT -0.097 vs -0.235R (z+3.9) D10 -0.299 vs -0.239 | H2 n 2,397 SYM 44.3% vs 44.9% (z-0.5) ICT -0.116 vs -0.225R (z+3.3) D10 -0.187 vs -0.125
+  [D] random entries: SYM win 49.8% (n 6,996), D10 +0.000 ATR
+    OB bull | H1 n 1,380 SYM 52.2% vs 50.9% (z+0.7) ICT +0.122 vs -0.050R (z+3.3) D10 +0.150 vs +0.326 | H2 n 1,694 SYM 49.6% vs 48.0% (z+1.0) ICT +0.044 vs -0.134R (z+3.9) D10 +0.278 vs -0.002
+    OB bear | H1 n 1,253 SYM 47.6% vs 40.6% (z+3.8) ICT -0.103 vs -0.285R (z+3.7) D10 -0.300 vs -0.378 | H2 n 1,557 SYM 45.3% vs 43.4% (z+1.1) ICT -0.070 vs -0.280R (z+4.6) D10 -0.245 vs -0.303
+    RB bull | H1 n   980 SYM 52.1% vs 51.5% (z+0.3) ICT +0.084 vs -0.154R (z+4.4) D10 +0.347 vs +0.323 | H2 n 1,249 SYM 46.8% vs 49.9% (z-1.8) ICT -0.049 vs -0.199R (z+3.2) D10 -0.009 vs +0.227
+    RB bear | H1 n 1,018 SYM 42.0% vs 43.5% (z-0.8) ICT -0.204 vs -0.231R (z+0.5) D10 -0.355 vs -0.326 | H2 n 1,209 SYM 45.2% vs 45.9% (z-0.4) ICT -0.127 vs -0.246R (z+2.6) D10 -0.268 vs -0.214
+
+==== FUTURES  (cells: n | SYM win% vs placebo | ICT mean R vs placebo | D10 ATR vs placebo; per half H1 / H2)
+  [5m] random entries: SYM win 49.8% (n 6,460), D10 +0.000 ATR
+    OB bull | H1 n 1,546 SYM 38.5% vs 41.7% (z-1.8) ICT -0.229 vs -0.223R (z-0.1) D10 -0.347 vs -0.373 | H2 n 1,460 SYM 41.2% vs 44.2% (z-1.6) ICT -0.154 vs -0.133R (z-0.4) D10 -0.293 vs -0.114
+    OB bear | H1 n 1,645 SYM 40.0% vs 40.4% (z-0.2) ICT -0.130 vs -0.186R (z+1.1) D10 -0.345 vs -0.302 | H2 n 1,471 SYM 39.4% vs 40.1% (z-0.4) ICT -0.196 vs -0.217R (z+0.4) D10 -0.342 vs -0.340
+    RB bull | H1 n   858 SYM 40.2% vs 38.0% (z+1.0) ICT -0.182 vs -0.348R (z+2.8) D10 -0.319 vs -0.431 | H2 n   846 SYM 44.8% vs 40.9% (z+1.7) ICT -0.018 vs -0.318R (z+4.9) D10 -0.099 vs -0.360
+    RB bear | H1 n   827 SYM 38.5% vs 40.5% (z-0.9) ICT -0.265 vs -0.379R (z+2.0) D10 -0.154 vs -0.069 | H2 n   883 SYM 42.6% vs 38.1% (z+2.0) ICT -0.215 vs -0.319R (z+1.8) D10 -0.405 vs -0.385
+  [15m] random entries: SYM win 49.5% (n 2,150), D10 +0.000 ATR
+    OB bull | H1 n   422 SYM 41.7% vs 44.4% (z-0.9) ICT -0.110 vs -0.094R (z-0.2) D10 -0.438 vs -0.409 | H2 n   479 SYM 39.7% vs 43.5% (z-1.3) ICT -0.225 vs -0.189R (z-0.4) D10 +0.005 vs -0.248
+    OB bear | H1 n   464 SYM 39.9% vs 43.1% (z-1.0) ICT -0.098 vs -0.196R (z+1.1) D10 -0.236 vs -0.263 | H2 n   443 SYM 39.3% vs 38.3% (z+0.3) ICT -0.183 vs -0.422R (z+2.9) D10 -0.448 vs -0.477
+    RB bull | H1 n   355 SYM 40.6% vs 39.0% (z+0.5) ICT -0.111 vs -0.381R (z+3.1) D10 -0.674 vs -0.537 | H2 n   373 SYM 46.1% vs 43.6% (z+0.8) ICT -0.061 vs -0.217R (z+1.8) D10 -0.016 vs +0.084
+    RB bear | H1 n   349 SYM 43.6% vs 37.5% (z+1.9) ICT -0.110 vs -0.409R (z+3.5) D10 -0.084 vs -0.220 | H2 n   362 SYM 45.6% vs 39.3% (z+2.0) ICT -0.244 vs -0.384R (z+1.7) D10 -0.127 vs -0.458
+  [30m] random entries: SYM win 49.3% (n 1,072), D10 +0.000 ATR
+    OB bull | H1 n   201 SYM 41.3% vs 45.6% (z-1.0) ICT -0.060 vs -0.089R (z+0.2) D10 -1.067 vs -0.243 | H2 n   233 SYM 36.9% vs 48.8% (z-2.7) ICT -0.241 vs -0.131R (z-0.9) D10 -0.131 vs -0.035
+    OB bear | H1 n   252 SYM 42.5% vs 39.4% (z+0.7) ICT -0.039 vs -0.196R (z+1.3) D10 -0.026 vs -0.172 | H2 n   227 SYM 36.6% vs 39.5% (z-0.7) ICT -0.215 vs -0.386R (z+1.5) D10 +0.078 vs -0.414
+    RB bull | H1 n   202 SYM 41.6% vs 36.0% (z+1.3) ICT -0.025 vs -0.349R (z+2.7) D10 -1.097 vs -0.674 | H2 n   210 SYM 43.8% vs 40.8% (z+0.7) ICT -0.129 vs -0.342R (z+1.9) D10 +0.251 vs -0.148
+    RB bear | H1 n   189 SYM 47.6% vs 40.5% (z+1.6) ICT -0.107 vs -0.318R (z+1.8) D10 +0.031 vs -0.245 | H2 n   191 SYM 40.3% vs 36.5% (z+0.9) ICT -0.026 vs -0.452R (z+3.6) D10 -0.065 vs -0.449
+  [1h] random entries: SYM win 49.1% (n 5,974), D10 +0.000 ATR
+    OB bull | H1 n 1,115 SYM 43.7% vs 46.2% (z-1.3) ICT -0.056 vs -0.180R (z+2.4) D10 -0.105 vs +0.003 | H2 n 1,190 SYM 44.4% vs 45.3% (z-0.5) ICT -0.084 vs -0.255R (z+3.4) D10 +0.070 vs -0.015
+    OB bear | H1 n 1,087 SYM 42.3% vs 43.3% (z-0.5) ICT -0.157 vs -0.239R (z+1.6) D10 -0.189 vs -0.236 | H2 n 1,061 SYM 45.9% vs 43.3% (z+1.3) ICT -0.060 vs -0.269R (z+4.0) D10 +0.087 vs -0.197
+    RB bull | H1 n 1,391 SYM 49.4% vs 43.8% (z+3.2) ICT -0.044 vs -0.322R (z+6.0) D10 +0.011 vs -0.072 | H2 n 1,347 SYM 48.7% vs 46.0% (z+1.6) ICT -0.051 vs -0.181R (z+2.7) D10 +0.101 vs +0.049
+    RB bear | H1 n 1,060 SYM 44.7% vs 46.0% (z-0.7) ICT -0.168 vs -0.270R (z+2.1) D10 -0.159 vs -0.143 | H2 n 1,150 SYM 44.5% vs 47.3% (z-1.6) ICT -0.105 vs -0.223R (z+2.4) D10 -0.102 vs -0.018
+  [4h] random entries: SYM win 48.6% (n 1,596), D10 +0.000 ATR
+    OB bull | H1 n   296 SYM 46.3% vs 44.1% (z+0.6) ICT -0.128 vs -0.248R (z+1.2) D10 -0.064 vs -0.044 | H2 n   316 SYM 44.6% vs 41.6% (z+0.8) ICT -0.077 vs -0.257R (z+1.8) D10 +0.201 vs -0.029
+    OB bear | H1 n   276 SYM 46.7% vs 44.9% (z+0.5) ICT -0.107 vs -0.154R (z+0.5) D10 +0.440 vs -0.175 | H2 n   315 SYM 42.5% vs 42.8% (z-0.1) ICT -0.192 vs -0.307R (z+1.2) D10 -0.333 vs -0.189
+    RB bull | H1 n   396 SYM 45.5% vs 44.3% (z+0.4) ICT -0.091 vs -0.192R (z+1.1) D10 +0.052 vs -0.058 | H2 n   385 SYM 46.5% vs 42.1% (z+1.4) ICT -0.001 vs -0.262R (z+2.9) D10 +0.173 vs +0.177
+    RB bear | H1 n   255 SYM 48.2% vs 45.9% (z+0.6) ICT -0.118 vs -0.270R (z+1.6) D10 +0.055 vs -0.171 | H2 n   288 SYM 45.5% vs 48.6% (z-0.9) ICT -0.141 vs -0.221R (z+0.8) D10 -0.094 vs -0.235
+  [D] random entries: SYM win 49.9% (n 1,672), D10 +0.000 ATR
+    OB bull | H1 n   343 SYM 47.8% vs 47.9% (z-0.0) ICT -0.048 vs -0.140R (z+0.9) D10 +0.309 vs +0.180 | H2 n   359 SYM 47.4% vs 49.7% (z-0.7) ICT -0.097 vs -0.219R (z+1.3) D10 +0.154 vs -0.002
+    OB bear | H1 n   346 SYM 38.7% vs 44.0% (z-1.5) ICT -0.185 vs -0.340R (z+1.7) D10 -0.316 vs -0.265 | H2 n   314 SYM 42.4% vs 40.3% (z+0.6) ICT -0.022 vs -0.317R (z+3.0) D10 -0.060 vs -0.505
+    RB bull | H1 n   352 SYM 47.7% vs 51.3% (z-1.0) ICT +0.023 vs -0.168R (z+2.0) D10 +0.225 vs +0.466 | H2 n   292 SYM 54.1% vs 49.1% (z+1.4) ICT +0.094 vs -0.190R (z+2.8) D10 +0.386 vs +0.153
+    RB bear | H1 n   240 SYM 42.1% vs 46.2% (z-1.1) ICT -0.150 vs -0.145R (z-0.1) D10 -0.389 vs -0.054 | H2 n   257 SYM 44.0% vs 41.5% (z+0.7) ICT -0.248 vs -0.323R (z+0.8) D10 -0.212 vs -0.351
