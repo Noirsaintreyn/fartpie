@@ -1,0 +1,58 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+trades 613, labels matched 100%
+  THIN  on  28% of 2022-26 trades | avg pts flagged  -5.8 vs not  +8.6
+  BEAR  on  17% of 2022-26 trades | avg pts flagged  -2.0 vs not  +5.8
+  NOISY on  27% of 2022-26 trades | avg pts flagged  +5.7 vs not  +4.1
+  HARH  on  32% of 2022-26 trades | avg pts flagged  +4.7 vs not  +4.4
+  ZUP   on  63% of 2022-26 trades | avg pts flagged  +1.2 vs not +10.2
+
+PER EVAL BOUGHT (starts on every session 2022 - 2025)
+  A  flat 1 NQ (no models)                 passed  39% failed  61% | median  18 sessions | avg fees  132
+  B  0.5 on THIN (volume profile)          passed  39% failed  61% | median  18 sessions | avg fees  132
+  V1 0.5 on BEAR or NOISY (regime)         passed  39% failed  61% | median  18 sessions | avg fees  132
+  V2 0.5 on HARH (vol model)               passed  39% failed  61% | median  18 sessions | avg fees  132
+  V3 0.5 on THIN or BEAR or NOISY          passed  39% failed  61% | median  18 sessions | avg fees  132
+  V4 1 / 0.5 / 0.3 by flag count (4 flags) passed  39% failed  61% | median  18 sessions | avg fees  132
+  V5 V4 in eval and funded                 passed  43% failed  57% | median  39 sessions | avg fees  197
+  V6 V4 + ZUP as 5th flag                  passed  39% failed  61% | median  18 sessions | avg fees  132
+
+PER FUNDED ACCOUNT (after a pass)
+  A  flat 1 NQ (no models)                 blown before 1st payout  69% | >= 1 payout  31% | still open, unpaid  0% | avg payouts 2.1 | avg $ to you +3,673 (paid ones +11,766) | median life  26 sessions
+  B  0.5 on THIN (volume profile)          blown before 1st payout  34% | >= 1 payout  66% | still open, unpaid  0% | avg payouts 3.3 | avg $ to you +5,466 (paid ones +8,316) | median life  84 sessions
+  V1 0.5 on BEAR or NOISY (regime)         blown before 1st payout  50% | >= 1 payout  50% | still open, unpaid  0% | avg payouts 2.0 | avg $ to you +3,338 (paid ones +6,711) | median life  37 sessions
+  V2 0.5 on HARH (vol model)               blown before 1st payout  43% | >= 1 payout  57% | still open, unpaid  0% | avg payouts 2.8 | avg $ to you +4,431 (paid ones +7,725) | median life  53 sessions
+  V3 0.5 on THIN or BEAR or NOISY          blown before 1st payout  32% | >= 1 payout  68% | still open, unpaid  0% | avg payouts 2.4 | avg $ to you +3,754 (paid ones +5,561) | median life  67 sessions
+  V4 1 / 0.5 / 0.3 by flag count (4 flags) blown before 1st payout  32% | >= 1 payout  68% | still open, unpaid  0% | avg payouts 2.1 | avg $ to you +3,059 (paid ones +4,531) | median life  63 sessions
+  V5 V4 in eval and funded                 blown before 1st payout  20% | >= 1 payout  80% | still open, unpaid  0% | avg payouts 2.8 | avg $ to you +4,270 (paid ones +5,353) | median life  93 sessions
+  V6 V4 + ZUP as 5th flag                  blown before 1st payout  20% | >= 1 payout  80% | still open, unpaid  0% | avg payouts 2.3 | avg $ to you +2,493 (paid ones +3,109) | median life  89 sessions
+
+ECONOMICS PER EVAL BOUGHT
+  A  flat 1 NQ (no models)                 evals bought -> paid 12.3% | evals per first payout  8.2 | net $ per eval bought +1,310
+  B  0.5 on THIN (volume profile)          evals bought -> paid 25.8% | evals per first payout  3.9 | net $ per eval bought +2,015
+  V1 0.5 on BEAR or NOISY (regime)         evals bought -> paid 19.5% | evals per first payout  5.1 | net $ per eval bought +1,179
+  V2 0.5 on HARH (vol model)               evals bought -> paid 22.5% | evals per first payout  4.4 | net $ per eval bought +1,608
+  V3 0.5 on THIN or BEAR or NOISY          evals bought -> paid 26.5% | evals per first payout  3.8 | net $ per eval bought +1,342
+  V4 1 / 0.5 / 0.3 by flag count (4 flags) evals bought -> paid 26.5% | evals per first payout  3.8 | net $ per eval bought +1,069
+  V5 V4 in eval and funded                 evals bought -> paid 34.2% | evals per first payout  2.9 | net $ per eval bought +1,634
+  V6 V4 + ZUP as 5th flag                  evals bought -> paid 31.5% | evals per first payout  3.2 | net $ per eval bought  +847
+
+12-MONTH CAREERS (start each month 2022-01 .. 2025-10, rebuy on every fail / blow)
+  A  flat 1 NQ (no models)                 paid at least once  61% | evals before 1st payout (median)   3 | sessions to 1st payout 116 | evals bought  6.1, funded blown 2.0 | net $ median +2,488 (10th -1,184 / 90th +8,380, mean +2,551)
+  B  0.5 on THIN (volume profile)          paid at least once  85% | evals before 1st payout (median)   2 | sessions to 1st payout  85 | evals bought  5.4, funded blown 1.4 | net $ median +2,771 (10th -1,058 / 90th +8,348, mean +3,618)
+  V1 0.5 on BEAR or NOISY (regime)         paid at least once  74% | evals before 1st payout (median)   2 | sessions to 1st payout  94 | evals bought  5.5, funded blown 1.5 | net $ median +2,349 (10th -1,183 / 90th +6,808, mean +3,040)
+  V2 0.5 on HARH (vol model)               paid at least once  85% | evals before 1st payout (median)   2 | sessions to 1st payout  96 | evals bought  5.6, funded blown 1.4 | net $ median +3,206 (10th -1,108 / 90th +7,877, mean +3,484)
+  V3 0.5 on THIN or BEAR or NOISY          paid at least once  85% | evals before 1st payout (median)   2 | sessions to 1st payout  85 | evals bought  5.5, funded blown 1.2 | net $ median +2,723 (10th   -984 / 90th +7,263, mean +3,212)
+  V4 1 / 0.5 / 0.3 by flag count (4 flags) paid at least once  85% | evals before 1st payout (median)   2 | sessions to 1st payout  85 | evals bought  5.3, funded blown 1.2 | net $ median +2,826 (10th   -984 / 90th +6,636, mean +2,971)
+  V5 V4 in eval and funded                 paid at least once  67% | evals before 1st payout (median)   1 | sessions to 1st payout 112 | evals bought  3.3, funded blown 0.8 | net $ median +1,409 (10th   -836 / 90th +6,710, mean +2,287)
+  V6 V4 + ZUP as 5th flag                  paid at least once  89% | evals before 1st payout (median)   2 | sessions to 1st payout  84 | evals bought  4.6, funded blown 1.0 | net $ median +1,754 (10th   -787 / 90th +6,230, mean +2,357)
+
+ONE CAREER Jan 2022 -> Oct 2026
+  A  flat 1 NQ (no models)                 evals bought  12, funded blown   4 | evals before 1st payout 9.0 | fees  1,774, received  31,860, net +30,086
+  B  0.5 on THIN (volume profile)          evals bought  14, funded blown   4 | evals before 1st payout 2.0 | fees  1,823, received  33,987, net +32,164
+  V1 0.5 on BEAR or NOISY (regime)         evals bought  13, funded blown   3 | evals before 1st payout 2.0 | fees  1,576, received  28,726, net +27,150
+  V2 0.5 on HARH (vol model)               evals bought   8, funded blown   1 | evals before 1st payout 2.0 | fees    886, received  32,266, net +31,380
+  V3 0.5 on THIN or BEAR or NOISY          evals bought  13, funded blown   3 | evals before 1st payout 2.0 | fees  1,576, received  26,677, net +25,101
+  V4 1 / 0.5 / 0.3 by flag count (4 flags) evals bought  15, funded blown   7 | evals before 1st payout 2.0 | fees  2,121, received  23,557, net +21,436
+  V5 V4 in eval and funded                 evals bought   8, funded blown   3 | evals before 1st payout 2.0 | fees  1,917, received  21,105, net +19,188
+  V6 V4 + ZUP as 5th flag                  evals bought  15, funded blown   4 | evals before 1st payout 2.0 | fees  1,970, received  18,003, net +16,033

@@ -1,0 +1,33 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+trades 613, labels matched 100%
+  THIN  on  28% of 2022-26 trades | avg pts flagged  -5.8 vs not  +8.6
+  BEAR  on  17% of 2022-26 trades | avg pts flagged  -2.0 vs not  +5.8
+  NOISY on  27% of 2022-26 trades | avg pts flagged  +5.7 vs not  +4.1
+  HARH  on  32% of 2022-26 trades | avg pts flagged  +4.7 vs not  +4.4
+  ZUP   on  63% of 2022-26 trades | avg pts flagged  +1.2 vs not +10.2
+
+PER EVAL BOUGHT (starts on every session 2022 - 2025)
+  B  0.5 on THIN                           passed  39% failed  61% | median  18 sessions | avg fees  132
+  V7 0.5 on THIN or HARH                   passed  39% failed  61% | median  18 sessions | avg fees  132
+  V8 1 / 0.5 / 0.3 by THIN + HARH count    passed  39% failed  61% | median  18 sessions | avg fees  132
+
+PER FUNDED ACCOUNT (after a pass)
+  B  0.5 on THIN                           blown before 1st payout  34% | >= 1 payout  66% | still open, unpaid  0% | avg payouts 3.3 | avg $ to you +5,466 (paid ones +8,316) | median life  84 sessions
+  V7 0.5 on THIN or HARH                   blown before 1st payout  32% | >= 1 payout  68% | still open, unpaid  0% | avg payouts 2.3 | avg $ to you +3,516 (paid ones +5,208) | median life  65 sessions
+  V8 1 / 0.5 / 0.3 by THIN + HARH count    blown before 1st payout  32% | >= 1 payout  68% | still open, unpaid  0% | avg payouts 2.4 | avg $ to you +3,716 (paid ones +5,505) | median life  65 sessions
+
+ECONOMICS PER EVAL BOUGHT
+  B  0.5 on THIN                           evals bought -> paid 25.8% | evals per first payout  3.9 | net $ per eval bought +2,015
+  V7 0.5 on THIN or HARH                   evals bought -> paid 26.5% | evals per first payout  3.8 | net $ per eval bought +1,249
+  V8 1 / 0.5 / 0.3 by THIN + HARH count    evals bought -> paid 26.5% | evals per first payout  3.8 | net $ per eval bought +1,327
+
+12-MONTH CAREERS (start each month 2022-01 .. 2025-10, rebuy on every fail / blow)
+  B  0.5 on THIN                           paid at least once  85% | evals before 1st payout (median)   2 | sessions to 1st payout  85 | evals bought  5.4, funded blown 1.4 | net $ median +2,771 (10th -1,058 / 90th +8,348, mean +3,618)
+  V7 0.5 on THIN or HARH                   paid at least once  85% | evals before 1st payout (median)   2 | sessions to 1st payout  85 | evals bought  5.5, funded blown 1.3 | net $ median +2,955 (10th -1,108 / 90th +8,000, mean +3,414)
+  V8 1 / 0.5 / 0.3 by THIN + HARH count    paid at least once  85% | evals before 1st payout (median)   2 | sessions to 1st payout  85 | evals bought  5.0, funded blown 1.2 | net $ median +2,917 (10th -1,010 / 90th +8,092, mean +3,535)
+
+ONE CAREER Jan 2022 -> Oct 2026
+  B  0.5 on THIN                           evals bought  14, funded blown   4 | evals before 1st payout 2.0 | fees  1,823, received  33,987, net +32,164
+  V7 0.5 on THIN or HARH                   evals bought  16, funded blown   5 | evals before 1st payout 2.0 | fees  1,972, received  27,111, net +25,139
+  V8 1 / 0.5 / 0.3 by THIN + HARH count    evals bought  16, funded blown   6 | evals before 1st payout 2.0 | fees  1,972, received  25,999, net +24,027
