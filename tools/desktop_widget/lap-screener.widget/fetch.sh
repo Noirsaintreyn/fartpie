@@ -1,5 +1,5 @@
 #!/bin/bash
-# Pulls the site's live snapshot for the desktop widget. Logs in with BACKEND_USER / BACKEND_PASSWORD from ~/fartpie/discord_bot/.env
+# Pulls the site's live screener snapshot for the screener widget. Logs in with BACKEND_USER / BACKEND_PASSWORD from ~/fartpie/discord_bot/.env
 # (the same login the Discord bot uses), keeps the session cookie in ~/.lap_widget_cookie and only logs in again when the cookie stops working.
 ENVF="${LAP_ENV:-$HOME/fartpie/discord_bot/.env}"
 val() { grep -E "^$1=" "$ENVF" 2>/dev/null | head -1 | cut -d= -f2- | sed -e 's/^["'\'']//' -e 's/["'\'']$//'; }
@@ -15,9 +15,4 @@ if ! printf '%s' "$out" | grep -q '"success": *true'; then
   curl -s --max-time 45 -b "$JAR" -c "$JAR" -H 'Content-Type: application/json' -d "$body" "$URL/api/login" > /dev/null
   out="$(snap)"
 fi
-case "$out" in \{*) ;; *) out='{"error":"site did not answer (Render may be waking up)"}';; esac
-# account-start signals (prior close): VOL-HI / VXN / COLD / DIP, cached 30 min by the script itself
-PYV="$HOME/fartpie/.venv311/bin/python"; [ -x "$PYV" ] || PYV="$PY"
-acct="$("$PYV" "$HOME/fartpie/tools/account_signals.py" --json 2>/dev/null | tail -1)"
-case "$acct" in \{*) ;; *) acct='{}';; esac
-printf '{"site":%s,"acct":%s}' "$out" "$acct"
+case "$out" in \{*) printf '%s' "$out" ;; *) echo '{"error":"site did not answer (Render may be waking up)"}' ;; esac
