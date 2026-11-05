@@ -1,0 +1,69 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+613 trades, 2022-26 sessions 1196, trading days 293
+flags 0.35: THIN 29%, HARH 32%, VWAPX 41%
+flags 0.25: THIN 29%, HARH 32%, VWAPX 38%
+avg pts per trade by count (post-hoc labels, so in-sample by construction)
+  good 0: 18-21   -7.5 (n28) | 22-23   -0.7 (n8) | 24-26   +3.1 (n15)
+  good 1: 18-21   -5.9 (n53) | 22-23   -6.7 (n28) | 24-26   -6.3 (n32)
+  good 2: 18-21   +7.2 (n101) | 22-23  +10.7 (n48) | 24-26   +8.6 (n84)
+  good 3: 18-21   +3.9 (n68) | 22-23   +2.7 (n46) | 24-26   +2.3 (n57)
+  good 4: 18-21   +9.6 (n21) | 22-23  +30.1 (n10) | 24-26   +6.6 (n14)
+  bad 0: 18-21   +7.6 (n102) | 22-23  +14.6 (n60) | 24-26  +15.7 (n83)
+  bad 1: 18-21   -1.0 (n92) | 22-23   +7.7 (n52) | 24-26   -4.1 (n61)
+  bad 2: 18-21   +0.2 (n64) | 22-23  -14.0 (n22) | 24-26   -2.0 (n42)
+  bad 3: 18-21   -7.4 (n12) | 22-23  -37.6 (n6) | 24-26   -8.2 (n12)
+  bad 4: 18-21  +74.0 (n1) | 22-23   +nan (n0) | 24-26  -19.8 (n4)
+  S0 current stack               2022-26: trades 342, avg size 0.58 NQ, avg $ per trade    +86
+  CUT-A skip thin / hard / LVN   2022-26: trades 205, avg size 0.67 NQ, avg $ per trade   +165
+  CUT-B + skip strong close      2022-26: trades 143, avg size 0.69 NQ, avg $ per trade   +193
+  DOWN size down all bad         2022-26: trades 342, avg size 0.49 NQ, avg $ per trade    +75
+  UP 1.5 NQ on clean + good      2022-26: trades 342, avg size 0.69 NQ, avg $ per trade   +118
+  UPDN up on good, down on bad   2022-26: trades 342, avg size 0.57 NQ, avg $ per trade    +97
+  UPDN2 + 2 NQ on 3+ good        2022-26: trades 342, avg size 0.61 NQ, avg $ per trade   +109
+RULE-A trades, by take profit (1 NQ, avg pts per trade)
+  T0 fixed 75                        trades 357 win 53% median target 75 pts (75 fallback 100%) | 18-21  +8.2 / 22-23 +13.5 / 24-26 +10.7
+  AV50 first P50/75/90 >= 25 ahead   trades 357 win 54% median target 70 pts (75 fallback 10%) | 18-21  +9.7 / 22-23 +10.8 / 24-26  +7.4
+  AV75 first P75/90                  trades 357 win 52% median target 100 pts (75 fallback 10%) | 18-21 +11.9 / 22-23 +13.7 / 24-26 +11.4
+  AV90 P90 runner                    trades 357 win 48% median target 181 pts (75 fallback 10%) | 18-21 +11.1 / 22-23 +15.7 / 24-26 +11.8
+  AVCAP AV50 capped 150              trades 357 win 55% median target 70 pts (75 fallback 10%) | 18-21  +9.7 / 22-23 +10.6 / 24-26  +8.7
+RULE-A trades by exit (1 lot, pts)
+  T75/S50 (current)                trades 357 win 53% avg loss  -40.2 | 18-21  +8.2 / 22-23 +13.5 / 24-26 +10.7
+  T75/S35                          trades 363 win 46% avg loss  -32.1 | 18-21  +4.9 / 22-23 +14.6 / 24-26  +6.6
+  T75/S25                          trades 369 win 38% avg loss  -24.5 | 18-21  +4.6 / 22-23  +5.2 / 24-26  +6.1
+  T50/S50                          trades 358 win 59% avg loss  -39.9 | 18-21  +7.9 / 22-23 +15.3 / 24-26  +5.9
+  T50/S35                          trades 363 win 52% avg loss  -32.3 | 18-21  +4.0 / 22-23 +15.1 / 24-26  +2.6
+  T50/S25                          trades 369 win 43% avg loss  -24.5 | 18-21  +4.0 / 22-23  +6.3 / 24-26  +3.2
+  T37.5/S25                        trades 369 win 47% avg loss  -24.5 | 18-21  +3.0 / 22-23  +4.2 / 24-26  +1.4
+  T100/S50                         trades 357 win 50% avg loss  -40.4 | 18-21 +10.4 / 22-23 +13.3 / 24-26  +8.0
+  VX15 T75/S50 + 15m flip-back     trades 370 win 51% avg loss  -39.1 | 18-21  +5.7 / 22-23 +13.7 / 24-26 +10.5
+  VX15-noT S50 + 15m flip-back     trades 370 win 46% avg loss  -39.7 | 18-21  +9.1 / 22-23 +16.9 / 24-26  +9.9
+  VX5 T75/S50 + 5m against         trades 366 win 49% avg loss  -34.9 | 18-21  +3.7 / 22-23 +11.4 / 24-26  +9.7
+  SC3 thirds 25/50/75              trades 357 win 61% avg loss  -36.2 | 18-21  +6.8 / 22-23 +11.6 / 24-26  +6.0
+  SC3-BE thirds + breakeven        trades 359 win 69% avg loss  -41.1 | 18-21  +6.3 / 22-23  +9.0 / 24-26  +4.9
+  SC2-BE halves 37.5/75 + BE       trades 359 win 64% avg loss  -39.7 | 18-21  +6.9 / 22-23 +12.2 / 24-26  +7.0
+  RUN-BE half 75 / half P90 + BE   trades 357 win 53% avg loss  -40.2 | 18-21  +9.5 / 22-23 +15.5 / 24-26  +9.3
+sigma (NQ pts) median 149 | day-extreme targets, median pts: AD0.75 75 (75 fallback 51%), AD1.0 75 (75 fallback 31%), AD1.5 127 (75 fallback 10%)
+  AD0.75                           trades 357 win 54% | 18-21  +8.3 / 22-23 +12.0 / 24-26  +6.8
+  AD1                              trades 357 win 52% | 18-21  +9.6 / 22-23 +12.4 / 24-26  +8.4
+  AD1.5                            trades 357 win 49% | 18-21 +10.2 / 22-23 +13.9 / 24-26 +10.6
+  RUN-AD half 75 / half AD1 + BE   trades 357 win 53% | 18-21  +8.8 / 22-23 +14.7 / 24-26  +7.5
+
+FIRM SIMS (eval exit / funded exit)
+  A T75 / T75 (current)          TOPSTEP     | eval passed  54% | funded blown before 1st payout  32% | evals per 1st payout   2.7 | net/eval +1,852 | 12m paid  67% median +1,965
+  A T75 / T75 (current)          LUCID FLEX  | eval passed  52% | funded blown before 1st payout  33% | evals per 1st payout   2.9 | net/eval +1,917 | 12m paid  65% median +1,572
+  B T50 / T50                    TOPSTEP     | eval passed  65% | funded blown before 1st payout  24% | evals per 1st payout   2.0 | net/eval +1,827 | 12m paid  76% median   +639
+  B T50 / T50                    LUCID FLEX  | eval passed  65% | funded blown before 1st payout  26% | evals per 1st payout   2.1 | net/eval +1,655 | 12m paid  70% median   +350
+  C T50 eval / RUN-BE funded     TOPSTEP     | eval passed  65% | funded blown before 1st payout  30% | evals per 1st payout   2.2 | net/eval +1,800 | 12m paid  67% median +1,050
+  C T50 eval / RUN-BE funded     LUCID FLEX  | eval passed  65% | funded blown before 1st payout  33% | evals per 1st payout   2.3 | net/eval +1,544 | 12m paid  65% median   +968
+  D T50 eval / T75 funded        TOPSTEP     | eval passed  65% | funded blown before 1st payout  31% | evals per 1st payout   2.2 | net/eval +1,852 | 12m paid  67% median +1,031
+  D T50 eval / T75 funded        LUCID FLEX  | eval passed  65% | funded blown before 1st payout  34% | evals per 1st payout   2.3 | net/eval +1,981 | 12m paid  65% median +1,156
+  E AD1 / AD1                    TOPSTEP     | eval passed  45% | funded blown before 1st payout  29% | evals per 1st payout   3.1 | net/eval   +937 | 12m paid  54% median   +274
+  E AD1 / AD1                    LUCID FLEX  | eval passed  43% | funded blown before 1st payout  33% | evals per 1st payout   3.4 | net/eval   +612 | 12m paid  52% median    +58
+  F AD0.75 / AD0.75              TOPSTEP     | eval passed  45% | funded blown before 1st payout  41% | evals per 1st payout   3.8 | net/eval   +471 | 12m paid  54% median    -16
+  F AD0.75 / AD0.75              LUCID FLEX  | eval passed  43% | funded blown before 1st payout  42% | evals per 1st payout   4.0 | net/eval   +482 | 12m paid  54% median    +85
+  G AD1.5 / AD1.5                TOPSTEP     | eval passed  27% | funded blown before 1st payout  31% | evals per 1st payout   5.4 | net/eval   +377 | 12m paid  48% median   -588
+  G AD1.5 / AD1.5                LUCID FLEX  | eval passed  27% | funded blown before 1st payout  35% | evals per 1st payout   5.8 | net/eval   +471 | 12m paid  46% median   -219
+  H T50 eval / RUN-AD funded     TOPSTEP     | eval passed  65% | funded blown before 1st payout  31% | evals per 1st payout   2.2 | net/eval +1,621 | 12m paid  67% median +1,001
+  H T50 eval / RUN-AD funded     LUCID FLEX  | eval passed  65% | funded blown before 1st payout  34% | evals per 1st payout   2.3 | net/eval +1,709 | 12m paid  65% median +1,202
+exit 0
