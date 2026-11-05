@@ -1,0 +1,11 @@
+MNQ order flow 2024-12-18 -> 2025-11-17, 235 sessions, 15m RTH bars 6016; delta = aggressor buys - sells per bar (sign-corrected)
+  VEC     signals/day 0.34 trades   77 win  52% avg  +10.9 pts (Dec-May +14.8 / Jun-Nov  +7.9) | coin-flip  +2.9 | t +1.6 | total   +836
+  CVD0    signals/day 0.92 trades  163 win  48% avg   +3.1 pts (Dec-May  -6.3 / Jun-Nov +12.6) | coin-flip  +3.3 | t +0.7 | total   +504
+  BARD    signals/day 2.14 trades  308 win  49% avg   +4.4 pts (Dec-May  -0.6 / Jun-Nov  +9.0) | coin-flip  +1.8 | t +1.4 | total  +1350
+  CVDX    signals/day 1.78 trades  329 win  47% avg   +1.9 pts (Dec-May  -0.6 / Jun-Nov  +4.5) | coin-flip  -0.4 | t +0.6 | total   +611
+  VEC+D   signals/day 0.28 trades   65 win  51% avg   +9.9 pts (Dec-May +18.4 / Jun-Nov  +4.6) | coin-flip  +5.7 | t +1.4 | total   +641
+  VEC-D   signals/day 0.06 trades   13 win  54% avg  +11.0 pts (Dec-May  -2.2 / Jun-Nov +40.8) | coin-flip  +4.1 | t +0.6 | total   +144
+  VEC+C   signals/day 0.27 trades   63 win  52% avg  +11.8 pts (Dec-May +18.4 / Jun-Nov  +7.5) | coin-flip  +2.8 | t +1.6 | total   +743
+  VEC-C   signals/day 0.06 trades   15 win  47% avg   +2.8 pts (Dec-May  -2.2 / Jun-Nov +10.2) | coin-flip  +5.0 | t +0.2 | total    +42
+  DIV     only 1 signals
+exit 0
