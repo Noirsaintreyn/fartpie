@@ -1,0 +1,124 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+gamma data 2018-01-02 -> 2026-10-08; sessions 2018-01-02 -> 2026-10-08
+strategies built: FLIP 546 days, LONG 324 days, SHORT 323 days, FADE 546 days, TIGHT 546 days, WIDE 546 days, PM 173 days, RSI 793 days, ORB 1936 days, IMOM 2185 days, ES 509 days
+Model is not converging.  Current: 4686.563386638934 is not greater than 4686.685199843539. Delta is -0.12181320460422285
+regime mix 2022-26: HMM {'bull': 0.7, 'bear': 0.3} | QZ {'z>=0': 0.62, 'z<0': 0.38} | HAR {'low': 0.38, 'high': 0.35, 'mid': 0.28} | GAMMA {'neg': 0.61, 'pos': 0.39} | VXN {'flat': 0.71, 'falling': 0.15, 'rising': 0.13} | TREND {'up': 0.63, 'down': 0.37}
+
+STRATEGY LIBRARY alone ($/day by period; realistic months 2022-26)
+  FLIP (18-21  +13/day)                      passed  22% lost  41% neither  36% | month $ mean   +597 worst  -2,588 | $/day   +26 (22-23  +30 / 24-26  +23) | 2026 passed 4/10 lost 4
+  LONG (18-21   +9/day)                      passed   7% lost  26% neither  67% | month $ mean   +147 worst  -2,224 | $/day    +4 (22-23  +13 / 24-26   -3) | 2026 passed 0/10 lost 3
+  SHORT (18-21   -3/day)                     passed   5% lost  19% neither  76% | month $ mean   +465 worst  -2,401 | $/day   +22 (22-23  +17 / 24-26  +24) | 2026 passed 1/10 lost 3
+  FADE (18-21  -25/day)                      passed   2% lost  62% neither  36% | month $ mean   -568 worst  -2,707 | $/day   -48 (22-23  -79 / 24-26  -25) | 2026 passed 1/10 lost 6
+  TIGHT (18-21   -4/day)                     passed   2% lost  21% neither  78% | month $ mean    +63 worst  -2,560 | $/day    +2 (22-23   +5 / 24-26   +0) | 2026 passed 0/10 lost 3
+  WIDE (18-21  +19/day)                      passed  14% lost  28% neither  59% | month $ mean +1,301 worst  -2,440 | $/day   +20 (22-23  +56 / 24-26   -6) | 2026 passed 1/10 lost 3
+  PM (18-21   +9/day)                        passed   0% lost  16% neither  84% | month $ mean   -137 worst  -2,434 | $/day   -13 (22-23  -16 / 24-26  -11) | 2026 passed 0/10 lost 0
+  RSI (18-21  -21/day)                       passed  21% lost  53% neither  26% | month $ mean   +204 worst  -2,688 | $/day   -12 (22-23  -36 / 24-26   +6) | 2026 passed 3/10 lost 4
+  ORB (18-21   +1/day)                       passed  28% lost  71% neither   2% | month $ mean   +191 worst  -2,602 | $/day   +14 (22-23  -26 / 24-26  +43) | 2026 passed 4/10 lost 6
+  IMOM (18-21  -19/day)                      passed  22% lost  52% neither  26% | month $ mean   +501 worst  -2,776 | $/day   -37 (22-23  -85 / 24-26   -2) | 2026 passed 3/10 lost 5
+  ES (18-21   +1/day)                        passed   9% lost  24% neither  67% | month $ mean   +211 worst  -2,213 | $/day   -13 (22-23   -3 / 24-26  -20) | 2026 passed 2/10 lost 2
+
+$ by year (1 contract)
+       FLIP   LONG  SHORT   FADE  TIGHT   WIDE     PM    RSI    ORB   IMOM    ES
+2018  -3214  -7660    790  -3915  -7285   2149   4699   -844 -10425   -530  1643
+2019  -1864  -2100  -3114   -722  -5936   -974   1571  -6876   4677  -5772  -541
+2020    805   5830  -6587   -303   3816   7454   -503  -3508  -2878  16695 -4740
+2021  17747  12876   5453 -20250   5142  10916   3076  -9687   9290 -29476  4657
+2022   4605   2430   2175 -20822  -1363  17250 -12003 -13044   -431 -26981  1014
+2023  10258   4333   6584 -18943   3896  10938   4075  -5047 -12687 -15385 -2601
+2024   3789    560   2468  -1440   -453   3682  -8278  -6748   7059  -5293 -5341
+2025  13446   4157  10105 -14347   9856  -7517     -8   2554  -1507 -15834 -7438
+2026  -1341  -6761   4400  -1676  -9100   -127    390   8266  24379  19558  -835
+
+winner each year: 2018 PM, 2019 ORB, 2020 IMOM, 2021 FLIP, 2022 WIDE, 2023 WIDE, 2024 ORB, 2025 FLIP, 2026 ORB
+rank correlation, last year -> this year: 2019 +0.12, 2020 -0.21, 2021 +0.09, 2022 +0.93, 2023 +0.87, 2024 +0.39, 2025 +0.29, 2026 -0.30 | mean +0.27
+rank correlation, trailing 12 months -> next month: mean +0.050 (2022-26 +0.072)
+
+BEST STRATEGY PER REGIME CELL by period (mean $/day; does the winner repeat?)
+  HMM    bear     18-21: IMOM +66, WIDE +25 (FLIP -14, n268) | 22-23: FLIP +21, SHORT +19 (FLIP +21, n233) | 24-26: SHORT +25, ORB +24 (FLIP +22, n130)
+  HMM    bull     18-21: FLIP +23, WIDE +17 (FLIP +23, n740) | 22-23: WIDE +89, FLIP +37 (FLIP +37, n268) | 24-26: ORB +47, SHORT +24 (FLIP +23, n565)
+  QZ     z<0      18-21: LONG +38, WIDE +36 (FLIP +22, n287) | 22-23: WIDE +61, FLIP +59 (FLIP +59, n228) | 24-26: RSI +60, FLIP +54 (FLIP +54, n224)
+  QZ     z>=0     18-21: WIDE +13, FLIP +10 (FLIP +10, n721) | 22-23: WIDE +53, SHORT +15 (FLIP +5, n273) | 24-26: ORB +56, SHORT +15 (FLIP +8, n471)
+  HAR    high     18-21: WIDE +108, IMOM +69 (FLIP +40, n207) | 22-23: TIGHT +7, LONG +3 (FLIP -1, n164) | 24-26: SHORT +49, FLIP +42 (FLIP +42, n252)
+  HAR    low      18-21: ORB +65, SHORT +44 (FLIP +40, n220) | 22-23: WIDE +100, FLIP +88 (FLIP +88, n217) | 24-26: ORB +61, RSI +36 (FLIP +13, n233)
+  HAR    mid      18-21: PM +6, ES -0 (FLIP -6, n581) | 22-23: WIDE +83, ES +27 (FLIP -33, n120) | 24-26: ORB +141, SHORT +27 (FLIP +11, n210)
+  GAMMA  neg      18-21: WIDE +30, FLIP +26 (FLIP +26, n684) | 22-23: WIDE +81, FLIP +32 (FLIP +32, n384) | 24-26: FLIP +60, SHORT +51 (FLIP +60, n342)
+  GAMMA  pos      18-21: WIDE -3, PM -4 (FLIP -13, n324) | 22-23: SHORT +22, FLIP +21 (FLIP +21, n117) | 24-26: ORB +86, SHORT -1 (FLIP -13, n353)
+  VXN    falling  18-21: WIDE +18, ORB +14 (FLIP +6, n209) | 22-23: ORB -2, WIDE -5 (FLIP -70, n74) | 24-26: FLIP +99, ORB +83 (FLIP +99, n109)
+  VXN    flat     18-21: PM +18, RSI +5 (FLIP -0, n601) | 22-23: WIDE +74, FLIP +65 (FLIP +65, n368) | 24-26: ORB +39, SHORT +14 (FLIP +7, n486)
+  VXN    rising   18-21: WIDE +103, FLIP +63 (FLIP +63, n198) | 22-23: PM +46, WIDE +22 (FLIP -66, n59) | 24-26: IMOM +147, RSI +65 (FLIP +17, n100)
+  TREND  down     18-21: IMOM +39, LONG +36 (FLIP +13, n307) | 22-23: WIDE +36, LONG +22 (FLIP +12, n232) | 24-26: WIDE +47, SHORT +44 (FLIP +29, n214)
+  TREND  up       18-21: WIDE +16, FLIP +13 (FLIP +13, n701) | 22-23: WIDE +74, FLIP +45 (FLIP +45, n269) | 24-26: ORB +85, FLIP +20 (FLIP +20, n481)
+
+META, realistic months 2022 - Sep 2026
+  STATIC FLIP                                passed  22% lost  41% neither  36% | month $ mean   +597 worst  -2,588 | $/day   +26 (22-23  +30 / 24-26  +23) | 2026 passed 4/10 lost 4
+  STATIC best of 2018-21 (WIDE)              passed  14% lost  28% neither  59% | month $ mean +1,301 worst  -2,440 | $/day   +20 (22-23  +56 / 24-26   -6) | 2026 passed 1/10 lost 3
+  ROLL best trailing 12m                     passed  16% lost  38% neither  47% | month $ mean   +594 worst  -2,440 | $/day   +14 (22-23  +29 / 24-26   +2) | 2026 passed 3/10 lost 6 | picks WIDE 30%, FLIP 28%, ORB 25%, SHORT 12%
+  ROLL best trailing 24m                     passed  16% lost  38% neither  47% | month $ mean   +496 worst  -2,440 | $/day   +13 (22-23  +47 / 24-26  -11) | 2026 passed 2/10 lost 6 | picks WIDE 42%, FLIP 38%, SHORT 10%, ORB 6%
+  ROLL best expanding                        passed  14% lost  29% neither  57% | month $ mean +1,189 worst  -2,440 | $/day   +13 (22-23  +56 / 24-26  -18) | 2026 passed 1/10 lost 4 | picks WIDE 87%, FLIP 13%
+
+  == HMM
+  GATE expanding                             passed  16% lost  33% neither  52% | month $ mean   +490 worst  -2,588 | $/day   +17 (22-23  +16 / 24-26  +17) | 2026 passed 4/10 lost 4
+  GATE 24m                                   passed  19% lost  34% neither  47% | month $ mean   +571 worst  -2,588 | $/day   +23 (22-23  +33 / 24-26  +16) | 2026 passed 4/10 lost 4
+  MAP expanding                              passed  16% lost  34% neither  50% | month $ mean +1,105 worst  -2,440 | $/day    -2 (22-23   -8 / 24-26   +3) | 2026 passed 4/10 lost 3 | picks WIDE 65%, FLIP 24%, LONG 5%, PM 4%
+  MAP 24m                                    passed   7% lost  38% neither  55% | month $ mean   +410 worst  -2,459 | $/day   -22 (22-23   +0 / 24-26  -38) | 2026 passed 0/10 lost 7 | picks WIDE 37%, LONG 18%, SHORT 16%, FLIP 13%
+  ORACLE (hindsight map, 2022-26)            passed  22% lost  41% neither  36% | month $ mean   +597 worst  -2,588 | $/day   +26 (22-23  +30 / 24-26  +23) | 2026 passed 4/10 lost 4 | bear->FLIP, bull->FLIP
+  PLACEBO map (shifted regimes, 20 draws)    passed  16% lost  34% | month $ mean +1,050 (range +795 to +1,312)
+
+  == QZ
+  GATE expanding                             passed  17% lost  41% neither  41% | month $ mean   +490 worst  -2,588 | $/day   +19 (22-23  +15 / 24-26  +23) | 2026 passed 4/10 lost 4
+  GATE 24m                                   passed  19% lost  34% neither  47% | month $ mean   +500 worst  -2,588 | $/day   +16 (22-23  +19 / 24-26  +14) | 2026 passed 4/10 lost 4
+  MAP expanding                              passed  10% lost  26% neither  64% | month $ mean +1,079 worst  -2,440 | $/day   +16 (22-23  +48 / 24-26   -7) | 2026 passed 2/10 lost 3 | picks WIDE 75%, LONG 12%, FLIP 12%, SHORT 1%
+  MAP 24m                                    passed  17% lost  34% neither  48% | month $ mean   +751 worst  -2,440 | $/day   +14 (22-23  +39 / 24-26   -4) | 2026 passed 3/10 lost 6 | picks WIDE 35%, FLIP 18%, ORB 13%, SHORT 10%
+  ORACLE (hindsight map, 2022-26)            passed  26% lost  71% neither   3% | month $ mean    +77 worst  -2,646 | $/day   +32 (22-23   -1 / 24-26  +56) | 2026 passed 2/10 lost 7 | z<0->FLIP, z>=0->ORB
+  PLACEBO map (shifted regimes, 20 draws)    passed  16% lost  36% | month $ mean   +936 (range +505 to +1,151)
+
+  == HAR
+  GATE expanding                             passed  16% lost  31% neither  53% | month $ mean   +522 worst  -2,401 | $/day   +24 (22-23  +37 / 24-26  +15) | 2026 passed 1/10 lost 3
+  GATE 24m                                   passed  21% lost  31% neither  48% | month $ mean   +682 worst  -2,401 | $/day   +20 (22-23  +30 / 24-26  +13) | 2026 passed 4/10 lost 4
+  MAP expanding                              passed  12% lost  36% neither  52% | month $ mean   +764 worst  -2,486 | $/day    +6 (22-23   +8 / 24-26   +5) | 2026 passed 1/10 lost 2 | picks WIDE 46%, FLIP 34%, ES 11%, PM 5%
+  MAP 24m                                    passed  17% lost  45% neither  38% | month $ mean   +503 worst  -2,674 | $/day    +5 (22-23   -0 / 24-26   +9) | 2026 passed 3/10 lost 6 | picks WIDE 33%, SHORT 17%, ORB 16%, FLIP 13%
+  ORACLE (hindsight map, 2022-26)            passed  29% lost  41% neither  29% | month $ mean   +842 worst  -2,542 | $/day   +53 (22-23  +36 / 24-26  +65) | 2026 passed 4/10 lost 5 | high->SHORT, low->FLIP, mid->ORB
+  PLACEBO map (shifted regimes, 20 draws)    passed  15% lost  36% | month $ mean   +671 (range +338 to +1,074)
+
+  == GAMMA
+  GATE expanding                             passed  19% lost  38% neither  43% | month $ mean   +539 worst  -2,588 | $/day   +23 (22-23  +25 / 24-26  +22) | 2026 passed 3/10 lost 4
+  GATE 24m                                   passed  19% lost  41% neither  40% | month $ mean   +457 worst  -2,588 | $/day   +21 (22-23  +22 / 24-26  +20) | 2026 passed 4/10 lost 4
+  MAP expanding                              passed  14% lost  28% neither  59% | month $ mean +1,140 worst  -2,420 | $/day   +30 (22-23  +60 / 24-26   +8) | 2026 passed 2/10 lost 3 | picks WIDE 59%, SHORT 14%, CASH 13%, FLIP 7%
+  MAP 24m                                    passed  21% lost  40% neither  40% | month $ mean   +541 worst  -2,440 | $/day   +20 (22-23  +46 / 24-26   +1) | 2026 passed 5/10 lost 4 | picks FLIP 35%, WIDE 28%, ORB 15%, SHORT 10%
+  ORACLE (hindsight map, 2022-26)            passed  22% lost  52% neither  26% | month $ mean +1,045 worst  -2,646 | $/day   +53 (22-23  +45 / 24-26  +59) | 2026 passed 2/10 lost 4 | neg->WIDE, pos->ORB
+  PLACEBO map (shifted regimes, 20 draws)    passed  14% lost  36% | month $ mean   +784 (range +356 to +1,157)
+
+  == VXN
+  GATE expanding                             passed  19% lost  34% neither  47% | month $ mean   +669 worst  -2,588 | $/day   +23 (22-23  +33 / 24-26  +16) | 2026 passed 4/10 lost 4
+  GATE 24m                                   passed  19% lost  34% neither  47% | month $ mean   +699 worst  -2,401 | $/day   +23 (22-23  +39 / 24-26  +12) | 2026 passed 3/10 lost 4
+  MAP expanding                              passed  14% lost  45% neither  41% | month $ mean   +327 worst  -2,520 | $/day    -6 (22-23  -12 / 24-26   -2) | 2026 passed 2/10 lost 6 | picks FLIP 57%, WIDE 27%, PM 8%, ORB 7%
+  MAP 24m                                    passed  19% lost  40% neither  41% | month $ mean   +811 worst  -2,405 | $/day   +15 (22-23  +31 / 24-26   +3) | 2026 passed 2/10 lost 6 | picks FLIP 38%, WIDE 21%, SHORT 18%, ORB 10%
+  ORACLE (hindsight map, 2022-26)            passed  22% lost  43% neither  34% | month $ mean   +820 worst  -2,957 | $/day   +36 (22-23  +52 / 24-26  +24) | 2026 passed 2/10 lost 5 | falling->ORB, flat->WIDE, rising->RSI
+  PLACEBO map (shifted regimes, 20 draws)    passed  12% lost  38% | month $ mean   +707 (range +271 to +1,225)
+
+  == TREND
+  GATE expanding                             passed  22% lost  41% neither  36% | month $ mean   +513 worst  -2,588 | $/day   +22 (22-23  +26 / 24-26  +19) | 2026 passed 4/10 lost 4
+  GATE 24m                                   passed  19% lost  33% neither  48% | month $ mean   +632 worst  -2,588 | $/day   +18 (22-23  +30 / 24-26   +9) | 2026 passed 3/10 lost 4
+  MAP expanding                              passed  12% lost  31% neither  57% | month $ mean +1,141 worst  -2,576 | $/day   +12 (22-23  +20 / 24-26   +7) | 2026 passed 2/10 lost 5 | picks WIDE 59%, FLIP 21%, LONG 18%, IMOM 1%
+  MAP 24m                                    passed  16% lost  38% neither  47% | month $ mean   +587 worst  -2,602 | $/day   +19 (22-23  +28 / 24-26  +13) | 2026 passed 3/10 lost 6 | picks WIDE 29%, FLIP 18%, ORB 16%, SHORT 15%
+  ORACLE (hindsight map, 2022-26)            passed  29% lost  60% neither  10% | month $ mean   +758 worst  -2,602 | $/day   +48 (22-23  +13 / 24-26  +73) | 2026 passed 4/10 lost 6 | down->WIDE, up->ORB
+  PLACEBO map (shifted regimes, 20 draws)    passed  16% lost  30% | month $ mean +1,103 (range +330 to +1,479)
+
+  == HMMxQZ
+  GATE expanding                             passed  19% lost  40% neither  41% | month $ mean   +616 worst  -2,588 | $/day   +33 (22-23  +41 / 24-26  +27) | 2026 passed 4/10 lost 3
+  GATE 24m                                   passed  17% lost  38% neither  45% | month $ mean   +551 worst  -2,588 | $/day   +27 (22-23  +35 / 24-26  +22) | 2026 passed 4/10 lost 4
+  MAP expanding                              passed  17% lost  40% neither  43% | month $ mean   +996 worst  -2,394 | $/day    +7 (22-23  +39 / 24-26  -16) | 2026 passed 2/10 lost 6 | picks WIDE 65%, LONG 12%, IMOM 11%, FLIP 6%
+  MAP 24m                                    passed  16% lost  41% neither  43% | month $ mean   +625 worst  -2,983 | $/day    +9 (22-23   +8 / 24-26   +9) | 2026 passed 3/10 lost 7 | picks WIDE 28%, LONG 16%, ORB 14%, SHORT 10%
+  ORACLE (hindsight map, 2022-26)            passed  34% lost  59% neither   7% | month $ mean   +579 worst  -2,998 | $/day   +49 (22-23   +7 / 24-26  +80) | 2026 passed 4/10 lost 6 | bear/z<0->FLIP, bear/z>=0->IMOM, bull/z<0->IMOM, bull/z>=0->ORB
+  PLACEBO map (shifted regimes, 20 draws)    passed  16% lost  39% | month $ mean   +730 (range +296 to +1,349)
+
+  == HARxGAMMA
+  GATE expanding                             passed  14% lost  34% neither  52% | month $ mean   +464 worst  -2,401 | $/day   +17 (22-23  +19 / 24-26  +15) | 2026 passed 1/10 lost 3
+  GATE 24m                                   passed  19% lost  33% neither  48% | month $ mean   +626 worst  -2,401 | $/day   +21 (22-23  +21 / 24-26  +21) | 2026 passed 4/10 lost 4
+  MAP expanding                              passed   3% lost  45% neither  52% | month $ mean   +271 worst  -2,440 | $/day    -7 (22-23   -8 / 24-26   -7) | 2026 passed 0/10 lost 3 | picks WIDE 39%, FLIP 18%, FADE 11%, ES 10%
+  MAP 24m                                    passed  19% lost  50% neither  31% | month $ mean   +309 worst  -2,995 | $/day   -10 (22-23  -16 / 24-26   -6) | 2026 passed 4/10 lost 4 | picks WIDE 23%, FLIP 18%, ORB 14%, IMOM 9%
+  ORACLE (hindsight map, 2022-26)            passed  33% lost  53% neither  14% | month $ mean   +744 worst  -2,602 | $/day   +66 (22-23  +42 / 24-26  +83) | 2026 passed 3/10 lost 5 | high/neg->SHORT, high/pos->ORB, low/neg->WIDE, low/pos->ORB, mid/neg->ORB, mid/pos->ORB
+  PLACEBO map (shifted regimes, 20 draws)    passed  18% lost  47% | month $ mean   +638 (range -126 to +1,616)
+
+SUMMARY walk-forward (2022-26):       passed   lost    mean | mode                        | gate   0.183  0.358  563.83 | map    0.143  0.381  709.91
