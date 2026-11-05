@@ -1,0 +1,39 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+613 trades, 2022-26 sessions 1196, trading days 293
+flags 0.35: THIN 29%, HARH 32%, VWAPX 41%
+flags 0.25: THIN 29%, HARH 32%, VWAPX 38%
+
+== buffer 0.35 (live)
+  TOPSTEP       E1   F1   | eval passed  32% | funded blown before 1st payout  72% | evals per 1st payout  11.3 | net/eval   +430 | 12m paid  63% median   +785 10th -1,233 mean +2,022
+  TOPSTEP       E1   FT   | eval passed  32% | funded blown before 1st payout  62% | evals per 1st payout   8.3 | net/eval   +456 | 12m paid  80% median +2,184 10th -1,156 mean +2,702
+  TOPSTEP       E1   FVH  | eval passed  32% | funded blown before 1st payout  43% | evals per 1st payout   5.6 | net/eval   +494 | 12m paid  83% median +1,808 10th -1,106 mean +2,254
+  TOPSTEP       E1   FALL | eval passed  32% | funded blown before 1st payout  38% | evals per 1st payout   5.1 | net/eval   +735 | 12m paid  83% median +2,279 10th -1,106 mean +2,597
+  TOPSTEP       EALL FALL | eval passed  45% | funded blown before 1st payout  45% | evals per 1st payout   4.0 | net/eval +1,109 | 12m paid  67% median +2,178 10th   -860 mean +2,543
+  LUCID FLEX    E1   F1   | eval passed  31% | funded blown before 1st payout  74% | evals per 1st payout  12.5 | net/eval   +267 | 12m paid  59% median   +340 10th -1,898 mean +1,376
+  LUCID FLEX    E1   FT   | eval passed  31% | funded blown before 1st payout  64% | evals per 1st payout   9.0 | net/eval   +395 | 12m paid  78% median +1,814 10th -1,825 mean +2,303
+  LUCID FLEX    E1   FVH  | eval passed  31% | funded blown before 1st payout  45% | evals per 1st payout   5.9 | net/eval   +358 | 12m paid  78% median +1,468 10th -1,825 mean +1,792
+  LUCID FLEX    E1   FALL | eval passed  31% | funded blown before 1st payout  39% | evals per 1st payout   5.4 | net/eval   +716 | 12m paid  83% median +2,072 10th -1,825 mean +2,404
+  LUCID FLEX    EALL FALL | eval passed  45% | funded blown before 1st payout  45% | evals per 1st payout   4.0 | net/eval +1,157 | 12m paid  67% median +1,755 10th -1,460 mean +2,487
+  MFFU BUILDER  E1   F1   | eval passed  31% | funded blown before 1st payout  65% | evals per 1st payout   9.0 | net/eval   +190 | 12m paid  85% median   +834 10th -1,912 mean +1,317
+  MFFU BUILDER  E1   FT   | eval passed  31% | funded blown before 1st payout  55% | evals per 1st payout   7.1 | net/eval   +250 | 12m paid  80% median +1,613 10th -1,912 mean +1,647
+  MFFU BUILDER  E1   FVH  | eval passed  31% | funded blown before 1st payout  46% | evals per 1st payout   5.9 | net/eval   +458 | 12m paid  80% median   +841 10th -1,912 mean +1,587
+  MFFU BUILDER  E1   FALL | eval passed  31% | funded blown before 1st payout  42% | evals per 1st payout   5.5 | net/eval   +519 | 12m paid  83% median +1,590 10th -1,912 mean +1,811
+  MFFU BUILDER  EALL FALL | eval passed  45% | funded blown before 1st payout  45% | evals per 1st payout   4.0 | net/eval   +770 | 12m paid  72% median   +840 10th -1,530 mean +1,905
+
+== buffer 0.25
+  TOPSTEP       E1   F1   | eval passed  33% | funded blown before 1st payout  78% | evals per 1st payout  14.1 | net/eval   +377 | 12m paid  48% median -1,082 10th -1,430 mean +1,030
+  TOPSTEP       E1   FT   | eval passed  33% | funded blown before 1st payout  58% | evals per 1st payout   7.3 | net/eval   +461 | 12m paid  70% median +1,521 10th -1,231 mean +2,157
+  TOPSTEP       E1   FVH  | eval passed  33% | funded blown before 1st payout  46% | evals per 1st payout   5.6 | net/eval   +535 | 12m paid  78% median +1,395 10th -1,082 mean +2,127
+  TOPSTEP       E1   FALL | eval passed  33% | funded blown before 1st payout  48% | evals per 1st payout   5.9 | net/eval   +526 | 12m paid  76% median +1,385 10th -1,108 mean +2,158
+  TOPSTEP       EALL FALL | eval passed  39% | funded blown before 1st payout  58% | evals per 1st payout   6.1 | net/eval   +696 | 12m paid  61% median   +996 10th   -984 mean +2,167
+  LUCID FLEX    E1   F1   | eval passed  33% | funded blown before 1st payout  78% | evals per 1st payout  14.1 | net/eval   +309 | 12m paid  48% median -1,314 10th -1,752 mean   +844
+  LUCID FLEX    E1   FT   | eval passed  33% | funded blown before 1st payout  63% | evals per 1st payout   8.3 | net/eval   +445 | 12m paid  70% median +1,062 10th -1,606 mean +1,965
+  LUCID FLEX    E1   FVH  | eval passed  33% | funded blown before 1st payout  50% | evals per 1st payout   6.2 | net/eval   +418 | 12m paid  76% median +1,204 10th -1,606 mean +1,943
+  LUCID FLEX    E1   FALL | eval passed  33% | funded blown before 1st payout  48% | evals per 1st payout   5.9 | net/eval   +506 | 12m paid  76% median   +853 10th -1,460 mean +1,926
+  LUCID FLEX    EALL FALL | eval passed  38% | funded blown before 1st payout  63% | evals per 1st payout   7.1 | net/eval   +483 | 12m paid  61% median +1,223 10th -1,022 mean +2,235
+  MFFU BUILDER  E1   F1   | eval passed  33% | funded blown before 1st payout  76% | evals per 1st payout  12.7 | net/eval   +156 | 12m paid  61% median   -330 10th -1,912 mean   +513
+  MFFU BUILDER  E1   FT   | eval passed  33% | funded blown before 1st payout  65% | evals per 1st payout   8.6 | net/eval   +386 | 12m paid  72% median   +421 10th -1,836 mean +1,042
+  MFFU BUILDER  E1   FVH  | eval passed  33% | funded blown before 1st payout  60% | evals per 1st payout   7.5 | net/eval   +326 | 12m paid  74% median   +161 10th -1,530 mean   +728
+  MFFU BUILDER  E1   FALL | eval passed  33% | funded blown before 1st payout  51% | evals per 1st payout   6.2 | net/eval   +364 | 12m paid  76% median   +360 10th -1,377 mean   +791
+  MFFU BUILDER  EALL FALL | eval passed  38% | funded blown before 1st payout  45% | evals per 1st payout   4.8 | net/eval   +419 | 12m paid  72% median +1,370 10th -1,071 mean +1,335
