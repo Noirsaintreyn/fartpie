@@ -1,0 +1,54 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+trades 613; avg 18-21 +2.5 | 22-23 +5.3 | 24-26 +3.9; hard 8% weak 58% of flips
+
+  -- STRENGTH
+  hard break                               18-21   -0.6 (n 21 w38%) | 22-23  +12.5 (n  5 w60%) | 24-26  -18.4 (n 23 w26%)
+  normal break                             18-21   +4.4 (n 92 w50%) | 22-23   +3.8 (n 49 w47%) | 24-26   +5.7 (n 76 w47%)
+  weak break                               18-21   +1.8 (n158 w44%) | 22-23   +5.7 (n 86 w48%) | 24-26   +7.6 (n103 w50%)
+
+  -- CLOSE
+  middle close                             18-21   +6.8 (n 66 w48%) | 22-23   +3.2 (n 39 w49%) | 24-26  +11.9 (n 47 w49%)
+  strong close                             18-21   +5.0 (n102 w51%) | 22-23   -1.4 (n 52 w44%) | 24-26   -3.4 (n 85 w41%)
+  weak close                               18-21   -2.8 (n103 w38%) | 22-23  +14.1 (n 49 w51%) | 24-26   +7.5 (n 70 w50%)
+
+  -- RANGE-D
+  at the extreme (breakout)                18-21   +6.2 (n157 w50%) | 22-23   +6.9 (n 98 w49%) | 24-26   +2.3 (n139 w45%)
+  from the opposite end                    18-21   -7.2 (n 15 w40%) | 22-23  +23.3 (n  2 w50%) | 24-26  +17.2 (n 11 w55%)
+  mid range                                18-21   -2.0 (n 99 w39%) | 22-23   +0.5 (n 40 w45%) | 24-26   +5.5 (n 52 w48%)
+
+  -- RANGE-PD
+  beyond prior range (new hi/lo)           18-21   +3.9 (n167 w50%) | 22-23   +6.8 (n 82 w50%) | 24-26   -1.5 (n110 w43%)
+  middle of prior range                    18-21   -5.9 (n 53 w34%) | 22-23   +2.5 (n 35 w46%) | 24-26  +10.7 (n 57 w51%)
+  top fifth of prior range                 18-21   +2.6 (n 43 w37%) | 22-23   -5.8 (n 17 w35%) | 24-26  +12.9 (n 20 w50%)
+
+  -- RANGE-20
+  20d bottom fifth                         18-21   -5.5 (n 49 w35%) | 22-23  +14.5 (n 24 w54%) | 24-26   +4.4 (n 36 w44%)
+  20d middle                               18-21   +7.6 (n150 w50%) | 22-23   +9.3 (n 75 w51%) | 24-26   +3.9 (n113 w47%)
+  20d top fifth                            18-21   -2.7 (n 72 w43%) | 22-23   -7.4 (n 41 w39%) | 24-26   +3.8 (n 53 w45%)   <- worse in all three
+
+  -- NODE_M
+  HVN                                      18-21   +4.2 (n 84 w46%) | 22-23  +12.6 (n 43 w51%) | 24-26   +6.5 (n 72 w47%)   <- beats all three
+  LVN                                      18-21   -0.2 (n 48 w44%) | 22-23  -17.9 (n 21 w29%) | 24-26   -9.4 (n 28 w36%)
+  mid node                                 18-21   +4.4 (n118 w47%) | 22-23   +8.2 (n 72 w51%) | 24-26   +6.2 (n 99 w48%)   <- beats all three
+
+  -- NODE_60D
+  HVN                                      18-21   +6.8 (n 69 w52%) | 22-23  +31.9 (n 44 w68%) | 24-26   +3.1 (n 72 w46%)
+  LVN                                      18-21   -1.7 (n 51 w39%) | 22-23  -12.8 (n 21 w33%) | 24-26   +9.9 (n 32 w53%)
+  mid node                                 18-21   +3.1 (n129 w44%) | 22-23   -5.3 (n 73 w40%) | 24-26   +2.9 (n 95 w44%)
+
+  -- STRENGTH x NODE_M
+  normal break @ HVN                       18-21   +9.5 (n 26 w54%) | 22-23  +17.7 (n 11 w55%) | 24-26  +10.4 (n 25 w48%)
+  normal break @ LVN                       18-21   +7.3 (n 19 w53%) | 22-23  -39.5 (n  7 w14%) | 24-26   -3.7 (n 14 w43%)
+  normal break @ mid node                  18-21   +3.5 (n 39 w49%) | 22-23  +10.4 (n 27 w52%) | 24-26   +6.0 (n 37 w49%)
+  weak break @ HVN                         18-21   +3.1 (n 53 w45%) | 22-23  +10.9 (n 30 w50%) | 24-26   +9.4 (n 39 w51%)   <- beats all three
+  weak break @ LVN                         18-21   -4.6 (n 26 w38%) | 22-23   -7.1 (n 14 w36%) | 24-26   -9.1 (n  9 w33%)
+  weak break @ mid node                    18-21   +5.3 (n 69 w46%) | 22-23   +6.4 (n 42 w50%) | 24-26  +10.2 (n 52 w52%)   <- beats all three
+
+  -- STRENGTH x AHEAD_60D
+  normal break / HVN path ahead            18-21  +16.7 (n 32 w59%) | 22-23   +2.5 (n 19 w42%) | 24-26  +17.7 (n 28 w54%)
+  normal break / LVN path ahead            18-21   -7.6 (n 36 w36%) | 22-23  -20.8 (n 15 w33%) | 24-26   -9.6 (n 26 w38%)
+  normal break / mid path                  18-21   +6.2 (n 22 w55%) | 22-23  +30.1 (n 15 w67%) | 24-26   +8.4 (n 22 w50%)
+  weak break / HVN path ahead              18-21   +2.7 (n 45 w49%) | 22-23  +28.1 (n 26 w65%) | 24-26   +0.3 (n 49 w45%)
+  weak break / LVN path ahead              18-21   -9.4 (n 48 w31%) | 22-23   -9.1 (n 21 w33%) | 24-26  +13.0 (n 27 w52%)
+  weak break / mid path                    18-21  +10.7 (n 57 w49%) | 22-23   -1.2 (n 39 w44%) | 24-26  +15.7 (n 27 w56%)
