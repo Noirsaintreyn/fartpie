@@ -1,0 +1,12 @@
+(A) real MNQ minutes 2024-12-17 -> 2025-11-17, 235 sessions; 15m bars RTH 6016, PRE 11208, GLOBEX 20404
+  RTH vector                       flips/day 0.34 trades  77 win 52% avg +10.9 pts (Dec-May +14.8 / Jun-Nov  +7.9) | coin-flip -0.1 | total   +836
+  PRE (04:00-16:00) vector         flips/day 0.33 trades  77 win 49% avg  +8.4 pts (Dec-May  +0.1 / Jun-Nov +19.0) | coin-flip +1.4 | total   +650
+  GLOBEX (overnight incl.) vector  flips/day 0.40 trades  92 win 42% avg  -0.6 pts (Dec-May  +4.1 / Jun-Nov  -4.9) | coin-flip -1.1 | total    -58
+  BOTH: RTH flip, GLOBEX agrees    flips/day 0.26 trades  62 win 53% avg +12.0 pts (Dec-May +14.6 / Jun-Nov  +9.9) | coin-flip +4.4 | total   +742
+  BOTH2: GLOBEX flip, RTH agrees   flips/day 0.20 trades  46 win 46% avg  +4.1 pts (Dec-May  +8.3 / Jun-Nov  +0.3) | coin-flip +3.7 | total   +190
+  15m state agreement at RTH bar ends: RTH vs PRE 81%, RTH vs GLOBEX 71%
+
+(B) QQQ 5m bars before 09:30: 4.0% of bars (7063 over 2204 days)
+  current (04:00-16:00 bars)   AM flips 654 (0.30/day)
+  RTH only                     AM flips 664 (0.30/day)
+exit 0

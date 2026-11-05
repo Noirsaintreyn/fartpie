@@ -1019,7 +1019,7 @@ def register():
 @app.route('/api/login', methods=['POST'])
 def login():
     global DB_PATH
-    print(f"Login attempt received: {request.json}")
+    print(f"Login attempt received: user={(request.json or {}).get('username')!r}")   # never log the password
     
     data = request.json
     username = data.get('username')

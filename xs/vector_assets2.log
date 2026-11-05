@@ -1,0 +1,48 @@
+  Nasdaq 100     session 09-16 ET | 1.5R/1R: trades  102 win  50% avg +0.036 R (halves +0.034 / +0.039) coin-flip -0.039 t +0.4 | always-in: 103 flips avg -0.043 R t -0.1
+  S&P 500        session 09-16 ET | 1.5R/1R: trades   98 win  48% avg +0.058 R (halves +0.065 / +0.051) coin-flip -0.055 t +0.6 | always-in: 99 flips avg -0.230 R t -0.5
+  Dow            session 09-16 ET | 1.5R/1R: trades   85 win  51% avg +0.007 R (halves -0.170 / +0.179) coin-flip +0.008 t +0.1 | always-in: 86 flips avg -0.104 R t -0.2
+Crumb fetch rate-limited (HTTP 429), continuing without crumb
+  Russell 2000   session 09-16 ET | 1.5R/1R: trades   75 win  55% avg +0.102 R (halves +0.241 / -0.035) coin-flip -0.086 t +0.9 | always-in: 75 flips avg -0.228 R t -0.4
+  Gold           session 08-13 ET | 1.5R/1R: trades   60 win  40% avg -0.080 R (halves -0.066 / -0.094) coin-flip -0.134 t -0.8 | always-in: 61 flips avg +1.518 R t +1.5
+  Silver         session 08-13 ET | 1.5R/1R: trades   84 win  40% avg -0.052 R (halves +0.055 / -0.160) coin-flip -0.048 t -0.6 | always-in: 85 flips avg +0.414 R t +0.6
+  Copper         session 08-13 ET | 1.5R/1R: trades  103 win  45% avg -0.184 R (halves -0.200 / -0.168) coin-flip -0.022 t -2.8 | always-in: 104 flips avg -0.748 R t -2.1
+  Crude oil      session 09-14 ET | 1.5R/1R: trades   71 win  52% avg +0.049 R (halves -0.003 / +0.100) coin-flip -0.060 t +0.5 | always-in: 71 flips avg -0.050 R t -0.1
+  Nat gas        session 09-14 ET | 1.5R/1R: trades   94 win  53% avg -0.014 R (halves +0.019 / -0.046) coin-flip -0.083 t -0.2 | always-in: 94 flips avg -0.536 R t -1.5
+  Euro FX        session 03-12 ET | 1.5R/1R: trades  113 win  46% avg +0.030 R (halves +0.077 / -0.016) coin-flip -0.059 t +0.3 | always-in: 118 flips avg +0.186 R t +0.4
+  Yen            session 03-12 ET | 1.5R/1R: trades  122 win  52% avg +0.097 R (halves +0.168 / +0.026) coin-flip -0.076 t +1.0 | always-in: 126 flips avg -0.332 R t -0.6
+  Pound          session 03-12 ET | 1.5R/1R: trades  108 win  47% avg +0.060 R (halves +0.076 / +0.045) coin-flip -0.098 t +0.6 | always-in: 111 flips avg +0.233 R t +0.5
+  Aussie         session 03-12 ET | 1.5R/1R: trades  139 win  42% avg -0.126 R (halves -0.122 / -0.129) coin-flip -0.020 t -1.5 | always-in: 140 flips avg -0.400 R t -1.1
+  10y note       session 08-15 ET | 1.5R/1R: trades   96 win  38% avg -0.201 R (halves -0.129 / -0.273) coin-flip -0.097 t -2.4 | always-in: 98 flips avg -0.393 R t -0.9
+  30y bond       session 08-15 ET | 1.5R/1R: trades  101 win  32% avg -0.300 R (halves -0.264 / -0.334) coin-flip -0.025 t -3.9 | always-in: 101 flips avg -0.407 R t -1.1
+  Live cattle    session 09-14 ET | 1.5R/1R: trades   47 win  53% avg +0.066 R (halves +0.318 / -0.176) coin-flip -0.065 t +0.5 | always-in: 47 flips avg +0.419 R t +0.7
+  Feeder cattle  session 09-14 ET | 1.5R/1R: trades   63 win  54% avg +0.025 R (halves +0.251 / -0.193) coin-flip -0.023 t +0.3 | always-in: 65 flips avg -0.455 R t -0.8
+  Lean hogs      session 09-14 ET | 1.5R/1R: trades   67 win  31% avg -0.284 R (halves -0.202 / -0.365) coin-flip -0.010 t -3.1 | always-in: 67 flips avg -0.677 R t -0.8
+  Corn           session 09-14 ET | 1.5R/1R: trades   48 win  44% avg +0.122 R (halves +0.311 / -0.066) coin-flip -0.034 t +0.9 | always-in: 48 flips avg +0.992 R t +1.1
+  Soybeans       session 09-14 ET | 1.5R/1R: trades   69 win  49% avg +0.002 R (halves -0.133 / +0.134) coin-flip -0.005 t +0.0 | always-in: 71 flips avg -0.101 R t -0.2
+  Wheat          session 09-14 ET | 1.5R/1R: trades   65 win  43% avg -0.068 R (halves -0.019 / -0.116) coin-flip -0.005 t -0.7 | always-in: 65 flips avg +0.220 R t +0.4
+  Bitcoin        session 09-16 ET | 1.5R/1R: trades  107 win  43% avg +0.041 R (halves +0.122 / -0.039) coin-flip -0.046 t +0.4 | always-in: 109 flips avg +0.026 R t +0.0
+
+RANKED (1.5R / 1R exits) by t-stat:
+  Yen            avg +0.097 R  t +1.0  halves +0.168 / +0.026  BOTH HALVES + | always-in t -0.6
+  Corn           avg +0.122 R  t +0.9  halves +0.311 / -0.066   | always-in t +1.1
+  Russell 2000   avg +0.102 R  t +0.9  halves +0.241 / -0.035   | always-in t -0.4
+  S&P 500        avg +0.058 R  t +0.6  halves +0.065 / +0.051  BOTH HALVES + | always-in t -0.5
+  Pound          avg +0.060 R  t +0.6  halves +0.076 / +0.045  BOTH HALVES + | always-in t +0.5
+  Live cattle    avg +0.066 R  t +0.5  halves +0.318 / -0.176   | always-in t +0.7
+  Crude oil      avg +0.049 R  t +0.5  halves -0.003 / +0.100   | always-in t -0.1
+  Bitcoin        avg +0.041 R  t +0.4  halves +0.122 / -0.039   | always-in t +0.0
+  Nasdaq 100     avg +0.036 R  t +0.4  halves +0.034 / +0.039  BOTH HALVES + | always-in t -0.1
+  Euro FX        avg +0.030 R  t +0.3  halves +0.077 / -0.016   | always-in t +0.4
+  Feeder cattle  avg +0.025 R  t +0.3  halves +0.251 / -0.193   | always-in t -0.8
+  Dow            avg +0.007 R  t +0.1  halves -0.170 / +0.179   | always-in t -0.2
+  Soybeans       avg +0.002 R  t +0.0  halves -0.133 / +0.134   | always-in t -0.2
+  Nat gas        avg -0.014 R  t -0.2  halves +0.019 / -0.046   | always-in t -1.5
+  Silver         avg -0.052 R  t -0.6  halves +0.055 / -0.160   | always-in t +0.6
+  Wheat          avg -0.068 R  t -0.7  halves -0.019 / -0.116   | always-in t +0.4
+  Gold           avg -0.080 R  t -0.8  halves -0.066 / -0.094   | always-in t +1.5
+  Aussie         avg -0.126 R  t -1.5  halves -0.122 / -0.129   | always-in t -1.1
+  10y note       avg -0.201 R  t -2.4  halves -0.129 / -0.273   | always-in t -0.9
+  Copper         avg -0.184 R  t -2.8  halves -0.200 / -0.168   | always-in t -2.1
+  Lean hogs      avg -0.284 R  t -3.1  halves -0.202 / -0.365   | always-in t -0.8
+  30y bond       avg -0.300 R  t -3.9  halves -0.264 / -0.334   | always-in t -1.1
+exit 0

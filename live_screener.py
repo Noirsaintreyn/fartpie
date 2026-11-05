@@ -232,10 +232,35 @@ def pm_blocked(t):
     t = pd.Timestamp(t); m = t.hour * 60 + t.minute
     return t >= NO_PM and PM_CUT <= m < RTH1
 
+ANCHOR_START = pd.Timestamp(os.getenv('ANCHOR_START', '2262-01-01'))   # Nov 5 2026 (xs/screener_anchor.py): set e.g. ANCHOR_START=2026-11-06 09:30 to turn on
+def anchor_arrays(H):
+    """per bar: RTH low of the day before this bar, RTH low of the week's earlier days, 20-day daily sigma at the prior close"""
+    m = (H.dt.dt.hour * 60 + H.dt.dt.minute).values; rth = (m >= RTH0) & (m < RTH1); day = H.dt.dt.normalize()
+    lo = np.where(rth, H.low.values, np.inf); cm = pd.Series(lo).groupby(day.values).cummin().values
+    lowD = np.r_[np.inf, cm[:-1]]; lowD[np.r_[True, day.values[1:] != day.values[:-1]]] = np.inf
+    R = H[rth]; D = R.groupby(R.dt.dt.normalize()).agg(l=('low', 'min'), c=('close', 'last'))
+    sig = np.log(D.c).diff().rolling(20).std(); wk = D.index.to_period('W-FRI')
+    wlow = pd.Series(D.l.values, index=D.index).groupby(wk).transform(lambda s: s.cummin().shift(1)).fillna(np.inf)
+    last = dict(day=day.iloc[-1], m=m[-1], cm=cm[-1], sig_today=sig.iloc[-1] if len(sig) else np.nan, sig_prev=sig.shift(1).iloc[-1] if len(sig) else np.nan,
+                wl_today=wlow.iloc[-1] if len(D) and D.index[-1] == day.iloc[-1] else np.inf)
+    return lowD, wlow.reindex(day).values, sig.shift(1).reindex(day).values, last
+def anchor_blocked(AN, j, px, t):
+    """skip an entry already more than 1 sigma above the day's low or 1 weekly sigma (sigma x sqrt 5) above the week's low (the site's anchored projection)"""
+    if pd.Timestamp(t) < ANCHOR_START: return False
+    lowD, lowW, sig, L = AN
+    if j < len(lowD): s, ld, lw = sig[j], lowD[j], lowW[j]
+    elif L['m'] < RTH1 - 15: s, ld, lw = L['sig_prev'], L['cm'], L['wl_today']           # next open is later today: day low so far incl. the last bar
+    else:                                                                              # next open is tomorrow: today's close-based sigma, week low incl. today
+        s, ld = L['sig_today'], np.inf; nxt = pd.Timestamp(t).normalize()
+        lw = min(L['wl_today'], L['cm']) if nxt.to_period('W-FRI') == pd.Timestamp(L['day']).to_period('W-FRI') else np.inf
+    if not np.isfinite(s) or s <= 0: return False
+    ld = min(ld, px); lw = min(lw, ld)
+    return (px - ld) / (px * s) > 1 or (px - lw) / (px * s * np.sqrt(5)) > 1
 def replay_track(H, elig, track='15m', carry=None):
     """All trades of one track (15m flips / 1h flips) on premarket+RTH bars, entries/exits at RTH opens only.
     Returns trade dicts: status CLOSED / HOLD / BUY (enter at the next open) / SELL (exit at the next open)."""
     reg, s1, o, c, hi = H.reg.values, H.s1.values, H.open.values, H.close.values, H.high.values; n = len(H)
+    AN = anchor_arrays(H) if ANCHOR_START < pd.Timestamp('2262-01-01') else None
     m = (H.dt.dt.hour * 60 + H.dt.dt.minute).values; dts = H.dt.values; lk0 = np.datetime64(MODEL2)
     g = [j for j in range(1, n) if m[j] >= RTH0] + [n]
     KR = [reg[j - 1] for j in g]; KS = [s1[j - 1] for j in g]; EL = [elig[j] if j < n else elig[-1] for j in g]
@@ -249,6 +274,7 @@ def replay_track(H, elig, track='15m', carry=None):
         if not inpos:
             sig = (KS[p] == 1 and KS[p - 1] != 1) if track == '1h' else (KR[p] == 1 and KR[p - 1] != 1)
             if sig and EL[p] and pm_blocked(dts[j] if not virt else pd.Timestamp(dts[-1]) + pd.Timedelta('15min')): continue
+            if sig and EL[p] and AN is not None and anchor_blocked(AN, j, o[j] if not virt else c[-1], dts[j] if not virt else pd.Timestamp(dts[-1]) + pd.Timedelta('15min')): continue
             if sig and EL[p]:
                 if virt: T.append(dict(status='BUY', e=None, px=None, t0=VIRT, t1=INF, h1=track == '1h', pg=0.0, lock=False)); break
                 inpos, e, px, b1, peak, hs = True, j, o[j], False, o[j], False

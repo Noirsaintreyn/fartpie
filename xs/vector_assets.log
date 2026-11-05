@@ -1,0 +1,47 @@
+  Nasdaq 100     NQ=F   bars 13676 flips  254 win  41% avg -0.067 R (1st half -0.109 / 2nd -0.024) | coin-flip -0.147 | t -0.9
+  S&P 500        ES=F   bars 13671 flips  272 win  37% avg -0.146 R (1st half -0.131 / 2nd -0.160) | coin-flip -0.078 | t -2.1
+  Dow            YM=F   bars 13668 flips  274 win  39% avg -0.083 R (1st half -0.107 / 2nd -0.060) | coin-flip -0.078 | t -1.2
+  Russell 2000   RTY=F  bars 13702 flips  267 win  39% avg -0.109 R (1st half -0.149 / 2nd -0.070) | coin-flip -0.061 | t -1.6
+  Gold           GC=F   bars 13713 flips  232 win  37% avg -0.141 R (1st half -0.251 / 2nd -0.031) | coin-flip -0.119 | t -1.9
+  Silver         SI=F   bars 13710 flips  256 win  40% avg -0.039 R (1st half -0.144 / 2nd +0.067) | coin-flip -0.018 | t -0.5
+  Copper         HG=F   bars 13706 flips  267 win  37% avg -0.102 R (1st half -0.133 / 2nd -0.071) | coin-flip -0.065 | t -1.5
+  Crude oil      CL=F   bars 13500 flips  266 win  44% avg +0.003 R (1st half +0.051 / 2nd -0.045) | coin-flip -0.003 | t +0.0
+  Nat gas        NG=F   bars 13483 flips  272 win  43% avg +0.005 R (1st half +0.103 / 2nd -0.093) | coin-flip -0.019 | t +0.1
+  Euro FX        6E=F   bars 13709 flips  287 win  32% avg -0.275 R (1st half -0.249 / 2nd -0.300) | coin-flip -0.102 | t -4.3
+  Yen            6J=F   bars 13711 flips  267 win  41% avg -0.063 R (1st half -0.017 / 2nd -0.109) | coin-flip -0.057 | t -0.9
+  Pound          6B=F   bars 13713 flips  268 win  41% avg -0.080 R (1st half +0.036 / 2nd -0.195) | coin-flip -0.029 | t -1.1
+  Aussie         6A=F   bars 13711 flips  310 win  36% avg -0.165 R (1st half -0.178 / 2nd -0.153) | coin-flip -0.076 | t -2.6
+  10y note       ZN=F   bars 13633 flips  295 win  37% avg -0.137 R (1st half -0.047 / 2nd -0.225) | coin-flip -0.138 | t -2.1
+  30y bond       ZB=F   bars 13636 flips  311 win  40% avg -0.117 R (1st half -0.061 / 2nd -0.172) | coin-flip -0.047 | t -1.9
+  Live cattle    LE=F   bars  3584 flips   63 win  44% avg +0.033 R (1st half +0.064 / 2nd +0.003) | coin-flip -0.032 | t +0.2
+  Feeder cattle  GF=F   bars  3543 flips   73 win  38% avg -0.099 R (1st half +0.068 / 2nd -0.261) | coin-flip -0.077 | t -0.7
+  Lean hogs      HE=F   bars  3583 flips   68 win  34% avg -0.240 R (1st half -0.159 / 2nd -0.321) | coin-flip +0.102 | t -1.7
+  Corn           ZC=F   bars 11147 flips  215 win  46% avg +0.030 R (1st half +0.094 / 2nd -0.034) | coin-flip -0.022 | t +0.4
+  Soybeans       ZS=F   bars 11151 flips  225 win  41% avg -0.069 R (1st half +0.057 / 2nd -0.194) | coin-flip -0.142 | t -0.9
+  Wheat          ZW=F   bars 11146 flips  218 win  37% avg -0.179 R (1st half -0.153 / 2nd -0.205) | coin-flip -0.031 | t -2.4
+  Bitcoin        BTC=F  bars 14105 flips  290 win  39% avg -0.119 R (1st half -0.076 / 2nd -0.162) | coin-flip -0.053 | t -1.8
+
+RANKED by t-stat (|t| < 2 is indistinguishable from noise; both halves positive is the minimum to look further):
+  Corn           avg +0.030 R  t +0.4  halves +0.094 / -0.034  
+  Live cattle    avg +0.033 R  t +0.2  halves +0.064 / +0.003  BOTH HALVES +
+  Nat gas        avg +0.005 R  t +0.1  halves +0.103 / -0.093  
+  Crude oil      avg +0.003 R  t +0.0  halves +0.051 / -0.045  
+  Silver         avg -0.039 R  t -0.5  halves -0.144 / +0.067  
+  Feeder cattle  avg -0.099 R  t -0.7  halves +0.068 / -0.261  
+  Yen            avg -0.063 R  t -0.9  halves -0.017 / -0.109  
+  Soybeans       avg -0.069 R  t -0.9  halves +0.057 / -0.194  
+  Nasdaq 100     avg -0.067 R  t -0.9  halves -0.109 / -0.024  
+  Pound          avg -0.080 R  t -1.1  halves +0.036 / -0.195  
+  Dow            avg -0.083 R  t -1.2  halves -0.107 / -0.060  
+  Copper         avg -0.102 R  t -1.5  halves -0.133 / -0.071  
+  Russell 2000   avg -0.109 R  t -1.6  halves -0.149 / -0.070  
+  Lean hogs      avg -0.240 R  t -1.7  halves -0.159 / -0.321  
+  Bitcoin        avg -0.119 R  t -1.8  halves -0.076 / -0.162  
+  30y bond       avg -0.117 R  t -1.9  halves -0.061 / -0.172  
+  Gold           avg -0.141 R  t -1.9  halves -0.251 / -0.031  
+  S&P 500        avg -0.146 R  t -2.1  halves -0.131 / -0.160  
+  10y note       avg -0.137 R  t -2.1  halves -0.047 / -0.225  
+  Wheat          avg -0.179 R  t -2.4  halves -0.153 / -0.205  
+  Aussie         avg -0.165 R  t -2.6  halves -0.178 / -0.153  
+  Euro FX        avg -0.275 R  t -4.3  halves -0.249 / -0.300  
+exit 0
