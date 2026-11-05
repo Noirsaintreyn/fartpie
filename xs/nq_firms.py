@@ -6,7 +6,7 @@ FIRMS (rules from help pages / rule guides, Sep-Nov 2026; prices are list prices
   TOPSTEP     eval $49 / 21 sessions, +$3,000, $2,000 EOD trailing (stops at start), $1,000 DLL, best day <= 50%;  funded $149 activation, $2,000 EOD trailing stops at $0,
               payout after 5 days >= $150 (and profit since last after the first): 50% of balance up to $2,000, 90% - $30, max loss locks at $0 after a payout.
   TOPSTEP-NAF the No Activation Fee path: eval $95 / 21 sessions, $0 activation, same rules.
-  LUCID FLEX  eval $146 one-time, +$3,000, $2,000 EOD trailing (locks at +$100 once the close reaches +$2,100), no DLL, best day <= 50%;  funded $0 activation, same drawdown,
+  LUCID FLEX  eval $88 one-time (list $146; Rey uses code VAULT, ~$85-90), +$3,000, $2,000 EOD trailing (locks at +$100 once the close reaches +$2,100), no DLL, best day <= 50%;  funded $0 activation, same drawdown,
               no consistency, payout after 5 days >= $150 and profit in the cycle: 50% of profit up to $2,000 (min $500), 90%; max loss moves to +$100 after a payout.
   MFFU RAPID EOD  eval $157 one-time, +$3,000, $2,000 EOD trailing (locks at +$100), no DLL, best day <= 30%, >= 4 trading days;  funded $0 activation, EOD trailing locks at +$100,
               no consistency, daily payouts: everything above a $2,100 buffer (min $500; after the first, $500 profit since the last), 90%.
@@ -43,7 +43,7 @@ NS = len(D_); print(f'{len(TR)} trades, 2022-26 sessions {NS}, trading days {sum
 F = {
  'TOPSTEP':        dict(fee=49, monthly=True, e_lock=0, e_dll=1000, cons=.5, min_days=0, act=149, f_lock=0, f_dll=1000, intraday=False, pay='topstep'),
  'TOPSTEP-NAF':    dict(fee=95, monthly=True, e_lock=0, e_dll=1000, cons=.5, min_days=0, act=0, f_lock=0, f_dll=1000, intraday=False, pay='topstep'),
- 'LUCID FLEX':     dict(fee=146, monthly=False, e_lock=100, e_dll=None, cons=.5, min_days=0, act=0, f_lock=100, f_dll=None, intraday=False, pay='lucid'),
+ 'LUCID FLEX':     dict(fee=88, monthly=False, e_lock=100, e_dll=None, cons=.5, min_days=0, act=0, f_lock=100, f_dll=None, intraday=False, pay='lucid'),
  'MFFU RAPID EOD': dict(fee=157, monthly=False, e_lock=100, e_dll=None, cons=.3, min_days=4, act=0, f_lock=100, f_dll=None, intraday=False, pay='mffu_rapid'),
  'MFFU BUILDER':   dict(fee=153, monthly=False, e_lock=100, e_dll=None, cons=None, min_days=0, act=0, f_lock=100, f_dll=1000, intraday=False, pay='mffu_builder'),
  'TPT':            dict(fee=170, monthly=True, e_lock=0, e_dll=None, cons=.5, min_days=5, act=130, f_lock=0, f_dll=None, intraday=True, pay='tpt'),
