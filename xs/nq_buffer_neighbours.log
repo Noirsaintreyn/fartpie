@@ -1,0 +1,9 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+gamma data 2018-01-02 -> 2026-10-08; sessions 2018-01-02 -> 2026-10-08
+  STATIC 0.10                        flips/day 0.35 trades 691 | avg 18-21  +2.6 (n296) / 22-23  +6.1 (n164) / 24-26  +6.7 (n231) | coin-flip -1.3 | months passed  28% lost  36% mean  +975 | 2026 passed 3/10 lost 4
+  STATIC 0.15                        flips/day 0.34 trades 673 | avg 18-21  +1.4 (n279) / 22-23  +6.7 (n160) / 24-26  +3.8 (n234) | coin-flip -0.8 | months passed  26% lost  36% mean  +872 | 2026 passed 3/10 lost 3
+  STATIC 0.20                        flips/day 0.32 trades 643 | avg 18-21  +3.2 (n273) / 22-23  +7.6 (n154) / 24-26  +3.6 (n216) | coin-flip -1.0 | months passed  26% lost  40% mean  +895 | 2026 passed 3/10 lost 4
+  STATIC 0.25                        flips/day 0.31 trades 635 | avg 18-21  +2.6 (n273) / 22-23  +7.6 (n155) / 24-26  +4.1 (n207) | coin-flip -2.1 | months passed  29% lost  40% mean  +881 | 2026 passed 3/10 lost 5
+  STATIC 0.30                        flips/day 0.30 trades 618 | avg 18-21  +3.8 (n270) / 22-23  +6.1 (n144) / 24-26  +2.7 (n204) | coin-flip -1.2 | months passed  22% lost  36% mean  +626 | 2026 passed 4/10 lost 4
+  STATIC 0.35                        flips/day 0.30 trades 613 | avg 18-21  +2.5 (n271) / 22-23  +5.3 (n140) / 24-26  +3.9 (n202) | coin-flip -1.9 | months passed  22% lost  41% mean  +597 | 2026 passed 4/10 lost 4

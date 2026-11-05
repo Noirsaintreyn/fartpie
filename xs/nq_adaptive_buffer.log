@@ -1,0 +1,12 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+gamma data 2018-01-02 -> 2026-10-08; sessions 2018-01-02 -> 2026-10-08
+15m bars 59463; live vector reproduced by vec_ad(0.35): 100.0% of bars; ER terciles 0.15/0.33, ATR ratio terciles 0.87/1.06
+  STATIC 0.20                        flips/day 0.32 trades 643 | avg 18-21  +3.2 (n273) / 22-23  +7.6 (n154) / 24-26  +3.6 (n216) | coin-flip -1.8 | months passed  26% lost  40% mean  +895 | 2026 passed 3/10 lost 4
+  STATIC 0.35 (live)                 flips/day 0.30 trades 613 | avg 18-21  +2.5 (n271) / 22-23  +5.3 (n140) / 24-26  +3.9 (n202) | coin-flip -2.1 | months passed  22% lost  41% mean  +597 | 2026 passed 4/10 lost 4
+  STATIC 0.50                        flips/day 0.28 trades 592 | avg 18-21  +3.1 (n256) / 22-23  +4.5 (n137) / 24-26  -0.0 (n199) | coin-flip -2.8 | months passed  22% lost  41% mean  +584 | 2026 passed 2/10 lost 7
+  STATIC 0.70                        flips/day 0.26 trades 553 | avg 18-21  +3.1 (n234) / 22-23  +7.0 (n127) / 24-26  +1.0 (n192) | coin-flip -1.5 | months passed  19% lost  34% mean  +614 | 2026 passed 2/10 lost 5
+  ER-CHOP chop .55 / trend .20       flips/day 0.29 trades 607 | avg 18-21  +4.3 (n261) / 22-23  +0.9 (n141) / 24-26  +4.5 (n205) | coin-flip -0.9 | months passed  21% lost  36% mean  +696 | 2026 passed 4/10 lost 3
+  ER-INV chop .20 / trend .55        flips/day 0.30 trades 605 | avg 18-21  +1.4 (n260) / 22-23  +6.1 (n147) / 24-26  +3.3 (n198) | coin-flip -0.7 | months passed  19% lost  36% mean  +749 | 2026 passed 1/10 lost 5
+  ER-CONT .35 x median/ER            flips/day 0.29 trades 598 | avg 18-21  +4.7 (n257) / 22-23  +6.4 (n138) / 24-26  +2.8 (n203) | coin-flip -1.7 | months passed  24% lost  38% mean  +685 | 2026 passed 3/10 lost 4
+  VOL-EXP expand .55 / contract .20  flips/day 0.29 trades 597 | avg 18-21  +2.8 (n261) / 22-23  +3.8 (n138) / 24-26  +3.0 (n198) | coin-flip -3.1 | months passed  21% lost  33% mean  +626 | 2026 passed 3/10 lost 4
