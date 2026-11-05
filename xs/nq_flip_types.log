@@ -1,0 +1,68 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+Model is not converging.  Current: 2971.752701469593 is not greater than 2971.833503517396. Delta is -0.08080204780299027
+trades 613 (in-sample 2018-21 271, 2022-26 342)
+
+STEP 1: avg pts per trade by label   [in-sample 2018-21 | out-of-sample 22-23 | 24-26]   (n, win)
+  ALL  IS +2.5 | OOS +4.5
+  DIR    long                        18-21   +4.1 (n142 w47%) | 22-23   +4.5 (n 68 w50%) | 24-26   -0.8 (n101 w43%)
+  DIR    short                       18-21   +0.7 (n129 w43%) | 22-23   +6.1 (n 72 w46%) | 24-26   +8.7 (n101 w50%)
+  ORDER  first flip                  18-21   +2.6 (n253 w46%) | 22-23   +3.4 (n126 w46%) | 24-26   +4.2 (n167 w47%)
+  ORDER  later flip                  18-21   +0.7 (n 18 w39%) | 22-23  +22.5 (n 14 w64%) | 24-26   +2.7 (n 35 w43%)
+  TIME   09:45-10:00                 18-21   +0.7 (n169 w44%) | 22-23   +6.4 (n 80 w46%) | 24-26   +6.6 (n116 w47%)
+  TIME   10:00-10:30                 18-21  +15.0 (n 36 w64%) | 22-23   +5.8 (n 20 w50%) | 24-26  -12.6 (n 38 w34%)
+  TIME   10:30-11:30                 18-21   +0.1 (n 66 w39%) | 22-23   +2.9 (n 40 w50%) | 24-26  +10.7 (n 48 w52%)
+  GAP    against gap                 18-21   +3.3 (n 59 w44%) | 22-23  +10.8 (n 38 w55%) | 24-26   -1.6 (n 65 w42%)
+  GAP    with gap                    18-21   +2.3 (n212 w46%) | 22-23   +3.3 (n102 w45%) | 24-26   +6.5 (n137 w48%)
+  AMT    AMT aligned                 18-21   +2.4 (n156 w45%) | 22-23   +8.5 (n 73 w49%) | 24-26   +7.0 (n 90 w48%)
+  AMT    AMT not aligned             18-21   +2.6 (n115 w46%) | 22-23   +1.8 (n 67 w46%) | 24-26   +1.5 (n112 w45%)
+  DISP   big flip bar                18-21   +0.5 (n 96 w45%) | 22-23   +5.5 (n 37 w46%) | 24-26   -0.7 (n 78 w42%)
+  DISP   mid flip bar                18-21   -0.6 (n 88 w42%) | 22-23  +11.2 (n 53 w51%) | 24-26   +9.5 (n 74 w50%)
+  DISP   small flip bar              18-21   +7.8 (n 87 w49%) | 22-23   -1.1 (n 50 w46%) | 24-26   +2.9 (n 50 w46%)
+  VOL5   high volume                 18-21   +6.8 (n 88 w50%) | 22-23   +1.1 (n 40 w45%) | 24-26   +0.8 (n 79 w44%)
+  VOL5   low volume                  18-21   -7.4 (n 86 w30%) | 22-23   +0.2 (n 40 w42%) | 24-26  +11.8 (n 57 w53%)
+  VOL5   mid volume                  18-21   +7.4 (n 97 w55%) | 22-23  +11.5 (n 60 w53%) | 24-26   +0.9 (n 66 w42%)
+  VWAP   behind VWAP                 18-21   +1.0 (n101 w44%) | 22-23   -0.1 (n 44 w43%) | 24-26   +1.8 (n 58 w43%)
+  VWAP   extended past VWAP          18-21   +8.8 (n 84 w52%) | 22-23   +5.0 (n 52 w50%) | 24-26   -3.4 (n 88 w41%)
+  VWAP   near VWAP                   18-21   -1.9 (n 86 w41%) | 22-23  +11.0 (n 44 w50%) | 24-26  +17.7 (n 56 w57%)
+  PRIOR  after chop (<8 bars)        18-21   +5.1 (n 51 w45%) | 22-23   +7.9 (n 31 w52%) | 24-26   -6.6 (n 60 w35%)
+  PRIOR  after long regime (>26)     18-21   +1.9 (n158 w46%) | 22-23   +9.9 (n 75 w52%) | 24-26   +5.7 (n104 w49%)
+  PRIOR  after medium regime         18-21   +1.9 (n 62 w44%) | 22-23   -7.2 (n 34 w35%) | 24-26  +15.7 (n 38 w55%)
+  HAR    HAR high                    18-21   +7.0 (n 59 w49%) | 22-23   -0.3 (n 42 w45%) | 24-26   +7.7 (n 68 w47%)
+  HAR    HAR low                     18-21   +7.4 (n 59 w51%) | 22-23  +16.4 (n 58 w55%) | 24-26   +2.0 (n 78 w46%)
+  HAR    HAR mid                     18-21   -1.2 (n153 w42%) | 22-23   -4.9 (n 40 w40%) | 24-26   +2.1 (n 56 w45%)
+  HURST  Hurst .45-.55               18-21   +2.7 (n 82 w48%) | 22-23  +18.0 (n 41 w59%) | 24-26   +1.7 (n 72 w43%)
+  HURST  Hurst < .45 (mean-rev)      18-21   +3.2 (n 31 w39%) | 22-23  +26.8 (n 11 w64%) | 24-26  +15.2 (n 22 w59%)
+  HURST  Hurst > .55 (trending)      18-21   +2.2 (n158 w46%) | 22-23   -3.3 (n 88 w41%) | 24-26   +3.1 (n108 w45%)
+  WAVE   wavelet mid                 18-21   +0.8 (n 92 w48%) | 22-23   -2.1 (n 54 w43%) | 24-26   +2.3 (n 65 w45%)
+  WAVE   wavelet noisy               18-21   -1.6 (n 82 w34%) | 22-23   +9.9 (n 30 w53%) | 24-26   +3.7 (n 62 w44%)
+  WAVE   wavelet trendy              18-21   +7.5 (n 97 w53%) | 22-23  +10.0 (n 56 w50%) | 24-26   +5.6 (n 75 w49%)
+  GMM    GMM calm                    18-21   +2.3 (n150 w45%) | 22-23   +5.8 (n 72 w49%) | 24-26   +6.1 (n 98 w49%)
+  GMM    GMM normal                  18-21   +5.0 (n116 w48%) | 22-23   +4.8 (n 68 w47%) | 24-26   +1.9 (n104 w43%)
+  GMM    GMM stressed                18-21  -51.0 (n  5 w0%) | 22-23   n/a | 24-26   n/a
+  HMM    HMM bear                    18-21   +0.0 (n 50 w42%) | 22-23   -1.2 (n 41 w44%) | 24-26   -4.1 (n 16 w38%)
+  HMM    HMM bull                    18-21   +3.0 (n221 w46%) | 22-23   +8.0 (n 99 w49%) | 24-26   +4.6 (n186 w47%)
+  QZ     QQQ z20 < 0                 18-21   +3.6 (n 87 w46%) | 22-23  +10.2 (n 66 w53%) | 24-26  +10.2 (n 59 w51%)
+  QZ     QQQ z20 >= 0                18-21   +2.0 (n184 w45%) | 22-23   +1.0 (n 74 w43%) | 24-26   +1.3 (n143 w44%)
+  DVOL   day volume high             18-21   +9.9 (n 64 w52%) | 22-23   -5.3 (n 22 w36%) | 24-26   +3.3 (n 43 w47%)
+  DVOL   day volume low              18-21   -3.3 (n114 w43%) | 22-23   +5.0 (n 52 w50%) | 24-26   +5.8 (n 70 w49%)
+  DVOL   day volume normal           18-21   +4.5 (n 93 w44%) | 22-23   +9.1 (n 66 w50%) | 24-26   +2.7 (n 89 w44%)
+
+STEP 2: in-sample rules: DISP=small flip bar (+1), VOL5=high volume (+1), VOL5=low volume (-1), VOL5=mid volume (+1), VWAP=extended past VWAP (+1), VWAP=near VWAP (-1), HAR=HAR high (+1), HAR=HAR low (+1), WAVE=wavelet noisy (-1), WAVE=wavelet trendy (+1), DVOL=day volume high (+1), DVOL=day volume low (-1)
+  score cut-offs (in-sample terciles): bad <= 0, great >= 2; 2022-26 mix: {'great': 0.53, 'bad': 0.29, 'normal': 0.18}
+  bad     IS   -6.3 (n101) | OOS 22-23   +2.7 (n38 w42%) | 24-26   +4.4 (n61 w44%)
+  great   IS  +14.3 (n116) | OOS 22-23   +7.0 (n75 w49%) | 24-26   -2.0 (n107 w41%)
+  normal  IS   -6.4 (n54) | OOS 22-23   +4.3 (n27 w52%) | 24-26  +21.9 (n34 w65%)
+
+STEP 3: long / short (2022-26, 1 NQ 75/50)
+  both directions (n342, avg +4.5)             months passed 22% lost 41% neither 36% | P&L mean +597 worst -2,588 | 2026 passed 4/10 lost 4
+  long only (n175, avg +1.3)                   months passed 7% lost 26% neither 67% | P&L mean +147 worst -2,224 | 2026 passed 0/10 lost 3
+  long + shorts only in HMM bear (n204, avg +0.9) months passed 12% lost 31% neither 57% | P&L mean +183 worst -2,224 | 2026 passed 0/10 lost 4
+  long + shorts only when QQQ z20 < 0 (n220, avg +4.9) months passed 17% lost 29% neither 53% | P&L mean +409 worst -2,540 | 2026 passed 2/10 lost 3
+
+STEP 4: sizing on 2022-26 with the in-sample setup score (realistic months)
+  F flat 10 MNQ (1 NQ) 75/50                   months passed 22% lost 41% neither 36% | P&L mean +597 worst -2,588 | 2026 passed 4/10 lost 4
+  M1 bad 7 / normal 10 / great 20 MNQ, 75/50   months passed 17% lost 29% neither 53% | P&L mean +1,609 worst -2,428 | 2026 passed 2/10 lost 3
+  M2 great 20 MNQ at 37.5/25, others 7 / 10 MNQ 75/50 months passed 24% lost 29% neither 47% | P&L mean +883 worst -2,714 | 2026 passed 1/10 lost 5
+  M3 great 30 MNQ at 25/17, others 7 / 10 MNQ 75/50 months passed 21% lost 31% neither 48% | P&L mean +776 worst -2,817 | 2026 passed 1/10 lost 6
+  great setups 2022-26: 75/50 win 45% avg +1.7 pts | 37.5/25 win 42% avg +0.2 pts
