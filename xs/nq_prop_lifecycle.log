@@ -1,0 +1,43 @@
+Crumb fetch rate-limited (HTTP 429), continuing without crumb
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+
+PER EVAL BOUGHT (starts on every session 2022 - 2025)
+  A  eval 1 NQ, funded 1 NQ                passed  39% failed  61% | median  18 sessions | avg fees  132
+  B  funded 0.5 NQ on thin 60D path        passed  39% failed  61% | median  18 sessions | avg fees  132
+  C  funded 0.5 NQ flat                    passed  39% failed  61% | median  18 sessions | avg fees  132
+  A-cons  consistency payout path          passed  39% failed  61% | median  18 sessions | avg fees  132
+  B-all  0.5 NQ on thin path in eval too   passed  44% failed  56% | median  24 sessions | avg fees  152
+  COIN  random direction (median of 10)    passed  27% failed  73% | median  16 sessions | avg fees  116
+
+PER FUNDED ACCOUNT (after a pass)
+  A  eval 1 NQ, funded 1 NQ                blown before 1st payout  69% | >= 1 payout  31% | still open, unpaid  0% | avg payouts 2.1 | avg $ to you +3,673 (paid ones +11,766) | median life  26 sessions
+  B  funded 0.5 NQ on thin 60D path        blown before 1st payout  34% | >= 1 payout  66% | still open, unpaid  0% | avg payouts 3.3 | avg $ to you +5,466 (paid ones +8,316) | median life  84 sessions
+  C  funded 0.5 NQ flat                    blown before 1st payout  28% | >= 1 payout  72% | still open, unpaid  0% | avg payouts 1.6 | avg $ to you +1,467 (paid ones +2,042) | median life  63 sessions
+  A-cons  consistency payout path          blown before 1st payout  69% | >= 1 payout  31% | still open, unpaid  0% | avg payouts 1.8 | avg $ to you +4,598 (paid ones +14,730) | median life  26 sessions
+  B-all  0.5 NQ on thin path in eval too   blown before 1st payout  39% | >= 1 payout  61% | still open, unpaid  0% | avg payouts 3.3 | avg $ to you +5,492 (paid ones +8,933) | median life  90 sessions
+  COIN  random direction (median of 10)    blown before 1st payout  73% | >= 1 payout  27% | still open, unpaid  0% | avg payouts 0.6 | avg $ to you   +929 (paid ones +2,973) | median life  18 sessions
+
+ECONOMICS PER EVAL BOUGHT
+  A  eval 1 NQ, funded 1 NQ                evals bought -> paid 12.3% | evals per first payout  8.2 | net $ per eval bought +1,310
+  B  funded 0.5 NQ on thin 60D path        evals bought -> paid 25.8% | evals per first payout  3.9 | net $ per eval bought +2,015
+  C  funded 0.5 NQ flat                    evals bought -> paid 28.2% | evals per first payout  3.5 | net $ per eval bought  +444
+  A-cons  consistency payout path          evals bought -> paid 12.3% | evals per first payout  8.2 | net $ per eval bought +1,674
+  B-all  0.5 NQ on thin path in eval too   evals bought -> paid 27.2% | evals per first payout  3.7 | net $ per eval bought +2,279
+  COIN  random direction (median of 10)    evals bought -> paid 7.3% | evals per first payout 15.4 | net $ per eval bought  +131
+
+12-MONTH CAREERS (start each month 2022-01 .. 2025-10, rebuy on every fail / blow)
+  A  eval 1 NQ, funded 1 NQ                paid at least once  61% | evals before 1st payout (median)   3 | sessions to 1st payout 116 | evals bought  6.1, funded blown 2.0 | net $ median +2,488 (10th -1,184 / 90th +8,380, mean +2,551)
+  B  funded 0.5 NQ on thin 60D path        paid at least once  85% | evals before 1st payout (median)   2 | sessions to 1st payout  85 | evals bought  5.4, funded blown 1.4 | net $ median +2,771 (10th -1,058 / 90th +8,348, mean +3,618)
+  C  funded 0.5 NQ flat                    paid at least once  87% | evals before 1st payout (median)   2 | sessions to 1st payout  86 | evals bought  5.3, funded blown 1.4 | net $ median +1,229 (10th   -886 / 90th +4,768, mean +1,745)
+  A-cons  consistency payout path          paid at least once  63% | evals before 1st payout (median)   3 | sessions to 1st payout 112 | evals bought  5.9, funded blown 2.0 | net $ median +1,122 (10th -1,184 / 90th +6,929, mean +2,359)
+  B-all  0.5 NQ on thin path in eval too   paid at least once  83% | evals before 1st payout (median)   4 | sessions to 1st payout 102 | evals bought  4.9, funded blown 1.6 | net $ median +2,744 (10th -1,084 / 90th +8,348, mean +3,294)
+  COIN  random direction (median of 10)    paid at least once  51% | evals before 1st payout (median)   4 | sessions to 1st payout 125 | evals bought  8.8, funded blown 1.4 | net $ median   -313 (10th -1,156 / 90th +4,308, mean   +695)
+
+ONE CAREER Jan 2022 -> Oct 2026
+  A  eval 1 NQ, funded 1 NQ                evals bought  12, funded blown   4 | evals before 1st payout 9.0 | fees  1,774, received  31,860, net +30,086
+  B  funded 0.5 NQ on thin 60D path        evals bought  14, funded blown   4 | evals before 1st payout 2.0 | fees  1,823, received  33,987, net +32,164
+  C  funded 0.5 NQ flat                    evals bought  24, funded blown   8 | evals before 1st payout 2.0 | fees  2,956, received  14,378, net +11,422
+  A-cons  consistency payout path          evals bought   9, funded blown   2 | evals before 1st payout 9.0 | fees  1,182, received  26,285, net +25,103
+  B-all  0.5 NQ on thin path in eval too   evals bought  13, funded blown   4 | evals before 1st payout 2.0 | fees  1,774, received  33,987, net +32,213
+  COIN  random direction (median of 10)    evals bought  39, funded blown   8 | evals before 1st payout 12.0 | fees  4,187, received  11,007, net  +7,168
