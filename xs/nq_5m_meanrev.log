@@ -1,0 +1,27 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+613 trades, 2022-26 sessions 1196, trading days 293
+flags 0.35: THIN 29%, HARH 32%, VWAPX 41%
+flags 0.25: THIN 29%, HARH 32%, VWAPX 38%
+PART A: QQQ 2018 - Oct 2026
+  F15 15m flip (base)      flips/day 0.30 trades 613 win 46% | avg 18-21  +2.5 (n271) / 22-23  +5.3 (n140) / 24-26  +3.9 (n202) | coin-flip -2.4 | months passed  22% lost  41% mean  +597 | 2026 passed 4/10
+  F15-NEG                  flips/day 0.21 trades 433 win 49% | avg 18-21  +4.4 (n202) / 22-23  +5.2 (n120) / 24-26  +9.3 (n111) | coin-flip -2.1 | months passed  16% lost  28% mean  +584 | 2026 passed 2/10
+  F5 5m flip               flips/day 0.79 trades 1339 win 43% | avg 18-21  -3.4 (n550) / 22-23  +3.7 (n317) / 24-26  -0.8 (n472) | coin-flip -1.6 | months passed  41% lost  47% mean +1,239 | 2026 passed 4/10
+  F5-NEG                   flips/day 0.51 trades 885 win 43% | avg 18-21  -3.6 (n396) / 22-23  +6.9 (n253) / 24-26  -0.8 (n236) | coin-flip -1.6 | months passed  29% lost  31% mean +1,045 | 2026 passed 2/10
+  F5x15 5m flip with 15m   flips/day 0.31 trades 659 win 45% | avg 18-21  -0.4 (n303) / 22-23  +4.0 (n133) / 24-26  -4.9 (n223) | coin-flip +0.2 | months passed  17% lost  55% mean   +81 | 2026 passed 1/10
+  F5x15-NEG                flips/day 0.20 trades 415 win 44% | avg 18-21  -0.2 (n209) / 22-23  +9.3 (n104) / 24-26  -5.9 (n102) | coin-flip -1.2 | months passed  12% lost  38% mean   +31 | 2026 passed 1/10
+  5m, no gate                trades 978 (9.3/mo) win 43% | 18-21  -1.9 (n404) / 22-23  +4.8 (n237) / 24-25  +1.0 (n249) / 2026  -4.5 (n88) | coin-flip -1.2
+  5m, Z-MR                   trades 686 (6.5/mo) win 44% | 18-21  +0.1 (n315) / 22-23  +5.0 (n143) / 24-25  +3.3 (n171) / 2026  -7.1 (n57) | coin-flip -0.4
+  5m, toward VWAP            trades 171 (1.6/mo) win 38% | 18-21  -4.0 (n80) / 22-23  -3.2 (n33) / 24-25  -3.1 (n48) / 2026 -26.0 (n10) | coin-flip -4.1
+  5m, Z-MR + toward VWAP     trades 102 (1.0/mo) win 37% | 18-21  -2.6 (n50) / 22-23  -4.9 (n17) / 24-25  -9.9 (n29) / 2026  -9.3 (n6) | coin-flip -3.1
+
+FIRM SIMS
+  5m, no gate                LUCID FLEX | eval passed  26% | funded blown before 1st payout  43% | evals per 1st payout   6.8 | net/eval   +143 | 12m median   -836 | 2022-Oct26 net  +2,750 | 2026 net  -440 (5 evals)
+  5m, no gate                TOPSTEP    | eval passed  25% | funded blown before 1st payout  49% | evals per 1st payout   7.9 | net/eval    +99 | 12m median   -982 | 2022-Oct26 net    +953 | 2026 net  -788 (5 evals)
+  5m, Z-MR                   LUCID FLEX | eval passed  26% | funded blown before 1st payout  60% | evals per 1st payout   9.6 | net/eval   +131 | 12m median   -112 | 2022-Oct26 net  +2,247 | 2026 net  -352 (4 evals)
+  5m, Z-MR                   TOPSTEP    | eval passed  26% | funded blown before 1st payout  59% | evals per 1st payout   9.4 | net/eval   +111 | 12m median   -328 | 2022-Oct26 net  +2,305 | 2026 net  -688 (4 evals)
+  5m, toward VWAP            LUCID FLEX | eval passed   8% | funded blown before 1st payout 100% | evals per 1st payout   inf | net/eval    -88 | 12m median   -352 | 2022-Oct26 net  -1,408 | 2026 net  -352 (4 evals)
+  5m, toward VWAP            TOPSTEP    | eval passed  10% | funded blown before 1st payout 100% | evals per 1st payout   inf | net/eval   -172 | 12m median   -686 | 2022-Oct26 net  -3,140 | 2026 net  -588 (4 evals)
+  5m, Z-MR + toward VWAP     LUCID FLEX | eval passed   7% | funded blown before 1st payout 100% | evals per 1st payout   inf | net/eval    -88 | 12m median   -264 | 2022-Oct26 net    -792 | 2026 net  -176 (2 evals)
+  5m, Z-MR + toward VWAP     TOPSTEP    | eval passed   7% | funded blown before 1st payout 100% | evals per 1st payout   inf | net/eval   -247 | 12m median   -638 | 2022-Oct26 net  -2,746 | 2026 net  -490 (2 evals)
+exit 0
