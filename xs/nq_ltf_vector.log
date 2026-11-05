@@ -1,0 +1,47 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+613 trades, 2022-26 sessions 1196, trading days 293
+flags 0.35: THIN 29%, HARH 32%, VWAPX 41%
+flags 0.25: THIN 29%, HARH 32%, VWAPX 38%
+PART A: QQQ 2018 - Oct 2026
+  F15 15m flip (base)      flips/day 0.30 trades 613 win 46% | avg 18-21  +2.5 (n271) / 22-23  +5.3 (n140) / 24-26  +3.9 (n202) | coin-flip -2.4 | months passed  22% lost  41% mean  +597 | 2026 passed 4/10
+  F15-NEG                  flips/day 0.21 trades 433 win 49% | avg 18-21  +4.4 (n202) / 22-23  +5.2 (n120) / 24-26  +9.3 (n111) | coin-flip -2.1 | months passed  16% lost  28% mean  +584 | 2026 passed 2/10
+  F5 5m flip               flips/day 0.79 trades 1339 win 43% | avg 18-21  -3.4 (n550) / 22-23  +3.7 (n317) / 24-26  -0.8 (n472) | coin-flip -1.6 | months passed  41% lost  47% mean +1,239 | 2026 passed 4/10
+  F5-NEG                   flips/day 0.51 trades 885 win 43% | avg 18-21  -3.6 (n396) / 22-23  +6.9 (n253) / 24-26  -0.8 (n236) | coin-flip -1.6 | months passed  29% lost  31% mean +1,045 | 2026 passed 2/10
+  F5x15 5m flip with 15m   flips/day 0.31 trades 659 win 45% | avg 18-21  -0.4 (n303) / 22-23  +4.0 (n133) / 24-26  -4.9 (n223) | coin-flip +0.2 | months passed  17% lost  55% mean   +81 | 2026 passed 1/10
+  F5x15-NEG                flips/day 0.20 trades 415 win 44% | avg 18-21  -0.2 (n209) / 22-23  +9.3 (n104) / 24-26  -5.9 (n102) | coin-flip -1.2 | months passed  12% lost  38% mean   +31 | 2026 passed 1/10
+
+PART B: real MNQ minutes 2024-12-18 -> 2025-11-17, 236 sessions (path on 1m bars)
+  1m vector   any day         flips/day  3.76 trades 355 win 44% avg  +2.6 (Dec-May  +0.4 / Jun-Nov  +4.9) | coin-flip +0.9 | total   +914 pts
+  1m vector   negative gamma  flips/day  1.92 trades 192 win 44% avg  +3.7 (Dec-May  +1.5 / Jun-Nov  +7.5) | coin-flip +2.4 | total   +717 pts
+  5m vector   any day         flips/day  0.85 trades 160 win 49% avg  +7.3 (Dec-May  +3.8 / Jun-Nov +10.6) | coin-flip +2.1 | total  +1172 pts
+  5m vector   negative gamma  flips/day  0.40 trades  81 win 42% avg  +2.3 (Dec-May  -5.4 / Jun-Nov +12.9) | coin-flip -1.4 | total   +184 pts
+  15m vector  any day         flips/day  0.33 trades  77 win 49% avg  +8.4 (Dec-May  +0.1 / Jun-Nov +19.0) | coin-flip -0.1 | total   +650 pts
+  15m vector  negative gamma  flips/day  0.16 trades  38 win 53% avg +14.3 (Dec-May +12.4 / Jun-Nov +16.9) | coin-flip +2.6 | total   +544 pts
+
+FIRM SIMS (real-time drawdown; starts 2022 - 2025)
+  F15 15m flip (base)      TOPSTEP     E1   F1   | eval passed  32% | funded blown before 1st payout  72% | evals per 1st payout  11.3 | net/eval   +430 | 12m paid  63% median   +785
+  F15 15m flip (base)      TOPSTEP     EALL FALL | eval passed  45% | funded blown before 1st payout  47% | evals per 1st payout   4.2 | net/eval +1,028 | 12m paid  65% median +1,880
+  F15 15m flip (base)      LUCID FLEX  E1   F1   | eval passed  31% | funded blown before 1st payout  74% | evals per 1st payout  12.5 | net/eval   +267 | 12m paid  59% median   +340
+  F15 15m flip (base)      LUCID FLEX  EALL FALL | eval passed  45% | funded blown before 1st payout  47% | evals per 1st payout   4.2 | net/eval +1,058 | 12m paid  65% median +1,517
+  F15-NEG                  TOPSTEP     E1   F1   | eval passed  32% | funded blown before 1st payout  66% | evals per 1st payout   9.2 | net/eval   +476 | 12m paid  63% median   +958
+  F15-NEG                  TOPSTEP     EALL FALL | eval passed  46% | funded blown before 1st payout  51% | evals per 1st payout   4.4 | net/eval   +507 | 12m paid  63% median   +878
+  F15-NEG                  LUCID FLEX  E1   F1   | eval passed  31% | funded blown before 1st payout  65% | evals per 1st payout   9.2 | net/eval   +474 | 12m paid  63% median   +924
+  F15-NEG                  LUCID FLEX  EALL FALL | eval passed  46% | funded blown before 1st payout  51% | evals per 1st payout   4.4 | net/eval   +528 | 12m paid  63% median   +867
+  F5 5m flip               TOPSTEP     E1   F1   | eval passed  28% | funded blown before 1st payout  79% | evals per 1st payout  16.7 | net/eval   +147 | 12m paid  65% median +2,850
+  F5 5m flip               TOPSTEP     EALL FALL | eval passed  29% | funded blown before 1st payout  51% | evals per 1st payout   7.2 | net/eval    +72 | 12m paid  50% median   -932
+  F5 5m flip               LUCID FLEX  E1   F1   | eval passed  26% | funded blown before 1st payout  81% | evals per 1st payout  20.1 | net/eval     +7 | 12m paid  65% median -1,711
+  F5 5m flip               LUCID FLEX  EALL FALL | eval passed  27% | funded blown before 1st payout  55% | evals per 1st payout   8.3 | net/eval     +9 | 12m paid  46% median -1,679
+  F5-NEG                   TOPSTEP     E1   F1   | eval passed  36% | funded blown before 1st payout  82% | evals per 1st payout  15.4 | net/eval   +230 | 12m paid  65% median +1,252
+  F5-NEG                   TOPSTEP     EALL FALL | eval passed  38% | funded blown before 1st payout  50% | evals per 1st payout   5.2 | net/eval   +231 | 12m paid  57% median   -786
+  F5-NEG                   LUCID FLEX  E1   F1   | eval passed  35% | funded blown before 1st payout  79% | evals per 1st payout  13.2 | net/eval   +194 | 12m paid  65% median +1,645
+  F5-NEG                   LUCID FLEX  EALL FALL | eval passed  37% | funded blown before 1st payout  48% | evals per 1st payout   5.2 | net/eval   +303 | 12m paid  48% median   -584
+  F5x15 5m flip with 15m   TOPSTEP     E1   F1   | eval passed  25% | funded blown before 1st payout  77% | evals per 1st payout  17.6 | net/eval   +107 | 12m paid  50% median   -362
+  F5x15 5m flip with 15m   TOPSTEP     EALL FALL | eval passed  36% | funded blown before 1st payout  33% | evals per 1st payout   4.1 | net/eval   +129 | 12m paid  61% median   +133
+  F5x15 5m flip with 15m   LUCID FLEX  E1   F1   | eval passed  26% | funded blown before 1st payout  76% | evals per 1st payout  16.2 | net/eval    +87 | 12m paid  63% median    +69
+  F5x15 5m flip with 15m   LUCID FLEX  EALL FALL | eval passed  37% | funded blown before 1st payout  36% | evals per 1st payout   4.2 | net/eval   +251 | 12m paid  61% median   +182
+  F5x15-NEG                TOPSTEP     E1   F1   | eval passed  17% | funded blown before 1st payout  83% | evals per 1st payout  34.6 | net/eval    -45 | 12m paid  24% median   -884
+  F5x15-NEG                TOPSTEP     EALL FALL | eval passed  46% | funded blown before 1st payout  32% | evals per 1st payout   3.2 | net/eval   +327 | 12m paid  43% median   -637
+  F5x15-NEG                LUCID FLEX  E1   F1   | eval passed  18% | funded blown before 1st payout  81% | evals per 1st payout  29.5 | net/eval    -55 | 12m paid  37% median   -949
+  F5x15-NEG                LUCID FLEX  EALL FALL | eval passed  40% | funded blown before 1st payout  41% | evals per 1st payout   4.3 | net/eval   +469 | 12m paid  28% median   -438
+exit 0
