@@ -1,0 +1,94 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+trades 613; avg pts 18-21 +2.5 | 22-23 +5.3 | 24-26 +3.9
+
+BY LABEL: avg pts per trade (n, win) in 2018-21 | 2022-23 | 2024-26
+
+  -- profile D
+  NODE   HVN                      18-21   -2.9 (n 16 w31%) | 22-23  -10.9 (n  9 w33%) | 24-26   +8.6 (n 19 w47%)
+  NODE   LVN                      18-21   -2.4 (n 44 w36%) | 22-23   +3.0 (n 20 w50%) | 24-26   -1.3 (n 29 w45%)
+  NODE   mid node                 18-21   +0.9 (n 47 w38%) | 22-23   +9.6 (n 29 w48%) | 24-26  +11.3 (n 43 w51%)
+  NODE   outside profile          18-21   +4.8 (n164 w51%) | 22-23   +6.1 (n 82 w49%) | 24-26   +1.6 (n111 w44%)
+  AHEAD  HVN path ahead           18-21   -0.5 (n 72 w39%) | 22-23   +2.1 (n 49 w45%) | 24-26   +9.6 (n 80 w50%)
+  AHEAD  mid path                 18-21   +3.6 (n199 w48%) | 22-23   +7.0 (n 91 w49%) | 24-26   +0.2 (n122 w43%)
+  BEHIND mid behind               18-21   +1.7 (n 91 w45%) | 22-23   -0.0 (n 39 w38%) | 24-26   +5.6 (n 51 w49%)
+  BEHIND thick behind             18-21   -0.6 (n 99 w40%) | 22-23   +0.8 (n 40 w48%) | 24-26   +6.9 (n 56 w46%)
+  BEHIND thin behind              18-21   +7.2 (n 81 w52%) | 22-23  +11.7 (n 61 w54%) | 24-26   +1.3 (n 95 w44%)
+  VALUE  away from value          18-21   +2.7 (n230 w46%) | 22-23   +3.3 (n110 w46%) | 24-26   +4.6 (n147 w48%)
+  VALUE  back toward value        18-21  +12.2 (n  6 w50%) | 22-23  +26.4 (n  7 w57%) | 24-26   +1.4 (n 19 w42%)
+  VALUE  inside value             18-21   -0.7 (n 35 w40%) | 22-23   +8.5 (n 23 w52%) | 24-26   +2.6 (n 36 w42%)
+  COMBO  not combo                18-21   +2.5 (n271 w45%) | 22-23   +5.3 (n140 w48%) | 24-26   +3.9 (n202 w46%)
+
+  -- profile W
+  NODE   HVN                      18-21   +5.5 (n 74 w46%) | 22-23   +8.6 (n 43 w51%) | 24-26  +13.0 (n 50 w52%)   <- beats all three
+  NODE   LVN                      18-21   +3.1 (n 55 w49%) | 22-23  +21.7 (n 10 w60%) | 24-26   -2.9 (n 39 w44%)
+  NODE   mid node                 18-21   +0.2 (n122 w43%) | 22-23   +0.1 (n 78 w44%) | 24-26   +3.3 (n104 w44%)
+  NODE   outside profile          18-21   +3.8 (n 20 w45%) | 22-23  +16.8 (n  9 w56%) | 24-26   -9.5 (n  9 w44%)
+  AHEAD  HVN path ahead           18-21   +3.4 (n 81 w47%) | 22-23  +10.1 (n 69 w52%) | 24-26   +6.8 (n 90 w48%)   <- beats all three
+  AHEAD  LVN path ahead           18-21   -1.2 (n 97 w41%) | 22-23   +4.9 (n 33 w45%) | 24-26   +0.8 (n 62 w45%)
+  AHEAD  mid path                 18-21   +5.5 (n 93 w48%) | 22-23   -3.1 (n 38 w42%) | 24-26   +2.6 (n 50 w44%)
+  BEHIND mid behind               18-21   +2.0 (n 90 w42%) | 22-23  +15.4 (n 26 w62%) | 24-26   +7.1 (n 43 w51%)
+  BEHIND thick behind             18-21   +2.0 (n 97 w46%) | 22-23   -2.4 (n 53 w42%) | 24-26   +6.8 (n 75 w47%)
+  BEHIND thin behind              18-21   +3.6 (n 84 w48%) | 22-23   +7.7 (n 61 w48%) | 24-26   -0.3 (n 84 w43%)
+  VALUE  away from value          18-21   +4.0 (n 71 w45%) | 22-23   +5.0 (n 28 w46%) | 24-26   +1.1 (n 50 w44%)
+  VALUE  back toward value        18-21   +8.9 (n 11 w55%) | 22-23  +32.3 (n  6 w67%) | 24-26  +45.4 (n 11 w82%)
+  VALUE  inside value             18-21   +1.5 (n189 w45%) | 22-23   +3.9 (n106 w47%) | 24-26   +1.7 (n141 w44%)
+  COMBO  COMBO away + LVN ahead   18-21   +3.6 (n 61 w44%) | 22-23  +12.1 (n 21 w52%) | 24-26   -4.7 (n 32 w41%)
+  COMBO  not combo                18-21   +2.2 (n210 w46%) | 22-23   +4.1 (n119 w47%) | 24-26   +5.6 (n170 w47%)
+
+  -- profile M
+  NODE   HVN                      18-21   +4.2 (n 84 w46%) | 22-23  +12.6 (n 43 w51%) | 24-26   +6.5 (n 72 w47%)   <- beats all three
+  NODE   LVN                      18-21   -0.2 (n 48 w44%) | 22-23  -17.9 (n 21 w29%) | 24-26   -9.4 (n 28 w36%)
+  NODE   mid node                 18-21   +4.4 (n118 w47%) | 22-23   +8.2 (n 72 w51%) | 24-26   +6.2 (n 99 w48%)   <- beats all three
+  NODE   outside profile          18-21  -10.3 (n 14 w36%) | 22-23   -3.3 (n  4 w50%) | 24-26   -9.3 (n  3 w33%)
+  AHEAD  HVN path ahead           18-21   +4.7 (n 86 w49%) | 22-23   +7.2 (n 52 w48%) | 24-26   +7.8 (n 74 w50%)   <- beats all three
+  AHEAD  LVN path ahead           18-21   -3.8 (n 90 w40%) | 22-23  -13.4 (n 31 w35%) | 24-26   -3.6 (n 54 w41%)
+  AHEAD  mid path                 18-21   +7.5 (n 88 w48%) | 22-23  +13.8 (n 57 w54%) | 24-26   +5.6 (n 74 w46%)   <- beats all three
+  BEHIND mid behind               18-21   +1.9 (n 91 w46%) | 22-23   +8.2 (n 43 w51%) | 24-26   +9.5 (n 54 w50%)
+  BEHIND thick behind             18-21   +5.2 (n 91 w51%) | 22-23   +5.4 (n 45 w44%) | 24-26   +0.1 (n 81 w43%)
+  BEHIND thin behind              18-21   +0.8 (n 82 w39%) | 22-23   +2.8 (n 52 w48%) | 24-26   +4.1 (n 67 w46%)
+  VALUE  away from value          18-21   -2.4 (n 63 w38%) | 22-23   +2.8 (n 30 w50%) | 24-26   +6.1 (n 44 w48%)
+  VALUE  back toward value        18-21   +5.6 (n 53 w45%) | 22-23   -3.9 (n 28 w39%) | 24-26   +3.4 (n 41 w44%)
+  VALUE  inside value             18-21   +3.9 (n148 w49%) | 22-23   +9.4 (n 82 w50%) | 24-26   +3.3 (n117 w46%)
+  COMBO  COMBO away + LVN ahead   18-21   -6.9 (n 43 w35%) | 22-23   -4.9 (n 15 w47%) | 24-26   -8.5 (n 22 w36%)
+  COMBO  not combo                18-21   +4.6 (n221 w48%) | 22-23   +6.5 (n125 w48%) | 24-26   +5.5 (n180 w47%)   <- beats all three
+
+  -- profile 60D
+  NODE   HVN                      18-21   +6.8 (n 69 w52%) | 22-23  +31.9 (n 44 w68%) | 24-26   +3.1 (n 72 w46%)
+  NODE   LVN                      18-21   -1.7 (n 51 w39%) | 22-23  -12.8 (n 21 w33%) | 24-26   +9.9 (n 32 w53%)
+  NODE   mid node                 18-21   +3.1 (n129 w44%) | 22-23   -5.3 (n 73 w40%) | 24-26   +2.9 (n 95 w44%)
+  NODE   outside profile          18-21  -10.2 (n 11 w36%) | 22-23   -3.8 (n  2 w50%) | 24-26   -9.3 (n  3 w33%)
+  AHEAD  HVN path ahead           18-21   +4.5 (n 86 w48%) | 22-23  +18.2 (n 49 w57%) | 24-26   +4.9 (n 86 w47%)   <- beats all three
+  AHEAD  LVN path ahead           18-21   -5.9 (n 89 w37%) | 22-23  -14.0 (n 36 w33%) | 24-26   -0.9 (n 61 w43%)
+  AHEAD  mid path                 18-21   +9.5 (n 85 w51%) | 22-23   +6.4 (n 55 w49%) | 24-26   +7.8 (n 55 w49%)   <- beats all three
+  BEHIND mid behind               18-21   +6.8 (n 90 w48%) | 22-23  +14.0 (n 40 w52%) | 24-26  +16.3 (n 44 w52%)   <- beats all three
+  BEHIND thick behind             18-21   +4.2 (n 87 w52%) | 22-23  +11.9 (n 58 w53%) | 24-26   -2.6 (n 88 w42%)
+  BEHIND thin behind              18-21   -3.8 (n 83 w35%) | 22-23  -12.0 (n 42 w36%) | 24-26   +4.4 (n 70 w47%)
+  VALUE  away from value          18-21   -3.1 (n 66 w38%) | 22-23   -8.6 (n 28 w39%) | 24-26  +10.5 (n 43 w49%)
+  VALUE  back toward value        18-21   +7.2 (n 56 w46%) | 22-23   +2.1 (n 26 w46%) | 24-26   -6.9 (n 44 w36%)
+  VALUE  inside value             18-21   +3.4 (n138 w48%) | 22-23  +10.8 (n 86 w51%) | 24-26   +5.6 (n115 w49%)   <- beats all three
+  COMBO  COMBO away + LVN ahead   18-21   -8.2 (n 52 w37%) | 22-23  -12.8 (n 18 w39%) | 24-26   +2.6 (n 28 w43%)
+  COMBO  not combo                18-21   +5.2 (n208 w47%) | 22-23   +8.0 (n122 w49%) | 24-26   +4.2 (n174 w47%)   <- beats all three
+
+REALISTIC MONTHS 2022 - Oct 2026 (filters re-run, so a skipped signal frees the slot for the next flip)
+  base                                           passed  22% lost  41% neither  36% | month $ mean   +597 worst  -2,588 | 2026 passed 4/10 lost 4
+  D: skip HVN entries (n315, avg +4.8)           passed  21% lost  43% neither  36% | month $ mean   +506 worst  -2,588 | 2026 passed 3/10 lost 5
+  D: only away from value (n260, avg +4.4)       passed  17% lost  40% neither  43% | month $ mean   +356 worst  -2,000 | 2026 passed 2/10 lost 4
+  D: only LVN path ahead (n0, avg +nan)          passed   0% lost   0% neither 100% | month $ mean     +0 worst      +0 | 2026 passed 0/10 lost 0
+  D: only COMBO (n0, avg +nan)                   passed   0% lost   0% neither 100% | month $ mean     +0 worst      +0 | 2026 passed 0/10 lost 0
+  D: 1 NQ on COMBO / 0.5 NQ otherwise            passed   2% lost   7% neither  91% | month $ mean   +268 worst  -2,320 | 2026 passed 0/10 lost 2
+  W: skip HVN entries (n250, avg +2.2)           passed  10% lost  31% neither  59% | month $ mean   +319 worst  -2,588 | 2026 passed 1/10 lost 5
+  W: only away from value (n79, avg +3.0)        passed   2% lost   9% neither  90% | month $ mean    +37 worst  -2,868 | 2026 passed 0/10 lost 1
+  W: only LVN path ahead (n97, avg +3.0)         passed   3% lost   9% neither  88% | month $ mean   +100 worst  -2,868 | 2026 passed 0/10 lost 0
+  W: only COMBO (n54, avg +2.7)                  passed   3% lost   3% neither  93% | month $ mean    +59 worst  -2,868 | 2026 passed 0/10 lost 0
+  W: 1 NQ on COMBO / 0.5 NQ otherwise            passed   5% lost  17% neither  78% | month $ mean   +287 worst  -2,148 | 2026 passed 0/10 lost 2
+  M: skip HVN entries (n228, avg +2.5)           passed  14% lost  36% neither  50% | month $ mean   +467 worst  -2,540 | 2026 passed 1/10 lost 5
+  M: only away from value (n76, avg +5.7)        passed   0% lost   9% neither  91% | month $ mean   +170 worst  -2,000 | 2026 passed 0/10 lost 1
+  M: only LVN path ahead (n86, avg -6.6)         passed   2% lost  14% neither  84% | month $ mean    -67 worst  -2,000 | 2026 passed 0/10 lost 1
+  M: only COMBO (n39, avg -4.5)                  passed   0% lost   9% neither  91% | month $ mean    -37 worst  -2,000 | 2026 passed 0/10 lost 2
+  M: 1 NQ on COMBO / 0.5 NQ otherwise            passed   7% lost  14% neither  79% | month $ mean   +259 worst  -2,804 | 2026 passed 0/10 lost 2
+  60D: skip HVN entries (n227, avg -0.2)         passed  16% lost  33% neither  52% | month $ mean   +267 worst  -2,401 | 2026 passed 2/10 lost 3
+  60D: only away from value (n74, avg +4.2)      passed   5% lost   9% neither  86% | month $ mean   +191 worst  -2,000 | 2026 passed 0/10 lost 1
+  60D: only LVN path ahead (n98, avg -5.3)       passed   5% lost  16% neither  79% | month $ mean    -35 worst  -2,000 | 2026 passed 1/10 lost 2
+  60D: only COMBO (n48, avg -1.6)                passed   0% lost   7% neither  93% | month $ mean     +0 worst  -2,000 | 2026 passed 0/10 lost 1
+  60D: 1 NQ on COMBO / 0.5 NQ otherwise          passed   3% lost  14% neither  83% | month $ mean   +280 worst  -2,510 | 2026 passed 0/10 lost 2

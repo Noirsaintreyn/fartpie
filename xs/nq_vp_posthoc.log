@@ -1,0 +1,11 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+  base                                                 passed  22% lost  41% neither  36% | month $ mean   +597 worst  -2,588 | 2026 passed 4/10 lost 4
+  skip LVN path ahead (M) (n258, avg +8.2)             passed  14% lost  34% neither  52% | month $ mean   +592 worst  -2,401 | 2026 passed 1/10 lost 4
+  0.5 NQ when LVN path ahead (M), else 1 NQ            passed  17% lost  36% neither  47% | month $ mean   +623 worst  -2,401 | 2026 passed 2/10 lost 4
+  skip LVN path ahead (60D) (n245, avg +8.6)           passed  16% lost  26% neither  59% | month $ mean   +674 worst  -2,401 | 2026 passed 2/10 lost 2
+  0.5 NQ when LVN path ahead (60D), else 1 NQ          passed  19% lost  29% neither  52% | month $ mean   +656 worst  -2,401 | 2026 passed 3/10 lost 3
+  skip LVN path ahead (M or 60D) (n223, avg +10.2)     passed  12% lost  24% neither  64% | month $ mean   +710 worst  -2,401 | 2026 passed 1/10 lost 2
+  0.5 NQ when LVN path ahead (M or 60D), else 1 NQ     passed  17% lost  28% neither  55% | month $ mean   +708 worst  -2,401 | 2026 passed 2/10 lost 3
+  skip LVN path ahead (M and 60D) (n280, avg +7.0)     passed  17% lost  36% neither  47% | month $ mean   +552 worst  -2,401 | 2026 passed 2/10 lost 4
+  0.5 NQ when LVN path ahead (M and 60D), else 1 NQ    passed  19% lost  38% neither  43% | month $ mean   +578 worst  -2,401 | 2026 passed 3/10 lost 4
