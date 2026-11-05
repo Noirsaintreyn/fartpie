@@ -15,4 +15,9 @@ if ! printf '%s' "$out" | grep -q '"success": *true'; then
   curl -s --max-time 45 -b "$JAR" -c "$JAR" -H 'Content-Type: application/json' -d "$body" "$URL/api/login" > /dev/null
   out="$(snap)"
 fi
-[ -n "$out" ] && printf '%s' "$out" || echo '{"error":"site did not answer (Render may be waking up)"}'
+case "$out" in \{*) ;; *) out='{"error":"site did not answer (Render may be waking up)"}';; esac
+# account-start signals (prior close): VOL-HI / VXN / COLD / DIP, cached 30 min by the script itself
+PYV="$HOME/fartpie/.venv311/bin/python"; [ -x "$PYV" ] || PYV="$PY"
+acct="$("$PYV" "$HOME/fartpie/tools/account_signals.py" --json 2>/dev/null | tail -1)"
+case "$acct" in \{*) ;; *) acct='{}';; esac
+printf '{"site":%s,"acct":%s}' "$out" "$acct"
