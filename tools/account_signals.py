@@ -35,14 +35,16 @@ def series(q, y):
 def trades():
     if not os.path.exists(LOG): return pd.DataFrame(columns=['day', 'net_pts'])
     L = pd.read_csv(LOG, parse_dates=['day']); return L.sort_values('day')
+def ordn(x):
+    n = int(round(x)); return f"{n}{'th' if 10 <= n % 100 <= 20 else {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')}"
 def read(asof, yz, yzp, vx, vxm, z, L, live=True):
     a = lambda s: s[s.index <= asof].iloc[-1] if (s.index <= asof).any() else np.nan
     p, v, m, zz = a(yzp), a(vx), a(vxm), a(z); T = L[L.day <= asof]; last20 = T.net_pts.iloc[-20:].sum() if len(T) >= 20 else np.nan
     stale = live and (len(T) == 0 or (asof - T.day.iloc[-1]).days > 30)       # live only: the log has not been kept up
-    out = [dict(key='VOL-HI', on=bool(p >= 2 / 3), value=f'{p:.0%} pct (20d YZ vol {np.sqrt(a(yz) * 252):.0%}/yr)'),
-           dict(key='VXN', on=bool(v >= m), value=f'{v:.1f} vs median {m:.1f}'),
-           dict(key='COLD', on=bool(last20 < 0) if not stale else False, stale=bool(stale), value=(f'last 20 {last20:+.0f} pts' if np.isfinite(last20) else 'n/a') + (f' (log ends {T.day.iloc[-1]:%b %d}: add trades)' if stale and len(T) else '')),
-           dict(key='DIP', on=bool(zz < -1), value=f'z {zz:+.2f}')]
+    out = [dict(key='VOL-HI', on=bool(p >= 2 / 3), value=f'{ordn(p * 100)} percentile of the year, {np.sqrt(a(yz) * 252):.0%} annualized'),
+           dict(key='VXN', on=bool(v >= m), value=f'{v:.1f} against a median of {m:.1f}'),
+           dict(key='COLD', on=bool(last20 < 0) if not stale else False, stale=bool(stale), value=(f'last 20 trades {last20:+.0f} points' if np.isfinite(last20) else 'fewer than 20 trades logged') + (f', log ends {T.day.iloc[-1].day} {T.day.iloc[-1]:%b}: add live trades' if stale and len(T) else '')),
+           dict(key='DIP', on=bool(zz < -1), value=f'20-day z-score {zz:+.2f}'.replace(' -', ' −'))]
     for s in out: s['label'], s['payout_on'], s['payout_off'] = STATS[s['key']]
     return out
 def nxt(d):
