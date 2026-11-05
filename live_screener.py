@@ -232,7 +232,7 @@ def pm_blocked(t):
     t = pd.Timestamp(t); m = t.hour * 60 + t.minute
     return t >= NO_PM and PM_CUT <= m < RTH1
 
-ANCHOR_START = pd.Timestamp(os.getenv('ANCHOR_START', '2262-01-01'))   # Nov 5 2026 (xs/screener_anchor.py): set e.g. ANCHOR_START=2026-11-06 09:30 to turn on
+ANCHOR_START = pd.Timestamp(os.getenv('ANCHOR_START', '2262-01-01'))   # Nov 5 2026: anchored-vol entry filter, REJECTED on the honest harness (xs/screener_anchor_wide.py: 22-26 +24% vs live +29%) - keep off
 def anchor_arrays(H):
     """per bar: RTH low of the day before this bar, RTH low of the week's earlier days, 20-day daily sigma at the prior close"""
     m = (H.dt.dt.hour * 60 + H.dt.dt.minute).values; rth = (m >= RTH0) & (m < RTH1); day = H.dt.dt.normalize()
