@@ -1,0 +1,49 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+613 trades, 2022-26 sessions 1196, trading days 293
+flags 0.35: THIN 29%, HARH 32%, VWAPX 41%
+flags 0.25: THIN 29%, HARH 32%, VWAPX 38%
+avg pts per trade by count (post-hoc labels, so in-sample by construction)
+  good 0: 18-21   -7.5 (n28) | 22-23   -0.7 (n8) | 24-26   +3.1 (n15)
+  good 1: 18-21   -5.9 (n53) | 22-23   -6.7 (n28) | 24-26   -6.3 (n32)
+  good 2: 18-21   +7.2 (n101) | 22-23  +10.7 (n48) | 24-26   +8.6 (n84)
+  good 3: 18-21   +3.9 (n68) | 22-23   +2.7 (n46) | 24-26   +2.3 (n57)
+  good 4: 18-21   +9.6 (n21) | 22-23  +30.1 (n10) | 24-26   +6.6 (n14)
+  bad 0: 18-21   +7.6 (n102) | 22-23  +14.6 (n60) | 24-26  +15.7 (n83)
+  bad 1: 18-21   -1.0 (n92) | 22-23   +7.7 (n52) | 24-26   -4.1 (n61)
+  bad 2: 18-21   +0.2 (n64) | 22-23  -14.0 (n22) | 24-26   -2.0 (n42)
+  bad 3: 18-21   -7.4 (n12) | 22-23  -37.6 (n6) | 24-26   -8.2 (n12)
+  bad 4: 18-21  +74.0 (n1) | 22-23   +nan (n0) | 24-26  -19.8 (n4)
+  S0 current stack               2022-26: trades 342, avg size 0.58 NQ, avg $ per trade    +86
+  CUT-A skip thin / hard / LVN   2022-26: trades 205, avg size 0.67 NQ, avg $ per trade   +165
+  CUT-B + skip strong close      2022-26: trades 143, avg size 0.69 NQ, avg $ per trade   +193
+  DOWN size down all bad         2022-26: trades 342, avg size 0.49 NQ, avg $ per trade    +75
+  UP 1.5 NQ on clean + good      2022-26: trades 342, avg size 0.69 NQ, avg $ per trade   +118
+  UPDN up on good, down on bad   2022-26: trades 342, avg size 0.57 NQ, avg $ per trade    +97
+  UPDN2 + 2 NQ on 3+ good        2022-26: trades 342, avg size 0.61 NQ, avg $ per trade   +109
+
+Rule A (75/50) 2026: trades 34, win 47%, avg +6.2 pts, total $+541 | 2022-25 avg +13.1 pts, 3.6 trades/month
+         n   win    pts      usd
+day                             
+2026-01  6  0.17 -30.17 -2830.00
+2026-02  5  0.80  37.83  1012.93
+2026-03  5  0.60  24.00   894.00
+2026-04  1  0.00 -51.00 -1020.00
+2026-05  2  0.50  11.50  -576.00
+2026-06  5  0.20 -26.00 -1188.00
+2026-07  2  1.00  74.00  1924.00
+2026-08  5  0.40  -1.00   384.00
+2026-09  3  0.67  32.33  1940.00
+
+every flip (75/50) 2026: trades 60, win 40%, avg -1.1 pts, total $-1,341 | 2022-25 avg +5.7 pts, 5.9 trades/month
+         n   win    pts     usd
+day                            
+2026-01  7  0.14 -33.14 -4640.0
+2026-02  8  0.50  10.62  1698.7
+2026-03  7  0.57  20.43  2860.0
+2026-04  6  0.50  11.50  1380.0
+2026-05  8  0.38  -4.12  -660.0
+2026-06  5  0.20 -26.00 -2600.0
+2026-07  4  0.75  42.75  3420.0
+2026-08  6  0.50  11.50  1380.0
+2026-09  9  0.22 -23.22 -4180.0
