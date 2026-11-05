@@ -1,0 +1,127 @@
+Crumb fetch rate-limited (HTTP 429), continuing without crumb
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+613 trades, 2022-26 sessions 1196, trading days 293
+flags 0.35: THIN 29%, HARH 32%, VWAPX 41%
+flags 0.25: THIN 29%, HARH 32%, VWAPX 38%
+avg pts per trade by count (post-hoc labels, so in-sample by construction)
+  good 0: 18-21   -7.5 (n28) | 22-23   -0.7 (n8) | 24-26   +3.1 (n15)
+  good 1: 18-21   -5.9 (n53) | 22-23   -6.7 (n28) | 24-26   -6.3 (n32)
+  good 2: 18-21   +7.2 (n101) | 22-23  +10.7 (n48) | 24-26   +8.6 (n84)
+  good 3: 18-21   +3.9 (n68) | 22-23   +2.7 (n46) | 24-26   +2.3 (n57)
+  good 4: 18-21   +9.6 (n21) | 22-23  +30.1 (n10) | 24-26   +6.6 (n14)
+  bad 0: 18-21   +7.6 (n102) | 22-23  +14.6 (n60) | 24-26  +15.7 (n83)
+  bad 1: 18-21   -1.0 (n92) | 22-23   +7.7 (n52) | 24-26   -4.1 (n61)
+  bad 2: 18-21   +0.2 (n64) | 22-23  -14.0 (n22) | 24-26   -2.0 (n42)
+  bad 3: 18-21   -7.4 (n12) | 22-23  -37.6 (n6) | 24-26   -8.2 (n12)
+  bad 4: 18-21  +74.0 (n1) | 22-23   +nan (n0) | 24-26  -19.8 (n4)
+  S0 current stack               2022-26: trades 342, avg size 0.58 NQ, avg $ per trade    +86
+  CUT-A skip thin / hard / LVN   2022-26: trades 205, avg size 0.67 NQ, avg $ per trade   +165
+  CUT-B + skip strong close      2022-26: trades 143, avg size 0.69 NQ, avg $ per trade   +193
+  DOWN size down all bad         2022-26: trades 342, avg size 0.49 NQ, avg $ per trade    +75
+  UP 1.5 NQ on clean + good      2022-26: trades 342, avg size 0.69 NQ, avg $ per trade   +118
+  UPDN up on good, down on bad   2022-26: trades 342, avg size 0.57 NQ, avg $ per trade    +97
+  UPDN2 + 2 NQ on 3+ good        2022-26: trades 342, avg size 0.61 NQ, avg $ per trade   +109
+PER TRADE BY YEAR (Rule A)
+
+  F: stop median 50 pts (2022 50 / 2026 50), target median 75, avg size 7.1 MNQ
+    2022: n  44 win 52% avg $ +158 avg R +0.18 | target 32% stop 41% noon 27% | year $+6,969
+    2023: n  45 win 56% avg $ +252 avg R +0.36 | target 40% stop 31% noon 29% | year $+11,335
+    2024: n  42 win 48% avg $  +32 avg R +0.07 | target 33% stop 45% noon 21% | year $+1,353
+    2025: n  41 win 61% avg $ +326 avg R +0.44 | target 46% stop 32% noon 22% | year $+13,358
+    2026: n  34 win 47% avg $  +16 avg R +0.12 | target 44% stop 53% noon 3% | year $+541
+
+  P1: stop median 41 pts (2022 36 / 2026 83), target median 62, avg size 9.0 MNQ
+    2022: n  44 win 57% avg $ +256 avg R +0.36 | target 48% stop 36% noon 16% | year $+11,281
+    2023: n  46 win 61% avg $ +331 avg R +0.48 | target 50% stop 30% noon 20% | year $+15,237
+    2024: n  42 win 45% avg $   -4 avg R +0.02 | target 29% stop 43% noon 29% | year $-188
+    2025: n  41 win 54% avg $ +139 avg R +0.22 | target 37% stop 37% noon 27% | year $+5,692
+    2026: n  34 win 47% avg $  -72 avg R +0.07 | target 32% stop 50% noon 18% | year $-2,442
+
+  P2: stop median 34 pts (2022 30 / 2026 69), target median 68, avg size 10.3 MNQ
+    2022: n  44 win 45% avg $ +159 avg R +0.20 | target 30% stop 50% noon 20% | year $+6,980
+    2023: n  46 win 52% avg $ +357 avg R +0.49 | target 43% stop 43% noon 13% | year $+16,400
+    2024: n  43 win 42% avg $  -35 avg R -0.01 | target 21% stop 49% noon 30% | year $-1,491
+    2025: n  41 win 49% avg $ +186 avg R +0.30 | target 34% stop 44% noon 22% | year $+7,620
+    2026: n  34 win 47% avg $   +5 avg R +0.24 | target 29% stop 50% noon 21% | year $+159
+
+  A1: stop median 48 pts (2022 66 / 2026 87), target median 84, avg size 8.3 MNQ
+    2022: n  44 win 52% avg $ +151 avg R +0.19 | target 23% stop 32% noon 45% | year $+6,622
+    2023: n  46 win 54% avg $ +251 avg R +0.40 | target 33% stop 33% noon 35% | year $+11,537
+    2024: n  43 win 42% avg $  -22 avg R +0.03 | target 28% stop 49% noon 23% | year $-948
+    2025: n  41 win 49% avg $ +104 avg R +0.13 | target 22% stop 37% noon 41% | year $+4,275
+    2026: n  34 win 50% avg $  -31 avg R +0.12 | target 24% stop 47% noon 29% | year $-1,068
+
+  A2: stop median 36 pts (2022 49 / 2026 65), target median 72, avg size 10.3 MNQ
+    2022: n  44 win 50% avg $ +208 avg R +0.21 | target 25% stop 41% noon 34% | year $+9,168
+    2023: n  46 win 48% avg $ +231 avg R +0.39 | target 39% stop 43% noon 17% | year $+10,641
+    2024: n  43 win 40% avg $  -21 avg R +0.04 | target 28% stop 53% noon 19% | year $-890
+    2025: n  41 win 49% avg $ +174 avg R +0.23 | target 27% stop 46% noon 27% | year $+7,119
+    2026: n  34 win 44% avg $  -47 avg R +0.12 | target 24% stop 53% noon 24% | year $-1,595
+
+  VW: stop median 18 pts (2022 18 / 2026 35), target median 27, avg size 14.9 MNQ
+    2022: n  44 win 43% avg $   +7 avg R +0.09 | target 41% stop 55% noon 5% | year $+324
+    2023: n  46 win 46% avg $  +37 avg R +0.08 | target 41% stop 54% noon 4% | year $+1,691
+    2024: n  43 win 47% avg $  +30 avg R +0.05 | target 42% stop 53% noon 5% | year $+1,290
+    2025: n  41 win 56% avg $ +296 avg R +0.42 | target 46% stop 41% noon 12% | year $+12,125
+    2026: n  34 win 35% avg $  -77 avg R -0.08 | target 32% stop 65% noon 3% | year $-2,624
+
+  ORB: stop median 33 pts (2022 51 / 2026 87), target median 85, avg size 11.1 MNQ
+    2022: n  44 win 39% avg $ +209 avg R +0.33 | target 14% stop 55% noon 32% | year $+9,197
+    2023: n  46 win 48% avg $ +267 avg R +0.44 | target 30% stop 41% noon 28% | year $+12,291
+    2024: n  43 win 40% avg $ +167 avg R +0.22 | target 21% stop 51% noon 28% | year $+7,174
+    2025: n  41 win 46% avg $ +220 avg R +0.32 | target 20% stop 37% noon 44% | year $+9,003
+    2026: n  33 win 45% avg $  -67 avg R +0.17 | target 24% stop 52% noon 24% | year $-2,205
+Rule A trades 357; avg 18-21 +8.2 / 22-23 +13.5 / 24-25 +12.6 / 2026 +6.2
+
+WITH vs AGAINST each gate (avg pts, 1 lot)
+  SMA20  with  33% | 18-21 with   +3.2 (n 45) vs against  +10.4 (n106) | 22-23 with   +8.0 (n 31) vs against  +16.5 (n 58) | 24-25 with   -0.4 (n 29) vs against  +19.6 (n 54) | 2026 with  +25.9 (n 13) vs against   -6.0 (n 21)
+  SMA50  with  40% | 18-21 with   -1.6 (n 58) vs against  +14.4 (n 93) | 22-23 with   +0.5 (n 36) vs against  +22.4 (n 53) | 24-25 with   +5.9 (n 36) vs against  +17.6 (n 47) | 2026 with  +20.4 (n 14) vs against   -3.8 (n 20)
+  SMA200 with  50% | 18-21 with   +5.8 (n 76) vs against  +10.6 (n 75) | 22-23 with  +16.1 (n 42) vs against  +11.2 (n 47) | 24-25 with   +8.1 (n 41) vs against  +16.9 (n 42) | 2026 with   -5.5 (n 18) vs against  +19.3 (n 16)
+  Z-MR   with  68% | 18-21 with  +10.2 (n108) vs against   +3.2 (n 43) | 22-23 with  +16.5 (n 58) vs against   +8.0 (n 31) | 24-25 with  +19.6 (n 54) vs against   -0.4 (n 29) | 2026 with   -6.0 (n 21) vs against  +25.9 (n 13)
+  Z-TR   with  32% | 18-21 with   +3.2 (n 43) vs against  +10.2 (n108) | 22-23 with   +8.0 (n 31) vs against  +16.5 (n 58) | 24-25 with   -0.4 (n 29) vs against  +19.6 (n 54) | 2026 with  +25.9 (n 13) vs against   -6.0 (n 21)
+  VWAP   with  86% | 18-21 with   +8.1 (n124) vs against   +8.7 (n 27) | 22-23 with  +14.5 (n 78) vs against   +6.7 (n 11) | 24-25 with  +11.0 (n 71) vs against  +21.9 (n 12) | 2026 with   +6.2 (n 34) vs against   +nan (n  0)
+  WVWAP  with  80% | 18-21 with   +8.8 (n118) vs against   +6.2 (n 33) | 22-23 with  +11.4 (n 72) vs against  +22.5 (n 17) | 24-25 with  +11.0 (n 64) vs against  +17.9 (n 19) | 2026 with   +1.3 (n 30) vs against  +42.8 (n  4)
+  GAP    with  71% | 18-21 with   +9.7 (n113) vs against   +3.7 (n 38) | 22-23 with   +6.4 (n 65) vs against  +32.9 (n 24) | 24-25 with  +20.6 (n 57) vs against   -4.9 (n 26) | 2026 with   -7.9 (n 19) vs against  +24.0 (n 15)
+  H1     with  32% | 18-21 with   +2.0 (n 48) vs against  +11.1 (n103) | 22-23 with  +11.4 (n 32) vs against  +14.7 (n 57) | 24-25 with  +11.0 (n 25) vs against  +13.3 (n 58) | 2026 with  +39.9 (n 11) vs against   -9.9 (n 23)
+  H4     with  41% | 18-21 with   +4.3 (n 58) vs against  +10.7 (n 93) | 22-23 with  +10.7 (n 39) vs against  +15.8 (n 50) | 24-25 with  +12.7 (n 35) vs against  +12.5 (n 48) | 2026 with  +11.5 (n 16) vs against   +1.5 (n 18)
+  VXN    with  39% | 18-21 with   +6.9 (n 57) vs against   +9.0 (n 94) | 22-23 with   +8.7 (n 38) vs against  +17.2 (n 51) | 24-25 with   +3.2 (n 32) vs against  +18.4 (n 51) | 2026 with  +20.4 (n 14) vs against   -3.8 (n 20)
+% of Rule A trades in TREND mode
+  PERF  2018-21 15% | 2022 70% | 2023 64% | 2024 40% | 2025 7% | 2026 94%
+  VR    2018-21 9% | 2022 7% | 2023 13% | 2024 47% | 2025 2% | 2026 24%
+  AC    2018-21 20% | 2022 27% | 2023 51% | 2024 40% | 2025 20% | 2026 35%
+
+Rule A $ by year at final sizing x mode (1 contract-equivalent ladder; slot effects ignored)
+  always normal     2018-21 +24,826 | 2022  +5,495 | 2023 +12,075 | 2024    +549 | 2025 +13,799 | 2026  +2,900
+  always 2026 mode  2018-21 +13,370 | 2022  +4,517 | 2023  +7,479 | 2024    +578 | 2025  +8,435 | 2026  +4,467
+  PERF-1            2018-21 +23,418 | 2022  +4,841 | 2023  +7,819 | 2024  -2,372 | 2025 +12,574 | 2026  +4,327
+  PERF-2            2018-21 +21,961 | 2022  +3,597 | 2023  +7,920 | 2024  -3,155 | 2025 +11,039 | 2026  +4,327
+  VR-1              2018-21 +22,180 | 2022  +4,751 | 2023 +11,105 | 2024  -1,423 | 2025 +13,799 | 2026  +2,579
+  VR-2              2018-21 +20,476 | 2022  +3,352 | 2023  +9,894 | 2024  -2,307 | 2025 +12,263 | 2026    -718
+  AC-1              2018-21 +19,036 | 2022  +3,821 | 2023  +8,208 | 2024  +2,273 | 2025 +13,709 | 2026  +3,599
+  AC-2              2018-21 +16,422 | 2022  +2,236 | 2023  +9,580 | 2024  +1,539 | 2025 +12,020 | 2026  +1,042
+state mix of Rule A trades by year: 2018-21 {'MR/LOW': 0.33, 'MR/HIGH': 0.3, 'TREND/LOW': 0.25, 'TREND/HIGH': 0.12} | 2022 {'MR/HIGH': 0.39, 'TREND/HIGH': 0.3, 'MR/LOW': 0.18, 'TREND/LOW': 0.14} | 2023 {'MR/LOW': 0.62, 'TREND/LOW': 0.38} | 2024 {'TREND/LOW': 0.45, 'TREND/HIGH': 0.36, 'MR/LOW': 0.19} | 2025 {'MR/HIGH': 0.39, 'TREND/LOW': 0.34, 'MR/LOW': 0.22, 'TREND/HIGH': 0.05} | 2026 {'TREND/LOW': 0.41, 'TREND/HIGH': 0.29, 'MR/LOW': 0.24, 'MR/HIGH': 0.06}
+
+WITH minus AGAINST the 1h vector (avg pts) by state and year
+  MR/HIGH    2018-21   +0.1 (n14/31) | 2022  -16.4 (n7/10) | 2023    n/a | 2024    n/a | 2025   +6.7 (n5/11) | 2026    n/a
+  MR/LOW     2018-21  -25.5 (n16/32) | 2022   -2.3 (n3/5) | 2023  +20.0 (n10/18) | 2024    n/a | 2025  +47.1 (n3/6) | 2026  +16.7 (n3/5)
+  TREND/HIGH 2018-21  -41.8 (n3/15) | 2022  +28.9 (n5/8) | 2023    n/a | 2024  -31.6 (n8/7) | 2025    n/a | 2026    n/a
+  TREND/LOW  2018-21   +8.0 (n13/25) | 2022    n/a | 2023  -78.5 (n5/12) | 2024  +33.5 (n5/14) | 2025    n/a | 2026  +69.5 (n6/8)
+
+Rule A $ by year (final sizing x state-machine sizing)
+  always normal  2018-21 +24,826 | 2022  +5,495 | 2023 +12,075 | 2024    +549 | 2025 +13,799 | 2026  +2,900 | 2022-26  +34,818
+  THEORY         2018-21 +20,314 | 2022  +5,607 | 2023  +5,302 | 2024    -292 | 2025  +8,367 | 2026  +3,804 | 2022-26  +22,788
+  LEARN-X        2018-21 +22,491 | 2022  +5,050 | 2023  +6,922 | 2024  -2,910 | 2025 +10,634 | 2026  +2,802 | 2022-26  +22,498
+  LEARN-24       2018-21 +25,336 | 2022  +5,442 | 2023  +9,697 | 2024    +706 | 2025 +13,799 | 2026  +2,900 | 2022-26  +32,544
+  PLACEBO LEARN-X (20 shifted state series): 2022-26 median +27,596 (range +22,287 to +30,703) | 2026 median +1,173
+
+STATE-MACHINE SYSTEMS (gap-gated eval; sizing in eval and funded)
+  always normal  LUCID 50K | eval pass  58% | funded paid  78% | evals -> payout  45% | net/eval +3,220 | 12m median +2,767 positive  65% | 2022-Oct26 +19,249 | 2026  -176
+  always normal  TOPSTEP   | eval pass  58% | funded paid  82% | evals -> payout  47% | net/eval +3,073 | 12m median +2,550 positive  65% | 2022-Oct26 +18,048 | 2026  -490
+  THEORY         LUCID 50K | eval pass  45% | funded paid  83% | evals -> payout  38% | net/eval +1,566 | 12m median   +818 positive  54% | 2022-Oct26 +14,885 | 2026  -176
+  THEORY         TOPSTEP   | eval pass  45% | funded paid  83% | evals -> payout  37% | net/eval +1,549 | 12m median   +408 positive  52% | 2022-Oct26 +12,915 | 2026  -590
+  LEARN-X        LUCID 50K | eval pass  52% | funded paid  79% | evals -> payout  41% | net/eval +1,990 | 12m median +1,038 positive  61% | 2022-Oct26 +13,577 | 2026  -176
+  LEARN-X        TOPSTEP   | eval pass  52% | funded paid  78% | evals -> payout  40% | net/eval +2,013 | 12m median   +492 positive  54% | 2022-Oct26 +11,385 | 2026  -490
+  LEARN-24       LUCID 50K | eval pass  62% | funded paid  75% | evals -> payout  46% | net/eval +3,839 | 12m median +2,767 positive  61% | 2022-Oct26 +18,906 | 2026  -176
+  LEARN-24       TOPSTEP   | eval pass  62% | funded paid  82% | evals -> payout  51% | net/eval +3,637 | 12m median +2,467 positive  59% | 2022-Oct26 +17,489 | 2026  -490
+exit 0
