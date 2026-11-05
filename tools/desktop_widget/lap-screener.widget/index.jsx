@@ -1,29 +1,43 @@
 // L'Argent Parle - the live vector screener, as an engraved desk statement. Übersicht widget (https://tracesof.net/uebersicht/), refreshes every minute
 // from the site's snapshot. Type: Times New Roman (roman for figures, italic for prose) + Snell Roundhand for the masthead (both ship with macOS).
+// MOVE IT: drag it anywhere (the spot is remembered). Double-click puts it back at the default spot.
 import { css } from "uebersicht";
 
 export const command = "bash lap-screener.widget/fetch.sh";
 export const refreshFrequency = 60 * 1000;
+export const className = `left: 0; top: 0;`;            // the panel positions itself (draggable), see Panel below
 
 const C = { ink: "rgba(13,19,34,0.94)", vellum: "#ece2c9", vellum2: "#c9bfa6", pewter: "#8b8f99", gold: "#c6a465", rule: "rgba(198,164,101,0.28)", faint: "rgba(236,226,201,0.08)",
             gain: "#9cc3a0", loss: "#d4776f", amber: "#e0b25a" };
 const SERIF = `"Times New Roman", Times, serif`, SCRIPT = `"Snell Roundhand", "Apple Chancery", cursive`;
-export const className = `
-  left: 24px; bottom: 24px; width: 392px; color: ${C.vellum}; font-family: ${SERIF}; font-size: 13px; line-height: 1.35;
+const box = css`
+  position: absolute; width: 392px; color: ${C.vellum}; font-family: ${SERIF}; font-size: 13px; line-height: 1.35; cursor: grab; user-select: none;
   background: ${C.ink}; border: 1px solid ${C.rule}; border-radius: 6px; padding: 0 20px 18px; overflow: hidden;
   box-shadow: 0 18px 50px rgba(0,0,0,0.45); -webkit-font-smoothing: antialiased;
+  &:active { cursor: grabbing; }
 `;
 const row = css`display: flex; align-items: baseline; padding: 5px 0; border-top: 1px solid ${C.faint};`;
 const title = css`display: flex; justify-content: space-between; align-items: baseline; margin: 16px 0 4px; font-style: italic; color: ${C.gold}; font-size: 15px;`;
 const it = css`font-style: italic;`;
 
+// ---- dragging: the panel's spot lives in localStorage, so it survives refreshes and restarts
+const KEY = "lap-screener-pos", DEF = { x: 190, y: 64 };
+const getPos = () => { try { const p = JSON.parse(window.localStorage.getItem(KEY)); return p && isFinite(p.x) && isFinite(p.y) ? p : DEF; } catch (e) { return DEF; } };
+const startDrag = (e) => {
+  if (e.button !== 0) return;
+  const el = e.currentTarget, p = getPos(), dx = e.clientX - p.x, dy = e.clientY - p.y;
+  const at = (ev) => ({ x: Math.max(0, ev.clientX - dx), y: Math.max(0, ev.clientY - dy) });
+  const move = (ev) => { const q = at(ev); el.style.left = `${q.x}px`; el.style.top = `${q.y}px`; };
+  const up = (ev) => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); try { window.localStorage.setItem(KEY, JSON.stringify(at(ev))); } catch (err) {} };
+  window.addEventListener("mousemove", move); window.addEventListener("mouseup", up); e.preventDefault();
+};
+const resetPos = (e) => { try { window.localStorage.removeItem(KEY); } catch (err) {} e.currentTarget.style.left = `${DEF.x}px`; e.currentTarget.style.top = `${DEF.y}px`; };
+const Panel = ({ children }) => { const p = getPos(); return <div className={box} style={{ left: p.x, top: p.y }} onMouseDown={startDrag} onDoubleClick={resetPos}>{children}</div>; };
+
 const MON = { "01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", "05": "May", "06": "Jun", "07": "Jul", "08": "Aug", "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dec" };
-const DAY = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" };
-const MONTH = { Jan: "January", Feb: "February", Mar: "March", Apr: "April", May: "May", Jun: "June", Jul: "July", Aug: "August", Sep: "September", Oct: "October", Nov: "November", Dec: "December" };
 const sgn = (x, d = 2) => (x == null || isNaN(x) ? "–" : `${x > 0 ? "+" : x < 0 ? "−" : ""}${Math.abs(Number(x)).toFixed(d)}%`);
 const hue = (x) => (x == null || isNaN(x) ? C.pewter : x >= 0 ? C.gain : C.loss);
 const shortDay = (s) => { const m = /(\d\d)-(\d\d)/.exec(s || ""); return m ? `${Number(m[2])} ${MON[m[1]]}` : ""; };          // 'Wed 10-21 11:00  343.18' -> '21 Oct'
-const longSince = (s) => { const p = (s || "").split(" "); return p.length === 3 ? `${DAY[p[0]] || p[0]} ${Number(p[2])} ${MONTH[p[1]] || p[1]}` : s || "the start"; };
 const ago = (iso) => { if (!iso) return ""; const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000); return m < 1 ? "just now" : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} days ago`; };
 const SLOTS = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight"];
 
@@ -66,20 +80,18 @@ export const render = ({ output, error }) => {
   let d = null; try { d = JSON.parse(output); } catch (e) {}
   const today = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
   if (error || !d || d.error || !d.snapshot)
-    return (<div><Masthead right={today} /><div className={it} style={{ color: C.vellum2, marginTop: 14 }}>{(d && d.error) || "Waiting for the site. Render can take a minute to wake up."}</div></div>);
+    return (<Panel><Masthead right={today} /><div className={it} style={{ color: C.vellum2, marginTop: 14 }}>{(d && d.error) || "Waiting for the site. Render can take a minute to wake up."}</div></Panel>);
   const s = d.snapshot, h = s.history || {}, pos = s.positions || [], sig = s.signals || [], watch = (s.watch || []).slice(0, 8);
   const trades = h.trades || [], since = {}; trades.filter((t) => t.open).forEach((t) => { since[t.name] = shortDay(t.entry); });
   const closed = trades.filter((t) => !t.open).slice(0, 3);
   const age = s.asof ? (Date.now() - new Date(s.asof).getTime()) / 60000 : null, stale = s.market_open && age > 30;
   return (
-    <div>
+    <Panel>
       <Masthead right={<span>{today}<br /><span style={{ color: stale ? C.amber : C.pewter }}>{s.market_open ? "Market open" : "Market closed"}, updated {ago(s.asof)}</span></span>} />
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 14 }}>
-        <div>
-          <div style={{ fontSize: 42, lineHeight: 1, color: hue(h.book), letterSpacing: "-0.01em" }}>{sgn(h.book)}</div>
-          <div className={it} style={{ color: C.vellum2, marginTop: 4 }}>since {longSince(h.since)}</div>
-        </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginTop: 14 }}>
+        <div style={{ fontSize: 42, lineHeight: 1, color: hue(h.book), letterSpacing: "-0.01em" }}>{sgn(h.book)}</div>
         <div style={{ textAlign: "right", color: C.vellum2, lineHeight: 1.5 }}>
+          <div className={it} style={{ color: C.gold, fontSize: 14 }}>since launch</div>
           {h.qqq != null && <div><span className={it} style={{ color: C.pewter }}>QQQ </span>{sgn(h.qqq)}</div>}
           {h.spy != null && <div><span className={it} style={{ color: C.pewter }}>SPY </span>{sgn(h.spy)}</div>}
         </div>
@@ -135,6 +147,6 @@ export const render = ({ output, error }) => {
           </span>
         ))}
       </div>
-    </div>
+    </Panel>
   );
 };

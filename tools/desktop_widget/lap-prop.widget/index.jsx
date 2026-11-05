@@ -1,22 +1,39 @@
 // L'Argent Parle - prop accounts: is today a good day to open an evaluation? Account-start signals known at the prior close
 // (tools/account_signals.py; backtest xs/nq_accounts3.py / xs/nq_full_system.py). Übersicht widget, refreshes every 5 minutes (the script caches for 30).
+// MOVE IT: drag it anywhere (the spot is remembered). Double-click puts it back at the default spot.
 import { css } from "uebersicht";
 
 export const command = "bash lap-prop.widget/fetch.sh";
 export const refreshFrequency = 5 * 60 * 1000;
+export const className = `left: 0; top: 0;`;            // the panel positions itself (draggable), see Panel below
 
 const C = { ink: "rgba(13,19,34,0.94)", vellum: "#ece2c9", vellum2: "#c9bfa6", pewter: "#8b8f99", gold: "#c6a465", rule: "rgba(198,164,101,0.28)", faint: "rgba(236,226,201,0.08)",
             gain: "#9cc3a0", loss: "#d4776f" };
 const SERIF = `"Times New Roman", Times, serif`, SCRIPT = `"Snell Roundhand", "Apple Chancery", cursive`;
-export const className = `
-  left: 476px; bottom: 24px; width: 336px; color: ${C.vellum}; font-family: ${SERIF}; font-size: 13px; line-height: 1.35;
+const box = css`
+  position: absolute; width: 336px; color: ${C.vellum}; font-family: ${SERIF}; font-size: 13px; line-height: 1.35; cursor: grab; user-select: none;
   background: ${C.ink}; border: 1px solid ${C.rule}; border-radius: 6px; padding: 0 20px 16px; overflow: hidden;
   box-shadow: 0 18px 50px rgba(0,0,0,0.45); -webkit-font-smoothing: antialiased;
+  &:active { cursor: grabbing; }
 `;
 const row = css`display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-top: 1px solid ${C.faint};`;
 const it = css`font-style: italic;`;
 const PLAIN = { "VOL-HI": "Volatility in its top third", VXN: "VXN above its yearly median", COLD: "System in a cold streak", DIP: "QQQ stretched below average" };
 const day = (d, opt) => (d ? new Date(`${d}T12:00:00`).toLocaleDateString("en-GB", opt) : "");
+
+// ---- dragging: the panel's spot lives in localStorage, so it survives refreshes and restarts
+const KEY = "lap-prop-pos", DEF = { x: 640, y: 64 };
+const getPos = () => { try { const p = JSON.parse(window.localStorage.getItem(KEY)); return p && isFinite(p.x) && isFinite(p.y) ? p : DEF; } catch (e) { return DEF; } };
+const startDrag = (e) => {
+  if (e.button !== 0) return;
+  const el = e.currentTarget, p = getPos(), dx = e.clientX - p.x, dy = e.clientY - p.y;
+  const at = (ev) => ({ x: Math.max(0, ev.clientX - dx), y: Math.max(0, ev.clientY - dy) });
+  const move = (ev) => { const q = at(ev); el.style.left = `${q.x}px`; el.style.top = `${q.y}px`; };
+  const up = (ev) => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); try { window.localStorage.setItem(KEY, JSON.stringify(at(ev))); } catch (err) {} };
+  window.addEventListener("mousemove", move); window.addEventListener("mouseup", up); e.preventDefault();
+};
+const resetPos = (e) => { try { window.localStorage.removeItem(KEY); } catch (err) {} e.currentTarget.style.left = `${DEF.x}px`; e.currentTarget.style.top = `${DEF.y}px`; };
+const Panel = ({ children }) => { const p = getPos(); return <div className={box} style={{ left: p.x, top: p.y }} onMouseDown={startDrag} onDoubleClick={resetPos}>{children}</div>; };
 
 const Guilloche = ({ w, h }) => {
   const lines = [];
@@ -32,7 +49,7 @@ export const render = ({ output }) => {
   let a = null; try { a = JSON.parse(output); } catch (e) {}
   const ok = a && !a.error && a.signals;
   return (
-    <div>
+    <Panel>
       <div style={{ position: "relative", height: 62, margin: "0 -20px", padding: "0 20px", borderBottom: `1px solid ${C.rule}` }}>
         <Guilloche w={376} h={62} />
         <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "flex-end", height: 54 }}>
@@ -70,6 +87,6 @@ export const render = ({ output }) => {
           </div>
         </div>
       )}
-    </div>
+    </Panel>
   );
 };
