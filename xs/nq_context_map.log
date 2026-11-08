@@ -1,0 +1,89 @@
+15m RTH flips 2018-2026: 1084 (0.49 a day); AM 09:45-11:30: 664
+flips 1084; with VA 1084, with node 1073
+
+=== LONG flips (545) | periods  18-21  22-23  24-25   2026
+  VA:
+    below VAL      n  49 win 37% TH   -4.2  F75   -1.1 | TH   +1.2  +29.5  -35.0      .
+    VAL-POC        n  51 win 51% TH   +7.5  F75   +7.9 | TH  +15.6  +18.4  -25.6      .
+    POC-VAH        n  59 win 44% TH  +11.4  F75   -5.8 | TH   +5.6  -12.9  +40.1      .
+    above VAH      n 386 win 39% TH   +9.9  F75   +3.2 | TH  +15.6  +13.1  +12.6  -27.2
+  BR:
+    VAL            n  23 win 43% TH  -11.6  F75   -1.3 | TH   +5.7  -31.6      .      .
+    POC            n  25 win 44% TH  +22.0  F75   -6.3 | TH   -3.1      .  +62.6      .
+    VAH            n  78 win 42% TH   +9.8  F75   +0.0 | TH  +25.1  +11.7   -1.0  -22.8
+    none           n 419 win 40% TH   +8.6  F75   +3.4 | TH  +12.8  +17.7   +6.0  -29.9
+  ND:
+    LVN            n 108 win 36% TH   +1.4  F75   +0.1 | TH  +16.4  -10.3  -12.2   -6.6
+    middle         n 209 win 40% TH   +9.8  F75   -0.1 | TH  +10.4  +31.8   +1.9  -30.8
+    HVN            n 197 win 44% TH   +8.5  F75   +5.8 | TH  +18.3   +2.8   +2.8  -20.6
+    outside range  n  26 win 38% TH  +29.1  F75   +3.4 | TH   -9.7      .      .      .
+  GAM:
+    neg gamma      n 424 win 41% TH  +12.7  F75   +4.2 | TH  +15.6  +14.9  +13.8  -15.5
+    pos gamma      n 121 win 40% TH   -5.9  F75   -4.5 | TH   +2.8   -1.8   -2.7  -38.3
+  VOL:
+    high vol       n 193 win 36% TH  +17.3  F75   +4.4 | TH  +26.2  +22.1   +8.9   -6.0
+    normal vol     n 352 win 43% TH   +3.8  F75   +1.1 | TH   +7.5   +7.4   +7.2  -36.8
+  GAMMA x VOL x NODE cells (n >= 15), best first:
+    neg gamma + high vol + middle                  n  65 win 34% TH  +21.1  F75   -3.0 | 2018-21   +2.8 / 2022-26  +29.2 both halves +
+    neg gamma + high vol + LVN                     n  36 win 31% TH  +17.2  F75   +1.1 | 2018-21  +58.3 / 2022-26  -12.2 
+    neg gamma + high vol + HVN                     n  69 win 45% TH  +16.8  F75  +15.2 | 2018-21  +38.1 / 2022-26   -4.0 
+    neg gamma + normal vol + HVN                   n  90 win 44% TH   +9.3  F75   +2.3 | 2018-21   +6.4 / 2022-26  +12.9 both halves +
+    neg gamma + normal vol + middle                n 107 win 44% TH   +8.5  F75   +4.5 | 2018-21  +14.5 / 2022-26   +3.1 both halves +
+    neg gamma + normal vol + LVN                   n  38 win 39% TH   -0.0  F75   +6.0 | 2018-21   +1.0 / 2022-26   -1.1 
+    pos gamma + normal vol + middle                n  33 win 39% TH   -3.3  F75   -5.4 | 2018-21   +5.3 / 2022-26   -7.7 
+    pos gamma + normal vol + HVN                   n  32 win 44% TH   -5.5  F75   -3.2 | 2018-21  +16.9 / 2022-26  -17.3 
+    pos gamma + normal vol + LVN                   n  31 win 39% TH  -12.7  F75   -9.9 | 2018-21   -7.5 / 2022-26  -15.6 both halves -
+  VA x NODE cells (n >= 15), best first:
+    above VAH + outside range                      n  24 win 42% TH  +35.7  F75   +7.9 | 2018-21   -6.8 / 2022-26  +95.3 
+    below VAL + middle                             n  16 win 56% TH  +33.7  F75   +3.0 | 2018-21  +32.6 / 2022-26  +34.4 both halves +
+    POC-VAH + middle                               n  19 win 53% TH  +26.2  F75   -0.8 | 2018-21   +3.9 / 2022-26  +64.5 both halves +
+    VAL-POC + HVN                                  n  24 win 67% TH  +21.8  F75  +17.7 | 2018-21  +12.8 / 2022-26  +30.8 both halves +
+    above VAH + HVN                                n 124 win 42% TH  +12.8  F75   +8.5 | 2018-21  +25.1 / 2022-26   +1.0 both halves +
+    above VAH + middle                             n 154 win 37% TH   +6.8  F75   -0.0 | 2018-21   +7.7 / 2022-26   +6.4 both halves +
+    above VAH + LVN                                n  82 win 37% TH   +2.8  F75   -0.9 | 2018-21  +18.9 / 2022-26  -14.1 
+    POC-VAH + HVN                                  n  29 win 41% TH   -0.5  F75  -11.3 | 2018-21   +9.6 / 2022-26   -8.7 
+    VAL-POC + middle                               n  20 win 35% TH   -2.5  F75   -2.9 | 2018-21  +22.4 / 2022-26  -19.1 
+    below VAL + HVN                                n  20 win 30% TH  -21.3  F75   -0.4 | 2018-21   -7.4 / 2022-26  -32.7 both halves -
+
+=== SHORT flips (539) | periods  18-21  22-23  24-25   2026
+  VA:
+    below VAL      n 372 win 28% TH   -1.4  F75   -3.1 | TH   -8.2   +1.2   +0.5  +18.3
+    VAL-POC        n  68 win 46% TH  +17.8  F75   +8.9 | TH  +28.5  +28.8   -7.7      .
+    POC-VAH        n  43 win 40% TH  +19.6  F75   +2.4 | TH  +13.5      .  +32.4      .
+    above VAH      n  56 win 36% TH  +11.1  F75   -2.9 | TH   -5.8  +21.9  +57.1      .
+  BR:
+    VAL            n  86 win 35% TH   +5.4  F75   +0.8 | TH   -8.9   -4.8  +68.8  -13.1
+    POC            n  35 win 43% TH   +8.5  F75   +8.2 | TH   +2.7  +25.1   +0.4      .
+    VAH            n  54 win 39% TH  +14.6  F75   +3.3 | TH  +24.8  +29.4   +1.2      .
+    none           n 364 win 29% TH   +1.6  F75   -3.1 | TH   -5.1  +11.3   -2.7  +16.8
+  ND:
+    LVN            n 112 win 27% TH   -7.4  F75   -7.5 | TH   -5.8  -15.6   +1.5  -14.8
+    middle         n 209 win 31% TH   +7.8  F75   +0.2 | TH   -0.7   +3.9  +19.5  +35.9
+    HVN            n 203 win 35% TH   +7.5  F75   +1.4 | TH   -0.0  +39.7   -0.5   +0.3
+    outside range  n   9 win 33% TH  -18.2  F75   -9.5 | TH  -17.5      .      .      .
+  GAM:
+    neg gamma      n 321 win 33% TH   +9.0  F75   +0.5 | TH   +1.4  +15.4  +15.0  +22.8
+    pos gamma      n 218 win 30% TH   -3.5  F75   -3.5 | TH   -7.8   -5.1   +2.3   -4.1
+  VOL:
+    high vol       n 155 win 28% TH   +8.4  F75   -5.4 | TH   +0.0  +13.6   +9.3  +25.1
+    normal vol     n 384 win 33% TH   +2.2  F75   +0.6 | TH   -2.6   +9.2   +5.9   -0.4
+  GAMMA x VOL x NODE cells (n >= 15), best first:
+    neg gamma + high vol + LVN                     n  22 win 41% TH  +23.9  F75   +4.9 | 2018-21  +31.1 / 2022-26  +17.8 both halves +
+    neg gamma + normal vol + middle                n  73 win 38% TH  +18.7  F75  +15.4 | 2018-21  +21.1 / 2022-26  +16.3 both halves +
+    neg gamma + normal vol + HVN                   n  83 win 43% TH  +18.0  F75   +8.8 | 2018-21   +4.7 / 2022-26  +38.0 both halves +
+    neg gamma + high vol + middle                  n  51 win 22% TH   +7.1  F75  -16.8 | 2018-21  -23.5 / 2022-26  +26.8 
+    neg gamma + high vol + HVN                     n  52 win 23% TH   +1.9  F75   -6.1 | 2018-21  -11.2 / 2022-26  +12.2 
+    pos gamma + normal vol + HVN                   n  58 win 31% TH   -2.5  F75   -3.4 | 2018-21   -9.1 / 2022-26   +0.9 
+    pos gamma + normal vol + middle                n  75 win 28% TH   -4.8  F75   -6.0 | 2018-21  -12.9 / 2022-26   +0.9 
+    pos gamma + normal vol + LVN                   n  56 win 27% TH  -10.3  F75   -5.8 | 2018-21  -22.1 / 2022-26   -2.0 both halves -
+    neg gamma + normal vol + LVN                   n  27 win 19% TH  -29.4  F75  -21.3 | 2018-21  -34.9 / 2022-26  -27.1 both halves -
+  VA x NODE cells (n >= 15), best first:
+    VAL-POC + HVN                                  n  36 win 47% TH  +29.2  F75   +6.3 | 2018-21  +37.4 / 2022-26  +23.3 both halves +
+    POC-VAH + HVN                                  n  20 win 40% TH  +29.0  F75   -1.3 | 2018-21  +15.9 / 2022-26  +44.9 both halves +
+    above VAH + middle                             n  21 win 29% TH  +28.8  F75   -9.5 | 2018-21  -26.9 / 2022-26  +63.1 
+    POC-VAH + middle                               n  18 win 44% TH  +25.7  F75  +18.4 | 2018-21  +11.3 / 2022-26  +54.5 both halves +
+    below VAL + middle                             n 144 win 28% TH   +4.8  F75   -2.0 | 2018-21   -1.3 / 2022-26   +9.7 
+    below VAL + HVN                                n 120 win 30% TH   +0.3  F75   +1.0 | 2018-21  -10.4 / 2022-26   +9.7 
+    above VAH + HVN                                n  27 win 37% TH   -5.1  F75   -1.3 | 2018-21  -11.1 / 2022-26   +1.4 
+    VAL-POC + middle                               n  26 win 38% TH   -5.2  F75   +7.5 | 2018-21  +13.9 / 2022-26  -12.2 
+    below VAL + LVN                                n  97 win 24% TH  -10.8  F75   -8.9 | 2018-21  -14.0 / 2022-26   -8.8 both halves -
