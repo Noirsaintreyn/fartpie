@@ -1,0 +1,18 @@
+15m RTH flips 2018-2026: 1084 (0.49 a day); AM 09:45-11:30: 664
+5m flip candidates 3149 (2.1 a day); target hit 48%; avg -1.87 pts; bracket median 2018-21 12 / 2022-26 21 pts
+  2020: train 641, test 396, AUC LGBM 0.538 logistic 0.496 | top features rvol, vz, mopen, node, gexp
+  2021: train 1037, test 349, AUC LGBM 0.513 logistic 0.532 | top features rvol, node, vz, adr, mopen
+  2022: train 1386, test 350, AUC LGBM 0.541 logistic 0.470 | top features vz, node, mopen, gexp, rv20p
+  2023: train 1736, test 366, AUC LGBM 0.511 logistic 0.483 | top features vz, node, mopen, z21, rv20p
+  2024: train 2102, test 380, AUC LGBM 0.472 logistic 0.501 | top features node, vz, rvol, rv5p, gexp
+  2025: train 2482, test 391, AUC LGBM 0.489 logistic 0.528 | top features node, vz, gexp, z21, mopen
+  2026: train 2873, test 276, AUC LGBM 0.471 logistic 0.493 | top features node, z21, rvol, rv5p, vz
+
+  pooled 2020-26 AUC: LGBM 0.496, logistic 0.493
+  by LGBM quintile (2020-26): Q1 hit 47% avg -2.42 | Q2 hit 46% avg -1.91 | Q3 hit 45% avg -2.56 | Q4 hit 49% avg -1.10 | Q5 hit 44% avg -3.34
+
+  POLICY (1 contract)            trades/day  hit   pts/trade  pts/day  qualifying days/month | by year: qual days/mo, pts/day
+  every flip (no model)                1.22   45%      -2.95    -3.59                  11.5 | 2020 10.2/-5.3 2021 11.9/-3.1 2022 13.0/+0.5 2023 13.6/+0.4 2024 11.5/-2.8 2025 11.0/-4.1 2026 9.3/-12.5
+  LGBM top 10%                            0.06   47%      -2.09    -0.12                   0.6 | 2020 0.3/-0.3 2021 0.4/-0.0 2022 0.0/-0.6 2023 0.2/+0.1 2024 1.1/+0.3 2025 1.0/+0.2 2026 1.1/-0.6
+  LGBM top 20%                            0.16   45%      -3.54    -0.58                   1.5 | 2020 1.9/-0.3 2021 0.9/-0.3 2022 0.6/-1.0 2023 1.2/+0.4 2024 2.6/+0.4 2025 1.7/-0.7 2026 1.9/-3.1
+  LGBM top 30%                            0.31   45%      -3.17    -0.98                   2.9 | 2020 3.1/-1.1 2021 1.9/+0.0 2022 2.1/-0.3 2023 2.3/+0.2 2024 4.2/-0.8 2025 3.6/-0.3 2026 3.4/-5.6
