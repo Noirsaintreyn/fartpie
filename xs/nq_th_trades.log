@@ -1,0 +1,13 @@
+15m RTH flips 2018-2026: 1084 (0.49 a day); AM 09:45-11:30: 664
+alignment rules picked each year (features whose best tercile beat the worst in every training year):
+  2020: yz1, yz5, rv1, shock, vxn, comp, used, brk, body, vwd, drift, prev, z5, z252, ruleA_am
+  2021: yz1, yz5, rv1, shock, vix, vxn, comp, used, body, vwd, drift, z63, ruleA_am
+  2022: yz1, rv1, shock, comp, brk, acc, body, me, ruleA_am
+  2023: shock, comp, vwd, prev, room, ruleA_am
+  2024: shock, ruleA_am
+  2025: shock, room, ruleA_am
+  2026: shock, ruleA_am
+FIX_A  trades 370 (2022+: 199) | 2022+ sized points +6,211 = +5.19 a day | avg size 1.33 | worst MAE -51
+RA_TH  trades 343 (2022+: 192) | 2022+ sized points +3,493 = +2.92 a day | avg size 0.76 | worst MAE -51
+WF_A   trades 827 (2022+: 596) | 2022+ sized points +6,196 = +5.18 a day | avg size 0.98 | worst MAE -51
+exit 0
