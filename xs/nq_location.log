@@ -1,0 +1,304 @@
+loaded; SPY 15m through 2026-08-14 15:45:00
+context: bad 10% normal 39% good 51% of signals; liquidity target found on 44%, median 47 pts
+613 trades, 2022-26 sessions 1196, trading days 293
+flags 0.35: THIN 29%, HARH 32%, VWAPX 41%
+flags 0.25: THIN 29%, HARH 32%, VWAPX 38%
+avg pts per trade by count (post-hoc labels, so in-sample by construction)
+  good 0: 18-21   -7.5 (n28) | 22-23   -0.7 (n8) | 24-26   +3.1 (n15)
+  good 1: 18-21   -5.9 (n53) | 22-23   -6.7 (n28) | 24-26   -6.3 (n32)
+  good 2: 18-21   +7.2 (n101) | 22-23  +10.7 (n48) | 24-26   +8.6 (n84)
+  good 3: 18-21   +3.9 (n68) | 22-23   +2.7 (n46) | 24-26   +2.3 (n57)
+  good 4: 18-21   +9.6 (n21) | 22-23  +30.1 (n10) | 24-26   +6.6 (n14)
+  bad 0: 18-21   +7.6 (n102) | 22-23  +14.6 (n60) | 24-26  +15.7 (n83)
+  bad 1: 18-21   -1.0 (n92) | 22-23   +7.7 (n52) | 24-26   -4.1 (n61)
+  bad 2: 18-21   +0.2 (n64) | 22-23  -14.0 (n22) | 24-26   -2.0 (n42)
+  bad 3: 18-21   -7.4 (n12) | 22-23  -37.6 (n6) | 24-26   -8.2 (n12)
+  bad 4: 18-21  +74.0 (n1) | 22-23   +nan (n0) | 24-26  -19.8 (n4)
+  S0 current stack               2022-26: trades 342, avg size 0.58 NQ, avg $ per trade    +86
+  CUT-A skip thin / hard / LVN   2022-26: trades 205, avg size 0.67 NQ, avg $ per trade   +165
+  CUT-B + skip strong close      2022-26: trades 143, avg size 0.69 NQ, avg $ per trade   +193
+  DOWN size down all bad         2022-26: trades 342, avg size 0.49 NQ, avg $ per trade    +75
+  UP 1.5 NQ on clean + good      2022-26: trades 342, avg size 0.69 NQ, avg $ per trade   +118
+  UPDN up on good, down on bad   2022-26: trades 342, avg size 0.57 NQ, avg $ per trade    +97
+  UPDN2 + 2 NQ on 3+ good        2022-26: trades 342, avg size 0.61 NQ, avg $ per trade   +109
+PER TRADE BY YEAR (Rule A)
+
+  F: stop median 50 pts (2022 50 / 2026 50), target median 75, avg size 7.1 MNQ
+    2022: n  44 win 52% avg $ +158 avg R +0.18 | target 32% stop 41% noon 27% | year $+6,969
+    2023: n  45 win 56% avg $ +252 avg R +0.36 | target 40% stop 31% noon 29% | year $+11,335
+    2024: n  42 win 48% avg $  +32 avg R +0.07 | target 33% stop 45% noon 21% | year $+1,353
+    2025: n  41 win 61% avg $ +326 avg R +0.44 | target 46% stop 32% noon 22% | year $+13,358
+    2026: n  34 win 47% avg $  +16 avg R +0.12 | target 44% stop 53% noon 3% | year $+541
+
+  P1: stop median 41 pts (2022 36 / 2026 83), target median 62, avg size 9.0 MNQ
+    2022: n  44 win 57% avg $ +256 avg R +0.36 | target 48% stop 36% noon 16% | year $+11,281
+    2023: n  46 win 61% avg $ +331 avg R +0.48 | target 50% stop 30% noon 20% | year $+15,237
+    2024: n  42 win 45% avg $   -4 avg R +0.02 | target 29% stop 43% noon 29% | year $-188
+    2025: n  41 win 54% avg $ +139 avg R +0.22 | target 37% stop 37% noon 27% | year $+5,692
+    2026: n  34 win 47% avg $  -72 avg R +0.07 | target 32% stop 50% noon 18% | year $-2,442
+
+  P2: stop median 34 pts (2022 30 / 2026 69), target median 68, avg size 10.3 MNQ
+    2022: n  44 win 45% avg $ +159 avg R +0.20 | target 30% stop 50% noon 20% | year $+6,980
+    2023: n  46 win 52% avg $ +357 avg R +0.49 | target 43% stop 43% noon 13% | year $+16,400
+    2024: n  43 win 42% avg $  -35 avg R -0.01 | target 21% stop 49% noon 30% | year $-1,491
+    2025: n  41 win 49% avg $ +186 avg R +0.30 | target 34% stop 44% noon 22% | year $+7,620
+    2026: n  34 win 47% avg $   +5 avg R +0.24 | target 29% stop 50% noon 21% | year $+159
+
+  A1: stop median 48 pts (2022 66 / 2026 87), target median 84, avg size 8.3 MNQ
+    2022: n  44 win 52% avg $ +151 avg R +0.19 | target 23% stop 32% noon 45% | year $+6,622
+    2023: n  46 win 54% avg $ +251 avg R +0.40 | target 33% stop 33% noon 35% | year $+11,537
+    2024: n  43 win 42% avg $  -22 avg R +0.03 | target 28% stop 49% noon 23% | year $-948
+    2025: n  41 win 49% avg $ +104 avg R +0.13 | target 22% stop 37% noon 41% | year $+4,275
+    2026: n  34 win 50% avg $  -31 avg R +0.12 | target 24% stop 47% noon 29% | year $-1,068
+
+  A2: stop median 36 pts (2022 49 / 2026 65), target median 72, avg size 10.3 MNQ
+    2022: n  44 win 50% avg $ +208 avg R +0.21 | target 25% stop 41% noon 34% | year $+9,168
+    2023: n  46 win 48% avg $ +231 avg R +0.39 | target 39% stop 43% noon 17% | year $+10,641
+    2024: n  43 win 40% avg $  -21 avg R +0.04 | target 28% stop 53% noon 19% | year $-890
+    2025: n  41 win 49% avg $ +174 avg R +0.23 | target 27% stop 46% noon 27% | year $+7,119
+    2026: n  34 win 44% avg $  -47 avg R +0.12 | target 24% stop 53% noon 24% | year $-1,595
+
+  VW: stop median 18 pts (2022 18 / 2026 35), target median 27, avg size 14.9 MNQ
+    2022: n  44 win 43% avg $   +7 avg R +0.09 | target 41% stop 55% noon 5% | year $+324
+    2023: n  46 win 46% avg $  +37 avg R +0.08 | target 41% stop 54% noon 4% | year $+1,691
+    2024: n  43 win 47% avg $  +30 avg R +0.05 | target 42% stop 53% noon 5% | year $+1,290
+    2025: n  41 win 56% avg $ +296 avg R +0.42 | target 46% stop 41% noon 12% | year $+12,125
+    2026: n  34 win 35% avg $  -77 avg R -0.08 | target 32% stop 65% noon 3% | year $-2,624
+
+  ORB: stop median 33 pts (2022 51 / 2026 87), target median 85, avg size 11.1 MNQ
+    2022: n  44 win 39% avg $ +209 avg R +0.33 | target 14% stop 55% noon 32% | year $+9,197
+    2023: n  46 win 48% avg $ +267 avg R +0.44 | target 30% stop 41% noon 28% | year $+12,291
+    2024: n  43 win 40% avg $ +167 avg R +0.22 | target 21% stop 51% noon 28% | year $+7,174
+    2025: n  41 win 46% avg $ +220 avg R +0.32 | target 20% stop 37% noon 44% | year $+9,003
+    2026: n  33 win 45% avg $  -67 avg R +0.17 | target 24% stop 52% noon 24% | year $-2,205
+Rule A trades 357; avg 18-21 +8.2 / 22-23 +13.5 / 24-25 +12.6 / 2026 +6.2
+
+WITH vs AGAINST each gate (avg pts, 1 lot)
+  SMA20  with  33% | 18-21 with   +3.2 (n 45) vs against  +10.4 (n106) | 22-23 with   +8.0 (n 31) vs against  +16.5 (n 58) | 24-25 with   -0.4 (n 29) vs against  +19.6 (n 54) | 2026 with  +25.9 (n 13) vs against   -6.0 (n 21)
+  SMA50  with  40% | 18-21 with   -1.6 (n 58) vs against  +14.4 (n 93) | 22-23 with   +0.5 (n 36) vs against  +22.4 (n 53) | 24-25 with   +5.9 (n 36) vs against  +17.6 (n 47) | 2026 with  +20.4 (n 14) vs against   -3.8 (n 20)
+  SMA200 with  50% | 18-21 with   +5.8 (n 76) vs against  +10.6 (n 75) | 22-23 with  +16.1 (n 42) vs against  +11.2 (n 47) | 24-25 with   +8.1 (n 41) vs against  +16.9 (n 42) | 2026 with   -5.5 (n 18) vs against  +19.3 (n 16)
+  Z-MR   with  68% | 18-21 with  +10.2 (n108) vs against   +3.2 (n 43) | 22-23 with  +16.5 (n 58) vs against   +8.0 (n 31) | 24-25 with  +19.6 (n 54) vs against   -0.4 (n 29) | 2026 with   -6.0 (n 21) vs against  +25.9 (n 13)
+  Z-TR   with  32% | 18-21 with   +3.2 (n 43) vs against  +10.2 (n108) | 22-23 with   +8.0 (n 31) vs against  +16.5 (n 58) | 24-25 with   -0.4 (n 29) vs against  +19.6 (n 54) | 2026 with  +25.9 (n 13) vs against   -6.0 (n 21)
+  VWAP   with  86% | 18-21 with   +8.1 (n124) vs against   +8.7 (n 27) | 22-23 with  +14.5 (n 78) vs against   +6.7 (n 11) | 24-25 with  +11.0 (n 71) vs against  +21.9 (n 12) | 2026 with   +6.2 (n 34) vs against   +nan (n  0)
+  WVWAP  with  80% | 18-21 with   +8.8 (n118) vs against   +6.2 (n 33) | 22-23 with  +11.4 (n 72) vs against  +22.5 (n 17) | 24-25 with  +11.0 (n 64) vs against  +17.9 (n 19) | 2026 with   +1.3 (n 30) vs against  +42.8 (n  4)
+  GAP    with  71% | 18-21 with   +9.7 (n113) vs against   +3.7 (n 38) | 22-23 with   +6.4 (n 65) vs against  +32.9 (n 24) | 24-25 with  +20.6 (n 57) vs against   -4.9 (n 26) | 2026 with   -7.9 (n 19) vs against  +24.0 (n 15)
+  H1     with  32% | 18-21 with   +2.0 (n 48) vs against  +11.1 (n103) | 22-23 with  +11.4 (n 32) vs against  +14.7 (n 57) | 24-25 with  +11.0 (n 25) vs against  +13.3 (n 58) | 2026 with  +39.9 (n 11) vs against   -9.9 (n 23)
+  H4     with  41% | 18-21 with   +4.3 (n 58) vs against  +10.7 (n 93) | 22-23 with  +10.7 (n 39) vs against  +15.8 (n 50) | 24-25 with  +12.7 (n 35) vs against  +12.5 (n 48) | 2026 with  +11.5 (n 16) vs against   +1.5 (n 18)
+  VXN    with  39% | 18-21 with   +6.9 (n 57) vs against   +9.0 (n 94) | 22-23 with   +8.7 (n 38) vs against  +17.2 (n 51) | 24-25 with   +3.2 (n 32) vs against  +18.4 (n 51) | 2026 with  +20.4 (n 14) vs against   -3.8 (n 20)
+walk-forward AUC (Rule A trades, target = win)
+  LOGIT all 0.504 | 2021 0.47 (n31) | 2022 0.51 (n44) | 2023 0.65 (n45) | 2024 0.58 (n42) | 2025 0.34 (n41) | 2026 0.44 (n34)
+  GBM   all 0.506 | 2021 0.58 (n31) | 2022 0.51 (n44) | 2023 0.54 (n45) | 2024 0.56 (n42) | 2025 0.40 (n41) | 2026 0.34 (n34)
+
+Rule A $ by year (final sizing x rule; 2022-26)
+  normal                     2022  +5,495 | 2023 +12,075 | 2024    +549 | 2025 +13,799 | 2026  +2,900 | total  +34,818
+  LOGIT x0.5 bottom third    2022  +4,439 | 2023 +12,585 | 2024    +923 | 2025 +10,255 | 2026    +904 | total  +29,106
+  GBM x0.5 bottom third      2022  +4,912 | 2023 +12,585 | 2024    +173 | 2025 +12,460 | 2026  +3,251 | total  +33,382
+  LS2 half after 2 losses    2022  +3,072 | 2023  +9,707 | 2024  +1,042 | 2025 +11,655 | 2026  +1,149 | total  +26,625
+  EQ20 half when last 20 < 0 2022  +4,809 | 2023 +11,335 | 2024    -804 | 2025 +13,799 | 2026  +2,900 | total  +32,039
+  LOGIT skip bottom third    2022  +3,384 | 2023 +13,095 | 2024  +1,297 | 2025  +6,710 | 2026  -1,092 | total  +23,394
+  GBM skip bottom third      2022  +4,330 | 2023 +13,095 | 2024    -203 | 2025 +11,122 | 2026  +3,602 | total  +31,945
+sigma median 9.4 bps, RV median 8.88 bps/min (model training means 19.8 / 3.80)
+  R50 target pts: median 26 | entries 09:45-10:15 29 / 10:15-11:00 23 / 11:00-11:30 20 | 2022 28 / 2026 49
+  R40 target pts: median 33 | entries 09:45-10:15 37 / 10:15-11:00 29 / 11:00-11:30 24 | 2022 35 / 2026 62
+  R60 target pts: median 21 | entries 09:45-10:15 23 / 10:15-11:00 20 / 11:00-11:30 20 | 2022 22 / 2026 39
+
+Rule A trades by take profit (1 lot, NQ pts)
+  T75         n357 win 53% target hit 32% stop 32% noon 36% | 18-21  +8.2 / 22-23 +13.5 / 24-25 +12.6 / 2026  +6.2
+  R50         n360 win 69% target hit 66% stop 23% noon 11% | 18-21  +5.7 / 22-23  +7.3 / 24-25  +8.9 / 2026  -5.0
+  R40         n360 win 66% target hit 63% stop 25% noon 12% | 18-21  +6.5 / 22-23 +10.4 / 24-25 +10.7 / 2026  +0.9
+  R60         n361 win 72% target hit 70% stop 20% noon 11% | 18-21  +4.7 / 22-23  +6.0 / 24-25  +7.7 / 2026  -1.6
+  R50 cap150  n360 win 69% target hit 66% stop 23% noon 11% | 18-21  +5.7 / 22-23  +7.3 / 24-25  +8.9 / 2026  -5.0
+Rule A trades 357; per trade 1 lot (NQ pts) by label and period
+  -- NEWS
+    CPI day                    n  18 win  61% avg  +16.7 | 18-21  -10.9 (n7) | 22-23  +24.0 (n5) | 24-25  +42.9 (n6) | 2026   +nan (n0)
+    FOMC day                   n  10 win  60% avg  +15.0 | 18-21  -16.9 (n5) | 22-23  +47.5 (n2) | 24-25  +32.6 (n2) | 2026  +74.0 (n1)
+    NFP day                    n  18 win  61% avg  +16.0 | 18-21  +16.1 (n6) | 22-23  +33.8 (n8) | 24-25  -51.0 (n1) | 2026   -9.3 (n3)
+    day after FOMC             n  11 win  27% avg  -19.6 | 18-21   +2.2 (n4) | 22-23  +74.0 (n1) | 24-25  -49.1 (n4) | 2026  -51.0 (n2)
+    no event                   n 300 win  53% avg  +10.6 | 18-21  +10.1 (n129) | 22-23   +8.8 (n73) | 24-25  +13.8 (n70) | 2026   +9.5 (n28)
+  -- TIME
+    09:35-10:15                n 245 win  54% avg  +12.1 | 18-21  +11.3 (n110) | 22-23  +13.8 (n55) | 24-25  +15.6 (n58) | 2026   +3.3 (n22)
+    10:15-11:00                n  76 win  47% avg   +5.4 | 18-21   -1.3 (n28) | 22-23  +10.0 (n20) | 24-25   +6.8 (n16) | 2026  +11.5 (n12)
+    11:00-11:35                n  36 win  56% avg   +8.8 | 18-21   +2.9 (n13) | 22-23  +17.8 (n14) | 24-25   +3.4 (n9) | 2026   +nan (n0)
+  -- ADX
+    no trend falling           n 158 win  54% avg  +11.4 | 18-21   +6.5 (n61) | 22-23  +20.8 (n35) | 24-25  +13.6 (n44) | 2026   +4.6 (n18)
+    no trend rising            n  72 win  62% avg  +21.9 | 18-21  +20.5 (n28) | 22-23  +17.5 (n18) | 24-25  +34.4 (n14) | 2026  +17.3 (n12)
+    trend falling              n  72 win  44% avg   -0.2 | 18-21   -4.7 (n32) | 22-23   +4.1 (n23) | 24-25   +5.2 (n14) | 2026   -9.3 (n3)
+    trend rising               n  55 win  49% avg   +6.0 | 18-21  +14.0 (n30) | 22-23   +5.2 (n13) | 24-25   -9.7 (n11) | 2026  -51.0 (n1)
+  -- EMA
+    15m EMA9/21 agrees         n 153 win  54% avg  +10.0 | 18-21   +4.3 (n68) | 22-23  +18.3 (n40) | 24-25   +6.3 (n28) | 2026  +19.2 (n17)
+    15m EMA9/21 disagrees      n 204 win  52% avg  +10.6 | 18-21  +11.4 (n83) | 22-23   +9.7 (n49) | 24-25  +15.7 (n55) | 2026   -6.9 (n17)
+  -- SMA
+    close vs SMA20 agrees      n 113 win  49% avg   +6.3 | 18-21   +3.5 (n40) | 22-23   +8.0 (n31) | 24-25   -0.4 (n29) | 2026  +25.9 (n13)
+    close vs SMA20 disagrees   n 244 win  55% avg  +12.2 | 18-21   +9.9 (n111) | 22-23  +16.5 (n58) | 24-25  +19.6 (n54) | 2026   -6.0 (n21)
+  -- SMAX
+    SMA20/50 agrees            n 155 win  52% avg   +9.7 | 18-21   +2.3 (n53) | 22-23  +13.6 (n43) | 24-25  +12.7 (n42) | 2026  +15.2 (n17)
+    SMA20/50 disagrees         n 202 win  53% avg  +10.9 | 18-21  +11.4 (n98) | 22-23  +13.5 (n46) | 24-25  +12.4 (n41) | 2026   -2.8 (n17)
+  -- DRIFT
+    drift agrees               n 161 win  53% avg   +8.8 | 18-21   +3.9 (n59) | 22-23   +3.4 (n42) | 24-25  +16.7 (n42) | 2026  +18.4 (n18)
+    drift disagrees            n 188 win  53% avg  +11.9 | 18-21  +11.4 (n84) | 22-23  +22.6 (n47) | 24-25   +8.3 (n41) | 2026   -7.6 (n16)
+    n/a                        n   8 win  62% avg   +6.9 | 18-21   +6.9 (n8) | 22-23   +nan (n0) | 24-25   +nan (n0) | 2026   +nan (n0)
+PART 1. Prop trades (Rule A, 75 / 50, flat 12:00), 1 contract, NQ points after cost
+  year  trades  win   avg   total  avg win  avg loss  full stops
+  2018     34   53%   +2.0     +68    +26.8     -25.9       15%
+  2019     38   47%   +3.2    +122    +30.2     -21.1        8%
+  2020     38   47%   +3.6    +138    +57.0     -44.4       37%
+  2021     41   63%  +22.3    +913    +58.3     -40.1       22%
+  2022     44   52%   +8.9    +391    +58.2     -45.1       41%
+  2023     45   56%  +18.1    +815    +65.2     -40.7       31%
+  2024     42   48%   +3.5    +146    +58.5     -46.5       45%
+  2025     41   61%  +21.9    +897    +64.5     -44.7       32%
+  2026     34   47%   +6.2    +210    +70.5     -51.0       53%
+
+  Lucid 50K, 5 accounts from Jan 2022 (events by year):
+    2022: evals bought 5, passed 5, payouts 0 (0 pts), accounts done after 5 payouts 0, fees 440
+    2023: evals bought 0, passed 0, payouts 15 (1,350 pts), accounts done after 5 payouts 0, fees -0
+    2024: evals bought 5, passed 5, payouts 0 (0 pts), accounts done after 5 payouts 0, fees 440
+    2025: evals bought 0, passed 0, payouts 20 (1,460 pts), accounts done after 5 payouts 0, fees -0
+    2026: evals bought 5, passed 0, payouts 5 (450 pts), accounts done after 5 payouts 5, fees 440
+
+  Lucid 150K, 5 accounts from Jan 2022 (events by year):
+    2022: evals bought 5, passed 0, payouts 0 (0 pts), accounts done after 5 payouts 0, fees 1,220
+    2023: evals bought 0, passed 5, payouts 15 (2,025 pts), accounts done after 5 payouts 0, fees -0
+    2024: evals bought 5, passed 5, payouts 0 (0 pts), accounts done after 5 payouts 0, fees 1,220
+    2025: evals bought 0, passed 0, payouts 20 (2,275 pts), accounts done after 5 payouts 0, fees -0
+    2026: evals bought 5, passed 0, payouts 5 (675 pts), accounts done after 5 payouts 5, fees 1,220
+
+  Market by year: QQQ return, QQQ daily range (%), VXN average, every-flip 15m count a day, share passing Rule A, every flip held (TH) avg pts
+    2018: QQQ  -1.4% | daily range 1.65% | VXN 20.9 | flips/day 0.51 | Rule A  27% | TH  +5.1 F75  -0.2
+    2019: QQQ +40.8% | daily range 1.13% | VXN 19.1 | flips/day 0.51 | Rule A  30% | TH  -6.1 F75  -4.6
+    2020: QQQ +46.3% | daily range 2.14% | VXN 32.9 | flips/day 0.46 | Rule A  32% | TH +13.3 F75  +4.1
+    2021: QQQ +26.2% | daily range 1.39% | VXN 24.1 | flips/day 0.46 | Rule A  36% | TH +12.0 F75  +7.3
+    2022: QQQ -33.3% | daily range 2.43% | VXN 31.6 | flips/day 0.50 | Rule A  35% | TH +18.9 F75  +1.0
+    2023: QQQ +52.4% | daily range 1.44% | VXN 21.6 | flips/day 0.52 | Rule A  35% | TH  +4.5 F75  +4.8
+    2024: QQQ +26.0% | daily range 1.29% | VXN 19.4 | flips/day 0.54 | Rule A  31% | TH  +1.7 F75  -5.4
+    2025: QQQ +19.4% | daily range 1.49% | VXN 22.1 | flips/day 0.42 | Rule A  39% | TH +14.8 F75  +6.1
+    2026: QQQ +20.6% | daily range 1.44% | VXN 24.4 | flips/day 0.52 | Rule A  20% | TH  -7.5 F75  -7.2
+
+PART 2. Location. Prop trades with features: 357 of 357; flips: 1083 of 1084
+  periods:  18-21   2022   2023   2024   2025   2026
+
+PROP TRADES (Rule A, 75/50 noon)
+  -- VWAP z (trade direction) [pts] spread +15.9  * every period
+    z -1..0 (discount side)        n  15  +12.9 |   +8.7      .      .      .      .      .
+    z 1..2                         n 165  +12.9 |  +13.9  +17.9  +14.7   +0.0  +18.2   +8.0
+    z < -1                         n  35  +10.8 |   +8.6      .      .      .      .      .
+    z > 2                          n 110  +10.0 |   +4.4   -4.9  +35.5   +8.0  +19.3  +11.5
+    z 0..1                         n  32   -3.0 |   -3.0      .      .      .      .      .
+  -- prior-day value area [pts] spread +18.4  * every period
+    value, far side of POC         n  24  +19.3 |  +22.9      .      .      .      .      .
+    beyond value, far side         n  31  +13.7 |   -2.7      .      .      .      .      .
+    beyond value, trade side       n 255  +10.9 |   +8.9   +5.1  +19.3   +5.8  +26.8   -0.1
+    value, trade side of POC       n  47   +0.9 |   -0.1   -1.2      .      .      .      .
+  -- flip bar broke [pts] spread +12.0  * every period
+    far edge reclaim (VAL long)    n  14  +17.3 |      .      .      .      .      .      .
+    none                           n 257  +11.3 |   +8.2  +13.2  +14.7   -4.1  +34.4  +11.8
+    POC                            n  19   +9.8 |      .      .      .      .      .      .
+    trade-side edge (VAH long)     n  67   +5.3 |   +4.8      .  +18.4      .   -8.4      .
+  -- prior-day range position [pts] spread +25.8  * every period
+    discount half                  n  50  +25.0 |  +31.3  +27.6      .   -0.7      .  +27.1
+    beyond trade-side extreme      n 183  +13.3 |  +12.2   +9.7  +29.6   -5.0  +36.4  -10.2
+    premium half                   n 112   +0.2 |   -2.3   -1.6   -9.2  +18.4   -1.6      .
+    beyond far extreme             n  12   -0.8 |      .      .      .      .      .      .
+  -- z21 daily [pts] spread +11.3
+    low third                      n 113  +15.8 |  +14.7   +5.8  +23.6   +8.0  +29.2      .
+    mid third                      n 112  +11.5 |   +7.4   +9.6  +36.4  +16.5  +21.4      .
+    high third                     n 112   +4.5 |   +3.6  +10.7   -4.1  -14.9  +15.0  +27.1
+  -- z63 daily [pts] spread +10.5
+    low third                      n 111  +14.7 |  +18.2   -2.8  +32.3   +4.1  +12.1      .
+    mid third                      n 111  +12.2 |   +5.8  +21.7  +20.0   +5.2  +37.9      .
+    high third                     n 111   +4.3 |   -3.0   +0.2   +2.0   +0.7  +18.6  +27.1
+  -- z252 daily [pts] spread +9.8
+    low third                      n 103  +16.7 |  +17.9   -5.1  +46.8   +7.7  +26.5      .
+    mid third                      n 102   +9.9 |   -2.4  +14.5   +0.1      .  +42.1  +27.7
+    high third                     n 103   +6.9 |  +12.1  +12.2  +17.9   -4.1   +7.3      .
+
+EVERY RTH FLIP
+  -- VWAP z (trade direction) [th] spread +7.3
+    z 1..2                         n 469   +8.3 |   +5.9  +22.6   -4.5   -5.4  +39.2   -4.1
+    z 0..1                         n 116   +5.4 |  +17.2   -3.9  +17.2   -4.0      .  -51.0
+    z > 2                          n 385   +5.3 |   +5.2   +5.3  +17.6  +21.0   -6.4  -15.9
+    z < -1                         n  59   +3.8 |   -3.6      .      .  -18.5  -26.8      .
+    z -1..0 (discount side)        n  54   +1.0 |   -4.8  +30.6   -7.5      .      .      .
+  -- prior-day value area [th] spread +14.8
+    value, trade side of POC       n 126  +18.9 |  +18.4  +25.2   +8.9  +17.6  +15.7  +28.6
+    value, far side of POC         n  97   +8.1 |  +14.5  +15.5  +17.5  +46.3  -36.3  -45.3
+    beyond value, trade side       n 757   +4.3 |   +4.0  +10.2   +3.9   -0.2  +15.3   -5.9
+    beyond value, far side         n 103   +4.1 |   -3.6  +90.3   -8.2  -29.3      .  -21.3
+  -- flip bar broke [th] spread +20.7  * every period
+    POC                            n  62  +25.7 |  +29.1  -14.9      .  +31.0      .      .
+    trade-side edge (VAH long)     n 193   +5.2 |   +2.8   -3.8   +4.9  +16.8  +33.6  -22.7
+    none                           n 773   +5.1 |   +4.3  +30.1   +0.2   -9.8  +14.4   -5.9
+    far edge reclaim (VAL long)    n  55   +5.0 |  +14.9      .      .      .      .      .
+  -- prior-day range position [th] spread +9.2
+    discount half                  n 170  +11.6 |  +17.3  +55.4   -0.2   -6.5   -0.5  -37.3
+    beyond far extreme             n  49  +10.7 |   +2.1      .      .      .      .      .
+    beyond trade-side extreme      n 538   +6.6 |   +3.9  +14.9   +6.2   +1.9  +14.6   +6.3
+    premium half                   n 326   +2.4 |   +3.9   -0.4   +5.3  +16.4   +1.5  -23.8
+  -- z21 daily [th] spread +5.0
+    low third                      n 357   +9.3 |   +8.1  +18.0   -3.2   +7.8  +25.7   +2.1
+    high third                     n 357   +5.3 |   +5.5   +9.6   +7.6   -5.8  +22.7   -7.8
+    mid third                      n 357   +4.4 |   +4.3  +29.3   +8.8   +2.6   -4.5  -16.6
+  -- z63 daily [th] spread +6.2
+    mid third                      n 352   +8.1 |   +7.4  +26.0   +5.0   +9.6  +25.5  -18.2
+    low third                      n 352   +7.9 |   +4.4  +26.5   +8.8   -2.0  +22.0   +0.0
+    high third                     n 352   +1.8 |   +3.5   +0.2   -0.1   -2.1   +1.1   +4.6
+  -- z252 daily [th] spread +11.5
+    low third                      n 318  +13.4 |   +2.7  +41.5  +23.9   +6.3  +23.2  +12.0
+    mid third                      n 318   +3.9 |   +2.5   +8.1   +4.0  +12.8  +11.0  -10.2
+    high third                     n 318   +1.9 |  +12.6  +14.0  -13.9   -7.5   +8.8  -23.4
+  -- VWAP z (trade direction) [f75] spread +8.2  * every period
+    z 1..2                         n 469   +2.2 |   +3.6   +5.0   +3.4  -10.3  +12.7   -7.7
+    z > 2                          n 385   +0.1 |   +0.0   +2.0  +12.0   +3.1  -11.1   -8.9
+    z 0..1                         n 116   -0.1 |   +4.1  -24.0   +4.2   -0.9      .   -9.3
+    z < -1                         n  59   -0.8 |   -3.7      .      .  -11.4   +4.6      .
+    z -1..0 (discount side)        n  54   -6.0 |   -5.3  -13.4  -14.5      .      .      .
+  -- prior-day value area [f75] spread +6.5
+    value, trade side of POC       n 126   +5.0 |   +7.4   -7.0  -12.1   +7.1   +5.0  +40.3
+    value, far side of POC         n  97   +1.2 |   +8.6   +7.2   +4.1   +9.9  -26.0  -29.7
+    beyond value, trade side       n 757   +0.1 |   +0.5   -1.2   +8.0   -6.6  +10.8  -11.5
+    beyond value, far side         n 103   -1.5 |   -4.0  +32.3   -0.3  -19.9      .   +8.6
+  -- flip bar broke [f75] spread +16.8  * every period
+    POC                            n  62  +13.0 |  +14.3  -17.8      .  +17.0      .      .
+    none                           n 773   +0.7 |   -0.1   +6.7   +4.8  -10.6  +12.3   -4.3
+    trade-side edge (VAH long)     n 193   -2.4 |   +2.6  -14.1   +1.9   +6.1   -4.4  -33.8
+    far edge reclaim (VAL long)    n  55   -3.8 |   +8.3      .      .      .      .      .
+  -- prior-day range position [f75] spread +4.4  * every period
+    discount half                  n 170   +2.4 |  +10.5   +5.1   -2.1   -4.0  -23.9   -3.2
+    beyond trade-side extreme      n 538   +0.7 |   +0.8   +1.0  +16.2  -12.9  +10.1   -9.3
+    premium half                   n 326   +0.0 |   -0.9   -2.3   -4.6  +12.0   +8.3   -7.7
+    beyond far extreme             n  49   -2.0 |   -4.3      .      .      .      .      .
+  -- z21 daily [f75] spread +2.3
+    low third                      n 357   +1.8 |   +3.2   -8.0   +6.6   -0.1   +7.7   -1.0
+    mid third                      n 357   +0.4 |   +1.9  +17.2   +8.5  -11.1   +2.8  -18.6
+    high third                     n 357   -0.5 |   -0.4   -5.1   +0.8   -3.6   +7.7   -0.9
+  -- z63 daily [f75] spread +1.1
+    high third                     n 352   +0.9 |   +0.8   -8.1   -2.3   +1.5   +7.2   +8.1
+    low third                      n 352   +0.4 |   +1.4   +2.0  +13.5   -6.5   -5.5   -6.4
+    mid third                      n 352   -0.2 |   +0.6   +6.0   +3.6  -11.2  +25.1  -15.7
+  -- z252 daily [f75] spread +1.9
+    low third                      n 318   +1.7 |   +1.0   +4.0  +21.7   -5.7   -0.1   -4.2
+    mid third                      n 318   +0.5 |   -4.1   -1.3   +2.5   -5.5  +20.9   +5.2
+    high third                     n 318   -0.2 |   +8.9   +1.9   -7.8   -5.0   +2.9  -21.9
+
+SUMMARY (* = best beats worst in every period with 8+ trades)
+  * VWAP z (trade direction)   pts  spread  +15.9  best z -1..0 (discount side)        worst z 0..1
+  * prior-day value area       pts  spread  +18.4  best value, far side of POC         worst value, trade side of POC
+  * flip bar broke             pts  spread  +12.0  best far edge reclaim (VAL long)    worst trade-side edge (VAH long)
+  * prior-day range position   pts  spread  +25.8  best discount half                  worst beyond far extreme
+    z21 daily                  pts  spread  +11.3  best low third                      worst high third
+    z63 daily                  pts  spread  +10.5  best low third                      worst high third
+    z252 daily                 pts  spread   +9.8  best low third                      worst high third
+    VWAP z (trade direction)   th   spread   +7.3  best z 1..2                         worst z -1..0 (discount side)
+    prior-day value area       th   spread  +14.8  best value, trade side of POC       worst beyond value, far side
+  * flip bar broke             th   spread  +20.7  best POC                            worst far edge reclaim (VAL long)
+    prior-day range position   th   spread   +9.2  best discount half                  worst premium half
+    z21 daily                  th   spread   +5.0  best low third                      worst mid third
+    z63 daily                  th   spread   +6.2  best mid third                      worst high third
+    z252 daily                 th   spread  +11.5  best low third                      worst high third
+  * VWAP z (trade direction)   f75  spread   +8.2  best z 1..2                         worst z -1..0 (discount side)
+    prior-day value area       f75  spread   +6.5  best value, trade side of POC       worst beyond value, far side
+  * flip bar broke             f75  spread  +16.8  best POC                            worst far edge reclaim (VAL long)
+  * prior-day range position   f75  spread   +4.4  best discount half                  worst beyond far extreme
+    z21 daily                  f75  spread   +2.3  best low third                      worst high third
+    z63 daily                  f75  spread   +1.1  best high third                     worst mid third
+    z252 daily                 f75  spread   +1.9  best low third                      worst high third
