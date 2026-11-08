@@ -1,0 +1,40 @@
+15m RTH flips 2018-2026: 1084 (0.49 a day); AM 09:45-11:30: 664
+20-day ADR, NQ points: median 2018-21 138, 2022-26 264
+
+PART 1 per trade (n, win, avg pts) | 2018-21 | 2022-26 | by year
+  every flip   target 0.10 x ADR, stop 1x: n1072 win 50% avg  -0.5 |  -1.5 |  +0.2 |  -1.4  -1.9  -0.7  -1.8  -0.6  +0.1  -1.2  +4.0  -0.6
+  every flip   target 0.10 x ADR, stop 2x: n1072 win 67% avg  -0.3 |  +0.0 |  -0.6 |  -0.7  -1.1  -2.6  +4.6  -0.1  -0.7  -2.7  +5.2  -4.1
+  every flip   target 0.15 x ADR, stop 1x: n1072 win 51% avg  -0.4 |  +0.2 |  -0.8 |  -1.4  -1.6  +1.0  +2.8  -0.5  +0.2  -5.4  +7.7  -5.4
+  every flip   target 0.15 x ADR, stop 2x: n1072 win 67% avg  +2.2 |  +1.8 |  +2.6 |  -2.0  -1.5  +2.7  +8.5  +7.3  +2.1  -0.9  +4.0  +0.6
+  every flip   target 0.20 x ADR, stop 1x: n1072 win 51% avg  -0.9 |  +1.8 |  -3.1 |  +0.4  -1.6  +1.3  +7.4  -0.9  +1.3  -9.1  +5.5 -12.5
+  every flip   target 0.20 x ADR, stop 2x: n1072 win 62% avg  +1.8 |  +2.1 |  +1.6 |  +1.3  -2.4  +1.2  +9.0 +14.0  +0.7  -4.6  +3.4  -6.1
+  every flip   target 0.30 x ADR, stop 1x: n1072 win 52% avg  +2.9 |  +4.5 |  +1.6 |  +0.0  -2.4  +8.2 +13.1  +8.3  +5.6  -4.5  +3.0  -5.6
+  every flip   target 0.30 x ADR, stop 2x: n1072 win 58% avg  +4.7 |  +6.4 |  +3.3 |  +2.5  -2.2  +8.8 +17.4 +16.7  +5.5 -10.7  +0.4  +5.7
+  Rule A flips target 0.10 x ADR, stop 1x: n 338 win 55% avg  +2.5 |  -0.3 |  +4.6 |  -0.4  -2.0  +1.4  -0.2  +5.0  +4.2  -3.0 +13.2  +2.7
+  Rule A flips target 0.10 x ADR, stop 2x: n 338 win 72% avg  +3.2 |  +0.8 |  +5.0 |  +1.0  -0.8  -2.6  +5.5 +10.9  +3.5  -4.0 +14.9  -5.7
+  Rule A flips target 0.15 x ADR, stop 1x: n 338 win 58% avg  +5.4 |  +2.4 |  +7.6 |  -1.4  -1.1  +4.4  +6.4 +14.4  +2.6  +0.7 +20.1  -6.9
+  Rule A flips target 0.15 x ADR, stop 2x: n 338 win 72% avg  +7.6 |  +2.7 | +11.3 |  -1.2  -1.5  +3.5  +8.7 +21.2  +7.1  +5.7 +18.5  -3.5
+  Rule A flips target 0.20 x ADR, stop 1x: n 338 win 58% avg  +6.2 |  +3.1 |  +8.5 |  +4.0  -1.7  -0.0  +9.8 +12.4 +11.1  +1.0 +19.1 -12.0
+  Rule A flips target 0.20 x ADR, stop 2x: n 338 win 68% avg  +8.3 |  +2.3 | +12.9 |  +4.1  -5.6  +0.8  +9.7 +26.1 +16.7  +1.3 +24.1 -23.5
+  Rule A flips target 0.30 x ADR, stop 1x: n 338 win 56% avg  +8.9 |  +7.3 | +10.0 |  -0.4  -1.5  +7.7 +20.7 +10.7 +15.9  -2.0 +24.6  -9.4
+  Rule A flips target 0.30 x ADR, stop 2x: n 338 win 62% avg +13.1 |  +8.4 | +16.7 |  +3.1  -1.1  +7.3 +22.0 +32.2 +22.3  -7.0 +20.7 +11.2
+
+PART 2 quota filler on C30 + 4 x Rule A (every flip filler)
+  version                                  avg/day  months>=7.5/day  losing months  worst month  worst 6-mo/day  worst year/day  max DD  Sharpe
+  MAIN (C30 + 4 x RA), no filler            +27.82             55%            36%        -1720          -23.67      -1.18 (2019)   -3012    1.43
+  + filler always, 0.10 ADR / stop 2x, 1 ct  +27.67             56%            36%        -1870          -24.76      -1.72 (2019)   -3176    1.39
+  + filler when behind, 0.10 ADR / stop 2x, 1 ct  +28.03             55%            35%        -1870          -23.05      -0.68 (2019)   -3015    1.42
+  + filler always, 0.10 ADR / stop 2x, 2 ct  +27.53             56%            35%        -2020          -25.86      -2.25 (2019)   -3426    1.34
+  + filler when behind, 0.10 ADR / stop 2x, 2 ct  +28.25             57%            32%        -2020          -22.30      -0.11 (2019)   -3314    1.40
+  + filler always, 0.15 ADR / stop 2x, 1 ct  +28.91             58%            35%        -1808          -25.20      -1.94 (2019)   -3408    1.43
+  + filler when behind, 0.15 ADR / stop 2x, 1 ct  +28.50             57%            34%        -1808          -23.18      -1.03 (2019)   -3351    1.43
+  + filler always, 0.15 ADR / stop 2x, 2 ct  +30.00             58%            35%        -1896          -26.74      -2.70 (2019)   -3874    1.42
+  + filler when behind, 0.15 ADR / stop 2x, 2 ct  +30.01             59%            32%        -1896          -22.65      -1.13 (2019)   -3760    1.47
+  + filler always, 0.20 ADR / stop 1x, 1 ct  +27.36             56%            38%        -1845          -25.25      -1.98 (2019)   -3406    1.34
+  + filler when behind, 0.20 ADR / stop 1x, 1 ct  +28.00             56%            37%        -1845          -24.00      -1.12 (2019)   -3173    1.40
+  + filler always, 0.20 ADR / stop 1x, 2 ct  +26.91             55%            37%        -1971          -26.83      -2.78 (2019)   -4084    1.25
+  + filler when behind, 0.20 ADR / stop 1x, 2 ct  +27.94             58%            31%        -1971          -24.33      -1.42 (2019)   -3496    1.35
+  + filler always, 0.30 ADR / stop 1x, 1 ct  +29.22             56%            35%        -1735          -26.32      -2.39 (2019)   -3695    1.41
+  + filler when behind, 0.30 ADR / stop 1x, 1 ct  +29.27             57%            35%        -1735          -24.64      -1.65 (2019)   -3595    1.45
+  + filler always, 0.30 ADR / stop 1x, 2 ct  +30.62             61%            34%        -1750          -28.98      -3.59 (2019)   -4448    1.37
+  + filler when behind, 0.30 ADR / stop 1x, 2 ct  +30.75             63%            30%        -1750          -26.26      -2.99 (2019)   -4248    1.47
