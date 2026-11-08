@@ -1,6 +1,7 @@
 // L'Argent Parle - the live vector screener, as an engraved desk statement. Übersicht widget (https://tracesof.net/uebersicht/), refreshes every minute
 // from the site's snapshot. Type: Times New Roman (roman for figures, italic for prose) + Snell Roundhand for the masthead (both ship with macOS).
 // MOVE IT: drag it anywhere (the spot is remembered). Double-click puts it back at the default spot.
+// Data: the Mac screener's own ~/fartpie/live/site_snapshot.json (fetch.sh), so overnight it shows the last close and goes live at the open.
 import { css } from "uebersicht";
 
 export const command = "bash lap-screener.widget/fetch.sh";
@@ -40,6 +41,11 @@ const hue = (x) => (x == null || isNaN(x) ? C.pewter : x >= 0 ? C.gain : C.loss)
 const shortDay = (s) => { const m = /(\d\d)-(\d\d)/.exec(s || ""); return m ? `${Number(m[2])} ${MON[m[1]]}` : ""; };          // 'Wed 10-21 11:00  343.18' -> '21 Oct'
 const ago = (iso) => { if (!iso) return ""; const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000); return m < 1 ? "just now" : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} days ago`; };
 const SLOTS = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight"];
+const marketOpenNow = () => {                      // New York clock: weekdays 09:30-16:00 (holidays show as open but stale)
+  const p = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(new Date());
+  const g = (t) => (p.find((x) => x.type === t) || {}).value, m = (Number(g("hour")) % 24) * 60 + Number(g("minute"));
+  return !["Sat", "Sun"].includes(g("weekday")) && m >= 570 && m < 960;
+};
 
 const Guilloche = ({ w, h }) => {                 // banknote-style engraved wave band behind the masthead
   const lines = [];
@@ -84,10 +90,12 @@ export const render = ({ output, error }) => {
   const s = d.snapshot, h = s.history || {}, pos = s.positions || [], sig = s.signals || [], watch = (s.watch || []).slice(0, 8);
   const trades = h.trades || [], since = {}; trades.filter((t) => t.open).forEach((t) => { since[t.name] = shortDay(t.entry); });
   const closed = trades.filter((t) => !t.open).slice(0, 3);
-  const age = s.asof ? (Date.now() - new Date(s.asof).getTime()) / 60000 : null, stale = s.market_open && age > 30;
+  const age = s.asof ? (Date.now() - new Date(s.asof).getTime()) / 60000 : null, open = marketOpenNow(), stale = open && age > 30;
+  const asofDay = s.asof ? new Date(s.asof).toLocaleDateString("en-GB", { weekday: "long" }) : "", sameDay = s.asof && new Date(s.asof).toDateString() === new Date().toDateString();
+  const status = !open ? `Market closed, showing ${sameDay ? "today" : asofDay}'s close` : stale ? `Screener not updating, last ${ago(s.asof)}` : `Market open, updated ${ago(s.asof)}`;
   return (
     <Panel>
-      <Masthead right={<span>{today}<br /><span style={{ color: stale ? C.amber : C.pewter }}>{s.market_open ? "Market open" : "Market closed"}, updated {ago(s.asof)}</span></span>} />
+      <Masthead right={<span>{today}<br /><span style={{ color: stale ? C.amber : C.pewter }}>{status}</span></span>} />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginTop: 14 }}>
         <div style={{ fontSize: 42, lineHeight: 1, color: hue(h.book), letterSpacing: "-0.01em" }}>{sgn(h.book)}</div>
         <div style={{ textAlign: "right", color: C.vellum2, lineHeight: 1.5 }}>

@@ -1,0 +1,32 @@
+15m RTH flips 2018-2026: 1084 (0.49 a day); AM 09:45-11:30: 664
+alignment rules picked each year (features whose best tercile beat the worst in every training year):
+  2020: yz1, yz5, rv1, shock, vxn, comp, used, brk, body, vwd, drift, prev, z5, z252, ruleA_am
+  2021: yz1, yz5, rv1, shock, vix, vxn, comp, used, body, vwd, drift, z63, ruleA_am
+  2022: yz1, rv1, shock, comp, brk, acc, body, me, ruleA_am
+  2023: shock, comp, vwd, prev, room, ruleA_am
+  2024: shock, ruleA_am
+  2025: shock, room, ruleA_am
+  2026: shock, ruleA_am
+
+WALK-FORWARD 2020 - Oct 2026 (NQ points)    pts/day trades/day avg size per contract days>=7.5 months>=50  worst mo  max DD Sharpe losing yrs
+  M0                                        +4.05       0.49     1.00        +4.05       14%        49%      -462   -1236   0.89          1
+      per day by year: 2020 +6.1 2021 +5.5 2022 +9.4 2023 +2.4 2024 +0.9 2025 +6.2 2026 -3.9
+  M0b                                       +3.81       0.41     1.00        +3.81       12%        49%      -411   -1118   0.88          1
+      per day by year: 2020 +4.8 2021 +4.9 2022 +10.4 2023 +0.7 2024 +0.3 2025 +7.5 2026 -3.7
+  RA                                        +4.05       0.16     1.00        +4.05        6%        46%      -306    -717   1.31          1
+      per day by year: 2020 +4.6 2021 +4.4 2022 +7.2 2023 +2.1 2024 +1.2 2025 +8.6 2026 -0.7
+  M2                                        +6.81       0.49     1.05        +6.48       13%        52%      -502   -1499   1.07          1
+      per day by year: 2020 +9.3 2021 +12.1 2022 +13.6 2023 +1.7 2024 +0.9 2025 +11.7 2026 -4.1
+  M3                                        +7.34       0.39     1.53        +4.80       12%        57%      -765   -1976   1.01          2
+      per day by year: 2020 +8.7 2021 +12.6 2022 +14.4 2023 +3.6 2024 -1.5 2025 +16.7 2026 -6.2
+  M4                                        +1.12       0.28     1.00        +1.12        8%        32%      -258    -943   0.43          1
+      per day by year: 2020 +0.6 2021 +2.6 2022 +2.0 2023 +1.2 2024 +1.1 2025 +2.3 2026 -2.7
+  M5                                        +7.35       0.35     1.54        +4.77       11%        57%      -765   -1874   1.04          2
+      per day by year: 2020 +8.7 2021 +12.6 2022 +10.3 2023 +5.2 2024 -0.9 2025 +16.8 2026 -3.9
+  M6                                        +3.22       0.33     1.45        +2.22       10%        48%      -457   -2449   0.72          1
+      per day by year: 2020 +6.9 2021 +9.9 2022 +6.1 2023 +2.4 2024 +0.4 2025 +3.4 2026 -9.5
+  M7                                        +5.03       0.49     0.85        +5.92       13%        45%      -476   -1248   1.03          1
+      per day by year: 2020 +9.5 2021 +10.1 2022 +11.2 2023 +1.3 2024 +0.1 2025 +4.2 2026 -3.1
+  M3+lookback                               +5.82       0.39     1.26        +4.64       12%        51%      -765   -1707   0.93          2
+      per day by year: 2020 +8.2 2021 +11.8 2022 +13.8 2023 +1.7 2024 -3.1 2025 +11.3 2026 -5.7
+exit 0
