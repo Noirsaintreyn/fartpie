@@ -1,0 +1,42 @@
+15m RTH flips 2018-2026: 1084 (0.49 a day); AM 09:45-11:30: 664
+candidates 3149: 2018-21 1386, 2022-26 1763
+
+BRACKETS, every 5m flip: points per trade 2018-21 | 2022-26 | win 2022-26
+  0.04 / 0.04  30 min          :  -2.72 |  -3.77 | 38%
+  0.04 / 0.04  60 min          :  -2.73 |  -3.77 | 38%
+  0.04 / 0.04  60 min + reverse:  -2.73 |  -3.76 | 38%
+  0.06 / 0.06  30 min          :  -2.39 |  -3.00 | 45%
+  0.06 / 0.06  60 min          :  -2.45 |  -3.01 | 44%
+  0.06 / 0.06  60 min + reverse:  -2.45 |  -3.02 | 44%
+  0.06 / 0.04  30 min          :  -2.17 |  -2.96 | 34%
+  0.06 / 0.04  60 min          :  -2.23 |  -2.94 | 34%
+  0.06 / 0.04  60 min + reverse:  -2.23 |  -2.94 | 34%
+  0.10 / 0.05  30 min          :  -1.43 |  -1.86 | 33%
+  0.10 / 0.05  60 min          :  -1.44 |  -1.89 | 32%
+  0.10 / 0.05  60 min + reverse:  -1.44 |  -1.90 | 32%
+  0.12 / 0.06  30 min          :  -1.47 |  -1.08 | 35%
+  0.12 / 0.06  60 min          :  -1.39 |  -0.88 | 34%
+  0.12 / 0.06  60 min + reverse:  -1.39 |  -0.88 | 34%
+  0.16 / 0.08  30 min          :  -1.30 |  -0.36 | 38%
+  0.16 / 0.08  60 min          :  -1.13 |  -0.54 | 36%
+  0.16 / 0.08  60 min + reverse:  -1.13 |  -0.51 | 36%
+
+best bracket on 2018-21: 0.16 / 0.08, 60 min (-1.13 per trade in 2018-21, -0.54 in 2022-26)
+feature spreads (with minus without, points per trade) 2018-21 -> 2022-26:
+  neg gamma                 -0.34 ->  +1.28 
+  vol top third             -0.81 ->  +0.14 
+  RVOL top 30%              -1.84 ->  -0.71 
+  not bad VA side           +1.71 ->  -0.75 (in score)
+  not LVN                   +1.04 ->  +1.05 (in score)
+  15m vector agrees         -0.37 ->  -0.21 
+  1h vector agrees          +0.86 ->  -0.78 (in score)
+  first 90 min              -1.98 ->  -1.66 
+  flip bar range top 30%    +0.19 ->  -1.41 (in score)
+
+TOP % by score (4 features), judged 2022-26 at 1 contract, <= 3 trades a day, one at a time:
+  selection         trades/day  pts/trade  pts/day  +7.5-pt days/month  Sharpe
+  every flip              1.66      -0.92    -1.52                 8.5   -0.55
+  top 30%                 0.67      -1.01    -0.68                 4.3   -0.39
+  top 20%                 0.44      -1.09    -0.47                 2.9   -0.34
+  top 10%                 0.20      -1.67    -0.33                 1.3   -0.35
+  top 5%                  0.13      +0.03    +0.00                 0.9    0.00
