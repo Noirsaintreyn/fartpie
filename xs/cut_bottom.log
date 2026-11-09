@@ -1,0 +1,43 @@
+=== engines (V2 + skip slow flips): trades a year, NQ pts per trade at 1 contract, weighted points (pts x size) a year | 2018-21 / 2022-25 ===
+  RA        26 /    30 a yr |  +9.94 / +13.44 pts |   +185 /   +410 wtd pts a yr  (direction known 100%)
+  M1       104 /   106 a yr |  +8.50 /  +9.12 pts |   +175 /   +237 wtd pts a yr  (direction known 100%)
+  R1        16 /    19 a yr |  +3.79 /  +8.06 pts |    +20 /    +80 wtd pts a yr  (direction known 100%)
+  ON+       84 /   102 a yr |  +3.42 /  +5.08 pts |   +106 /   +211 wtd pts a yr  (direction known 100%)
+  ON-      172 /   160 a yr |  +1.98 /  +1.92 pts |    +19 /    +26 wtd pts a yr  (direction known 100%)
+  RULES     94 /   142 a yr |  +1.76 /  +3.16 pts |   +124 /   +256 wtd pts a yr  (direction known 100%)
+  V15a      50 /    49 a yr |  +9.27 / +28.11 pts |    +88 /   +449 wtd pts a yr  (direction known 100%)
+
+=== slices: pts per trade (n) 2018-21 / 2022-25; A = picked on 2018-21 (loses there, n >= 30); B = loses in both (n >= 25 each) ===
+  RA: all +9.94 / +13.44
+    DEX third = mid            -3.11 ( 40) /   +1.62 ( 40)  A 
+    HAR vs normal = mid            -2.90 ( 32) /   -3.71 ( 31)  AB
+    daily vector = with           -4.17 ( 37) /   +0.67 ( 49)  A 
+  M1: all +8.50 / +9.12 - no losing slices
+  R1: all +3.79 / +8.06
+    YZ20 third = low            -0.48 ( 38) /   +3.56 ( 45)  A 
+    HAR vs normal = low            -2.66 ( 43) /   +8.17 ( 49)  A 
+  ON+: all +3.42 / +5.08
+    weekday = Fri            -3.46 ( 65) /   +5.70 ( 86)  A 
+  ON-: all +1.98 / +1.92
+    DEX third = mid            -0.74 (245) /   +2.41 (182)  A 
+    YZ20 third = low            -4.55 (167) /   +9.88 (206)  A 
+    HAR vs normal = low            -4.14 (159) /   +0.66 (257)  A 
+    weekday = Fri            -2.79 (131) /   -3.82 (122)  AB
+  RULES: all +1.76 / +3.16
+    side = short          -0.25 (179) /   +2.24 (288)  A 
+  V15a: all +9.27 / +28.11 - no losing slices
+
+=== the cuts: what they remove | removed trades pts per trade 2018-21 / 2022-25 | kept trades | weighted points a year removed ===
+  A picked on 2018-21        removes 38% of trades | removed  -1.15 /  +3.63 | kept  +7.78 /  +8.91 | removed wtd pts -26 / +332 a yr
+     by engine (trades removed): RA 150, M1 0, R1 106, ON+ 151, ON- 851, RULES 467, V15a 0
+  B loses in both periods    removes 7% of trades | removed  -2.81 /  -3.80 | kept  +5.10 /  +7.59 | removed wtd pts -19 / -11 a yr
+     by engine (trades removed): RA 63, M1 0, R1 0, ON+ 0, ON- 253, RULES 0, V15a 0
+  C priors                   removes 24% of trades | removed +10.57 / +19.39 | kept  +2.63 /  +2.75 | removed wtd pts +428 / +1173 a yr
+     by engine (trades removed): RA 184, M1 631, R1 0, ON+ 0, ON- 0, RULES 0, V15a 292
+
+=== Lucid Flex 50K ===
+  V2 + skip slow flips (now)         pass 66%, paid 49%, evals/payout 0.92, dry run 3 | fleet 2018+: 2.07 payouts/mo, losing 23%, $2,734/mo, worst $-704 | 24 starts 2022-23: avg $4,169 / median $2,302, losing 27%
+    + cut A picked on 2018-21        pass 78%, paid 67%, evals/payout 0.60, dry run 4 | fleet 2018+: 2.27 payouts/mo, losing 21%, $2,584/mo, worst $-880 | 24 starts 2022-23: avg $2,576 / median $0, losing 37%
+    + cut B loses in both periods    pass 70%, paid 52%, evals/payout 0.73, dry run 3 | fleet 2018+: 2.26 payouts/mo, losing 26%, $2,984/mo, worst $-792 | 24 starts 2022-23: avg $4,157 / median $0, losing 37%
+    + cut C priors                   pass 48%, paid 29%, evals/payout 1.93, dry run 6 | fleet 2018+: 0.93 payouts/mo, losing 31%, $817/mo, worst $-704 | 24 starts 2022-23: avg $1,137 / median $0, losing 39%
+EXIT 0
