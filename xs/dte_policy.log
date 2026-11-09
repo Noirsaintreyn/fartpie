@@ -1,0 +1,8 @@
+
+50K: best policy on 2018-21 starts: eval (1.0, 1.5) funded (0.5, 1.5, 1.5) (train +22.2 per account-month; 1x policy +14.1); next best: ((1.5, 1.0), (0.5, 1.5, 1.5)) +22.0; ((1.0, 1.0), (0.5, 1.5, 1.5)) +22.0; ((1.5, 1.5), (0.5, 1.5, 1.5)) +21.2
+  TEST 2022-25 starts, all 1x (no policy)   pass 49% payout rate 29%, 1.6 payouts x 66 pts, blown 85%, per account-month +26.6, payouts every 14 d, 1.01 per funded month
+  TEST 2022-25 starts, chosen policy        pass 44% payout rate 20%, 1.1 payouts x 75 pts, blown 88%, per account-month +25.3, payouts every 18 d, 0.96 per funded month
+
+150K: best policy on 2018-21 starts: eval (1.5, 1.5) funded (1.0, 0.5, 1.5) (train +28.3 per account-month; 1x policy +22.0); next best: ((1.0, 1.5), (1.0, 1.0, 1.5)) +27.1; ((1.0, 1.5), (0.25, 1.5, 1.5)) +26.2; ((1.5, 1.5), (1.0, 1.0, 1.5)) +26.0
+  TEST 2022-25 starts, all 1x (no policy)   pass 44% payout rate 29%, 2.0 payouts x 113 pts, blown 73%, per account-month +44.9, payouts every 17 d, 1.10 per funded month
+  TEST 2022-25 starts, chosen policy        pass 37% payout rate 21%, 1.6 payouts x 119 pts, blown 75%, per account-month +43.7, payouts every 14 d, 1.11 per funded month

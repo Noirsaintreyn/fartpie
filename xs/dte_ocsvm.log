@@ -1,0 +1,17 @@
+noise trades with full context: 2856 (2014 - 2025), avg +3.58
+  2017: train 636, test 263 | test avg: top30%  +1.70 (n89) | top15%  +1.99 | rest  -0.98
+  2018: train 899, test 241 | test avg: top30%  -0.86 (n27) | top15%  +8.02 | rest  +9.68
+  2019: train 1140, test 255 | test avg: top30%  -0.79 (n92) | top15%  -0.25 | rest  +0.14
+  2020: train 1395, test 229 | test avg: top30%  +5.70 (n23) | top15%  -3.73 | rest  +0.49
+  2021: train 1624, test 231 | test avg: top30%  +6.65 (n92) | top15%  +1.89 | rest  +5.23
+  2022: train 1855, test 269 | test avg: top30% +12.66 (n79) | top15% +10.97 | rest  +8.28
+  2023: train 2124, test 242 | test avg: top30%  +7.86 (n107) | top15%  +9.98 | rest  +4.48
+  2024: train 2366, test 258 | test avg: top30%  +0.85 (n78) | top15%  +8.27 | rest  +4.32
+  2025: train 2624, test 232 | test avg: top30%  +2.99 (n69) | top15% +10.40 | rest  +9.13
+
+  selection (2017 - Jan 2026 unless noted)        trades  win   pts/trade  pts/day  2017-21 / 2022-25 per trade
+  every noise trade                              2220  31%     +4.55    +4.47   +2.91 /  +6.55
+  OCSVM contrast top 30%                          656  32%     +4.44    +1.29   +2.47 /  +6.34
+  OCSVM contrast top 15%                          372  34%     +5.61    +0.92   +1.15 /  +9.98
+  hand gate: neg gamma + DEX ok (2018+)          1089  33%     +7.62    +4.16   +6.57 /  +8.65
+  OCSVM top 30% AND hand gate (2018+)             256  36%     +7.42    +0.95   +7.75 /  +7.20
