@@ -1,0 +1,29 @@
+features found: rvol 100%, gap 100%, hi52 100%, rs20 100%, rev1 100%, ivol 100%, pcr 53%, vrp 53% | options names: 23
+
+=== all 54 names: CAGR / max DD 2019-22 (CHOOSE) | 2023-26 (JUDGE) | all ===
+  live ratio order            36.7% / DD -11.2% |  35.0% / DD -13.1% | all  35.9%
+  rvol alone                  34.7% / DD -15.0% |  29.4% / DD -16.8% | all  32.1%
+  rvol + ratio                32.0% / DD -16.4% |  37.7% / DD -13.3% | all  34.6%
+  gap alone                   32.0% / DD -13.6% |  25.1% / DD -14.3% | all  28.5%
+  gap + ratio                 33.3% / DD -18.7% |  30.0% / DD -15.1% | all  31.6%
+  hi52 alone                  29.4% / DD -17.0% |  28.4% / DD -14.3% | all  28.9%
+  hi52 + ratio                32.1% / DD -12.1% |  25.3% / DD -15.2% | all  28.7%
+  rs20 alone                  29.9% / DD -11.1% |  27.9% / DD -17.3% | all  28.9%
+  rs20 + ratio                29.7% / DD -12.8% |  28.9% / DD -19.1% | all  29.3%
+  rev1 alone                  34.9% / DD -11.6% |  22.1% / DD -13.9% | all  28.5%
+  rev1 + ratio                34.5% / DD -13.2% |  29.9% / DD -15.2% | all  32.2%
+  ivol alone                  29.3% / DD -15.2% |  21.2% / DD -13.7% | all  25.3%
+  ivol + ratio                33.9% / DD -13.5% |  29.8% / DD -17.8% | all  31.9%
+  -> chosen on 2019-22: rev1 alone (does not beat the live order there) | 2019-22 / 2023-26:  34.9% / DD -11.6% |  22.1% / DD -13.9% | all  28.5%
+
+=== 23 names with options data: CAGR / max DD 2019-22 (CHOOSE) | 2023-26 (JUDGE) | all ===
+  live ratio order            22.9% / DD -11.0% |  41.0% / DD -11.5% | all  31.3%
+  pcr alone                   20.5% / DD  -9.7% |  22.8% / DD -17.0% | all  21.6%
+  pcr + ratio                 24.7% / DD -10.6% |  34.5% / DD -11.6% | all  29.3%
+  vrp alone                   15.3% / DD -21.2% |  25.1% / DD -14.0% | all  19.9%
+  vrp + ratio                 22.4% / DD -10.5% |  36.3% / DD -13.6% | all  28.9%
+  rvol alone                  22.9% / DD -10.2% |  29.6% / DD -11.6% | all  26.0%
+  rvol + ratio                22.5% / DD -10.0% |  31.7% / DD -11.5% | all  26.8%
+  hi52 alone                  21.8% / DD -13.1% |  41.1% / DD -12.7% | all  30.7%
+  hi52 + ratio                26.1% / DD  -9.6% |  37.9% / DD -12.1% | all  31.6%
+  -> chosen on 2019-22: hi52 + ratio (beats the live order there) | 2019-22 / 2023-26:  26.1% / DD  -9.6% |  37.9% / DD -12.1% | all  31.6%
