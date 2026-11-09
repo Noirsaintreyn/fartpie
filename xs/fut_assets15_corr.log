@@ -1,0 +1,11 @@
+QQQ days kept 2166 of 2204 | RTH bars per day 25.9
+SPY days kept 2128 of 2166 | RTH bars per day 25.9
+FXE days kept 2137 of 2225 | RTH bars per day 24.7
+TLT days kept 2167 of 2205 | RTH bars per day 25.9
+daily correlation:
+       QQQ   SPY   FXE   TLT
+QQQ  1.00  0.70  0.01  0.02
+SPY  0.70  1.00  0.03 -0.00
+FXE  0.01  0.03  1.00  0.02
+TLT  0.02 -0.00  0.02  1.00
+NQ noise alone Sharpe 1.12 | NQ + ES noise (equal R) 1.10 | NQ noise + Euro trend-hold 1.36 | NQ + ES + Euro + Bonds 1.36
