@@ -1,0 +1,25 @@
+Q stop 40 all: 1112 trades since Feb 2018 (11.7 a month), hit 85%, avg +0.80, 2022+ avg +1.56
+Q stop 40 gamma ok: 757 trades since Feb 2018 (8.0 a month), hit 87%, avg +1.52, 2022+ avg +2.34
+Q stop 25 gamma ok: 757 trades since Feb 2018 (8.0 a month), hit 80%, avg +0.91, 2022+ avg +1.24
+
+  version                        acct  starts qual/mo pass  paid  payouts x size  blown | per acct-month | 1st payout  every  payouts/mo funded
+  U3 + YZ (current best)         50K   all        6.6  52%   35%   1.6 x  60 pts   88% |          +18.3 |    2.3 mo   16 d       0.89
+  U3 + YZ (current best)         50K   2022+      6.6  47%   28%   1.6 x  67 pts   85% |          +26.5 |    1.7 mo   14 d       1.02
+  U3 + YZ (current best)         150K  all        6.8  42%   32%   1.9 x 107 pts   81% |          +30.2 |    2.4 mo   17 d       1.06
+  U3 + YZ (current best)         150K  2022+      6.8  45%   32%   1.9 x 112 pts   78% |          +44.3 |    1.9 mo   15 d       1.15
+  + Q stop 40, every noise day   50K   all        7.9  48%   32%   1.5 x  66 pts   89% |          +27.6 |    1.9 mo   11 d       1.18
+  + Q stop 40, every noise day   50K   2022+      7.9  48%   29%   1.7 x  74 pts   83% |          +42.9 |    1.4 mo   11 d       1.40
+  + Q stop 40, every noise day   150K  all        8.3  41%   26%   1.5 x 115 pts   83% |          +34.7 |    2.0 mo   11 d       1.10
+  + Q stop 40, every noise day   150K  2022+      8.3  44%   27%   1.7 x 118 pts   76% |          +53.2 |    1.5 mo   10 d       1.46
+  + Q stop 40, gamma not top     50K   all        7.3  50%   32%   1.5 x  62 pts   87% |          +23.0 |    1.9 mo   14 d       1.01
+  + Q stop 40, gamma not top     50K   2022+      7.3  49%   27%   1.4 x  67 pts   87% |          +31.8 |    1.4 mo   14 d       1.15
+  + Q stop 40, gamma not top     150K  all        7.7  44%   26%   1.6 x 114 pts   81% |          +33.6 |    2.0 mo   15 d       0.94
+  + Q stop 40, gamma not top     150K  2022+      7.7  44%   25%   1.6 x 117 pts   81% |          +46.1 |    1.5 mo   16 d       1.15
+  + Q stop 25, gamma not top     50K   all        7.2  50%   34%   1.7 x  64 pts   86% |          +24.2 |    2.0 mo   15 d       1.01
+  + Q stop 25, gamma not top     50K   2022+      7.2  49%   30%   1.8 x  70 pts   81% |          +37.0 |    1.5 mo   14 d       1.21
+  + Q stop 25, gamma not top     150K  all        7.5  45%   31%   1.6 x 107 pts   85% |          +31.9 |    2.1 mo   16 d       1.03
+  + Q stop 25, gamma not top     150K  2022+      7.5  44%   27%   1.8 x 118 pts   77% |          +48.7 |    1.5 mo   16 d       1.16
+  + Q40 gamma not top + V15a     50K   all        7.3  52%   28%   1.4 x  68 pts   88% |          +23.9 |    2.0 mo   15 d       0.94
+  + Q40 gamma not top + V15a     50K   2022+      7.3  49%   26%   1.8 x  75 pts   83% |          +39.5 |    1.4 mo   14 d       1.16
+  + Q40 gamma not top + V15a     150K  all        7.7  51%   30%   1.4 x 106 pts   87% |          +32.0 |    2.3 mo   15 d       1.01
+  + Q40 gamma not top + V15a     150K  2022+      7.7  48%   27%   1.7 x 115 pts   79% |          +51.2 |    1.5 mo   15 d       1.15
