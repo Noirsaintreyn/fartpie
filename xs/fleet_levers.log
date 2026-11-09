@@ -1,0 +1,43 @@
+
+=== 150K x 5 Lucid Flex ===
+-- 1) payout cushion
+  take 50% (now)                               avg $ 5,431 / median $     0 | >= $2.5k  42%, >= $5k  36%, losing  43%, dry 4.0 mo | avg payout $2,465
+  take 25%                                     avg $ 5,053 / median $     0 | >= $2.5k  44%, >= $5k  34%, losing  43%, dry 4.0 mo | avg payout $2,121
+  take the $500 minimum                        avg $   732 / median $     0 | >= $2.5k  20%, >= $5k   1%, losing  44%, dry 4.0 mo | avg payout $450
+  take 50% + half size until rebuilt           avg $ 5,288 / median $     0 | >= $2.5k  43%, >= $5k  40%, losing  43%, dry 7.0 mo | avg payout $2,410
+  take 25% + half size until rebuilt           avg $ 4,576 / median $   595 | >= $2.5k  46%, >= $5k  37%, losing  39%, dry 4.0 mo | avg payout $2,030
+  take $500 + half size until rebuilt          avg $   803 / median $   168 | >= $2.5k  20%, >= $5k   1%, losing  41%, dry 4.0 mo | avg payout $450
+-- 2) decorrelated accounts (rotate A / B / C as evals are bought)
+  split, rules algo on every account           avg $ 2,137 / median $     0 | >= $2.5k  32%, >= $5k  20%, losing  47%, dry 6.0 mo | avg payout $1,984
+  split, rules algo only on B                  avg $ 2,486 / median $   854 | >= $2.5k  40%, >= $5k  25%, losing  37%, dry 4.0 mo | avg payout $2,193
+
+=== 50K x 5 Lucid Flex ===
+-- 1) payout cushion
+  take 50% (now)                               avg $ 4,469 / median $ 1,126 | >= $2.5k  40%, >= $5k  35%, losing  39%, dry 5.0 mo | avg payout $1,568
+  take 25%                                     avg $ 3,705 / median $   925 | >= $2.5k  42%, >= $5k  32%, losing  31%, dry 5.0 mo | avg payout $1,263
+  take the $500 minimum                        avg $ 1,219 / median $   724 | >= $2.5k  24%, >= $5k   0%, losing  33%, dry 5.0 mo | avg payout $450
+  take 50% + half size until rebuilt           avg $ 4,228 / median $   482 | >= $2.5k  41%, >= $5k  34%, losing  39%, dry 5.0 mo | avg payout $1,538
+  take 25% + half size until rebuilt           avg $ 3,688 / median $ 1,008 | >= $2.5k  42%, >= $5k  31%, losing  32%, dry 4.0 mo | avg payout $1,257
+  take $500 + half size until rebuilt          avg $ 1,243 / median $   817 | >= $2.5k  25%, >= $5k   0%, losing  31%, dry 4.0 mo | avg payout $450
+-- 2) decorrelated accounts (rotate A / B / C as evals are bought)
+  split, rules algo on every account           avg $ 1,210 / median $     0 | >= $2.5k  16%, >= $5k   8%, losing  44%, dry 7.0 mo | avg payout $1,044
+  split, rules algo only on B                  avg $ 1,576 / median $   430 | >= $2.5k  30%, >= $5k  10%, losing  38%, dry 3.5 mo | avg payout $1,357
+
+=== 3) shock days: S6 book, one 50K account ===
+  gap       flagged  10% /  11% of days | worst-day lift 1.02 (2018-21) / 0.72 (2022+) | book on flagged days $ +154 / $ +533 (other days $ +70 / $+121)
+  onr       flagged  10% /   7% of days | worst-day lift 1.83 (2018-21) / 1.42 (2022+) | book on flagged days $  +18 / $ +665 (other days $ +85 / $+128)
+  iv5       flagged  10% /  11% of days | worst-day lift 2.67 (2018-21) / 2.29 (2022+) | book on flagged days $  +22 / $ +179 (other days $ +85 / $+164)
+  yz1       flagged  10% /  10% of days | worst-day lift 2.22 (2018-21) / 1.88 (2022+) | book on flagged days $ +130 / $ +296 (other days $ +73 / $+150)
+  prng      flagged  10% /   6% of days | worst-day lift 1.63 (2018-21) / 1.66 (2022+) | book on flagged days $  +57 / $ +178 (other days $ +81 / $+165)
+  FOMC      flagged   3% /   3% of days | worst-day lift 0.67 (2018-21) / 0.00 (2022+) | book on flagged days $  -24 / $ +381 (other days $ +82 / $+158)
+  big 8:30  flagged  11% /  18% of days | worst-day lift 1.54 (2018-21) / 0.65 (2022+) | book on flagged days $ +111 / $ +320 (other days $ +75 / $+131)
+  GUARD = iv5 (2018-21 lift 2.67)
+  150K half size RTH on iv5 days               avg $ 5,610 / median $     0 | >= $2.5k  40%, >= $5k  38%, losing  46%, dry 7.0 mo | avg payout $2,475
+  150K skip RTH on iv5 days                    avg $ 5,934 / median $    59 | >= $2.5k  40%, >= $5k  39%, losing  43%, dry 4.0 mo | avg payout $2,472
+  150K daily stop -$600 x size                 avg $ 5,184 / median $   647 | >= $2.5k  39%, >= $5k  33%, losing  34%, dry 5.0 mo | avg payout $2,439
+  150K S6 as is                                avg $ 5,431 / median $     0 | >= $2.5k  42%, >= $5k  36%, losing  43%, dry 4.0 mo | avg payout $2,465
+  50K half size RTH on iv5 days                avg $ 4,246 / median $   496 | >= $2.5k  39%, >= $5k  32%, losing  39%, dry 5.0 mo | avg payout $1,543
+  50K skip RTH on iv5 days                     avg $ 4,136 / median $ 1,246 | >= $2.5k  42%, >= $5k  33%, losing  39%, dry 5.0 mo | avg payout $1,524
+  50K daily stop -$600 x size                  avg $ 3,384 / median $   835 | >= $2.5k  36%, >= $5k  33%, losing  35%, dry 4.0 mo | avg payout $1,473
+  50K S6 as is                                 avg $ 4,469 / median $ 1,126 | >= $2.5k  40%, >= $5k  35%, losing  39%, dry 5.0 mo | avg payout $1,568
+EXIT 0
