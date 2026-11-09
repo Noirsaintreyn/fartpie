@@ -1,0 +1,44 @@
+1) points per trade by z quintile (1 = least stretched ... 5 = most stretched in the trade direction), cuts from 2018-21 | 2018-21 / 2022-25
+
+  RA: 284 trades, 2018-21 +7.99, 2022-25 +10.63
+    zV:  +6.5/+17.6   +5.4/ +6.5  +19.9/ +4.7   +2.3/+20.7   +6.4/ +5.1
+    zN:  +7.6/ -6.5  -13.7/+15.7  +16.9/+20.1   +6.7/+25.6  +22.8/ -1.6
+    zU:  -1.6/ -6.9   +7.0/+28.5   +7.0/+24.6  +13.4/+10.5  +14.1/ -0.6
+    zE:  +1.7/ -5.0  +11.2/+16.8  +11.6/+14.4   -4.5/+12.7  +20.0/+16.1
+    no rule for RA (the most stretched fifth did not lose in 2018-21)
+
+  M1: 1075 trades, 2018-21 +6.85, 2022-25 +8.17
+    zV:  +6.2/ -2.7  +14.4/+22.3   +0.3/ +3.3   +9.3/ -4.6   +4.0/+18.8
+    zN:  +7.8/ +2.6   +4.4/+17.5   +8.2/ +8.8  +10.0/ +0.6   +3.9/+10.8
+    zU: +12.6/+12.1  +11.6/+22.6   +9.4/ +3.4   +3.7/ -3.4   -3.0/ +2.8
+    zE:  +7.3/ -3.7   +5.2/+17.8  +15.3/+11.8   +7.9/ -0.8   -1.4/+18.3
+    RULE M1: skip zU >= 1.04 (2018-21 top fifth -3.0) -> 2022-25: kept +8.97 (n481), skipped +2.84 (n72); total points 2022-25 kept +4313 vs all +4517
+
+  V15a: 684 trades, 2018-21 +4.87, 2022-25 +20.08
+    zV:  +3.3/ +0.9  +11.0/+27.6   +9.0/+32.1   +6.1/+18.7   -4.2/+20.0
+    zN:  +4.5/ +6.8   -6.2/+11.0   +9.2/+21.6   +7.6/+29.5   +9.2/+31.3
+    zU:  +5.9/+17.0   +4.8/+17.2   -0.7/+19.9   +9.2/+15.4   +5.1/+29.3
+    zE:  +1.1/+22.2  +18.6/+42.1   +5.0/ +3.7   +0.2/+20.7   -0.4/ +6.7
+    RULE V15a: skip zV >= 2.37 (2018-21 top fifth -4.2) -> 2022-25: kept +20.10 (n274), skipped +20.01 (n77); total points 2022-25 kept +5507 vs all +7047
+
+  RULES: 1088 trades, 2018-21 +1.66, 2022-25 +2.27
+    zV:  +2.5/ +3.0   +3.8/ +1.2   -2.6/ +1.3   +2.3/ +1.5   +2.4/ +3.8
+    zN:  +1.7/ +3.9   +1.8/ +3.1   +4.3/ +0.7   +0.5/ +3.3   +0.1/ -0.5
+    zU:  +1.5/ +6.1   +3.3/ +2.3   -1.0/ +1.0   +2.3/ +0.1   +2.1/ +0.8
+    zE:  +2.0/ +1.2   +3.5/ +0.5   +0.6/ +0.4   +0.7/ +2.2   +1.6/ +6.4
+    no rule for RULES (the most stretched fifth did not lose in 2018-21)
+
+2) 5m execution: points per trade (trades) | 2018-21 / 2022-25 | total points 2022-25
+  RA     as now           +7.99 ( 129) / +10.63 ( 155) |   +1648
+  RA     pullback limit   +7.34 ( 103) /  +9.34 ( 116) |   +1083
+  RA     5m confirm       +3.72 (  67) / +13.19 (  86) |   +1134
+  RULES  as now           +1.66 ( 433) /  +2.27 ( 655) |   +1485
+  RULES  pullback limit   +4.08 ( 328) /  +4.74 ( 515) |   +2440
+  RULES  5m confirm       -1.94 ( 240) /  -1.22 ( 344) |    -419
+
+3) fleet: Lucid Flex x5, 24 monthly starts 2022-23, budget 40 fees (S6 = profit algo + rules C+TPO + V15a)
+  150K  S6 as is             avg $ 5,431 / median $     0 | months >= $2.5k  42%, >= $5k  36%, losing  43%, dry 4.0 mo
+  150K  S6 + z skip rules    avg $ 6,246 / median $     0 | months >= $2.5k  40%, >= $5k  36%, losing  45%, dry 7.0 mo
+  50K   S6 as is             avg $ 4,469 / median $ 1,126 | months >= $2.5k  40%, >= $5k  35%, losing  39%, dry 5.0 mo
+  50K   S6 + z skip rules    avg $ 4,529 / median $   888 | months >= $2.5k  45%, >= $5k  32%, losing  38%, dry 5.0 mo
+EXIT 0

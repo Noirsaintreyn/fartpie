@@ -1,0 +1,8 @@
+rules pullback trades 843 (avg +4.48; 2022+ +4.74); noise skipped 173
+  150K  S6 as is                       avg $ 5,431 / median $     0 | months >= $2.5k  42%, >= $5k  36%, losing  43%, dry 4.0 mo | survive on 20 fees 96%
+  150K  S6, rules on 5m pullback       avg $ 4,885 / median $     0 | months >= $2.5k  40%, >= $5k  33%, losing  41%, dry 7.0 mo | survive on 20 fees 100%
+  150K  S6, pullback + noise zU skip   avg $ 5,635 / median $     0 | months >= $2.5k  41%, >= $5k  36%, losing  33%, dry 7.0 mo | survive on 20 fees 92%
+  50K   S6 as is                       avg $ 4,469 / median $ 1,126 | months >= $2.5k  40%, >= $5k  35%, losing  39%, dry 5.0 mo | survive on 20 fees 96%
+  50K   S6, rules on 5m pullback       avg $ 3,127 / median $ 1,448 | months >= $2.5k  41%, >= $5k  25%, losing  31%, dry 4.0 mo | survive on 20 fees 96%
+  50K   S6, pullback + noise zU skip   avg $ 3,256 / median $ 1,254 | months >= $2.5k  37%, >= $5k  27%, losing  34%, dry 4.0 mo | survive on 20 fees 100%
+EXIT 0
