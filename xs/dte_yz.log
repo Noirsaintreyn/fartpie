@@ -1,0 +1,34 @@
+
+=== M1 noise (neg gamma, DEX ok): 1106 trades, avg +7.47
+  YZ  1d   low n167 +7.56 (+0.8/+12.2) | mid n324 +9.63 (+4.2/+14.7) | high n615 +6.31 (+9.1/+3.3)
+  YZ  5d * low n165 +2.13 (-4.2/+5.7) | mid n311 +4.92 (+8.9/+1.1) | high n630 +10.13 (+7.5/+13.0)
+  YZ 20d * low n210 +1.84 (+2.0/+1.6) | mid n382 +3.18 (+5.5/+1.4) | high n514 +12.96 (+9.2/+17.1)
+
+=== ON after positive gamma: 704 trades, avg +4.79
+  YZ  1d * low n387 +6.42 (+5.1/+7.4) | mid n220 +4.17 (+1.6/+6.7) | high n97 -0.29 (+0.9/-1.1)
+  YZ  5d * low n400 +4.45 (+2.3/+6.2) | mid n197 +1.90 (+0.8/+3.0) | high n107 +11.39 (+16.2/+9.0)
+  YZ 20d * low n390 +4.52 (+2.9/+5.9) | mid n163 +1.29 (+1.9/+0.7) | high n151 +9.27 (+6.8/+10.9)
+
+=== ON after negative gamma: 1280 trades, avg +1.90
+  YZ  1d * low n276 -0.53 (-1.2/+0.1) | mid n385 +2.34 (+4.3/-0.1) | high n619 +2.72 (+1.5/+3.9)
+  YZ  5d   low n282 +0.67 (-5.7/+5.6) | mid n381 +3.46 (+1.7/+5.4) | high n617 +1.51 (+4.8/-2.4)
+  YZ 20d   low n313 +4.05 (-5.6/+11.9) | mid n394 -1.08 (+2.0/-4.2) | high n573 +2.78 (+5.1/-0.1)
+
+=== R1 80% rule (pos gamma): 141 trades, avg +5.99
+  YZ  1d * low n82 +8.17 (+3.3/+10.7) | mid n44 +1.58 (+1.5/+1.8) | high n15 +6.98 (+nan/+nan)
+  YZ  5d   low n83 +2.90 (-1.7/+7.0) | mid n34 +13.54 (+nan/+18.9) | high n24 +5.96 (+nan/+nan)
+  YZ 20d   low n83 +1.97 (-0.4/+3.9) | mid n30 +14.12 (+1.0/+nan) | high n28 +9.20 (+nan/+2.8)
+
+=== RA Rule A: 321 trades, avg +9.77
+  YZ  1d   low n113 +10.99 (+11.7/+10.6) | mid n101 +12.47 (+3.2/+20.5) | high n107 +5.93 (+10.8/+1.4)
+  YZ  5d * low n102 +18.53 (+17.6/+19.2) | mid n93 +3.56 (+10.1/-0.6) | high n126 +7.25 (+1.5/+13.2)
+  YZ 20d * low n93 +18.86 (+27.9/+13.6) | mid n105 +6.73 (+6.7/+6.7) | high n123 +5.49 (-0.4/+11.9)
+
+held in both periods: M1 noise (neg gamma, DEX ok) YZ5d best high worst low, M1 noise (neg gamma, DEX ok) YZ20d best high worst low, ON after positive gamma YZ1d best low worst high, ON after positive gamma YZ5d best high worst mid, ON after positive gamma YZ20d best high worst mid, ON after negative gamma YZ1d best high worst low, R1 80% rule (pos gamma) YZ1d best low worst mid, RA Rule A YZ5d best low worst mid, RA Rule A YZ20d best low worst high
+YZ sizing rules used (1.5x in the best third, 0.5x in the worst, by the first window that held: 5d, 20d, 1d): RA: (5, 'low', 'mid'), M1: (5, 'high', 'low'), R1: (1, 'low', 'mid'), ON+: (5, 'high', 'mid'), ON-: (1, 'high', 'low')
+
+  version                      acct  qual/mo pass  paid  payouts x size  blown | per acct-month | 1st payout  every  payouts/mo funded
+  U3 dealer-regime model       50K       6.5  53%   32%   1.5 x  53 pts   89% |          +14.3 |    2.7 mo   15 d       0.88
+  U3 dealer-regime model       150K      7.1  51%   33%   1.6 x 102 pts   89% |          +24.4 |    3.1 mo   13 d       1.04
+  U3 + YZ sizing per engine    50K       6.6  52%   35%   1.6 x  60 pts   88% |          +18.3 |    2.3 mo   16 d       0.89
+  U3 + YZ sizing per engine    150K      7.4  42%   32%   1.9 x 107 pts   81% |          +30.2 |    2.4 mo   17 d       1.06
