@@ -1,0 +1,62 @@
+system NQ points a month at 1 contract (one 50K account): by year avg / worst month: 2018: +108 / -185 | 2019: +24 / -79 | 2020: +44 / -103 | 2021: +122 / -97 | 2022: +117 / -91 | 2023: +129 / -85 | 2024: +62 / -151 | 2025: +228 / -106 | 2026: -107 / -107
+
+=== Lucid Flex 50K x 5 accounts (fee $88, start cash $1,760) - 215 evals bought ===
+  year  payouts  net $/mo   worst mo   best mo  mo>=7.5k mo>=10k  losing mo
+  2018       22     2,610       -440    14,854      2/11     1        3
+  2019       10     1,427       -440    10,712      1/12     1        1
+  2020       10       614       -968     3,788      0/12     0        7
+  2021       35     4,144       -616    13,712      3/12     2        5
+  2022       22     2,720       -880    12,972      3/12     2        6
+  2023       44     5,002       -440    17,423      5/12     2        2
+  2024       45     5,172       -440    17,230      5/12     3        7
+  2025       37     4,131       -440    18,000      2/12     2        4
+  2026        2       379        379       379      0/1      0        0
+  all years: average $3,204/mo, median $0, months >= $7.5k 22%, >= $10k 14%, losing 36%
+  2022+    : average $4,177/mo, median $419, months >= $7.5k 31%, >= $10k 18%, losing 39%
+  longest run of months under $7.5k: 25; total paid $326,504, fees $18,920
+
+=== Lucid Flex 150K x 5 accounts (fee $244, start cash $4,880) - 221 evals bought ===
+  year  payouts  net $/mo   worst mo   best mo  mo>=7.5k mo>=10k  losing mo
+  2018       26     4,658     -1,220    18,900      2/11     2        3
+  2019       10     2,026     -1,220    13,500      2/12     2        2
+  2020        4      -287     -2,684     2,398      0/12     0        7
+  2021       37     6,868     -1,220    24,300      5/12     4        6
+  2022       29     5,167     -2,684    24,300      4/12     4        7
+  2023       47     8,657     -1,220    34,612      5/12     4        1
+  2024       32     6,364     -1,464    27,000      4/12     3        7
+  2025       29     5,183     -1,464    27,000      3/12     2        5
+  2026        0      -976       -976      -976      0/1      0        1
+  all years: average $4,771/mo, median $0, months >= $7.5k 26%, >= $10k 22%, losing 41%
+  2022+    : average $6,194/mo, median $343, months >= $7.5k 33%, >= $10k 27%, losing 43%
+  longest run of months under $7.5k: 24; total paid $511,934, fees $53,924
+
+=== Lucid Pro 50K x 5 accounts (fee $172, start cash $3,440) - 112 evals bought ===
+  year  payouts  net $/mo   worst mo   best mo  mo>=7.5k mo>=10k  losing mo
+  2018       11     1,254       -860     9,450      1/11     0        3
+  2019        8     1,500          0     9,000      2/12     0        0
+  2020       11     1,962       -344    13,500      2/12     2        1
+  2021       20     3,476       -688    11,250      3/12     3        2
+  2022       15     2,525       -688    10,734      1/12     1        1
+  2023       30     4,896       -688    16,796      5/12     2        3
+  2024       16     2,477       -688    11,250      2/12     2        6
+  2025       24     3,484       -860    16,624      3/12     3        6
+  2026        0      -516       -516      -516      0/1      0        1
+  all years: average $2,678/mo, median $0, months >= $7.5k 20%, >= $10k 14%, losing 24%
+  2022+    : average $3,267/mo, median $0, months >= $7.5k 22%, >= $10k 16%, losing 35%
+  longest run of months under $7.5k: 14; total paid $276,391, fees $19,264
+
+=== Lucid Daily 150K x 5 accounts (fee $250, start cash $5,000) - 222 evals bought ===
+  year  payouts  net $/mo   worst mo   best mo  mo>=7.5k mo>=10k  losing mo
+  2018       69     8,181     -1,250    56,110      3/11     3        3
+  2019       35     3,700     -1,250    19,042      3/12     2        2
+  2020        0      -583     -2,750         0      0/12     0        7
+  2021       58     8,546     -1,500    51,493      4/12     3        6
+  2022       24     3,373     -2,750    27,954      2/12     2        7
+  2023      128    12,661     -1,250    52,390      6/12     6        3
+  2024       80     8,716     -1,500    39,006      4/12     4        7
+  2025       43     3,502     -2,750    28,034      2/12     2        8
+  2026        0    -1,000     -1,000    -1,000      0/1      0        1
+  all years: average $5,916/mo, median $0, months >= $7.5k 25%, >= $10k 23%, losing 46%
+  2022+    : average $6,898/mo, median $-250, months >= $7.5k 29%, >= $10k 29%, losing 53%
+  longest run of months under $7.5k: 23; total paid $623,472, fees $55,500
+EXIT 0
