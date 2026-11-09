@@ -1,0 +1,22 @@
+Rule A by confidence score: NQ pts per trade (n) 2018-21 / 2022-25
+  score 0:  -2.01 (38) /  +8.13 (46)
+  score 1: +14.06 (58) / +17.58 (68)
+  score 2: +63.62 (4) /  +7.12 (6)
+
+Rule A exits: NQ pts per trade 2018-21 / 2022-25 | total 2022-25 (score-weighted size not applied here)
+  T0:  +9.94 / +13.44 |  +1612
+  T1:  +6.48 / +11.06 |  +1327
+  T3:  +7.43 /  +6.11 |   +734
+  T4: +11.32 / +22.63 |  +2716
+  T5:  +9.99 / +20.91 |  +2510
+  chosen on 2018-21: T4
+
+=== Lucid Flex 50K ===
+  now                                      per eval 18-21 / 22-25: pass 72% / 60%, paid 60% / 37%, $1,250 / $1,352 | dry 3 | 24 starts: $4,169 / $2,302, losing 27% | from 2018: $2,734/mo, losing 23%, worst $-704, 2.07 payouts/mo, >= 2 in 44% of months
+  E2 + F0 (state sizing, declared)         per eval 18-21 / 22-25: pass 92% / 75%, paid 71% / 52%, $1,843 / $2,482 | dry 2 | 24 starts: $3,896 / $1,368, losing 16% | from 2018: $2,338/mo, losing 12%, worst $-440, 1.73 payouts/mo, >= 2 in 30% of months
+  E2 + F1 (exploratory funded)             per eval 18-21 / 22-25: pass 92% / 75%, paid 81% / 68%, $1,574 / $2,617 | dry 3 | 24 starts: $3,166 / $1,182, losing 22% | from 2018: $2,059/mo, losing 20%, worst $-440, 1.98 payouts/mo, >= 2 in 43% of months
+  E2 + F1 + Rule A confidence micros       per eval 18-21 / 22-25: pass 93% / 73%, paid 82% / 65%, $1,790 / $2,077 | dry 3 | 24 starts: $3,134 / $1,141, losing 21% | from 2018: $2,261/mo, losing 19%, worst $-440, 2.05 payouts/mo, >= 2 in 44% of months
+  E2 + F1 + Rule A trail T4                per eval 18-21 / 22-25: pass 80% / 68%, paid 74% / 52%, $2,380 / $1,833 | dry 4 | 24 starts: $2,798 / $1,461, losing 17% | from 2018: $1,986/mo, losing 18%, worst $-616, 1.75 payouts/mo, >= 2 in 38% of months
+  E2 + F1 + micros + trail T4              per eval 18-21 / 22-25: pass 81% / 67%, paid 71% / 51%, $2,032 / $1,666 | dry 2 | 24 starts: $2,767 / $618, losing 27% | from 2018: $1,750/mo, losing 21%, worst $-616, 1.60 payouts/mo, >= 2 in 31% of months
+  now + Rule A confidence micros           per eval 18-21 / 22-25: pass 75% / 60%, paid 63% / 36%, $1,418 / $1,151 | dry 7 | 24 starts: $3,741 / $0, losing 34% | from 2018: $2,434/mo, losing 25%, worst $-792, 1.93 payouts/mo, >= 2 in 35% of months
+EXIT 0

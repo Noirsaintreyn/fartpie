@@ -1,0 +1,23 @@
+=== EVAL policies (funded x1) | evals started 2018-21 (CHOOSE): pass, paid, payouts per eval, net $ per eval | started 2022-25 (JUDGE) ===
+  E0 x1                      72%, 60%, 1.19, $1,250 | 60%, 37%, 0.97, $1,352
+  E1 de-risk when hurt       84%, 68%, 1.45, $1,591 | 76%, 49%, 1.50, $2,234
+  E2 harder de-risk          92%, 71%, 1.62, $1,843 | 75%, 52%, 1.65, $2,482
+  E3 press when ahead        67%, 58%, 1.20, $1,268 | 54%, 33%, 0.83, $1,145
+  E4 protect near target     72%, 59%, 1.27, $1,374 | 61%, 38%, 1.06, $1,486
+  E5 E1 + E3                 73%, 62%, 1.38, $1,467 | 71%, 45%, 1.35, $2,014
+  chosen on 2018-21: E2 harder de-risk
+
+=== FUNDED policies (eval = E2 harder de-risk) | 2018-21 starts: paid, payouts per eval, net $ per eval | 2022-25 starts ===
+  F0 x1                                  71%, 1.62, $1,843 | 52%, 1.65, $2,482
+  F1 x clip(c, .4, 1)                    81%, 1.82, $1,574 | 68%, 2.10, $2,617
+  F2 x clip(c, .5, 1.5)                  80%, 1.78, $1,571 | 58%, 1.74, $2,120
+  F3 half after a payout until c >= .75  71%, 1.82, $1,605 | 52%, 1.78, $2,407
+  F4 x clip(c, .3, 1.25)                 81%, 1.71, $1,512 | 66%, 2.08, $2,558
+  chosen on 2018-21: F0 x1
+
+=== judged: 5-account fleets | 24 starts 2022-23: avg / median a month, losing months | one path from 2018: avg a month, losing, worst | longest run w/o payout ===
+  now (E0 + F0)                                        $4,169 / $2,302, losing 27% | $2,734, losing 23%, worst $-704 | dry 3 | 2022-25 starts: pass 60%, paid 37%, $1,352/eval
+  E2 harder de-risk + F0                               $3,896 / $1,368, losing 16% | $2,338, losing 12%, worst $-440 | dry 2 | 2022-25 starts: pass 75%, paid 52%, $2,482/eval
+  E0 + F0 x1                                           $4,169 / $2,302, losing 27% | $2,734, losing 23%, worst $-704 | dry 3 | 2022-25 starts: pass 60%, paid 37%, $1,352/eval
+  chosen: E2 harder de-risk + F0 x1                    $3,896 / $1,368, losing 16% | $2,338, losing 12%, worst $-440 | dry 2 | 2022-25 starts: pass 75%, paid 52%, $2,482/eval
+EXIT 0
