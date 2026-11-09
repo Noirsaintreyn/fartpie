@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/home/claude/fartpie/xs/dte_overnight_prop2.py", line 17, in <module>
+    gx = (DY.gex < 0); RAt, M1t, R1t = ra_trades(), m1_trades(), r1_trades(); M1g = M1t[M1t.day.map(gx) == True]; R1g = R1t[R1t.day.map(gx) == False]
+                                       ~~~~~~~~~^^
+  File "<string>", line 27, in ra_trades
+IndexError: index 0 is out of bounds for axis 0 with size 0
