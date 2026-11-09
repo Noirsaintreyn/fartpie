@@ -1,0 +1,26 @@
+days 2993 (2014-01 - 2026-01); with GEX 2012; median ADR 2014-17 46, 2022-25 244
+
+  M1 noise momentum: 3009 trades (1.01/day) win 30% avg +3.31 | neg gamma +6.87 (n1369) pos gamma +0.34 (n1640) | by year 14 +0.1 15 +0.5 16 +0.1 17 -0.1 18 +8.7 19 -0.2 20 +1.1 21 +5.7 22 +9.6 23 +6.0 24 +3.3 25 +7.5 26 -25.5
+
+  M2 Rule A: 327 trades (0.11/day) win 53% avg +9.67 | neg gamma +8.65 (n249) pos gamma +12.90 (n78) | by year 18 +2.0 19 +3.2 20 +3.6 21 +21.0 22 +8.9 23 +18.1 24 +1.8 25 +21.9 26 -30.2
+
+  R1 80% rule (opposite edge): 595 trades (0.20/day) win 47% avg +1.17 | neg gamma +0.00 (n263) pos gamma +2.10 (n332) | by year 14 +0.6 15 -1.1 16 +0.4 17 -2.8 18 -0.7 19 -2.8 20 +3.5 21 +3.9 22 +1.6 23 +6.8 24 +7.1 25 -4.8 26 +40.5
+
+  R1p 80% rule (to POC): 363 trades (0.12/day) win 57% avg -0.08 | neg gamma -2.92 (n169) pos gamma +2.39 (n194) | by year 14 -0.6 15 -3.2 16 -2.5 17 -1.1 18 +2.0 19 +2.4 20 -1.5 21 +1.7 22 -15.8 23 +10.8 24 +2.7 25 -2.3 26 +19.4
+
+  R2 VWAP 2-sd fade: 3311 trades (1.11/day) win 36% avg -1.52 | neg gamma -2.53 (n1435) pos gamma -0.75 (n1876) | by year 14 -1.5 15 -1.5 16 -1.1 17 -1.0 18 -0.8 19 -0.6 20 -0.2 21 -2.7 22 -6.6 23 -2.8 24 +1.1 25 -0.3 26 -13.5
+
+  daily correlation 2018+:
+                             M1 noise momentum  M2 Rule A  R1 80% rule (opposite edge)  R1p 80% rule (to POC)  R2 VWAP 2-sd fade
+M1 noise momentum                         1.00       0.14                         0.09                   0.07              -0.17
+M2 Rule A                                 0.14       1.00                         0.01                   0.01              -0.06
+R1 80% rule (opposite edge)               0.09       0.01                         1.00                   0.56              -0.05
+R1p 80% rule (to POC)                     0.07       0.01                         0.56                   1.00              -0.01
+R2 VWAP 2-sd fade                        -0.17      -0.06                        -0.05                  -0.01               1.00
+
+  BOOK 2018 - Jan 2026, 1 NQ per engine     pts/day  days>=+7.5  qual days/mo  losing days  Sharpe  max DD  worst month | by year pts/day
+  M1 noise only                                +4.84        20%          4.2          34%    1.09   -1043        -485 | 18 +8.4 19 -0.3 20 +1.1 21 +5.3 22 +10.3 23 +5.8 24 +3.4 25 +7.2 26 -24.2
+  M1 + M2                                      +6.42        23%          4.9          37%    1.33    -985        -666 | 18 +8.7 19 +0.2 20 +1.6 21 +8.6 22 +11.9 23 +9.1 24 +3.7 25 +10.8 26 -33.3
+  everything every day                         +5.01        38%          8.0          52%    0.93   -1325        -761 | 18 +7.6 19 -1.0 20 +2.2 21 +6.5 22 +5.4 23 +7.1 24 +6.3 25 +9.5 26 -38.0
+  DTE: neg gamma M1+M2, pos gamma R1+R2+M2     +6.64        29%          6.1          41%    1.42   -1027        -460 | 18 +9.3 19 +2.0 20 +0.1 21 +5.4 22 +12.7 23 +8.9 24 +3.9 25 +13.3 26 -23.0
+  DTE-p: same with R1 to POC                   +6.54        28%          5.9          40%    1.41    -981        -492 | 18 +9.2 19 +2.6 20 -0.4 21 +5.7 22 +12.7 23 +8.8 24 +2.9 25 +13.6 26 -24.6
