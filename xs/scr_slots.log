@@ -1,0 +1,35 @@
+real daily series (bars):      CAGR  37.4% | max DD -19.5% | worst yr   0.2% | 19-21  51.7% / 22-26  29.1% | $1k -> $11,650
+stand-in, 6 slots as live:     CAGR  35.9% | max DD -13.1% | worst yr   4.2% | 19-21  49.7% / 22-26  27.8% | $1k -> $10,677
+
+slots: average invested 94% | days fully invested 90% | days with 0-2 slots used 5%
+signals: taken 3690 (avg +0.43%, win 33%) | skipped, slots full 12445 (avg +0.29%, win 32%) | skipped by the breaker 1256 (avg +0.22%)
+
+=== variants ===
+  6 slots (live)                     invested  94% | CAGR  35.9% | max DD -13.1% | worst yr   4.2% | 19-21  49.7% / 22-26  27.8% | $1k -> $10,677
+  4 slots                            invested  93% | CAGR  39.9% | max DD -15.4% | worst yr   0.9% | 19-21  62.5% / 22-26  27.4% | $1k -> $13,434
+  5 slots                            invested  94% | CAGR  38.2% | max DD -18.3% | worst yr   3.6% | 19-21  56.2% / 22-26  27.9% | $1k -> $12,163
+  8 slots                            invested  93% | CAGR  30.9% | max DD -12.7% | worst yr  -5.6% | 19-21  44.2% / 22-26  23.1% | $1k -> $8,013
+  10 slots                           invested  94% | CAGR  29.0% | max DD -16.6% | worst yr  -8.4% | 19-21  41.3% / 22-26  21.9% | $1k -> $7,177
+  6 slots, breaker off               invested  98% | CAGR  36.0% | max DD -18.7% | worst yr  -5.0% | 19-21  48.0% / 22-26  29.0% | $1k -> $10,784
+  6 slots, idle -> QQQ               invested  94% | CAGR  29.2% | max DD -28.7% | worst yr -24.2% | 19-21  37.6% / 22-26  24.3% | $1k -> $7,262
+  6 slots, idle -> SPY               invested  94% | CAGR  30.3% | max DD -30.6% | worst yr -17.8% | 19-21  38.4% / 22-26  25.5% | $1k -> $7,733
+  6 slots, conviction size           invested  94% | CAGR  34.4% | max DD -14.1% | worst yr   2.0% | 19-21  47.6% / 22-26  26.7% | $1k -> $9,833
+  8 slots, idle -> QQQ               invested  93% | CAGR  24.3% | max DD -27.3% | worst yr -26.2% | 19-21  29.8% / 22-26  21.1% | $1k -> $5,387
+  10 slots, idle -> QQQ              invested  94% | CAGR  20.5% | max DD -32.7% | worst yr -29.2% | 19-21  23.5% / 22-26  18.7% | $1k -> $4,236
+  6 slots, idle -> QQQ, conviction   invested  94% | CAGR  29.4% | max DD -26.7% | worst yr -24.5% | 19-21  38.6% / 22-26  23.9% | $1k -> $7,336
+
+  QQQ: CAGR  23.3% | max DD -35.1% | worst yr -32.6% | 19-21  38.1% / 22-26  14.9% | $1k -> $5,060
+  SPY: CAGR  17.4% | max DD -33.7% | worst yr -18.2% | 19-21  26.0% / 22-26  12.3% | $1k -> $3,459
+
+=== pick order when several signals arrive at the same time (6 slots) ===
+  signals arriving with others at the same bar: 70%
+  highest ratio first (live)   CAGR  35.9% | max DD -13.1% | worst yr   4.2% | 19-21  49.7% / 22-26  27.8% | $1k -> $10,677
+  lowest ratio first           CAGR  23.6% | max DD -15.9% | worst yr  -2.9% | 19-21  40.7% / 22-26  13.9% | $1k -> $5,143
+  random 1                     CAGR  28.0% | max DD -18.1% | worst yr -11.7% | 19-21  46.8% / 22-26  17.4% | $1k -> $6,732
+  random 2                     CAGR  28.7% | max DD -18.7% | worst yr -10.6% | 19-21  54.3% / 22-26  14.8% | $1k -> $7,044
+  random 3                     CAGR  25.9% | max DD -16.9% | worst yr  -2.3% | 19-21  50.3% / 22-26  12.5% | $1k -> $5,913
+  all candidates, avg trade return by options-ratio fifth: 1.50-1.76: +0.28% | 1.76-2.18: +0.40% | 2.18-2.85: +0.16% | 2.85-3.96: +0.33% | 3.96-19.24: +0.40%
+
+=== exploratory pick orders ===
+  h1 first, then highest ratio                   CAGR  29.4% | max DD -12.7% | worst yr   1.8% | 19-21  46.0% / 22-26  19.8% | $1k -> $7,309
+  highest ratio first, h1 breaks ties (h1 first) CAGR  35.2% | max DD -13.1% | worst yr   2.3% | 19-21  49.5% / 22-26  26.8% | $1k -> $10,261
