@@ -1,0 +1,20 @@
+A+ cut: 30-min move into the flip >= 0.443 ADR
+  RA: now  +9.94 / +13.44 | tighter stop  +7.09 /  +9.07 pts per trade (2018-21 / 2022-25) | A+ trades: 49%, now +17.61 / +15.64, tighter +9.06 / +12.50
+  V15a: now  +9.27 / +28.11 | tighter stop +10.09 / +21.27 pts per trade (2018-21 / 2022-25) | A+ trades: 50%, now +13.05 / +17.24, tighter +14.04 / +10.97
+
+=== Lucid Flex 50K: eval changed, funded as now ===
+  E0 now                         EVAL pass 66% (median 32 days) | paid 49%, evals/payout 0.92, dry 3 | fleet 2018+: 2.07 pay/mo, losing 23%, $2,734/mo | 24 starts 2022-23: avg $4,169 / med $2,302, losing 27%
+      pass rate by start year: 18:75% 19:60% 20:81% 21:70% 22:68% 23:53% 24:60% 25:54%
+  E1 A+ x1.5                     EVAL pass 65% (median 32 days) | paid 47%, evals/payout 0.93, dry 4 | fleet 2018+: 2.23 pay/mo, losing 25%, $2,985/mo | 24 starts 2022-23: avg $4,529 / med $2,302, losing 31%
+      pass rate by start year: 18:75% 19:60% 20:83% 21:68% 22:63% 23:53% 24:54% 25:54%
+  E2 A+ x2                       EVAL pass 63% (median 34 days) | paid 47%, evals/payout 0.92, dry 8 | fleet 2018+: 2.11 pay/mo, losing 27%, $2,842/mo | 24 starts 2022-23: avg $4,432 / med $1,237, losing 29%
+      pass rate by start year: 18:76% 19:60% 20:87% 21:59% 22:56% 23:51% 24:56% 25:54%
+  E3 tighter stops               EVAL pass 61% (median 35 days) | paid 47%, evals/payout 0.86, dry 5 | fleet 2018+: 1.93 pay/mo, losing 23%, $2,487/mo | 24 starts 2022-23: avg $3,226 / med $0, losing 39%
+      pass rate by start year: 18:67% 19:50% 20:86% 21:66% 22:65% 23:56% 24:51% 25:38%
+  E4 tighter + A+ x1.5           EVAL pass 60% (median 34 days) | paid 45%, evals/payout 0.90, dry 9 | fleet 2018+: 1.97 pay/mo, losing 24%, $2,612/mo | 24 starts 2022-23: avg $3,341 / med $0, losing 44%
+      pass rate by start year: 18:63% 19:50% 20:87% 21:64% 22:62% 23:56% 24:46% 25:36%
+  E5 tighter + A+ x2             EVAL pass 59% (median 35 days) | paid 44%, evals/payout 0.95, dry 6 | fleet 2018+: 1.95 pay/mo, losing 28%, $2,539/mo | 24 starts 2022-23: avg $2,763 / med $0, losing 41%
+      pass rate by start year: 18:65% 19:50% 20:90% 21:62% 22:58% 23:55% 24:43% 25:36%
+  E6 only A+ (RA / V15a), x1.5   EVAL pass 65% (median 37 days) | paid 48%, evals/payout 0.94, dry 13 | fleet 2018+: 1.85 pay/mo, losing 24%, $2,258/mo | 24 starts 2022-23: avg $3,022 / med $0, losing 39%
+      pass rate by start year: 18:75% 19:60% 20:99% 21:67% 22:71% 23:41% 24:50% 25:51%
+EXIT 0
