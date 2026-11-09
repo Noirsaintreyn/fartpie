@@ -1,0 +1,27 @@
+
+=== Lucid Flex 50K bought 2024-03-26 (fee $88) | system points 26 Mar - 31 Dec 2024 at its size: +1086 ===
+  account 1: bought 2024-03-26 | eval PASSED 2024-04-23 -> blown 2024-04-30 | payouts: none
+  account 2: bought 2024-05-01 | eval failed 2024-05-08 | payouts: none
+  account 3: bought 2024-05-09 | eval PASSED 2024-06-17 -> blown 2024-07-12 | payouts: 2024-07-09 $652
+  account 4: bought 2024-07-15 | eval failed 2024-07-19 | payouts: none
+  account 5: bought 2024-07-22 | eval PASSED 2024-08-01 -> blown 2024-08-06 | payouts: none
+  account 6: bought 2024-08-07 | eval PASSED 2024-09-06 -> 5 payouts, closed 2024-11-15 | payouts: 2024-09-16 $1,262, 2024-09-24 $1,528, 2024-10-14 $1,320, 2024-10-28 $1,800, 2024-11-15 $1,800
+  account 7: bought 2024-11-18 | eval failed 2024-11-21 | payouts: none
+  account 8: bought 2024-11-22 | eval failed 2024-12-30 | payouts: none
+  account 9: bought 2024-12-31 | eval failed 2025-01-03 | payouts: none
+  ONE ACCOUNT AT A TIME: first payout 2024-07-09 $652 | 2024 (from 26 Mar): paid $8,362, spent $792 on 9 evals, net $7,570 | 12 months to 25 Mar 2025: paid $8,362
+  5-ACCOUNT FLEET: first payout 2024-06-28 $802 | 26 Mar - 31 Dec 2024: 28 payouts, paid $45,514, spent $2,904 on 33 evals, net $42,610
+
+=== Lucid Flex 150K bought 2024-03-26 (fee $244) | system points 26 Mar - 31 Dec 2024 at its size: +1216 ===
+  account 1: bought 2024-03-26 | eval PASSED 2024-04-23 -> blown 2024-05-08 | payouts: none
+  account 2: bought 2024-05-09 | eval PASSED 2024-06-20 -> blown 2024-07-12 | payouts: 2024-07-09 $760
+  account 3: bought 2024-07-15 | eval failed 2024-07-22 | payouts: none
+  account 4: bought 2024-07-23 | eval PASSED 2024-08-01 -> blown 2024-08-06 | payouts: none
+  account 5: bought 2024-08-07 | eval PASSED 2024-09-06 -> blown 2024-09-23 | payouts: 2024-09-18 $540
+  account 6: bought 2024-09-24 | eval PASSED 2024-10-31 -> blown 2024-11-15 | payouts: none
+  account 7: bought 2024-11-18 | eval failed 2024-11-22 | payouts: none
+  account 8: bought 2024-11-25 | eval failed 2024-12-27 | payouts: none
+  account 9: bought 2024-12-30 | eval failed 2024-12-31 | payouts: none
+  ONE ACCOUNT AT A TIME: first payout 2024-07-09 $760 | 2024 (from 26 Mar): paid $1,300, spent $2,196 on 9 evals, net $-896 | 12 months to 25 Mar 2025: paid $1,300
+  5-ACCOUNT FLEET: first payout 2024-06-26 $1,208 | 26 Mar - 31 Dec 2024: 27 payouts, paid $57,652, spent $6,832 on 28 evals, net $50,820
+EXIT 0
