@@ -1,0 +1,11 @@
+overnight after positive-gamma closes +4.79 (n704), after negative +1.90 (n1280)
+
+  version                            acct  qual/mo pass  paid  payouts x size  blown | per acct-month | 1st payout  every  payouts/mo funded
+  U0 G1 (overnight 2 every night)    50K       6.4  49%   28%   1.2 x  52 pts   93% |          +10.7 |    2.5 mo   14 d       0.77
+  U0 G1 (overnight 2 every night)    150K      7.3  48%   30%   1.5 x 101 pts   86% |          +21.4 |    2.9 mo   13 d       1.04
+  U1 overnight 3 pos-gamma / 1 neg   50K       6.2  53%   31%   1.5 x  52 pts   90% |          +13.4 |    2.8 mo   16 d       0.82
+  U1 overnight 3 pos-gamma / 1 neg   150K      7.0  50%   32%   1.7 x  99 pts   88% |          +23.5 |    3.2 mo   15 d       1.01
+  U2 overnight pos-gamma only, 3     50K       5.3  53%   33%   1.6 x  62 pts   89% |          +15.0 |    2.9 mo   20 d       0.72
+  U2 overnight pos-gamma only, 3     150K      5.8  50%   34%   1.9 x 105 pts   85% |          +24.7 |    3.2 mo   18 d       0.79
+  U3 overnight 4 pos-gamma / 1 neg   50K       6.5  53%   32%   1.5 x  53 pts   89% |          +14.3 |    2.7 mo   15 d       0.88
+  U3 overnight 4 pos-gamma / 1 neg   150K      7.1  51%   33%   1.6 x 102 pts   89% |          +24.4 |    3.1 mo   13 d       1.04
