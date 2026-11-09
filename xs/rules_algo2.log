@@ -1,0 +1,35 @@
+rows 129,574; new features filled: tpoc_dd 100%, tloc_d 100%, since_behind 100%, since_ahead 100%, wall_ahead 99%, wall_behind 99%
+
+=== rules algo C ===  test 2022 - Jan 2026
+  base    AUC 0.515 | hit bottom / top decile 62% / 67% | cut 0.68: 19.7 trades/mo, hit 69% (other side 66%), $ +5.4 a trade = +0.39 pts, wins 13.5/mo | by year 22:$+5 23:$+17 24:$-4 25:$+0 26:$+53
+  +TPO    AUC 0.520 | hit bottom / top decile 63% / 68% | cut 0.68: 13.9 trades/mo, hit 72% (other side 64%), $+22.0 a trade = +2.16 pts, wins 10.0/mo | by year 22:$+21 23:$+39 24:$+13 25:$+14 26:$+44
+  +HL     AUC 0.514 | hit bottom / top decile 63% / 68% | cut 0.70:  7.7 trades/mo, hit 69% (other side 64%), $ +6.6 a trade = +0.81 pts, wins  5.3/mo | by year 22:$+28 23:$+31 24:$-14 25:$-29 26:$+109
+  +WALLS  AUC 0.515 | hit bottom / top decile 62% / 67% | cut 0.72:  5.2 trades/mo, hit 72% (other side 63%), $+23.4 a trade = +2.94 pts, wins  3.7/mo | by year 22:$+55 23:$+18 24:$+28 25:$-14 26:$+48
+  +all    AUC 0.513 | hit bottom / top decile 62% / 66% | cut 0.72: 10.4 trades/mo, hit 71% (other side 63%), $+18.4 a trade = +2.02 pts, wins  7.3/mo | by year 22:$+31 23:$+21 24:$+19 25:$-9 26:$+65
+
+=== rules algo D ===  test 2022 - Jan 2026
+  base    AUC 0.532 | hit bottom / top decile 49% / 60% | cut 0.66: 11.6 trades/mo, hit 63% (other side 54%), $+13.2 a trade = +2.49 pts, wins  7.3/mo | by year 22:$+50 23:$+7 24:$-0 25:$+10 26:$-102
+  +TPO    AUC 0.521 | hit bottom / top decile 51% / 59% | cut 0.62: 20.5 trades/mo, hit 59% (other side 58%), $ -4.6 a trade = -0.20 pts, wins 12.2/mo | by year 22:$-5 23:$-18 24:$+10 25:$+0 26:$-82
+  +HL     AUC 0.527 | hit bottom / top decile 50% / 60% | cut 0.68:  6.5 trades/mo, hit 56% (other side 58%), $-19.9 a trade = -2.30 pts, wins  3.6/mo | by year 22:$-9 23:$-37 24:$-18 25:$-6 26:$-64
+  +WALLS  AUC 0.531 | hit bottom / top decile 49% / 60% | cut 0.69:  4.2 trades/mo, hit 61% (other side 59%), $ -0.7 a trade = +0.80 pts, wins  2.6/mo | by year 22:$+42 23:$-57 24:$-21 25:$+39 26:$-15
+  +all    AUC 0.521 | hit bottom / top decile 51% / 58% | cut 0.65: 14.8 trades/mo, hit 58% (other side 58%), $ -8.1 a trade = -1.41 pts, wins  8.6/mo | by year 22:$-24 23:$-6 24:$+1 25:$-2 26:$-20
+
+=== Rey's QQQ algo levels and THOD/TLOD lines mapped to NQ (Oct 2024 - Jan 2026): decision rows within 0.03 ADR, trading the bounce ===
+  1h algo levels  real    n  183 | C hit 63.4% $-19.5 | D hit 62.3% $ +9.2
+  1h algo levels  PLACEBO n  205 | C hit 66.8% $ -1.1 | D hit 57.1% $ -8.0
+  1h THOD/TLOD    real    n 1283 | C hit 64.1% $ -9.9 | D hit 55.7% $ -6.1
+  1h THOD/TLOD    PLACEBO n 1191 | C hit 64.0% $-10.5 | D hit 56.9% $ -5.5
+  4h algo levels  real    n  149 | C hit 69.1% $ +9.4 | D hit 61.7% $+12.4
+  4h algo levels  PLACEBO n  152 | C hit 67.1% $ -3.1 | D hit 59.2% $ -5.1
+  4h THOD/TLOD    real    n  654 | C hit 64.4% $-11.3 | D hit 54.6% $-13.9
+  4h THOD/TLOD    PLACEBO n  757 | C hit 65.9% $ +0.0 | D hit 56.1% $ -5.8
+  all rows in the window       n13860 | C hit 65.0% $ -8.5 | D hit 56.4% $ -6.6
+
+  version                          acct  qual/mo pass  paid  payouts x size  blown | pts per acct-month | 1st payout  every  payouts/mo funded   (accounts started 2022+)
+  + rules C, base features         50K       8.7  43%   24%   1.6 x $ 1252   86% |              +31.5 |    1.2 mo   10 d       1.44
+  + rules C, base features         150K      9.3  37%   24%   1.7 x $ 2144   83% |              +45.1 |    1.4 mo    9 d       1.64
+  + rules C, + TPO / HL / walls    50K       8.0  48%   25%   1.2 x $ 1355   93% |              +23.4 |    1.6 mo   13 d       0.98
+  + rules C, + TPO / HL / walls    150K      8.4  41%   27%   1.5 x $ 2270   82% |              +38.2 |    1.6 mo   11 d       1.33
+  + rules D, + TPO / HL / walls    50K       8.2  44%   21%   1.2 x $ 1327   91% |              +23.0 |    1.6 mo   10 d       1.16
+  + rules D, + TPO / HL / walls    150K      8.7  40%   24%   1.6 x $ 2251   80% |              +39.6 |    1.7 mo   11 d       1.30
+EXIT 0

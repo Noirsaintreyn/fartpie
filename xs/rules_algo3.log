@@ -1,0 +1,12 @@
+rows 129,574; new features filled: tpoc_dd 100%, tloc_d 100%, since_behind 100%, since_ahead 100%, wall_ahead 99%, wall_behind 99%
+
+=== rules algo C ===  test 2022 - Jan 2026
+  base    AUC 0.515 | hit bottom / top decile 62% / 67% | cut 0.68: 19.7 trades/mo, hit 69% (other side 66%), $ +5.4 a trade = +0.39 pts, wins 13.5/mo | by year 22:$+5 23:$+17 24:$-4 25:$+0 26:$+53
+  +TPO    AUC 0.520 | hit bottom / top decile 63% / 68% | cut 0.68: 13.9 trades/mo, hit 72% (other side 64%), $+22.0 a trade = +2.16 pts, wins 10.0/mo | by year 22:$+21 23:$+39 24:$+13 25:$+14 26:$+44
+
+  version                          acct  qual/mo pass  paid  payouts x size  blown | pts per acct-month | 1st payout  every  payouts/mo funded   (accounts started 2022+)
+  + rules C, base features         50K       8.7  43%   24%   1.6 x $ 1252   86% |              +31.5 |    1.2 mo   10 d       1.44
+  + rules C, base features         150K      9.3  37%   24%   1.7 x $ 2144   83% |              +45.1 |    1.4 mo    9 d       1.64
+  + rules C, + TPO                 50K       8.4  53%   33%   1.6 x $ 1271   87% |              +34.1 |    1.4 mo   11 d       1.31
+  + rules C, + TPO                 150K      8.8  49%   33%   1.9 x $ 2251   80% |              +58.7 |    1.5 mo   10 d       1.52
+EXIT 0
