@@ -1,0 +1,26 @@
+
+=== sigma anchor HTF: 3557 signals (37.3 / 37.7 a month) ===
+  P(the in-extreme holds) 10:30-11:59: 62% (n1404) / 61% (n1490)
+  P(the in-extreme holds) 12:00-13:59: 64% (n257) / 62% (n278)
+  P(the in-extreme holds) 14:00-15:00: 80% (n74) / 81% (n54)
+  projected other extreme (2018-21): median 1.61 sigma from the in-extreme, 80%-reached 1.12 sigma | 2022-25 share reaching them: 58% / 86%
+  target = projected (q50) 2018-21: 35.4 trades/mo, target hit 34%,  -1.49 pts/trade (shorts -0.61, longs -2.22), avg risk 66 pts
+  target = projected (q50) 2022-25: 35.3 trades/mo, target hit 40%,  -0.62 pts/trade (shorts -2.34, longs +0.90), avg risk 116 pts
+  target = 80% level (q20) 2018-21: 30.3 trades/mo, target hit 55%,  -1.35 pts/trade (shorts -0.56, longs -2.00), avg risk 59 pts
+  target = 80% level (q20) 2022-25: 28.7 trades/mo, target hit 60%,  +0.33 pts/trade (shorts -3.05, longs +3.34), avg risk 103 pts
+
+=== sigma anchor 4H: 3773 signals (39.7 / 39.8 a month) ===
+  P(the in-extreme holds) 10:30-11:59: 55% (n1618) / 57% (n1648)
+  P(the in-extreme holds) 12:00-13:59: 50% (n204) / 54% (n245)
+  P(the in-extreme holds) 14:00-15:00: 76% (n29) / 83% (n29)
+  projected other extreme (2018-21): median 2.35 sigma from the in-extreme, 80%-reached 1.61 sigma | 2022-25 share reaching them: 58% / 87%
+  target = projected (q50) 2018-21: 37.4 trades/mo, target hit 33%,  -1.73 pts/trade (shorts -0.45, longs -2.91), avg risk 56 pts
+  target = projected (q50) 2022-25: 37.4 trades/mo, target hit 38%,  +2.38 pts/trade (shorts +2.59, longs +2.18), avg risk 101 pts
+  target = 80% level (q20) 2018-21: 31.9 trades/mo, target hit 51%,  -2.30 pts/trade (shorts -0.87, longs -3.66), avg risk 49 pts
+  target = 80% level (q20) 2022-25: 30.8 trades/mo, target hit 55%,  -0.17 pts/trade (shorts -1.41, longs +0.97), avg risk 88 pts
+
+=== as a filter: system trades taken AGAINST an extreme that looks in at entry (HTF sigma) ===
+  V15a            against an in-extreme: -11.55 (n19) /  +0.28 (n21) | the rest:  +5.86 (n314) / +21.34 (n330)
+  rules C+TPO     against an in-extreme:  +3.28 (n50) /  +2.07 (n95) | the rest:  +1.45 (n383) /  +2.30 (n560)
+  Rule A          against an in-extreme:   +nan (n0) / +42.50 (n1) | the rest:  +7.99 (n129) / +10.43 (n154)
+EXIT 0

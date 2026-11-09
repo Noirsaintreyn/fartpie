@@ -1,0 +1,14 @@
+  predicting the day's log RTH range 2020-25: HAR (prior close)      R2 0.32
+  predicting the day's log RTH range 2020-25: ADR20                  R2 0.25
+  predicting the day's log RTH range 2020-25: THOD 1h sigma @09:30   R2 0.37
+  predicting the day's log RTH range 2020-25: THOD 4h sigma @09:30   R2 0.29
+
+  variant                            | per eval: pass, paid, EVALS PER PAYOUT, $/eval | one at a time 2018-26: evals/payout, LONGEST NO-PAYOUT RUN | fleet 2022-23: avg / median, losing, dry | from 2018: worst month, avg
+  V1 (S6 + IV skip), no vol sizing   | 57%, 37%,  1.1, $1,243 |  1.1,  5 | $4,256 / $1,516, 36%, 5.0 mo | $  -792, $2,617/mo
+  HAR relative                       | 60%, 46%,  0.9, $1,389 |  1.1,  5 | $4,401 / $1,536, 36%, 5.0 mo | $  -792, $2,999/mo
+  HAR absolute $                     | 65%, 51%,  0.8, $1,579 |  0.8,  6 | $2,701 / $    0, 32%, 4.0 mo | $  -440, $2,023/mo
+  THOD 1h relative                   | 52%, 36%,  1.1, $1,211 |  1.1,  8 | $3,661 / $    0, 44%, 7.0 mo | $  -704, $2,588/mo
+  THOD 1h absolute $                 | 62%, 52%,  0.8, $1,426 |  0.7,  5 | $2,635 / $  276, 30%, 6.0 mo | $  -704, $2,122/mo
+  THOD 4h relative                   | 62%, 44%,  1.0, $1,251 |  1.2, 12 | $3,003 / $    0, 50%, 7.0 mo | $  -792, $2,240/mo
+  THOD 4h absolute $                 | 64%, 52%,  0.7, $1,625 |  0.7,  6 | $2,467 / $    0, 29%, 4.0 mo | $  -792, $2,080/mo
+EXIT 0

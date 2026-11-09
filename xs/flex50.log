@@ -1,0 +1,13 @@
+  predicting tomorrow's log RTH range 2020-25: HAR forecast       R2 0.32
+  predicting tomorrow's log RTH range 2020-25: ADR20              R2 0.25
+  predicting tomorrow's log RTH range 2020-25: YZ 20d pct (rank)  R2 0.12
+
+  variant                    | per eval (2018-25 starts): pass, paid, payouts/eval, EVALS PER PAYOUT, $/eval | one at a time 2018-26: evals/payout, LONGEST NO-PAYOUT RUN (evals), months w/o payout, worst 12 mo | fleet 2022-23 starts: avg / median, losing | fleet from 2018: worst month, by year
+  V0 S6 as is                | 53%, 34%, 0.92,  1.1, $1,257 |  1.1,  7, 62%, $   -494 | $4,469 / $1,126, losing 39% | worst month $  -968, avg $3,323/mo: 18:2.5k 19:1.4k 20:1.1k 21:2.2k 22:3.8k 23:5.8k 24:6.2k 25:3.6k
+  V1 + IV-jump skip          | 57%, 37%, 0.95,  1.1, $1,243 |  1.1,  5, 62%, $     80 | $4,256 / $1,516, losing 36% | worst month $  -792, avg $2,617/mo: 18:1.7k 19:1.7k 20:0.4k 21:1.6k 22:0.9k 23:4.8k 24:6.1k 25:3.5k
+  V2 V1 + HAR relative       | 60%, 46%, 1.07,  0.9, $1,389 |  1.1,  5, 61%, $    -56 | $4,401 / $1,536, losing 36% | worst month $  -792, avg $2,999/mo: 18:0.8k 19:2.1k 20:2.1k 21:2.3k 22:1.0k 23:5.8k 24:5.8k 25:4.1k
+  V3 V1 + HAR absolute $     | 65%, 51%, 1.30,  0.8, $1,579 |  0.8,  6, 59%, $  1,010 | $2,701 / $    0, losing 32% | worst month $  -440, avg $2,023/mo: 18:0.1k 19:1.0k 20:2.3k 21:2.0k 22:1.0k 23:4.4k 24:4.5k 25:0.8k
+  V4 V1 + funded lock $150   | 57%, 37%, 0.88,  1.1, $  945 |  1.2,  9, 66%, $     58 | see from-2018 path | worst month $  -792, avg $1,841/mo: 18:0.8k 19:0.1k 20:0.1k 21:1.8k 22:0.2k 23:5.1k 24:3.2k 25:3.5k
+  V5 V2 + lock               | 60%, 37%, 0.78,  1.3, $  839 |  2.0,  9, 76%, $   -792 | see from-2018 path | worst month $  -792, avg $1,618/mo: 18:0.5k 19:0.3k 20:0.2k 21:1.6k 22:0.3k 23:4.2k 24:2.7k 25:3.2k
+  V6 V3 + lock               | 65%, 51%, 1.09,  0.9, $1,017 |  0.9,  5, 67%, $    850 | see from-2018 path | worst month $  -792, avg $1,255/mo: 18:0.7k 19:0.1k 20:0.2k 21:1.0k 22:0.7k 23:3.7k 24:2.1k 25:1.5k
+EXIT 0

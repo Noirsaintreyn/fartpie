@@ -1,0 +1,28 @@
+order-flow days: 236, 5m bars with delta 18,048
+points per trade (trades) | 1st half / 2nd half
+
+  15m vector, every flip: 103 trades, all +9.58 (45) / +4.20 (58)
+    delta AGAINST the flip (dz < 0)    +24.17 ( 11) /  -2.38 (  5)
+    delta normal (0-1)                 +42.50 ( 12) / -19.87 ( 16)
+    delta EXTENDED (dz >= 1)           -14.91 ( 21) / +15.50 ( 37)
+    CVD agrees                         +31.45 ( 34) /  +7.05 ( 51)
+    CVD disagrees                      -58.02 ( 11) / -16.56 (  7)
+
+  V15a (gamma-gated): 74 trades, all +18.64 (37) / +8.60 (37)
+    delta AGAINST the flip (dz < 0)    +30.92 ( 10) / +12.51 (  3)
+    delta normal (0-1)                 +71.69 (  9) / -32.02 ( 10)
+    delta EXTENDED (dz >= 1)           -13.73 ( 17) / +25.04 ( 24)
+    CVD agrees                         +47.57 ( 27) / +12.92 ( 31)
+    CVD disagrees                      -59.48 ( 10) / -13.73 (  6)
+
+  Rule A: 32 trades, all +28.68 (18) / +18.18 (14)
+    delta AGAINST the flip (dz < 0)    +24.00 (  5) / +74.00 (  1)
+    delta normal (0-1)                 +26.31 (  4) / -11.58 (  3)
+    delta EXTENDED (dz >= 1)           +32.33 (  9) / +21.52 ( 10)
+    CVD agrees                         +33.59 ( 14) / +18.18 ( 14)
+    CVD disagrees                      +11.50 (  4) /   +nan (  0)
+
+  CVD flips (own entries):  +0.13 (404) /  +2.06 (399) | win 31%, total +873 pts
+
+  CVD flips, 15m vector agrees:  -3.02 (374) /  -1.59 (361) | win 31%, total -1703 pts
+EXIT 0
