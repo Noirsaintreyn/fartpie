@@ -1,0 +1,48 @@
+vector levels rebuilt: regime matches the live series on 100.0% of 15m bars
+  15m flips, every: features found for 100% of 1001 trades
+  V15a (gamma-gated): features found for 100% of 684 trades
+  Rule A: features found for 82% of 284 trades
+
+=== 15m flips, every: all +3.57 (477) / +9.96 (524) | NQ pts per trade (n), 2018-21 / 2022-25 ===
+  RECENT: bars since the last flip                     < 14.00:  +0.81 (155) / +10.15 (211) | 14.00-51.33:  +3.57 (163) / +12.37 (128) | >= 51.33:  +6.27 (159) /  +8.08 (185)
+  RECENT: flips already today                          0:  +6.41 (355) / +11.02 (360) | 1:  -3.43 (98) / +10.78 (121) | 2+:  -9.82 (24) /  -1.20 (43) x
+  SPEED: bars from the old extreme                     < 6.00:  +7.02 (147) / +27.33 (181) | 6.00-21.33:  -3.12 (171) /  +1.22 (199) | >= 21.33:  +7.58 (159) /  +0.21 (144)
+  SPEED: 30-min move into the flip (ADR)               < 0.23:  +0.54 (159) /  -5.73 (178) | 0.23-0.44:  +3.64 (159) / +17.08 (162) | >= 0.44:  +6.54 (159) / +18.88 (184)
+  SIZE: close beyond the broken level (ADR)            < 0.11:  +3.78 (159) /  +3.72 (165) | 0.11-0.22:  -0.70 (159) / +15.34 (183) | >= 0.22:  +7.64 (159) / +10.22 (176)
+  SIZE: flip bar range / ATR                           < 1.17:  +6.69 (159) /  -3.08 (185) | 1.17-1.97:  +3.95 (159) / +19.30 (167) | >= 1.97:  +0.08 (159) / +14.92 (172)
+  POST-FLIP VOL: 1st bar range / ATR (known 15 min in) < 0.89:  +6.91 (159) /  +5.99 (220) | 0.89-1.35:  -4.85 (159) / +19.43 (141) | >= 1.35:  +8.66 (159) /  +7.13 (163)
+
+=== V15a (gamma-gated): all +4.87 (333) / +20.08 (351) | NQ pts per trade (n), 2018-21 / 2022-25 ===
+  RECENT: bars since the last flip                     < 14.00:  -1.51 (117) / +21.47 (141) | 14.00-51.33:  +5.93 (113) / +20.21 (89) | >= 51.33: +10.96 (103) / +18.35 (121)
+  RECENT: flips already today                          0:  +9.36 (244) / +19.34 (249) | 1:  -5.98 (70) / +27.17 (80) | 2+: -12.77 (19) /  +2.61 (22)
+  SPEED: bars from the old extreme                     < 6.00:  +5.78 (105) / +41.90 (124) | 6.00-21.33:  -2.91 (111) /  +9.74 (128) | >= 21.33: +11.43 (117) /  +6.11 (99)
+  SPEED: 30-min move into the flip (ADR)               < 0.23:  -1.85 (104) /  +0.26 (113) | 0.23-0.44:  +4.80 (117) / +31.05 (108) | >= 0.44: +11.19 (112) / +28.19 (130)
+  SIZE: close beyond the broken level (ADR)            < 0.11:  +1.69 (107) / +13.77 (93) | 0.11-0.22:  +2.72 (113) / +26.07 (131) | >= 0.22: +10.04 (113) / +18.51 (127)
+  SIZE: flip bar range / ATR                           < 1.17:  +6.65 (122) /  +4.38 (121) | 1.17-1.97:  +5.65 (117) / +31.85 (115) | >= 1.97:  +1.59 (94) / +24.83 (115)
+  POST-FLIP VOL: 1st bar range / ATR (known 15 min in) < 0.89:  +8.11 (118) / +13.63 (144) | 0.89-1.35:  -4.56 (119) / +32.04 (100) | >= 1.35: +12.58 (96) / +17.58 (107)
+
+=== Rule A: all +7.99 (129) / +10.63 (155) | NQ pts per trade (n), 2018-21 / 2022-25 ===
+  RECENT: bars since the last flip                     < 14.00:  +0.82 (25) / +11.82 (39) | 14.00-51.33: +13.08 (36) /  -4.17 (28) | >= 51.33:  +7.46 (47) / +17.29 (58)
+  RECENT: flips already today                          0:  +9.68 (93) / +10.21 (103) | 1:  -3.90 (15) / +13.43 (22) | 2+:   +nan (0) /   +nan (0)
+  SPEED: bars from the old extreme                     < 6.00: +11.65 (34) / +13.80 (46) | 6.00-21.33:  +4.11 (26) /  -0.38 (34) | >= 21.33:  +7.06 (48) / +16.11 (45)
+  SPEED: 30-min move into the flip (ADR)               < 0.23: -12.14 (19) / -16.36 (22) | 0.23-0.44:  -0.29 (34) /  +8.67 (35) | >= 0.44: +19.68 (55) / +20.64 (68)
+  SIZE: close beyond the broken level (ADR)            < 0.11: -22.76 (22) /  +6.95 (20) | 0.11-0.22:  +1.69 (40) /  +9.60 (47) | >= 0.22: +27.71 (46) / +13.05 (58)
+  SIZE: flip bar range / ATR                           < 1.17: +10.92 (13) /  +1.63 (25) | 1.17-1.97:  +8.37 (43) / +11.70 (52) | >= 1.97:  +6.53 (52) / +14.54 (48)
+  POST-FLIP VOL: 1st bar range / ATR (known 15 min in) < 0.89: +16.16 (19) /  +3.35 (39) | 0.89-1.35:  +3.83 (40) / +16.96 (36) | >= 1.35:  +7.79 (49) / +12.12 (50)
+
+=== POST-FLIP VOLATILITY AS AN EXIT (decided at the close of the first 15m bar after entry) | pts per trade 2018-21 / 2022-25 | total 2022-25 ===
+  15m flips, every     current exit (re-run)  +3.57 /  +9.96 | +5220   (logged: +3.57 / +9.96)
+    E1 out if quiet               +0.09 /  +5.98 | +3136
+    E2 out if wild AND against    +3.88 /  +9.80 | +5135
+    E3 out if quiet AND against   +2.76 /  +9.30 | +4874
+  V15a (gamma-gated)   current exit (re-run)  +4.87 / +20.08 | +7047   (logged: +4.87 / +20.08)
+    E1 out if quiet               +0.70 / +13.56 | +4760
+    E2 out if wild AND against    +5.39 / +19.95 | +7002
+    E3 out if quiet AND against   +3.68 / +18.87 | +6622
+  Rule A               current exit (re-run)  +7.79 / +10.78 | +1347   (logged: +7.79 / +10.78)
+    E1 out if quiet               +5.93 /  +9.92 | +1240
+    E2 out if wild AND against    +4.23 /  +9.71 | +1214
+    E3 out if quiet AND against   +6.94 / +11.60 | +1450
+
+  no V15a / Rule A pass - no fleet test
+EXIT 0
