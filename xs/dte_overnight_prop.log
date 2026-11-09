@@ -1,0 +1,13 @@
+  version                                        acct  qual/mo pass  paid  payouts x size  blown | per acct-month | 1st payout  every  payouts/mo funded
+  B0 day-type engine (V4)                        50K       4.2  52%   28%   1.4 x  74 pts   83% |          +18.5 |    2.8 mo   24 d       0.65
+  B0 day-type engine (V4)                        150K      4.3  45%   18%   1.0 x 117 pts   87% |          +16.7 |    2.4 mo   21 d       0.63
+  N1 + overnight all nights 2 mic, no stop       50K       7.7  45%   29%   1.2 x  56 pts   94% |          +15.8 |    2.4 mo   16 d       0.88
+  N1 + overnight all nights 2 mic, no stop       150K      8.5  43%   28%   1.3 x  98 pts   91% |          +23.7 |    2.2 mo   12 d       1.16
+  N2 + overnight all nights 3 mic, stop .25 ADR  50K       7.7  36%   19%   0.8 x  56 pts   99% |           +9.7 |    1.7 mo   12 d       0.92
+  N2 + overnight all nights 3 mic, stop .25 ADR  150K      8.1  32%   16%   0.9 x  98 pts   94% |          +13.8 |    1.7 mo   13 d       0.99
+  N3 + overnight neg-gamma 3 mic, stop .25 ADR   50K       6.0  33%   15%   0.8 x  65 pts   97% |           +8.6 |    1.8 mo   16 d       0.73
+  N3 + overnight neg-gamma 3 mic, stop .25 ADR   150K      6.3  31%   12%   0.8 x 107 pts   93% |           +8.6 |    1.8 mo   16 d       0.72
+  N4 + overnight neg-gamma 5 mic, stop .25 ADR   50K       6.3  29%   13%   0.9 x  69 pts   95% |          +11.3 |    1.5 mo   12 d       0.84
+  N4 + overnight neg-gamma 5 mic, stop .25 ADR   150K      6.5  28%   12%   0.9 x 114 pts   93% |          +12.1 |    1.5 mo   11 d       0.91
+  N5 + overnight neg-gamma 3 mic, no stop        50K       6.7  36%   17%   0.8 x  63 pts   96% |          +11.1 |    1.9 mo   14 d       0.73
+  N5 + overnight neg-gamma 3 mic, no stop        150K      7.1  35%   17%   1.0 x 100 pts   94% |          +15.3 |    2.1 mo   15 d       0.88
