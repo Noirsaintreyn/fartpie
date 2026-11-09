@@ -1,0 +1,41 @@
+1) points per trade: gamma TOP THIRD vs the rest | 2014-17 / 2018-21 / 2022-25 | GEX sign 2018+ (negative / positive)
+  ema921   top third -0.38 / -0.76 / -5.41  | rest +0.07 / +2.72 / +11.24  | GEX<0 +5.92 GEX>0 -1.53
+  ema2050  top third -0.95 / +0.62 / -10.13  | rest +0.31 / +7.03 / +11.16  | GEX<0 +7.22 GEX>0 -0.17
+  donch    top third +1.12 / -3.26 / -4.65  | rest +1.68 / +2.61 / +16.51  | GEX<0 +10.01 GEX>0 -4.21
+  vwap     top third -1.11 / -0.42 / +1.36  | rest -0.38 / +2.14 / +3.02  | GEX<0 +2.90 GEX>0 -0.09
+  super    top third +0.48 / -4.92 / -5.72  | rest +2.14 / +2.24 / +9.34  | GEX<0 +5.23 GEX>0 -4.77
+  macd     top third -0.99 / +1.41 / -2.39  | rest -0.42 / +0.88 / +1.21  | GEX<0 +2.05 GEX>0 -2.55
+  vector   top third +0.96 / +0.58 / -10.56  | rest +1.20 / +4.76 / +20.08  | GEX<0 +10.68 GEX>0 -1.69
+
+2) out-of-sample books 2022 - Jan 2026, 1 contract, all day:
+  vector every flip                  trades   524 avg  +9.96 | +5.15 pts/day, Sharpe +1.09, max DD  -652
+  vector off in top-third gamma      trades   351 avg +20.08 | +6.95 pts/day, Sharpe +1.55, max DD  -652
+  ema921 every flip                  trades   964 avg  +5.16 | +4.90 pts/day, Sharpe +0.93, max DD -1922
+  ema921 off in top-third gamma      trades   612 avg +11.24 | +6.78 pts/day, Sharpe +1.40, max DD -1069
+  ema2050 every flip                 trades   436 avg  +4.57 | +1.96 pts/day, Sharpe +0.61, max DD -1962
+  ema2050 off in top-third gamma     trades   301 avg +11.16 | +3.31 pts/day, Sharpe +1.09, max DD -1315
+  donch every flip                   trades   574 avg  +9.47 | +5.36 pts/day, Sharpe +1.13, max DD -1235
+  donch off in top-third gamma       trades   383 avg +16.51 | +6.24 pts/day, Sharpe +1.41, max DD  -830
+  super every flip                   trades   765 avg  +3.95 | +2.98 pts/day, Sharpe +0.57, max DD -1813
+  super off in top-third gamma       trades   491 avg  +9.34 | +4.52 pts/day, Sharpe +0.94, max DD -1498
+  macd every flip                    trades  1580 avg  -0.08 | -0.12 pts/day, Sharpe -0.02, max DD -3251
+  macd off in top-third gamma        trades  1015 avg  +1.21 | +1.21 pts/day, Sharpe +0.22, max DD -2118
+  vwap every flip                    trades  2494 avg  +2.44 | +6.00 pts/day, Sharpe +0.71, max DD -3536
+  vwap off in top-third gamma        trades  1620 avg  +3.02 | +4.83 pts/day, Sharpe +0.63, max DD -3734
+  vector by year, every flip / off in top-third gamma (pts/trade): 2014 +1.5/+1.2, 2015 +1.1/+1.4, 2016 -0.3/+0.1, 2017 +2.3/+2.0, 2018 +1.9/+0.1, 2019 -2.7/-2.7, 2020 +8.8/+9.5, 2021 +6.8/+11.9, 2022 +18.0/+21.6, 2023 +4.3/+10.2, 2024 +8.6/+25.4, 2025 +13.2/+27.3
+
+3) V15a (all day) 684 trades since Feb 2018, avg +12.67; V15b (afternoon) 237, avg +3.79; daily correlation with Rule A: V15a +0.37, V15b -0.01
+
+  version                    acct  starts pass  paid  payouts x size  blown | per acct-month | 1st payout  every  payouts/mo funded
+  U3 + YZ (current best)     50K   all     52%   35%   1.6 x  60 pts   88% |          +18.3 |    2.3 mo   16 d       0.89
+  U3 + YZ (current best)     50K   2022+   47%   28%   1.6 x  67 pts   85% |          +26.5 |    1.7 mo   14 d       1.02
+  U3 + YZ (current best)     150K  all     42%   32%   1.9 x 107 pts   81% |          +30.2 |    2.4 mo   17 d       1.06
+  U3 + YZ (current best)     150K  2022+   45%   32%   1.9 x 112 pts   78% |          +44.3 |    1.9 mo   15 d       1.15
+  + V15a vector all day      50K   all     53%   29%   1.5 x  69 pts   84% |          +22.2 |    2.4 mo   17 d       0.84
+  + V15a vector all day      50K   2022+   49%   27%   1.7 x  75 pts   79% |          +34.5 |    1.5 mo   16 d       1.08
+  + V15a vector all day      150K  all     49%   31%   1.8 x 114 pts   76% |          +39.6 |    2.4 mo   18 d       1.04
+  + V15a vector all day      150K  2022+   50%   32%   2.1 x 120 pts   67% |          +58.9 |    1.9 mo   19 d       1.13
+  + V15b vector afternoon    50K   all     53%   32%   1.5 x  62 pts   87% |          +19.1 |    2.2 mo   15 d       0.91
+  + V15b vector afternoon    50K   2022+   51%   27%   1.7 x  69 pts   81% |          +31.0 |    1.6 mo   14 d       1.08
+  + V15b vector afternoon    150K  all     44%   31%   1.8 x 107 pts   81% |          +30.4 |    2.2 mo   16 d       1.09
+  + V15b vector afternoon    150K  2022+   48%   30%   1.9 x 116 pts   73% |          +49.0 |    1.9 mo   14 d       1.17
