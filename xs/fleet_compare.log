@@ -1,0 +1,105 @@
+
+=== 1) Lucid Flex 50K x 5, fleet started Jan 2022 (net of eval fees, per month) ===
+  S0 profit only                     avg $   -36 | median $     0 | months >= $2.5k   0% | losing   8% | worst 3 mo $ -1,496 | longest no-payout run 49 mo | sd $   138
+  S1 + old qualifier                 avg $   -36 | median $     0 | months >= $2.5k   0% | losing   6% | worst 3 mo $ -1,760 | longest no-payout run 49 mo | sd $   153
+  S2 + rules C                       avg $ 2,774 | median $   -88 | months >= $2.5k  31% | losing  53% | worst 3 mo $ -1,760 | longest no-payout run  6 mo | sd $ 5,469
+  S3 + rules C+TPO (now)             avg $ 3,720 | median $   419 | months >= $2.5k  39% | losing  39% | worst 3 mo $ -1,584 | longest no-payout run  4 mo | sd $ 5,779
+  S4 + rules D                       avg $   -36 | median $     0 | months >= $2.5k   0% | losing   6% | worst 3 mo $ -1,760 | longest no-payout run 49 mo | sd $   167
+  S6 S3 + V15a                       avg $   -36 | median $     0 | months >= $2.5k   0% | losing   8% | worst 3 mo $ -1,672 | longest no-payout run 49 mo | sd $   138
+  S7 rules C+TPO alone               avg $   225 | median $     0 | months >= $2.5k   0% | losing  10% | worst 3 mo $   -440 | longest no-payout run 16 mo | sd $   666
+  S5 S3, funded p x1.25 r x1.5       avg $ 3,027 | median $     0 | months >= $2.5k  37% | losing  49% | worst 3 mo $ -1,848 | longest no-payout run  4 mo | sd $ 5,049
+
+=== 1) Lucid Flex 150K x 5, fleet started Jan 2022 (net of eval fees, per month) ===
+  S0 profit only                     avg $  -100 | median $     0 | months >= $2.5k   0% | losing   6% | worst 3 mo $ -4,880 | longest no-payout run 49 mo | sd $   413
+  S1 + old qualifier                 avg $  -100 | median $     0 | months >= $2.5k   0% | losing   6% | worst 3 mo $ -4,880 | longest no-payout run 49 mo | sd $   445
+  S2 + rules C                       avg $  -100 | median $     0 | months >= $2.5k   0% | losing   6% | worst 3 mo $ -4,880 | longest no-payout run 49 mo | sd $   410
+  S3 + rules C+TPO (now)             avg $ 5,096 | median $   343 | months >= $2.5k  37% | losing  41% | worst 3 mo $ -4,880 | longest no-payout run  6 mo | sd $ 9,369
+  S4 + rules D                       avg $  -100 | median $     0 | months >= $2.5k   0% | losing   6% | worst 3 mo $ -4,880 | longest no-payout run 49 mo | sd $   464
+  S6 S3 + V15a                       avg $  -100 | median $     0 | months >= $2.5k   0% | losing   6% | worst 3 mo $ -4,880 | longest no-payout run 49 mo | sd $   401
+  S7 rules C+TPO alone               avg $   186 | median $     0 | months >= $2.5k   4% | losing  14% | worst 3 mo $ -1,220 | longest no-payout run 15 mo | sd $ 1,181
+  S5 S3, funded p x1.25 r x1.5       avg $ 5,012 | median $     0 | months >= $2.5k  37% | losing  49% | worst 3 mo $ -4,880 | longest no-payout run  6 mo | sd $ 9,215
+
+=== 2) where the points come from and go: points per trade at 1 contract (n), 2018-21 | 2022-25 ===
+
+  RA: 284 trades | 2018-21 +7.99 (129) | 2022-25 +10.63 (155)
+    gamma sign           neg:  +7.8 (103) | +10.3 (114)   pos:  +8.7 (26) | +11.5 (41)
+    gamma tercile        high:  +5.9 (31) | +15.7 (31)   low: +10.6 (59) |  +7.9 (56)   mid:  +5.7 (39) | +10.6 (68)
+    YZ20 tercile         high:  +0.5 (58) |  +7.6 (49)   low: +24.4 (27) | +14.9 (56)   mid:  +7.8 (44) |  +8.8 (50)
+    IV tercile           high:  +2.9 (54) | +12.7 (59)   low: +18.3 (39) | +15.8 (52)   mid:  +2.5 (35) |  +7.3 (34)   na: +74.0 (1) | -16.8 (10)
+    DEX tercile          high: +19.7 (33) | +23.0 (44)   low: +12.6 (45) |  +7.4 (59)   mid:  -5.2 (50) |  +8.8 (42)   na: +74.0 (1) | -16.8 (10)
+    NQ vs 50d avg        above:  +8.4 (84) |  +9.7 (101)   below:  +7.2 (45) | +12.3 (54)
+    day type             FOMC: +11.2 (3) | +40.6 (4)   big 8:30: +10.6 (13) | +22.1 (39)   other:  +7.6 (113) |  +5.6 (112)
+    side                 long: +12.0 (57) |  +4.5 (82)   short:  +4.8 (72) | +17.6 (73)
+    DEX with/against     against: +12.4 (89) | +13.0 (94)   with:  -1.9 (40) |  +7.0 (61)
+    open vs prior value  above VAH: +14.1 (54) |  +9.4 (56)   below VAL: +11.6 (45) | +16.8 (54)   inside:  -8.4 (30) |  +4.9 (45)
+    gap with trade       against:  +0.9 (36) |  +8.6 (47)   with: +10.7 (93) | +11.5 (108)
+
+  M1: 1106 trades | 2018-21 +6.62 (543) | 2022-25 +8.29 (563)
+    gamma sign           neg:  +6.6 (543) |  +8.3 (563)
+    gamma tercile        high: +11.9 (18) |  +0.7 (30)   low:  +6.2 (385) |  +2.2 (370)   mid:  +7.2 (140) | +23.6 (163)
+    YZ20 tercile         high:  +9.2 (269) | +17.1 (245)   low:  +2.0 (110) |  +1.6 (100)   mid:  +5.5 (164) |  +1.4 (218)
+    IV tercile           high:  +7.6 (320) | +10.1 (356)   low:  +4.9 (79) | +11.2 (63)   mid:  +5.0 (143) |  +3.5 (130)   na: +59.5 (1) |  -5.8 (14)
+    DEX tercile          low: +10.3 (334) |  +8.7 (362)   mid:  +0.4 (208) |  +8.5 (187)   na: +59.5 (1) |  -5.8 (14)
+    NQ vs 50d avg        above:  +2.9 (272) |  +1.8 (217)   below: +10.3 (271) | +12.4 (346)
+    day type             FOMC:  -2.5 (18) | +30.3 (13)   big 8:30:  +5.7 (66) | +11.2 (98)   other:  +7.1 (459) |  +7.0 (452)
+
+  R1: 141 trades | 2018-21 +3.25 (63) | 2022-25 +8.20 (78)
+    gamma sign           pos:  +3.3 (63) |  +8.2 (78)
+    gamma tercile        high:  +5.9 (53) | +10.0 (58)   low: +21.3 (1) | +39.9 (6)   mid: -14.3 (9) | -12.9 (14)
+    YZ20 tercile         high: +22.6 (9) |  +2.8 (19)   low:  -0.4 (37) |  +3.9 (46)   mid:  +1.0 (17) | +31.2 (13)
+    IV tercile           high: -28.2 (4) | -28.4 (4)   low:  +1.7 (40) |  +4.9 (53)   mid: +13.1 (19) | +23.1 (19)   na:  +nan (0) | +27.6 (2)
+    DEX tercile          high:  +3.9 (56) |  +7.7 (58)   low: -18.1 (1) |  +9.2 (2)   mid:  +0.9 (6) |  +7.5 (16)   na:  +nan (0) | +27.6 (2)
+    NQ vs 50d avg        above:  +3.3 (63) | +10.6 (75)   below:  +nan (0) | -53.0 (3)
+    day type             FOMC: -15.7 (1) |  +nan (0)   big 8:30: +16.6 (5) | +24.4 (13)   other:  +2.4 (57) |  +5.0 (65)
+
+  ON+: 739 trades | 2018-21 +3.42 (329) | 2022-25 +5.08 (410)
+    gamma sign           pos:  +3.4 (329) |  +5.1 (410)
+    gamma tercile        high:  +3.1 (271) |  -0.0 (296)   low: -27.9 (1) |  -4.1 (25)   mid:  +5.7 (57) | +24.7 (89)
+    YZ20 tercile         high:  +7.3 (62) |  +9.9 (95)   low:  +2.5 (181) |  +4.8 (229)   mid:  +2.6 (86) |  +0.4 (86)
+    IV tercile           high:  -2.4 (24) | +39.2 (31)   low:  +3.0 (202) |  +1.4 (266)   mid:  +6.1 (101) |  +9.0 (100)   na: -15.2 (2) | -30.3 (13)
+    DEX tercile          high:  +4.0 (292) |  +4.5 (283)   low: -21.7 (1) |  -3.1 (14)   mid:  +0.6 (34) | +12.6 (100)   na: -15.2 (2) | -30.3 (13)
+    NQ vs 50d avg        above:  +3.6 (327) |  +4.6 (392)   below: -24.3 (2) | +14.7 (18)
+    day type             FOMC:  +6.7 (9) | +28.5 (13)   big 8:30:  +5.5 (31) | +16.3 (70)   other:  +3.1 (289) |  +1.7 (327)
+
+  ON-: 1314 trades | 2018-21 +1.98 (676) | 2022-25 +1.92 (638)
+    gamma sign           neg:  +2.0 (676) |  +1.9 (638)
+    gamma tercile        high:  +2.6 (71) |  -6.7 (95)   low:  +1.0 (361) |  +5.0 (328)   mid:  +3.2 (244) |  +1.0 (215)
+    YZ20 tercile         high:  +5.2 (330) |  +0.8 (261)   low:  -5.6 (144) | +10.6 (178)   mid:  +2.2 (202) |  -4.4 (199)
+    IV tercile           high:  +3.8 (338) |  +2.3 (323)   low:  -0.9 (143) |  -3.3 (154)   mid:  -0.0 (193) |  +2.4 (143)   na: +101.1 (2) | +35.9 (18)
+    DEX tercile          high:  +0.1 (140) |  -0.3 (124)   low:  +3.9 (297) |  +2.0 (328)   mid:  -0.1 (237) |  -0.2 (168)   na: +101.1 (2) | +35.9 (18)
+    NQ vs 50d avg        above:  -0.4 (420) |  +6.4 (309)   below:  +5.8 (256) |  -2.2 (329)
+    day type             FOMC:  +4.9 (21) | +67.3 (20)   big 8:30:  -2.9 (71) |  -9.0 (113)   other:  +2.5 (584) |  +1.8 (505)
+
+  RULES C+TPO: 1088 trades | 2018-21 +1.66 (433) | 2022-25 +2.27 (655)
+    gamma sign           neg:  +1.6 (345) |  +2.2 (454)   pos:  +1.9 (88) |  +2.3 (201)
+    gamma tercile        high:  +0.0 (100) |  +0.5 (202)   low:  +2.7 (218) |  +3.5 (262)   mid:  +1.2 (115) |  +2.4 (191)
+    YZ20 tercile         high:  +2.0 (198) |  +4.0 (251)   low:  +0.5 (116) |  +3.0 (216)   mid:  +2.2 (119) |  -0.8 (188)
+    IV tercile           high:  +2.6 (210) |  +3.1 (264)   low:  +1.2 (115) |  +2.1 (215)   mid:  +0.1 (106) |  +0.9 (154)   na: +11.2 (2) |  +3.0 (22)
+    DEX tercile          high:  -0.1 (135) |  +1.9 (203)   low:  +2.7 (185) |  +4.3 (260)   mid:  +1.9 (111) |  -0.4 (170)   na: +11.2 (2) |  +3.0 (22)
+    NQ vs 50d avg        above:  +1.0 (273) |  +1.1 (399)   below:  +2.8 (160) |  +4.0 (256)
+    day type             FOMC:  -9.6 (5) |  +8.3 (17)   big 8:30:  +1.8 (45) |  +2.0 (134)   other:  +1.8 (383) |  +2.1 (504)
+
+  V15a: 684 trades | 2018-21 +4.87 (333) | 2022-25 +20.08 (351)
+    gamma sign           neg:  +4.4 (310) | +18.2 (298)   pos: +11.2 (23) | +30.8 (53)
+    gamma tercile        low:  +4.2 (192) | +23.0 (160)   mid:  +5.8 (141) | +17.6 (191)
+    YZ20 tercile         high:  +4.9 (176) | +21.4 (133)   low:  +9.7 (73) | +18.5 (101)   mid:  +0.7 (84) | +20.0 (117)
+    IV tercile           high:  +8.6 (169) | +20.7 (174)   low:  +6.9 (62) | +34.0 (77)   mid:  -2.1 (98) | +12.4 (86)   na: -13.5 (4) | -16.7 (14)
+    DEX tercile          high:  +9.8 (51) | +16.4 (69)   low:  +8.5 (149) | +23.7 (168)   mid:  -0.7 (129) | +21.7 (100)   na: -13.5 (4) | -16.7 (14)
+    NQ vs 50d avg        above:  +6.9 (199) | +14.7 (179)   below:  +1.8 (134) | +25.6 (172)
+    day type             FOMC:  -5.7 (21) | -16.5 (22)   big 8:30:  +1.5 (29) | +37.0 (76)   other:  +6.0 (283) | +18.2 (253)
+    side                 long: +10.7 (191) | +15.1 (204)   short:  -3.0 (142) | +27.0 (147)
+
+=== 3) cells where an engine lost in BOTH periods (>= 15 trades each) - and who made money there in both ===
+  ON-          IV tercile = low: -0.9 (143) | -3.3 (154)   -> made money there: RA +18.3/+15.8, M1 +4.9/+11.2, R1 +1.7/+4.9, ON+ +3.0/+1.4, RULES C+TPO +1.2/+2.1, V15a +6.9/+34.0
+  ON-          DEX tercile = mid: -0.1 (237) | -0.2 (168)   -> made money there: M1 +0.4/+8.5, ON+ +0.6/+12.6
+  ON-          day type = big 8:30: -2.9 (71) | -9.0 (113)   -> made money there: M1 +5.7/+11.2, ON+ +5.5/+16.3, RULES C+TPO +1.8/+2.0, V15a +1.5/+37.0
+  V15a         day type = FOMC: -5.7 (21) | -16.5 (22)   -> made money there: ON- +4.9/+67.3
+  50K S3, skip the bad cells         avg $ 3,830 | median $   199 | months >= $2.5k  37% | losing  37% | worst 3 mo $ -1,760 | longest no-payout run  4 mo | sd $ 6,081   [RA 0, M1 0, R1 0, ON+ 0, ON- 688, rules 0 trades touched]
+  50K S3 as is                       avg $ 3,720 | median $   419 | months >= $2.5k  39% | losing  39% | worst 3 mo $ -1,584 | longest no-payout run  4 mo | sd $ 5,779
+  150K S3, skip the bad cells        avg $  -100 | median $     0 | months >= $2.5k   0% | losing   6% | worst 3 mo $ -4,880 | longest no-payout run 49 mo | sd $   401   [RA 0, M1 0, R1 0, ON+ 0, ON- 688, rules 0 trades touched]
+  150K S3 as is                      avg $ 5,096 | median $   343 | months >= $2.5k  37% | losing  41% | worst 3 mo $ -4,880 | longest no-payout run  6 mo | sd $ 9,369
+  50K S3, half size the bad cells    avg $ 3,665 | median $     0 | months >= $2.5k  39% | losing  39% | worst 3 mo $ -1,760 | longest no-payout run  5 mo | sd $ 5,893   [RA 0, M1 0, R1 0, ON+ 0, ON- 688, rules 0 trades touched]
+  50K S3 as is                       avg $ 3,720 | median $   419 | months >= $2.5k  39% | losing  39% | worst 3 mo $ -1,584 | longest no-payout run  4 mo | sd $ 5,779
+  150K S3, half size the bad cells   avg $ 5,037 | median $   260 | months >= $2.5k  39% | losing  39% | worst 3 mo $ -4,880 | longest no-payout run  6 mo | sd $ 8,824   [RA 0, M1 0, R1 0, ON+ 0, ON- 688, rules 0 trades touched]
+  150K S3 as is                      avg $ 5,096 | median $   343 | months >= $2.5k  37% | losing  41% | worst 3 mo $ -4,880 | longest no-payout run  6 mo | sd $ 9,369
+EXIT 0

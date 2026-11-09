@@ -1,0 +1,33 @@
+
+=== Lucid Flex 50K x 5: fleets started every month Jan 2022 - Dec 2023, all their months pooled (net of eval fees) ===
+  setup                                  | budget 40 fees: avg / median month, months >= $2.5k, >= $5k, losing, median longest no-payout run | starts that survive on 20 fees
+  S0 profit only                         | $ 2,872 / $     0,  34%,  26%, losing  43%, dry  6.0 mo |  96%
+  S1 + old qualifier                     | $ 3,158 / $     0,  37%,  24%, losing  49%, dry  7.0 mo |  92%
+  S2 + rules C                           | $ 3,042 / $   -88,  33%,  25%, losing  53%, dry  5.0 mo |  92%
+  S3 + rules C+TPO (now)                 | $ 4,103 / $   379,  39%,  28%, losing  40%, dry  4.0 mo | 100%
+  S4 + rules D                           | $ 2,983 / $  -176,  30%,  21%, losing  52%, dry  7.0 mo |  92%
+  S6 S3 + V15a                           | $ 4,469 / $ 1,126,  40%,  35%, losing  39%, dry  5.0 mo |  96%
+  S7 rules C+TPO alone                   | $   194 / $     0,   1%,   0%, losing  13%, dry 16.0 mo | 100%
+  S3x S3, ON- skipped in its bad cells   | $ 4,073 / $   199,  36%,  27%, losing  37%, dry  4.0 mo | 100%
+  S5 S3, funded p x1.25 r x1.5           | $ 3,227 / $     0,  36%,  28%, losing  48%, dry  4.0 mo | 100%
+
+=== Lucid Flex 150K x 5: fleets started every month Jan 2022 - Dec 2023, all their months pooled (net of eval fees) ===
+  setup                                  | budget 40 fees: avg / median month, months >= $2.5k, >= $5k, losing, median longest no-payout run | starts that survive on 20 fees
+  S0 profit only                         | $ 3,890 / $     0,  29%,  25%, losing  48%, dry  7.0 mo |  96%
+  S1 + old qualifier                     | $ 3,162 / $     0,  30%,  20%, losing  49%, dry  7.0 mo |  96%
+  S2 + rules C                           | $ 2,944 / $  -488,  23%,  22%, losing  55%, dry  9.0 mo |  88%
+  S3 + rules C+TPO (now)                 | $ 5,562 / $     0,  38%,  33%, losing  45%, dry  6.0 mo | 100%
+  S4 + rules D                           | $ 4,401 / $     0,  28%,  27%, losing  46%, dry  6.0 mo |  92%
+  S6 S3 + V15a                           | $ 5,431 / $     0,  42%,  36%, losing  43%, dry  4.0 mo |  96%
+  S7 rules C+TPO alone                   | $   144 / $     0,   4%,   2%, losing  16%, dry 15.0 mo | 100%
+  S3x S3, ON- skipped in its bad cells   | $ 5,090 / $     0,  39%,  32%, losing  39%, dry  6.0 mo |  96%
+  S5 S3, funded p x1.25 r x1.5           | $ 5,587 / $  -244,  39%,  34%, losing  53%, dry  6.0 mo | 100%
+
+=== what blows the funded accounts (S3, Flex 50K, funded accounts started every 5th day 2022 - Jun 2025) ===
+  143 blown accounts. $ by engine (1 account, 50K size):
+                                             RA       M1       R1      ON+      ON-    RULES     total
+  all funded days, $ per day                 43       22        5       20        1       20       111
+  worst 5% of days, $ per day              -305     -368     -112     -266     -103     -100    -1,254
+  10 days before a blowup, $ total           75     -111       54      -70     -111      -68      -231
+  share of blowup windows where the engine lost money: RA 41%, M1 50%, R1 21%, ON+ 38%, ON- 51%, RULES 55%
+EXIT 0
