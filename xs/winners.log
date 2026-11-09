@@ -1,0 +1,26 @@
+
+=== RA: 220 trades | points per signal 2018-21 / 2022-25 | total 2022-25 | avg MFE | kept / MFE on winners | exit -> 15:55 on the trade side ===
+  now                                       +9.94 / +13.44 |  +1612 | MFE  48.3 | kept  80% | post-exit +14.1 (n220)
+  RA-a no noon flat                         +8.63 / +17.15 |  +2058 | MFE  53.8 | kept  84% | post-exit +15.4 (n180)
+  RA-b half at 75, runner 15m flip         +11.51 / +21.14 |  +2536 | MFE  80.7 | kept  53% | post-exit  +8.1 (n143)
+  RA-c half at 75, runner 1h flip          +12.83 / +21.22 |  +2546 | MFE  67.1 | kept  56% | post-exit  +5.5 (n175)
+  RA-d no target, BE after 75, 15m flip    +14.54 / +26.70 |  +3204 | MFE  80.7 | kept  78% | post-exit  +8.1 (n143)
+
+=== V15a: 392 trades | points per signal 2018-21 / 2022-25 | total 2022-25 | avg MFE | kept / MFE on winners | exit -> 15:55 on the trade side ===
+  now                                       +9.27 / +28.11 |  +5537 | MFE  70.9 | kept  79% | post-exit  +6.7 (n265)
+  V-a escalate to 30m flip at +0.25 ADR     +8.20 / +21.48 |  +4231 | MFE  60.6 | kept  81% | post-exit +10.2 (n313)
+  V-b escalate to 1h flip at +0.25 ADR      +6.94 / +18.10 |  +3566 | MFE  58.9 | kept  78% | post-exit +13.1 (n319)
+  V-c pyramid at +0.15 ADR                 +17.05 / +41.39 |  +8154 | MFE  62.0 | kept  80% | post-exit  +9.3 (n303)
+  V-d pyramid + 1h escalation              +15.22 / +31.68 |  +6241 | MFE  55.6 | kept  78% | post-exit +12.0 (n330)
+
+passes: [('RA', 'RA-b half at 75, runner 15m flip'), ('RA', 'RA-c half at 75, runner 1h flip'), ('RA', 'RA-d no target, BE after 75, 15m flip'), ('V15a', 'V-c pyramid at +0.15 ADR'), ('V15a', 'V-d pyramid + 1h escalation')]
+
+=== Lucid Flex 50K ===
+  V2 + skip slow flips (now)                                 pass 66%, paid 49%, evals/payout 0.92, dry 3 | fleet 2018+: 2.07 pay/mo, losing 23%, $2,734/mo | 24 starts 2022-23: avg $4,169 / med $2,302, losing 27%
+  RA RA-b half at 75, runner 15m flip                        pass 62%, paid 47%, evals/payout 0.95, dry 4 | fleet 2018+: 1.97 pay/mo, losing 25%, $2,543/mo | 24 starts 2022-23: avg $3,448 / med $0, losing 27%
+  RA RA-c half at 75, runner 1h flip                         pass 64%, paid 48%, evals/payout 0.89, dry 5 | fleet 2018+: 1.95 pay/mo, losing 28%, $2,573/mo | 24 starts 2022-23: avg $3,555 / med $0, losing 35%
+  RA RA-d no target, BE after 75, 15m flip                   pass 59%, paid 47%, evals/payout 0.86, dry 3 | fleet 2018+: 1.68 pay/mo, losing 29%, $2,178/mo | 24 starts 2022-23: avg $2,679 / med $0, losing 30%
+  V15a V-c pyramid at +0.15 ADR                              pass 63%, paid 48%, evals/payout 0.82, dry 5 | fleet 2018+: 1.78 pay/mo, losing 30%, $2,358/mo | 24 starts 2022-23: avg $3,286 / med $1,360, losing 34%
+  V15a V-d pyramid + 1h escalation                           pass 62%, paid 47%, evals/payout 0.81, dry 5 | fleet 2018+: 2.02 pay/mo, losing 29%, $2,654/mo | 24 starts 2022-23: avg $3,038 / med $494, losing 38%
+  both: RA-d no target, BE after 75, 15m flip + V-c pyramid  pass 54%, paid 34%, evals/payout 1.09, dry 15 | fleet 2018+: 1.38 pay/mo, losing 40%, $1,944/mo | 24 starts 2022-23: avg $2,058 / med $0, losing 49%
+EXIT 0
