@@ -1,0 +1,19 @@
+features found for 100% of 17391 candidate signals; HAR betas [-0.33   0.245  0.362  0.316]
+
+=== pick order (6 slots, stand-in path) | CAGR / max DD 2019-22 (CHOOSE) | 2023-26 (JUDGE) | all ===
+  ratio           36.7% / DD -11.2% |  35.0% / DD -13.1% | all  35.9%
+  yz              36.7% / DD -12.7% |  20.4% / DD -22.1% | all  28.6%
+  har             27.4% / DD -13.7% |  16.8% / DD -22.8% | all  22.1%
+  harrel          32.2% / DD -12.7% |  15.6% / DD -17.4% | all  23.9%
+  ratio+har       29.1% / DD -14.9% |  27.3% / DD -14.3% | all  28.2%
+  ratio+harrel    38.5% / DD -11.5% |  26.2% / DD -16.0% | all  32.4%
+
+  all candidates by YZ20 third: high: avg +0.36%, avg |move| 3.11%, win 36% | low: avg +0.25%, avg |move| 1.71%, win 31% | mid: avg +0.33%, avg |move| 2.24%, win 31%
+  crowded bars (>= 7 flips), avg return by ratio rank: 1:+1.04% 2:+0.72% 3:+0.75% 4:+0.72% 5:+0.27% 6:+0.53% 7:+0.45% 8:+0.23%
+  crowded bars (>= 7 flips), avg return by har rank: 1:+0.46% 2:+0.86% 3:+1.33% 4:+0.82% 5:+0.10% 6:+0.49% 7:+0.42% 8:+0.24%
+  crowded bars (>= 7 flips), avg return by harrel rank: 1:+0.77% 2:+0.11% 3:+0.63% 4:+1.03% 5:+0.33% 6:+0.63% 7:+0.58% 8:+0.36%
+
+=== Jul 15 2025 - Sep 2026 only: daily options ratio (prior day) found for 100% of 3692 signals ===
+  252-day ratio (live)     return +39.7%, max DD  -6.2%
+  daily ratio, yesterday   return +15.7%, max DD  -8.7%
+  HAR                      return  -2.9%, max DD -19.0%
