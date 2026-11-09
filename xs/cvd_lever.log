@@ -1,0 +1,19 @@
+  direction known for RA: 100% of 329 trades
+  direction known for M1: 100% of 1106 trades
+  direction known for R1: 100% of 332 trades
+  direction known for RULES: 61% of 1298 trades
+  direction known for V15a: 100% of 1058 trades
+1) points per trade, CVD agrees vs disagrees | 1st half (n) / 2nd half (n) | V2 engines, IV-skipped trades left out
+  RA     agrees +37.27 ( 12) / +15.27 ( 11)   disagrees +32.33 (  3) /   +nan (  0)
+  M1     agrees  +6.73 ( 24) /  -5.58 ( 28)   disagrees +24.80 (  3) /  +5.83 ( 15)
+  R1     agrees  -2.49 (  5) /  -0.10 ( 15)   disagrees -23.66 (  3) /   +nan (  0)
+  RULES  agrees  +3.75 ( 25) /  -5.99 ( 29)   disagrees  +3.04 (  6) / -10.60 (  4)
+  V15a   agrees  +1.75 ( 18) / +20.57 ( 25)   disagrees -59.52 (  7) /  -7.56 (  5)
+
+2) Lucid Flex 50K inside the order-flow window (2024-12-18 - 2025-11-18) | per eval: pass, paid, payouts/eval, evals per payout, net $/eval after the $88 fee | one account at a time: evals bought, payouts, net $
+  V2 as is                                    46%,  15%, 0.35,  2.9, $   480 | 10 evals, 7 payouts, $11,168
+  skip V15a when CVD disagrees                55%,  27%, 0.77,  1.3, $ 1,113 | 10 evals, 10 payouts, $15,012
+  skip all RTH engines when CVD disagrees     48%,  21%, 0.49,  2.0, $   728 | 10 evals, 6 payouts, $ 7,616
+  skip disagree + 1.5x when CVD agrees        44%,  19%, 0.62,  1.6, $   946 | 13 evals, 2 payouts, $   185
+  V2 + CVD flips as an extra engine           36%,  11%, 0.26,  3.9, $   308 | 21 evals, 6 payouts, $ 7,609
+EXIT 0

@@ -28,9 +28,29 @@ def cvd_engine():
             if res is None: res = ((c[ix[-1]] - e) * dr, len(ix) - 1)
             rows.append((d, m[ix[j]], dr, res[0] - 1.0, max(mae, (S - e) * dr) - 1.0)); busy = res[1]; cnt += 1
     T_ = pd.DataFrame(rows, columns=['day', 'm', 'dir', 'pts', 'mae']); T_['sz'], T_['ce'], T_['cf'] = 1.0, 1.0, 1.0; return T_
-base = variant(True, relm); CA = {}
+KD = {d: k for k, d in enumerate(days)}
+def add_dir(nm, T_):
+    # M1, R1 and RULES tables carry no direction column - recover it from the engine's own entry rule / the rules dataset
+    if 'dir' in T_: return T_
+    T_ = T_.copy()
+    if nm == 'RULES':
+        K_ = DS[['day', 'entry_m', f'ptsC', 'dir']].copy(); K_['day'] = pd.to_datetime(K_.day); K_['mm'] = K_.entry_m.clip(lower=0); K_['pk'] = K_.ptsC.round(3)
+        g_ = K_.groupby(['day', 'mm', 'pk']).dir.agg(lambda s_: s_.iloc[0] if s_.nunique() == 1 else np.nan)
+        T_['dir'] = [g_.get((pd.Timestamp(d), mm_, round(p_, 3)), np.nan) for d, mm_, p_ in zip(T_.day, T_.m, T_.pts)]; return T_
+    out = []
+    for r_ in T_.itertuples():
+        d = pd.Timestamp(r_.day); ix = gi[d]; w = np.where(m[ix] == r_.m)[0]
+        if not len(w) or w[0] == 0: out.append(np.nan); continue
+        j = w[0]; o0 = o[ix[0]]
+        if nm == 'M1':   # breakout above max(open, prior close) x (1 + s) -> long; below min(...) x (1 - s) -> short; signal = the bar before entry
+            pc = c[gi[days[KD[d] - 1]][-1]]; cp = c[ix[j - 1]]; out.append(1 if cp > max(o0, pc) else (-1 if cp < min(o0, pc) else np.nan))
+        else:            # R1 80% rule: opened above value -> short back through it (entry below the open), opened below -> long
+            out.append(float(np.sign(o[ix[j]] - o0)) if o[ix[j]] != o0 else np.nan)
+    T_['dir'] = out; return T_
+base = [(add_dir(nm, T_), u, yz) if nm in RTH else (T_, u, yz) for nm, (T_, u, yz) in zip(NAMES, variant(True, relm))]; CA = {}
 for nm, (T_, u, yz) in zip(NAMES, base):
     if nm not in RTH: continue
+    print(f'  direction known for {nm}: {T_.dir.notna().mean():.0%} of {len(T_)} trades', flush=True)
     dd = pd.to_datetime(T_.day); w = ((dd >= W0) & (dd <= W1)).values; ca = np.full(len(T_), np.nan)
     if w.any(): ca[np.where(w)[0]] = [f_[1] for f_ in feats(T_[w])]
     CA[nm] = ca
