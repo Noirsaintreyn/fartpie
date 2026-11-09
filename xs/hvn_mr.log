@@ -1,0 +1,36 @@
+walls cover 2014-01-02 - 2025-12-15 | algo levels 2024-10-14 - 2026-10-16 | k = 5.90
+
+=== stop 0.05 / target 0.05 ADR | trades a month, HOLD (target first), NQ pts per trade: 2018-21 / 2022-25 | placebo pts per trade ===
+  all HVN touches        12.5/mo 38%  -2.96 (plc  -3.07)  |  17.3/mo 38%  -4.28 (plc  -4.82)
+  GAMMA+                  3.1/mo 40%  -2.46 (plc  -2.62)  |   5.9/mo 40%  -3.28 (plc  -3.22)
+  GAMMA-                  9.4/mo 38%  -3.12 (plc  -3.22)  |  11.4/mo 36%  -4.80 (plc  -5.69)
+  THOD line               4.0/mo 39%  -2.90 (plc  -3.66)  |   5.6/mo 36%  -4.57 (plc  -5.69)
+  EXH (range used)        3.3/mo 39%  -2.51 (plc  -2.93)  |   5.0/mo 36%  -4.97 (plc  -4.20)
+  WALL                    0.4/mo 38%  -2.78 (plc  -2.75)  |   1.4/mo 39%  -3.76 (plc  -5.35)
+  GAMMA+ & THOD           1.0/mo 41%  -2.06 (plc  -3.69)  |   1.9/mo 36%  -4.40 (plc  -3.75)
+  GAMMA+ & EXH            0.9/mo 33%  -3.85 (plc  -3.15)  |   1.6/mo 34%  -5.41 (plc  -2.30)
+  THOD & EXH              0.3/mo 64%  +0.86 (plc  -2.12)  |   0.8/mo 40%  -4.12 (plc  -6.02)
+  GAMMA+ & THOD & EXH     0.1/mo 75%  +3.89 (plc  -4.57)  |   0.2/mo 33%  -6.25 (plc  -4.49)
+  GAMMA- & EXH            2.3/mo 42%  -1.98 (plc  -2.84)  |   3.4/mo 37%  -4.77 (plc  -5.12)
+
+=== stop 0.05 / target 0.10 ADR | trades a month, HOLD (target first), NQ pts per trade: 2018-21 / 2022-25 | placebo pts per trade ===
+  all HVN touches        12.5/mo 32%  -1.53 (plc  -2.04)  |  17.3/mo 32%  -1.51 (plc  -2.76)
+  GAMMA+                  3.1/mo 33%  -1.59 (plc  -1.60)  |   5.9/mo 33%  -0.78 (plc  -1.26)
+  GAMMA-                  9.4/mo 32%  -1.51 (plc  -2.18)  |  11.4/mo 31%  -1.88 (plc  -3.57)
+  THOD line               4.0/mo 33%  -1.58 (plc  -3.15)  |   5.6/mo 31%  -1.57 (plc  -4.20)
+  EXH (range used)        3.3/mo 33%  -0.96 (plc  -1.66)  |   5.0/mo 28%  -3.53 (plc  -1.85)
+  WALL                    0.4/mo 24%  -4.63 (plc  -1.41)  |   1.4/mo 34%  +0.15 (plc  -2.68)
+  GAMMA+ & THOD           1.0/mo 33%  -0.98 (plc  -2.71)  |   1.9/mo 33%  -1.30 (plc  -1.97)
+  GAMMA+ & EXH            0.9/mo 30%  -2.09 (plc  -1.50)  |   1.6/mo 26%  -4.03 (plc  +0.75)
+  THOD & EXH              0.3/mo 57%  +3.78 (plc  -1.88)  |   0.8/mo 32%  -2.02 (plc  -4.04)
+  GAMMA+ & THOD & EXH     0.1/mo 75%  +9.66 (plc  -3.40)  |   0.2/mo 33%  -3.14 (plc  +0.05)
+  GAMMA- & EXH            2.3/mo 34%  -0.53 (plc  -1.72)  |   3.4/mo 29%  -3.30 (plc  -3.12)
+
+=== Oct 2024 - Jan 2026 only: paired with Rey's QQQ 1h / 4h algo levels | n, hold, pts per trade (2:1 / 1:1) | placebo ===
+  all HVN touches (window)     n 272 29%  -1.84 /  -5.34 | placebo n  274  -2.54 /  -5.41
+  HVN + algo level             n  15 47%  +2.39 /  -3.61 | placebo n   16  -1.49 /  -5.13
+  HVN, no algo level           n 257 28%  -2.09 /  -5.44 | placebo n  258  -2.60 /  -5.43
+  HVN + algo level + GAMMA+    n   6 50%  +6.54 /  -0.20 | placebo n    7  +7.16 /  +0.68
+
+  nothing passed - no fleet test
+EXIT 0
