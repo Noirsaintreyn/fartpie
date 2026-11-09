@@ -1,0 +1,7 @@
+  V15a: 217 slow-flip trades skipped of 684 (cut 0.225 ADR)
+  RA: 41 slow-flip trades skipped of 284 (cut 0.225 ADR)
+  V2 as is                                       pass 60%, evals/payout 0.93, longest dry run  5 | fleet avg $4,401 / median $1,536, >= $2.5k 46%, losing 36%, dry 5.0 mo
+  V2, Rule A skips slow flips (declared pass)    pass 63%, evals/payout 0.91, longest dry run  5 | fleet avg $4,341 / median $1,666, >= $2.5k 47%, losing 34%, dry 4.0 mo
+  V2, V15a skips slow flips (exploratory)        pass 63%, evals/payout 0.95, longest dry run  3 | fleet avg $4,206 / median $1,109, >= $2.5k 38%, losing 31%, dry 5.0 mo
+  V2, both skip slow flips (exploratory)         pass 66%, evals/payout 0.92, longest dry run  3 | fleet avg $4,169 / median $2,302, >= $2.5k 46%, losing 27%, dry 4.0 mo
+EXIT 0
