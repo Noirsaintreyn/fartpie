@@ -1,0 +1,15 @@
+Rule A on futures: 329 trades, skipped 12%, ladder 10/5/3 micros 40% / 46% / 14% (VWAP cut 0.21 ADR) | kept avg +9.13, skipped avg +15.07
+
+  version                            acct  qual/mo pass  paid  payouts x size  blown | per acct-month | 1st payout  every  payouts/mo funded
+  F0 RA production alone             50K       1.3  46%   25%   1.3 x  82 pts   71% |           +5.4 |    6.2 mo   81 d       0.21
+  F0 RA production alone             150K      1.3  36%   28%   1.9 x 123 pts   52% |           +7.6 |    7.2 mo   77 d       0.22
+  F1 + M1g 3 + R1g 5                 50K       4.0  49%   23%   1.5 x  71 pts   86% |          +14.3 |    2.7 mo   21 d       0.61
+  F1 + M1g 3 + R1g 5                 150K      4.1  44%   23%   1.5 x 117 pts   85% |          +19.1 |    3.2 mo   21 d       0.62
+  F2 F1 + OA 2 (neg-gamma nights)    50K       5.7  41%   18%   0.9 x  57 pts   98% |           +6.8 |    2.3 mo   15 d       0.53
+  F2 F1 + OA 2 (neg-gamma nights)    150K      6.2  38%   18%   0.9 x 101 pts   94% |           +9.0 |    2.7 mo   16 d       0.71
+  F3 F1 + OB 2 (every night)         50K       6.5  49%   25%   1.2 x  55 pts   89% |          +12.2 |    2.3 mo   14 d       0.80
+  F3 F1 + OB 2 (every night)         150K      7.2  46%   26%   1.4 x 103 pts   89% |          +20.1 |    2.5 mo   13 d       0.99
+  F4 F1 + OA 3                       50K       6.2  38%   13%   0.6 x  56 pts   98% |           +4.0 |    1.9 mo   13 d       0.48
+  F4 F1 + OA 3                       150K      6.6  35%   17%   1.0 x 108 pts   91% |          +11.6 |    2.7 mo   10 d       0.78
+  F5 F2, halve all on high-YZ days   50K       5.2  45%   29%   1.3 x  49 pts   95% |           +8.0 |    3.2 mo   17 d       0.67
+  F5 F2, halve all on high-YZ days   150K      5.7  47%   34%   1.2 x  85 pts   93% |           +9.6 |    4.1 mo   19 d       0.79
