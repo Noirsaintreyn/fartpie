@@ -1,0 +1,25 @@
+
+=== RA: 220 trades | NQ pts per trade 2018-21 / 2022-25 | total 2022-25 | share of trades the NHP exit closed ===
+  now             +9.94 / +13.44 |  +1612
+  NHP-2          +11.90 / +13.25 |  +1590 | changed  42%
+  NHP-4          +11.84 / +10.82 |  +1299 | changed  34%
+  NHP-6          +11.99 / +10.90 |  +1308 | changed  25%
+  NHP-2 + VOL     +9.92 / +14.33 |  +1720 | changed   4%
+  NHP-4 + VOL     +9.54 / +14.03 |  +1683 | changed   2%
+  NHP-6 + VOL    +10.22 / +13.76 |  +1651 | changed   1%
+
+=== V15a: 392 trades | NQ pts per trade 2018-21 / 2022-25 | total 2022-25 | share of trades the NHP exit closed ===
+  now             +9.27 / +28.11 |  +5537
+  NHP-2           -1.33 /  +5.58 |  +1100 | changed  56%
+  NHP-4           +2.30 /  +5.91 |  +1165 | changed  48%
+  NHP-6           +2.64 /  +7.76 |  +1528 | changed  43%
+  NHP-2 + VOL     +6.91 / +20.08 |  +3956 | changed  20%
+  NHP-4 + VOL     +8.66 / +22.20 |  +4374 | changed  15%
+  NHP-6 + VOL     +8.71 / +24.08 |  +4744 | changed  11%
+
+passes: [('RA', 'NHP-6 + VOL')]
+
+=== Lucid Flex 50K ===
+  V2 + skip slow flips (now)               pass 66%, paid 49%, evals/payout 0.92, dry 3 | fleet 2018+: 2.07 pay/mo, losing 23%, $2,734/mo | 24 starts 2022-23: avg $4,169 / med $2,302, losing 27%
+  RA NHP-6 + VOL                           pass 66%, paid 49%, evals/payout 0.91, dry 3 | fleet 2018+: 2.09 pay/mo, losing 23%, $2,775/mo | 24 starts 2022-23: avg $4,181 / med $2,302, losing 27%
+EXIT 0
