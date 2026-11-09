@@ -1,0 +1,64 @@
+
+===== 15m-track flips =====
+  TOUCH W CALL 19-21 | flip   +2.1% med  -10.9% win 19% t +1.2 n 1293 | random   -1.5% med   -6.9% win 24% t -0.6 n 3882 | edge   +3.6 | ex NVDA/TSLA edge   +2.7
+  TOUCH W CALL 22-26 | flip   +0.3% med   -8.3% win 18% t +0.7 n 3639 | random   -3.0% med   -6.6% win 21% t -1.4 n12040 | edge   +3.3 | ex NVDA/TSLA edge   +3.0
+  TOUCH W CDS  19-21 | flip   -5.5% med  -16.7% win 20% t -0.3 n 1284 | random   -7.4% med  -12.8% win 24% t -3.0 n 3833 | edge   +1.9 | ex NVDA/TSLA edge   +1.0
+  TOUCH W CDS  22-26 | flip   -6.9% med  -14.4% win 18% t -2.2 n 3630 | random   -9.1% med  -12.0% win 21% t -6.3 n12010 | edge   +2.2 | ex NVDA/TSLA edge   +2.2
+  TOUCH M CALL 19-21 | flip   -0.6% med   -9.0% win 20% t -0.2 n 1590 | random   -2.8% med   -6.3% win 26% t -1.9 n 4776 | edge   +2.2 | ex NVDA/TSLA edge   +1.8
+  TOUCH M CALL 22-26 | flip   -3.5% med   -7.6% win 18% t -1.3 n 4416 | random   -5.3% med   -6.3% win 21% t -5.6 n14578 | edge   +1.8 | ex NVDA/TSLA edge   +1.7
+  TOUCH M CDS  19-21 | flip  -12.5% med  -16.2% win 16% t -6.3 n 1542 | random  -12.1% med  -12.7% win 21% t -8.4 n 4615 | edge   -0.4 | ex NVDA/TSLA edge   -0.5
+  TOUCH M CDS  22-26 | flip  -12.3% med  -14.4% win 16% t -8.9 n 4351 | random  -12.6% med  -11.9% win 18% t -14.8 n14424 | edge   +0.3 | ex NVDA/TSLA edge   +0.2
+  MID   W CALL 19-21 | flip   +9.4% med   +0.0% win 22% t +2.8 n 1293 | random   +5.5% med   +0.0% win 27% t +2.0 n 3882 | edge   +3.9 | ex NVDA/TSLA edge   +3.1
+  MID   W CALL 22-26 | flip   +6.1% med   +0.0% win 20% t +2.4 n 3639 | random   +3.4% med   +0.0% win 23% t +2.1 n12040 | edge   +2.7 | ex NVDA/TSLA edge   +2.5
+  MID   W CDS  19-21 | flip   +8.0% med   +0.0% win 25% t +3.1 n 1284 | random   +5.8% med   +0.0% win 30% t +2.3 n 3833 | edge   +2.1 | ex NVDA/TSLA edge   +1.3
+  MID   W CDS  22-26 | flip   +4.5% med   +0.0% win 22% t +2.2 n 3630 | random   +2.9% med   +0.0% win 25% t +2.0 n12010 | edge   +1.6 | ex NVDA/TSLA edge   +1.6
+  MID   M CALL 19-21 | flip   +7.9% med   +0.0% win 25% t +2.7 n 1590 | random   +5.0% med   +0.0% win 32% t +3.0 n 4776 | edge   +2.9 | ex NVDA/TSLA edge   +2.6
+  MID   M CALL 22-26 | flip   +3.6% med   +0.0% win 23% t +2.6 n 4416 | random   +1.5% med   +0.0% win 26% t +1.9 n14578 | edge   +2.1 | ex NVDA/TSLA edge   +2.1
+  MID   M CDS  19-21 | flip   +5.2% med   +0.0% win 28% t +2.7 n 1542 | random   +4.2% med   +0.0% win 34% t +2.8 n 4614 | edge   +0.9 | ex NVDA/TSLA edge   +0.9
+  MID   M CDS  22-26 | flip   +2.1% med   +0.0% win 24% t +2.2 n 4351 | random   +1.1% med   +0.0% win 27% t +1.6 n14424 | edge   +1.0 | ex NVDA/TSLA edge   +1.1
+
+===== 1h-track flips =====
+  TOUCH W CALL 19-21 | flip  +17.0% med  -14.7% win 26% t +2.3 n  279 | random   +5.2% med   -9.7% win 31% t +1.0 n  872 | edge  +11.8 | ex NVDA/TSLA edge  +11.1
+  TOUCH W CALL 22-26 | flip   +7.3% med  -20.3% win 23% t +0.7 n  766 | random   -1.6% med   -8.6% win 27% t -0.6 n 2537 | edge   +8.8 | ex NVDA/TSLA edge   +7.3
+  TOUCH W CDS  19-21 | flip   +5.4% med  -17.8% win 27% t +1.6 n  277 | random  -18.7% med  -14.5% win 32% t -1.2 n  857 | edge  +24.1 | ex NVDA/TSLA edge  +26.1
+  TOUCH W CDS  22-26 | flip   +0.8% med  -24.0% win 23% t -0.1 n  765 | random   -5.8% med  -13.7% win 28% t -2.3 n 2534 | edge   +6.6 | ex NVDA/TSLA edge   +5.3
+  TOUCH M CALL 19-21 | flip  +11.6% med  -10.9% win 26% t +1.4 n  350 | random   +4.1% med   -6.0% win 35% t +1.1 n 1047 | edge   +7.5 | ex NVDA/TSLA edge   +3.7
+  TOUCH M CALL 22-26 | flip   -1.2% med  -14.0% win 23% t -0.1 n  952 | random   -4.4% med   -7.2% win 28% t -2.6 n 3111 | edge   +3.2 | ex NVDA/TSLA edge   +1.8
+  TOUCH M CDS  19-21 | flip   -2.9% med  -16.5% win 24% t -1.0 n  341 | random   -9.3% med  -11.9% win 30% t -3.2 n 1020 | edge   +6.4 | ex NVDA/TSLA edge   +5.2
+  TOUCH M CDS  22-26 | flip  -10.8% med  -20.2% win 21% t -3.1 n  934 | random  -11.9% med  -12.9% win 25% t -7.9 n 3082 | edge   +1.1 | ex NVDA/TSLA edge   +0.6
+  MID   W CALL 19-21 | flip  +24.2% med   -2.4% win 27% t +3.0 n  279 | random  +21.6% med   +0.0% win 34% t +2.9 n  872 | edge   +2.6 | ex NVDA/TSLA edge   +0.3
+  MID   W CALL 22-26 | flip  +12.5% med  -14.1% win 24% t +1.4 n  766 | random   +4.6% med   +0.0% win 29% t +1.2 n 2537 | edge   +7.9 | ex NVDA/TSLA edge   +6.4
+  MID   W CDS  19-21 | flip  +18.3% med   +0.0% win 31% t +3.1 n  277 | random  +14.6% med   +0.0% win 36% t +3.0 n  857 | edge   +3.7 | ex NVDA/TSLA edge   +1.9
+  MID   W CDS  22-26 | flip  +10.8% med   -8.1% win 25% t +1.5 n  765 | random   +5.7% med   +0.0% win 31% t +1.6 n 2534 | edge   +5.2 | ex NVDA/TSLA edge   +4.0
+  MID   M CALL 19-21 | flip  +20.8% med   +0.0% win 31% t +2.7 n  350 | random  +15.2% med   +0.0% win 40% t +4.1 n 1047 | edge   +5.6 | ex NVDA/TSLA edge   +1.3
+  MID   M CALL 22-26 | flip   +6.0% med   -4.8% win 26% t +1.1 n  952 | random   +2.5% med   +0.0% win 32% t +1.1 n 3111 | edge   +3.4 | ex NVDA/TSLA edge   +2.1
+  MID   M CDS  19-21 | flip  +15.3% med   +0.0% win 35% t +2.8 n  340 | random  +11.9% med   +0.0% win 43% t +3.1 n 1020 | edge   +3.4 | ex NVDA/TSLA edge   +1.5
+  MID   M CDS  22-26 | flip   +3.4% med   -1.7% win 28% t +1.0 n  934 | random   +1.7% med   +0.0% win 34% t +0.9 n 3082 | edge   +1.7 | ex NVDA/TSLA edge   +1.4
+
+edge by year (flip - matched random, % per trade), TOUCH:
+  15m W CALL 2019  +0.1 2020  +2.4 2021  +5.2 2022  -2.1 2023  +6.9 2024  +7.0 2025  +0.8 2026  +3.6
+  15m M CALL 2019  -0.5 2020  -0.3 2021  +4.6 2022  -3.6 2023  +6.0 2024  +3.9 2025  +0.6 2026  +1.6
+  15m W CDS  2019  +3.8 2020  +1.1 2021  +1.8 2022  -2.5 2023  +8.8 2024  +4.3 2025  +0.5 2026  -1.8
+  15m M CDS  2019  +2.2 2020  -3.0 2021  +0.4 2022  -2.2 2023  +6.0 2024  +1.0 2025  -0.7 2026  -5.3
+  1h  W CALL 2019 -12.4 2020  +5.2 2021 +23.6 2022 -10.5 2023  -5.4 2024 +31.4 2025 +13.6 2026  +6.5
+  1h  M CALL 2019  -8.0 2020  -0.6 2021 +17.9 2022  -9.0 2023  +6.3 2024 +13.6 2025  +1.7 2026  +0.4
+  1h  W CDS  2019  -8.0 2020  -0.4 2021 +52.2 2022 -10.3 2023  +1.1 2024 +22.0 2025 +11.7 2026  +1.0
+  1h  M CDS  2019  -5.1 2020  -2.4 2021 +16.0 2022  -5.6 2023  +4.1 2024  +4.9 2025  +0.9 2026  -0.5
+
+monthly book, 1 unit of premium per trade, TOUCH (flips only):
+  15m W CALL 19-21:  35.9 trades/mo, avg month  +0.75 units, months positive 44%, worst -14.50, best +26.78
+  15m W CALL 22-26:  63.8 trades/mo, avg month  +0.16 units, months positive 46%, worst -23.04, best +31.87
+  15m M CALL 19-21:  44.2 trades/mo, avg month  -0.28 units, months positive 42%, worst -13.30, best +37.18
+  15m M CALL 22-26:  77.5 trades/mo, avg month  -2.75 units, months positive 33%, worst -20.03, best +24.32
+  15m W CDS  19-21:  35.7 trades/mo, avg month  -1.98 units, months positive 36%, worst -19.08, best  +9.80
+  15m W CDS  22-26:  63.7 trades/mo, avg month  -4.39 units, months positive 35%, worst -29.50, best +25.40
+  15m M CDS  19-21:  42.8 trades/mo, avg month  -5.36 units, months positive 11%, worst -19.87, best  +9.56
+  15m M CDS  22-26:  76.3 trades/mo, avg month  -9.40 units, months positive 16%, worst -27.74, best  +5.24
+  1h  W CALL 19-21:   8.0 trades/mo, avg month  +1.35 units, months positive 57%, worst  -5.19, best +16.24
+  1h  W CALL 22-26:  13.4 trades/mo, avg month  +0.97 units, months positive 51%, worst  -9.64, best +27.37
+  1h  M CALL 19-21:   9.7 trades/mo, avg month  +1.13 units, months positive 42%, worst  -4.04, best +17.86
+  1h  M CALL 22-26:  16.7 trades/mo, avg month  -0.20 units, months positive 35%, worst  -6.73, best +24.49
+  1h  W CDS  19-21:   7.9 trades/mo, avg month  +0.43 units, months positive 51%, worst  -6.20, best  +8.24
+  1h  W CDS  22-26:  13.4 trades/mo, avg month  +0.10 units, months positive 44%, worst -10.12, best +15.69
+  1h  M CDS  19-21:   9.5 trades/mo, avg month  -0.28 units, months positive 33%, worst  -3.67, best  +9.18
+  1h  M CDS  22-26:  16.4 trades/mo, avg month  -1.78 units, months positive 26%, worst  -9.58, best +12.39
