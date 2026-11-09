@@ -1,0 +1,68 @@
+decision rows 129,574 on 2945 days (2014-01-30 - 2026-01-30)
+
+=== A: +7.5 pts net before -20 (no-edge line ~70%); size 10 micros ===
+  train 14-19: base hit 58% | hit by predicted decile (low -> high): 14% 32% 46% 55% 61% 66% 70% 73% 77% 83%
+  valid 20-21: base hit 70% | hit by predicted decile (low -> high): 67% 67% 72% 71% 70% 70% 71% 71% 72% 72%
+  test 22-26: base hit 70% | hit by predicted decile (low -> high): 70% 71% 70% 70% 71% 71% 71% 70% 69% 71%
+  validation 2020-21 ($ a trade at size, trades): 0.40:-18(494) 0.44:-18(494) 0.48:-18(494) 0.52:-18(494) 0.56:-18(494) 0.60:-18(494) 0.64:-18(494) 0.68:-18(494) 0.72:-3(487) 0.76:-5(396) 0.80:-21(167)  -> chosen cut 0.78
+  train 14-19: 357 trades (5.2 a month), hit 86% (other side 53%), avg $+74 = +3.71 pts at 10.0 micros (other side $-107), wins (qualifying) 4.5 a month | 14:$+130/96%/28 15:$+111/93%/44 16:$+90/88%/49 17:$+95/90%/31 18:$+83/88%/93 19:$+26/78%/112
+  valid 20-21: 291 trades (12.4 a month), hit 75% (other side 66%), avg $+7 = +0.35 pts at 10.0 micros (other side $-42), wins (qualifying) 9.3 a month | 20:$+4/74%/144 21:$+10/76%/147
+  test 22-26: 635 trades (13.4 a month), hit 68% (other side 74%), avg $-35 = -1.75 pts at 10.0 micros (other side $-1), wins (qualifying) 9.0 a month | 22:$-15/71%/121 23:$-12/72%/165 24:$-52/65%/164 25:$-64/62%/165 26:$+36/80%/20
+
+=== B: +15 pts net before -40 (no-edge line ~71%); size 5 micros ===
+  train 14-19: base hit 39% | hit by predicted decile (low -> high): 1% 7% 16% 27% 33% 42% 54% 63% 70% 81%
+  valid 20-21: base hit 69% | hit by predicted decile (low -> high): 56% 65% 67% 69% 69% 70% 74% 72% 70% 75%
+  test 22-26: base hit 71% | hit by predicted decile (low -> high): 67% 69% 71% 71% 72% 71% 72% 71% 73% 73%
+  validation 2020-21 ($ a trade at size, trades): 0.40:+8(494) 0.44:+8(494) 0.48:+8(494) 0.52:+8(494) 0.56:+7(493) 0.60:+4(483) 0.64:+3(460) 0.68:+1(402) 0.72:+5(307) 0.76:-6(204) 0.80:+33(86)  -> chosen cut 0.80
+  train 14-19: 92 trades (1.3 a month), hit 93% (other side 57%), avg $+113 = +11.35 pts at 5.0 micros (other side $-81), wins (qualifying) 1.2 a month | 14:$+150/100%/2 15:$+150/100%/7 16:$+150/100%/7 17:$+150/100%/3 18:$+80/88%/32 19:$+123/95%/41
+  valid 20-21: 86 trades (3.7 a month), hit 79% (other side 72%), avg $+33 = +3.28 pts at 5.0 micros (other side $-6), wins (qualifying) 2.9 a month | 20:$+78/87%/39 21:$-5/72%/47
+  test 22-26: 235 trades (4.9 a month), hit 77% (other side 73%), avg $+21 = +2.13 pts at 5.0 micros (other side $-3), wins (qualifying) 3.8 a month | 22:$+10/75%/64 23:$-25/69%/32 24:$+53/83%/52 25:$+20/77%/69 26:$+57/83%/18
+
+=== C: +0.06 ADR (+1) before -0.12 ADR (no-edge line ~67%); size micros = ceil(150 / (2 x target)) ===
+  train 14-19: base hit 60% | hit by predicted decile (low -> high): 39% 51% 53% 58% 61% 62% 64% 66% 69% 78%
+  valid 20-21: base hit 65% | hit by predicted decile (low -> high): 61% 63% 63% 64% 65% 65% 64% 65% 65% 72%
+  test 22-26: base hit 65% | hit by predicted decile (low -> high): 62% 65% 65% 64% 64% 65% 66% 66% 68% 67%
+  validation 2020-21 ($ a trade at size, trades): 0.40:-21(494) 0.44:-21(494) 0.48:-21(494) 0.52:-21(494) 0.56:-21(494) 0.60:-21(494) 0.64:-12(493) 0.68:+11(404) 0.72:+18(148)  -> chosen cut 0.68
+  train 14-19: 522 trades (7.5 a month), hit 81% (other side 44%), avg $+61 = +1.88 pts at 20.5 micros (other side $-128), wins (qualifying) 6.1 a month | 14:$+67/83%/42 15:$+48/80%/88 16:$+70/84%/85 17:$+99/89%/57 18:$+72/83%/122 19:$+35/76%/128
+  valid 20-21: 404 trades (17.2 a month), hit 70% (other side 61%), avg $+11 = +0.93 pts at 7.4 micros (other side $-33), wins (qualifying) 12.0 a month | 20:$+7/69%/192 21:$+14/70%/212
+  test 22-26: 934 trades (19.7 a month), hit 69% (other side 66%), avg $+5 = +0.39 pts at 5.6 micros (other side $-6), wins (qualifying) 13.5 a month | 22:$+5/68%/239 23:$+17/71%/224 24:$-4/67%/233 25:$+0/67%/220 26:$+53/78%/18
+
+=== D: +0.1 ADR (+1) before -0.15 ADR (no-edge line ~60%); size micros = ceil(150 / (2 x target)) ===
+  train 14-19: base hit 54% | hit by predicted decile (low -> high): 24% 38% 45% 48% 54% 56% 60% 66% 69% 78%
+  valid 20-21: base hit 57% | hit by predicted decile (low -> high): 49% 53% 57% 57% 60% 58% 59% 61% 58% 61%
+  test 22-26: base hit 57% | hit by predicted decile (low -> high): 49% 56% 56% 58% 58% 58% 58% 60% 61% 60%
+  validation 2020-21 ($ a trade at size, trades): 0.40:-8(494) 0.44:-8(494) 0.48:-8(494) 0.52:-8(494) 0.56:-7(494) 0.60:+3(489) 0.64:-11(356) 0.68:+12(126) 0.72:+33(44)  -> chosen cut 0.66
+  train 14-19: 473 trades (6.8 a month), hit 83% (other side 30%), avg $+88 = +4.27 pts at 13.0 micros (other side $-137), wins (qualifying) 5.7 a month | 14:$+59/78%/49 15:$+70/80%/83 16:$+106/88%/69 17:$+106/88%/52 18:$+94/84%/116 19:$+87/83%/104
+  valid 20-21: 229 trades (9.7 a month), hit 63% (other side 54%), avg $+12 = +1.55 pts at 4.7 micros (other side $-31), wins (qualifying) 6.2 a month | 20:$+6/62%/112 21:$+17/64%/117
+  test 22-26: 551 trades (11.6 a month), hit 63% (other side 54%), avg $+13 = +2.49 pts at 3.5 micros (other side $-29), wins (qualifying) 7.3 a month | 22:$+50/72%/146 23:$+7/62%/125 24:$-0/60%/134 25:$+10/60%/126 26:$-102/35%/20
+
+  version                          acct  starts qual/mo pass  paid  payouts x size  blown | per acct-month | 1st payout  every  payouts/mo funded
+  profit algo only (U3 + YZ)       50K   2022+      7.7  47%   28%   1.6 x $ 1333   85% |          +26.5 |    1.7 mo   14 d       1.02
+  profit algo only (U3 + YZ)       50K   all        7.7  52%   35%   1.6 x $ 1209   88% |          +18.3 |    2.3 mo   16 d       0.89
+  profit algo only (U3 + YZ)       150K  2022+      7.7  45%   32%   1.9 x $ 2237   78% |          +44.3 |    1.9 mo   15 d       1.15
+  profit algo only (U3 + YZ)       150K  all        7.7  42%   32%   1.9 x $ 2131   81% |          +30.2 |    2.4 mo   17 d       1.06
+  + old qualifier (noise +7.5/40)  50K   2022+      8.7  48%   29%   1.7 x $ 1478   83% |          +42.9 |    1.4 mo   11 d       1.40
+  + old qualifier (noise +7.5/40)  50K   all        8.7  48%   32%   1.5 x $ 1325   89% |          +27.6 |    1.9 mo   11 d       1.18
+  + old qualifier (noise +7.5/40)  150K  2022+      9.0  44%   27%   1.7 x $ 2364   76% |          +53.2 |    1.5 mo   10 d       1.46
+  + old qualifier (noise +7.5/40)  150K  all        9.0  41%   26%   1.5 x $ 2303   83% |          +34.7 |    2.0 mo   11 d       1.10
+  + rules B (+15/40, 5 mic)        50K   2022+      7.8  53%   25%   1.0 x $ 1328   91% |          +19.5 |    1.7 mo   16 d       0.88
+  + rules B (+15/40, 5 mic)        50K   all        7.8  58%   35%   1.2 x $ 1205   91% |          +16.8 |    2.3 mo   16 d       0.84
+  + rules B (+15/40, 5 mic)        150K  2022+      8.0  45%   30%   1.6 x $ 2248   81% |          +38.9 |    1.9 mo   13 d       1.10
+  + rules B (+15/40, 5 mic)        150K  all        8.0  49%   33%   1.6 x $ 2182   86% |          +30.0 |    2.2 mo   14 d       1.01
+  + rules C (ADR-scaled)           50K   2022+      8.7  43%   24%   1.6 x $ 1252   86% |          +31.5 |    1.2 mo   10 d       1.44
+  + rules C (ADR-scaled)           50K   all        8.7  46%   32%   1.9 x $ 1297   81% |          +29.5 |    1.6 mo   12 d       1.25
+  + rules C (ADR-scaled)           150K  2022+      9.3  37%   24%   1.7 x $ 2144   83% |          +45.1 |    1.4 mo    9 d       1.64
+  + rules C (ADR-scaled)           150K  all        9.3  40%   30%   2.0 x $ 2190   77% |          +44.2 |    1.6 mo   11 d       1.44
+  + rules C funded only            50K   2022+      8.7  47%   24%   1.4 x $ 1255   90% |          +25.4 |    1.4 mo    9 d       1.32
+  + rules C funded only            50K   all        8.7  52%   31%   1.6 x $ 1315   84% |          +21.8 |    2.0 mo   11 d       1.14
+  + rules C funded only            150K  2022+      9.3  45%   30%   1.7 x $ 2169   84% |          +43.6 |    1.8 mo   10 d       1.49
+  + rules C funded only            150K  all        9.3  42%   29%   2.0 x $ 2272   74% |          +36.9 |    2.2 mo   11 d       1.40
+  + rules D (ADR-scaled)           50K   2022+      8.2  49%   20%   1.2 x $ 1380   91% |          +26.1 |    1.6 mo   11 d       1.16
+  + rules D (ADR-scaled)           50K   all        8.2  56%   37%   1.6 x $ 1240   88% |          +24.6 |    2.2 mo   13 d       1.06
+  + rules D (ADR-scaled)           150K  2022+      8.6  43%   24%   1.7 x $ 2419   77% |          +48.4 |    1.6 mo   13 d       1.33
+  + rules D (ADR-scaled)           150K  all        8.6  51%   36%   2.0 x $ 2198   78% |          +44.0 |    2.4 mo   12 d       1.27
+  + rules D funded only            50K   2022+      8.2  47%   22%   1.3 x $ 1365   91% |          +24.2 |    1.4 mo   12 d       1.12
+  + rules D funded only            50K   all        8.2  52%   30%   1.3 x $ 1279   92% |          +17.5 |    2.0 mo   13 d       1.01
+  + rules D funded only            150K  2022+      8.6  45%   25%   1.6 x $ 2378   77% |          +41.6 |    1.7 mo   13 d       1.18
+  + rules D funded only            150K  all        8.6  42%   29%   2.0 x $ 2291   75% |          +34.5 |    2.2 mo   14 d       1.21
+EXIT 0
