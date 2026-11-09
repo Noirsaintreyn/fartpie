@@ -29,3 +29,4 @@ discord_bot/worker/node_modules/
 /lse_ohlcv_cache/
 /xs/ext/
 /data/
+data/yahoo/
