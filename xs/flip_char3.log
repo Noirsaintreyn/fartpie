@@ -1,0 +1,17 @@
+
+=== V2 as is ===
+  per eval: pass 60% | paid at least once 46% (77% of funded) | payouts per eval 1.07 = 0.93 evals per payout | avg payout $1,294 | paid per eval $1,389 ($1,301 after the fee)
+  timing (trading days): start -> pass median 30 | start -> 1st payout median 56 (25-75%: 34-76) | between payouts median 16 (25-75%: 12-21) | payouts per funded month 0.94
+  one account at a time (Feb 2018 - Jan 2026): 49 evals, 45 payouts = 1.09 evals per payout, longest run without a payout 5 evals, months with a payout 39%, payouts a month 0.47
+  5-account fleet from Feb 2018: payouts a month 2.22 | months with 0 payouts 52%, with >= 2 41% | net $2,999/mo, worst month $-792, losing months 33%
+    by year: 2018: 1.1/mo $0.8k 2019: 1.3/mo $2.1k 2020: 1.8/mo $2.1k 2021: 2.3/mo $2.3k 2022: 0.8/mo $1.0k 2023: 3.8/mo $5.8k 2024: 3.8/mo $5.8k 2025: 2.8/mo $4.1k
+  fleet, 24 monthly starts 2022-23: avg $4,401 / median $1,536 a month, >= $2.5k 46%, losing 36%, dry 5.0 mo
+
+=== V2 + skip slow flips (Rule A + V15a) ===
+  per eval: pass 66% | paid at least once 49% (75% of funded) | payouts per eval 1.09 = 0.92 evals per payout | avg payout $1,273 | paid per eval $1,386 ($1,298 after the fee)
+  timing (trading days): start -> pass median 32 | start -> 1st payout median 59 (25-75%: 38-84) | between payouts median 16 (25-75%: 12-20) | payouts per funded month 0.84
+  one account at a time (Feb 2018 - Jan 2026): 37 evals, 48 payouts = 0.77 evals per payout, longest run without a payout 3 evals, months with a payout 42%, payouts a month 0.50
+  5-account fleet from Feb 2018: payouts a month 2.07 | months with 0 payouts 46%, with >= 2 44% | net $2,734/mo, worst month $-704, losing months 23%
+    by year: 2018: 1.1/mo $0.9k 2019: 1.3/mo $2.0k 2020: 1.4/mo $1.6k 2021: 1.0/mo $0.7k 2022: 1.7/mo $2.1k 2023: 3.4/mo $4.8k 2024: 3.8/mo $6.0k 2025: 2.9/mo $3.8k
+  fleet, 24 monthly starts 2022-23: avg $4,169 / median $2,302 a month, >= $2.5k 46%, losing 27%, dry 4.0 mo
+EXIT 0
