@@ -1,0 +1,48 @@
+points per trade [trades/mo, VWAP reached] | 2018-21 / 2022-25
+
+=== 15m vector ===
+  flip toward VWAP, stop = line                   +0.04 [ 1.1/mo, VWAP hit 64%] /  -7.66 [ 1.2/mo, VWAP hit 60%] | to VWAP 0.08 ADR, to stop 0.17 ADR
+      positive gamma                              -1.25 [ 0.3/mo, VWAP hit 64%] /  -6.95 [ 0.4/mo, VWAP hit 50%]
+      negative gamma                              +0.54 [ 0.8/mo, VWAP hit 64%] /  -8.02 [ 0.8/mo, VWAP hit 65%]
+      VWAP < 0.05 ADR away                        -0.87 [ 0.5/mo, VWAP hit 83%] /  -4.69 [ 0.5/mo, VWAP hit 83%]
+      VWAP 0.05-0.15 ADR                          -2.59 [ 0.4/mo, VWAP hit 45%] /  -3.78 [ 0.6/mo, VWAP hit 55%]
+      VWAP > 0.15 ADR                            +10.57 [ 0.2/mo, VWAP hit 57%] / -30.30 [ 0.2/mo, VWAP hit 12%]
+  flip toward VWAP, line trails                   +0.04 [ 1.1/mo, VWAP hit 64%] /  -7.66 [ 1.2/mo, VWAP hit 60%] | to VWAP 0.08 ADR, to stop 0.17 ADR
+  every flip, stop = line, target VWAP if ahead   -7.51 [10.2/mo, VWAP hit 33%] / -17.98 [10.9/mo, VWAP hit 30%] | to VWAP -0.24 ADR, to stop 0.32 ADR
+  plain flips (0.15 ADR stop, flip exit)          +3.68 [10.2/mo, VWAP hit  0%] /  +9.96 [10.9/mo, VWAP hit  0%] | to VWAP -0.24 ADR, to stop 0.15 ADR
+
+=== 30m vector ===
+  flip toward VWAP, stop = line                   +7.41 [ 0.5/mo, VWAP hit 76%] /  -2.12 [ 0.5/mo, VWAP hit 67%] | to VWAP 0.10 ADR, to stop 0.19 ADR
+      positive gamma                              -0.37 [ 0.2/mo, VWAP hit 67%] /  +4.52 [ 0.2/mo, VWAP hit 80%]
+      negative gamma                             +11.78 [ 0.3/mo, VWAP hit 81%] /  -6.86 [ 0.3/mo, VWAP hit 57%]
+      VWAP < 0.05 ADR away                        +1.02 [ 0.2/mo, VWAP hit 88%] /  +1.51 [ 0.2/mo, VWAP hit 90%]
+      VWAP 0.05-0.15 ADR                          +5.80 [ 0.3/mo, VWAP hit 75%] /  -3.33 [ 0.2/mo, VWAP hit 60%]
+      VWAP > 0.15 ADR                            +21.51 [ 0.1/mo, VWAP hit 60%] /  -8.16 [ 0.1/mo, VWAP hit 25%]
+  flip toward VWAP, line trails                   +7.41 [ 0.5/mo, VWAP hit 76%] /  -2.12 [ 0.5/mo, VWAP hit 67%] | to VWAP 0.10 ADR, to stop 0.19 ADR
+  every flip, stop = line, target VWAP if ahead   -8.17 [ 5.5/mo, VWAP hit 28%] / -18.65 [ 6.4/mo, VWAP hit 27%] | to VWAP -0.30 ADR, to stop 0.44 ADR
+  plain flips (0.15 ADR stop, flip exit)          +4.76 [ 5.5/mo, VWAP hit  0%] /  +5.68 [ 6.4/mo, VWAP hit  0%] | to VWAP -0.30 ADR, to stop 0.15 ADR
+
+=== 45m vector ===
+  flip toward VWAP, stop = line                   +1.47 [ 0.6/mo, VWAP hit 85%] /  -5.03 [ 0.4/mo, VWAP hit 65%] | to VWAP 0.09 ADR, to stop 0.35 ADR
+      positive gamma                              -2.21 [ 0.1/mo, VWAP hit 60%] /  +4.32 [ 0.2/mo, VWAP hit 78%]
+      negative gamma                              +2.35 [ 0.5/mo, VWAP hit 90%] / -12.67 [ 0.2/mo, VWAP hit 55%]
+      VWAP < 0.05 ADR away                        +1.64 [ 0.2/mo, VWAP hit 100%] /  -4.22 [ 0.2/mo, VWAP hit 88%]
+      VWAP 0.05-0.15 ADR                          -0.62 [ 0.2/mo, VWAP hit 90%] /  +3.87 [ 0.2/mo, VWAP hit 67%]
+      VWAP > 0.15 ADR                             +3.66 [ 0.2/mo, VWAP hit 67%] / -33.90 [ 0.1/mo, VWAP hit  0%]
+  flip toward VWAP, line trails                   +1.47 [ 0.6/mo, VWAP hit 85%] /  -5.03 [ 0.4/mo, VWAP hit 65%] | to VWAP 0.09 ADR, to stop 0.35 ADR
+  every flip, stop = line, target VWAP if ahead  -12.89 [ 4.1/mo, VWAP hit 31%] /  -7.89 [ 4.0/mo, VWAP hit 26%] | to VWAP -0.31 ADR, to stop 0.54 ADR
+  plain flips (0.15 ADR stop, flip exit)          -0.25 [ 4.1/mo, VWAP hit  0%] / +12.12 [ 4.0/mo, VWAP hit  0%] | to VWAP -0.31 ADR, to stop 0.15 ADR
+
+=== 60m vector ===
+  flip toward VWAP, stop = line                   +3.28 [ 0.4/mo, VWAP hit 78%] / +12.62 [ 0.2/mo, VWAP hit 82%] | to VWAP 0.14 ADR, to stop 0.26 ADR
+      positive gamma                              -8.01 [ 0.0/mo, VWAP hit 50%] /  -0.95 [ 0.1/mo, VWAP hit 67%]
+      negative gamma                              +4.69 [ 0.3/mo, VWAP hit 81%] / +17.71 [ 0.2/mo, VWAP hit 88%]
+      VWAP < 0.05 ADR away                        +2.11 [ 0.1/mo, VWAP hit 100%] /  +4.94 [ 0.1/mo, VWAP hit 100%]
+      VWAP 0.05-0.15 ADR                          +5.42 [ 0.1/mo, VWAP hit 83%] / +21.73 [ 0.1/mo, VWAP hit 100%]
+      VWAP > 0.15 ADR                             +2.31 [ 0.1/mo, VWAP hit 50%] /  +9.28 [ 0.1/mo, VWAP hit 50%]
+  flip toward VWAP, line trails                   +3.28 [ 0.4/mo, VWAP hit 78%] / +12.62 [ 0.2/mo, VWAP hit 82%] | to VWAP 0.14 ADR, to stop 0.26 ADR
+  every flip, stop = line, target VWAP if ahead   -7.35 [ 3.0/mo, VWAP hit 31%] / -15.15 [ 2.9/mo, VWAP hit 29%] | to VWAP -0.32 ADR, to stop 0.63 ADR
+  plain flips (0.15 ADR stop, flip exit)          +0.72 [ 3.0/mo, VWAP hit  0%] /  -1.77 [ 2.9/mo, VWAP hit  0%] | to VWAP -0.32 ADR, to stop 0.15 ADR
+
+PASS: none
+EXIT 0
