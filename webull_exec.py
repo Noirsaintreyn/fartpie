@@ -30,7 +30,7 @@ SETUP (once)
 RUN (from ~/fartpie, next to the screener's --loop)
   python3 webull_exec.py --check      auth, accounts, raw balance and positions (check the equity / buying-power fields)
   python3 webull_exec.py --status     executor slots vs Webull positions
-  python3 webull_exec.py --loop       mirror the screener all day (dry run unless LIVE_ORDERS=1)
+  python3 webull_exec.py --loop       mirror the screener until 16:10 ET, then exit (dry run unless LIVE_ORDERS=1)
   python3 webull_exec.py --selftest   offline test with a fake broker and a fake signal log
 """
 import argparse, hashlib, json, math, os, sys, time
@@ -196,6 +196,7 @@ if __name__ == '__main__':
         E = Executor(b)
         while True:
             t = now_et()
+            if t.hour * 60 + t.minute >= 970: log('16:10 ET - executor done for the day'); st_save(E.S); break
             if t.weekday() < 5 and 565 <= t.hour * 60 + t.minute < 965:
                 try: E.cycle()
                 except Exception as e: log(f'! cycle: {str(e)[:200]}'); notify(f'⚠️ Webull executor error: {str(e)[:300]}')

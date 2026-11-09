@@ -6,7 +6,7 @@
   <!-- Webull executor: weekdays 09:20 ET start, mirrors the screener's BUY / SELL into Webull until 16:05 (dry run unless LIVE_ORDERS=1 in .env) -->
   <key>ProgramArguments</key>
   <array><string>/bin/zsh</string><string>-lc</string>
-    <string>cd ~/fartpie &amp;&amp; timeout 25800 python3 webull_exec.py --loop >> live/webull_exec.out 2>&amp;1</string></array>
+    <string>cd ~/fartpie &amp;&amp; python3 webull_exec.py --loop >> live/webull_exec.out 2>&amp;1</string></array>
   <key>StartCalendarInterval</key>
   <array>
     <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>20</integer></dict>
