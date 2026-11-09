@@ -1,0 +1,17 @@
+
+=== 30m vector (gated, 3 micros) ===
+  trades on 17% of days; correlation of its daily $ with: RA +0.25, M1 +0.27, V15a +0.53, RULES -0.01 | with the S6 book +0.39
+  days it trades that V15a also trades: 65%; same direction on those days: 93%
+  all: S6 avg day $123 -> $134; worst 5% of S6 days $-1,351 -> $-1,401; its own worst 5% days $-637; days S6 >= $150 35% -> 35%; biggest day share check: max day / month total
+  2022+: S6 avg day $166 -> $180; worst 5% of S6 days $-1,467 -> $-1,543; its own worst 5% days $-739; days S6 >= $150 40% -> 40%; biggest day share check: max day / month total
+  50K: eval pass 53% -> 49%, days to pass 19 -> 20 | funded blown 75% -> 77%, payouts/mo 1.35 -> 1.26, avg payout $1,535 -> $1,591
+  150K: eval pass 51% -> 49%, days to pass 21 -> 21 | funded blown 73% -> 71%, payouts/mo 1.47 -> 1.42, avg payout $2,447 -> $2,480
+
+=== 45m vector (gated, 3 micros) ===
+  trades on 13% of days; correlation of its daily $ with: RA +0.15, M1 +0.21, V15a +0.25, RULES +0.11 | with the S6 book +0.26
+  days it trades that V15a also trades: 59%; same direction on those days: 92%
+  all: S6 avg day $123 -> $131; worst 5% of S6 days $-1,351 -> $-1,384; its own worst 5% days $-525; days S6 >= $150 35% -> 36%; biggest day share check: max day / month total
+  2022+: S6 avg day $166 -> $179; worst 5% of S6 days $-1,467 -> $-1,499; its own worst 5% days $-551; days S6 >= $150 40% -> 40%; biggest day share check: max day / month total
+  50K: eval pass 53% -> 55%, days to pass 19 -> 20 | funded blown 75% -> 72%, payouts/mo 1.35 -> 1.35, avg payout $1,535 -> $1,574
+  150K: eval pass 51% -> 52%, days to pass 21 -> 22 | funded blown 73% -> 69%, payouts/mo 1.47 -> 1.46, avg payout $2,447 -> $2,452
+EXIT 0
