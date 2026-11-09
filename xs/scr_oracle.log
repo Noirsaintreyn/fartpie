@@ -1,0 +1,53 @@
+=== 1) who gets the slot when flips arrive together | CAGR / max DD 2019-22 | 2023-26 | all ===
+  ORACLE: best actual return first      67.2% / DD  -9.7% | 131.0% / DD  -5.4% | all  95.2% | $1k -> $176,121
+  live: highest options ratio           36.7% / DD -11.2% |  35.0% / DD -13.1% | all  35.9% | $1k -> $10,677
+  random                                29.3% / DD -18.1% |  26.7% / DD -16.8% | all  28.0% | $1k -> $6,732
+  ANTI-ORACLE: worst return first        2.6% / DD -38.6% | -30.3% / DD -80.2% | all -14.8% | $1k -> $289
+
+=== 2a) bars with >= 3 flips (1,828 bars): how often each feature's top pick is the bar's best trade | chance 25% ===
+  lowest  har     picks the best  24% /  21% of the time | its pick averages +0.34% / +0.35%
+  highest harrel  picks the best  24% /  21% of the time | its pick averages +0.31% / +0.34%
+  highest rvol    picks the best  24% /  21% of the time | its pick averages +0.27% / +0.36%
+  lowest  vrp     picks the best  24% /  21% of the time | its pick averages +0.37% / +0.33%
+  lowest  rvol    picks the best  23% /  21% of the time | its pick averages +0.29% / +0.29%
+  highest yz      picks the best  23% /  21% of the time | its pick averages +0.26% / +0.30%
+  lowest  rev1    picks the best  23% /  21% of the time | its pick averages +0.32% / +0.34%
+  lowest  gap     picks the best  24% /  20% of the time | its pick averages +0.34% / +0.33%
+  highest ratio   picks the best  23% /  21% of the time | its pick averages +0.25% / +0.36%
+  highest hi52    picks the best  23% /  21% of the time | its pick averages +0.30% / +0.34%
+  highest rs20    picks the best  23% /  21% of the time | its pick averages +0.28% / +0.35%
+  lowest  ivol    picks the best  23% /  21% of the time | its pick averages +0.33% / +0.36%
+  lowest  yz      picks the best  23% /  21% of the time | its pick averages +0.33% / +0.34%
+  highest har     picks the best  23% /  20% of the time | its pick averages +0.24% / +0.29%
+  lowest  rs20    picks the best  23% /  21% of the time | its pick averages +0.24% / +0.30%
+  lowest  pcr     picks the best  23% /  21% of the time | its pick averages +0.34% / +0.33%
+  lowest  hi52    picks the best  23% /  20% of the time | its pick averages +0.21% / +0.28%
+  lowest  ratio   picks the best  23% /  20% of the time | its pick averages +0.29% / +0.30%
+  lowest  harrel  picks the best  23% /  21% of the time | its pick averages +0.29% / +0.33%
+  highest rev1    picks the best  23% /  21% of the time | its pick averages +0.29% / +0.29%
+  highest gap     picks the best  22% /  21% of the time | its pick averages +0.22% / +0.32%
+  highest ivol    picks the best  22% /  21% of the time | its pick averages +0.22% / +0.34%
+  highest vrp     picks the best  22% /  21% of the time | its pick averages +0.33% / +0.30%
+  highest pcr     picks the best  22% /  21% of the time | its pick averages +0.33% / +0.34%
+
+=== 2b) TOP-DECILE winners (return >= 3.98%) vs the rest: average feature before entry, 2019-22 | 2023-26 ===
+  ratio       3.432 vs    3.442 |    3.141 vs    2.984
+  yz          0.027 vs    0.023 |    0.027 vs    0.023
+  har         0.030 vs    0.027 |    0.030 vs    0.026
+  harrel      1.231 vs    1.151 |    1.077 vs    1.041
+  rvol        1.004 vs    0.990 |    0.964 vs    0.973
+  gap         0.006 vs    0.005 |    0.009 vs    0.004
+  hi52        0.765 vs    0.801 |    0.787 vs    0.820
+  rs20       -0.025 vs   -0.018 |   -0.019 vs   -0.021
+  rev1       -0.007 vs   -0.005 |   -0.006 vs   -0.005
+  ivol        0.019 vs    0.017 |    0.023 vs    0.020
+  tm        630.202 vs  631.429 |  628.314 vs  629.658
+  spy20      -0.006 vs    0.000 |    0.008 vs    0.011
+  n           3.603 vs    3.334 |    5.150 vs    4.854
+  pcr         0.766 vs    0.754 |    0.829 vs    0.843
+  vrp        -0.017 vs   -0.009 |   -0.008 vs   -0.014
+  ratio_rk    2.290 vs    2.168 |    2.946 vs    2.941
+
+=== 2c) all features together (boosting fit on 2019-22): within-bar AUC for spotting the best trade | 2019-22 (fit) / 2023-26 (unseen) ===
+  model 0.773 / 0.499 | options ratio alone 0.482 / 0.515 | chance 0.500
+  slot sim ordered by the model:  45.7% / DD -10.5% |  17.6% / DD -23.4% | all  31.4%
