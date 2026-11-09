@@ -12,8 +12,8 @@ tradervana.com Apex 22 Oct 2026, Take Profit Trader 13 Oct 2026, MyFundedFutures
   TAKE PROFIT (PRO) test EOD trailing, 50% consistency, 3 days min; PRO INTRADAY trailing until the floor reaches the start balance; withdraw anything above buffer +2000/+3000/+4500
                     from day one; no consistency; 80%; fee $170/$330/$360 a month while testing + $130 activation; up to 5 funded
   MFFU RAPID        eval EOD, 50% consistency, 2 days min; funded INTRADAY trailing, lock +100; payouts daily above buffer +2100/+3100/+4600; no consistency; 90%; one-time fee
-Intraday trailing is modeled on closed-trade equity (open-trade peaks unknown) - optimistic for the intraday firms. Payout policy for every firm: request when the payout
-would be >= $1,350 to you (Rey's bar), else the largest allowed (capped plans). Our own daily stop (-$1,000 x size) runs in every firm.
+Intraday trailing is modeled on closed-trade equity (open-trade peaks unknown) - optimistic for the intraday firms. Payout policy for every firm (Rey, Nov 9 run 2): withdraw AS SOON AS ALLOWED - the minimum request ($500) or more, the first
+day each firm's rules allow (run 1 waited for >= $1,350 to you; log kept as xs/firms_1350.log). Our own daily stop (-$1,000 x size) runs in every firm.
 Fees (list, before promo codes): Lucid Flex $88 50K / $244 150K (Rey's cost with his code), Lucid Pro $172 50K, Lucid Daily ~$108 50K (Phidias, Aug - Oct 2026),
 Apex EOD $490 / $790 / $1,490 + $129 activation on a 50K pass (proptradingvibes 10 Aug 2026; Apex runs deep promos), TPT $170/$330/$360 a month + $130, MFFU Rapid $125.
 Accounts started every 5th trading day Jan 2022 - Jun 2025 (the rules algo never saw 2022+). Report: eval pass rate and days, funded payouts per month, size, blown,
@@ -59,7 +59,7 @@ def eval_run(R, z, s, end):
         eod(st, mll, R['lock'])
     return 'open', end
 def fund_run(R, z, s, end):
-    i = z['i']; mll = R['mll'][i]; st = dict(bal=0.0, floor=-mll, peak=0.0); pays = []; since = 0.0; qd = 0; bestc = 0.0; lastk = -99; want = 1350 / R['split']
+    i = z['i']; mll = R['mll'][i]; st = dict(bal=0.0, floor=-mll, peak=0.0); pays = []; since = 0.0; qd = 0; bestc = 0.0; lastk = -99; want = 500.0
     for k in range(s, end):
         pnl, br = run_day(LF, k, st, mll, R['lock'], z['scale'], R['f_intra'])
         if br: return 'lost', k, pays
