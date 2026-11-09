@@ -1,0 +1,20 @@
+FOMC calendar check: 14:00 bar volume / 20-day median - FOMC days median 4.6x (72% >= 3x, n96); other Wednesdays median 1.1x (10% >= 3x)
+rows 129,574; PA/NEWS filled 100% / 100%
+
+(1) RTH range / ADR: FOMC days 1.28 (n91), big 8:30 release days (8:30 volume >= 3x) 1.21 (n399), other days 0.99
+    2014-21: after the vol inputs, leftover range on FOMC days +0.18 ADR, big 8:30 days +0.05 ADR, 8:30 move size corr with leftover +0.03 (vol inputs explain R2 0.25)
+    2022-26: after the vol inputs, leftover range on FOMC days +0.31 ADR, big 8:30 days +0.06 ADR, 8:30 move size corr with leftover +0.01 (vol inputs explain R2 0.19)
+
+(2) rules algo C + TPO, test 2022 - Jan 2026
+  base (C + TPO)  AUC 0.520 | 13.9 trades/mo, hit 72% (other side 64%), $+22.0 a trade = +2.16 pts, wins 10.0/mo | by year 22:$+21 23:$+39 24:$+13 25:$+14 26:$+44
+
+(3) base rules algo trades 2022+ by day type:
+    FOMC day                 n  22 hit 77% $ +52.2 a trade
+    FOMC day, after 13:45    n   5 hit 40% $-128.3 a trade
+    big 8:30 release day     n 136 hit 73% $ +28.5 a trade
+    other days               n 504 hit 71% $ +19.6 a trade
+
+  + PA            AUC 0.509 | 14.4 trades/mo, hit 70% (other side 63%), $+15.7 a trade = +1.60 pts, wins 10.1/mo | by year 22:$+28 23:$+12 24:$+9 25:$+6 26:$+65
+  + NEWS          AUC 0.517 | 13.0 trades/mo, hit 72% (other side 62%), $+22.1 a trade = +2.29 pts, wins  9.3/mo | by year 22:$+29 23:$+22 24:$+8 25:$+25 26:$+47
+  + PA + NEWS     AUC 0.510 | 12.0 trades/mo, hit 71% (other side 64%), $+19.1 a trade = +2.12 pts, wins  8.5/mo | by year 22:$+31 23:$+7 24:$+31 25:$-4 26:$+80
+EXIT 0
