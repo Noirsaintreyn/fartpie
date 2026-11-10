@@ -1,0 +1,28 @@
+building samples...
+17965 decision samples, label sign balance 0.521
+features built
+  M1 ROCKET: top 10% score                       18-21:  -0.99/d (t -1.55, std  20.2, m/s -0.049) | 22-26:  +0.92/d (t +0.79, std  37.5, m/s 0.025)
+  M1 ROCKET: every decision                      18-21:  -3.30/d (t -1.83, std  57.3, m/s -0.058) | 22-26:  +0.14/d (t +0.04, std 106.9, m/s 0.001)
+  M1 ROCKET: top 25%                             18-21:  -1.18/d (t -1.23, std  30.5, m/s -0.039) | 22-26:  +1.17/d (t +0.72, std  53.0, m/s 0.022)
+  M1+CTX ROCKET fed known context: top 10% score 18-21:  -1.03/d (t -1.59, std  20.7, m/s -0.050) | 22-26:  +1.11/d (t +0.97, std  37.1, m/s 0.030)
+  M1+CTX ROCKET fed known context: every decision 18-21:  -3.05/d (t -1.69, std  57.3, m/s -0.053) | 22-26:  -0.25/d (t -0.08, std 106.2, m/s -0.002)
+  M1+CTX ROCKET fed known context: top 25%       18-21:  -1.61/d (t -1.55, std  32.9, m/s -0.049) | 22-26:  +1.46/d (t +0.90, std  52.3, m/s 0.028)
+  M2 signature: top 10% score                    18-21:  -0.38/d (t -0.46, std  26.1, m/s -0.014) | 22-26:  -1.34/d (t -1.07, std  40.4, m/s -0.033)
+  M2 signature: every decision                   18-21:  -2.73/d (t -1.39, std  62.6, m/s -0.044) | 22-26:  -0.34/d (t -0.10, std 106.4, m/s -0.003)
+  M2 signature: top 25%                          18-21:  -0.96/d (t -0.85, std  36.0, m/s -0.027) | 22-26:  -1.58/d (t -0.91, std  56.3, m/s -0.028)
+  M2+CTX signature fed context: top 10% score    18-21:  +0.67/d (t +0.93, std  22.9, m/s 0.029) | 22-26:  -0.40/d (t -0.35, std  37.7, m/s -0.011)
+  M2+CTX signature fed context: every decision   18-21:  -0.58/d (t -0.30, std  60.7, m/s -0.010) | 22-26:  +1.14/d (t +0.35, std 105.3, m/s 0.011)
+  M2+CTX signature fed context: top 25%          18-21:  -0.28/d (t -0.29, std  30.8, m/s -0.009) | 22-26:  +0.67/d (t +0.37, std  58.9, m/s 0.011)
+  CTX only (ridge): top 10% score                18-21:  +0.13/d (t +0.18, std  22.7, m/s 0.006) | 22-26:  -0.03/d (t -0.03, std  33.0, m/s -0.001)
+  CTX only (ridge): every decision               18-21:  -0.49/d (t -0.27, std  56.5, m/s -0.009) | 22-26:  +0.59/d (t +0.17, std 116.4, m/s 0.005)
+  CTX only (ridge): top 25%                      18-21:  -0.33/d (t -0.33, std  32.6, m/s -0.010) | 22-26:  +2.51/d (t +1.24, std  65.9, m/s 0.038)
+
+M3: 3069 noise trades, features 16
+  noise engine, all trades (base)                18-21:  +4.79/d (t +3.07, std  49.5, m/s 0.097) | 22-26:  +8.52/d (t +2.99, std  92.3, m/s 0.092)   <== PASS
+  M3 keep P(win) >= training median              18-21:  +2.96/d (t +2.96, std  31.8, m/s 0.093) | 22-26:  +4.48/d (t +2.92, std  49.8, m/s 0.090)   <== PASS
+  M3 keep top third                              18-21:  +1.49/d (t +2.01, std  23.6, m/s 0.063) | 22-26:  +3.38/d (t +2.76, std  39.8, m/s 0.085)   <== PASS
+  M3 DROP the bottom third (keep top two thirds) 18-21:  +2.96/d (t +2.96, std  31.8, m/s 0.093) | 22-26:  +4.48/d (t +2.92, std  49.8, m/s 0.090)   <== PASS
+
+M4 HMM filtered state (0 calm .. 2 volatile) at 09:30: noise engine pts/day by state, 2018-21 | 2022-26
+  18-21: state 0:  +0.48 (n242) | state 1:  +4.44 (n411) | state 2:  +7.52 (n363)
+  22-26: state 0:  +6.24 (n281) | state 1: +10.23 (n449) | state 2:  +7.77 (n306)
