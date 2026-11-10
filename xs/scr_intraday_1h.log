@@ -1,0 +1,16 @@
+candidates 6,049 (Dec 2024 - Sep 2026) | hourly bars for 52 of 53 names | entry price found 100% | hourly features (flips at / after 10:30) 42%
+=== pick order | return / max DD  Dec 2024 - Sep 2025 (CHOOSE) | Oct 2025 - Sep 2026 (JUDGE) | whole ===
+  ratio         +9.4% / DD -13.1% | +37.7% / DD  -5.9% | whole +50.6%
+  spd          +12.5% / DD -12.9% | +21.7% / DD  -5.9% | whole +36.9%
+  rv            +6.9% / DD -13.2% | +24.5% / DD  -6.7% | whole +33.1%
+  ratio+spd    +12.4% / DD -13.0% | +36.0% / DD  -5.9% | whole +52.9%
+  ratio+rv      +6.2% / DD -13.1% | +23.5% / DD -10.7% | whole +31.1%
+  -> chosen on the first half: spd
+  flips at / after 10:30 by spd third: 1 low: +0.19% (win 28%, n 835) | 2 mid: +0.32% (win 31%, n 833) | 3 high: +0.34% (win 38%, n 884)
+  flips at / after 10:30 by rv third: 1 low: +0.26% (win 30%, n 798) | 2 mid: +0.15% (win 30%, n 884) | 3 high: +0.44% (win 38%, n 870)
+=== replacing weak holdings (live ratio order) | first half (CHOOSE) | second half (JUDGE) | whole ===
+  no replacement (live)   +9.4% / DD -13.1% | +37.7% / DD  -5.9% | whole +50.6% | swaps 0
+  R1                      +5.3% / DD -16.3% |  +0.4% / DD -16.2% | whole  +5.7% | swaps 221
+  R2                     +11.5% / DD -13.6% |  +4.3% / DD -13.5% | whole +16.3% | swaps 159
+  R3                      +6.8% / DD -12.8% | +33.3% / DD  -6.6% | whole +42.4% | swaps 65
+  -> chosen on the first half: R2 (beats live there)
