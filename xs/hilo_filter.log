@@ -1,0 +1,13 @@
+=== TEST A: pts per trade by class (against | neutral | with), 18-21 // 22-26; t(against vs rest), t(with vs rest) ===
+  RA                    +nan (n0) |   +9.3 (n69) |  +11.3 (n31) //   +nan (n0) |  +10.9 (n76) |  +17.9 (n44) | t against  +nan/ +nan | t with +0.21/+0.70
+  V15a                 -24.5 (n1) |  +11.3 (n105) |   +7.3 (n89) //  +73.0 (n1) |  +16.6 (n124) |  +47.2 (n72) | t against  +nan/ +nan | t with -0.38/+1.62
+  NZ                    +3.5 (n2) |  +10.1 (n393) |   +1.5 (n565) //  -40.5 (n1) |   +4.7 (n438) |  +10.1 (n688) | t against  +nan/ +nan | t with -2.41/+1.05
+  POOLED RTH engines   -24.5 (n1) |  +10.5 (n174) |   +8.3 (n120) //  +73.0 (n1) |  +14.4 (n200) |  +36.1 (n116) | t against  +nan/ +nan | t with -0.28/+1.75
+
+=== TEST B: system multipliers (RTH engines x live size x engine weight, noise engine not included) ===
+  base                        18-21: +2.30/d std  19.5 m/s 0.118 worstM  -102 | 22-26: +5.45/d std  34.8 m/s 0.157 worstM  -194
+  skip against                18-21: +2.31/d std  19.5 m/s 0.118 worstM  -102 | 22-26: +5.43/d std  34.8 m/s 0.156 worstM  -194
+  half against                18-21: +2.30/d std  19.5 m/s 0.118 worstM  -102 | 22-26: +5.44/d std  34.8 m/s 0.156 worstM  -194
+  with x1.25                  18-21: +2.39/d std  20.2 m/s 0.118 worstM  -101 | 22-26: +5.82/d std  36.7 m/s 0.159 worstM  -199
+  half against + with x1.25   18-21: +2.40/d std  20.2 m/s 0.119 worstM  -101 | 22-26: +5.81/d std  36.7 m/s 0.158 worstM  -199
+  skip against + with x1.25   18-21: +2.40/d std  20.2 m/s 0.119 worstM  -101 | 22-26: +5.80/d std  36.7 m/s 0.158 worstM  -199
