@@ -1,0 +1,9 @@
+2497 trades; features 23
+\nfit 2018-21 -> test 2022-26: kept 13/23 features; positive: bandw, HAR_w, HAR_m, YZr, VIX, sp | negative: hmm, dexp, vflow, dpoc, vaw, pocpos, bal
+  base      pts/d  +8.39 std   43.0 m/s 0.195 worst month   -194
+  composite pts/d  +8.87 std   46.2 m/s 0.192 worst month   -209
+  m/s uplift -0.003; shuffled-sign m/s 95th pct +0.001 (median -0.005)
+\nfit 2022-26 -> test 2018-21: kept 15/23 features; positive: bandw, vwdd, HAR_m, YZr, VIX, IV, gexp, vanna, charm, gp, dpoc, dtpoc | negative: hmm, vaw, sp
+  base      pts/d  +4.11 std   26.2 m/s 0.157 worst month   -102
+  composite pts/d  +4.07 std   26.3 m/s 0.155 worst month   -112
+  m/s uplift -0.001; shuffled-sign m/s 95th pct +0.003 (median -0.004)
