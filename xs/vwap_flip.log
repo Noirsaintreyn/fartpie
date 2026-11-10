@@ -1,0 +1,62 @@
+candidates 17,391 | VWAP features: no (needs lse_clean - Mac) | rotation / macro: yes
+  SECRS20  coverage 100%
+  SECRS5   coverage 100%
+  STKRS20  coverage 100%
+  VIX      coverage 100%
+  VIXCH5   coverage 100%
+  TNX20    coverage 100%
+  DXY20    coverage 100%
+
+=== TEST 1 per trade: bucket | 2019-22 (CHOOSE): n, ret, win, chop-out, runner | 2023-26 (JUDGE) ===
+  SECRS20  (cuts -0.016, 0.00779)
+    1 low          n 1,981 +0.40% win 33% chop 51% run 11% | n 4,087 +0.29% win 32% chop 51% run 10%
+    2 mid          n 1,981 +0.36% win 32% chop 53% run 10% | n 3,456 +0.27% win 34% chop 52% run  9%
+    3 high         n 1,985 +0.30% win 33% chop 49% run  9% | n 3,901 +0.32% win 32% chop 51% run 10%
+  SECRS5  (cuts -0.0086, 0.00314)
+    1 low          n 1,981 +0.47% win 35% chop 51% run 11% | n 3,987 +0.36% win 32% chop 52% run 10%
+    2 mid          n 1,983 +0.33% win 33% chop 51% run 10% | n 3,479 +0.30% win 33% chop 51% run 10%
+    3 high         n 1,983 +0.25% win 31% chop 52% run  9% | n 3,978 +0.22% win 33% chop 51% run 10%
+  STKRS20  (cuts -0.0374, 0.0125)
+    1 low          n 1,981 +0.23% win 33% chop 52% run 10% | n 4,303 +0.21% win 32% chop 53% run 10%
+    2 mid          n 1,983 +0.49% win 33% chop 51% run 10% | n 3,148 +0.28% win 32% chop 52% run  9%
+    3 high         n 1,983 +0.33% win 33% chop 50% run  9% | n 3,993 +0.40% win 34% chop 49% run 10%
+  VIX  (cuts 19.6, 25.8)
+    1 low          n 1,975 +0.30% win 30% chop 51% run  8% | n 8,618 +0.19% win 31% chop 52% run  9%
+    2 mid          n 1,987 +0.42% win 33% chop 51% run 10% | n 2,209 +0.55% win 36% chop 51% run 12%
+    3 high         n 1,985 +0.34% win 35% chop 53% run 12% | n   617 +0.90% win 42% chop 48% run 15%
+  VIXCH5  (cuts -0.89, 1.52)
+    1 low          n 1,980 +0.35% win 31% chop 50% run 10% | n 3,205 +0.46% win 35% chop 48% run 12%
+    2 mid          n 1,964 +0.53% win 34% chop 50% run 11% | n 5,254 +0.21% win 30% chop 53% run  9%
+    3 high         n 2,003 +0.18% win 33% chop 53% run  9% | n 2,985 +0.26% win 34% chop 52% run 10%
+  TNX20  (cuts -0.06, 0.138)
+    1 low          n 1,978 +0.41% win 36% chop 49% run 11% | n 3,905 +0.36% win 33% chop 51% run 10%
+    2 mid          n 1,961 +0.62% win 34% chop 49% run 11% | n 3,888 +0.10% win 31% chop 52% run 10%
+    3 high         n 2,008 +0.03% win 28% chop 55% run  9% | n 3,651 +0.43% win 33% chop 50% run 10%
+  DXY20  (cuts -0.00348, 0.0121)
+    1 low          n 1,981 +0.43% win 33% chop 52% run 10% | n 5,435 +0.35% win 33% chop 52% run 11%
+    2 mid          n 1,980 +0.32% win 31% chop 53% run 10% | n 2,814 +0.38% win 34% chop 48% run 11%
+    3 high         n 1,986 +0.30% win 34% chop 49% run 11% | n 3,195 +0.11% win 31% chop 54% run  8%
+
+  SUMMARY (best / worst bucket chosen on 2019-22): ret spread 2019-22 -> same buckets 2023-26 | chop-out gap (worst - best) 2019-22 -> 2023-26
+    VIX      best 2 mid          worst 1 low          +0.12% -> +0.37% | chop +0% -> +0%  HOLDS
+    DXY20    best 1 low          worst 3 high         +0.14% -> +0.24% | chop -3% -> +2%  HOLDS
+    SECRS5   best 1 low          worst 3 high         +0.23% -> +0.14% | chop +2% -> -2%  
+    STKRS20  best 2 mid          worst 1 low          +0.26% -> +0.07% | chop +1% -> +1%  HOLDS
+    SECRS20  best 1 low          worst 3 high         +0.10% -> -0.03% | chop -2% -> +0%  
+    VIXCH5   best 2 mid          worst 3 high         +0.35% -> -0.05% | chop +3% -> -1%  
+    TNX20    best 2 mid          worst 3 high         +0.59% -> -0.32% | chop +7% -> -2%  
+
+=== TEST 2 the 6-slot book: CAGR / max DD 2019-22 (CHOOSE) | 2023-26 (JUDGE) ===
+  live (ratio order, no skip)           36.7% / DD -11.2% |  35.0% / DD -13.1%
+  SECRS5: order ratio + SECRS5          35.1% / DD -12.3% |  34.4% / DD -13.3%
+  SECRS20: order ratio + SECRS20        34.8% / DD -15.8% |  28.3% / DD -12.7%
+  STKRS20: order ratio + STKRS20        33.7% / DD -13.0% |  20.5% / DD -17.1%
+  TNX20: skip 3 high                    31.8% / DD -10.4% |  18.8% / DD -19.5%
+  STKRS20: skip 1 low                   28.9% / DD -12.2% |  26.3% / DD -17.6%
+  DXY20: skip 3 high                    24.6% / DD -12.1% |  21.8% / DD -25.5%
+  VIX: skip 1 low                       23.7% / DD -11.2% |  24.1% / DD -10.3%
+  SECRS20: skip 3 high                  23.2% / DD -18.4% |  35.7% / DD -16.4%
+  VIXCH5: skip 3 high                   22.0% / DD -19.7% |  12.2% / DD -19.2%
+  SECRS5: skip 3 high                   21.5% / DD -21.3% |  29.5% / DD -15.2%
+  -> 10 rules; 0 beat live in BOTH periods | chosen on 2019-22: SECRS5: order ratio + SECRS5 -> 2023-26 34.4% vs live 35.0% (does not beat live)
+  by year, live vs chosen: 2019 +42% vs +46% | 2020 +77% vs +79% | 2021 +33% vs +28% | 2022 +4% vs -0% | 2023 +60% vs +70% | 2024 +29% vs +35% | 2025 +19% vs +10% | 2026 +25% vs +19%
