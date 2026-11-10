@@ -1,0 +1,54 @@
+option names 23, with gamma 18 | YZ top-third cut 0.0199
+
+=== stock: big moves after the flip (share >= +5% / >= +10%, mean, n) | 2019-21 ; 2022-26 ===
+  all flips                      8% /   3%, mean +0.59% (n 1951) ;   6% /   2%, mean +0.26% (n 5389)
+  NEG                           12% /   7%, mean +1.28% (n 244) ;   5% /   2%, mean +0.11% (n 1460)
+  NEG + HIVOL                   13% /   4%, mean +1.01% (n 136) ;   6% /   3%, mean +0.05% (n 758)
+  NEG + FLOW                    15% /   7%, mean +1.42% (n 75) ;   4% /   2%, mean +0.18% (n 543)
+  NEG + HIVOL + FLOW (setup)    19% /   7%, mean +1.65% (n 42) ;   5% /   3%, mean +0.19% (n 277)
+  POS + HIVOL + FLOW            12% /   3%, mean +0.81% (n 171) ;   9% /   3%, mean +0.55% (n 460)
+  HIVOL + FLOW (any gamma)      11% /   3%, mean +0.69% (n 273) ;   8% /   3%, mean +0.37% (n 1045)
+
+=== long calls, real fills (buy ask / sell bid): mean / median return on premium, win | flip vs RANDOM days with the same flags | 2019-21 ; 2022-26 ===
+  -- WEEKLY call, exit at the screener exit --
+    all flips                    flip   +4.7% / med -11.6% win 20% (n 1572) vs random   +0.1% (n 2764) ; flip   +1.5% / med  -9.1% win 19% (n 4405) vs random   -0.7% (n 3591)
+    NEG                          flip  +21.1% / med -13.0% win 26% (n  202) vs random   +7.0% (n  299) ; flip   -4.9% / med  -9.4% win 17% (n 1206) vs random   +3.1% (n  660)
+    NEG + HIVOL                  flip   -0.8% / med -16.6% win 21% (n  112) vs random   -2.6% (n  144) ; flip   -4.2% / med  -7.7% win 17% (n  639) vs random   +7.8% (n  310)
+    NEG + FLOW                   flip   +6.4% / med -16.0% win 26% (n   69) vs random   +0.2% (n  124) ; flip   -5.7% / med -11.0% win 16% (n  457) vs random   +2.1% (n  267)
+    NEG + HIVOL + FLOW (setup)   flip   -5.8% / med -23.9% win 17% (n   36) vs random   -7.1% (n   64) ; flip   -2.0% / med -11.4% win 15% (n  237) vs random   +3.5% (n  123)
+    POS + HIVOL + FLOW           flip   +8.6% / med  -8.4% win 29% (n  146) vs random   -2.6% (n  354) ; flip   +5.7% / med  -5.7% win 21% (n  384) vs random   -0.2% (n  426)
+    HIVOL + FLOW (any gamma)     flip   -2.1% / med -14.4% win 23% (n  232) vs random   -3.2% (n  503) ; flip   +2.6% / med  -8.3% win 19% (n  877) vs random   -0.1% (n  778)
+  -- WEEKLY call, exit at expiry --
+    all flips                    flip  +16.1% / med -73.5% win 40% (n 1572) vs random  +21.9% (n 2764) ; flip  +18.0% / med -100.0% win 36% (n 4405) vs random  +15.5% (n 3591)
+    NEG                          flip  +32.5% / med -77.1% win 42% (n  202) vs random  +27.8% (n  299) ; flip  +19.5% / med -86.9% win 38% (n 1206) vs random  +20.7% (n  660)
+    NEG + HIVOL                  flip   +7.3% / med -82.0% win 40% (n  112) vs random   +1.1% (n  144) ; flip  +20.9% / med -85.5% win 39% (n  639) vs random  +17.2% (n  310)
+    NEG + FLOW                   flip  +35.6% / med -75.2% win 43% (n   69) vs random  +17.3% (n  124) ; flip  +21.3% / med -95.4% win 38% (n  457) vs random  +18.6% (n  267)
+    NEG + HIVOL + FLOW (setup)   flip  +16.5% / med -78.5% win 42% (n   36) vs random   -5.3% (n   64) ; flip  +28.5% / med -100.0% win 38% (n  237) vs random  +14.7% (n  123)
+    POS + HIVOL + FLOW           flip  +16.4% / med -32.2% win 47% (n  146) vs random  +22.7% (n  354) ; flip  +23.0% / med -100.0% win 36% (n  384) vs random  +15.4% (n  426)
+    HIVOL + FLOW (any gamma)     flip   +8.1% / med -48.2% win 43% (n  232) vs random  +14.3% (n  503) ; flip  +24.5% / med -100.0% win 37% (n  877) vs random  +12.8% (n  778)
+  -- MONTHLY call, exit at the screener exit --
+    all flips                    flip   +1.6% / med  -9.4% win 21% (n 1940) vs random   -4.4% (n 3252) ; flip   -3.1% / med  -8.2% win 19% (n 5368) vs random   -4.4% (n 4887)
+    NEG                          flip  +16.6% / med -11.6% win 25% (n  242) vs random   +1.8% (n  332) ; flip   -5.6% / med  -8.7% win 17% (n 1455) vs random   -3.1% (n  922)
+    NEG + HIVOL                  flip   +1.2% / med -14.2% win 21% (n  136) vs random   -5.0% (n  161) ; flip   -7.2% / med  -7.9% win 18% (n  754) vs random   -1.8% (n  415)
+    NEG + FLOW                   flip  +21.5% / med -10.4% win 27% (n   74) vs random   -3.9% (n  134) ; flip   -5.4% / med  -9.0% win 18% (n  542) vs random   -4.5% (n  361)
+    NEG + HIVOL + FLOW (setup)   flip  +13.4% / med  -9.9% win 21% (n   42) vs random   -9.8% (n   69) ; flip   -6.9% / med  -8.5% win 17% (n  276) vs random   -4.5% (n  161)
+    POS + HIVOL + FLOW           flip   +7.7% / med  -9.3% win 28% (n  171) vs random   -7.0% (n  397) ; flip   +0.2% / med  -6.1% win 21% (n  459) vs random   -7.2% (n  576)
+    HIVOL + FLOW (any gamma)     flip   +2.9% / med -10.9% win 23% (n  273) vs random   -7.6% (n  552) ; flip   -1.8% / med  -7.5% win 19% (n 1042) vs random   -4.8% (n 1039)
+
+=== the setup, WEEKLY call held to expiry, TOUCH: robustness ===
+  NEG + HIVOL + FLOW (setup)   19-21:  4.0 trades in active months | month avg +0.66 units, months positive 67%, worst -6.82, best +4.81 | mean without the top 5 trades -34.1% (top 5: +423%, +387%, +367%, +238%, +238%)
+  NEG + HIVOL + FLOW (setup)   22-26:  5.9 trades in active months | month avg +1.69 units, months positive 42%, worst -10.46, best +48.84 | mean without the top 5 trades +11.0% (top 5: +1421%, +729%, +715%, +694%, +651%)
+    by year (2022-26): 2022: +28% (n 137) | 2023: +116% (n 19) | 2024: +36% (n 23) | 2025: -2% (n 58)
+    by name (2022-26, top / bottom 3 by total): CAT +46.2u, AMD +16.7u, HD +14.7u, ADBE -6.2u, CRM -6.3u, DIS -10.9u
+  all flips                    19-21: 43.7 trades in active months | month avg +7.01 units, months positive 64%, worst -54.69, best +121.50 | mean without the top 5 trades +13.4% (top 5: +1207%, +797%, +778%, +769%, +747%)
+  all flips                    22-26: 77.3 trades in active months | month avg +13.94 units, months positive 56%, worst -65.53, best +115.12 | mean without the top 5 trades +16.7% (top 5: +1421%, +1257%, +1074%, +1029%, +1011%)
+    by year (2022-26): 2022: +4% (n 822) | 2023: +27% (n 805) | 2024: +37% (n 1061) | 2025: +11% (n 1223) | 2026: +3% (n 494)
+    by name (2022-26, top / bottom 3 by total): AAPL +118.1u, CAT +104.8u, NVDA +88.6u, MCD -13.9u, UPS -18.3u, CRM -23.7u
+
+=== POS + HIVOL + FLOW, calls closed at the screener exit, TOUCH: robustness ===
+  WEEKLY 19-21: n 146, mean +8.6%, without top 5 -4.8% | month avg +0.40u, months positive 52%, worst -3.65u
+  WEEKLY 22-26: n 384, mean +5.7%, without top 5 -1.5% | month avg +0.45u, months positive 40%, worst -4.60u
+    by year: 2022: -2% (n 76) | 2023: +10% (n 72) | 2024: -7% (n 109) | 2025: +19% (n 127) | by name top / bottom: NVDA +15.7u, AAPL +5.9u, ORCL +5.1u, TGT -3.7u, DIS -4.3u
+  MONTHLY 19-21: n 171, mean +7.7%, without top 5 -7.3% | month avg +0.41u, months positive 38%, worst -2.57u
+  MONTHLY 22-26: n 459, mean +0.2%, without top 5 -5.7% | month avg +0.02u, months positive 33%, worst -4.81u
+    by year: 2022: -10% (n 91) | 2023: +13% (n 84) | 2024: -6% (n 127) | 2025: +5% (n 157) | by name top / bottom: CAT +8.1u, TSLA +7.6u, ORCL +2.2u, DIS -4.2u, AMD -5.5u
