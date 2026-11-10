@@ -1,0 +1,47 @@
+daily measures built: 2985 | corr among measures:
+      hv5   hr5   hd5    hD   hdD
+hv5  1.00  0.67  0.69  0.03  0.02
+hr5  0.67  1.00  0.61  0.02  0.01
+hd5  0.69  0.61  1.00  0.02  0.03
+hD   0.03  0.02  0.02  1.00 -0.08
+hdD  0.02  0.01  0.03 -0.08  1.00
+
+=== PART A: day-level. Efficiency |c-o|/(h-l) and noise-engine pts/day by third (low | mid | high), early // late; spread high-low, t ===
+  efficiency    hv5    +0.478 |  +0.468 |  +0.465 //  +0.489 |  +0.512 |  +0.484 | spread -0.013 (t -0.87) // -0.005 (t -0.28)
+  efficiency    hr5    +0.463 |  +0.476 |  +0.472 //  +0.518 |  +0.505 |  +0.463 | spread +0.009 (t +0.61) // -0.055 (t -2.73)
+  efficiency    hd5    +0.475 |  +0.462 |  +0.474 //  +0.488 |  +0.531 |  +0.472 | spread -0.001 (t -0.08) // -0.016 (t -0.84)
+  efficiency    hD     +0.460 |  +0.466 |  +0.485 //  +0.485 |  +0.503 |  +0.491 | spread +0.025 (t +1.67) // +0.006 (t +0.29)
+  efficiency    hdD    +0.480 |  +0.465 |  +0.466 //  +0.502 |  +0.503 |  +0.474 | spread -0.014 (t -0.94) // -0.028 (t -1.33)
+  noise pts/day hv5    +4.655 |  +2.305 |  +0.876 // +14.925 |  +8.086 |  +4.227 | spread -3.778 (t -1.82) // -10.698 (t -1.36)
+  noise pts/day hr5    +3.186 |  +3.903 |  +0.749 // +14.521 |  +6.393 |  +5.576 | spread -2.437 (t -1.16) // -8.946 (t -1.14)
+  noise pts/day hd5    +2.595 |  +4.119 |  +1.125 // +14.018 |  +9.191 |  +4.092 | spread -1.471 (t -0.68) // -9.925 (t -1.28)
+  noise pts/day hD     +3.681 |  +2.667 |  +1.490 //  +6.005 | +13.079 |  +6.549 | spread -2.191 (t -0.95) // +0.544 (t +0.10)
+  noise pts/day hdD    +2.855 |  +4.058 |  +0.925 // +12.544 |  +9.676 |  +3.435 | spread -1.930 (t -0.92) // -9.109 (t -1.18)
+
+=== PART B: trade points by third of each measure (thirds cut on 2014-21); PASS flags per engine vs the chance rate ===
+  RA       225 trades, 10 tests, real PASS 0 vs chance 0.0 (95th pct 0)
+  M1       833 trades, 10 tests, real PASS 0 vs chance 0.0 (95th pct 0)
+  R1       295 trades, 10 tests, real PASS 0 vs chance 0.0 (95th pct 0)
+  RULES   1119 trades, 10 tests, real PASS 0 vs chance 0.0 (95th pct 0)
+  V15a     613 trades, 10 tests, real PASS 0 vs chance 0.0 (95th pct 0)
+  noise   2959 trades, 14 tests, real PASS 0 vs chance 0.0 (95th pct 0)
+
+  M1: pts per trade by third of hv5 / hd5 / vr (low | mid | high), early // late
+     hv5   +10.1 |   +6.7 |   +8.7 //   +7.0 |   +8.5 |  +10.5
+     hd5    +8.8 |  +10.8 |   +5.8 //   +9.6 |  +13.6 |   +4.5
+     vr     -2.1 |   +9.3 |  +14.8 //  +10.3 |   +2.6 |   +0.6
+
+  RULES: pts per trade by third of hv5 / hd5 / vr (low | mid | high), early // late
+     hv5    +1.8 |   +1.7 |   +2.0 //   +3.4 |   +3.2 |   +3.0
+     hd5    +1.9 |   +1.2 |   +2.3 //   +2.7 |   +6.1 |   +1.4
+     vr     +4.2 |   +4.0 |   +1.0 //   +4.1 |   +4.7 |   +1.4
+
+  V15a: pts per trade by third of hv5 / hd5 / vr (low | mid | high), early // late
+     hv5    +5.7 |   +6.9 |   +4.1 //  +22.5 |  +36.8 |  +25.2
+     hd5    +5.2 |   +6.7 |   +4.8 //  +15.2 |  +35.4 |  +32.1
+     vr     -2.3 |   +6.1 |   +3.5 //   +8.4 |  +32.9 |  +33.3
+
+  noise: pts per trade by third of hv5 / hd5 / vr (low | mid | high), early // late
+     hv5    +4.6 |   +2.7 |   +0.9 //  +14.4 |   +6.9 |   +4.3
+     hd5    +2.8 |   +4.6 |   +0.9 //  +13.6 |   +9.1 |   +2.0
+     vr     +0.9 |   +1.5 |   +2.8 //  +14.4 |   +2.7 |   +6.6
