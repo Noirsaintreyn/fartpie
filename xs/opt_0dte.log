@@ -1,0 +1,26 @@
+flips in the 23 option names with 15m entry prices: 8,271 | flip days with a 0DTE expiry available: 19%
+  the stock itself, flip entry -> that day's close: 2019-22 avg +0.07% (up 54%) | 2023-26 avg +0.04% (up 52%)
+
+=== per trade, 1 contract, return on premium | 2019-22 | 2023-26 (n, win, avg, median, avg cost of 1 contract; stock over the same window) ===
+  0DTE ATM                     n   604 win 20% avg -41.7% med -99.4% cost $  121 (stock +0.01%) | n   993 win 15% avg -55.3% med -100.0% cost $  105 (stock +0.09%)
+  0DTE FIT                     n   599 win 13% avg -55.5% med -100.1% cost $   79 (stock +0.01%) | n   989 win 10% avg -65.1% med -100.1% cost $   75 (stock +0.11%)
+  WEEK ATM, out at the close   n 3,078 win 28% avg -20.9% med -32.6% cost $  257 (stock +0.08%) | n 4,633 win 25% avg -27.1% med -38.7% cost $  199 (stock +0.03%)
+  WEEK FIT, out at the close   n 3,034 win 17% avg -40.2% med -62.7% cost $   94 (stock +0.07%) | n 4,602 win 18% avg -38.3% med -58.9% cost $   91 (stock +0.03%)
+  WEEK ATM, held to expiry     n 3,078 win 28% avg -17.1% med -99.5% cost $  257 (stock +0.05%) | n 4,633 win 25% avg -20.5% med -100.0% cost $  199 (stock +0.19%)
+  WEEK FIT, held to expiry     n 3,034 win 14% avg -36.5% med -100.1% cost $   94 (stock +0.05%) | n 4,602 win 15% avg -27.8% med -100.1% cost $   91 (stock +0.19%)
+
+=== $692 from 2019, 6 slots, whole contracts | end value | CAGR | worst DD (closed trades) | trades | skipped (nothing fit the slot) ===
+  0DTE ATM                     $      21 | -36.1% | -97.9% |    32 | 1,565 | 2019: $-554 2020: $-50 2021: $-32 2023: $-27 2024: $-8
+  0DTE FIT                     $       6 | -45.5% | -99.2% |    37 | 1,561 | 2019: $-682 2020: $-4
+  WEEK ATM, out at the close   $      44 | -29.8% | -96.8% |    43 | 7,668 | 2019: $-565 2020: $-50 2021: $-19 2023: $-22 2024: $+13 2025: $-5
+  WEEK FIT, out at the close   $       7 | -45.0% | -99.1% |    47 | 7,667 | 2019: $-685
+  WEEK ATM, held to expiry     $      21 | -36.3% | -98.2% |    30 | 7,681 | 2019: $-587 2020: $-32 2021: $-19 2023: $-26 2024: $-8
+  WEEK FIT, held to expiry     $       6 | -45.5% | -99.1% |    30 | 7,681 | 2019: $-686
+
+=== $692 from 2023, 6 slots, whole contracts | end value | CAGR | worst DD (closed trades) | trades | skipped (nothing fit the slot) ===
+  0DTE ATM                     $      22 | -59.6% | -98.3% |    62 |   931 | 2023: $-651 2024: $-19
+  0DTE FIT                     $       7 | -70.8% | -99.8% |    67 |   917 | 2023: $-685
+  WEEK ATM, out at the close   $      42 | -52.2% | -96.4% |    63 | 4,570 | 2023: $-653 2024: $+8 2025: $-5
+  WEEK FIT, out at the close   $       4 | -74.2% | -99.4% |    46 | 4,582 | 2023: $-688
+  WEEK ATM, held to expiry     $      21 | -60.2% | -99.9% |    65 | 4,524 | 2023: $-652 2024: $-19
+  WEEK FIT, held to expiry     $       6 | -70.9% | -99.9% |    64 | 4,465 | 2023: $-686
