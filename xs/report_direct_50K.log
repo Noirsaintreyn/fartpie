@@ -1,0 +1,29 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+  scale 1.0
+
+=== LUCIDDIRECT 50K, one account, no evaluation: A. S6 + room rule (current) ===
+  as soon as eligible        2018-21 starts: paid>=1 71% (bust before any payout 29%) | payouts/acct 3.50 | 5 payouts 70% | avg payout $2,200 | days to 1st payout 153 | net/acct $350: $7,286, $515: $7,121, ($350, flat 90% split: $6,585) | accounts per payout 0.29
+  as soon as eligible        2022-25 starts: paid>=1 59% (bust before any payout 41%) | payouts/acct 2.28 | 5 payouts 32% | avg payout $2,151 | days to 1st payout 92 | net/acct $350: $4,524, $515: $4,359, ($350, flat 90% split: $4,065) | accounts per payout 0.44
+  wait +$1,000 extra profit  2018-21 starts: paid>=1 70% (bust before any payout 30%) | payouts/acct 3.52 | 5 payouts 70% | avg payout $2,200 | days to 1st payout 154 | net/acct $350: $7,318, $515: $7,153, ($350, flat 90% split: $6,614) | accounts per payout 0.28
+  wait +$1,000 extra profit  2022-25 starts: paid>=1 59% (bust before any payout 41%) | payouts/acct 2.28 | 5 payouts 32% | avg payout $2,151 | days to 1st payout 92 | net/acct $350: $4,524, $515: $4,359, ($350, flat 90% split: $4,065) | accounts per payout 0.44
+  wait +$2,000 extra profit  2018-21 starts: paid>=1 70% (bust before any payout 30%) | payouts/acct 3.52 | 5 payouts 70% | avg payout $2,200 | days to 1st payout 154 | net/acct $350: $7,318, $515: $7,153, ($350, flat 90% split: $6,614) | accounts per payout 0.28
+  wait +$2,000 extra profit  2022-25 starts: paid>=1 59% (bust before any payout 41%) | payouts/acct 2.28 | 5 payouts 32% | avg payout $2,151 | days to 1st payout 92 | net/acct $350: $4,518, $515: $4,353, ($350, flat 90% split: $4,060) | accounts per payout 0.44
+
+=== LUCIDDIRECT 50K, one account, no evaluation: D. S6 + NZ long-only funded u 0.5 ===
+  as soon as eligible        2018-21 starts: paid>=1 48% (bust before any payout 52%) | payouts/acct 2.38 | 5 payouts 47% | avg payout $2,199 | days to 1st payout 127 | net/acct $350: $4,842, $515: $4,677, ($350, flat 90% split: $4,365) | accounts per payout 0.42
+  as soon as eligible        2022-25 starts: paid>=1 58% (bust before any payout 42%) | payouts/acct 2.19 | 5 payouts 30% | avg payout $2,151 | days to 1st payout 93 | net/acct $350: $4,333, $515: $4,168, ($350, flat 90% split: $3,891) | accounts per payout 0.46
+  wait +$1,000 extra profit  2018-21 starts: paid>=1 48% (bust before any payout 52%) | payouts/acct 2.38 | 5 payouts 47% | avg payout $2,199 | days to 1st payout 127 | net/acct $350: $4,842, $515: $4,677, ($350, flat 90% split: $4,365) | accounts per payout 0.42
+  wait +$1,000 extra profit  2022-25 starts: paid>=1 58% (bust before any payout 42%) | payouts/acct 2.19 | 5 payouts 30% | avg payout $2,151 | days to 1st payout 93 | net/acct $350: $4,333, $515: $4,168, ($350, flat 90% split: $3,891) | accounts per payout 0.46
+  wait +$2,000 extra profit  2018-21 starts: paid>=1 48% (bust before any payout 52%) | payouts/acct 2.40 | 5 payouts 48% | avg payout $2,199 | days to 1st payout 128 | net/acct $350: $4,878, $515: $4,713, ($350, flat 90% split: $4,398) | accounts per payout 0.42
+  wait +$2,000 extra profit  2022-25 starts: paid>=1 58% (bust before any payout 42%) | payouts/acct 2.19 | 5 payouts 30% | avg payout $2,151 | days to 1st payout 93 | net/acct $350: $4,333, $515: $4,168, ($350, flat 90% split: $3,891) | accounts per payout 0.46
+
+=== LUCIDDIRECT 50K, one account, no evaluation: B. S6 + NZ funded only u 0.3 ===
+  as soon as eligible        2018-21 starts: paid>=1 49% (bust before any payout 51%) | payouts/acct 2.40 | 5 payouts 48% | avg payout $2,199 | days to 1st payout 128 | net/acct $350: $4,886, $515: $4,721, ($350, flat 90% split: $4,406) | accounts per payout 0.42
+  as soon as eligible        2022-25 starts: paid>=1 52% (bust before any payout 47%) | payouts/acct 1.79 | 5 payouts 20% | avg payout $2,135 | days to 1st payout 91 | net/acct $350: $3,454, $515: $3,289, ($350, flat 90% split: $3,092) | accounts per payout 0.56
+  wait +$1,000 extra profit  2018-21 starts: paid>=1 49% (bust before any payout 51%) | payouts/acct 2.42 | 5 payouts 48% | avg payout $2,199 | days to 1st payout 131 | net/acct $350: $4,923, $515: $4,758, ($350, flat 90% split: $4,439) | accounts per payout 0.41
+  wait +$1,000 extra profit  2022-25 starts: paid>=1 52% (bust before any payout 47%) | payouts/acct 1.79 | 5 payouts 20% | avg payout $2,135 | days to 1st payout 91 | net/acct $350: $3,454, $515: $3,289, ($350, flat 90% split: $3,092) | accounts per payout 0.56
+  wait +$2,000 extra profit  2018-21 starts: paid>=1 49% (bust before any payout 51%) | payouts/acct 2.42 | 5 payouts 48% | avg payout $2,199 | days to 1st payout 131 | net/acct $350: $4,923, $515: $4,758, ($350, flat 90% split: $4,439) | accounts per payout 0.41
+  wait +$2,000 extra profit  2022-25 starts: paid>=1 52% (bust before any payout 47%) | payouts/acct 1.79 | 5 payouts 20% | avg payout $2,135 | days to 1st payout 91 | net/acct $350: $3,454, $515: $3,289, ($350, flat 90% split: $3,092) | accounts per payout 0.56
