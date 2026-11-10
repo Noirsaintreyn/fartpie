@@ -1,0 +1,14 @@
+analog excursions built
+
+noise engine with exits / skips from the analog excursion distribution (target = analog quantile of the day's high / low from the open)
+  baseline (no target)                         18-21: +4.79/d t +3.07 std  49.5 m/s 0.097 | 22-26: +8.52/d t +2.99 std  92.3 m/s 0.092 | trades 2087 avg +6.6
+  TP at analog q50 excursion                   18-21: +4.54/d t +3.08 std  46.8 m/s 0.097 | 22-26: +7.30/d t +2.91 std  81.2 m/s 0.090 | trades 2496 avg +4.9
+  TP at analog q75 excursion                   18-21: +3.06/d t +2.15 std  45.3 m/s 0.068 | 22-26: +7.64/d t +3.31 std  74.9 m/s 0.102 | trades 2907 avg +3.8
+  TP at analog q25 excursion                   18-21: +4.84/d t +3.12 std  49.2 m/s 0.098 | 22-26: +8.24/d t +2.89 std  92.4 m/s 0.089 | trades 2123 avg +6.4
+  CONTROL: TP at 1.0 x fixed sigma_end         18-21: +4.05/d t +2.83 std  45.4 m/s 0.089 | 22-26: +6.91/d t +2.94 std  76.3 m/s 0.091 | trades 2837 avg +4.0
+  CONTROL: TP at 1.5 x fixed sigma_end         18-21: +4.74/d t +3.26 std  46.1 m/s 0.103 | 22-26: +7.87/d t +3.41 std  74.8 m/s 0.105 | trades 2939 avg +4.4   <== beats baseline both
+  CONTROL: TP at 2.0 x fixed sigma_end         18-21: +4.39/d t +3.01 std  46.4 m/s 0.095 | 22-26: +7.61/d t +3.08 std  80.2 m/s 0.095 | trades 2707 avg +4.6
+  skip entry beyond analog q50 (no room)       18-21: +2.91/d t +2.78 std  33.3 m/s 0.087 | 22-26: +1.90/d t +0.99 std  62.4 m/s 0.030 | trades 643 avg +7.7
+  skip entry beyond analog q75 (no room)       18-21: +4.21/d t +2.94 std  45.5 m/s 0.092 | 22-26: +4.97/d t +1.92 std  83.9 m/s 0.059 | trades 1625 avg +5.8
+  TP q75 + skip q75                            18-21: +2.15/d t +2.10 std  32.5 m/s 0.066 | 22-26: +2.06/d t +1.45 std  46.0 m/s 0.045 | trades 2074 avg +2.1
+  TP q50 + skip q75                            18-21: +3.69/d t +2.80 std  41.9 m/s 0.088 | 22-26: +2.83/d t +1.46 std  63.0 m/s 0.045 | trades 2007 avg +3.3
