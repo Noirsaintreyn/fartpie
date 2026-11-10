@@ -221,3 +221,35 @@ def site_qr():
     if not d:
         return jsonify({'success': False, 'error': 'no QR bands for today yet'}), 400
     return jsonify({'success': True, 'ticker': tk, 'qr': d, 'taus': QZ.TAUS})
+
+
+# ---------------------------------------------------------------- daily read (facts only): daily_read.py, built on demand, cached 10 min
+_read = {'t': 0.0, 'data': None, 'busy': False}
+
+
+def _build_read():
+    try:
+        import daily_read as DRD
+        with _lock: snap = _snap['data']
+        d = DRD.build(snap)
+        _read['data'], _read['t'] = d, time.time()
+    except Exception as ex:
+        print('daily read failed:', str(ex)[:200])
+    finally:
+        _read['busy'] = False
+
+
+@app.route('/api/site/read')
+def site_read():
+    e = _need_login()
+    if e: return e
+    stale = time.time() - _read['t'] > 600
+    if stale and not _read['busy']:
+        _read['busy'] = True
+        if _read['data'] is None:
+            _build_read()                                   # first request waits for it
+        else:
+            threading.Thread(target=_build_read, daemon=True).start()
+    if _read['data'] is None:
+        return jsonify({'success': False, 'error': 'The read is still building - refresh in a minute.'})
+    return jsonify({'success': True, 'read': _read['data'], 'built': int(_read['t'])})

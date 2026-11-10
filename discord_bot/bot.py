@@ -445,8 +445,8 @@ async def on_ready():
             asyncio.get_running_loop().create_task(gex_prefetch_loop())
     if getattr(client, '_synced', False): return       # reconnects fire on_ready again: register commands once per process only
     client._synced = True
-    if SCREENER_ONLY:                                  # Oct 21 2026: THOD/TLOD / levels / GEX bot retired - Discord is the screener only (/check, /history)
-        for name in ('levels', 'chart', 'daily'): tree.remove_command(name)
+    if SCREENER_ONLY:                                  # Oct 21 2026: THOD/TLOD / levels / GEX bot retired; Nov 10 2026: no slash commands at all
+        for name in ('levels', 'chart', 'daily', 'brief', 'pro', 'check', 'history', 'hm', 'hh'): tree.remove_command(name)   # Nov 10 2026: Discord = screener signals only; the daily read, charts and history live on the site
     await sync_commands()
     asyncio.get_running_loop().create_task(command_guard())
     import socket

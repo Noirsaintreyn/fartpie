@@ -3,7 +3,7 @@ Features known at the open: gap (signed, in 20d-range units), |gap| rank, HAR (l
 Analogs: Gaussian-kernel kNN (k=40) on robust-z features over PRIOR days only. Outputs conditional distribution of the day (range, up/down excursion, close, close location, gap fill) vs baseline,
 plus a walk-forward track record (what the analog read has and has not predicted) so the story is not oversold."""
 import sys, numpy as np, pandas as pd, yfinance as yf, warnings; warnings.filterwarnings('ignore')
-TARGET = pd.Timestamp(sys.argv[1]) if len(sys.argv) > 1 else None
+TARGET = pd.Timestamp(sys.argv[1]) if (__name__ == '__main__' and len(sys.argv) > 1) else None
 def dl(s):
     d = yf.download(s, start='2000-01-01', progress=False, auto_adjust=False); d.columns = [c[0] if isinstance(c, tuple) else c for c in d.columns]; d.index = pd.to_datetime(d.index).normalize(); return d
 vix = dl('^VIX'); FEATS = ['gap', 'gabs', 'har_d', 'har_w', 'har_m', 'yz', 'vix', 'vix5', 'vixgap', 'ret5', 'ret20', 'dist50', 'slope20', 'adx', 'bbw', 'ttm', 'vol1', 'vol5', 'pos20']

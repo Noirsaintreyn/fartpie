@@ -680,6 +680,24 @@ def xt_history(meta):
         for e in v: seen[(e['tk'], e['date'], e['side'])] = e
     return sorted(seen.values(), key=lambda e: (e['date'], e['time']), reverse=True)[:60]
 
+def recent_reads(n=14):
+    """the saved daily reads (daily_read.py), newest first: one per trading day, kept on the worker disk"""
+    d = f'{LIVE}/reads'
+    if not os.path.isdir(d): return []
+    out = []
+    for f in sorted(os.listdir(d), reverse=True)[:n]:
+        try: out.append(json.load(open(f'{d}/{f}')))
+        except Exception: pass
+    return out
+
+def save_daily_read():
+    """09:40 ET: build the facts-only daily read once the open is in, archive it as live/reads/YYYY-MM-DD.json"""
+    import daily_read as DRD
+    try: snap = json.load(open(f'{LIVE}/site_snapshot.json'))
+    except Exception: snap = None
+    r = DRD.build(snap); os.makedirs(f'{LIVE}/reads', exist_ok=True)
+    json.dump(r, open(f"{LIVE}/reads/{r['date']}.json", 'w')); return r
+
 def latest_note():
     """the most recent morning note: today's once written, else the previous one (Friday's over the weekend)"""
     for fa in (f'{LIVE}/analysis.json', 'live_data/analysis.json'):
@@ -773,6 +791,8 @@ def write_site_snapshot(rows, meta):
                 slots=meta['slots'], cutoff=CUT2, positions=pos, signals=sig, watch=watch, history=hist)
     note = latest_note()                                                            # the 09:00 write-up (frozen) + its session's range chart, live every scan
     snap['analysis'] = note; snap['ranges'] = site_ranges(rows, meta, note)
+    try: snap['reads'] = recent_reads()
+    except Exception as e: print(f'  ! site reads: {str(e)[:80]}')
     try: snap['xt'] = xt_history(meta)
     except Exception as e: print(f'  ! site xt: {str(e)[:80]}')
     tmp = f'{LIVE}/site_snapshot.json.tmp'; json.dump(snap, open(tmp, 'w')); os.replace(tmp, f'{LIVE}/site_snapshot.json')
@@ -1273,7 +1293,7 @@ def extreme_chart(tk, H, z, side, path):
 def day_extremes(rows, st):
     """Oct 27 2026: chart when the day's low / high is likely in, by the time-of-day x vector model (range_path), for held names"""
     now = now_et(); mins = now.hour * 60 + now.minute
-    if not (10 * 60 + 15 <= mins < RTH1) or os.getenv('EXTREME_ALERTS', '1') != '1': return
+    if not (10 * 60 + 15 <= mins < RTH1) or os.getenv('EXTREME_ALERTS', '0') != '1': return
     today = f'{now:%Y-%m-%d}'; done = set()
     for r in rows:
         if r['action'] not in ('HOLD', 'SELL') or r['base'] in done: continue
@@ -1724,11 +1744,14 @@ if __name__ == '__main__':
         if MID_BOOK and t.dayofweek == 0 and mins >= 9 * 60 and st.get('midpost') != today:  # Monday 09:00: mid/small book card
             subprocess.Popen([sys.executable, 'mid_book.py', '--post'], stdout=open(f'{LIVE}/mid_book.log', 'a'), stderr=subprocess.STDOUT)
             st['midpost'] = today; _save(st)
+        if mins >= 9 * 60 + 40 and st.get('read') != today:
+            try: save_daily_read(); st['read'] = today; _save(st); print('  daily read saved')
+            except Exception as ex: print(f'  ! daily read: {str(ex)[:100]}')
         if mins >= 9 * 60 and st.get('morning') != today:                    # 09:00 ET: open positions
             args.update_gamma = INCLUDE_QQQ; rows, meta = scan(args); args.update_gamma = False; show(rows, meta)
-            if post_positions(rows, meta): st['morning'] = today; _save(st)
+            if os.getenv('POSITIONS_POST', '0') != '1' or post_positions(rows, meta): st['morning'] = today; _save(st)   # Nov 10 2026: Discord = signals only, so no 09:00 positions card unless POSITIONS_POST=1
             check_stale(rows, st); post_new_signals(rows, meta, st)             # premarket flips on held names -> exit-at-open alert
-            if os.getenv('DAILY_BRIEF', '1') == '1' and st.get('brief') != today:  # 09:00 ET: the /brief, posted every weekday
+            if st.get('brief') != today:  # 09:00 ET: the /brief, posted every weekday
                 try:
                     import daily_report as DR
                     fs = DR.build(sys.modules[__name__], mark_live(rows, True), meta, f'{LIVE}/report_{today}', True)
@@ -1736,7 +1759,7 @@ if __name__ == '__main__':
                         shutil.copy(f'{LIVE}/report_{today}/analysis.json', f'{LIVE}/analysis.json'); os.makedirs(f'{LIVE}/notes', exist_ok=True)
                         shutil.copy(f'{LIVE}/analysis.json', f'{LIVE}/notes/{today}.json'); write_site_snapshot(rows, meta)
                     except Exception as ex: print(f'  ! site analysis: {str(ex)[:80]}')
-                    if post(f"\U0001f4f0 Morning report · {now_et():%a %b %d}", fs[:10], channel=os.getenv('BRIEF_CHANNEL_ID')): st['brief'] = today; _save(st)
+                    if os.getenv('DAILY_BRIEF', '0') != '1' or post(f"\U0001f4f0 Morning report · {now_et():%a %b %d}", fs[:10], channel=os.getenv('BRIEF_CHANNEL_ID')): st['brief'] = today; _save(st)   # site only unless DAILY_BRIEF=1
                 except Exception as ex: print(f'  ! daily brief: {str(ex)[:80]}')
         elif 9 * 60 + 15 <= mins < RTH0:                                        # ~09:16 pre-open recheck
             rows, meta = scan(args); show(rows, meta); check_stale(rows, st); post_new_signals(rows, meta, st)
