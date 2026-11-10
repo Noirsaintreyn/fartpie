@@ -9,6 +9,7 @@ REPLACEMENT (live ratio order otherwise): when a new flip arrives and all 6 slot
   R1  the weakest holding is losing and the new flip's ratio is higher than that holding's
   R2  a holding whose FIRST 15m bar after entry closed below its entry, and the new flip's ratio is higher (the lowest such holding)
   R3  the weakest holding is down more than 0.5 ATR, whatever the ratios
+  RPOS (added Nov 9 after the rough hourly look, xs/scr_hp_swap.py) the new flip's stock is in POSITIVE gamma and the weakest holding is losing (18 names with GEX, to Dec 2025)
 CHOSEN on 2019-22, JUDGED on 2023-26 (Sep 25)."""
 import glob, os, sys, numpy as np, pandas as pd
 from collections import deque
@@ -50,6 +51,12 @@ for tk, H in BARS.items():
     FE.append(A.assign(tk=tk)[['tk', 'o', 'spd', 'rv15', 'b1', 'atr']])
 FE = pd.concat(FE).reset_index().rename(columns={'index': 'entry', 'dt': 'entry'}); FE = FE.set_index(['tk', 'entry'])
 T0 = T0.join(FE, on=['tk', 'entry']); T0['atrp'] = T0.atr / T0.o
+GXF = glob.glob(os.path.join(os.path.dirname(P('xs/ext/wide_T.parquet')), 'gex', '*.csv')); T0['gx'] = np.nan
+if GXF and not SYN:                                            # per-stock net GEX (18 names); prior close -> next session
+    _g = []
+    for f in GXF:
+        g = pd.read_csv(f, parse_dates=['date']).sort_values('date'); g['tk'] = os.path.basename(f)[:-4]; g['nxt'] = g.date.shift(-1); _g.append(g[['tk', 'nxt', 'net_gex']].dropna(subset=['nxt']))
+    _g = pd.concat(_g).set_index(['tk', 'nxt']).net_gex; T0['gx'] = [_g.get((t, d), np.nan) for t, d in zip(T0.tk, T0.entry.dt.normalize())]
 print(f'candidates {len(T0):,}, with bars {T0.o.notna().mean():.0%}, SPD {T0.spd.notna().mean():.0%}, RV15 {T0.rv15.notna().mean():.0%}', flush=True)
 def price_at(tk, t):
     H = BARS.get(tk)
@@ -74,6 +81,7 @@ def taken(X, N=6, brk=.08, rule=None):
                 if rule == 'R1' and cur < 0 and r.ratio > h['ratio']: cand.append((cur, h))
                 if rule == 'R2' and h['b1'] < 0 and e > h['e'] + pd.Timedelta(minutes=15) and r.ratio > h['ratio']: cand.append((cur, h))
                 if rule == 'R3' and np.isfinite(h['atrp']) and cur < -.5 * h['atrp']: cand.append((cur, h))
+                if rule == 'RPOS' and np.isfinite(r.gx) and r.gx > 0 and cur < 0: cand.append((cur, h))
             if cand:
                 cur, h = min(cand, key=lambda z: z[0]); op.remove(h); pend = [p for p in pend if p[2] is not h]; nrep += 1
                 rr = (1 + cur) * (1 - 2e-4) - 1; out[h['k']] = (h['tk'], h['e'], e, rr); real += np.log1p(rr / N); hist.append((e, real)); win.append((e, real))
@@ -115,7 +123,7 @@ if __name__ == '__main__':
         print(f'  all candidates by {f} third (cuts {c1:.2f} / {c2:.2f}): ' + ' | '.join(f'{k}: {g_.ret.mean():+.2%} (win {np.mean(g_.ret > 0):.0%})' for k, g_ in T0.groupby(b_) if k != 'nan'), flush=True)
     print('\n=== replacing weak holdings with a new, higher-rated flip (live ratio order) | 2019-22 (CHOOSE) | 2023-26 (JUDGE) | all ===', flush=True)
     X0 = order('ratio'); RR = {}
-    for rule in (None, 'R1', 'R2', 'R3'):
+    for rule in (None, 'R1', 'R2', 'R3', 'RPOS'):
         tk_, nrep = taken(X0, rule=rule); s_ = daily(tk_); RR[rule] = s_; print(f'  {str(rule or "no replacement (live)"):<22} {st2(s_)} | replacements {nrep:,}', flush=True)
     br = max(['R1', 'R2', 'R3'], key=lambda k_: cagr_a(RR[k_])); print(f'  -> chosen on 2019-22: {br} ({"beats" if cagr_a(RR[br]) > cagr_a(RR[None]) else "does not beat"} live there)', flush=True)
     if bk != 'ratio':

@@ -1,0 +1,17 @@
+18-name universe: 6,599 signals with GEX (32% in negative gamma)
+
+=== 1) per trade: avg return, win rate (n) | 2019-22 ; 2023-25 ===
+  NEG       +0.37% win 34% (n 933) vs rest +0.48% win 34% ; +0.22% win 32% (n 1146) vs rest +0.42% win 32%
+  NEG+YZ    +0.38% win 38% (n 401) vs rest +0.45% win 34% ; +0.08% win 34% (n 310) vs rest +0.38% win 32%
+  NEG+HAR   +0.25% win 35% (n 669) vs rest +0.50% win 34% ; +0.06% win 33% (n 613) vs rest +0.42% win 32%
+  NEG+IVUP  +0.18% win 33% (n 595) vs rest +0.52% win 34% ; +0.11% win 31% (n 687) vs rest +0.41% win 32%
+  POS       +0.48% win 34% (n 1834) vs rest +0.37% win 34% ; +0.42% win 32% (n 2686) vs rest +0.22% win 32%
+
+=== 2) slots, all 54 names: high-probability flips first, then ratio | CAGR / max DD 2019-22 | 2023-25 ===
+  live (ratio only)     36.7% / DD -11.2% |  34.8% / DD -13.1%
+  NEG                   30.5% / DD -18.6% |  21.8% / DD -16.3%
+  NEG+YZ                32.7% / DD -12.4% |  28.5% / DD -16.2%
+  NEG+HAR               29.8% / DD -17.6% |  20.5% / DD -17.3%
+  NEG+IVUP              34.9% / DD -13.8% |  22.8% / DD -13.0%
+  POS first, then ratio                   32.2% / DD -10.5% |  34.8% / DD -13.1%
+  ratio, POS breaks near-ties (rank-sum)  32.1% / DD -13.9% |  33.9% / DD -13.2%
