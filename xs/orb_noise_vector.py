@@ -1,5 +1,5 @@
 """Nov 10 2026: WHY DO OPENING-RANGE AND NOISE-BAND BREAKOUTS WORK, AND HOW DO THEY RELATE TO THE VECTOR TRADES (RA and V15a, the two vector engines)? DECLARED BEFORE RESULTS.
-Real NQ 5m (09:30-15:55 ET, bar-open stamps). At each vector entry (bar open m, direction d) the state is read from the LAST COMPLETED bar (close of bar m-5), so nothing from the entry bar or later is used.
+Real NQ 5m (09:30-15:55 ET, bar-open stamps; ET parquet - the CSV is Central time, see the fix note in the code). At each vector entry (bar open m, direction d) the state is read from the LAST COMPLETED bar (close of bar m-5), so nothing from the entry bar or later is used.
   ORB state    opening range = 09:30-09:45 (first 3 bars). with = price already beyond the OR in the trade direction | inside | against = beyond the OR on the other side.
                ORB whip = price has already broken the OR in the trade direction and is back inside it.
   Noise band   sigma(t) = mean over the prior 14 sessions of |close(t)/open - 1| at that time of day; UB = max(open, prior close) x (1 + sigma), LB = min(open, prior close) x (1 - sigma). Same three states.
@@ -9,8 +9,10 @@ Rule: a state matters only if the gap between its best and worst bucket has the 
 PART C: standalone baseline - ORB30 close-break (first 5m close beyond the 09:30-10:00 range, 10:00-11:30, stop = opposite side of the range, flat 12:00 / 15:55), and how often it agrees with the vector direction."""
 import sys, os, numpy as np, pandas as pd, pickle, warnings; warnings.filterwarnings('ignore')
 SP = '/tmp/claude-0/-home-claude/6d3c83e1-1a4a-5a0a-8647-c2590d1d30a4/scratchpad'
-_eh = open('xs/nq_edge_hunt.py').read(); exec(_eh[:_eh.index("def days(d):")])
-d = load(); mod = d.index.hour * 60 + d.index.minute; d = d[(mod >= 570) & (mod < 960)].copy(); d['day'] = d.index.normalize(); d['mod'] = d.index.hour * 60 + d.index.minute
+# TIMEZONE FIX (Nov 10 2026): NQ_5Min.csv is in CENTRAL time (volume peaks at 8:30, not 9:30). xs/nq_edge_hunt.load() does not shift it, so the first version of this file read every bar one hour early/late and its states leaked the future. Use the ET parquet the engines use.
+X = pd.read_parquet('/tmp/claude-0/ml/nq5_real.parquet'); X = X[X.rth].copy()
+d = pd.DataFrame({'sym': X.sym.values, 'o': X.open.values, 'h': X.high.values, 'l': X.low.values, 'c': X.close.values, 'v': X.volume.values}, index=pd.DatetimeIndex(X.dt))
+d['day'] = d.index.normalize(); d['mod'] = d.index.hour * 60 + d.index.minute
 d['tp'] = (d.h + d.l + d.c) / 3; d['pv'] = d.tp * d.v; d['cv'] = d.groupby('day').v.cumsum(); d['vw'] = d.groupby('day').pv.cumsum() / d.cv.replace(0, np.nan)
 G = {k: g.set_index('mod') for k, g in d.groupby('day')}; DK = sorted(G); pos = {k: i for i, k in enumerate(DK)}
 O = pd.Series({k: G[k].o.iloc[0] for k in DK}); C = pd.Series({k: G[k].c.iloc[-1] for k in DK}); sym = pd.Series({k: G[k].sym.iloc[0] for k in DK})

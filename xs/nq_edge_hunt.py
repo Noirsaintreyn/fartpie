@@ -18,7 +18,7 @@ ROOT = '/home/claude/fartpie'
 def load():
     d = pd.read_csv('/mnt/user-data/uploads/Downloads/NQ_5Min.csv', sep=';', skiprows=2, header=None, names=['dt', 'sym', 'o', 'h', 'l', 'c', 'v'])
     for k in 'ohlc': d[k] = d[k].astype(str).str.replace('.', '', regex=False).str.replace(',', '.', regex=False).astype(float)
-    d['dt'] = pd.to_datetime(d.dt, format='%m/%d/%Y %I:%M %p'); return d.sort_values('dt').drop_duplicates('dt').set_index('dt')
+    d['dt'] = pd.to_datetime(d.dt, format='%m/%d/%Y %I:%M %p') + pd.Timedelta(hours=1); return d.sort_values('dt').drop_duplicates('dt').set_index('dt')
 def days(d):
     m = d.index.hour * 60 + d.index.minute; D = []; prev = None; rth = d[(m >= 570) & (m < 960)]; ovn = d
     for day, g in rth.groupby(rth.index.normalize()):

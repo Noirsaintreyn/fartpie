@@ -1,0 +1,25 @@
+  RA exit logic vs pipeline table: 225 trades, exact (within 0.6 pt) 25%, mean sim +5.21 vs table +11.90
+  RA trades in the pipeline: good: n 82, +27.4 pts | mid: n 125, +8.8 pts | bad: n 18, -36.8 pts | none: n 0, +nan pts
+  V15a trades in the pipeline: good: n 281, +22.3 pts | mid: n 281, +9.5 pts | bad: n 62, -13.0 pts | none: n 7, -0.2 pts
+
+=== 50K, ONE ACCOUNT (per eval started every 2nd trading day), Lucid caps, room rule, cost 0.5 pt ===
+  A. base (no state)
+    2018-21 starts: pass 95% | paid once 80% | payouts/eval 1.68 (0.60 evals per payout) | avg payout $1,035 | net $1,648/eval | days: start->pass 70, funded->1st payout 22, start->1st payout 103, between 18
+    2022-25 starts: pass 71% | paid once 43% | payouts/eval 0.83 (1.21 evals per payout) | avg payout $1,086 | net $811/eval | days: start->pass 38, funded->1st payout 12, start->1st payout 55, between 11
+    one account at a time 2018-26: 26 evals, 28 payouts, longest run without a payout 5 evals
+  B. skip bad states
+    2018-21 starts: pass 95% | paid once 80% | payouts/eval 1.66 (0.60 evals per payout) | avg payout $989 | net $1,550/eval | days: start->pass 66, funded->1st payout 21, start->1st payout 99, between 18
+    2022-25 starts: pass 75% | paid once 53% | payouts/eval 1.05 (0.95 evals per payout) | avg payout $1,154 | net $1,124/eval | days: start->pass 35, funded->1st payout 12, start->1st payout 53, between 12
+    one account at a time 2018-26: 24 evals, 31 payouts, longest run without a payout 3 evals
+  C. B + delayed entry on band confirmation (RA)
+    2018-21 starts: pass 95% | paid once 77% | payouts/eval 1.82 (0.55 evals per payout) | avg payout $1,118 | net $1,952/eval | days: start->pass 58, funded->1st payout 22, start->1st payout 84, between 17
+    2022-25 starts: pass 79% | paid once 53% | payouts/eval 1.70 (0.59 evals per payout) | avg payout $1,567 | net $2,581/eval | days: start->pass 29, funded->1st payout 11, start->1st payout 42, between 13
+    one account at a time 2018-26: 21 evals, 46 payouts, longest run without a payout 3 evals
+
+=== SIDES: trades taken (sz > 0), count and avg pts by direction ===
+  A. base (no state): RA 143, V15a 350
+  B. skip bad states: RA 125, V15a 288
+  C. B + delayed entry on band confirmation (RA): RA 207, V15a 569
+  RA base trades by side (states known): long 119 / short 143; avg pts long +3.5 short +11.8; bad-state skips: long 14, short 15
+  V15a base trades by side (states known): long 502 / short 416; avg pts long +8.2 short +8.0; bad-state skips: long 66, short 44
+  RA flips inside the band: long 64 / short 75
