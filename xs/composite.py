@@ -4,6 +4,7 @@ FIT on one period only: for each feature the sign of its Spearman correlation wi
 import sys, io, contextlib, pickle, numpy as np, pandas as pd, warnings; warnings.filterwarnings('ignore')
 sys.path.insert(0, '/home/claude/fartpie/xs'); SP = '/tmp/claude-0/-home-claude/6d3c83e1-1a4a-5a0a-8647-c2590d1d30a4/scratchpad'
 a = open('adv_ctx.py').read(); exec(a[:a.index('import lightgbm as lgb')])                       # builds M (day-level context)
+from hmmlearn.hmm import GaussianHMM
 r = open('adv_regime.py').read(); exec(r[r.index('Dd = pd.DataFrame'):r.index('G = pd.read_pickle')]); HM = states(3)
 import nz_core as Z
 from nz_core import A, SIG, SI, OPEN, PC
