@@ -1,0 +1,41 @@
+=== naked long calls on ALL flips | 2019-21 ; 2022-26 ===
+  M30 ATM TP30  win 25%, avg  -3.1%, med  -7.4% (n 1876), months+ 33%, worst mo -14.1u ; win 23%, avg  -4.2%, med  -6.6% (n 5264), months+ 33%, worst mo -21.9u
+  M30 ATM TP50  win 22%, avg  -2.4%, med  -8.2% (n 1876), months+ 39%, worst mo -14.7u ; win 21%, avg  -3.4%, med  -7.3% (n 5264), months+ 37%, worst mo -20.9u
+  M30 ATM VEC   win 21%, avg  +1.9%, med  -8.8% (n 1876), months+ 36%, worst mo -14.7u ; win 19%, avg  -2.9%, med  -8.0% (n 5264), months+ 39%, worst mo -19.6u
+  M30 ITM TP30  win 24%, avg  -3.1%, med  -6.9% (n 1907), months+ 31%, worst mo -10.0u ; win 22%, avg  -4.9%, med  -7.0% (n 5318), months+ 23%, worst mo -20.3u
+  M30 ITM TP50  win 23%, avg  -2.4%, med  -7.2% (n 1907), months+ 33%, worst mo -10.3u ; win 20%, avg  -4.6%, med  -7.3% (n 5318), months+ 30%, worst mo -20.3u
+  M30 ITM VEC   win 22%, avg  -0.4%, med  -7.2% (n 1907), months+ 42%, worst mo -10.9u ; win 19%, avg  -4.5%, med  -7.5% (n 5318), months+ 32%, worst mo -18.6u
+  M60 ATM TP30  win 25%, avg  -1.7%, med  -5.4% (n 1787), months+ 36%, worst mo -12.2u ; win 24%, avg  -1.9%, med  -3.8% (n 4946), months+ 35%, worst mo -10.7u
+  M60 ATM TP50  win 23%, avg  -1.2%, med  -5.7% (n 1787), months+ 44%, worst mo -12.4u ; win 22%, avg  -1.7%, med  -4.3% (n 4946), months+ 39%, worst mo -11.5u
+  M60 ATM VEC   win 22%, avg  +1.3%, med  -5.8% (n 1787), months+ 42%, worst mo -12.4u ; win 21%, avg  -0.9%, med  -4.4% (n 4946), months+ 40%, worst mo -12.9u
+  M60 ITM TP30  win 25%, avg  -1.4%, med  -4.4% (n 1790), months+ 36%, worst mo  -6.6u ; win 21%, avg  -3.3%, med  -4.9% (n 4984), months+ 28%, worst mo -11.0u
+  M60 ITM TP50  win 24%, avg  -0.9%, med  -4.4% (n 1790), months+ 39%, worst mo  -6.8u ; win 21%, avg  -3.0%, med  -4.9% (n 4984), months+ 28%, worst mo -10.9u
+  M60 ITM VEC   win 24%, avg  +0.1%, med  -4.5% (n 1790), months+ 42%, worst mo  -7.1u ; win 20%, avg  -3.0%, med  -4.9% (n 4984), months+ 26%, worst mo -12.0u
+
+=== TOP-DECILE quality flips (out of sample, 2021-26) vs the other flips, same years ===
+  M30 ATM TP30  top: win 27%, avg  -3.9%, med  -8.9% (n  742), months+ 28%, worst mo  -5.0u | rest: win 23%, avg  -4.2%, med  -6.7% (n 5489), months+ 30%, worst mo -22.6u | top by year: 21:-3% 22:-5% 23:+2% 24:-7% 25:-2% 26:-12%
+  M30 ATM TP50  top: win 24%, avg  -2.9%, med -10.0% (n  742), months+ 36%, worst mo  -5.0u | rest: win 21%, avg  -3.5%, med  -7.3% (n 5489), months+ 29%, worst mo -21.5u | top by year: 21:-1% 22:-5% 23:+2% 24:-4% 25:-2% 26:-12%
+  M30 ATM VEC   top: win 22%, avg  +0.3%, med -10.8% (n  742), months+ 26%, worst mo  -4.4u | rest: win 19%, avg  -1.8%, med  -8.0% (n 5489), months+ 35%, worst mo -20.7u | top by year: 21:+14% 22:-11% 23:+11% 24:+1% 25:-2% 26:-16%
+  M30 ITM TP30  top: win 24%, avg  -4.8%, med  -8.4% (n  748), months+ 23%, worst mo  -3.9u | rest: win 22%, avg  -4.8%, med  -7.0% (n 5547), months+ 23%, worst mo -19.3u | top by year: 21:-4% 22:-5% 23:-0% 24:-8% 25:-4% 26:-10%
+  M30 ITM TP50  top: win 23%, avg  -3.9%, med  -8.6% (n  748), months+ 30%, worst mo  -4.0u | rest: win 20%, avg  -4.6%, med  -7.3% (n 5547), months+ 26%, worst mo -19.5u | top by year: 21:-2% 22:-4% 23:+1% 24:-7% 25:-3% 26:-11%
+  M30 ITM VEC   top: win 22%, avg  -2.8%, med  -8.8% (n  748), months+ 25%, worst mo  -3.4u | rest: win 19%, avg  -3.8%, med  -7.5% (n 5547), months+ 29%, worst mo -18.0u | top by year: 21:+6% 22:-8% 23:+4% 24:-5% 25:-4% 26:-12%
+  M60 ATM TP30  top: win 27%, avg  -0.4%, med  -4.4% (n  704), months+ 37%, worst mo  -3.4u | rest: win 24%, avg  -2.1%, med  -3.9% (n 5170), months+ 32%, worst mo  -9.6u | top by year: 21:-1% 22:-2% 23:+4% 24:+2% 25:-2% 26:-11%
+  M60 ATM TP50  top: win 25%, avg  +0.2%, med  -5.3% (n  704), months+ 37%, worst mo  -3.5u | rest: win 22%, avg  -1.9%, med  -4.3% (n 5170), months+ 38%, worst mo -10.0u | top by year: 21:-0% 22:-1% 23:+3% 24:+4% 25:-2% 26:-12%
+  M60 ATM VEC   top: win 24%, avg  +1.9%, med  -5.4% (n  704), months+ 34%, worst mo  -2.7u | rest: win 21%, avg  -0.5%, med  -4.5% (n 5170), months+ 39%, worst mo -11.5u | top by year: 21:+11% 22:-7% 23:+7% 24:+8% 25:-2% 26:-13%
+  M60 ITM TP30  top: win 25%, avg  -2.7%, med  -5.9% (n  699), months+ 28%, worst mo  -2.7u | rest: win 22%, avg  -3.1%, med  -4.7% (n 5212), months+ 25%, worst mo  -9.8u | top by year: 21:-1% 22:-3% 23:+1% 24:-5% 25:-3% 26:-9%
+  M60 ITM TP50  top: win 24%, avg  -2.3%, med  -6.0% (n  699), months+ 31%, worst mo  -2.6u | rest: win 21%, avg  -2.8%, med  -4.8% (n 5212), months+ 30%, worst mo -10.0u | top by year: 21:-1% 22:-3% 23:+1% 24:-5% 25:-2% 26:-9%
+  M60 ITM VEC   top: win 24%, avg  -1.7%, med  -6.0% (n  699), months+ 26%, worst mo  -2.4u | rest: win 21%, avg  -2.4%, med  -4.8% (n 5212), months+ 25%, worst mo  -9.7u | top by year: 21:+4% 22:-5% 23:+2% 24:-3% 25:-3% 26:-10%
+
+=== EXPLORATORY: option-only exits (TP / SL on the option, else out after 10 trading days) | all flips 2019-21 ; 2022-26 | top-decile quality flips 2021-26 ===
+  M30 ATM TP100/SL50 win 42%, avg  +6.3%, med -26.6% (n 1876), months+ 58%, worst mo -34.9u ; win 37%, avg  +0.2%, med -50.7% (n 5264), months+ 47%, worst mo -39.5u | top decile: win 39%, avg  +2.3%, med -50.3% (n  742), months+ 46%, worst mo  -7.3u
+  M30 ATM TP30/SL40  win 50%, avg  +2.4%, med  -1.6% (n 1876), months+ 61%, worst mo -20.1u ; win 47%, avg  -2.3%, med -40.3% (n 5264), months+ 46%, worst mo -28.4u | top decile: win 47%, avg  -1.9%, med -40.3% (n  742), months+ 46%, worst mo  -6.6u
+  M30 ATM TP50/SL50  win 48%, avg  +5.7%, med -13.8% (n 1876), months+ 67%, worst mo -30.1u ; win 44%, avg  -1.0%, med -44.3% (n 5264), months+ 46%, worst mo -35.8u | top decile: win 45%, avg  +1.5%, med -41.1% (n  742), months+ 43%, worst mo  -7.3u
+  M30 ITM TP100/SL50 win 49%, avg  +5.9%, med  -0.9% (n 1907), months+ 58%, worst mo -32.0u ; win 42%, avg  -2.3%, med -18.0% (n 5318), months+ 46%, worst mo -50.8u | top decile: win 43%, avg  -0.2%, med -15.7% (n  748), months+ 48%, worst mo  -5.8u
+  M30 ITM TP30/SL40  win 54%, avg  +2.7%, med +12.9% (n 1907), months+ 61%, worst mo -26.7u ; win 47%, avg  -3.8%, med -11.7% (n 5318), months+ 42%, worst mo -30.8u | top decile: win 47%, avg  -3.2%, med -16.0% (n  748), months+ 41%, worst mo  -5.0u
+  M30 ITM TP50/SL50  win 52%, avg  +5.4%, med  +4.3% (n 1907), months+ 64%, worst mo -32.2u ; win 45%, avg  -2.7%, med -12.9% (n 5318), months+ 46%, worst mo -40.5u | top decile: win 46%, avg  -0.4%, med -10.6% (n  748), months+ 45%, worst mo  -5.3u
+  M60 ATM TP100/SL50 win 46%, avg  +6.8%, med  -6.0% (n 1787), months+ 61%, worst mo -24.8u ; win 41%, avg  +2.5%, med -17.9% (n 4946), months+ 51%, worst mo -39.7u | top decile: win 42%, avg  +4.7%, med -19.8% (n  704), months+ 47%, worst mo  -5.5u
+  M60 ATM TP30/SL40  win 53%, avg  +4.4%, med +15.2% (n 1787), months+ 58%, worst mo -21.1u ; win 49%, avg  -0.5%, med  -3.9% (n 4946), months+ 46%, worst mo -28.4u | top decile: win 51%, avg  +1.9%, med  +2.6% (n  704), months+ 44%, worst mo  -7.2u
+  M60 ATM TP50/SL50  win 50%, avg  +6.2%, med  -0.1% (n 1787), months+ 64%, worst mo -24.1u ; win 45%, avg  +1.0%, med -11.2% (n 4946), months+ 49%, worst mo -31.5u | top decile: win 46%, avg  +4.3%, med -14.1% (n  704), months+ 46%, worst mo  -6.0u
+  M60 ITM TP100/SL50 win 53%, avg  +5.9%, med  +2.8% (n 1790), months+ 67%, worst mo -20.9u ; win 45%, avg  -0.6%, med  -5.9% (n 4984), months+ 49%, worst mo -38.3u | top decile: win 46%, avg  +0.5%, med  -4.0% (n  699), months+ 47%, worst mo  -5.0u
+  M60 ITM TP30/SL40  win 56%, avg  +4.4%, med  +8.7% (n 1790), months+ 67%, worst mo -19.8u ; win 49%, avg  -1.7%, med  -2.4% (n 4984), months+ 47%, worst mo -28.2u | top decile: win 51%, avg  +0.9%, med  +1.9% (n  699), months+ 46%, worst mo  -3.5u
+  M60 ITM TP50/SL50  win 54%, avg  +5.1%, med  +4.2% (n 1790), months+ 61%, worst mo -21.7u ; win 46%, avg  -0.7%, med  -5.1% (n 4984), months+ 49%, worst mo -35.7u | top decile: win 48%, avg  +1.2%, med  -1.4% (n  699), months+ 44%, worst mo  -4.4u
