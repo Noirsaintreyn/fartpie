@@ -1,0 +1,22 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== EVAL PHASE counterfactuals (50K, variant I, starts every 2nd day 2018-2025): which rule costs time / adds failures ===
+  baseline (all rules on)            pass  87% | fail  13% | open  0% | days to pass median  47 mean  58 p90 114 | de-risk days/eval 38.1 | daily-stop days 0.1 | cap-bound days 0.0 | blocked by consistency 3.4d
+  no daily loss stop (-$1000)        pass  88% | fail  12% | open  0% | days to pass median  48 mean  59 p90 114 | de-risk days/eval 38.0 | daily-stop days 0.0 | cap-bound days 0.0 | blocked by consistency 3.5d
+  no policy de-risk (always full size) pass  71% | fail  29% | open  0% | days to pass median  32 mean  36 p90  65 | de-risk days/eval  0.0 | daily-stop days 0.1 | cap-bound days 0.0 | blocked by consistency 7.6d
+  no contract cap (40)               pass  87% | fail  13% | open  0% | days to pass median  47 mean  58 p90 114 | de-risk days/eval 38.1 | daily-stop days 0.1 | cap-bound days 0.0 | blocked by consistency 3.4d
+  no consistency rule                pass  88% | fail  12% | open  0% | days to pass median  42 mean  53 p90 110 | de-risk days/eval 37.2 | daily-stop days 0.0 | cap-bound days 0.0 | blocked by consistency 0.0d
+  ALL off (pure strategy)            pass  70% | fail  30% | open  0% | days to pass median  24 mean  28 p90  54 | de-risk days/eval  0.0 | daily-stop days 0.0 | cap-bound days 0.0 | blocked by consistency 0.0d
+
+PASSED evals: 807 | days to pass: median 47 | days with a trade 100% of days | days at/over target but blocked by consistency 3.4 avg (33% of evals) | worst single day during eval median $-564
+FAILED evals: 117 (13%) | survived median 30 days | killed by one day >= -$1,000: 18%, >= -$1,500: 18% | peak balance before the fail median $973 | balance at fail median $-650 | failed within 10 days 14%, 20 days 32%
+  fail rate by start year: {2018: '23%', 2019: '0%', 2020: '0%', 2021: '0%', 2022: '1%', 2023: '39%', 2024: '18%', 2025: '31%'}
+
+DAILY P&L at 1.0 sizing: mean $114 | median $9 | no-trade days 0% | days >= +$150 32% | days <= -$300 14% | std $644 -> a $3,000 target at $114/day is 26 days if smooth; actual median 47
+
+=== FUNDED PHASE: time from pass to first payout ===
+  funded accounts 807 | paid 79% | lost before first payout 21% | open 0%
+  trading days pass->first payout: median 14 mean 19 p90 34 | days to FIVE +$150 days: median 14 | extra days after the 5th win day waiting for balance/payout floor: median 0 (26% of accounts delayed)
+  fraction of funded days that are a +$150 qualifying day (5 needed): 32% -> expected 16 days if independent
