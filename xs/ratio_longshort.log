@@ -1,0 +1,13 @@
+=== 1) bull flips by options-ratio fifth (cuts 1.79, 2.25, 2.83, 3.98) | avg, |move|, win, chop-outs (same-day loss) | 2019-22 ; 2023-26 ===
+  fifth 1 (lowest)  +0.58%, |2.60%|, win 35%, chop 30% (n 1190) ; +0.24%, |2.01%|, win 32%, chop 29% (n 2713)
+  fifth 2           +0.16%, |2.20%|, win 32%, chop 29% (n 1189) ; +0.35%, |2.35%|, win 32%, chop 29% (n 2254)
+  fifth 3           +0.25%, |2.15%|, win 30%, chop 30% (n 1189) ; +0.14%, |2.53%|, win 33%, chop 29% (n 1848)
+  fifth 4           +0.47%, |2.30%|, win 33%, chop 27% (n 1189) ; +0.24%, |2.38%|, win 33%, chop 29% (n 2447)
+  fifth 5 (highest) +0.30%, |2.46%|, win 34%, chop 30% (n 1190) ; +0.47%, |2.59%|, win 34%, chop 29% (n 2238)
+
+=== 2) ROUGH long / short on 1h vector flips, 52 names, 2024-12-16 - 2026-11-09 | avg, win, |move|, chop-outs (<= 2 bars at a loss), trades ===
+  high-ratio half  LONG  all: avg +0.49%, win 28%, |5.49%|, chop 5% (n 877) | SPY weak only: avg +1.56%, win 29%, |7.18%|, chop 5% (n 238)
+  high-ratio half  SHORT all: avg -0.64%, win 27%, |4.60%|, chop 5% (n 881) | SPY weak only: avg -0.98%, win 30%, |4.54%|, chop 4% (n 182)
+  low-ratio half   LONG  all: avg +0.32%, win 26%, |4.38%|, chop 5% (n 831) | SPY weak only: avg +0.68%, win 27%, |5.09%|, chop 8% (n 236)
+  low-ratio half   SHORT all: avg -0.67%, win 25%, |3.63%|, chop 5% (n 831) | SPY weak only: avg -0.88%, win 25%, |3.82%|, chop 6% (n 193)
+  (SPY below its 50-day average on 24% of entry days in this window)
