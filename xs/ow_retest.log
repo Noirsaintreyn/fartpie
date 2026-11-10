@@ -1,0 +1,11 @@
+overnight days 3120, wide share 35%
+
+=== per-trade points (V2 live table), WIDE vs not; 2014-21 | 2022-26 ===
+  RA    WIDE   +8.4 (n 37) vs not   +5.1 (n 85) t +0.36 | WIDE   +9.6 (n 57) vs not   +9.8 (n 83) t -0.02
+  M1    WIDE   +6.5 (n 162) vs not   +9.8 (n 246) t -0.59 | WIDE   +8.7 (n 163) vs not   +9.4 (n 262) t -0.08
+  R1    WIDE   +0.4 (n 82) vs not   -0.0 (n 156) t +0.15 | WIDE  +18.9 (n 15) vs not   +5.4 (n 62) t +1.06
+  RULES WIDE   +2.3 (n 218) vs not   +1.5 (n 340) t +0.78 | WIDE   +2.4 (n 206) vs not   +3.6 (n 363) t -0.58
+  V15a  WIDE   +0.9 (n 232) vs not   +5.4 (n 402) t -1.26 | WIDE  +21.9 (n 111) vs not  +14.0 (n 187) t +0.61
+
+=== noise engine pts / DAY, WIDE vs not ===
+  NZ    WIDE  +3.14 (n 711) vs not  +2.20 (n 1330) t +0.48 | WIDE  +8.98 (n 366) vs not  +8.27 (n 686) t +0.10

@@ -1,0 +1,8 @@
+
+=== 50K: PAYOUT-REQUEST POLICY, 77 monthly starts, year-2 steady state ===
+  ask asap (base)        year-1 $ 19,678 | yr2 $ 4,727/mo | payouts/mo 3.37 | months with 0 payouts 41%
+  wait for B=2500        year-1 $ 18,904 | yr2 $ 5,219/mo | payouts/mo 3.33 | months with 0 payouts 41%
+  wait for B=3000        year-1 $ 18,859 | yr2 $ 5,415/mo | payouts/mo 3.26 | months with 0 payouts 40%
+  wait for B=4000        year-1 $ 20,814 | yr2 $ 6,087/mo | payouts/mo 3.47 | months with 0 payouts 31%
+  B=4000, flat $2,000    year-1 $ 20,814 | yr2 $ 6,087/mo | payouts/mo 3.47 | months with 0 payouts 31%
+  B=5000                 year-1 $ 19,502 | yr2 $ 5,794/mo | payouts/mo 3.30 | months with 0 payouts 28%

@@ -1,0 +1,15 @@
+=== NZ risk-normalised + context sizing ===
+  base                                        18-21: +4.60 std  49.2 m/s 0.093 worstD   -209 worstM   -342 M>0 57% | 22-26: +8.55 std  93.6 m/s 0.091 worstD   -405 worstM   -562 M>0 63%
+  stop 25                                     18-21: +4.42 std  45.0 m/s 0.098 worstD   -160 worstM   -333 M>0 66% | 22-26: +5.56 std  72.6 m/s 0.077 worstD   -255 worstM   -490 M>0 65%
+  stop 15                                     18-21: +3.10 std  41.9 m/s 0.074 worstD   -170 worstM   -367 M>0 57% | 22-26: +2.51 std  62.0 m/s 0.041 worstD   -170 worstM   -510 M>0 55%
+  LDL 40                                      18-21: +4.23 std  45.6 m/s 0.093 worstD    -74 worstM   -306 M>0 66% | 22-26: +5.51 std  66.5 m/s 0.083 worstD    -73 worstM   -450 M>0 61%
+  LDL 60                                      18-21: +4.22 std  48.2 m/s 0.088 worstD    -83 worstM   -342 M>0 53% | 22-26: +6.15 std  73.1 m/s 0.084 worstD    -97 worstM   -464 M>0 63%
+  band-width sizing                           18-21: +4.09 std  51.5 m/s 0.079 worstD   -263 worstM   -233 M>0 60% | 22-26: +6.88 std  85.3 m/s 0.081 worstD   -328 worstM   -636 M>0 65%
+  context vol-target                          18-21: +3.80 std  44.8 m/s 0.085 worstD   -209 worstM   -254 M>0 60% | 22-26: +8.39 std  85.4 m/s 0.098 worstD   -206 worstM   -689 M>0 67%
+  context edge-tilt (exploratory)             18-21: +5.94 std  56.8 m/s 0.105 worstD   -202 worstM   -403 M>0 64% | 22-26: +11.41 std 105.3 m/s 0.108 worstD   -380 worstM   -479 M>0 71%
+  stop25 + LDL40                              18-21: +3.60 std  43.1 m/s 0.084 worstD    -60 worstM   -333 M>0 60% | 22-26: +4.68 std  66.9 m/s 0.070 worstD    -64 worstM   -407 M>0 61%
+  stop25 + LDL40 + band-width                 18-21: +3.47 std  44.2 m/s 0.078 worstD    -76 worstM   -265 M>0 62% | 22-26: +3.77 std  71.5 m/s 0.053 worstD    -94 worstM   -413 M>0 59%
+  stop25 + LDL40 + bw + ctx vol-target        18-21: +3.13 std  46.1 m/s 0.068 worstD   -115 worstM   -292 M>0 57% | 22-26: +4.79 std  92.3 m/s 0.052 worstD   -126 worstM   -536 M>0 59%
+  stop25 + LDL40 + bw + ctx + tilt            18-21: +4.28 std  52.6 m/s 0.081 worstD   -179 worstM   -293 M>0 64% | 22-26: +8.28 std 121.4 m/s 0.068 worstD   -196 worstM   -565 M>0 61%
+
+  context ridge: out-of-sample corr of predicted vs actual log-range ratio 2022-26: +0.274
