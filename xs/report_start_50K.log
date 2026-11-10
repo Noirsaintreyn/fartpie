@@ -1,0 +1,138 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+
+##### I. current best: x0.5 bottom-third gap: 936 eval starts (every 2nd day, 936 of them). outcome = net $/eval | pass % | paid-once % | median days to 1st payout
+-- by era
+  first 1500 days                    n  750 | net $+2,382 | pass  90% | paid  75% | d1pay   76
+  last 1500 days                     n  186 | net $+2,235 | pass  77% | paid  44% | d1pay   42
+  2018-21                            n  489 | net $+2,094 | pass  95% | paid  85% | d1pay   86
+  2022-25                            n  447 | net $+2,636 | pass  80% | paid  51% | d1pay   44
+-- by feature at start (terciles for continuous; first/last 1500 days shown as net $)
+  vxn_z      LOW                                     n  312 | net $+1,678 | pass  87% | paid  67% | d1pay   66 | halves +1,558/+2,340
+             MID                                     n  312 | net $+2,427 | pass  85% | paid  68% | d1pay   82 | halves +2,595/+1,812
+             HIGH                                    n  312 | net $+2,953 | pass  91% | paid  71% | d1pay   68 | halves +3,067/+2,563   hi-lo t +5.47
+  vxn_pct    LOW                                     n  315 | net $+1,672 | pass  87% | paid  66% | d1pay   67 | halves +1,642/+1,836
+             MID                                     n  306 | net $+2,360 | pass  85% | paid  67% | d1pay   86 | halves +2,398/+2,227
+             HIGH                                    n  315 | net $+3,026 | pass  91% | paid  73% | d1pay   67 | halves +3,175/+2,512   hi-lo t +5.90
+  qqq_z20    LOW                                     n  312 | net $+2,929 | pass  90% | paid  74% | d1pay   71 | halves +2,917/+2,992
+             MID                                     n  312 | net $+2,211 | pass  86% | paid  63% | d1pay   68 | halves +2,271/+2,005
+             HIGH                                    n  312 | net $+1,917 | pass  87% | paid  69% | d1pay   79 | halves +1,933/+1,854   hi-lo t -4.17
+  qqq_ret5   LOW                                     n  312 | net $+2,913 | pass  90% | paid  74% | d1pay   71 | halves +2,946/+2,772
+             MID                                     n  312 | net $+2,091 | pass  87% | paid  70% | d1pay   71 | halves +2,028/+2,331
+             HIGH                                    n  312 | net $+2,053 | pass  85% | paid  62% | d1pay   76 | halves +2,157/+1,641   hi-lo t -3.48
+  rng20_pct  LOW                                     n  290 | net $+1,663 | pass  88% | paid  69% | d1pay   66 | halves +1,778/ +267
+             MID                                     n  283 | net $+2,045 | pass  84% | paid  65% | d1pay   82 | halves +2,024/+2,114
+             HIGH                                    n  293 | net $+3,465 | pass  97% | paid  77% | d1pay   68 | halves +3,812/+2,765   hi-lo t +7.56
+  mom5       LOW                                     n  311 | net $+2,668 | pass  90% | paid  76% | d1pay   69 | halves +2,941/+1,617
+             MID                                     n  311 | net $+1,999 | pass  86% | paid  67% | d1pay   82 | halves +2,008/+1,926
+             HIGH                                    n  311 | net $+2,401 | pass  86% | paid  63% | d1pay   65 | halves +2,240/+2,814   hi-lo t -1.06
+  mom10      LOW                                     n  311 | net $+2,445 | pass  92% | paid  78% | d1pay   70 | halves +2,673/+1,531
+             MID                                     n  309 | net $+2,661 | pass  85% | paid  70% | d1pay   77 | halves +2,602/+3,081
+             HIGH                                    n  311 | net $+1,976 | pass  86% | paid  58% | d1pay   70 | halves +1,826/+2,368   hi-lo t -1.96
+  mom20      LOW                                     n  309 | net $+2,670 | pass  92% | paid  81% | d1pay   70 | halves +2,839/+1,730
+             MID                                     n  308 | net $+2,495 | pass  87% | paid  72% | d1pay   75 | halves +2,341/+3,367
+             HIGH                                    n  309 | net $+1,955 | pass  83% | paid  54% | d1pay   72 | halves +1,966/+1,930   hi-lo t -2.99
+  eval_mom   LOW                                     n  805 | net $+2,539 | pass  86% | paid  66% | d1pay   70 | halves +2,630/+2,235
+             MID                                     n    0 | net $  +nan | pass nan% | paid nan% | d1pay  nan | halves  +nan/ +nan
+             HIGH                                    n  618 | net $+2,308 | pass  84% | paid  64% | d1pay   77 | halves +2,212/+2,691   hi-lo t -1.40
+  VXN >= 1y median                   n  464 | net $+2,882 | pass  89% | paid  70% | d1pay   72 | halves +3,058/+2,257
+  VXN < 1y median                    n  472 | net $+1,832 | pass  86% | paid  67% | d1pay   73 | halves +1,751/+2,208
+-- day of week at start (0=Mon)
+  dow 0                              n  174 | net $+2,283 | pass  86% | paid  69% | d1pay   71
+  dow 1                              n  193 | net $+2,560 | pass  88% | paid  70% | d1pay   72
+  dow 2                              n  192 | net $+2,213 | pass  89% | paid  66% | d1pay   77
+  dow 3                              n  186 | net $+2,357 | pass  87% | paid  70% | d1pay   72
+  dow 4                              n  191 | net $+2,342 | pass  87% | paid  69% | d1pay   73
+-- month at start
+  month  1                           n   71 | net $+2,201 | pass  96% | paid  56% | d1pay   71
+  month  2                           n   78 | net $+2,129 | pass  87% | paid  60% | d1pay   65
+  month  3                           n   85 | net $+2,284 | pass  87% | paid  68% | d1pay   76
+  month  4                           n   85 | net $+1,939 | pass  82% | paid  58% | d1pay   85
+  month  5                           n   86 | net $+1,678 | pass  76% | paid  57% | d1pay   71
+  month  6                           n   81 | net $+2,095 | pass  89% | paid  65% | d1pay   79
+  month  7                           n   82 | net $+3,226 | pass  98% | paid  76% | d1pay   75
+  month  8                           n   80 | net $+2,568 | pass  92% | paid  68% | d1pay   75
+  month  9                           n   71 | net $+1,913 | pass  85% | paid  75% | d1pay   84
+  month 10                           n   78 | net $+2,283 | pass  87% | paid  78% | d1pay   81
+  month 11                           n   68 | net $+2,674 | pass  85% | paid  82% | d1pay   68
+  month 12                           n   71 | net $+3,393 | pass  87% | paid  85% | d1pay   61
+-- by year
+  2018                               n  114 | net $+2,080 | pass  77% | paid  68% | d1pay   71
+  2019                               n  124 | net $  +622 | pass 100% | paid  92% | d1pay  124
+  2020                               n  126 | net $+3,265 | pass 100% | paid  94% | d1pay   95
+  2021                               n  125 | net $+2,386 | pass 100% | paid  85% | d1pay   74
+  2022                               n  125 | net $+4,604 | pass  99% | paid  70% | d1pay   54
+  2023                               n  124 | net $+1,493 | pass  61% | paid  44% | d1pay   36
+  2024                               n  125 | net $+2,620 | pass  82% | paid  48% | d1pay   46
+  2025                               n   73 | net $+1,233 | pass  74% | paid  33% | d1pay   34
+-- EVAL MOMENTUM: corr(prior-60d eval success rate, this eval net) -0.03 (n 805); first 1500 -0.13 | last 1500 +0.18
+   next-start outcome after a PASS vs after a FAIL (adjacent starts, 2 days apart, highly overlapping): pass% 98% vs 15%
+
+##### P. I + day-type x1.0/x0.5 (cut low only): 936 eval starts (every 2nd day, 936 of them). outcome = net $/eval | pass % | paid-once % | median days to 1st payout
+-- by era
+  first 1500 days                    n  750 | net $+3,094 | pass  91% | paid  81% | d1pay   74
+  last 1500 days                     n  186 | net $+1,938 | pass  70% | paid  37% | d1pay   38
+  2018-21                            n  489 | net $+2,525 | pass  95% | paid  87% | d1pay   87
+  2022-25                            n  447 | net $+3,235 | pass  78% | paid  56% | d1pay   49
+-- by feature at start (terciles for continuous; first/last 1500 days shown as net $)
+  vxn_z      LOW                                     n  312 | net $+2,570 | pass  88% | paid  75% | d1pay   64 | halves +2,695/+1,882
+             MID                                     n  312 | net $+2,752 | pass  83% | paid  69% | d1pay   80 | halves +3,049/+1,663
+             HIGH                                    n  312 | net $+3,270 | pass  88% | paid  72% | d1pay   68 | halves +3,576/+2,234   hi-lo t +2.65
+  vxn_pct    LOW                                     n  315 | net $+2,575 | pass  88% | paid  75% | d1pay   64 | halves +2,765/+1,519
+             MID                                     n  306 | net $+2,618 | pass  83% | paid  67% | d1pay   87 | halves +2,813/+1,923
+             HIGH                                    n  315 | net $+3,392 | pass  89% | paid  74% | d1pay   68 | halves +3,729/+2,235   hi-lo t +3.11
+  qqq_z20    LOW                                     n  312 | net $+3,422 | pass  89% | paid  77% | d1pay   71 | halves +3,632/+2,392
+             MID                                     n  312 | net $+2,839 | pass  85% | paid  70% | d1pay   68 | halves +3,133/+1,823
+             HIGH                                    n  312 | net $+2,331 | pass  86% | paid  70% | d1pay   74 | halves +2,495/+1,684   hi-lo t -4.10
+  qqq_ret5   LOW                                     n  312 | net $+3,305 | pass  90% | paid  77% | d1pay   70 | halves +3,505/+2,431
+             MID                                     n  312 | net $+2,587 | pass  86% | paid  71% | d1pay   67 | halves +2,769/+1,897
+             HIGH                                    n  312 | net $+2,699 | pass  84% | paid  68% | d1pay   74 | halves +2,996/+1,525   hi-lo t -2.19
+  rng20_pct  LOW                                     n  290 | net $+2,551 | pass  89% | paid  78% | d1pay   63 | halves +2,657/+1,258
+             MID                                     n  283 | net $+2,796 | pass  84% | paid  70% | d1pay   77 | halves +3,209/+1,463
+             HIGH                                    n  293 | net $+3,384 | pass  93% | paid  77% | d1pay   68 | halves +3,862/+2,419   hi-lo t +3.17
+  mom5       LOW                                     n  311 | net $+3,030 | pass  89% | paid  75% | d1pay   70 | halves +3,503/+1,239
+             MID                                     n  311 | net $+2,516 | pass  86% | paid  72% | d1pay   80 | halves +2,629/+1,600
+             HIGH                                    n  311 | net $+3,067 | pass  84% | paid  69% | d1pay   62 | halves +3,252/+2,591   hi-lo t +0.13
+  mom10      LOW                                     n  311 | net $+2,695 | pass  90% | paid  75% | d1pay   72 | halves +3,018/+1,422
+             MID                                     n  309 | net $+3,090 | pass  85% | paid  75% | d1pay   72 | halves +3,215/+2,251
+             HIGH                                    n  311 | net $+2,845 | pass  85% | paid  66% | d1pay   67 | halves +3,087/+2,178   hi-lo t +0.56
+  mom20      LOW                                     n  309 | net $+2,665 | pass  90% | paid  80% | d1pay   70 | halves +2,971/+1,003
+             MID                                     n  308 | net $+3,046 | pass  88% | paid  74% | d1pay   72 | halves +3,113/+2,730
+             HIGH                                    n  309 | net $+2,966 | pass  82% | paid  63% | d1pay   70 | halves +3,341/+1,962   hi-lo t +1.12
+  eval_mom   LOW                                     n  775 | net $+3,086 | pass  85% | paid  70% | d1pay   68 | halves +3,407/+1,995
+             MID                                     n    0 | net $  +nan | pass nan% | paid nan% | d1pay  nan | halves  +nan/ +nan
+             HIGH                                    n  587 | net $+2,821 | pass  84% | paid  70% | d1pay   75 | halves +2,927/+2,364   hi-lo t -1.43
+  VXN >= 1y median                   n  464 | net $+3,200 | pass  86% | paid  71% | d1pay   72 | halves +3,533/+2,019
+  VXN < 1y median                    n  472 | net $+2,533 | pass  87% | paid  73% | d1pay   69 | halves +2,684/+1,839
+-- day of week at start (0=Mon)
+  dow 0                              n  174 | net $+2,703 | pass  85% | paid  72% | d1pay   71
+  dow 1                              n  193 | net $+3,245 | pass  88% | paid  75% | d1pay   71
+  dow 2                              n  192 | net $+2,637 | pass  89% | paid  70% | d1pay   72
+  dow 3                              n  186 | net $+3,040 | pass  85% | paid  72% | d1pay   72
+  dow 4                              n  191 | net $+2,682 | pass  86% | paid  72% | d1pay   68
+-- month at start
+  month  1                           n   71 | net $+2,312 | pass  92% | paid  65% | d1pay   56
+  month  2                           n   78 | net $+2,152 | pass  87% | paid  60% | d1pay   65
+  month  3                           n   85 | net $+2,367 | pass  84% | paid  58% | d1pay   80
+  month  4                           n   85 | net $+2,341 | pass  82% | paid  66% | d1pay   90
+  month  5                           n   86 | net $+1,915 | pass  76% | paid  64% | d1pay   77
+  month  6                           n   81 | net $+3,512 | pass  89% | paid  83% | d1pay   72
+  month  7                           n   82 | net $+4,347 | pass  98% | paid  82% | d1pay   64
+  month  8                           n   80 | net $+3,162 | pass  95% | paid  70% | d1pay   72
+  month  9                           n   71 | net $+2,804 | pass  83% | paid  75% | d1pay   80
+  month 10                           n   78 | net $+2,643 | pass  85% | paid  78% | d1pay   74
+  month 11                           n   68 | net $+3,076 | pass  85% | paid  85% | d1pay   60
+  month 12                           n   71 | net $+3,879 | pass  86% | paid  85% | d1pay   57
+-- by year
+  2018                               n  114 | net $+2,624 | pass  77% | paid  63% | d1pay   68
+  2019                               n  124 | net $  +693 | pass 100% | paid  91% | d1pay  128
+  2020                               n  126 | net $+2,825 | pass 100% | paid  94% | d1pay   95
+  2021                               n  125 | net $+3,948 | pass 100% | paid  98% | d1pay   66
+  2022                               n  125 | net $+6,557 | pass  99% | paid  84% | d1pay   57
+  2023                               n  124 | net $+2,120 | pass  66% | paid  57% | d1pay   40
+  2024                               n  125 | net $+2,205 | pass  78% | paid  42% | d1pay   40
+  2025                               n   73 | net $+1,205 | pass  60% | paid  27% | d1pay   32
+-- EVAL MOMENTUM: corr(prior-60d eval success rate, this eval net) -0.01 (n 775); first 1500 -0.13 | last 1500 +0.15
+   next-start outcome after a PASS vs after a FAIL (adjacent starts, 2 days apart, highly overlapping): pass% 98% vs 14%
