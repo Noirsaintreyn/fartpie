@@ -1,0 +1,48 @@
+noise trades with features: 3069; pts/trade 14-21 +2.65 | 22-26 +7.95
+
+=== TEST 1: pts per trade by third of each feature (bottom | middle | top), 14-21 // 22-26; spread top-bottom, t ===
+  all     rv      +3.5 |   +3.4 |   +1.1 //  +11.8 |   +0.1 |  +16.2 | top-bottom   -2.4 (t -1.07) //   +4.3 (t +0.52)
+  all     rv3     +3.0 |   +3.1 |   +1.8 //  +13.8 |   +1.3 |  +12.5 | top-bottom   -1.1 (t -0.54) //   -1.3 (t -0.15)
+  all     wick    +0.8 |   +3.0 |   +4.2 //   +7.7 |   +7.7 |   +8.5 | top-bottom   +3.4 (t +1.52) //   +0.8 (t +0.10)
+  all     acc     +2.0 |   +2.3 |   +3.8 //   +6.6 |  +12.6 |   +4.6 | top-bottom   +1.7 (t +0.77) //   -2.0 (t -0.37)
+  all     vb      +0.8 |   +3.5 |   +3.6 //   +9.7 |  +10.5 |   +4.0 | top-bottom   +2.8 (t +1.44) //   -5.7 (t -1.02)
+  long    rv      +2.6 |   +2.4 |   +2.7 //  +20.0 |   +3.8 |  +22.7 | top-bottom   +0.0 (t +0.02) //   +2.7 (t +0.21)
+  long    rv3     +2.5 |   +2.1 |   +3.5 //  +20.7 |   +5.3 |  +16.8 | top-bottom   +0.9 (t +0.35) //   -3.9 (t -0.29)
+  long    wick    +1.1 |   +5.1 |   +1.2 //  +11.9 |   +9.0 |  +21.0 | top-bottom   +0.1 (t +0.06) //   +9.1 (t +0.60)
+  long    acc     +3.6 |   +1.0 |   +3.4 //  +14.1 |  +22.1 |   +1.2 | top-bottom   -0.1 (t -0.05) //  -12.9 (t -1.84)
+  long    vb      +1.7 |   +5.2 |   +1.0 //  +10.5 |  +20.6 |   +7.9 | top-bottom   -0.7 (t -0.30) //   -2.6 (t -0.34)
+  short   rv      +5.7 |   +4.4 |   +0.5 //   +2.1 |   -2.9 |  +13.4 | top-bottom   -5.2 (t -1.11) //  +11.3 (t +1.26)
+  short   rv3     +4.2 |   +4.2 |   +1.2 //   +3.0 |   -1.8 |  +11.1 | top-bottom   -3.0 (t -0.71) //   +8.1 (t +0.93)
+  short   wick    +0.5 |   +0.6 |   +6.6 //   +4.1 |   +6.7 |   -1.0 | top-bottom   +6.1 (t +1.66) //   -5.1 (t -0.70)
+  short   acc     +0.2 |   +3.8 |   +4.0 //   -0.6 |   +4.3 |   +6.6 | top-bottom   +3.8 (t +1.05) //   +7.2 (t +0.88)
+  short   vb      -0.4 |   +2.1 |   +5.9 //   +8.9 |   +1.7 |   +1.7 | top-bottom   +6.3 (t +1.88) //   -7.2 (t -0.83)
+  vae (beyond prior-day value area) 14-21: accepted   +4.2 (n744) vs inside   +8.2 (n186), t -0.77
+  vae (beyond prior-day value area) 22-26: accepted   +8.0 (n920) vs inside   +8.2 (n177), t -0.02
+
+=== TEST 2: the filtered noise engine (pts per day over all days; trades kept) ===
+  all trades (base)                  kept 100% | 14-21: +2.53/d std  37.0 m/s 0.068 (t +3.08) | 22-26: +8.52/d std  92.3 m/s 0.092 (t +2.99)
+  accepted: >= 2 closes beyond       kept  81% | 14-21: +2.25/d std  33.4 m/s 0.067 (t +3.04) | 22-26: +6.34/d std  84.3 m/s 0.075 (t +2.44)
+  accepted: >= 3 closes beyond       kept  66% | 14-21: +1.87/d std  30.4 m/s 0.061 (t +2.78) | 22-26: +6.12/d std  80.1 m/s 0.076 (t +2.48)
+  rv >= 1.0                          kept  63% | 14-21: +1.10/d std  29.5 m/s 0.037 (t +1.68) | 22-26: +4.01/d std  66.2 m/s 0.061 (t +1.97)
+  rv >= 1.3                          kept  39% | 14-21: +0.81/d std  25.5 m/s 0.032 (t +1.43) | 22-26: +3.86/d std  55.5 m/s 0.069 (t +2.25)
+  rv3 >= 1.0 (volume stepping in)    kept  65% | 14-21: +1.51/d std  31.6 m/s 0.048 (t +2.15) | 22-26: +4.23/d std  67.1 m/s 0.063 (t +2.05)
+  closed near the extreme (wick <= .25) kept  40% | 14-21: +0.45/d std  23.4 m/s 0.019 (t +0.88) | 22-26: +3.48/d std  50.7 m/s 0.069 (t +2.23)
+  rv >= 1 and wick <= .25            kept  26% | 14-21: -0.12/d std  18.1 m/s -0.006 (t -0.29) | 22-26: +2.07/d std  42.0 m/s 0.049 (t +1.60)
+  acc >= 2 and rv3 >= 1              kept  54% | 14-21: +1.72/d std  29.3 m/s 0.059 (t +2.65) | 22-26: +2.45/d std  57.9 m/s 0.042 (t +1.37)
+  top third volume-beyond share      kept  34% | 14-21: +1.15/d std  21.5 m/s 0.053 (t +2.42) | 22-26: +1.51/d std  44.6 m/s 0.034 (t +1.10)
+  rv < 1.0 (thin breaks, for reference) kept  37% | 14-21: +1.43/d std  23.0 m/s 0.062 (t +2.81) | 22-26: +4.50/d std  65.0 m/s 0.069 (t +2.25)
+  first-bar break only (for reference) kept  19% | 14-21: +0.28/d std  17.6 m/s 0.016 (t +0.72) | 22-26: +2.18/d std  38.2 m/s 0.057 (t +1.85)
+
+=== TEST 3: failure to accept (rejection) fade engine ===
+  rv >= 1.3, back inside within 3 bars: n 921 | 14-21: +0.16/d (t +0.56) | 22-26: +1.15/d (t +1.16) | per trade +1.7
+  rv >= 1.0, back inside within 3 bars: n 1232 | 14-21: -0.30/d (t -0.95) | 22-26: +1.28/d (t +1.17) | per trade +0.6
+  rv >= 1.6, back inside within 3 bars: n 624 | 14-21: -0.00/d (t -0.01) | 22-26: +1.06/d (t +1.25) | per trade +1.8
+  rv >= 1.3, back inside within 6 bars: n 1036 | 14-21: +0.09/d (t +0.29) | 22-26: +0.97/d (t +0.93) | per trade +1.2
+
+=== TEST 4: vector trades (Rule A, V15a): signal-bar volume and wick by third ===
+  RA   rv      -0.5 (n35) |  +10.2 (n35) |  +17.6 (n35) //   +3.7 (n40) |  +29.2 (n34) |  +10.2 (n46) | top-bottom t +1.65 // +0.54
+  RA   rv3     -0.4 (n35) |  +12.5 (n35) |  +15.1 (n35) //  +11.7 (n27) |  +13.7 (n37) |  +14.1 (n56) | top-bottom t +1.43 // +0.18
+  RA   wick    +9.9 (n35) |  +10.6 (n35) |   +6.8 (n35) //  +14.5 (n44) |   +8.4 (n43) |  +18.6 (n33) | top-bottom t -0.26 // +0.32
+  V15a rv      +5.9 (n145) |   +5.0 (n144) |   +4.8 (n144) //  +40.3 (n65) |   +3.8 (n79) |  +49.4 (n53) | top-bottom t -0.20 // +0.37
+  V15a rv3     +2.5 (n145) |   +8.2 (n144) |   +5.1 (n144) //  +26.7 (n58) |  +22.8 (n81) |  +36.9 (n58) | top-bottom t +0.51 // +0.44
+  V15a wick    +3.3 (n145) |   +0.9 (n144) |  +11.6 (n144) //  +33.8 (n85) |  +31.3 (n49) |  +17.9 (n63) | top-bottom t +1.50 // -0.79
