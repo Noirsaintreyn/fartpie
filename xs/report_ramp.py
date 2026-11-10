@@ -29,7 +29,7 @@ if __name__ == '__main__':
         return T_
     base_w = [(_w125(T_, en), u, yz) for en, (T_, u, yz) in zip(NAMES, base)]
     LOCK['on'] = False; A = ACCX['50K']; fee = A['fee']; E0, E2, F0 = EP['E0 x1'], EP['E2 harder de-risk'], FP['F0 x1']
-    LOCK['on'] = False; A = ACCX['50K']; fee = A['fee']; E2, F0 = EP['E2 harder de-risk'], FP['F0 x1']
+    LOCK['on'] = False; import os; TIER = os.environ.get('TIER', '50K'); A = ACCX[TIER]; fee = A['fee']; E2, F0 = EP['E2 harder de-risk'], FP['F0 x1']
     LE_, LF_ = lists(base_c, 'e'), lists(base_c, 'f'); TRJ = {}
     def traj(k):
         if k not in TRJ:
@@ -68,7 +68,7 @@ if __name__ == '__main__':
         N_, C_, oop, fk, resc, P = sim(k0); first = next((i for i, m in enumerate(N_.index) if P.get(m, 0) > 0), None)
         R.append(dict(start=D_[k0], oop=oop, full_mo=None if fk is None else (fk - k0) / 21, resc=resc, first_mo=None if first is None else first,
                       y1=N_.iloc[:12].sum(), y2=N_.iloc[12:24].mean() if len(N_) >= 24 else np.nan, m13_24=C_.iloc[12:24].mean() if len(C_) >= 24 else np.nan, tot=N_.sum(), months=len(N_)))
-    R = pd.DataFrame(R); print(f'\n=== ONE ACCOUNT FIRST, +2 PER PAYOUT, FULL AT 5, THEN REPLACE EVERY DROP ({len(R)} monthly starts Feb 2018 - Jun 2024, room rule, cost 0.5 pt) ===')
+    R = pd.DataFrame(R); print(f'\n=== {TIER}: ONE ACCOUNT FIRST, +2 PER PAYOUT, FULL AT 5, THEN REPLACE EVERY DROP ({len(R)} monthly starts Feb 2018 - Jun 2024, room rule, cost 0.5 pt) ===')
     print(f'  reached 5 slots: {R.full_mo.notna().mean():.0%} of starts; months to fill (median / 25-75%): {R.full_mo.median():.1f} ({R.full_mo.quantile(.25):.1f}-{R.full_mo.quantile(.75):.1f})')
     print(f'  first payout (months after start): median {R.first_mo.median():.0f}, 90th pct {R.first_mo.quantile(.9):.0f}; no payout in first 6 months: {np.mean(R.first_mo.isna() | (R.first_mo >= 6)):.0%}')
     print(f'  out-of-pocket fees ($88 each): average ${R.oop.mean():,.0f}, median ${R.oop.median():,.0f}, worst ${R.oop.max():,.0f}; starts needing a rescue re-buy: {np.mean(R.resc > 0):.0%}')
