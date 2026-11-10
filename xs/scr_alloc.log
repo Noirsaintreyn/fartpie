@@ -1,0 +1,33 @@
+live (re-run with grouped bars):  36.7% / DD -11.2% |  35.0% / DD -13.1% | all  35.9% | trades 3,690
+
+=== A) OCCUPANCY: share of trades / slot-days / P&L / top-decile winners | avg return ===
+  h1    False        trades  78% | slot-days  69% | P&L   69% | top winners  70% | avg +0.38%, win 31%
+  h1    True         trades  22% | slot-days  31% | P&L   31% | top winners  30% | avg +0.59%, win 38%
+  tm    09:30-09:45  trades  51% | slot-days  47% | P&L   46% | top winners  50% | avg +0.39%, win 33%
+  tm    10:00-10:30  trades  22% | slot-days  26% | P&L   26% | top winners  22% | avg +0.51%, win 38%
+  tm    10:45-13:00  trades  22% | slot-days  22% | P&L   26% | top winners  23% | avg +0.51%, win 31%
+  tm    13:15+       trades   5% | slot-days   5% | P&L    2% | top winners   5% | avg +0.16%, win 24%
+  hold  same day     trades  31% | slot-days   9% | P&L  -83% | top winners   1% | avg -1.11%, win 2%
+  hold  2-3 days     trades  39% | slot-days  24% | P&L  -60% | top winners   7% | avg -0.64%, win 27%
+  hold  4-10 days    trades  24% | slot-days  39% | P&L   94% | top winners  43% | avg +1.63%, win 65%
+  hold  > 10 days    trades   6% | slot-days  28% | P&L  149% | top winners  48% | avg +10.01%, win 97%
+
+=== B) ROBUSTNESS: CAGR 2019-22 / 2023-26 / all, distribution over 60 paths (5th / 50th / 95th pct) and where live sits ===
+  shuffle near-ties only (within 10%)  32.9% / 35.5% / 37.7% (live 36.7%, beats  85%) | 32.3% / 35.9% / 38.9% (live 35.0%, beats  37%) | 33.4% / 35.6% / 37.5% (live 35.9%, beats  63%)
+  fully random within the bar          25.0% / 30.9% / 34.3% (live 36.7%, beats  97%) | 15.2% / 22.6% / 31.7% (live 35.0%, beats  97%) | 21.2% / 27.0% / 30.6% (live 35.9%, beats 100%)
+
+=== C / D) near-tie diversification and sector caps | CAGR / DD 2019-22 | 2023-26 | all ===
+  live                            36.7% / DD -11.2% |  35.0% / DD -13.1% | all  35.9%
+  C near-tie: least correlated    36.4% / DD -11.9% |  30.9% / DD -16.8% | all  33.7%
+  C control: new sector first     35.6% / DD -10.7% |  37.2% / DD -13.2% | all  36.3%
+  D cap 2 per sector              22.9% / DD -15.7% |  36.6% / DD -15.4% | all  29.3%
+  D cap 3 per sector              34.8% / DD -11.0% |  35.6% / DD -13.2% | all  35.1%
+
+=== E) $700 CASH ACCOUNT, settlement T+2 -> T+1 (May 28 2024) ===
+  same trades as live, ledger kept: good-faith-violation risks 1,316 of 3,690 trades (36%)
+  buy only with SETTLED cash:   5.9% / DD -22.4% |  12.2% / DD -27.2% | all   8.9% | trades 2,680, signals skipped for unsettled cash 12,246
+  settled-only, each name = equity / 6 : realized ~ 13.3% a year | trades 2,680, skipped for unsettled cash 12,246
+  settled-only, each name = equity / 8 : realized ~ 17.3% a year | trades 3,329, skipped for unsettled cash 5,383
+  settled-only, each name = equity / 9 : realized ~ 18.1% a year | trades 3,485, skipped for unsettled cash 3,425
+  settled-only, each name = equity / 12: realized ~ 16.2% a year | trades 3,647, skipped for unsettled cash 749
+  reference, live with margin / no settlement limit, same realized method: ~ 39.0% a year

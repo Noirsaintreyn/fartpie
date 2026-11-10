@@ -10,6 +10,9 @@ REPLACEMENT (live ratio order otherwise): when a new flip arrives and all 6 slot
   R2  a holding whose FIRST 15m bar after entry closed below its entry, and the new flip's ratio is higher (the lowest such holding)
   R3  the weakest holding is down more than 0.5 ATR, whatever the ratios
   RPOS (added Nov 9 after the rough hourly look, xs/scr_hp_swap.py) the new flip's stock is in POSITIVE gamma and the weakest holding is losing (18 names with GEX, to Dec 2025)
+ALLOCATION (from Rey's attached review, Nov 9; frozen before running): RES6 hold the 6th slot through the first 15-minute interval, then give it to the
+best-ratio flip still valid, at the 09:45 price | BATCH flips arriving 09:30-09:59 allocated together at 10:00 by ratio, at 10:00 prices | QUEUE a flip skipped
+because slots were full waits (same session, before 14:00, while its own trade is still open) and takes the next freed slot at that moment's price.
 CHOSEN on 2019-22, JUDGED on 2023-26 (Sep 25)."""
 import glob, os, sys, numpy as np, pandas as pd
 from collections import deque
@@ -28,7 +31,7 @@ if SYN:                                                        # smoke test only
     rows = []
     for d in D[::2]:
         for tk in rng.choice(TKS, 7, replace=False):
-            e = d + pd.Timedelta(minutes=570 + 15 * int(rng.integers(1, 12))); x = e + pd.Timedelta(days=int(rng.integers(0, 4)), minutes=60)
+            e = d + pd.Timedelta(minutes=570 + 15 * int(rng.integers(0, 12))); x = e + pd.Timedelta(days=int(rng.integers(0, 4)), minutes=60)
             rows.append(dict(tk=tk, entry=e, exit=x, ret=rng.normal(.003, .03), ratio=rng.uniform(1.5, 6), h1=False, liq=True, sp=True))
     T0 = pd.DataFrame(rows)
 else:
@@ -112,6 +115,75 @@ def order(kind):
     X['_k'] = {'ratio': -X.ratio, 'spd': rk('spd'), 'rv15': rk('rv15'), 'ratio+spd': rk('ratio') + rk('spd'), 'ratio+rv15': rk('ratio') + rk('rv15'),
                'ratio+spd+rv15': rk('ratio') + rk('spd') + rk('rv15')}[kind]
     return X.sort_values(['entry', '_k', 'tk'], kind='stable')
+import heapq
+def delayed(r, t):
+    """the same signal entered later at time t (real later price); None if it already exited or no price"""
+    if t >= r.exit or not np.isfinite(r.o): return None
+    p = price_at(r.tk, t); X = r.o * (1 + r.ret)
+    if not np.isfinite(p) or p <= 0: return None
+    return dict(tk=r.tk, entry=t, exit=r.exit, ret=X / p - 1, ratio=r.ratio)
+def taken_alloc(mode, N=6, brk=.08, qmax_min=840):
+    """mode: 'RES6' hold the 6th slot through the first 15-minute interval, then give it to the best-ratio flip still valid (later price) |
+       'BATCH' flips arriving 09:30-09:59 are pooled and allocated together at 10:00 by ratio (later prices) |
+       'QUEUE' a flip skipped because all slots were full waits (same session, until 14:00, while its own trade would still be open);
+               when a slot frees, the best-ratio queued flip enters at that moment's price. No holding is ever sold early."""
+    X = order('ratio'); ev = []; seq = 0
+    for r in X.itertuples():
+        tod = r.entry.hour * 60 + r.entry.minute
+        if mode == 'BATCH' and 570 <= tod < 600:
+            d = delayed(r, r.entry.normalize() + pd.Timedelta(minutes=600))
+            if d: heapq.heappush(ev, (d['entry'], -d['ratio'], seq, 'c', d)); seq += 1
+            continue
+        heapq.heappush(ev, (r.entry, -r.ratio, seq, 'c', dict(tk=r.tk, entry=r.entry, exit=r.exit, ret=r.ret, ratio=r.ratio, _r=r))); seq += 1
+    op = []; pend = []; real = 0.0; hist = []; win = deque(); lvl0 = 0.0; out = []; queue = []; held_res = {}; n_q = 0; n_res = 0
+    def free_slots(): return N - len(op)
+    def breaker_ok(e):
+        nonlocal lvl0
+        if not (brk and hist): return True
+        t0 = e - pd.Timedelta(days=28)
+        while win and win[0][0] < t0: lvl0 = win.popleft()[1]
+        return real - max([lvl0] + [hh for _, hh in win]) >= np.log1p(-brk)
+    def settle(upto):
+        nonlocal real, op, pend
+        done = sorted([p for p in pend if p[0] <= upto], key=lambda z: z[0]); pend = [p for p in pend if p[0] > upto]
+        for xt, rr in done:
+            real += np.log1p(rr / N); hist.append((xt, real)); win.append((xt, real))
+            if mode == 'QUEUE': heapq.heappush(ev, (xt, 0.0, -1, 'x', None))
+        op = [x_ for x_ in op if x_ > upto]
+    def take(c):
+        op.append(c['exit']); pend.append((c['exit'], c['ret'])); out.append((c['tk'], c['entry'], c['exit'], c['ret']))
+    while ev:
+        e = ev[0][0]; grp = []
+        while ev and ev[0][0] == e: grp.append(heapq.heappop(ev))
+        settle(e)
+        cands = sorted([g for g in grp if g[3] == 'c'], key=lambda g: (g[1], g[2]))
+        if mode == 'QUEUE' and any(g[3] == 'x' for g in grp) and free_slots() > 0 and not cands:
+            tod = e.hour * 60 + e.minute; queue = [q for q in queue if q['_r'].entry.normalize() == e.normalize() and tod < qmax_min and e < q['exit']]
+            while queue and free_slots() > 0 and breaker_ok(e):
+                q = max(queue, key=lambda z: z['ratio']); queue.remove(q); d = delayed(q['_r'], e)
+                if d: take(d); n_q += 1
+        tod = e.hour * 60 + e.minute; day = e.normalize()
+        if mode == 'RES6' and tod == 585 and day in held_res:
+            pool = [dict(c, _late=True) for c in held_res.pop(day)] + [g[4] for g in cands]
+            best = sorted(pool, key=lambda z: -z['ratio'])
+            for c in best:
+                if free_slots() <= 0 or not breaker_ok(e): break
+                if c.get('_late'):
+                    d = delayed(c['_r'], e)
+                    if d: take(d); n_res += 1
+                    continue
+                take(c)
+            continue
+        for g in cands:
+            c = g[4]
+            limit = N - 1 if (mode == 'RES6' and tod == 570) else N
+            if len(op) >= limit:
+                if mode == 'RES6' and tod == 570 and len(op) < N: held_res.setdefault(day, []).append(c); continue
+                if mode == 'QUEUE' and '_r' in c and tod < qmax_min: queue.append(c)
+                continue
+            if not breaker_ok(e): break
+            take(c)
+    return out, dict(queued_entries=n_q, reserved_entries=n_res)
 if __name__ == '__main__':
     print('\n=== pick order when flips arrive together | CAGR / max DD 2019-22 (CHOOSE) | 2023-26 (JUDGE) | all ===', flush=True); RES = {}
     for kind in ('ratio', 'spd', 'rv15', 'ratio+spd', 'ratio+rv15', 'ratio+spd+rv15'):
@@ -128,3 +200,7 @@ if __name__ == '__main__':
     br = max(['R1', 'R2', 'R3'], key=lambda k_: cagr_a(RR[k_])); print(f'  -> chosen on 2019-22: {br} ({"beats" if cagr_a(RR[br]) > cagr_a(RR[None]) else "does not beat"} live there)', flush=True)
     if bk != 'ratio':
         tk_, nrep = taken(order(bk), rule=br); print(f'  combined: {bk} order + {br}: {st2(daily(tk_))}', flush=True)
+    print('\n=== ALLOCATION (Rey review, added Nov 9): reserve the 6th slot / opening batch / valid-signal queue, real later prices | 2019-22 | 2023-26 | all ===', flush=True)
+    print(f'  {"live":<28} {st2(RR[None])}', flush=True)
+    for mode in ('RES6', 'BATCH', 'QUEUE'):
+        tk_, inf = taken_alloc(mode); print(f'  {mode:<28} {st2(daily(tk_))} | {inf}', flush=True)
