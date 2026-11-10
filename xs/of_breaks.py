@@ -5,6 +5,7 @@ import sys, numpy as np, pandas as pd, warnings; warnings.filterwarnings('ignore
 sys.path.insert(0, '/home/claude/fartpie/xs'); import nz_core as Z
 from nz_core import A, DAYS, GRID, NB
 O = pd.read_parquet('/mnt/user-data/uploads/fartpie/mnq_orderflow_1min.parquet'); O['dt'] = pd.to_datetime(O.datetime).dt.tz_convert('America/New_York').dt.tz_localize(None); O = O.set_index('dt').sort_index()
+O['buy_vol'], O['sell_vol'] = O.sell_vol.copy(), O.buy_vol.copy(); O['signed_vol'] = -O.signed_vol   # build_mnq_orderflow_1min.py labels are inverted (corr with price change was -0.68); corrected here
 O['tot'] = O.buy_vol + O.sell_vol; O['day'] = O.index.normalize(); O['m'] = O.index.hour * 60 + O.index.minute
 cov = sorted(set(O.day)); cov = [d for d in cov if d in A]; print(len(cov), 'covered days', cov[0], cov[-1])
 rows = []
