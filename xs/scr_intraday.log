@@ -1,0 +1,26 @@
+candidates 17,391, with bars 100%, SPD 53%, RV15 67%
+
+=== pick order when flips arrive together | CAGR / max DD 2019-22 (CHOOSE) | 2023-26 (JUDGE) | all ===
+  ratio             36.7% / DD -11.2% |  35.0% / DD -13.1% | all  35.9%
+  spd               28.2% / DD -18.9% |  15.3% / DD -16.2% | all  21.8%
+  rv15              31.2% / DD -11.3% |  14.9% / DD -25.3% | all  23.1%
+  ratio+spd         36.7% / DD -10.7% |  33.3% / DD -16.1% | all  35.0%
+  ratio+rv15        32.4% / DD -11.8% |  37.5% / DD -13.1% | all  34.8%
+  ratio+spd+rv15    31.9% / DD -11.2% |  32.3% / DD -12.7% | all  32.1%
+  -> chosen on 2019-22: ratio
+  all candidates by spd third (cuts 0.14 / 0.28): high: +0.32% (win 34%) | low: +0.27% (win 31%) | mid: +0.34% (win 31%)
+  all candidates by rv15 third (cuts 0.80 / 1.17): high: +0.30% (win 33%) | low: +0.42% (win 32%) | mid: +0.22% (win 32%)
+
+=== replacing weak holdings with a new, higher-rated flip (live ratio order) | 2019-22 (CHOOSE) | 2023-26 (JUDGE) | all ===
+  no replacement (live)   36.7% / DD -11.2% |  35.0% / DD -13.1% | all  35.9% | replacements 0
+  R1                      31.0% / DD -11.3% |  33.4% / DD -13.8% | all  32.1% | replacements 986
+  R2                      29.4% / DD -13.0% |  22.7% / DD -22.6% | all  26.1% | replacements 1,025
+  R3                      33.8% / DD -11.2% |  30.4% / DD -13.2% | all  32.1% | replacements 252
+  RPOS                    37.3% / DD -10.8% |  30.8% / DD -12.5% | all  34.0% | replacements 921
+  -> chosen on 2019-22: R3 (does not beat live there)
+
+=== ALLOCATION (Rey review, added Nov 9): reserve the 6th slot / opening batch / valid-signal queue, real later prices | 2019-22 | 2023-26 | all ===
+  live                          36.7% / DD -11.2% |  35.0% / DD -13.1% | all  35.9%
+  RES6                          31.4% / DD -11.1% |  21.6% / DD -14.3% | all  26.5% | {'queued_entries': 0, 'reserved_entries': 248}
+  BATCH                         30.4% / DD -14.0% |  16.3% / DD -21.2% | all  23.4% | {'queued_entries': 0, 'reserved_entries': 0}
+  QUEUE                         28.7% / DD -14.6% |  27.2% / DD -15.9% | all  27.9% | {'queued_entries': 389, 'reserved_entries': 0}
