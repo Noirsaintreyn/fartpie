@@ -218,7 +218,7 @@ if __name__ == '__main__':
         return 'open', end
     k25_ = int(np.searchsorted(D_, pd.Timestamp('2025-07-01')))
     print('\nPRE-LOAD test: eval begins with +$X banked on day 1 (by hand), algo runs from day 2. starts every 2nd day 2018-2025')
-    for X in (0, 500, 1000):
+    for X in (-500, -800, 500):
         rows = []
         for s_ in range(k18, k25_, 2):
             r, k2 = EV2(LE_, A, s_ + (1 if X else 0), NS, E2, True, float(X)); 
