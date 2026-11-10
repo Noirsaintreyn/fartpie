@@ -1,0 +1,15 @@
+  BASE                            18-21: +2.30/d std  19.5 m/s 0.118 worstM  -102 M>0 72% | 22-26: +5.45/d std  34.8 m/s 0.157 worstM  -194 M>0 80%
+  E1 M1 midday x0                 18-21: +2.28/d std  19.2 m/s 0.119 worstM  -100 M>0 68% | 22-26: +5.42/d std  34.0 m/s 0.159 worstM  -165 M>0 80%
+  E2 M1 midday x0.5               18-21: +2.29/d std  19.3 m/s 0.119 worstM  -101 M>0 70% | 22-26: +5.43/d std  34.3 m/s 0.158 worstM  -179 M>0 80%
+  E3 R1 midday x0                 18-21: +2.37/d std  19.4 m/s 0.122 worstM  -102 M>0 72% | 22-26: +5.49/d std  34.7 m/s 0.158 worstM  -194 M>0 78%
+  E4 RULES first hour x0.5        18-21: +2.26/d std  18.9 m/s 0.119 worstM  -104 M>0 77% | 22-26: +5.28/d std  34.2 m/s 0.154 worstM  -228 M>0 76%
+  E5 RULES far from 52w POC x0.5  18-21: +2.27/d std  19.1 m/s 0.119 worstM  -102 M>0 81% | 22-26: +5.29/d std  34.4 m/s 0.154 worstM  -194 M>0 73%
+  E6 M1 morning x1.25             18-21: +2.38/d std  20.0 m/s 0.119 worstM  -104 M>0 72% | 22-26: +5.58/d std  35.7 m/s 0.156 worstM  -200 M>0 80%
+  E7 = E2+E3+E4+E5                18-21: +2.28/d std  18.2 m/s 0.125 worstM  -104 M>0 74% | 22-26: +5.17/d std  33.5 m/s 0.154 worstM  -213 M>0 73%
+  E8 = E7 + E6                    18-21: +2.37/d std  18.7 m/s 0.126 worstM  -105 M>0 74% | 22-26: +5.30/d std  34.4 m/s 0.154 worstM  -220 M>0 73%
+
+per-engine bucket check (pts per trade, early // late):
+  M1 midday       +2.6 (n90) vs rest  +10.2 (t -1.33) //   +1.7 (n101) vs rest  +11.4 (t -1.29)
+  M1 morning     +11.6 (n124) vs rest   +7.2 (t +0.79) //  +21.9 (n121) vs rest   +4.0 (t +1.78)
+  R1 midday       -4.3 (n13) vs rest   +5.9 (t -0.59) //   -5.1 (n14) vs rest  +11.0 (t -1.27)
+  RULES first hour   +0.5 (n179) vs rest   +3.0 (t -1.61) //   +2.6 (n310) vs rest   +3.9 (t -0.67)
