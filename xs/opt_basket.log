@@ -1,0 +1,27 @@
+candidates in the 23 option names: 7,871 (23 names), 2019-01-02 - 2026-09-14
+
+=== $692 from 2019 (6 slots, $115.33 each to start) | end value | CAGR | worst DD (closed trades) | trades | flips skipped (unaffordable) | win | avg per trade ===
+  shares (fractional)                              $    4,244 | +26.6% | -22.7% | 3,663 |     0 | 32% |  +0.3%
+      by year P&L: 2019 $+72 | 2020 $+368 | 2021 $+428 | 2022 $-285 | 2023 $+623 | 2024 $+792 | 2025 $+852 | 2026 $+701
+  A  30-day ATM call, skip if > slot               $      417 |  -6.4% | -39.7% |   28 | 7,843 | 21% | -12.5%
+      by year P&L: 2021 $-44 | 2023 $-55 | 2024 $-176
+  B  30-day call, strike moved out until it fits   $       17 | -38.0% | -97.5% |   63 | 7,808 | 13% | -33.2%
+      by year P&L: 2019 $-663 | 2020 $-3 | 2021 $-4 | 2022 $-4
+  C  weekly call, strike moved out until it fits   $       16 | -38.5% | -97.6% |   35 | 7,836 | 11% | -57.5%
+      by year P&L: 2019 $-676
+  D  60-day ATM call, skip if > slot               $      703 |  +0.2% |  -9.9% |   11 | 7,860 | 36% |  +1.5%
+      by year P&L: 2024 $+11
+  reference: shares, all 54 names (live universe)  $    4,947 | +28.7% | -21.5% | 4,128
+
+=== $692 from 2023 (6 slots, $115.33 each to start) | end value | CAGR | worst DD (closed trades) | trades | flips skipped (unaffordable) | win | avg per trade ===
+  shares (fractional)                              $    2,166 | +36.2% | -13.3% | 1,918 |     0 | 32% |  +0.4%
+      by year P&L: 2023 $+277 | 2024 $+404 | 2025 $+435 | 2026 $+358
+  A  30-day ATM call, skip if > slot               $      424 | -12.4% | -41.7% |   28 | 4,850 | 21% | -12.3%
+      by year P&L: 2023 $-92 | 2024 $-176
+  B  30-day call, strike moved out until it fits   $       16 | -64.2% | -99.4% |  150 | 4,619 | 20% |  -7.6%
+      by year P&L: 2023 $-676
+  C  weekly call, strike moved out until it fits   $        5 | -73.5% | -99.8% |  102 | 4,725 | 12% | -10.9%
+      by year P&L: 2023 $-687
+  D  60-day ATM call, skip if > slot               $      703 |  +0.4% |  -9.9% |   11 | 4,867 | 36% |  +1.5%
+      by year P&L: 2024 $+11
+  reference: shares, all 54 names (live universe)  $    1,731 | +27.3% | -18.1% | 2,170
