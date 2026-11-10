@@ -1,0 +1,87 @@
+feature days 1960 (2018-02-01 .. 2026-01-30); positive-gamma days 0%
+
+=== TEST 1: does it dictate NOISE size? y = log(range / trailing-14d range); top third minus bottom third (positive = bigger day than the sigma model says) ===
+  gp     18-21 top over bot   -0.33 (t -7.85) | 22-26 top over bot   -0.28 (t -7.83)   <== PASS
+  dpoc   18-21 top over bot   +0.33 (t +8.38) | 22-26 top over bot   +0.17 (t +4.36)   <== PASS
+  dtpoc  18-21 top over bot   +0.32 (t +7.96) | 22-26 top over bot   +0.13 (t +3.55)   <== PASS
+  vaw    18-21 top over bot   +0.39 (t +9.72) | 22-26 top over bot   +0.17 (t +4.41)   <== PASS
+  pocpos 18-21 top over bot   -0.06 (t -1.35) | 22-26 top over bot   -0.14 (t -3.91)
+  sp     18-21 top over bot   +0.01 (t +0.33) | 22-26 top over bot   -0.04 (t -0.95)
+  bal    18-21 top over bot   +0.00 (t +0.11) | 22-26 top over bot   -0.01 (t -0.17)
+  pos    18-21 0.0 over 1.0   +0.15 (t +4.12) | 22-26 0.0 over 1.0   +0.19 (t +5.97)   <== PASS
+  loc    18-21 below over above   +0.29 (t +7.03) | 22-26 below over above   +0.10 (t +2.66)   <== PASS
+  tloc   18-21 below over above   +0.30 (t +7.04) | 22-26 below over above   +0.11 (t +2.99)   <== PASS
+
+=== TEST 2: noise engine pts / day by bucket, BOTH SIDES ===
+  gp     18-21 top over bot   -6.17 (t -1.46) | 22-26 top over bot   -4.34 (t -0.54)
+  dpoc   18-21 top over bot   +2.62 (t +0.65) | 22-26 top over bot   +5.53 (t +0.62)
+  dtpoc  18-21 top over bot   +6.78 (t +1.75) | 22-26 top over bot   -1.34 (t -0.16)
+  vaw    18-21 top over bot   +1.51 (t +0.37) | 22-26 top over bot   -4.57 (t -0.59)
+  pocpos 18-21 top over bot   -1.24 (t -0.31) | 22-26 top over bot   -5.11 (t -0.68)
+  sp     18-21 top over bot   -5.32 (t -1.48) | 22-26 top over bot   -8.77 (t -1.21)
+  bal    18-21 top over bot   -1.08 (t -0.27) | 22-26 top over bot   +2.31 (t +0.31)
+  pos    18-21 0.0 over 1.0   +2.06 (t +0.64) | 22-26 0.0 over 1.0  +10.54 (t +1.98)
+  loc    18-21 above over inside   +5.93 (t +1.70) | 22-26 above over below  +11.18 (t +1.26)
+  tloc   18-21 above over inside   +6.92 (t +2.05) | 22-26 above over below   +9.26 (t +1.08)
+
+=== TEST 2: noise engine pts / day by bucket, LONG ===
+  gp     18-21 top over bot   -2.57 (t -1.06) | 22-26 top over bot   -4.31 (t -0.66)
+  dpoc   18-21 top over bot   -1.32 (t -0.61) | 22-26 top over bot   +2.74 (t +0.38)
+  dtpoc  18-21 top over bot   +1.05 (t +0.50) | 22-26 top over bot   +3.98 (t +0.56)
+  vaw    18-21 top over bot   -1.19 (t -0.57) | 22-26 top over bot   +8.23 (t +1.38)
+  pocpos 18-21 top over bot   -0.38 (t -0.18) | 22-26 top over bot   -3.37 (t -0.54)
+  sp     18-21 top over bot   -2.06 (t -1.01) | 22-26 top over bot   -4.73 (t -0.82)
+  bal    18-21 top over bot   -1.52 (t -0.71) | 22-26 top over bot  +12.66 (t +2.18)
+  pos    18-21 0.0 over 1.0   +1.77 (t +1.06) | 22-26 0.0 over 1.0   +6.59 (t +1.76)
+  loc    18-21 above over below   +4.81 (t +2.51) | 22-26 above over below   +2.29 (t +0.33)
+  tloc   18-21 above over below   +4.36 (t +2.14) | 22-26 above over inside   +1.62 (t +0.46)
+
+=== TEST 2: noise engine pts / day by bucket, SHORT ===
+  gp     18-21 top over bot   -3.60 (t -1.03) | 22-26 top over bot   -0.04 (t -0.01)
+  dpoc   18-21 top over bot   +3.94 (t +1.16) | 22-26 top over bot   +2.79 (t +0.53)
+  dtpoc  18-21 top over bot   +5.73 (t +1.75) | 22-26 top over bot   -5.31 (t -1.09)
+  vaw    18-21 top over bot   +2.69 (t +0.78) | 22-26 top over bot  -12.80 (t -2.56)
+  pocpos 18-21 top over bot   -0.86 (t -0.26) | 22-26 top over bot   -1.74 (t -0.40)
+  sp     18-21 top over bot   -3.26 (t -1.11) | 22-26 top over bot   -4.05 (t -0.92)
+  bal    18-21 top over bot   +0.44 (t +0.13) | 22-26 top over bot  -10.35 (t -2.21)
+  pos    18-21 0.0 over 1.0   +0.29 (t +0.10) | 22-26 0.0 over 1.0   +3.95 (t +1.03)
+  loc    18-21 below over inside   +5.46 (t +1.35) | 22-26 above over below   +8.89 (t +1.62)
+  tloc   18-21 above over inside   +5.18 (t +1.99) | 22-26 above over below   +8.31 (t +1.54)
+
+  bucket means (both sides, pts/day; 18-21 | 22-26):
+  gp     0: +7.93 | +7.90 ; 1: +3.15 | +14.88 ; 2: +1.75 | +3.56
+  dpoc   0: +3.59 | +7.24 ; 1: +4.00 | +6.73 ; 2: +6.21 | +12.78
+  dtpoc  0: +1.22 | +9.27 ; 1: +4.57 | +8.36 ; 2: +8.01 | +7.93
+  vaw    0: +3.56 | +11.47 ; 1: +5.18 | +7.47 ; 2: +5.07 | +6.89
+  pocpos 0: +4.03 | +11.68 ; 1: +6.99 | +6.46 ; 2: +2.79 | +6.57
+  sp     0: +5.14 | +10.68 ; 1: +8.86 | +13.57 ; 2: -0.18 | +1.91
+  bal    0: +6.32 | +7.41 ; 1: +2.24 | +8.52 ; 2: +5.24 | +9.72
+  pos    0.0: +5.27 (n 649) | +12.58 (n 616) ; 1.0: +3.21 (n 313) | +2.04 (n 382)
+  loc    above: +7.44 (n 410) | +13.17 (n 363) ; inside: +1.50 (n 298) | +8.85 (n 362) ; below: +3.66 (n 254) | +1.99 (n 273)
+  tloc   above: +8.00 (n 406) | +12.94 (n 373) ; inside: +1.09 (n 302) | +7.81 (n 340) ; below: +3.35 (n 254) | +3.67 (n 285)
+
+=== TEST 3: entry location vs the prior-day value area (points per trade) ===
+  18-21: with   +4.2 (n 718) | inside   +8.5 (n 150) | against   +3.8 (n 31)
+  22-26: with   +7.7 (n 911) | inside   -2.9 (n 154) | against +137.9 (n 14)
+
+=== TEST 4: the strongest single filters, applied (engine pts/day, daily std, mean/std; 18-21 | 22-26). Chosen only from TEST 2 passes. ===
+  all days                           18-21: +4.60 std  49.2 m/s 0.093 (trades on 100%) | 22-26: +8.55 std  93.6 m/s 0.091 (trades on 100%)
+  gp bottom third only               18-21: +2.40 std  33.9 m/s 0.071 (trades on 30%) | 22-26: +2.41 std  72.5 m/s 0.033 (trades on 30%)
+  gp top third only                  18-21: +0.53 std  20.7 m/s 0.025 (trades on 30%) | 22-26: +1.32 std  34.6 m/s 0.038 (trades on 37%)
+  dpoc bottom third only             18-21: +1.20 std  23.7 m/s 0.050 (trades on 33%) | 22-26: +2.53 std  42.6 m/s 0.059 (trades on 35%)
+  dpoc top third only                18-21: +2.07 std  34.3 m/s 0.060 (trades on 33%) | 22-26: +3.46 std  68.8 m/s 0.050 (trades on 27%)
+  dtpoc bottom third only            18-21: +0.41 std  21.3 m/s 0.019 (trades on 33%) | 22-26: +3.10 std  43.6 m/s 0.071 (trades on 33%)
+  dtpoc top third only               18-21: +2.67 std  34.2 m/s 0.078 (trades on 33%) | 22-26: +2.22 std  66.5 m/s 0.033 (trades on 28%)
+  vaw bottom third only              18-21: +1.19 std  20.3 m/s 0.058 (trades on 33%) | 22-26: +3.65 std  44.4 m/s 0.082 (trades on 32%)
+  vaw top third only                 18-21: +1.69 std  36.6 m/s 0.046 (trades on 33%) | 22-26: +2.35 std  69.0 m/s 0.034 (trades on 34%)
+  pocpos bottom third only           18-21: +1.34 std  30.3 m/s 0.044 (trades on 33%) | 22-26: +4.59 std  50.1 m/s 0.092 (trades on 39%)
+  pocpos top third only              18-21: +0.93 std  27.7 m/s 0.034 (trades on 33%) | 22-26: +2.08 std  64.0 m/s 0.032 (trades on 32%)
+  sp bottom third only               18-21: +1.72 std  27.5 m/s 0.062 (trades on 33%) | 22-26: +3.29 std  39.1 m/s 0.084 (trades on 31%)
+  sp top third only                  18-21: -0.06 std  25.1 m/s -0.002 (trades on 33%) | 22-26: +0.68 std  67.9 m/s 0.010 (trades on 35%)
+  bal bottom third only              18-21: +2.11 std  25.5 m/s 0.083 (trades on 33%) | 22-26: +2.69 std  49.0 m/s 0.055 (trades on 36%)
+  bal top third only                 18-21: +1.75 std  33.2 m/s 0.053 (trades on 33%) | 22-26: +3.46 std  68.7 m/s 0.050 (trades on 36%)
+  positive gamma only                18-21: +1.05 std  25.3 m/s 0.041 (trades on 33%) | 22-26: +0.78 std  35.6 m/s 0.022 (trades on 38%)
+  negative gamma only                18-21: +3.55 std  42.3 m/s 0.084 (trades on 67%) | 22-26: +7.76 std  86.6 m/s 0.090 (trades on 62%)
+  open above prior VA only           18-21: +3.17 std  28.8 m/s 0.110 (trades on 43%) | 22-26: +4.79 std  47.9 m/s 0.100 (trades on 36%)
+  open inside prior VA only          18-21: +0.47 std  26.4 m/s 0.018 (trades on 31%) | 22-26: +3.21 std  44.0 m/s 0.073 (trades on 36%)
+  open below prior VA only           18-21: +0.97 std  30.1 m/s 0.032 (trades on 26%) | 22-26: +0.55 std  67.6 m/s 0.008 (trades on 27%)
