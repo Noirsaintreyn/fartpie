@@ -1,0 +1,22 @@
+
+=== 150K: UNCAPPED vs LUCID CONTRACT CAPS (eval cap 100 MNQ assumed; funded by account profit) | 77 monthly starts, room rule, cost 0.5 pt ===
+  concurrency approximated by engine windows (RA / V15a to 12:00, M1 / R1 / RULES to close, overnight legs together); trades over the cap are cut to the room left or skipped
+  plan | year-1 net | year-2 net / month | payouts / month yr2 | months with 0 payouts (yr2) | out-of-pocket
+##### 150K: FULL STATS, Lucid caps, room rule, cost 0.5, fee $244 #####
+--- ONE ACCOUNT (eval started every 2nd day; funded = F0) ---
+  CURRENT: ask asap  2018-21 starts: pass 95% | funded paid >=1: 90% of funded (all evals 85%) | >=2: 35% | >=3: 19% | payouts per funded 1.66 per eval 1.58 | avg payout $1,887 | net per eval $2,735 | blown before 1st payout 10% | blown ever 88% | days: pass 76, funded->1st 15, between 15
+  CURRENT: ask asap  2022-25 starts: pass 80% | funded paid >=1: 59% of funded (all evals 47%) | >=2: 39% | >=3: 37% | payouts per funded 2.01 per eval 1.62 | avg payout $2,484 | net per eval $3,775 | blown before 1st payout 41% | blown ever 67% | days: pass 39, funded->1st 10, between 13
+  WAIT: B=4000       2018-21 starts: pass 95% | funded paid >=1: 84% of funded (all evals 80%) | >=2: 51% | >=3: 38% | payouts per funded 2.39 per eval 2.27 | avg payout $2,370 | net per eval $5,126 | blown before 1st payout 16% | blown ever 70% | days: pass 76, funded->1st 19, between 16
+  WAIT: B=4000       2022-25 starts: pass 80% | funded paid >=1: 56% of funded (all evals 45%) | >=2: 41% | >=3: 39% | payouts per funded 2.04 per eval 1.64 | avg payout $2,613 | net per eval $4,045 | blown before 1st payout 44% | blown ever 67% | days: pass 39, funded->1st 10, between 13
+  WAIT: B=5000       2018-21 starts: pass 95% | funded paid >=1: 83% of funded (all evals 78%) | >=2: 53% | >=3: 46% | payouts per funded 2.64 per eval 2.50 | avg payout $2,615 | net per eval $6,296 | blown before 1st payout 17% | blown ever 62% | days: pass 76, funded->1st 28, between 18
+  WAIT: B=5000       2022-25 starts: pass 80% | funded paid >=1: 53% of funded (all evals 43%) | >=2: 42% | >=3: 39% | payouts per funded 1.97 per eval 1.59 | avg payout $2,680 | net per eval $4,012 | blown before 1st payout 47% | blown ever 71% | days: pass 39, funded->1st 10, between 14
+--- 10-ACCOUNT FLEET (3 per payout, 5 funded, held reserve), 77 monthly starts Feb 2018 - Jun 2024 ---
+  CURRENT: ask asap  year-1 net: mean $18,296, median $10,661, worst start $-254 | out-of-pocket $353 | months to a full fleet 9.5 | rescue re-buys 0.6
+                     year-2 net/month: mean $7,364, median $7,697, p10 $860, p90 $12,738 | starts 2018-21 $6,165 vs 2022-24 $9,531
+                     year-2 monthly: net p10 $0 / p50 $2,963 / p90 $25,780, worst $-4,880, negative months 9% | payouts/month 3.34: 0 42%, 1 7%, 2 3%, 3 4%, 4+ 45%
+  WAIT: B=4000       year-1 net: mean $25,499, median $15,359, worst start $-488 | out-of-pocket $364 | months to a full fleet 9.1 | rescue re-buys 0.6
+                     year-2 net/month: mean $8,658, median $10,063, p10 $1,972, p90 $13,030 | starts 2018-21 $7,336 vs 2022-24 $11,049
+                     year-2 monthly: net p10 $0 / p50 $7,024 / p90 $25,780, worst $-4,880, negative months 8% | payouts/month 3.56: 0 37%, 1 5%, 2 4%, 3 5%, 4+ 48%
+  WAIT: B=5000       year-1 net: mean $23,536, median $10,816, worst start $-488 | out-of-pocket $371 | months to a full fleet 9.1 | rescue re-buys 0.6
+                     year-2 net/month: mean $8,990, median $9,922, p10 $1,539, p90 $13,552 | starts 2018-21 $7,794 vs 2022-24 $11,151
+                     year-2 monthly: net p10 $-244 / p50 $8,100 / p90 $26,024, worst $-4,880, negative months 10% | payouts/month 3.57: 0 36%, 1 4%, 2 6%, 3 4%, 4+ 50%
