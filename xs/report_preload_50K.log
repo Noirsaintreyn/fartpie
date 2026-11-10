@@ -1,0 +1,12 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+ACCX 50K: {'mll': 2000, 'target': 3000, 'scale': 1.0, 'qday': 150, 'cap': 2000, 'fee': 88}
+EVAL-PHASE daily P&L (fresh account sizing), 1992 days: mean $114 | median $9 | p10 $-403 | p90 $653 | best $6,659 | worst $-2,000
+  P(day >= +500) 13% | P(day >= +300) 21% | P(day <= -500) 7% | P(day <= -1000) 1% | P(flat day) 0%
+
+PRE-LOAD test: eval begins with +$X banked on day 1 (by hand), algo runs from day 2. starts every 2nd day 2018-2025
+  pre-load $   0: pass 87% | fail 13% | median days to pass 47 | median to 1st payout 74 | paid-once 69% | payouts/eval 1.81
+  pre-load $ 500: pass 89% | fail 11% | median days to pass 41 | median to 1st payout 64 | paid-once 71% | payouts/eval 1.93
+  pre-load $1000: pass 91% | fail 9% | median days to pass 32 | median to 1st payout 52 | paid-once 72% | payouts/eval 2.01
