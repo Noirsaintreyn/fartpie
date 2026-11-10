@@ -1,0 +1,12 @@
+29936 samples
+  GMM K=4 trained cluster signs      18-21:  +2.80/d t +1.14 | 22-26: +11.95/d t +2.48 | trades 6378
+      random-sign 22-26 mean pts/day: median -0.25, 95th pct +8.59
+  GMM K=6 trained cluster signs      18-21:  +4.18/d t +1.74 | 22-26: +10.20/d t +2.31 | trades 5650
+      random-sign 22-26 mean pts/day: median -1.04, 95th pct +7.74
+  GMM K=8 trained cluster signs      18-21:  +3.63/d t +1.36 | 22-26: +10.51/d t +2.37 | trades 6245
+      random-sign 22-26 mean pts/day: median -1.14, 95th pct +6.68
+
+(B) VVG: flagged 252 of 2903 days (8.7%); per year 2015:12 2016:16 2017:8 2018:29 2019:16 2020:33 2021:35 2022:27 2023:21 2024:25 2025:26 2026:4
+  reversal-from-peak frequency 100.0%; mean peak-to-close giveback 104.6 pts
+  fade-30-min trade 14-21: -1.16 pts/day (trades 110, mean per trade -10.7)
+  fade-30-min trade 22-26: +0.18 pts/day (trades 102, mean per trade +1.8)
