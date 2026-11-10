@@ -1,0 +1,83 @@
+candidates 17,391 | coverage: EY 100%, SY 96%, BM 97%, MCAP 97%, REVG 100%, GM 72%, NM 96%, ROE 90%, SURP 100%, EREACT 100%, DSE 100%, DTE 100%
+medians 2023-26: EY 0.0376, SY 0.213, BM 0.0915, MCAP 26, REVG 0.105, GM 0.479, NM 0.134, ROE 0.274, SURP 5.78, EREACT -0.00603, DSE 31, DTE 32
+
+=== TEST 1 per trade: bucket | 2019-22 (CHOOSE): n, ret, win, chop-out, runner | 2023-26 (JUDGE) ===
+  EY  (cuts 0.0211, 0.0446)
+    1 low    n 1,982 +0.46% win 33% chop 51% run 10% | n 2,618 +0.35% win 33% chop 51% run 11%
+    2 mid    n 1,982 +0.23% win 33% chop 52% run  9% | n 4,562 +0.27% win 32% chop 52% run  9%
+    3 high   n 1,983 +0.37% win 33% chop 51% run 10% | n 4,264 +0.29% win 33% chop 51% run 10%
+  SY  (cuts 0.172, 0.483)
+    1 low    n 1,822 +0.35% win 33% chop 52% run 11% | n 5,059 +0.32% win 33% chop 51% run 11%
+    2 mid    n 1,822 +0.21% win 33% chop 51% run  9% | n 2,881 +0.28% win 33% chop 52% run 10%
+    3 high   n 1,823 +0.49% win 33% chop 51% run 10% | n 3,206 +0.23% win 32% chop 51% run  8%
+  BM  (cuts 0.0548, 0.147)
+    1 low    n 1,865 +0.35% win 32% chop 52% run 10% | n 3,757 +0.30% win 31% chop 53% run 10%
+    2 mid    n 1,864 +0.49% win 35% chop 50% run 11% | n 3,752 +0.23% win 33% chop 51% run 10%
+    3 high   n 1,865 +0.28% win 31% chop 53% run  9% | n 3,790 +0.35% win 34% chop 51% run 10%
+  MCAP  (cuts 25.3, 26.3)
+    1 low    n 1,864 +0.50% win 34% chop 50% run 12% | n 2,958 +0.08% win 33% chop 51% run 10%
+    2 mid    n 1,865 +0.25% win 31% chop 52% run  9% | n 3,730 +0.32% win 32% chop 53% run 10%
+    3 high   n 1,865 +0.37% win 34% chop 51% run  9% | n 4,611 +0.41% win 33% chop 51% run 10%
+  REVG  (cuts 0.0911, 0.23)
+    1 low    n 1,953 +0.54% win 34% chop 50% run 11% | n 5,218 +0.29% win 32% chop 52% run  9%
+    2 mid    n 2,011 +0.19% win 32% chop 51% run  9% | n 3,814 +0.16% win 31% chop 51% run  9%
+    3 high   n 1,983 +0.33% win 32% chop 52% run 11% | n 2,412 +0.52% win 36% chop 51% run 14%
+  GM  (cuts 0.271, 0.611)
+    1 low    n 1,242 +0.37% win 31% chop 52% run 10% | n 2,554 +0.20% win 33% chop 52% run  9%
+    2 mid    n 1,288 +0.31% win 35% chop 51% run 10% | n 3,054 +0.32% win 33% chop 51% run 10%
+    3 high   n 1,266 +0.44% win 34% chop 51% run 11% | n 3,171 +0.43% win 33% chop 51% run 12%
+  NM  (cuts 0.0545, 0.209)
+    1 low    n 1,858 +0.43% win 32% chop 51% run 10% | n 2,528 +0.20% win 33% chop 50% run  8%
+    2 mid    n 1,889 +0.16% win 31% chop 53% run  9% | n 4,915 +0.29% win 33% chop 52% run 10%
+    3 high   n 1,875 +0.41% win 34% chop 51% run 11% | n 3,681 +0.31% win 32% chop 51% run 10%
+  ROE  (cuts 0.183, 0.345)
+    1 low    n 1,784 +0.31% win 32% chop 51% run  9% | n 3,298 +0.40% win 34% chop 51% run 11%
+    2 mid    n 1,807 +0.42% win 32% chop 52% run 10% | n 3,271 +0.23% win 34% chop 49% run 10%
+    3 high   n 1,810 +0.35% win 34% chop 51% run 10% | n 3,736 +0.28% win 32% chop 53% run 10%
+  SURP  (cuts 2.31, 12.9)
+    1 low    n 1,958 +0.23% win 33% chop 51% run 11% | n 3,755 +0.18% win 31% chop 53% run  9%
+    2 mid    n 2,002 +0.37% win 33% chop 51% run  9% | n 4,751 +0.43% win 34% chop 50% run 11%
+    3 high   n 1,987 +0.45% win 33% chop 52% run 10% | n 2,938 +0.23% win 32% chop 51% run 10%
+  EREACT  (cuts -0.0251, 0.0233)
+    1 low    n 1,956 +0.28% win 34% chop 49% run 10% | n 4,644 +0.38% win 33% chop 51% run 10%
+    2 mid    n 2,004 +0.48% win 33% chop 51% run 11% | n 2,906 +0.37% win 32% chop 52% run 10%
+    3 high   n 1,987 +0.29% win 32% chop 54% run  9% | n 3,894 +0.13% win 33% chop 51% run 10%
+  DSE
+    0-4      n   541 +0.21% win 37% chop 48% run 12% | n   919 +0.36% win 34% chop 50% run 11%
+    21+      n 3,937 +0.37% win 32% chop 52% run 10% | n 7,601 +0.32% win 32% chop 51% run 10%
+    5-20     n 1,469 +0.34% win 32% chop 50% run 10% | n 2,924 +0.22% win 33% chop 52% run  9%
+  DTE
+    1-3      n   289 +0.88% win 31% chop 56% run 15% | n   561 +0.34% win 29% chop 55% run 15%
+    16+      n 4,578 +0.32% win 33% chop 51% run 10% | n 8,708 +0.30% win 33% chop 51% run 10%
+    4-15     n 1,080 +0.32% win 31% chop 52% run  8% | n 2,175 +0.27% win 33% chop 51% run  9%
+
+  SUMMARY (best / worst bucket chosen on 2019-22): ret spread 2019-22 -> same buckets 2023-26 | chop-out gap (worst - best) 2019-22 -> 2023-26
+    REVG    best 1 low    worst 2 mid    +0.36% -> +0.13% | chop +1% -> -0%  
+    GM      best 3 high   worst 2 mid    +0.13% -> +0.11% | chop -0% -> +0%  HOLDS
+    EY      best 1 low    worst 2 mid    +0.23% -> +0.08% | chop +2% -> +1%  HOLDS
+    DTE     best 1-3      worst 4-15     +0.57% -> +0.07% | chop -4% -> -4%  
+    SURP    best 3 high   worst 1 low    +0.22% -> +0.05% | chop -1% -> +2%  HOLDS
+    EREACT  best 2 mid    worst 1 low    +0.20% -> -0.02% | chop -3% -> -1%  
+    DSE     best 21+      worst 0-4      +0.16% -> -0.04% | chop -5% -> -1%  
+    SY      best 3 high   worst 2 mid    +0.28% -> -0.05% | chop +0% -> +1%  
+    NM      best 1 low    worst 2 mid    +0.28% -> -0.09% | chop +3% -> +2%  
+    BM      best 2 mid    worst 3 high   +0.21% -> -0.12% | chop +3% -> -1%  
+    ROE     best 2 mid    worst 1 low    +0.11% -> -0.17% | chop -1% -> +2%  
+    MCAP    best 1 low    worst 2 mid    +0.26% -> -0.25% | chop +2% -> +2%  
+
+=== TEST 2 the 6-slot book: CAGR / max DD 2019-22 (CHOOSE) | 2023-26 (JUDGE) ===
+  live (ratio order, no skip)         36.7% / DD -11.2% |  35.0% / DD -13.1%
+  MCAP: order ratio + MCAP            36.9% / DD -11.0% |  21.5% / DD -19.3%
+  DSE: skip 0-4                       35.6% / DD -11.8% |  27.9% / DD -12.8%
+  DTE: order ratio + DTE              35.6% / DD -14.3% |  31.1% / DD -12.6%
+  EY: order ratio + EY                35.3% / DD -11.8% |  27.9% / DD -16.7%
+  REVG: skip 2 mid                    35.0% / DD -15.2% |  39.9% / DD -11.5%
+  SY: order ratio + SY                34.1% / DD -15.8% |  27.6% / DD -17.1%
+  GM: order ratio + GM                33.9% / DD -11.7% |  25.0% / DD -15.1%
+  DSE: order ratio + DSE              33.1% / DD -11.5% |  26.4% / DD -14.4%
+  REVG: order ratio + REVG            32.2% / DD -21.8% |  34.8% / DD -12.9%
+  EY: skip 2 mid                      31.7% / DD -16.1% |  35.6% / DD -11.4%
+  NM: order ratio + NM                31.1% / DD -14.0% |  28.2% / DD -13.5%
+  BM: order ratio + BM                31.1% / DD -14.1% |  20.5% / DD -14.8%
+  -> 24 rules; 0 beat live in BOTH periods | chosen on 2019-22: MCAP: order ratio + MCAP -> 2023-26 21.5% vs live 35.0% (does not beat live)
+  by year, live vs chosen: 2019 +42% vs +41% | 2020 +77% vs +84% | 2021 +33% vs +36% | 2022 +4% vs -1% | 2023 +60% vs +50% | 2024 +29% vs +8% | 2025 +19% vs +15% | 2026 +25% vs +11%

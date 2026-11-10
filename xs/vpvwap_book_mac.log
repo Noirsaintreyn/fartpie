@@ -1,0 +1,16 @@
+  no bars SPY
+candidates 17,391; PVWD thirds cut at 0.26 / 0.58 ATR (2019-22) | eligible: F1 11,945, F2 7,458, F3 2,750
+
+=== the 6-slot book: CAGR / max DD 2019-22 (CHOOSE) | 2023-26 (JUDGE) | trades, slot use ===
+  live (ratio order, no filter)             36.7% / DD -11.2% |  35.0% / DD -13.1% | 3,690 trades, slots used 94%
+  F1 skip inside/below value & PVWD low     28.4% / DD -17.1% |  27.3% / DD -13.7% | 3,200 trades, slots used 92% | win 34%, avg +0.43%
+  F2 above value OR PVWD top third          12.1% / DD -24.0% |  18.9% / DD -17.7% | 2,681 trades, slots used 86% | win 34%, avg +0.33%
+  F3 full checklist                         13.4% / DD -21.3% |   5.3% / DD -26.6% | 1,712 trades, slots used 66% | win 39%, avg +0.34%
+  O1 order ratio + VP/VWAP score            31.8% / DD -17.5% |  34.1% / DD -15.6% | 3,615 trades, slots used 93% | win 34%, avg +0.41%
+  O2 order ratio + MIG + VREC               34.3% / DD -14.8% |  24.8% / DD -17.5% | 3,714 trades, slots used 93% | win 33%, avg +0.36%
+  -> chosen on 2019-22: O2 order ratio + MIG + VREC -> 2023-26 24.8% vs live 35.0% (does not beat live)
+  by year F1 vs live: 2019 +49%/+42% | 2020 +60%/+77% | 2021 +28%/+33% | 2022 -11%/+4% | 2023 +60%/+60% | 2024 +20%/+29% | 2025 +13%/+19% | 2026 +12%/+25%
+  by year F2 vs live: 2019 +35%/+42% | 2020 +28%/+77% | 2021 +16%/+33% | 2022 -21%/+4% | 2023 +39%/+60% | 2024 +17%/+29% | 2025 -1%/+19% | 2026 +19%/+25%
+  by year F3 vs live: 2019 +14%/+42% | 2020 +30%/+77% | 2021 +25%/+33% | 2022 -11%/+4% | 2023 +11%/+60% | 2024 +7%/+29% | 2025 -14%/+19% | 2026 +19%/+25%
+  by year O1 vs live: 2019 +45%/+42% | 2020 +62%/+77% | 2021 +36%/+33% | 2022 -6%/+4% | 2023 +56%/+60% | 2024 +30%/+29% | 2025 +14%/+19% | 2026 +29%/+25%
+  by year O2 vs live: 2019 +47%/+42% | 2020 +69%/+77% | 2021 +31%/+33% | 2022 +0%/+4% | 2023 +48%/+60% | 2024 +19%/+29% | 2025 +4%/+19% | 2026 +25%/+25%
