@@ -1749,7 +1749,7 @@ if __name__ == '__main__':
             except Exception as ex: print(f'  ! daily read: {str(ex)[:100]}')
         if mins >= 9 * 60 and st.get('morning') != today:                    # 09:00 ET: open positions
             args.update_gamma = INCLUDE_QQQ; rows, meta = scan(args); args.update_gamma = False; show(rows, meta)
-            if os.getenv('POSITIONS_POST', '0') != '1' or post_positions(rows, meta): st['morning'] = today; _save(st)   # Nov 10 2026: Discord = signals only, so no 09:00 positions card unless POSITIONS_POST=1
+            if os.getenv('POSITIONS_POST', '1') != '1' or post_positions(rows, meta): st['morning'] = today; _save(st)   # Nov 10 2026: Discord = signals + open positions (set POSITIONS_POST=0 to silence)
             check_stale(rows, st); post_new_signals(rows, meta, st)             # premarket flips on held names -> exit-at-open alert
             if st.get('brief') != today:  # 09:00 ET: the /brief, posted every weekday
                 try:
