@@ -1,0 +1,25 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+
+=== A. S6 + room rule (current) | ramp fleet (1 eval first, +2 per payout, 5 slots, replace drops), 77 monthly starts Feb 2018 - Jun 2024, STEADY STATE = months after all 5 slots filled ===
+  months to first payout median 4 | months to fill 5 slots median 6.4 (p25-p75 4.5-8.6) | out-of-pocket fees avg $131
+  steady state per start: net/month avg $3,680 (median $3,643) | payouts/month 2.63 | LOSING months (net<0) avg 16% | months with ZERO payouts 52% | worst month avg $-440, worst ever $-440
+  pooled by calendar year (all starts): 2018: +649/mo lose 8% zero 83% | 2019: +1,226/mo lose 3% zero 74% | 2020: +1,800/mo lose 7% zero 59% | 2021: +2,266/mo lose 14% zero 46% | 2022: +2,479/mo lose 5% zero 52% | 2023: +4,253/mo lose 1% zero 28% | 2024: +5,819/mo lose 1% zero 48% | 2025: +3,361/mo lose 42% zero 67% | 2026: +0/mo lose 0% zero 100%
+  pooled 2018-21 losing 10% zero-payout 54% | 2022-26 losing 14% zero-payout 51%
+  monthly net distribution pooled: p5 $-440 p25 $0 median $0 p75 $6,356 p95 $15,930
+
+=== I. current best: x0.5 bottom-third gap | ramp fleet (1 eval first, +2 per payout, 5 slots, replace drops), 77 monthly starts Feb 2018 - Jun 2024, STEADY STATE = months after all 5 slots filled ===
+  months to first payout median 4 | months to fill 5 slots median 6.6 (p25-p75 4.4-10.0) | out-of-pocket fees avg $123
+  steady state per start: net/month avg $3,972 (median $4,275) | payouts/month 2.65 | LOSING months (net<0) avg 13% | months with ZERO payouts 55% | worst month avg $-424, worst ever $-440
+  pooled by calendar year (all starts): 2018: +922/mo lose 0% zero 78% | 2019: +686/mo lose 11% zero 80% | 2020: +1,827/mo lose 15% zero 65% | 2021: +987/mo lose 21% zero 74% | 2022: +3,550/mo lose 16% zero 55% | 2023: +2,608/mo lose 16% zero 63% | 2024: +5,635/mo lose 10% zero 49% | 2025: +5,299/mo lose 9% zero 48% | 2026: +0/mo lose 0% zero 100%
+  pooled 2018-21 losing 17% zero-payout 72% | 2022-26 losing 12% zero-payout 54%
+  monthly net distribution pooled: p5 $-440 p25 $0 median $0 p75 $6,528 p95 $16,200
+
+=== P. I + day-type x1.0/x0.5 (cut low only) | ramp fleet (1 eval first, +2 per payout, 5 slots, replace drops), 77 monthly starts Feb 2018 - Jun 2024, STEADY STATE = months after all 5 slots filled ===
+  months to first payout median 3 | months to fill 5 slots median 5.8 (p25-p75 3.9-8.2) | out-of-pocket fees avg $109
+  steady state per start: net/month avg $4,253 (median $4,259) | payouts/month 2.76 | LOSING months (net<0) avg 12% | months with ZERO payouts 51% | worst month avg $-482, worst ever $-880
+  pooled by calendar year (all starts): 2018: +3,695/mo lose 0% zero 0% | 2019: +1,024/mo lose 0% zero 70% | 2020: +1,145/mo lose 15% zero 61% | 2021: +3,142/mo lose 6% zero 47% | 2022: +3,359/mo lose 11% zero 54% | 2023: +4,011/mo lose 9% zero 49% | 2024: +6,189/mo lose 8% zero 41% | 2025: +4,741/mo lose 18% zero 58% | 2026: +0/mo lose 0% zero 100%
+  pooled 2018-21 losing 8% zero-payout 55% | 2022-26 losing 11% zero-payout 51%
+  monthly net distribution pooled: p5 $-440 p25 $0 median $0 p75 $8,538 p95 $17,762
