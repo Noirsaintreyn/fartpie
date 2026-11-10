@@ -1,0 +1,10 @@
+bands built
+  V0 mean14 (current)              18-21: +4.79/d t +3.07 std  49.5 m/s 0.097 | 22-26: +8.52/d t +2.99 std  92.3 m/s 0.092 | trades 2087 | corr(log band_end, log |day move|) +0.28
+  V1 median14                      18-21: +5.83/d t +3.43 std  54.0 m/s 0.108 | 22-26: +8.87/d t +2.91 std  98.8 m/s 0.090 | trades 2590 | corr(log band_end, log |day move|) +0.26
+  V2 trimmed14 (drop 2 largest)    18-21: +5.92/d t +3.47 std  54.3 m/s 0.109 | 22-26: +8.42/d t +2.72 std 100.3 m/s 0.084 | trades 2570 | corr(log band_end, log |day move|) +0.28
+  V3 mean30                        18-21: +5.34/d t +3.35 std  50.6 m/s 0.106 | 22-26: +7.59/d t +2.58 std  95.6 m/s 0.079 | trades 2037 | corr(log band_end, log |day move|) +0.26
+  V4 analog mean (k30)             18-21: +5.84/d t +3.79 std  49.0 m/s 0.119 | 22-26: +8.48/d t +2.89 std  95.1 m/s 0.089 | trades 2196 | corr(log band_end, log |day move|) +0.35
+  V5 analog q60                    18-21: +5.05/d t +3.28 std  48.9 m/s 0.103 | 22-26: +7.14/d t +2.86 std  81.1 m/s 0.088 | trades 2210 | corr(log band_end, log |day move|) +0.34
+  V6 analog q75                    18-21: +3.30/d t +2.70 std  38.8 m/s 0.085 | 22-26: +5.97/d t +2.73 std  70.9 m/s 0.084 | trades 1529 | corr(log band_end, log |day move|) +0.35
+
+[exited with code 0]
