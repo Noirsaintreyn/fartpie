@@ -1,0 +1,20 @@
+days 2102 (2017-07-06 - 2026-01-30); base points / day 14-21 +4.35 | 22-26 +12.16
+
+=== A: GMM, k = 6 (BIC) ===
+  cluster | n 14-21 / 22-26 | pts/day 14-21 (t vs rest) | pts/day 22-26 (t vs rest) | PASS
+  0 |  120 /   61 |    +2.1 (t -0.87) |    +8.5 (t -0.40) |
+  1 |   69 /   98 |    +8.2 (t +0.84) |    +8.7 (t -0.51) |
+  2 |  423 /  356 |    +0.0 (t -2.82) |    +9.4 (t -0.81) |
+  3 |  273 /  279 |    +9.6 (t +1.79) |   +17.6 (t +0.97) |
+  4 |  197 /  187 |    +3.4 (t -0.40) |   +14.7 (t +0.44) |
+  5 |   22 /   17 |   +31.6 (t +1.77) |   -13.2 (t -1.49) |
+
+=== B: kNN analogs (60 nearest prior days), forecast of the day's points ===
+  points    14-21: rank IC +0.016 | top third   +8.8 vs bottom third   +2.3 pts/day (t +1.52)
+  points    22-26: rank IC -0.013 | top third  +20.1 vs bottom third   +1.1 pts/day (t +2.63)
+  win prob  14-21: rank IC -0.018 | top third  +10.3 vs bottom third   +1.9 pts/day (t +2.08)
+  win prob  22-26: rank IC +0.052 | top third  +22.9 vs bottom third   +3.0 pts/day (t +2.72)
+
+=== C: sizing by the points forecast ===
+  base                               pts/day all  +8.06 | 14-21  +4.35 | 22-26 +12.16 | std   69.6 | mean/std 0.116 | worst month   -484
+  size x clip(0.5 + rank, .5, 1.5)   pts/day all +10.15 | 14-21  +5.01 | 22-26 +15.84 | std   89.3 | mean/std 0.114 | worst month   -718
