@@ -253,3 +253,23 @@ def site_read():
     if _read['data'] is None:
         return jsonify({'success': False, 'error': 'The read is still building - refresh in a minute.'})
     return jsonify({'success': True, 'read': _read['data'], 'built': int(_read['t'])})
+
+
+@app.route('/api/site/greeks', methods=['GET', 'POST'])
+def site_greeks_push():
+    """webull_greeks.py (Mac) posts the day's chain greeks here"""
+    tok = os.getenv('SITE_TOKEN', '')
+    if not tok or request.headers.get('X-Site-Token', '') != tok:
+        return jsonify({'success': False, 'error': 'forbidden'}), 403
+    if request.method == 'GET':
+        try: return jsonify(json.load(open(os.getenv('GREEKS_FILE', '/tmp/site_greeks.json'))))
+        except Exception: return jsonify({'success': False, 'error': 'none yet'}), 404
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict) or not isinstance(data.get('symbols'), dict):
+        return jsonify({'success': False, 'error': 'bad payload'}), 400
+    try:
+        json.dump(data, open(os.getenv('GREEKS_FILE', '/tmp/site_greeks.json'), 'w'))
+    except Exception as ex:
+        return jsonify({'success': False, 'error': str(ex)[:80]}), 500
+    _read['t'] = 0.0                                        # rebuild the read with the new greeks
+    return jsonify({'success': True})

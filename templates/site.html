@@ -135,9 +135,7 @@ body,button,input,select,table,th,td{font-style:italic}
 <nav aria-label="Main" id="nav">
 <button data-tab="analysis">Daily Analysis</button>
 <button data-tab="screener">Screener</button>
-<button data-tab="options">Options</button>
 <button data-tab="futures">Futures</button>
-<button data-tab="charts">Charts</button>
 <button data-tab="history">History</button>
 <button data-tab="backtest">Backtest</button>
 </nav>
@@ -190,11 +188,6 @@ body,button,input,select,table,th,td{font-style:italic}
 <!-- DAILY ANALYSIS -->
 <section id="tab-analysis" hidden>
 <div class="note-wrap tnr" id="anWrap"><div class="empty">Loading…</div></div>
-</section>
-
-<!-- OPTIONS -->
-<section id="tab-options" hidden>
-<div class="note-wrap tnr" id="opWrap"><div class="empty">Loading…</div></div>
 </section>
 
 <!-- FUTURES -->
@@ -305,7 +298,7 @@ body,button,input,select,table,th,td{font-style:italic}
   var getJSON = function (u) { return fetch(u, { credentials: 'same-origin' }).then(function (r) { if (r.status === 401) { location.href = '/login'; throw new Error('login'); } return r.json(); }); };
 
   // ---------------------------------------------------------------- tabs
-  var TITLES = { options: ['Options', 'Greeks and the options ratio behind the screener. Context, not a signal.'], futures: ['Futures', 'The NQ model: today\'s plan, the levels, the log and the results.'], extremes: ['Highs / Lows', 'When the day\'s low or high is likely in, from the time of day × vector model. Context, not a signal.'], screener: ['Screener', 'Vector flips on the names the options market is watching.'], analysis: ['Daily Analysis', 'Facts for the day: events, price profile, options, and what they mean for the screener and futures.'], mid: ['Mid / Small Book', 'Thirty names, rebalanced every four weeks.'],
+  var TITLES = { futures: ['Futures', 'The NQ model: today\'s plan, the levels, the log and the results.'], extremes: ['Highs / Lows', 'When the day\'s low or high is likely in, from the time of day × vector model. Context, not a signal.'], screener: ['Screener', 'Vector flips on the names the options market is watching.'], analysis: ['Daily Analysis', 'Facts for the day: events, price profile, options, and what they mean for the screener and futures.'], mid: ['Mid / Small Book', 'Thirty names, rebalanced every four weeks.'],
     charts: ['Charts', 'Vector, THOD / TLOD and quantile bands, each on its own timeframe.'], history: ['History', 'Every live trade, at the rule’s fills.'], backtest: ['Backtest', 'The screener against the indexes, 2019 – 2026.'] };
   var tab = 'analysis';
   function setTab(t) {
@@ -362,7 +355,6 @@ body,button,input,select,table,th,td{font-style:italic}
       return '<tr><td style="font-weight:600;color:var(--white)">' + esc(t.name) + '</td><td>' + esc(t.entry) + '</td><td' + (t.open ? ' class="gold"' : '') + '>' + esc(t.exit) + (t.lock ? ' · lock' : '') + '</td><td class="r ' + cls(t.ret) + '" style="font-weight:600">' + pct(t.ret, 2) + '</td><td class="r">' + pct(t.peak, 2) + '</td><td class="r ' + cls(t.ret) + '">' + pct(t.book, 2) + '</td></tr>';
     }).join('');
   }
-  document.addEventListener('click', function (e) { var b = e.target.closest('[data-tk]'); if (b) openChart(b.dataset.tk); });
 
   // ---------------------------------------------------------------- daily analysis (written 09:00 ET; ranges refresh every scan)
   var f2 = function (v) { return v == null ? '–' : Number(v).toFixed(2); };
@@ -603,14 +595,14 @@ body,button,input,select,table,th,td{font-style:italic}
     else h += '<p class="sub">Calendar unavailable.</p>';
     var nw = (R.news || []).slice(0, 6); if (nw.length) h += lis(nw.map(function (n) { return '<b>' + esc(n.tk) + '</b> ' + esc(n.title) + ' <small>' + esc(n.pub) + ' · ' + esc((n.t || '').slice(5, 16)) + '</small>'; }));
     h += '</div>';
-    var rows = ['SPY', 'QQQ', 'IWM'].map(function (k) { var x = I[k]; if (!x || x.error) return { c: ['<b>' + k + '</b>', '–', '–', '–', '–', '–', '–', '–'] }; return { c: ['<b>' + k + '</b>', f1(x.last), (x.gap > 0 ? '+' : '') + x.gap.toFixed(2) + '×', pc0(x.gap_rank), '<b>' + x.size.toFixed(2) + '×</b> (' + x.range_med.toFixed(2) + '% vs ' + x.range_base.toFixed(2) + '%)', pc0(x.gap_fill) + ' vs ' + pc0(x.gap_fill_base), pc0(x.p_up), (x.squeeze ? 'squeeze, ' : '') + 'ADX ' + x.adx] }; });
-    h += '<div class="essay brief"><h3>Markets: what days like this looked like</h3>' + tbl(['', 'Last', 'Gap (20d range)', '|Gap| rank', 'Expected range vs normal', 'Gap fill vs base', 'P(up)', 'State'], rows) +
+    var rows = ['SPY', 'QQQ', 'IWM'].map(function (k) { var x = I[k]; if (!x || x.error) return { c: ['<b>' + k + '</b>', '–', '–', '–', '–', '–', '–'] }; return { c: ['<b>' + k + '</b>', (x.gap > 0 ? '+' : '') + x.gap.toFixed(2) + '×', pc0(x.gap_rank), '<b>' + x.size.toFixed(2) + '×</b> (' + x.range_med.toFixed(2) + '% vs ' + x.range_base.toFixed(2) + '%)', pc0(x.gap_fill) + ' vs ' + pc0(x.gap_fill_base), pc0(x.p_up), (x.squeeze ? 'squeeze, ' : '') + 'ADX ' + x.adx] }; });
+    h += '<div class="essay brief"><h3>Markets: what days like this looked like</h3>' + tbl(['', 'Gap (20d range)', '|Gap| rank', 'Expected range vs normal', 'Gap fill vs base', 'P(up)', 'State'], rows) +
       '<p class="sub">VIX ' + (q.vix != null ? q.vix : '–') + ' · 5-day ' + (q.vix5 != null ? pct(q.vix5) : '–') + ' · open gap ' + (q.vixgap != null ? pct(q.vixgap) : '–') + '. Analogs: the 40 closest past days on gap, HAR range, Yang-Zhang, VIX, trend, squeeze and volume. Size and gap fill have held up out of sample; direction has not (P(up) stays near the base rate).</p></div>';
     var pr = ['NQ', 'QQQ', 'SPY'].filter(function (k) { return P[k] && !P[k].error; }).map(function (k) { var x = P[k], a = x.prior_profile, c = x.composite5, d = k === 'NQ' ? 0 : 2; return { c: ['<b>' + k + '</b>', f1(a.poc, d), f1(a.val, d) + ' – ' + f1(a.vah, d), f1(a.tpo_poc, d), esc(a.shape.split(' ')[0]), f1(c.poc, d), f1(c.val, d) + ' – ' + f1(c.vah, d), x.open == null ? '–' : esc(x.open_vs_va) + ' (' + (x.open_vs_poc > 0 ? '+' : '') + f1(x.open_vs_poc, d) + ' vs POC)'] }; });
     h += '<div class="essay brief"><h3>Volume profile and TPO</h3>' + (pr.length ? tbl(['Prior session', 'POC', 'Value area', 'TPO POC', 'Shape', '5-day POC', '5-day value area', 'Open'], pr) : '<p class="sub">Profile bars unavailable.</p>') + '</div>';
-    var O = R.options || {}, os = O.symbols || {}, ok = Object.keys(os);
-    h += '<div class="essay brief"><h3>Options</h3>' + (O.stale ? '<p class="sub">The greeks feed is ' + (O.age_days == null ? 'missing' : O.age_days + ' days old (last ' + esc(O.asof) + ')') + ', so the lines below are not today\'s.</p>' : '') +
-      (ok.length ? tbl(['', 'GEX', 'DEX', 'ATM IV', 'Skew 25Δ'], ok.map(function (k) { var z = os[k]; return { c: ['<b>' + k + '</b>', z.gex == null ? '–' : (z.gex / 1e9).toFixed(1) + 'B', z.dex == null ? '–' : (z.dex / 1e9).toFixed(1) + 'B', z.iv == null ? '–' : (z.iv * 100).toFixed(1) + '%', z.skew == null ? '–' : z.skew.toFixed(3)] }; })) : '') + '</div>';
+    var O = R.options || {}, os = O.symbols || {}, ok = Object.keys(os), gb = function (v, d, m) { return v == null ? '–' : (v / m).toFixed(d); };
+    h += '<div class="essay brief"><h3>Options</h3>' + (O.missing ? '<p class="sub">No greeks yet: webull_greeks.py has not pushed a chain.</p>' : O.stale ? '<p class="sub">Greeks are ' + O.age_days + ' trading days old (chain of ' + esc(O.asof) + ').</p>' : '<p class="sub">Webull chain of ' + esc(O.asof) + ' (prior close open interest).</p>') +
+      (ok.length ? tbl(['', 'Net GEX /1%', 'Net DEX', 'Vanna', 'Vega /pt', 'Charm /day', 'ATM IV', 'Skew 25Δ', 'Gamma flip', 'Call / put wall'], ok.map(function (k) { var z = os[k]; return { c: ['<b>' + k + '</b>', gb(z.gex, 2, 1e9) + 'B', gb(z.dex, 1, 1e9) + 'B', gb(z.vanna, 1, 1e6) + 'M', gb(z.vega, 1, 1e6) + 'M', gb(z.charm, 1, 1e6) + 'M', z.iv == null ? '–' : (z.iv * 100).toFixed(1) + '%', z.skew == null ? '–' : (z.skew * 100).toFixed(1) + ' pts', z.gamma_flip == null ? '–' : f1(z.gamma_flip, 0), (z.call_wall == null ? '–' : f1(z.call_wall, 0)) + ' / ' + (z.put_wall == null ? '–' : f1(z.put_wall, 0))] }; })) : '') + '</div>';
     var SC = R.screener || {}, sp = SC.positions || [];
     h += '<div class="essay brief"><h3>What it means for the screener</h3>' +
       lis([sp.length ? '<b>' + sp.length + ' of ' + (SC.slots || 6) + ' slots held</b>: ' + sp.map(function (p) { return esc(p.tk) + ' ' + (p.pnl > 0 ? '+' : '') + p.pnl + '% (room to stop ' + p.room + '%)'; }).join(', ') : 'No positions in the snapshot.',
@@ -621,22 +613,12 @@ body,button,input,select,table,th,td{font-style:italic}
     h += '<div class="essay brief"><h3>What it means for futures</h3>' + lis((FU.lines || []).map(esc)) + '<p class="sub"><a href="#" onclick="return window.__tab(\'futures\')" style="color:var(--gold)">Full NQ plan →</a></p></div>';
     el.innerHTML = h;
   }
-  function renderOptionsTab() {
-    var el = $('opWrap'); if (!RD) { el.innerHTML = '<div class="empty">Loading…</div>'; return; }
-    var O = RD.options || {}, os = O.symbols || {}, ok = Object.keys(os), S = SNAPX || {}, W = S.watch || [], h = '<div class="essay brief">';
-    var g = function (v, d, m) { return v == null ? '–' : (v / (m || 1)).toFixed(d); };
-    h += '<h3>Greeks</h3>' + (O.stale ? '<p class="sub">Feed ' + (O.age_days == null ? 'missing' : O.age_days + ' days old, last ' + esc(O.asof)) + '. Not today\'s numbers.</p>' : '<p class="sub">As of ' + esc(O.asof) + '.</p>');
-    h += ok.length ? tbl(['', 'Net GEX', 'Net DEX', 'ATM IV', 'Skew 25Δ', 'Vanna', 'Vega', 'Charm'], ok.map(function (k) { var z = os[k]; return { c: ['<b>' + k + '</b>', g(z.gex, 1, 1e9) + (z.gex == null ? '' : 'B'), g(z.dex, 1, 1e9) + (z.dex == null ? '' : 'B'), z.iv == null ? '–' : (z.iv * 100).toFixed(1) + '%', g(z.skew, 3), g(z.vanna, 1, 1e9), g(z.vega, 1, 1e6), g(z.charm, 1, 1e9)] }; })) : '<p class="sub">No greeks yet.</p>';
-    h += '</div><div class="essay brief"><h3>Options ratio: the screener\'s universe</h3><p class="sub">Option contracts × 100 ÷ shares, trailing 252-day median; the screener trades flips on names at 1.5 or higher.</p>' +
-      (W.length ? tbl(['Ticker', 'Ratio', 'Held'], W.slice(0, 25).map(function (w) { return { cls: w.held ? 'held' : '', c: [esc(w.tk), Number(w.ratio).toFixed(2), w.held ? '●' : ''] }; })) : '<p class="sub">No watch list yet.</p>') + '</div>';
-    el.innerHTML = h;
-  }
   function renderFuturesTab() {
     var el = $('fuWrap'); if (!RD) { el.innerHTML = '<div class="empty">Loading…</div>'; return; }
     var F = RD.futures || {}, n = F.nq || {}, pf = (RD.profile || {}).NQ || {}, a = pf.prior_profile, c = pf.composite5, hist = (SNAPX && SNAPX.reads) || [], h = '';
     h += '<div class="dateline"><span>' + esc(RD.date) + ' · NQ plan</span><span>the model runs in MotiveWave; this page is the plan and the levels</span></div>';
     h += '<div class="essay brief"><h3>Today</h3>' + lis((F.lines || []).map(esc));
-    if (n.open) h += tbl(['RTH open', 'Prior close', 'Gap', 'Gap ÷ 20d range', '|Gap| rank', 'Gap rule', 'Squeeze'], [{ c: [f1(n.open), f1(n.prior_close), (n.gap_pts > 0 ? '+' : '') + f1(n.gap_pts, 1), f1(n.gap_x), pc0(n.gap_rank), F.gap_rule && F.gap_rule.mult < 1 ? '<b class="dn">×0.5 on RA M1 R1 RULES V15a</b>' : 'full size', n.squeeze ? 'on' : 'off'] }]);
+    if (n.gap_pts != null) h += tbl(['Gap', 'Gap ÷ 20d range', '|Gap| rank', 'Gap rule', 'Squeeze'], [{ c: [(n.gap_pts > 0 ? '+' : '') + f1(n.gap_pts, 1), f1(n.gap_x), pc0(n.gap_rank), F.gap_rule && F.gap_rule.mult < 1 ? '<b class="dn">×0.5 on RA M1 R1 RULES V15a</b>' : 'full size', n.squeeze ? 'on' : 'off'] }]);
     h += '</div>';
     if (a) h += '<div class="essay brief"><h3>Levels</h3>' + tbl(['', 'POC', 'Value area', 'High / Low', 'Initial balance', 'Shape', 'Open'], [{ c: ['Prior session', f1(a.poc, 0), f1(a.val, 0) + ' – ' + f1(a.vah, 0), f1(a.hi, 0) + ' / ' + f1(a.lo, 0), a.ib ? f1(a.ib[0], 0) + ' – ' + f1(a.ib[1], 0) : '–', esc(a.shape.split(' ')[0]), esc(pf.open_vs_va || '–')] }, { c: ['5-day composite', f1(c.poc, 0), f1(c.val, 0) + ' – ' + f1(c.vah, 0), f1(c.hi, 0) + ' / ' + f1(c.lo, 0), '–', esc(c.shape.split(' ')[0]), ''] }]) + '</div>';
     if ((F.noise_bands || []).length) h += '<div class="essay brief"><h3>Noise-area bands (14-session average move by time of day)</h3>' + tbl(['By', 'Upper band', 'Lower band'], F.noise_bands.map(function (b) { return { c: [esc(b.t), f1(b.upper), f1(b.lower)] }; })) + '<p class="sub">A close beyond a band at a 30-minute mark is the noise-area break; the long side has been the stronger one.</p></div>';
@@ -644,7 +626,7 @@ body,button,input,select,table,th,td{font-style:italic}
     if (hist.length) h += '<div class="essay brief"><h3>Daily log</h3>' + tbl(['Date', 'NQ gap', '|Gap| rank', 'Size rule', 'QQQ range vs normal', 'High-impact'], hist.map(function (r) { var f = r.futures || {}, q = (r.indices || {}).QQQ || {}, nn = f.nq || {}, hi = (r.events || []).filter(function (e) { return e.date === r.date && e.impact === 'High'; }).map(function (e) { return e.title; }).join(', '); return { c: [esc(r.date), nn.gap_pts == null ? '–' : (nn.gap_pts > 0 ? '+' : '') + f1(nn.gap_pts, 1), pc0(nn.gap_rank), f.gap_rule && f.gap_rule.mult < 1 ? '×0.5' : 'full', q.size ? q.size.toFixed(2) + '×' : '–', esc(hi || '–')] }; })) + '</div>';
     el.innerHTML = h;
   }
-  function renderAllRead() { renderAnalysisRead(); renderOptionsTab(); renderFuturesTab(); }
+  function renderAllRead() { renderAnalysisRead(); renderFuturesTab(); }
   function loadRead() { getJSON('/api/site/read').then(function (j) { if (j.success) { RD = j.read; renderAllRead(); } else if (!RD) $('anWrap').innerHTML = '<div class="empty">' + esc(j.error || 'The read is not available yet.') + '</div>'; }).catch(function () {}); }
   window.__tab = function (t) { setTab(t); return false; };
   function loadSnap() { getJSON('/api/site/snapshot').then(function (j) { SNAPX = j.snapshot; renderSnap(j.snapshot); if (RD) renderAllRead(); }).catch(function () {}); }
@@ -817,7 +799,7 @@ body,button,input,select,table,th,td{font-style:italic}
 
   // ---------------------------------------------------------------- boot
   var t0 = 'analysis'; try { t0 = localStorage.getItem('lap_tab') || t0; } catch (e) {}
-  tfButtons(); setTab(TITLES[t0] && t0 !== 'mid' && t0 !== 'extremes' ? t0 : 'analysis'); loadSnap(); setInterval(loadSnap, 60000); loadRead(); setInterval(loadRead, 600000);
+  tfButtons(); setTab(TITLES[t0] && t0 !== 'mid' && t0 !== 'extremes' && t0 !== 'charts' && t0 !== 'options' ? t0 : 'analysis'); loadSnap(); setInterval(loadSnap, 60000); loadRead(); setInterval(loadRead, 600000);
 })();
 </script>
 </body>

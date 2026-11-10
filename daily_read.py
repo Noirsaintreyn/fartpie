@@ -26,7 +26,36 @@ def _c(key, ttl, fn):
 
 
 # ------------------------------------------------------------------ events: calendar + headlines
+def _helious(path, params, ttl):
+    """api.helious.io with HELIOUS_API_KEY (free plan: ~100 credits a month), cached in process and on disk so a redeploy doesn't re-spend them"""
+    import requests
+    key = os.getenv('HELIOUS_API_KEY', '')
+    if not key: raise RuntimeError('no HELIOUS_API_KEY')
+    ck = path + '?' + '&'.join(f'{k}={v}' for k, v in sorted(params.items())); cf = os.path.join(os.getenv('DATA_DIR', '/tmp'), 'helious_read_cache.json')
+    try: C = json.load(open(cf))
+    except Exception: C = {}
+    if ck in C and time.time() - C[ck]['t'] < ttl: return C[ck]['j']
+    r = requests.get('https://api.helious.io' + path, params=params, headers={'X-Api-Key': key} if key.startswith('hel_') else {}, timeout=20)
+    if r.status_code != 200: raise RuntimeError(f'helious {r.status_code}')
+    j = r.json(); C[ck] = dict(t=time.time(), j=j)
+    try: json.dump(C, open(cf, 'w'))
+    except Exception: pass
+    return j
+
+
 def calendar():
+    """US releases for the week: Helious first (forecast / previous / actual), the free ForexFactory JSON when Helious is unavailable"""
+    try:
+        ev = _helious('/v1/calendar', dict(days_back=1, days_ahead=7, country='US', limit=80), ttl=6 * 3600).get('data', {}).get('events', [])
+        out = []
+        for e in ev:
+            if e.get('impact') not in ('High', 'Medium') or e.get('type') == 'auction': continue
+            t = pd.Timestamp(e['datetime_utc']); t = t.tz_localize('UTC') if t.tzinfo is None else t; t = t.tz_convert(ET)
+            g = lambda *ks: next((str(e[k]) for k in ks if e.get(k) not in (None, '')), '')
+            out.append(dict(when=t.strftime('%a %H:%M'), date=str(t.date()), title=e.get('title', ''), impact=e['impact'], forecast=g('forecast', 'consensus', 'estimate'), previous=g('previous', 'prev'), actual=g('actual')))
+        if out: return sorted(out, key=lambda x: (x['date'], x['when']))
+    except Exception:
+        pass
     import requests
     def get():
         r = requests.get('https://nfs.faireconomy.media/ff_calendar_thisweek.json', timeout=15, headers={'User-Agent': 'Mozilla/5.0'}); r.raise_for_status(); return r.json()
@@ -133,19 +162,22 @@ def profiles(symbols=(('SPY', 'SPY', .05), ('QQQ', 'QQQ', .05), ('NQ', 'NQ=F', 5
 
 # ------------------------------------------------------------------ options greeks (pushed from the Mac)
 def options():
-    f = os.path.join(ROOT, 'live_data', 'greeks_snapshot.json')
-    try: d = json.load(open(f))
-    except Exception: d = None
+    """greeks from webull_greeks.py on the Mac (pushed to /api/site/greeks, or live_data/greeks_snapshot.json); says how old they are"""
+    d = None
+    for f in (os.getenv('GREEKS_FILE', '/tmp/site_greeks.json'), os.path.join(ROOT, 'live_data', 'greeks_snapshot.json')):
+        try: d = json.load(open(f)); break
+        except Exception: pass
+    if d is None and os.getenv('BACKEND_URL') and os.getenv('SITE_TOKEN'):          # the worker has no copy: ask the website
+        try:
+            import requests
+            r = requests.get(os.getenv('BACKEND_URL').rstrip('/') + '/api/site/greeks', headers={'X-Site-Token': os.getenv('SITE_TOKEN')}, timeout=15)
+            if r.ok: d = r.json()
+        except Exception: pass
     today = pd.Timestamp.now(tz=ET).tz_localize(None).normalize()
-    if d:
-        age = (today - pd.Timestamp(d.get('asof', '2000-01-01')).normalize()).days
-        d['age_days'] = age; d['stale'] = age > 3; return d
-    try:                                                                       # fall back to the last row of the research files (stale by construction)
-        g = pd.read_csv(os.path.join(ROOT, 'options_greeks_daily_QQQ.csv'), parse_dates=['date']).sort_values('date').iloc[-1]
-        age = (today - g.date.normalize()).days
-        return dict(asof=str(g.date.date()), age_days=age, stale=True, symbols={'QQQ': dict(gex=float(g.call_gex + g.put_gex), dex=float(g.call_dex + g.put_dex), iv=float(g.atm_iv), skew=float(g.skew_25d))})
-    except Exception:
-        return dict(stale=True, age_days=None, symbols={})
+    if d and d.get('asof'):
+        age = int(np.busday_count(pd.Timestamp(d['asof']).date(), today.date()))
+        d['age_days'] = age; d['stale'] = age > 1; return d
+    return dict(stale=True, age_days=None, symbols={}, missing=True)
 
 
 # ------------------------------------------------------------------ NQ plan
