@@ -1,0 +1,23 @@
+
+##### 3-state HMM. days per state: BEAR 1063 CHOP 625 BULL 293
+  noise engine pts per trade by regime x side (18-21 | 22-26):
+    BEAR  LONG   +5.4 (n330) |  +16.5 (n211)   SHORT  +13.0 (n279) |   +4.0 (n270)
+    CHOP  LONG   +3.7 (n95) |  +14.1 (n202)   SHORT   -3.6 (n100) |   +6.6 (n219)
+    BULL  LONG   +0.5 (n53) |   +1.7 (n78)   SHORT  -10.3 (n68) |   -1.5 (n126)
+  with-regime minus against-regime: +8.3 pts (t +1.91, n 332/398) | -6.3 pts (t -0.78, n 348/337)
+    all trades                       18-21: +8.41/d t +3.06 m/s 0.129 | 22-26: +14.57/d t +2.95 m/s 0.120
+    with-regime only (chop = both)   18-21: +6.48/d t +2.80 m/s 0.118 | 22-26: +9.12/d t +2.76 m/s 0.112
+    against-regime only              18-21: +1.93/d t +1.29 m/s 0.054 | 22-26: +5.45/d t +1.47 m/s 0.060
+  RA: BEL    +6|   -0 (n37/30)  BES    -6|  +24 (n44/23)  CHL    +1|  +11 (n8/25)  CHS   +23|  +17 (n14/33)  BUL   +24|  -27 (n3/13)  BUS   +17|  +12 (n12/14)
+  V15a: BEL   +12|  +13 (n124/79)  BES    +1|  +15 (n102/70)  CHL   +17|  +14 (n21/58)  CHS    -2|  +36 (n18/41)  BUL    +5|   -3 (n18/26)  BUS    -6|  +34 (n16/18)
+
+##### 2-state HMM. days per state: BEAR 1540 BULL 441
+  noise engine pts per trade by regime x side (18-21 | 22-26):
+    BEAR  LONG   +5.8 (n387) |  +15.0 (n385)   SHORT   +8.4 (n352) |   +4.3 (n464)
+    BULL  LONG   -0.8 (n91) |   +6.2 (n106)   SHORT   -3.9 (n95) |   +2.3 (n151)
+  with-regime minus against-regime: +2.6 pts (t +0.76, n 443/482) | -6.8 pts (t -1.21, n 570/536)
+    all trades                       18-21: +8.41/d t +3.06 m/s 0.129 | 22-26: +14.57/d t +2.95 m/s 0.120
+    with-regime only (chop = both)   18-21: +5.10/d t +2.28 m/s 0.096 | 22-26: +4.39/d t +1.48 m/s 0.060
+    against-regime only              18-21: +3.30/d t +2.05 m/s 0.086 | 22-26: +10.18/d t +2.55 m/s 0.104
+  RA: BEL    +7|   +1 (n40/58)  BES    +2|  +25 (n56/53)  BUL    +3|  -16 (n8/10)  BUS   +12|   -2 (n14/17)
+  V15a: BEL   +12|  +12 (n141/132)  BES    +1|  +21 (n115/106)  BUL    +8|   +6 (n22/31)  BUS    -6|  +39 (n21/23)
