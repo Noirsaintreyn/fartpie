@@ -1,0 +1,49 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+  ..20/300 paths done 1s
+  ..40/300 paths done 1s
+  ..60/300 paths done 1s
+  ..80/300 paths done 2s
+  ..100/300 paths done 2s
+  ..120/300 paths done 3s
+  ..140/300 paths done 3s
+  ..160/300 paths done 4s
+  ..180/300 paths done 4s
+  ..200/300 paths done 5s
+  ..220/300 paths done 5s
+  ..240/300 paths done 6s
+  ..260/300 paths done 6s
+  ..280/300 paths done 6s
+  ..300/300 paths done 7s
+
+=== base: 60 resampled paths (blocks of 7 days, 50 eval starts each, 50K Flex) ===
+  A. S6 + room rule (current)                  pass 76% [58%-94%] | paid-once 52% [30%-72%] | payouts/eval 1.41 [0.66-2.45] | net/eval $1,887 [p5 $652 p50 $1,835 p95 $3,349] | P(net<0) 0% | median days to 1st payout 52
+  I. current best: x0.5 bottom-third gap       pass 78% [56%-94%] | paid-once 57% [30%-78%] | payouts/eval 1.61 [0.61-3.00] | net/eval $2,172 [p5 $532 p50 $2,072 p95 $4,388] | P(net<0) 0% | median days to 1st payout 54
+  P. I + day-type x1.0/x0.5 (cut low only)     pass 80% [62%-96%] | paid-once 60% [36%-80%] | payouts/eval 1.73 [0.81-2.97] | net/eval $2,294 [p5 $696 p50 $2,267 p95 $4,433] | P(net<0) 0% | median days to 1st payout 56
+  paired: I>A net/eval in 68% of paths (mean diff $285) | P>I in 67% (mean diff $122, p5-p95 $-762..$1,035)
+
+=== notop: 60 resampled paths (blocks of 7 days, 50 eval starts each, 50K Flex) ===
+  A. S6 + room rule (current)                  pass 72% [54%-92%] | paid-once 48% [28%-74%] | payouts/eval 1.23 [0.52-2.03] | net/eval $1,566 [p5 $505 p50 $1,537 p95 $3,164] | P(net<0) 0% | median days to 1st payout 52
+  I. current best: x0.5 bottom-third gap       pass 74% [54%-92%] | paid-once 53% [24%-76%] | payouts/eval 1.39 [0.42-2.33] | net/eval $1,779 [p5 $417 p50 $1,798 p95 $3,571] | P(net<0) 0% | median days to 1st payout 54
+  P. I + day-type x1.0/x0.5 (cut low only)     pass 77% [56%-94%] | paid-once 56% [32%-78%] | payouts/eval 1.52 [0.52-2.56] | net/eval $1,904 [p5 $456 p50 $1,991 p95 $3,680] | P(net<0) 0% | median days to 1st payout 56
+  paired: I>A net/eval in 62% of paths (mean diff $213) | P>I in 68% (mean diff $125, p5-p95 $-559..$695)
+
+=== cost1: 60 resampled paths (blocks of 7 days, 50 eval starts each, 50K Flex) ===
+  A. S6 + room rule (current)                  pass 72% [52%-90%] | paid-once 48% [26%-68%] | payouts/eval 1.25 [0.46-2.31] | net/eval $1,661 [p5 $359 p50 $1,627 p95 $3,558] | P(net<0) 0% | median days to 1st payout 55
+  I. current best: x0.5 bottom-third gap       pass 75% [50%-92%] | paid-once 54% [32%-80%] | payouts/eval 1.46 [0.52-2.78] | net/eval $1,950 [p5 $444 p50 $1,794 p95 $4,166] | P(net<0) 0% | median days to 1st payout 57
+  P. I + day-type x1.0/x0.5 (cut low only)     pass 77% [54%-94%] | paid-once 56% [32%-76%] | payouts/eval 1.54 [0.58-2.70] | net/eval $2,028 [p5 $592 p50 $1,948 p95 $4,073] | P(net<0) 0% | median days to 1st payout 60
+  paired: I>A net/eval in 65% of paths (mean diff $288) | P>I in 53% (mean diff $79, p5-p95 $-515..$763)
+
+=== cut10: 60 resampled paths (blocks of 7 days, 50 eval starts each, 50K Flex) ===
+  A. S6 + room rule (current)                  pass 64% [44%-84%] | paid-once 40% [20%-60%] | payouts/eval 0.92 [0.28-1.76] | net/eval $1,139 [p5 $137 p50 $1,076 p95 $2,484] | P(net<0) 0% | median days to 1st payout 59
+  I. current best: x0.5 bottom-third gap       pass 67% [44%-90%] | paid-once 45% [22%-66%] | payouts/eval 1.09 [0.28-2.22] | net/eval $1,356 [p5 $154 p50 $1,162 p95 $2,952] | P(net<0) 0% | median days to 1st payout 64
+  P. I + day-type x1.0/x0.5 (cut low only)     pass 70% [48%-90%] | paid-once 48% [26%-72%] | payouts/eval 1.14 [0.41-2.19] | net/eval $1,378 [p5 $307 p50 $1,141 p95 $3,223] | P(net<0) 0% | median days to 1st payout 70
+  paired: I>A net/eval in 67% of paths (mean diff $217) | P>I in 50% (mean diff $22, p5-p95 $-557..$626)
+
+=== recent: 60 resampled paths (blocks of 7 days, 50 eval starts each, 50K Flex) ===
+  A. S6 + room rule (current)                  pass 71% [46%-88%] | paid-once 45% [26%-68%] | payouts/eval 1.36 [0.46-2.38] | net/eval $1,970 [p5 $660 p50 $1,876 p95 $3,711] | P(net<0) 0% | median days to 1st payout 40
+  I. current best: x0.5 bottom-third gap       pass 73% [44%-90%] | paid-once 48% [26%-72%] | payouts/eval 1.45 [0.56-2.47] | net/eval $2,118 [p5 $586 p50 $2,030 p95 $3,913] | P(net<0) 0% | median days to 1st payout 41
+  P. I + day-type x1.0/x0.5 (cut low only)     pass 75% [50%-94%] | paid-once 51% [24%-76%] | payouts/eval 1.51 [0.50-2.55] | net/eval $2,182 [p5 $525 p50 $2,182 p95 $3,813] | P(net<0) 0% | median days to 1st payout 42
+  paired: I>A net/eval in 60% of paths (mean diff $148) | P>I in 53% (mean diff $64, p5-p95 $-511..$756)
