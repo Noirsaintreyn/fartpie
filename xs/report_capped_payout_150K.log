@@ -1,0 +1,12 @@
+
+=== 150K: UNCAPPED vs LUCID CONTRACT CAPS (eval cap 100 MNQ assumed; funded by account profit) | 77 monthly starts, room rule, cost 0.5 pt ===
+  concurrency approximated by engine windows (RA / V15a to 12:00, M1 / R1 / RULES to close, overnight legs together); trades over the cap are cut to the room left or skipped
+  plan | year-1 net | year-2 net / month | payouts / month yr2 | months with 0 payouts (yr2) | out-of-pocket
+  PAYOUT-REQUEST POLICY WITH LUCID CONTRACT CAPS (Nov 10 2026, declared before results): 10 accounts, 3 per payout, 5 funded. Ask only once balance >= B (payout = min(.5 b, cap, flat)).
+  ask asap (base)        | year-1 $ 18,296 | yr2 $ 7,364/mo | payouts/mo 3.34 | avg payout $2,336 | months with >=4 payouts 45% | zero 42%
+  B=3000                 | year-1 $ 24,656 | yr2 $ 8,221/mo | payouts/mo 3.56 | avg payout $2,503 | months with >=4 payouts 49% | zero 42%
+  B=4000                 | year-1 $ 25,499 | yr2 $ 8,658/mo | payouts/mo 3.56 | avg payout $2,579 | months with >=4 payouts 48% | zero 37%
+  B=5000                 | year-1 $ 23,536 | yr2 $ 8,990/mo | payouts/mo 3.57 | avg payout $2,670 | months with >=4 payouts 50% | zero 36%
+  B=6000                 | year-1 $ 23,893 | yr2 $ 8,835/mo | payouts/mo 3.46 | avg payout $2,700 | months with >=4 payouts 51% | zero 39%
+  B=5000, flat $2,000    | year-1 $ 18,493 | yr2 $ 6,530/mo | payouts/mo 3.87 | avg payout $1,800 | months with >=4 payouts 53% | zero 32%
+  B=4000, flat $2,000    | year-1 $ 18,829 | yr2 $ 6,251/mo | payouts/mo 3.74 | avg payout $1,800 | months with >=4 payouts 50% | zero 36%
