@@ -1,0 +1,25 @@
+flips 8,271 | cuts from 2019-22: PVWD >= 0.51 ATR, OTMC >= 0.62, ratio >= 3.56 | tier sizes: ALL 8,271, RATIO 2,854, CORE 1,232, CORE+FLOW 229, CORE+RATIO 441, BEST 127
+
+=== M30 ATM: tier | 2019-22: n, win, avg, median (stock avg / win on the same flips) | 2023-26: same | one contract 2023-26: median cost, share <= $692 ===
+  ALL         n 2,904 win 23% avg  -2.7% med -17.1% (stock +0.35% / 33%) | n 4,403 win 21% avg  -3.7% med -17.1% (stock +0.30% / 32%) | $799, 43%
+  RATIO       n   948 win 25% avg  -0.5% med -15.9% (stock +0.39% / 35%) | n 1,639 win 25% avg  +0.7% med -15.2% (stock +0.53% / 34%) | $1,129, 24%
+  CORE        n   414 win 29% avg  +0.7% med -20.0% (stock +0.46% / 40%) | n   631 win 26% avg  -3.5% med -21.0% (stock +0.33% / 36%) | $838, 39%
+  CORE+FLOW   n   132 win 36% avg  +3.8% med -17.6% (stock +0.81% / 45%) | n    28 win 36% avg +14.9% med -13.7% (stock +1.69% / 46%) | $1,685, 18%
+  CORE+RATIO  n   131 win 34% avg  +0.1% med -15.8% (stock +0.60% / 45%) | n   252 win 29% avg  -0.2% med -16.6% (stock +0.60% / 39%) | $1,132, 21%
+  BEST        n    89 win 36% avg  +5.3% med -15.7% (stock +0.88% / 45%) | n    14 win 43% avg +20.4% med -11.1% (stock +3.05% / 50%) | $3,211, 0%
+
+=== M60 ATM: tier | 2019-22: n, win, avg, median (stock avg / win on the same flips) | 2023-26: same | one contract 2023-26: median cost, share <= $692 ===
+  ALL         n 2,525 win 26% avg  -0.8% med -11.5% (stock +0.39% / 34%) | n 3,728 win 24% avg  -1.1% med -10.9% (stock +0.29% / 32%) | $1,098, 29%
+  RATIO       n   826 win 27% avg  -0.1% med -10.6% (stock +0.43% / 36%) | n 1,336 win 27% avg  -0.1% med -10.3% (stock +0.41% / 34%) | $1,588, 9%
+  CORE        n   366 win 30% avg  +1.3% med -14.2% (stock +0.46% / 40%) | n   548 win 29% avg  -3.6% med -14.4% (stock +0.17% / 35%) | $1,158, 28%
+  CORE+FLOW   n   123 win 33% avg  -1.6% med -14.6% (stock +0.48% / 41%) | n    23 win 39% avg  +7.9% med -10.7% (stock +1.25% / 52%) | $2,428, 22%
+  CORE+RATIO  n   116 win 34% avg  -2.1% med -10.6% (stock +0.46% / 43%) | n   209 win 31% avg  -1.9% med -12.8% (stock +0.34% / 36%) | $1,573, 9%
+  BEST        n    87 win 34% avg  -0.2% med -13.8% (stock +0.67% / 41%) | n    11 win 45% avg +13.5% med  -2.2% (stock +2.68% / 55%) | $4,119, 0%
+
+=== M60 ITM: tier | 2019-22: n, win, avg, median (stock avg / win on the same flips) | 2023-26: same | one contract 2023-26: median cost, share <= $692 ===
+  ALL         n 2,532 win 26% avg  -1.0% med  -8.5% (stock +0.41% / 34%) | n 3,745 win 24% avg  -2.7% med  -8.6% (stock +0.28% / 32%) | $2,292, 2%
+  RATIO       n   829 win 29% avg  -0.3% med  -8.1% (stock +0.44% / 37%) | n 1,345 win 27% avg  -1.1% med  -8.0% (stock +0.41% / 34%) | $3,128, 0%
+  CORE        n   368 win 32% avg  +0.2% med -10.2% (stock +0.43% / 39%) | n   563 win 29% avg  -3.5% med -10.7% (stock +0.18% / 36%) | $2,467, 2%
+  CORE+FLOW   n   123 win 33% avg  -1.5% med -10.4% (stock +0.42% / 41%) | n    25 win 52% avg  +7.4% med  +7.3% (stock +1.47% / 56%) | $4,864, 4%
+  CORE+RATIO  n   115 win 38% avg  -1.2% med  -9.2% (stock +0.47% / 43%) | n   217 win 31% avg  -1.9% med  -9.6% (stock +0.32% / 37%) | $3,100, 0%
+  BEST        n    86 win 37% avg  -0.1% med  -9.5% (stock +0.68% / 42%) | n    11 win 45% avg +10.7% med  -2.6% (stock +2.68% / 55%) | $6,578, 0%
