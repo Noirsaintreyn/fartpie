@@ -1,0 +1,40 @@
+
+=== + ROOM RULE, cost 1.0 pt (as reported) ===
+  2018-21 starts: pass 92% | paid at least once 71% (77% of funded) | payouts per eval 1.62 (0.62 evals per payout) | avg payout $1,194 | net $1,843 per eval
+      trading days (median, middle half): start -> pass 67 (39-120) | FUNDED -> FIRST PAYOUT 31 (17-34) | start -> first payout 100 | between payouts 16 (14-23)
+  2022-25 starts: pass 75% | paid at least once 52% (70% of funded) | payouts per eval 1.65 (0.61 evals per payout) | avg payout $1,555 | net $2,482 per eval
+      trading days (median, middle half): start -> pass 33 (16-57) | FUNDED -> FIRST PAYOUT 12 (10-16) | start -> first payout 47 | between payouts 13 (10-18)
+  one account at a time 2018-26: 21 evals, 40 payouts, longest run without a payout 2 evals
+  5-account fleet, 24 starts 2022-23: $3,896 avg / $1,368 median a month, losing 16% | 2.67 payouts a month, 0 in 44%, >= 2 in 44% of months
+  5-account fleet from 2018: $2,338/mo, losing 12%, worst $-440 | 1.73 payouts a month, 0 in 57%, >= 2 in 30% of months
+    by year: 2018: 0.6/mo $0.4k | 2019: 1.0/mo $1.4k | 2020: 1.2/mo $1.5k | 2021: 0.6/mo $0.3k | 2022: 2.2/mo $3.4k | 2023: 2.2/mo $2.4k | 2024: 3.5/mo $5.9k | 2025: 2.5/mo $3.5k
+
+=== CURRENT SYSTEM, cost 0.5 pt ===
+  2018-21 starts: pass 73% | paid at least once 63% (86% of funded) | payouts per eval 1.41 (0.71 evals per payout) | avg payout $1,141 | net $1,519 per eval
+      trading days (median, middle half): start -> pass 39 (27-57) | FUNDED -> FIRST PAYOUT 20 (14-27) | start -> first payout 64 | between payouts 19 (16-24)
+  2022-25 starts: pass 63% | paid at least once 39% (61% of funded) | payouts per eval 1.11 (0.90 evals per payout) | avg payout $1,531 | net $1,612 per eval
+      trading days (median, middle half): start -> pass 21 (13-30) | FUNDED -> FIRST PAYOUT 11 (10-13) | start -> first payout 32 | between payouts 13 (10-18)
+  one account at a time 2018-26: 39 evals, 50 payouts, longest run without a payout 3 evals
+  5-account fleet, 24 starts 2022-23: $4,153 avg / $1,851 median a month, losing 35% | 2.86 payouts a month, 0 in 46%, >= 2 in 52% of months
+  5-account fleet from 2018: $2,904/mo, losing 28%, worst $-880 | 2.18 payouts a month, 0 in 50%, >= 2 in 42% of months
+    by year: 2018: 1.4/mo $1.4k | 2019: 1.2/mo $2.1k | 2020: 2.4/mo $2.5k | 2021: 1.6/mo $1.5k | 2022: 1.1/mo $1.3k | 2023: 3.2/mo $4.6k | 2024: 3.9/mo $6.3k | 2025: 2.7/mo $3.6k
+
+=== + ROOM RULE, cost 0.5 pt ===
+  2018-21 starts: pass 95% | paid at least once 77% (81% of funded) | payouts per eval 1.77 (0.56 evals per payout) | avg payout $1,128 | net $1,910 per eval
+      trading days (median, middle half): start -> pass 60 (37-101) | FUNDED -> FIRST PAYOUT 22 (14-32) | start -> first payout 87 | between payouts 17 (13-22)
+  2022-25 starts: pass 80% | paid at least once 53% (67% of funded) | payouts per eval 1.78 (0.56 evals per payout) | avg payout $1,577 | net $2,718 per eval
+      trading days (median, middle half): start -> pass 32 (16-53) | FUNDED -> FIRST PAYOUT 11 (10-13) | start -> first payout 47 | between payouts 13 (10-18)
+  one account at a time 2018-26: 27 evals, 37 payouts, longest run without a payout 3 evals
+  5-account fleet, 24 starts 2022-23: $4,374 avg / $1,712 median a month, losing 20% | 2.92 payouts a month, 0 in 48%, >= 2 in 50% of months
+  5-account fleet from 2018: $3,205/mo, losing 12%, worst $-440 | 2.32 payouts a month, 0 in 47%, >= 2 in 44% of months
+    by year: 2018: 0.9/mo $0.6k | 2019: 1.0/mo $1.5k | 2020: 1.6/mo $1.5k | 2021: 2.2/mo $2.5k | 2022: 2.9/mo $4.4k | 2023: 3.7/mo $5.2k | 2024: 3.8/mo $6.3k | 2025: 2.6/mo $3.8k
+
+=== + ROOM RULE, cost 0.5 pt, WIDE overnight x1.25 (gentler) ===
+  2018-21 starts: pass 94% | paid at least once 80% (85% of funded) | payouts per eval 1.83 (0.55 evals per payout) | avg payout $1,157 | net $2,029 per eval
+      trading days (median, middle half): start -> pass 56 (32-94) | FUNDED -> FIRST PAYOUT 21 (14-32) | start -> first payout 84 | between payouts 17 (15-22)
+  2022-25 starts: pass 77% | paid at least once 50% (64% of funded) | payouts per eval 1.59 (0.63 evals per payout) | avg payout $1,602 | net $2,460 per eval
+      trading days (median, middle half): start -> pass 30 (16-50) | FUNDED -> FIRST PAYOUT 11 (9-13) | start -> first payout 43 | between payouts 13 (10-17)
+  one account at a time 2018-26: 28 evals, 44 payouts, longest run without a payout 7 evals
+  5-account fleet, 24 starts 2022-23: $4,652 avg / $2,727 median a month, losing 15% | 3.05 payouts a month, 0 in 42%, >= 2 in 52% of months
+  5-account fleet from 2018: $3,327/mo, losing 16%, worst $-440 | 2.34 payouts a month, 0 in 52%, >= 2 in 43% of months
+    by year: 2018: 1.3/mo $1.4k | 2019: 1.3/mo $2.4k | 2020: 1.7/mo $1.7k | 2021: 1.6/mo $1.3k | 2022: 2.5/mo $3.8k | 2023: 3.7/mo $5.3k | 2024: 3.8/mo $6.2k | 2025: 3.1/mo $4.7k
