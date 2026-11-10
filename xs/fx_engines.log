@@ -1,0 +1,80 @@
+
+===== EURUSD LDN 07-16 UTC: 697 sessions, 9 bars =====
+  cost 0.010% N base             n  917 | %/day first half -0.0162 (t -2.03) | second half -0.0185 (t -3.32)
+  cost 0.010% N long only        n  287 | %/day first half -0.0059 (t -0.86) | second half -0.0069 (t -1.85)
+  cost 0.010% N short only       n  631 | %/day first half -0.0107 (t -2.64) | second half -0.0115 (t -2.92)
+  cost 0.010% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+  cost 0.020% N base             n  917 | %/day first half -0.0286 (t -3.54) | second half -0.0320 (t -5.65)
+  cost 0.020% N long only        n  287 | %/day first half -0.0104 (t -1.48) | second half -0.0105 (t -2.71)
+  cost 0.020% N short only       n  631 | %/day first half -0.0187 (t -4.51) | second half -0.0214 (t -5.35)
+  cost 0.020% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+
+===== EURUSD NY 12-21 UTC: 696 sessions, 9 bars =====
+  cost 0.010% N base             n  885 | %/day first half -0.0154 (t -2.53) | second half -0.0099 (t -1.75)
+  cost 0.010% N long only        n  254 | %/day first half -0.0028 (t -0.57) | second half -0.0041 (t -1.01)
+  cost 0.010% N short only       n  633 | %/day first half -0.0134 (t -3.71) | second half -0.0058 (t -1.49)
+  cost 0.010% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+  cost 0.020% N base             n  885 | %/day first half -0.0281 (t -4.56) | second half -0.0222 (t -3.92)
+  cost 0.020% N long only        n  254 | %/day first half -0.0067 (t -1.36) | second half -0.0074 (t -1.77)
+  cost 0.020% N short only       n  633 | %/day first half -0.0222 (t -6.00) | second half -0.0149 (t -3.79)
+  cost 0.020% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+
+===== GBPUSD LDN 07-16 UTC: 696 sessions, 9 bars =====
+  cost 0.010% N base             n  889 | %/day first half -0.0051 (t -0.65) | second half -0.0148 (t -2.21)
+  cost 0.010% N long only        n  297 | %/day first half -0.0045 (t -0.81) | second half -0.0069 (t -1.52)
+  cost 0.010% N short only       n  592 | %/day first half -0.0006 (t -0.10) | second half -0.0067 (t -1.42)
+  cost 0.010% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+  cost 0.020% N base             n  889 | %/day first half -0.0167 (t -2.15) | second half -0.0282 (t -4.18)
+  cost 0.020% N long only        n  297 | %/day first half -0.0090 (t -1.57) | second half -0.0108 (t -2.33)
+  cost 0.020% N short only       n  592 | %/day first half -0.0077 (t -1.44) | second half -0.0162 (t -3.45)
+  cost 0.020% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+
+===== GBPUSD NY 12-21 UTC: 696 sessions, 9 bars =====
+  cost 0.010% N base             n  843 | %/day first half -0.0113 (t -1.84) | second half -0.0012 (t -0.19)
+  cost 0.010% N long only        n  248 | %/day first half -0.0034 (t -0.72) | second half +0.0049 (t +0.96)
+  cost 0.010% N short only       n  596 | %/day first half -0.0080 (t -1.99) | second half -0.0066 (t -1.63)
+  cost 0.010% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+  cost 0.020% N base             n  843 | %/day first half -0.0229 (t -3.70) | second half -0.0136 (t -2.09)
+  cost 0.020% N long only        n  248 | %/day first half -0.0072 (t -1.50) | second half +0.0016 (t +0.31)
+  cost 0.020% N short only       n  596 | %/day first half -0.0157 (t -3.95) | second half -0.0157 (t -3.86)
+  cost 0.020% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+
+===== USDJPY LDN 07-16 UTC: 696 sessions, 9 bars =====
+  cost 0.010% N base             n  781 | %/day first half -0.0102 (t -1.05) | second half +0.0007 (t +0.07)
+  cost 0.010% N long only        n  296 | %/day first half -0.0023 (t -0.36) | second half -0.0013 (t -0.27)
+  cost 0.010% N short only       n  486 | %/day first half -0.0081 (t -1.09) | second half +0.0018 (t +0.22)
+  cost 0.010% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+  cost 0.020% N base             n  781 | %/day first half -0.0215 (t -2.22) | second half -0.0101 (t -1.08)
+  cost 0.020% N long only        n  296 | %/day first half -0.0061 (t -0.98) | second half -0.0057 (t -1.21)
+  cost 0.020% N short only       n  486 | %/day first half -0.0155 (t -2.10) | second half -0.0045 (t -0.57)
+  cost 0.020% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+
+===== USDJPY NY 12-21 UTC: 696 sessions, 9 bars =====
+  cost 0.010% N base             n  777 | %/day first half -0.0103 (t -1.31) | second half -0.0170 (t -3.06)
+  cost 0.010% N long only        n  249 | %/day first half +0.0008 (t +0.16) | second half -0.0057 (t -1.66)
+  cost 0.010% N short only       n  528 | %/day first half -0.0112 (t -1.89) | second half -0.0113 (t -2.58)
+  cost 0.010% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+  cost 0.020% N base             n  777 | %/day first half -0.0218 (t -2.79) | second half -0.0278 (t -4.88)
+  cost 0.020% N long only        n  249 | %/day first half -0.0026 (t -0.50) | second half -0.0094 (t -2.60)
+  cost 0.020% N short only       n  528 | %/day first half -0.0192 (t -3.31) | second half -0.0184 (t -4.09)
+  cost 0.020% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+
+===== XAUUSD LDN 07-16 UTC: 597 sessions, 9 bars =====
+  cost 0.030% N base             n  513 | %/day first half -0.0489 (t -2.48) | second half -0.0099 (t -0.30)
+  cost 0.030% N long only        n  280 | %/day first half -0.0233 (t -1.62) | second half -0.0315 (t -1.94)
+  cost 0.030% N short only       n  233 | %/day first half -0.0256 (t -1.88) | second half +0.0216 (t +0.77)
+  cost 0.030% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+  cost 0.060% N base             n  513 | %/day first half -0.0757 (t -3.76) | second half -0.0347 (t -1.06)
+  cost 0.060% N long only        n  280 | %/day first half -0.0387 (t -2.63) | second half -0.0442 (t -2.67)
+  cost 0.060% N short only       n  233 | %/day first half -0.0369 (t -2.64) | second half +0.0096 (t +0.34)
+  cost 0.060% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+
+===== XAUUSD NY 12-21 UTC: 593 sessions, 9 bars =====
+  cost 0.030% N base             n  451 | %/day first half -0.0273 (t -1.54) | second half -0.0350 (t -1.33)
+  cost 0.030% N long only        n  234 | %/day first half -0.0098 (t -0.79) | second half -0.0222 (t -1.33)
+  cost 0.030% N short only       n  218 | %/day first half -0.0189 (t -1.48) | second half -0.0128 (t -0.63)
+  cost 0.030% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
+  cost 0.060% N base             n  451 | %/day first half -0.0487 (t -2.65) | second half -0.0593 (t -2.20)
+  cost 0.060% N long only        n  234 | %/day first half -0.0202 (t -1.57) | second half -0.0355 (t -2.04)
+  cost 0.060% N short only       n  218 | %/day first half -0.0299 (t -2.25) | second half -0.0238 (t -1.16)
+  cost 0.060% O ORB first hour   n    0 | %/day first half +0.0000 (t +0.00) | second half +0.0000 (t +0.00)
