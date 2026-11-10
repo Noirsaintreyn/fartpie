@@ -1,0 +1,22 @@
+S6 alone: 14-21 +1.65 std  15.9 m/s 0.104 worst mo  -125 mo>=50 27% | 22-26 +6.29 std  39.6 m/s 0.159 worst mo  -260 mo>=50 69%
+
+  V0                                           n  3069 (0.99/day) | pts/day 14-21  +2.53 (t +3.08) | 22-26  +8.52 (t +2.99) | long  +6.2 short  +3.1 per trade | corr S6 +0.36   <== PASS
+      S6 + 0.25 x V0: 14-21 +2.28 std  21.5 m/s 0.106 worst mo  -145 mo>=50 36% | 22-26 +8.42 std  52.2 m/s 0.161 worst mo  -401 mo>=50 73%
+      S6 + 0.50 x V0: 14-21 +2.91 std  29.0 m/s 0.101 worst mo  -165 mo>=50 42% | 22-26 +10.55 std  70.3 m/s 0.150 worst mo  -541 mo>=50 73%
+      S6 + 1.00 x V0: 14-21 +4.18 std  46.0 m/s 0.091 worst mo  -300 mo>=50 51% | 22-26 +14.81 std 112.1 m/s 0.132 worst mo  -822 mo>=50 73%
+  V1                                           n  1779 (0.58/day) | pts/day 14-21  +2.12 (t +3.10) | 22-26  +5.61 (t +2.72) | long  +8.8 short  +3.0 per trade | corr S6 +0.39   <== PASS
+      S6 + 0.25 x V1: 14-21 +2.18 std  20.3 m/s 0.108 worst mo  -149 mo>=50 35% | 22-26 +7.69 std  48.6 m/s 0.158 worst mo  -421 mo>=50 78%
+      S6 + 0.50 x V1: 14-21 +2.71 std  26.2 m/s 0.103 worst mo  -172 mo>=50 36% | 22-26 +9.09 std  61.0 m/s 0.149 worst mo  -582 mo>=50 71%
+      S6 + 1.00 x V1: 14-21 +3.77 std  40.0 m/s 0.094 worst mo  -299 mo>=50 35% | 22-26 +11.90 std  90.0 m/s 0.132 worst mo  -904 mo>=50 71%
+  V2                                           n  1422 (0.46/day) | pts/day 14-21  +2.06 (t +2.82) | 22-26  +5.69 (t +2.65) | long +11.2 short  +3.5 per trade | corr S6 +0.39   <== PASS
+      S6 + 0.25 x V2: 14-21 +2.17 std  20.6 m/s 0.105 worst mo  -150 mo>=50 33% | 22-26 +7.71 std  49.0 m/s 0.157 worst mo  -403 mo>=50 73%
+      S6 + 0.50 x V2: 14-21 +2.68 std  27.0 m/s 0.099 worst mo  -175 mo>=50 34% | 22-26 +9.13 std  62.0 m/s 0.147 worst mo  -545 mo>=50 78%
+      S6 + 1.00 x V2: 14-21 +3.71 std  41.9 m/s 0.089 worst mo  -284 mo>=50 33% | 22-26 +11.97 std  92.4 m/s 0.130 worst mo  -831 mo>=50 73%
+  V3                                           n  5935 (1.92/day) | pts/day 14-21  +1.63 (t +2.15) | 22-26  +7.07 (t +3.06) | long  +2.5 short  +1.1 per trade | corr S6 +0.39   <== PASS
+      S6 + 0.25 x V3: 14-21 +2.06 std  20.9 m/s 0.099 worst mo  -151 mo>=50 33% | 22-26 +8.06 std  50.0 m/s 0.161 worst mo  -387 mo>=50 73%
+      S6 + 0.50 x V3: 14-21 +2.47 std  27.6 m/s 0.089 worst mo  -177 mo>=50 35% | 22-26 +9.82 std  64.3 m/s 0.153 worst mo  -514 mo>=50 78%
+      S6 + 1.00 x V3: 14-21 +3.29 std  43.2 m/s 0.076 worst mo  -282 mo>=50 37% | 22-26 +13.36 std  97.5 m/s 0.137 worst mo  -768 mo>=50 73%
+  V4                                           n   451 (0.15/day) | pts/day 14-21  +0.43 (t +0.99) | 22-26  +3.10 (t +1.49) | long  +5.2 short +13.6 per trade | corr S6 +0.17
+      S6 + 0.25 x V4: 14-21 +1.76 std  17.5 m/s 0.101 worst mo  -113 mo>=50 31% | 22-26 +7.06 std  45.6 m/s 0.155 worst mo  -270 mo>=50 67%
+      S6 + 0.50 x V4: 14-21 +1.87 std  20.1 m/s 0.093 worst mo  -126 mo>=50 34% | 22-26 +7.84 std  56.2 m/s 0.140 worst mo  -280 mo>=50 71%
+      S6 + 1.00 x V4: 14-21 +2.08 std  27.4 m/s 0.076 worst mo  -177 mo>=50 32% | 22-26 +9.39 std  83.7 m/s 0.112 worst mo  -371 mo>=50 71%

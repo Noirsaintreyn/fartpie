@@ -1,0 +1,29 @@
+S6 daily series (sz x weight): 14-21 +1.65 | 22-26 +6.29 pts/day
+
+=== FAMILY N: noise-area momentum ===
+  N base k 1.0, 30m, stop 40, both             n  3069 (0.99/day) | pts/day 14-21  +2.53 (t +3.08) | 22-26  +8.52 (t +2.99) | long  +6.2 short  +3.1 per trade | corr S6 +0.36   <== PASS
+  N k 0.75                                     n  3955 (1.28/day) | pts/day 14-21  +3.09 (t +3.35) | 22-26  +8.19 (t +2.60) | long  +5.0 short  +2.6 per trade | corr S6 +0.34   <== PASS
+  N k 1.25                                     n  2404 (0.78/day) | pts/day 14-21  +2.30 (t +3.17) | 22-26  +6.26 (t +2.91) | long  +5.0 short  +4.4 per trade | corr S6 +0.34   <== PASS
+  N 15m decisions                              n  4091 (1.32/day) | pts/day 14-21  +2.01 (t +2.34) | 22-26  +6.42 (t +2.50) | long  +3.4 short  +2.0 per trade | corr S6 +0.40   <== PASS
+  N stop 25                                    n  3356 (1.09/day) | pts/day 14-21  +2.36 (t +3.10) | 22-26  +5.75 (t +2.59) | long  +4.0 short  +2.6 per trade | corr S6 +0.42   <== PASS
+  N no stop                                    n  2886 (0.93/day) | pts/day 14-21  +2.22 (t +2.57) | 22-26  +7.60 (t +2.55) | long  +5.2 short  +3.5 per trade | corr S6 +0.35   <== PASS
+  N long only                                  n  1478 (0.48/day) | pts/day 14-21  +1.22 (t +2.55) | 22-26  +6.37 (t +3.07) | long  +6.2 short  +nan per trade | corr S6 +0.17   <== PASS
+  N short only                                 n  1591 (0.51/day) | pts/day 14-21  +1.30 (t +1.94) | 22-26  +2.15 (t +1.09) | long  +nan short  +3.1 per trade | corr S6 +0.34
+  N start 10:30                                n  2787 (0.90/day) | pts/day 14-21  +2.03 (t +2.72) | 22-26  +7.45 (t +2.70) | long  +5.7 short  +3.0 per trade | corr S6 +0.32   <== PASS
+  N long only, 15m                             n  1916 (0.62/day) | pts/day 14-21  +1.21 (t +2.39) | 22-26  +3.85 (t +2.55) | long  +3.4 short  +nan per trade | corr S6 +0.22   <== PASS
+
+=== FAMILY M: inside-area fade to VWAP ===
+  M fade z 1.0                                 n  1496 (0.48/day) | pts/day 14-21  +0.17 (t +0.35) | 22-26  -1.38 (t -0.86) | long  -0.3 short  -1.1 per trade | corr S6 -0.03
+  M fade z 1.5                                 n   419 (0.14/day) | pts/day 14-21  +0.56 (t +1.46) | 22-26  -1.64 (t -1.39) | long  +0.5 short  -3.5 per trade | corr S6 -0.01
+  M fade z 2.0                                 n   131 (0.04/day) | pts/day 14-21  +0.45 (t +1.66) | 22-26  -1.53 (t -1.84) | long  -9.7 short  -1.0 per trade | corr S6 -0.02
+
+=== FAMILY L: last-30-minute momentum ===
+  L first30                                    n  2938 (0.95/day) | pts/day 14-21  -0.66 (t -1.09) | 22-26  -2.91 (t -1.87) | long  -1.5 short  -1.5 per trade | corr S6 +0.01
+  L prior30                                    n  2969 (0.96/day) | pts/day 14-21  +0.32 (t +0.51) | 22-26  -0.44 (t -0.28) | long  -0.2 short  +0.3 per trade | corr S6 +0.02
+  L both                                       n  1529 (0.49/day) | pts/day 14-21  -0.02 (t -0.04) | 22-26  -1.59 (t -1.46) | long  -1.5 short  -0.6 per trade | corr S6 +0.02
+
+=== FAMILY G: noise-normalised gap ===
+  G go |gz| >= 1.0                             n  1759 (0.57/day) | pts/day 14-21  +0.39 (t +0.51) | 22-26  +0.96 (t +0.51) | long  +0.2 short  +2.1 per trade | corr S6 +0.19
+  G fade |gz| >= 1.0                           n  1759 (0.57/day) | pts/day 14-21  -0.22 (t -0.29) | 22-26  +0.42 (t +0.22) | long  -1.2 short  +0.9 per trade | corr S6 -0.04
+  G go |gz| >= 2.0                             n   945 (0.31/day) | pts/day 14-21  -0.22 (t -0.40) | 22-26  +1.49 (t +1.01) | long  -2.2 short  +5.5 per trade | corr S6 +0.17
+  G fade |gz| >= 2.0                           n   945 (0.31/day) | pts/day 14-21  -0.40 (t -0.69) | 22-26  -0.28 (t -0.19) | long  -2.6 short  -0.1 per trade | corr S6 -0.04

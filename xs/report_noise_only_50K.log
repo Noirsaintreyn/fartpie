@@ -1,0 +1,21 @@
+=== 50K, ONE ACCOUNT (per eval started every 2nd trading day), Lucid caps, room rule, cost 0.5 pt ===
+  NZ only, u 0.5 (5 MNQ)
+    2018-21 starts: pass 47% | paid once 22% | payouts/eval 0.49 (2.05 evals per payout) | avg payout $1,529 | net $659/eval | days: start->pass 68, funded->1st payout 22, start->1st payout 76, between 46
+    2022-25 starts: pass 44% | paid once 22% | payouts/eval 0.60 (1.66 evals per payout) | avg payout $1,503 | net $817/eval | days: start->pass 33, funded->1st payout 20, start->1st payout 51, between 20
+    one account at a time 2018-26: 27 evals, 17 payouts, longest run without a payout 8 evals
+  NZ only, u 1.0 (10 MNQ)
+    2018-21 starts: pass 33% | paid once 9% | payouts/eval 0.17 (5.89 evals per payout) | avg payout $1,745 | net $208/eval | days: start->pass 26, funded->1st payout 22, start->1st payout 46, between 24
+    2022-25 starts: pass 34% | paid once 10% | payouts/eval 0.26 (3.88 evals per payout) | avg payout $1,591 | net $322/eval | days: start->pass 24, funded->1st payout 21, start->1st payout 44, between 18
+    one account at a time 2018-26: 75 evals, 13 payouts, longest run without a payout 32 evals
+  NZ only, u 1.5
+    2018-21 starts: pass 27% | paid once 4% | payouts/eval 0.07 (13.97 evals per payout) | avg payout $1,617 | net $28/eval | days: start->pass 22, funded->1st payout 22, start->1st payout 41, between 20
+    2022-25 starts: pass 21% | paid once 2% | payouts/eval 0.08 (13.18 evals per payout) | avg payout $1,800 | net $49/eval | days: start->pass 16, funded->1st payout 18, start->1st payout 36, between 22
+    one account at a time 2018-26: 106 evals, 9 payouts, longest run without a payout 57 evals
+  NZ long only, u 1.0
+    2018-21 starts: pass 43% | paid once 21% | payouts/eval 0.47 (2.13 evals per payout) | avg payout $1,662 | net $694/eval | days: start->pass 64, funded->1st payout 25, start->1st payout 105, between 31
+    2022-25 starts: pass 40% | paid once 10% | payouts/eval 0.35 (2.82 evals per payout) | avg payout $1,776 | net $541/eval | days: start->pass 34, funded->1st payout 24, start->1st payout 50, between 28
+    one account at a time 2018-26: 31 evals, 15 payouts, longest run without a payout 8 evals
+  NZ long only, u 1.5
+    2018-21 starts: pass 29% | paid once 7% | payouts/eval 0.17 (5.82 evals per payout) | avg payout $1,793 | net $220/eval | days: start->pass 39, funded->1st payout 24, start->1st payout 60, between 36
+    2022-25 starts: pass 26% | paid once 4% | payouts/eval 0.18 (5.65 evals per payout) | avg payout $1,792 | net $229/eval | days: start->pass 26, funded->1st payout 31, start->1st payout 47, between 45
+    one account at a time 2018-26: 42 evals, 16 payouts, longest run without a payout 16 evals

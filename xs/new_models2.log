@@ -1,0 +1,19 @@
+S6 daily series (sz x weight): 14-21 +1.65 | 22-26 +6.29 pts/day
+
+=== FAMILY S: prior-day extreme sweep reversal ===
+  S sweep PDH/PDL fade                         n  1855 (0.60/day) | pts/day 14-21  -0.20 (t -0.34) | 22-26  +0.60 (t +0.46) | long  +1.1 short  -0.7 per trade | corr S6 -0.01
+
+=== FAMILY R: narrow-range breakout ===
+  R NR (bottom fifth) breakout                 n   527 (0.17/day) | pts/day 14-21  +0.06 (t +0.15) | 22-26  +0.57 (t +0.55) | long  -1.7 short  +6.1 per trade | corr S6 +0.12
+
+=== FAMILY O: opening-range breakout ===
+  O OR15 flat 12:00                            n  2991 (0.97/day) | pts/day 14-21  +0.16 (t +0.20) | 22-26  +4.30 (t +1.76) | long  +2.6 short  +0.6 per trade | corr S6 +0.23
+  O OR15 flat 15:55                            n  2991 (0.97/day) | pts/day 14-21  +0.36 (t +0.35) | 22-26  +5.91 (t +1.83) | long  +2.7 short  +1.9 per trade | corr S6 +0.32
+  O OR30 flat 12:00                            n  2705 (0.87/day) | pts/day 14-21  -0.44 (t -0.65) | 22-26  +2.50 (t +1.18) | long  +0.2 short  +1.1 per trade | corr S6 +0.21
+  O OR30 flat 15:55                            n  2705 (0.87/day) | pts/day 14-21  +0.40 (t +0.41) | 22-26  +3.83 (t +1.28) | long  +0.7 short  +3.1 per trade | corr S6 +0.31
+  O OR60 flat 12:00                            n  1971 (0.64/day) | pts/day 14-21  -0.11 (t -0.22) | 22-26  +0.89 (t +0.57) | long  +0.5 short  +0.2 per trade | corr S6 +0.17
+  O OR60 flat 15:55                            n  1971 (0.64/day) | pts/day 14-21  +0.24 (t +0.30) | 22-26  +2.63 (t +1.02) | long  +1.9 short  +1.4 per trade | corr S6 +0.28
+
+=== FAMILY K: trend-day follow ===
+  K range-so-far > 1.25 x typical              n  1218 (0.39/day) | pts/day 14-21  +0.57 (t +0.82) | 22-26  +3.64 (t +1.91) | long  +3.6 short  +4.5 per trade | corr S6 +0.19
+  K range-so-far > 1.5 x typical               n   776 (0.25/day) | pts/day 14-21  +0.13 (t +0.24) | 22-26  +1.86 (t +1.29) | long  +2.1 short  +3.3 per trade | corr S6 +0.20
