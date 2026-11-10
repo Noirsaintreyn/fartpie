@@ -1,0 +1,28 @@
+
+=== V15a: 392 signals | next bar HOLDS 93%, VOLUME kept 64% | NQ pts per SIGNAL (per trade taken, trades) 2018-21 ; 2022-25 ===
+    outcome of trades entered now when next bar hold=0 vol=0: -14.69 (n 3) ; -35.60 (n 4)
+    outcome of trades entered now when next bar hold=0 vol=1: -25.78 (n 10) ; -37.62 (n 9)
+    outcome of trades entered now when next bar hold=1 vol=0:  -0.58 (n 69) ; +26.30 (n 67)
+    outcome of trades entered now when next bar hold=1 vol=1: +19.02 (n 113) ; +36.37 (n 117)
+  C0 enter at the flip (now)         +9.27 per signal ( +9.27 per trade, 195) ; +28.11 per signal (+28.11 per trade, 197)
+  C1 wait, enter if HOLD             +9.18 per signal ( +9.84 per trade, 182) ; +16.02 per signal (+17.15 per trade, 184)
+  C2 wait, enter if HOLD + VOL       +6.73 per signal (+11.62 per trade, 113) ;  +4.64 per signal ( +7.81 per trade, 117)
+  C3 wait, enter if VOL              +6.34 per signal (+10.05 per trade, 123) ;  +3.74 per signal ( +5.85 per trade, 126)
+  C4 enter now, cut if both fail     +9.27 per signal ( +9.27 per trade, 195) ; +28.20 per signal (+28.20 per trade, 197)
+  C5 wait 15 min regardless          +8.56 per signal ( +8.56 per trade, 195) ; +15.58 per signal (+15.58 per trade, 197)
+
+=== RA: 220 signals | next bar HOLDS 87%, VOLUME kept 57% | NQ pts per SIGNAL (per trade taken, trades) 2018-21 ; 2022-25 ===
+    outcome of trades entered now when next bar hold=0 vol=0: +13.50 (n 4) ; -18.00 (n 7)
+    outcome of trades entered now when next bar hold=0 vol=1: -25.25 (n 7) ;  +7.07 (n 11)
+    outcome of trades entered now when next bar hold=1 vol=0: +13.64 (n 35) ; +14.17 (n 48)
+    outcome of trades entered now when next bar hold=1 vol=1: +11.84 (n 54) ; +18.15 (n 54)
+  C0 enter at the flip (now)         +9.94 per signal ( +9.94 per trade, 100) ; +13.44 per signal (+13.44 per trade, 120)
+  C1 wait, enter if HOLD             +7.06 per signal ( +7.94 per trade, 89) ;  +3.76 per signal ( +4.43 per trade, 102)
+  C2 wait, enter if HOLD + VOL       +2.16 per signal ( +4.00 per trade, 54) ;  -0.18 per signal ( -0.40 per trade, 54)
+  C3 wait, enter if VOL              +2.45 per signal ( +4.01 per trade, 61) ;  +1.82 per signal ( +3.37 per trade, 65)
+  C4 enter now, cut if both fail     +8.95 per signal ( +8.95 per trade, 100) ; +14.28 per signal (+14.28 per trade, 120)
+  C5 wait 15 min regardless          +8.30 per signal ( +8.30 per trade, 100) ;  +5.15 per signal ( +5.15 per trade, 120)
+
+passes: none
+  V2 + skip slow flips (now)         pass 66%, paid 49%, evals/payout 0.92 | 24 starts 2022-23: avg $4,169 / med $2,302, losing 27%
+  + add a V15a unit on HOLD + VOL    pass 64%, paid 47%, evals/payout 0.83 | 24 starts 2022-23: avg $4,136 / med $881, losing 35%
