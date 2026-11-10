@@ -1,0 +1,30 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+
+=== 50K, ONE ACCOUNT (per eval started every 2nd trading day), Lucid caps, room rule, cost 0.5 pt ===
+  A. S6 + room rule (current)
+    2018-21 starts: pass 95% | paid once 77% | payouts/eval 1.77 (0.56 evals per payout) | avg payout $1,127 | net $1,907/eval | days: start->pass 60, funded->1st payout 23, start->1st payout 87, between 17
+    2022-25 starts: pass 80% | paid once 51% | payouts/eval 1.62 (0.62 evals per payout) | avg payout $1,559 | net $2,435/eval | days: start->pass 32, funded->1st payout 11, start->1st payout 44, between 13
+    TIMING chain (trading days; x1.4 = calendar): between consecutive payouts avg 46 | median 20 | max 244 (65 cal avg, 342 cal max) | first payout of chain day 54
+    EVALS BOUGHT per paying eval-group (chain, incl. the paying one): avg 1.36 | max 3 | payouts total 41 over 7.9 yrs
+    2018-21 starts: start->first payout days avg 108 | median 87 | max 281 (393 cal) | never paid 23%
+    2022-25 starts: start->first payout days avg 49 | median 44 | max 97 (136 cal) | never paid 49%
+    one account at a time 2018-26: 22 evals, 41 payouts, longest run without a payout 3 evals
+  I. current best: x0.5 bottom-third gap
+    2018-21 starts: pass 95% | paid once 85% | payouts/eval 1.84 (0.54 evals per payout) | avg payout $1,185 | net $2,094/eval | days: start->pass 60, funded->1st payout 18, start->1st payout 86, between 18
+    2022-25 starts: pass 79% | paid once 51% | payouts/eval 1.78 (0.56 evals per payout) | avg payout $1,564 | net $2,695/eval | days: start->pass 34, funded->1st payout 12, start->1st payout 44, between 14
+    TIMING chain (trading days; x1.4 = calendar): between consecutive payouts avg 49 | median 22 | max 232 (68 cal avg, 325 cal max) | first payout of chain day 56
+    EVALS BOUGHT per paying eval-group (chain, incl. the paying one): avg 1.33 | max 3 | payouts total 40 over 7.9 yrs
+    2018-21 starts: start->first payout days avg 100 | median 86 | max 259 (363 cal) | never paid 15%
+    2022-25 starts: start->first payout days avg 50 | median 44 | max 102 (143 cal) | never paid 49%
+    one account at a time 2018-26: 21 evals, 40 payouts, longest run without a payout 2 evals
+  P. I + day-type x1.0/x0.5 (cut low only)
+    2018-21 starts: pass 95% | paid once 87% | payouts/eval 2.28 (0.44 evals per payout) | avg payout $1,146 | net $2,525/eval | days: start->pass 57, funded->1st payout 19, start->1st payout 87, between 18
+    2022-25 starts: pass 77% | paid once 56% | payouts/eval 2.09 (0.48 evals per payout) | avg payout $1,615 | net $3,295/eval | days: start->pass 32, funded->1st payout 12, start->1st payout 49, between 15
+    TIMING chain (trading days; x1.4 = calendar): between consecutive payouts avg 46 | median 21 | max 233 (65 cal avg, 326 cal max) | first payout of chain day 56
+    EVALS BOUGHT per paying eval-group (chain, incl. the paying one): avg 1.46 | max 3 | payouts total 42 over 7.9 yrs
+    2018-21 starts: start->first payout days avg 100 | median 87 | max 259 (363 cal) | never paid 13%
+    2022-25 starts: start->first payout days avg 51 | median 49 | max 102 (143 cal) | never paid 44%
+    one account at a time 2018-26: 20 evals, 42 payouts, longest run without a payout 2 evals
