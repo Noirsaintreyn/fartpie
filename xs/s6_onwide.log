@@ -1,0 +1,35 @@
+days 1,992 (2018-02-01 - 2026-01-30); wide overnight on 35% of days
+
+=== per engine: trades taken (sz > 0) | avg pts per trade, wide vs narrow | 2018-21 | 2022-Jan26 (t of the difference) ===
+  RA     n  257 | 18-21: wide  +22.4 (n  46) vs narrow   +6.7 (n 117) t +2.00 | 22-26: wide  +23.3 (n  52) vs narrow   +9.7 (n 140) t +1.45
+  M1     n  833 | 18-21: wide  +12.2 (n 185) vs narrow   +5.5 (n 223) t +1.27 | 22-26: wide  +17.4 (n 212) vs narrow   +0.9 (n 213) t +2.16
+  R1     n  139 | 18-21: wide   +5.2 (n  13) vs narrow   +3.4 (n  49) t +0.16 | 22-26: wide  +16.1 (n  11) vs narrow   +6.7 (n  66) t +0.76
+  ON+    n  739 | 18-21: wide   +3.2 (n  72) vs narrow   +3.4 (n 329) t -0.05 | 22-26: wide  +17.1 (n  88) vs narrow   +5.1 (n 410) t +1.19   [enters before 09:30: flag not usable]
+  ON-    n 1314 | 18-21: wide   -1.5 (n 271) vs narrow   +2.0 (n 676) t -0.79 | 22-26: wide   +0.8 (n 267) vs narrow   +1.9 (n 638) t -0.17   [enters before 09:30: flag not usable]
+  RULES  n  938 | 18-21: wide   +2.2 (n 164) vs narrow   +1.4 (n 205) t +0.55 | 22-26: wide   +4.5 (n 231) vs narrow   +2.3 (n 338) t +1.16
+  V15a   n  586 | 18-21: wide  +21.0 (n  90) vs narrow   +0.1 (n 198) t +2.48 | 22-26: wide  +32.6 (n 109) vs narrow   +7.9 (n 189) t +1.87
+
+=== system points per day, 1 contract per engine | all | 2018-21 | 2022-Jan26 | days >= +7.5 | losing days | months >= 50 pts | worst month ===
+  BASE                       +12.76 |  +9.49 | +15.91 |  44% |  51% |  68% |   -449
+  NARROW x0.5                +11.67 |  +8.79 | +14.44 |  44% |  50% |  65% |   -346
+  SKIP narrow                +10.58 |  +8.09 | +12.98 |  44% |  50% |  66% |   -464
+  WIDE x1.5 / NARROW x0.5    +15.50 | +11.66 | +19.21 |  45% |  50% |  70% |   -311
+  WIDE x1.5 only             +16.59 | +12.36 | +20.67 |  45% |  50% |  71% |   -339
+   by year base -> wide x1.5/narrow x0.5: 2018: +9.7 -> +14.9 | 2019: +2.3 -> +4.5 | 2020: +14.0 -> +16.4 | 2021: +11.9 -> +11.1 | 2022: +18.5 -> +26.3 | 2023: +9.8 -> +12.3 | 2024: +19.0 -> +23.1 | 2025: +18.1 -> +17.6 | 2026: -7.0 -> -11.7
+
+=== system points per day, weighted by the live size (sz) | all | 2018-21 | 2022-Jan26 | days >= +7.5 | losing days | months >= 50 pts | worst month ===
+  BASE                       +10.95 |  +6.39 | +15.34 |  45% |  51% |  67% |   -362
+  NARROW x0.5                 +9.95 |  +5.93 | +13.82 |  44% |  50% |  65% |   -321
+  SKIP narrow                 +8.94 |  +5.47 | +12.29 |  44% |  51% |  67% |   -351
+  WIDE x1.5 / NARROW x0.5    +13.15 |  +7.82 | +18.29 |  44% |  50% |  68% |   -333
+  WIDE x1.5 only             +14.15 |  +8.28 | +19.82 |  45% |  51% |  69% |   -368
+   by year base -> wide x1.5/narrow x0.5: 2018: +5.5 -> +8.9 | 2019: +2.1 -> +3.5 | 2020: +8.8 -> +10.1 | 2021: +9.0 -> +8.9 | 2022: +18.8 -> +25.8 | 2023: +10.5 -> +13.9 | 2024: +16.5 -> +19.3 | 2025: +17.3 -> +16.5 | 2026: -6.7 -> -11.0
+
+=== per engine pts/day (1 contract) base | with WIDE x1.5 / NARROW x0.5 ===
+  RA     +1.00 | +1.62
+  M1     +3.69 | +4.82
+  R1     +0.43 | +0.34
+  ON+    +1.69 | +1.69
+  ON-    +1.22 | +1.22
+  RULES  +1.23 | +1.32
+  V15a   +3.50 | +4.48
