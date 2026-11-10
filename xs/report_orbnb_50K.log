@@ -1,0 +1,9 @@
+  V15a trades in the pipeline: good: n 281, +22.3 pts | mid: n 281, +9.5 pts | bad: n 62, -13.0 pts | none: n 7, -0.2 pts
+
+=== 50K: ORB / NOISE-BAND STATE SIZING, CAPPED, 10 accounts 3 per payout | 77 monthly starts, room rule, cost 0.5 pt ===
+  plan | year-1 net | year-2 net / month | payouts / month yr2 | months with 0 payouts (yr2) | out-of-pocket | by start year (yr-2 $/mo)
+  base (no state)            | $ 18,660 | $ 4,422 | 3.31 |  36% | $135 | 2018:1.1k 2019:3.0k 2020:3.2k 2021:6.3k 2022:6.5k 2023:5.6k 2024:7.5k
+  skip bad states            | $ 23,139 | $ 5,197 | 3.71 |  36% | $133 | 2018:1.2k 2019:3.5k 2020:3.7k 2021:9.0k 2022:7.5k 2023:5.6k 2024:7.3k
+  skip bad, good x1.25       | $ 23,793 | $ 5,189 | 3.67 |  33% | $130 | 2018:1.2k 2019:3.6k 2020:5.5k 2021:8.1k 2022:6.9k 2023:5.7k 2024:3.9k
+  skip bad, good x1.5        | $ 24,901 | $ 5,216 | 3.66 |  34% | $130 | 2018:1.3k 2019:3.8k 2020:5.0k 2021:8.4k 2022:7.3k 2023:5.3k 2024:3.7k
+  good x1.5 only             | $ 18,318 | $ 4,410 | 3.20 |  38% | $134 | 2018:1.3k 2019:3.6k 2020:3.9k 2021:7.2k 2022:5.9k 2023:4.4k 2024:3.8k

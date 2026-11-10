@@ -1,0 +1,39 @@
+AFTER THE PIPELINE mv30 SKIP
+vector trades with a state: {'RA': 225, 'V15a': 624}
+
+=== RA: points per trade (win % | bad %) by state; early period n | late period n ===
+  orb   against:  -42.2 (0%|75%, n 4) /  -33.4 (8%|67%, n 12) || inside:   +7.4 (52%|28%, n 75) /  +13.0 (51%|42%, n 80) || with:  +21.8 (73%|4%, n 26) /  +34.7 (86%|7%, n 28)
+  nb    beyond:  +28.2 (77%|12%, n 26) /  +40.5 (79%|15%, n 33) || inside:   +2.8 (48%|28%, n 79) /   +5.8 (48%|42%, n 83) || opposite:   +nan (nan%|nan%, n 0) /  -51.0 (0%|100%, n 4)
+  vw    0:   +2.3 (42%|31%, n 48) /   -7.2 (33%|57%, n 54) || 1:  +14.8 (67%|18%, n 57) /  +30.3 (73%|20%, n 66)
+  whip  False:  +10.5 (57%|23%, n 98) /  +12.4 (55%|38%, n 108) || True:  -10.6 (29%|29%, n 7) /  +22.5 (58%|25%, n 12)
+  spreads (best bucket minus worst bucket; same sign and |t| >= 2 in both periods passes):
+    orb   early with over against  +64.0 (t  +nan) | late with over against  +68.1 (t +5.34)
+    nb    early beyond over inside  +25.4 (t +2.59) | late beyond over opposite  +91.5 (t  +nan)
+    vw    early 1 over 0  +12.4 (t +1.36) | late 1 over 0  +37.6 (t +3.81)
+    whip  early False over True  +21.1 (t  +nan) | late True over False  +10.1 (t +0.61)
+    dist  top third minus bottom third: early  +32.8 (t +3.05) | late  +45.0 (t +3.80)   <== PASS
+    orw   top third minus bottom third: early   +5.9 (t +0.51) | late  -10.9 (t -0.87)
+    sig   top third minus bottom third: early   -7.0 (t -0.63) | late  +13.4 (t +1.06)
+    dvw   top third minus bottom third: early  +27.2 (t +2.57) | late  +44.5 (t +3.82)   <== PASS
+
+=== V15a: points per trade (win % | bad %) by state; early period n | late period n ===
+  orb   against:   -4.4 (10%|0%, n 29) /  -25.9 (5%|37%, n 19) || inside:   +3.9 (23%|3%, n 243) /  +17.1 (30%|34%, n 116) || with:   +9.3 (43%|1%, n 155) /  +65.3 (48%|18%, n 62)
+  nb    beyond:  +13.0 (43%|1%, n 120) /  +66.7 (48%|28%, n 61) || inside:   +3.0 (25%|3%, n 292) /  +12.2 (28%|30%, n 132) || opposite:  -11.1 (0%|0%, n 15) /  -36.2 (0%|50%, n 4)
+  vw    0:   +2.9 (19%|3%, n 178) /   +6.2 (24%|30%, n 86) || 1:   +7.0 (37%|2%, n 249) /  +45.1 (41%|29%, n 111)
+  whip  False:   +5.7 (31%|2%, n 394) /  +28.6 (33%|30%, n 185) || True:   +0.5 (12%|6%, n 33) /  +20.8 (42%|25%, n 12)
+  spreads (best bucket minus worst bucket; same sign and |t| >= 2 in both periods passes):
+    orb   early with over against  +13.7 (t +2.01) | late with over against  +91.2 (t +4.36)   <== PASS
+    nb    early beyond over opposite  +24.2 (t +4.97) | late beyond over opposite +102.9 (t  +nan)
+    vw    early 1 over 0   +4.1 (t +0.84) | late 1 over 0  +38.9 (t +2.40)
+    whip  early False over True   +5.2 (t +0.44) | late False over True   +7.8 (t +0.28)
+    dist  top third minus bottom third: early  +19.2 (t +3.36) | late  +69.9 (t +3.47)   <== PASS
+    orw   top third minus bottom third: early   -4.9 (t -0.78) | late  -10.3 (t -0.48)
+    sig   top third minus bottom third: early   +5.8 (t +1.06) | late  +31.7 (t +1.59)
+    dvw   top third minus bottom third: early   +8.2 (t +1.49) | late  +40.0 (t +1.83)
+
+=== PART C: standalone ORB30 close-break on real NQ 5m, 1 contract, cost 1 pt ===
+  2014-21: 1868 trades (1868) | flat 12:00  -0.42 pts/trade (win 46%) | flat close  +1.86 | avg risk 34 pts
+  2022-26: 963 trades (963) | flat 12:00  -2.01 pts/trade (win 45%) | flat close  +2.15 | avg risk 90 pts
+  days with an ORB30 break and a vector entry: 551; same direction 61%
+    2014-21: ORB30 agrees with vector   +4.8 (n 216) vs disagrees   -7.7 (n 139), t +3.84
+    2022-26: ORB30 agrees with vector   +7.5 (n 118) vs disagrees  +11.3 (n 78), t -0.33
