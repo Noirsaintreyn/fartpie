@@ -1,0 +1,10 @@
+
+=== 50K: ACCOUNT ROLES IN A 10-ACCOUNT FLEET (3 per payout, 5 funded, reserve) | 77 monthly starts, room rule, cost 0.5 pt ===
+  plan | year-1 net | year-2 net / month | payouts / month yr2 | months with 0 payouts (yr2) | worst yr2 month (avg) | out-of-pocket
+  ALL x1 (copy-trade, old)                                     | $ 19,678 | $ 4,727 | 3.37 |  41% | $   -247 | $134
+  size ladder 0.7 / 1.0 / 1.4                                  | $ 17,864 | $ 4,816 | 3.69 |  23% | $     90 | $112
+  all x1.4                                                     | $ 15,932 | $ 4,801 | 3.33 |  43% | $   -106 | $137
+  all x0.7                                                     | $ 17,355 | $ 4,555 | 3.82 |  30% | $    -75 | $110
+  engine split: overnight | morning | rules (3 roles)          | $  1,853 | $ 1,011 | 0.87 |  61% | $    -77 | $162
+  engine split x1.5 each                                       | $  2,973 | $ 1,471 | 1.19 |  60% | $   -141 | $206
+  mixed: all x1 / overnight+morning x1.3 / rules+morning x1.3  | $ 14,651 | $ 4,486 | 3.26 |  25% | $    252 | $141
