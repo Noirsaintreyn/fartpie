@@ -15,10 +15,10 @@ Fg = Fg[['gexp','dexp','vanna','charm','vflow']].shift(1).reindex(ix, method='ff
 buf = io.StringIO()
 with contextlib.redirect_stdout(buf):
     import noise_context as NC
-VP = NC.F.copy(); VP.index = pd.to_datetime(VP.index).normalize(); vpc = [c for c in VP.columns if c not in ('gex',) and VP[c].dtype != object][:14]; M = M.join(VP[vpc], rsuffix='_vp')
+VP = NC.F.copy(); VP.index = pd.to_datetime(VP.index).normalize(); vpc = [c for c in VP.columns if c not in ('gex','y') and pd.api.types.is_numeric_dtype(VP[c])][:14]; M = M.join(VP[vpc], rsuffix='_vp')
 
 import lightgbm as lgb
-G = pd.read_pickle(f'{SP}/G_noise.pkl'); G['day'] = pd.to_datetime(G.day).dt.normalize(); G = G.join(M, on='day'); CXC = [c for c in M.columns]; TRC = [c for c in G.columns if c not in CXC + ['day','pts']]
+G = pd.read_pickle(f'{SP}/G_noise.pkl'); G['day'] = pd.to_datetime(G.day).dt.normalize(); M = M.apply(pd.to_numeric, errors='coerce'); G = G.join(M, on='day'); CXC = [c for c in M.columns]; TRC = [c for c in G.columns if c not in CXC + ['day','pts']]
 G = G[G.day >= '2018-02-01'].reset_index(drop=True); yr = G.day.dt.year.values; print(len(G), 'trades; context cols', len(CXC), 'trade cols', len(TRC), flush=True)
 def tt(a, b): return (a.mean() - b.mean()) / np.sqrt(a.var() / len(a) + b.var() / len(b)) if len(a) > 8 and len(b) > 8 else np.nan
 def ev(label, keep):
