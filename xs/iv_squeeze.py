@@ -22,3 +22,16 @@ s=F.sq.reindex(days); out=[]
 for lab,m in (('18-21',days.year<2022),('22-26',days.year>=2022)):
     p=P[m]; a=s[m]==1; out.append(f'{lab}: squeeze {p[a].mean():+5.1f} (n{a.sum()}) other {p[~a].mean():+5.1f} (t {t(p[a],p[~a]):+.2f})')
 print('squeeze', ' | '.join(out))
+
+# ---- S6 (V2) legs: sz-weighted pts on squeeze vs other days
+import pickle
+O,N=pickle.load(open(f'{SP}/s6.pkl','rb')); legs=O['V2']
+sqd=set(F.index[F.sq==1])
+print('\nS6 legs, sz-weighted pts/trade on squeeze days vs other (18-21 | 22-26)')
+tot={}
+for nm,(df,_,_) in zip(N,legs):
+    df=df.copy(); df['day']=pd.to_datetime(df.day).dt.normalize(); df['w']=df.pts*df.sz; df['sq']=df.day.isin(sqd)
+    o=[]
+    for lab,m in (('18-21',df.day.dt.year<2022),('22-26',df.day.dt.year>=2022)):
+        d=df[m]; o.append(f'{lab}: sq {d[d.sq].w.mean():+6.1f} (n{d.sq.sum()}) other {d[~d.sq].w.mean():+6.1f}')
+    print(f'  {nm:6}',' | '.join(o))
