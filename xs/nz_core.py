@@ -1,7 +1,7 @@
 """Shared core for the noise-area engine (copied from new_models.py lines 11-45): ET 5m arrays A, OPEN/CLOSE/PC/SIG and noise(). Nov 10 2026."""
 import numpy as np, pandas as pd, pickle, warnings; warnings.filterwarnings('ignore')
-SP = '/tmp/claude-0/-home-claude/6d3c83e1-1a4a-5a0a-8647-c2590d1d30a4/scratchpad'; COST = 0.5
-X = pd.read_parquet('/tmp/claude-0/ml/nq5_real.parquet'); X = X[X.rth].copy(); X['day'] = pd.to_datetime(X.day).dt.normalize()
+SP = '/tmp/claude-0/-home-claude/6d3c83e1-1a4a-5a0a-8647-c2590d1d30a4/scratchpad'; COST = float(__import__('os').environ.get('NZ_COST', 0.5))
+import os; X = pd.read_parquet(os.environ.get('NZ_SRC', '/tmp/claude-0/ml/nq5_real.parquet')); X = X[X.rth].copy(); X['day'] = pd.to_datetime(X.day).dt.normalize()
 GRID = np.arange(570, 960, 5); NB = len(GRID); pos_of = {m: i for i, m in enumerate(GRID)}
 DAYS = [d for d in sorted(X.day.unique()) if pd.Timestamp('2014-02-01') <= d <= pd.Timestamp('2026-01-30')]; ALLD = sorted(X.day.unique())
 A = {}
