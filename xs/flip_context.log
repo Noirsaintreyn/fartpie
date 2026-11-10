@@ -1,0 +1,37 @@
+{'RA': 220, 'M1': 833, 'R1': 139, 'RULES': 938, 'V15a': 392}
+
+=== TEST 1: PASS flags per engine (bucket vs the rest of that engine; spread in pts/trade, t; early // late) with the chance rate from 200 shuffles ===
+
+  RA: 220 trades, 44 bucket tests, real PASS flags 0 vs chance 0.0 (95th pct 0)
+
+  M1: 833 trades, 30 bucket tests, real PASS flags 0 vs chance 0.0 (95th pct 0)
+
+  R1: 139 trades, 28 bucket tests, real PASS flags 0 vs chance 0.0 (95th pct 0)
+
+  RULES: 938 trades, 30 bucket tests, real PASS flags 0 vs chance 0.0 (95th pct 0)
+
+  V15a: 392 trades, 46 bucket tests, real PASS flags 0 vs chance 0.0 (95th pct 0)
+
+=== TOD x engine: pts per trade (n), early // late ===
+  RA     09:35-10:29 | 10:30-11:59 | 12:00-13:59 | 14:00+ :   +10.7 (76) |   +7.4 (24) |   +nan (0) |   +nan (0) //  +12.4 (88) |  +16.2 (32) |   +nan (0) |   +nan (0)
+  M1     09:35-10:29 | 10:30-11:59 | 12:00-13:59 | 14:00+ :   +11.6 (124) |  +10.4 (141) |   +2.6 (90) |   +6.3 (53) //  +21.9 (121) |   +5.4 (137) |   +1.7 (101) |   +4.8 (66)
+  R1     09:35-10:29 | 10:30-11:59 | 12:00-13:59 | 14:00+ :    +1.0 (18) |   +8.8 (31) |   -4.3 (13) |   +nan (0) //  +22.2 (28) |   +2.0 (35) |   -5.1 (14) |   +nan (0)
+  RULES  09:35-10:29 | 10:30-11:59 | 12:00-13:59 | 14:00+ :    +0.5 (179) |   +2.9 (115) |   +2.0 (55) |   +6.6 (20) //   +2.6 (310) |   +4.8 (164) |   +1.6 (73) |   +4.4 (22)
+  V15a   09:35-10:29 | 10:30-11:59 | 12:00-13:59 | 14:00+ :   +11.1 (116) |   +5.7 (39) |   +2.9 (15) |  +10.1 (25) //  +24.5 (123) |  +56.8 (36) |  +28.2 (17) |   -0.1 (21)
+
+=== RA: pts per trade by VP direction class (beyond | inside | against), early // late ===
+  daily      +7.8 (80) |  +18.3 (10) |   +5.5 (5) //  +15.8 (94) |   +1.9 (15) |   +1.5 (8)
+  weekly    +21.2 (26) |   +7.6 (59) |   -0.5 (15) //  +10.5 (32) |   +9.6 (62) |  +26.1 (26)
+  monthly    +2.5 (22) |   -5.9 (35) |  +26.6 (43) //   +5.7 (28) |  +11.1 (60) |  +24.6 (32)
+  52-week    +4.5 (22) |   +7.0 (39) |  +16.0 (39) //   +7.0 (28) |  +16.2 (55) |  +14.2 (37)
+  nstack 0..4 beyond:  +17.6 (13) |  +10.1 (43) |   +2.4 (30) |  +31.4 (9) |   -4.7 (5) //   -5.7 (13) |  +26.0 (54) |   +5.3 (35) |   -0.6 (14) |  +26.6 (4)
+
+=== V15a: pts per trade by VP direction class (beyond | inside | against), early // late ===
+  daily      +5.9 (136) |  +26.3 (42) |   +0.9 (11) //  +24.3 (137) |  +27.0 (49) |  +44.5 (8)
+  weekly     +7.6 (61) |   +9.9 (98) |  +10.4 (36) //  +26.9 (66) |  +31.9 (95) |  +20.4 (36)
+  monthly   +10.4 (80) |   +6.3 (48) |  +10.0 (67) //   +9.9 (79) |  +51.0 (75) |  +21.6 (43)
+  52-week    +9.9 (72) |  +14.1 (66) |   +2.9 (57) //  +23.7 (68) |  +17.9 (82) |  +52.3 (47)
+  nstack 0..4 beyond:   +0.9 (25) |  +20.5 (62) |   +0.3 (55) |  +13.7 (35) |   +0.8 (18) //  +50.9 (25) |  +36.7 (73) |   +7.0 (44) |  +29.8 (31) |  +15.0 (24)
+
+=== TEST 2: cutting a consistently BAD pocket (negative in both periods; real PASS flags only) ===
+  base                                    18-21: +2.30/d std  19.5 m/s 0.118 worstM  -102 | 22-26: +5.45/d std  34.8 m/s 0.157 worstM  -194

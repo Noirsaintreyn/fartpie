@@ -1,0 +1,19 @@
+{'RA': 220, 'M1': 833, 'R1': 139, 'RULES': 938, 'V15a': 392}
+
+=== TEST 1: PASS flags per engine (bucket vs the rest of that engine; spread in pts/trade, t; early // late) with the chance rate from 200 shuffles ===
+
+  RA: 220 trades, 44 bucket tests, real PASS flags 0 vs chance 0.2 (95th pct 1)
+
+  M1: 833 trades, 30 bucket tests, real PASS flags 0 vs chance 0.3 (95th pct 1)
+
+  R1: 139 trades, 28 bucket tests, real PASS flags 0 vs chance 0.0 (95th pct 0)
+
+  RULES: 938 trades, 30 bucket tests, real PASS flags 1 vs chance 0.3 (95th pct 1)
+     dpoc_y high third               -2.8 (t -1.71, n123) //    -3.5 (t -1.84, n211)
+
+  V15a: 392 trades, 46 bucket tests, real PASS flags 0 vs chance 0.4 (95th pct 2)
+
+=== TOD x engine: pts per trade (n), early // late ===
+=== TEST 2: cutting a consistently BAD pocket (negative in both periods; real PASS flags only) ===
+  base                                    18-21: +2.30/d std  19.5 m/s 0.118 worstM  -102 | 22-26: +5.45/d std  34.8 m/s 0.157 worstM  -194
+  cut RULES: dpoc_y high third (n 123+211)18-21: +2.24/d std  18.8 m/s 0.119 worstM  -102 | 22-26: +5.13/d std  34.3 m/s 0.150 worstM  -194
