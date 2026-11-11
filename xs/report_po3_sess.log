@@ -1,0 +1,42 @@
+
+== V15a: 932 trades, mean +8.0, win 31%
+ London swept Asia: trade WITH sweep dir      n  288 win 32% mean   +6.3 | A n191   +0.3 (+0.1) | B n 97  +18.0 (+1.7) 
+ London swept Asia: no sweep                  n  231 win 31% mean   +7.4 | A n173  +10.1 (+2.4) | B n 58   -0.8 (-0.1) 
+ London swept Asia: AGAINST                   n  413 win 31% mean   +9.5 | A n270   +2.0 (+0.8) | B n143  +23.5 (+2.6) 
+ NY-side swept Asia: trade WITH sweep dir     n  268 win 31% mean   +6.6 | A n179   -0.5 (-0.2) | B n 89  +20.8 (+1.7) 
+ NY-side swept Asia: no sweep                 n  274 win 28% mean   +4.4 | A n189   +1.8 (+0.6) | B n 85  +10.2 (+0.9) 
+ NY-side swept Asia: AGAINST                  n  390 win 34% mean  +11.4 | A n266   +7.9 (+2.7) | B n124  +18.8 (+2.1) PASS
+ NY-side swept London: trade WITH sweep dir   n  297 win 35% mean  +11.6 | A n199   +2.9 (+1.1) | B n 98  +29.3 (+2.3) 
+ NY-side swept London: no sweep               n  171 win 25% mean   +6.3 | A n123   +1.9 (+0.4) | B n 48  +17.6 (+1.1) 
+ NY-side swept London: AGAINST                n  464 win 32% mean   +6.2 | A n312   +4.9 (+2.0) | B n152   +8.8 (+1.2) 
+ -- classic: London swept Asia, then trade...
+ classic: with London sweep (NY distributes opposite of the sweep wick) n  288 win 32% mean   +6.3 | A n191   +0.3 (+0.1) | B n 97  +18.0 (+1.7) 
+ London swept Asia AND NY then swept London, with LN n  110 win 35% mean   +5.1 | A n 72   -0.5 (-0.2) | B n 38  +15.6 (+0.9) 
+ London did NOT sweep Asia (Asia kept / continuation) n  231 win 31% mean   +7.4 | A n173  +10.1 (+2.4) | B n 58   -0.8 (-0.1) 
+   ...and trade is with the larger-window drift: skip n    0 win  0% mean   +0.0 | A n  0   +nan (+nan) | B n  0   +nan (+nan) 
+ tight Asia (below median) & AL=with          n  147 win 30% mean   -0.9 | A n139   -0.1 (-0.0) | B n  8  -15.6 (+nan) 
+ wide Asia (above median) & AL=with           n  141 win 35% mean  +13.8 | A n 52   +1.4 (+0.2) | B n 89  +21.0 (+1.8) 
+ -- leverage 2x when AL==1 or (AL==1 & LN>=0) ; 1x else
+   2x on AL==1            total    +9218 mean  +9.9 std  94.1 worst   -202 yrs-neg 3/13 (1x total +7416)
+   2x on AL==1 or AN==1   total   +10533 mean +11.3 std 107.9 worst   -202 yrs-neg 3/13 (1x total +7416)
+
+== RA: 262 trades, mean +8.0, win 52%
+ London swept Asia: trade WITH sweep dir      n   75 win 57% mean  +16.4 | A n 31   +5.2 (+0.7) | B n 44  +24.2 (+3.1) 
+ London swept Asia: no sweep                  n   60 win 45% mean   -3.7 | A n 32   +3.7 (+0.5) | B n 28  -12.2 (-1.2) 
+ London swept Asia: AGAINST                   n  127 win 52% mean   +8.6 | A n 59   +7.8 (+1.3) | B n 68   +9.2 (+1.4) 
+ NY-side swept Asia: trade WITH sweep dir     n   56 win 50% mean   +5.1 | A n 25   +3.4 (+0.4) | B n 31   +6.5 (+0.7) 
+ NY-side swept Asia: no sweep                 n   87 win 52% mean   +9.5 | A n 38   +3.2 (+0.4) | B n 49  +14.4 (+1.7) 
+ NY-side swept Asia: AGAINST                  n  119 win 53% mean   +8.2 | A n 59   +9.1 (+1.5) | B n 60   +7.5 (+1.1) 
+ NY-side swept London: trade WITH sweep dir   n   77 win 58% mean  +13.7 | A n 31  +15.0 (+1.8) | B n 46  +12.8 (+1.6) 
+ NY-side swept London: no sweep               n   63 win 46% mean   +4.3 | A n 35   -1.1 (-0.1) | B n 28  +11.1 (+1.0) 
+ NY-side swept London: AGAINST                n  122 win 51% mean   +6.3 | A n 56   +5.6 (+1.0) | B n 66   +6.9 (+1.0) 
+ -- classic: London swept Asia, then trade...
+ classic: with London sweep (NY distributes opposite of the sweep wick) n   75 win 57% mean  +16.4 | A n 31   +5.2 (+0.7) | B n 44  +24.2 (+3.1) 
+ London swept Asia AND NY then swept London, with LN n   24 win 62% mean  +19.5 | A n  9  +15.1 (+0.9) | B n 15  +22.2 (+1.6) 
+ London did NOT sweep Asia (Asia kept / continuation) n   60 win 45% mean   -3.7 | A n 32   +3.7 (+0.5) | B n 28  -12.2 (-1.2) 
+   ...and trade is with the larger-window drift: skip n    0 win  0% mean   +0.0 | A n  0   +nan (+nan) | B n  0   +nan (+nan) 
+ tight Asia (below median) & AL=with          n   35 win 57% mean  +15.4 | A n 21   -3.5 (-0.4) | B n 14  +43.7 (+3.7) 
+ wide Asia (above median) & AL=with           n   40 win 57% mean  +17.3 | A n 10  +23.6 (+1.6) | B n 30  +15.2 (+1.6) 
+ -- leverage 2x when AL==1 or (AL==1 & LN>=0) ; 1x else
+   2x on AL==1            total    +3323 mean +12.7 std  69.9 worst   -102 yrs-neg 3/9 (1x total +2095)
+   2x on AL==1 or AN==1   total    +3412 mean +13.0 std  74.0 worst   -102 yrs-neg 4/9 (1x total +2095)
