@@ -1,0 +1,63 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+days 1992; core legs trade on 39.0%; 2018-21 35.6%, 2022+ 42.3%
+
+=== STATE of idle vs trading days: mean (idle | trade) and t, by era; STABLE = same sign and |t|>=2 in both eras ===
+  rng_pts          A idle   129.92 trade   132.79 t  -0.5 | B idle   234.68 trade   223.01 t  +1.3 
+  absmove          A idle     0.55 trade     0.58 t  -0.7 | B idle     0.53 trade     0.51 t  +0.5 
+  eff              A idle     0.49 trade     0.51 t  -0.9 | B idle     0.46 trade     0.47 t  -1.1 
+  rng_x            A idle     1.04 trade     1.06 t  -0.5 | B idle     1.04 trade     1.01 t  +1.0 
+  gap_abs          A idle    49.44 trade   103.94 t -12.0 | B idle    80.99 trade   181.57 t -14.7 STABLE
+  gap_rel          A idle     0.41 trade     0.83 t -13.5 | B idle     0.36 trade     0.81 t -15.8 STABLE
+  vxn_pct          A idle     0.51 trade     0.50 t  +0.5 | B idle     0.46 trade     0.48 t  -1.0 
+  vxn_chg5         A idle     0.02 trade    -0.01 t  +2.9 | B idle     0.02 trade    -0.01 t  +3.2 STABLE
+  rng_prev_rel     A idle     1.05 trade     1.04 t  +0.1 | B idle     1.05 trade     0.99 t  +1.8 
+  rng20_pct        A idle     0.56 trade     0.57 t  -0.1 | B idle     0.52 trade     0.52 t  -0.0 
+  trend_eff10      A idle     0.36 trade     0.31 t  +3.6 | B idle     0.34 trade     0.31 t  +2.4 STABLE
+  qqq_z20          A idle     0.60 trade     0.40 t  +2.5 | B idle     0.41 trade     0.22 t  +2.4 STABLE
+  f_turn_month     A idle     0.20 trade     0.19 t  +0.3 | B idle     0.20 trade     0.19 t  +0.5 
+  f_last2          A idle     0.11 trade     0.07 t  +2.0 | B idle     0.10 trade     0.09 t  +1.0 
+  f_first_day      A idle     0.05 trade     0.05 t  -0.4 | B idle     0.04 trade     0.06 t  -0.9 
+  f_qtr_end_wk     A idle     0.08 trade     0.08 t  -0.1 | B idle     0.08 trade     0.08 t  -0.5 
+  f_pre_hol        A idle     0.04 trade     0.02 t  +2.2 | B idle     0.05 trade     0.03 t  +1.6 
+  f_opex_fri       A idle     0.05 trade     0.04 t  +0.4 | B idle     0.05 trade     0.04 t  +0.3 
+  f_opex_wk        A idle     0.05 trade     0.04 t  +0.4 | B idle     0.05 trade     0.04 t  +0.3 
+  f_vix_exp        A idle     0.05 trade     0.05 t  -0.1 | B idle     0.05 trade     0.04 t  +0.7 
+  f_mon            A idle     0.17 trade     0.22 t  -1.7 | B idle     0.19 trade     0.18 t  +0.4 
+  f_fri            A idle     0.20 trade     0.20 t  +0.1 | B idle     0.20 trade     0.20 t  +0.2 
+  f_fomc           A idle     0.03 trade     0.03 t  +0.8 | B idle     0.04 trade     0.02 t  +1.5 
+  f_fomc1          A idle     0.02 trade     0.05 t  -2.5 | B idle     0.03 trade     0.04 t  -0.9 
+  f_vix_up         A idle     0.11 trade     0.07 t  +2.0 | B idle     0.11 trade     0.05 t  +3.5 STABLE
+  f_vix_dn         A idle     0.12 trade     0.13 t  -0.5 | B idle     0.09 trade     0.07 t  +0.9 
+  f_vix_hi         A idle     0.44 trade     0.39 t  +1.6 | B idle     0.38 trade     0.41 t  -0.8 
+  f_vix_lo         A idle     0.18 trade     0.15 t  +1.2 | B idle     0.14 trade     0.09 t  +2.4 
+  f_vix5_up        A idle     0.43 trade     0.45 t  -0.4 | B idle     0.45 trade     0.47 t  -0.4 
+  f_tnx_up         A idle     0.11 trade     0.10 t  +0.5 | B idle     0.25 trade     0.29 t  -1.6 
+  f_tnx_dn         A idle     0.13 trade     0.13 t  +0.2 | B idle     0.20 trade     0.17 t  +1.2 
+  f_dxy_up         A idle     0.10 trade     0.10 t  -0.2 | B idle     0.12 trade     0.13 t  -0.8 
+  f_dxy_dn         A idle     0.08 trade     0.10 t  -1.1 | B idle     0.14 trade     0.13 t  +0.7 
+  f_nq5_up         A idle     0.31 trade     0.24 t  +2.2 | B idle     0.31 trade     0.21 t  +3.7 STABLE
+  f_nq5_dn         A idle     0.17 trade     0.13 t  +1.8 | B idle     0.23 trade     0.21 t  +0.7 
+  f_gap_up         A idle     0.17 trade     0.40 t  -7.7 | B idle     0.13 trade     0.38 t  -9.1 STABLE
+  f_gap_dn         A idle     0.10 trade     0.33 t  -8.4 | B idle     0.10 trade     0.34 t  -9.3 STABLE
+  f_swept_hi       A idle     0.28 trade     0.20 t  +2.9 | B idle     0.34 trade     0.18 t  +5.8 STABLE
+  f_swept_lo       A idle     0.27 trade     0.16 t  +3.9 | B idle     0.30 trade     0.17 t  +4.8 STABLE
+  f_open_above     A idle     0.28 trade     0.39 t  -3.5 | B idle     0.21 trade     0.37 t  -5.7 STABLE
+  f_open_below     A idle     0.12 trade     0.29 t  -6.1 | B idle     0.12 trade     0.33 t  -7.8 STABLE
+  f_pclose_top     A idle     0.33 trade     0.34 t  -0.3 | B idle     0.28 trade     0.29 t  -0.2 
+  f_pclose_bot     A idle     0.18 trade     0.17 t  +0.1 | B idle     0.17 trade     0.17 t  -0.2 
+  f_on_wide        A idle     0.27 trade     0.50 t  -7.1 | B idle     0.24 trade     0.51 t  -9.0 STABLE
+  f_drive_with     A idle     0.44 trade     0.56 t  -3.5 | B idle     0.48 trade     0.52 t  -1.2 
+  f_drive_against  A idle     0.54 trade     0.42 t  +3.5 | B idle     0.50 trade     0.47 t  +0.9 
+
+  share idle by weekday: {0: np.float64(0.59), 1: np.float64(0.64), 2: np.float64(0.64), 3: np.float64(0.57), 4: np.float64(0.61)}
+
+=== OPPORTUNITY on idle days (n 1215): range median 147 pts (trading days 157); |open->close| median 0 (trading 0); trend efficiency median 0.48 (trading 0.50); idle days with |open->close| >= 100 pts: 0% (trading days 0%)
+NZ in BASEP list: 1
+Traceback (most recent call last):
+  File "/home/claude/fartpie/xs/report_idle.py", line 449, in <module>
+    NZt = [T_ for (T_, u, yz), en in zip(variant(True, relm), NAMES) if en == 'NZ'][0].copy(); NZt['day'] = pd.to_datetime(NZt.day); NZt['idle'] = ~NZt.day.isin(tdays); NZt['era'] = np.where(NZt.day < '2022-01-01', 'A', 'B')
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+IndexError: list index out of range
