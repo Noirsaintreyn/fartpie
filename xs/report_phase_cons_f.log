@@ -1,0 +1,11 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+##### PHASE f: CONSENSUS weights (legs that moved the same direction in BOTH walk-forward folds) {'R1': 0.5, 'ON-': 0.0, 'V15a': 1.5}
+  2018-21  single score 2151.40 | paid  89% lost-before-1st  11% | median d   22 | avg $ in 120d   2151
+  2018-21  cons   score 2819.03 | paid  86% lost-before-1st  14% | median d   25 | avg $ in 120d   2819
+  2022-25  single score 3584.11 | paid  83% lost-before-1st  17% | median d   14 | avg $ in 120d   3584
+  2022-25  cons   score 4485.67 | paid  83% lost-before-1st  17% | median d   17 | avg $ in 120d   4486
+  ALL      single score 2825.98 | paid  86% lost-before-1st  14% | median d   18 | avg $ in 120d   2826
+  ALL      cons   score 3603.75 | paid  85% lost-before-1st  15% | median d   21 | avg $ in 120d   3604
