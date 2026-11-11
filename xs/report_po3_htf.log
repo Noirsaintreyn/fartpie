@@ -1,0 +1,56 @@
+
+== V15a: 932 trades, mean +8.0, win 31%
+ PD   WITH distrib  n  214 win 38% mean   +9.4 | A n150   +3.9 (+1.6) | B n 64  +22.4 (+1.7) 
+ PD   no sweep      n  495 win 29% mean   +6.4 | A n334   +3.3 (+1.3) | B n161  +13.0 (+1.6) 
+ PD   AGAINST       n  223 win 30% mean  +10.0 | A n150   +4.6 (+1.2) | B n 73  +21.0 (+1.5) 
+ PS   WITH distrib  n  284 win 30% mean   +9.2 | A n192   +1.4 (+0.4) | B n 92  +25.3 (+2.2) 
+ PS   no sweep      n  254 win 30% mean   +5.8 | A n166  +11.3 (+3.0) | B n 88   -4.5 (-0.5) 
+ PS   AGAINST       n  394 win 33% mean   +8.5 | A n276   +0.8 (+0.4) | B n118  +26.5 (+2.6) 
+ PW   WITH distrib  n  114 win 37% mean   +7.4 | A n 80   +8.7 (+2.3) | B n 34   +4.4 (+0.2) 
+ PW   no sweep      n  750 win 30% mean   +7.4 | A n510   +2.8 (+1.4) | B n240  +17.3 (+2.6) 
+ PW   AGAINST       n   68 win 41% mean  +14.9 | A n 44   +5.7 (+1.2) | B n 24  +31.7 (+1.5) 
+ PM   WITH distrib  n   51 win 31% mean  +19.2 | A n 40  +12.0 (+1.2) | B n 11  +45.2 (+0.7) 
+ PM   no sweep      n  841 win 31% mean   +7.4 | A n565   +3.0 (+1.7) | B n276  +16.5 (+2.7) 
+ PM   AGAINST       n   40 win 45% mean   +5.1 | A n 29   +7.2 (+1.1) | B n 11   -0.4 (-0.0) 
+ HTF  WITH distrib  n  149 win 32% mean   +6.6 | A n107   +8.4 (+1.9) | B n 42   +2.0 (+0.1) 
+ HTF  no sweep      n  686 win 30% mean   +7.9 | A n463   +2.3 (+1.1) | B n223  +19.5 (+2.8) 
+ HTF  AGAINST       n   97 win 41% mean  +10.6 | A n 64   +6.5 (+1.5) | B n 33  +18.5 (+1.1) 
+ ANY  WITH distrib  n  361 win 31% mean   +5.9 | A n246   +4.0 (+1.3) | B n115   +9.9 (+1.0) 
+ ANY  no sweep      n  145 win 31% mean   +7.7 | A n 97   +6.8 (+1.6) | B n 48   +9.5 (+0.7) 
+ ANY  AGAINST       n  426 win 32% mean   +9.8 | A n291   +2.5 (+1.1) | B n135  +25.7 (+2.7) 
+ -- confluence: # of levels swept in the trade direction (WITH)
+   with-count 0: n  450 win 32% mean   +8.6 A +3.1 B +19.9
+   with-count 1: n  332 win 26% mean   +3.5 A +4.2 B +1.9
+   with-count 2: n  122 win 43% mean  +15.8 A +4.5 B +43.8
+   with-count 3+: n   28 win 39% mean  +17.4 A +4.7 B +55.5
+ -- leverage: 2x on WITH-any-level (n_with>=1), 1x otherwise
+   1x all      total    +7416 mean  +8.0 std  69.9 worst   -101 yrs-neg 3/13
+   2x aligned  total   +10978 mean +11.8 std 112.7 worst   -201 yrs-neg 3/13
+
+== RA: 262 trades, mean +8.0, win 52%
+ PD   WITH distrib  n   36 win 64% mean  +14.1 | A n 15  +18.7 (+2.5) | B n 21  +10.8 (+1.0) 
+ PD   no sweep      n  165 win 48% mean   +4.5 | A n 78   +1.8 (+0.3) | B n 87   +6.9 (+1.1) 
+ PD   AGAINST       n   61 win 56% mean  +13.8 | A n 29  +10.9 (+1.3) | B n 32  +16.5 (+1.8) 
+ PS   WITH distrib  n   66 win 52% mean   +7.3 | A n 31   +6.0 (+0.7) | B n 35   +8.4 (+0.9) 
+ PS   no sweep      n   98 win 46% mean   +1.6 | A n 47   +7.9 (+1.3) | B n 51   -4.2 (-0.5) 
+ PS   AGAINST       n   98 win 58% mean  +14.9 | A n 44   +4.2 (+0.6) | B n 54  +23.6 (+3.3) 
+ PW   WITH distrib  n   34 win 62% mean  +18.4 | A n 14  +11.9 (+1.0) | B n 20  +23.1 (+1.9) 
+ PW   no sweep      n  218 win 49% mean   +5.7 | A n103   +4.9 (+1.1) | B n115   +6.5 (+1.2) 
+ PW   AGAINST       n   10 win 80% mean  +21.8 | A n  5  +14.2 (+nan) | B n  5  +29.4 (+nan) 
+ PM   WITH distrib  n   14 win 64% mean  +29.8 | A n  7  +25.5 (+nan) | B n  7  +34.2 (+nan) 
+ PM   no sweep      n  242 win 51% mean   +7.0 | A n112   +4.4 (+1.0) | B n130   +9.4 (+1.9) 
+ PM   AGAINST       n    6 win 50% mean   -4.6 | A n  3  +24.5 (+nan) | B n  3  -33.8 (+nan) 
+ HTF  WITH distrib  n   42 win 60% mean  +19.9 | A n 18  +16.1 (+1.5) | B n 24  +22.8 (+2.1) 
+ HTF  no sweep      n  204 win 49% mean   +5.2 | A n 96   +3.2 (+0.7) | B n108   +7.1 (+1.3) 
+ HTF  AGAINST       n   16 win 69% mean  +11.9 | A n  8  +18.0 (+nan) | B n  8   +5.7 (+nan) 
+ ANY  WITH distrib  n   95 win 53% mean   +6.7 | A n 47   +4.9 (+0.8) | B n 48   +8.6 (+1.1) 
+ ANY  no sweep      n   53 win 38% mean   -5.9 | A n 23   -0.4 (-0.0) | B n 30  -10.0 (-1.0) 
+ ANY  AGAINST       n  114 win 58% mean  +15.5 | A n 52  +10.1 (+1.6) | B n 62  +20.0 (+3.0) 
+ -- confluence: # of levels swept in the trade direction (WITH)
+   with-count 0: n  143 win 48% mean   +4.4 A +2.3 B +6.1
+   with-count 1: n   93 win 56% mean  +11.4 A +9.0 B +14.1
+   with-count 2: n   21 win 62% mean  +12.6 A +13.1 B +12.4
+   with-count 3+: n    5 win 60% mean  +29.7 A +35.8 B +25.7
+ -- leverage: 2x on WITH-any-level (n_with>=1), 1x otherwise
+   1x all      total    +2095 mean  +8.0 std  51.1 worst    -51 yrs-neg 3/9
+   2x aligned  total    +3567 mean +13.6 std  77.6 worst   -102 yrs-neg 3/9
