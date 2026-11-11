@@ -1,0 +1,51 @@
+trades 1098 | win 49% | mean +6.6 pts | median ADR 140 pts | median hold 11 bars (15m)
+
+== (1) RECOVERABILITY: trades whose adverse excursion reached k*ADR
+ MAE reached -0.05 ADR: n  961 (88%) win 43% mean final    -3.0 pts | never reached: n  137 win 96% mean  +73.8
+ MAE reached -0.10 ADR: n  820 (75%) win 35% mean final   -13.0 pts | never reached: n  278 win 92% mean  +64.5
+ MAE reached -0.15 ADR: n  690 (63%) win 28% mean final   -21.4 pts | never reached: n  408 win 85% mean  +54.0
+ MAE reached -0.25 ADR: n  474 (43%) win 16% mean final   -41.1 pts | never reached: n  624 win 75% mean  +42.9
+ MAE reached -0.35 ADR: n  313 (29%) win 12% mean final   -56.3 pts | never reached: n  785 win 64% mean  +31.7
+ MAE reached -0.50 ADR: n  130 (12%) win  5% mean final   -86.2 pts | never reached: n  968 win 55% mean  +19.1
+
+== winners vs losers: path shape (median)
+ winners  n  542 mean   +62.2 | median MAE  -12.0 (-0.11 ADR) | median MFE  +49.4 | median hold 16 bars
+ losers   n  556 mean   -47.6 | median MAE  -37.0 (-0.35 ADR) | median MFE  +14.0 | median hold 8 bars
+
+BIG LOSERS (<= -0.35 ADR): 209 trades (19.0%) account for -16978 of the total +7268 pts; non-big mean +27.3
+
+== (2) FEATURE TERCILES (cuts 2014-21): n, win, mean pts, big-loser rate | era A mean (t) | era B mean (t)
+ seq    1     n  828 win 49% mean    +7.6 bigloss 20.9% | A   +6.0 (+2.5) | B  +10.8 (+1.2) 
+ seq    2     n  222 win 52% mean    +4.8 bigloss 14.0% | A  +10.9 (+2.1) | B   -5.8 (-0.4) 
+ prev   -1.0  n  270 win 51% mean    +3.6 bigloss 13.3% | A   +9.2 (+2.1) | B   -5.4 (-0.5) 
+ prev   0.0   n  828 win 49% mean    +7.6 bigloss 20.9% | A   +6.0 (+2.5) | B  +10.8 (+1.2) 
+ m      low   n  393 win 47% mean    +5.2 bigloss 30.3% | A   +7.0 (+1.9) | B   +1.1 (+0.1) 
+ m      mid   n  347 win 49% mean   +10.1 bigloss 16.4% | A   +8.9 (+1.9) | B  +12.0 (+0.9) 
+ m      high  n  358 win 52% mean    +4.8 bigloss 9.2% | A   +4.5 (+2.0) | B   +5.3 (+0.5) 
+ barsz  low   n  394 win 48% mean    +1.3 bigloss 5.1% | A   +6.4 (+2.7) | B   -6.9 (-1.1) 
+ barsz  mid   n  348 win 50% mean    +5.2 bigloss 21.3% | A   +4.5 (+1.3) | B   +6.9 (+0.6) 
+ barsz  high  n  356 win 51% mean   +13.9 bigloss 32.3% | A   +9.4 (+2.0) | B  +23.2 (+1.2) 
+ vwd    low   n  358 win 50% mean    +3.9 bigloss 15.4% | A   +4.8 (+1.2) | B   +1.8 (+0.2) 
+ vwd    mid   n  379 win 47% mean    +3.1 bigloss 18.5% | A   +8.5 (+2.6) | B   -6.0 (-0.6) 
+ vwd    high  n  361 win 51% mean   +13.0 bigloss 23.3% | A   +7.0 (+1.9) | B  +24.9 (+1.5) 
+ dopen  low   n  361 win 50% mean    +3.1 bigloss 15.5% | A   +7.1 (+1.8) | B   -4.8 (-0.5) 
+ dopen  mid   n  363 win 47% mean    +2.0 bigloss 18.7% | A   +6.5 (+1.9) | B   -6.8 (-0.7) 
+ dopen  high  n  374 win 51% mean   +14.5 bigloss 22.7% | A   +6.7 (+1.9) | B  +28.3 (+1.8) 
+ gapal  low   n  367 win 52% mean    +6.4 bigloss 19.9% | A   +5.4 (+1.6) | B   +8.2 (+0.7) 
+ gapal  mid   n  375 win 46% mean    +7.0 bigloss 18.7% | A   +3.8 (+1.3) | B  +12.7 (+0.9) 
+ gapal  high  n  356 win 51% mean    +6.5 bigloss 18.5% | A  +11.1 (+2.6) | B   -3.1 (-0.3) 
+
+PASS list: []
+
+== STOP SWEEP on the pure-vector trades (stop at -k*ADR if the adverse excursion reached it; cost .5; intrabar order ignored)
+ stop(ADR) | pts/trade | win | pts/day | worst | 2014-21 pts/trade | 2022-26 pts/trade | big-loss share
+ 0.1       |   +4.4 | 23% |  +5.9 |   -67 |   +2.4 |   +8.2 | +0.0x
+ 0.15      |   +5.0 | 32% |  +6.6 |  -100 |   +2.7 |   +9.3 | +0.0x
+ 0.2       |   +6.2 | 38% |  +8.3 |  -133 |   +5.4 |   +7.9 | +0.0x
+ 0.25      |   +7.7 | 42% | +10.2 |  -167 |   +5.7 |  +11.5 | +0.0x
+ 0.3       |   +7.9 | 45% | +10.4 |  -179 |   +6.5 |  +10.5 | +0.0x
+ 0.35      |   +7.6 | 46% | +10.0 |  -208 |   +6.3 |  +10.1 | -2.0x
+ 0.4       |   +8.2 | 47% | +10.9 |  -238 |   +6.6 |  +11.3 | -1.7x
+ 0.5       |   +8.0 | 49% | +10.6 |  -297 |   +6.9 |  +10.2 | -1.8x
+ 0.75      |   +7.0 | 49% |  +9.3 |  -280 |   +6.8 |   +7.4 | -2.2x
+ None      |   +6.6 | 49% |  +8.8 |  -325 |   +6.8 |   +6.3 | -2.3x
