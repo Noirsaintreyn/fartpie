@@ -1,0 +1,23 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== NEVER-TRADE WINDOWS test on top of Z + X1 (Flex 50K, E2 eval + funded clip, starts every 2nd day) ===
+Z + X1 gate (base for this test)             | ALL pass  89% evalfail  11% paid  81% fundedlost   7% | 1st payout median  73d | payouts/eval 2.61 net/eval $3,068
+                                             | 2018-21 pass  94% evalfail   6% paid  86% fundedlost   8% | 1st payout median  89d | payouts/eval 2.59 net/eval $2,657
+                                             | 2022-25 pass  83% evalfail  17% paid  76% fundedlost   7% | 1st payout median  50d | payouts/eval 2.65 net/eval $3,530
++ drop ON- leg                               | ALL pass  94% evalfail   6% paid  89% fundedlost   5% | 1st payout median  80d | payouts/eval 3.19 net/eval $4,386
+                                             | 2018-21 pass  99% evalfail   1% paid  93% fundedlost   6% | 1st payout median  97d | payouts/eval 3.64 net/eval $4,655
+                                             | 2022-25 pass  89% evalfail  11% paid  85% fundedlost   3% | 1st payout median  57d | payouts/eval 2.69 net/eval $4,084
++ ON+ not on Tuesdays                        | ALL pass  89% evalfail  11% paid  82% fundedlost   7% | 1st payout median  73d | payouts/eval 2.81 net/eval $3,127
+                                             | 2018-21 pass  94% evalfail   6% paid  92% fundedlost   2% | 1st payout median  91d | payouts/eval 2.91 net/eval $2,858
+                                             | 2022-25 pass  82% evalfail  18% paid  71% fundedlost  11% | 1st payout median  48d | payouts/eval 2.71 net/eval $3,430
++ M1 not after 11:00                         | ALL pass  89% evalfail  11% paid  82% fundedlost   7% | 1st payout median  76d | payouts/eval 2.29 net/eval $2,612
+                                             | 2018-21 pass  94% evalfail   6% paid  86% fundedlost   8% | 1st payout median  95d | payouts/eval 2.00 net/eval $1,842
+                                             | 2022-25 pass  83% evalfail  17% paid  78% fundedlost   5% | 1st payout median  54d | payouts/eval 2.62 net/eval $3,477
++ no RTH entries after 12:00                 | ALL pass  87% evalfail  13% paid  80% fundedlost   8% | 1st payout median  78d | payouts/eval 2.38 net/eval $2,819
+                                             | 2018-21 pass  98% evalfail   2% paid  89% fundedlost   9% | 1st payout median 101d | payouts/eval 2.42 net/eval $2,516
+                                             | 2022-25 pass  75% evalfail  25% paid  70% fundedlost   6% | 1st payout median  51d | payouts/eval 2.34 net/eval $3,160
++ ALL of: drop ON-, ON+ Tue, M1 after 11:00  | ALL pass  91% evalfail   9% paid  86% fundedlost   5% | 1st payout median  88d | payouts/eval 3.28 net/eval $4,386
+                                             | 2018-21 pass  99% evalfail   1% paid  93% fundedlost   6% | 1st payout median 114d | payouts/eval 3.35 net/eval $4,009
+                                             | 2022-25 pass  82% evalfail  18% paid  78% fundedlost   4% | 1st payout median  55d | payouts/eval 3.20 net/eval $4,810
