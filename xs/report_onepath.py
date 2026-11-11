@@ -431,7 +431,7 @@ if __name__ == '__main__':
             fr, k3, pays = FU(LF, A, k2 + 1, NS, FPOL, True)
             for kk, x in pays:
                 flows.append((kk, x)); npay += 1; first = first or kk
-            if fr != 'lost': break
+            if fr not in ('lost', 'graduated'): break
             k = k3 + 1
         return flows, nev, npay, first
     kst = [i for i, d in enumerate(D_) if d >= pd.Timestamp('2022-01-03')][0]; offs = list(range(kst, kst + 60, 3))
