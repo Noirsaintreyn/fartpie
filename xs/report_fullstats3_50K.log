@@ -21,3 +21,6 @@ STK-N6 x0.5 tier<=1 / x1.25 tier>=2
 MAP+ENV only (no greeks): x0.5 neither / x1.5 both
    EVAL  pass  97% FAIL   3% | pass<=30d  16% <=60d  50% <=90d  69% | still running >30d  83% >60d  47% >90d  28% | fee-months/eval 4.18
    FUNDED paid  89% lost-before-1st  11% lost-ever  31% | 1st payout <=30d  45% <=60d  77% <=90d  84% (median 30d) | payouts in 90d 2.11 / 180d 3.56 | $ in 90d 3,179 / 180d 5,625 | $ total 6,123
+HEDGING only: x0.5 H=0 / x1.5 H=2
+   EVAL  pass  96% FAIL   4% | pass<=30d  15% <=60d  48% <=90d  65% | still running >30d  83% >60d  49% >90d  31% | fee-months/eval 4.35
+   FUNDED paid  89% lost-before-1st  11% lost-ever  31% | 1st payout <=30d  44% <=60d  74% <=90d  82% (median 31d) | payouts in 90d 2.02 / 180d 3.47 | $ in 90d 3,046 / 180d 5,493 | $ total 6,061
