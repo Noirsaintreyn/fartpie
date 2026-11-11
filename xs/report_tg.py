@@ -40,16 +40,16 @@ for d in TD.index:
     f['yz_pct'] = yzp.get(d, np.nan); f['har_ratio'] = har_ratio.get(d, np.nan); f['gjr_ratio'] = gjr_ratio.get(d, np.nan)
     rows[d] = f
 F = pd.DataFrame(rows).T.astype(float); F['morn_vol_rel'] = F.morn_vol / F.morn_vol.rolling(20, min_periods=10).mean().shift(1); F = F.drop(columns='morn_vol')
-X = TD.join(F, how='inner'); X['half'] = np.where(X.index.year < 2022, 'A', 'B'); X['T'] = X.tier.str[0].astype(int)
+X = TD.join(F, how='inner'); X['half'] = np.where(X.index.year < 2022, 'A', 'B'); X['TG'] = X.tier.str[0].astype(int)
 feats = ['gap_rel', 'yz_pct', 'har_ratio', 'gjr_ratio', 'vxn_pct', 'rng_prev_rel', 'trend_eff10', 'vd10_abs', 'vd_max30', 'n_cross', 'cross_runlen', 'flip_vol_rel', 'morn_vol_rel', 'no_break', 'brk_time', 'brk_dist', 'brk_vol_rel', 'brk_hold', 'brk_gap_align', 'n_state_chg']
 def tt(a, b):
     a, b = a.dropna(), b.dropna()
     if len(a) < 8 or len(b) < 8: return np.nan
     return (b.mean() - a.mean()) / np.sqrt(a.var() / len(a) + b.var() / len(b) + 1e-12)
-print(f'days {len(X)} | terrible {int((X.T==1).sum())} great {int((X.T==5).sum())}\n')
+print(f'days {len(X)} | terrible {int((X.TG==1).sum())} great {int((X.TG==5).sum())}\n')
 print(f'{"feature":14} | {"TERRIBLE":>8} {"BAD":>7} {"FLAT":>7} {"GOOD":>7} {"GREAT":>7} | great-minus-terrible t: 2018-21 | 2022-26 | consistent?')
 for f in feats:
-    m = [X[X.T == k][f].mean() for k in (1, 2, 3, 4, 5)]; ta = tt(X[(X.T == 1) & (X.half == 'A')][f], X[(X.T == 5) & (X.half == 'A')][f]); tb = tt(X[(X.T == 1) & (X.half == 'B')][f], X[(X.T == 5) & (X.half == 'B')][f])
+    m = [X[X.TG == k][f].mean() for k in (1, 2, 3, 4, 5)]; ta = tt(X[(X.TG == 1) & (X.half == 'A')][f], X[(X.TG == 5) & (X.half == 'A')][f]); tb = tt(X[(X.TG == 1) & (X.half == 'B')][f], X[(X.TG == 5) & (X.half == 'B')][f])
     flag = 'YES' if np.isfinite(ta) and np.isfinite(tb) and np.sign(ta) == np.sign(tb) and min(abs(ta), abs(tb)) >= 2 else ''
     print(f'{f:14} | ' + ' '.join(f'{x:7.2f}' for x in m) + f' | {ta:+6.1f} | {tb:+6.1f} | {flag}')
 # also: do these features predict the day's P&L (correlation, per half)?
@@ -58,12 +58,12 @@ for f in feats: print(f'  {f:14} A {X[X.half=="A"][[f,"pts"]].corr().iloc[0,1]:+
 # GMM regimes
 from sklearn.mixture import GaussianMixture; from sklearn.preprocessing import StandardScaler
 gf = ['gap_rel', 'yz_pct', 'har_ratio', 'gjr_ratio', 'vxn_pct', 'rng_prev_rel', 'trend_eff10', 'vd_max30', 'n_cross', 'brk_time', 'brk_dist']
-Z_ = X[gf + ['pts', 'T', 'half']].copy(); Z_['brk_time'] = Z_.brk_time.fillna(330); Z_['brk_dist'] = Z_.brk_dist.fillna(0); Z_ = Z_.dropna()
+Z_ = X[gf + ['pts', 'TG', 'half']].copy(); Z_['brk_time'] = Z_.brk_time.fillna(330); Z_['brk_dist'] = Z_.brk_dist.fillna(0); Z_ = Z_.dropna()
 ss = StandardScaler().fit(Z_[Z_.half == 'A'][gf]); XA = ss.transform(Z_[Z_.half == 'A'][gf]); XB = ss.transform(Z_[Z_.half == 'B'][gf]); XAll = ss.transform(Z_[gf])
 bic = {k: GaussianMixture(k, covariance_type='diag', n_init=5, random_state=0).fit(XA).bic(XA) for k in range(2, 6)}; kb = min(bic, key=bic.get); print(f'\nGMM (diag, fit on 2018-21, features {gf}): BIC {dict((k, round(v)) for k, v in bic.items())} -> k={kb}')
 gm = GaussianMixture(kb, covariance_type='diag', n_init=5, random_state=0).fit(XA); Z_['cl'] = gm.predict(XAll)
 for cl in range(kb):
     g = Z_[Z_.cl == cl]; ga, gb = g[g.half == 'A'], g[g.half == 'B']; cen = pd.Series(ss.transform(g[gf]).mean(0), index=gf)
     hi = cen.sort_values(key=abs, ascending=False).head(4)
-    print(f' cluster {cl}: n {len(g):4d} (A {len(ga)}, B {len(gb)}) | mean pts A {ga.pts.mean():+6.1f} B {gb.pts.mean():+6.1f} | terrible% A {np.mean(ga["T"]==1):4.0%} B {np.mean(gb["T"]==1):4.0%} | great% A {np.mean(ga["T"]==5):4.0%} B {np.mean(gb["T"]==5):4.0%} | defining z: ' + ', '.join(f'{k} {v:+.1f}' for k, v in hi.items()))
+    print(f' cluster {cl}: n {len(g):4d} (A {len(ga)}, B {len(gb)}) | mean pts A {ga.pts.mean():+6.1f} B {gb.pts.mean():+6.1f} | terrible% A {np.mean(ga["TG"]==1):4.0%} B {np.mean(gb["TG"]==1):4.0%} | great% A {np.mean(ga["TG"]==5):4.0%} B {np.mean(gb["TG"]==5):4.0%} | defining z: ' + ', '.join(f'{k} {v:+.1f}' for k, v in hi.items()))
 X.to_pickle(SC + 'tg_features.pkl')
