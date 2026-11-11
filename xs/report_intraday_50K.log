@@ -1,0 +1,48 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== INTRADAY STAND-DOWN RULES on top of Z (Flex 50K, E2 eval + funded clip, starts every 2nd day) ===
+none (Z)                                     | ALL pass  87% evalfail  13% paid  78% fundedlost   8% | 1st payout median  64d | payouts/eval 2.20 net/eval $2,527
+                                             | 2018-21 pass  93% evalfail   7% paid  87% fundedlost   6% | 1st payout median  79d | payouts/eval 2.22 net/eval $2,108
+                                             | 2022-25 pass  79% evalfail  21% paid  69% fundedlost  11% | 1st payout median  45d | payouts/eval 2.17 net/eval $2,997
+X1 >=3 VWAP crosses by 11:00 -> x0           | ALL pass  89% evalfail  11% paid  81% fundedlost   7% | 1st payout median  73d | payouts/eval 2.61 net/eval $3,068
+                                             | 2018-21 pass  94% evalfail   6% paid  86% fundedlost   8% | 1st payout median  89d | payouts/eval 2.59 net/eval $2,657
+                                             | 2022-25 pass  83% evalfail  17% paid  76% fundedlost   7% | 1st payout median  50d | payouts/eval 2.65 net/eval $3,530
+X1h same -> x0.5                             | ALL pass  88% evalfail  12% paid  80% fundedlost   8% | 1st payout median  69d | payouts/eval 2.48 net/eval $2,847
+                                             | 2018-21 pass  93% evalfail   7% paid  87% fundedlost   7% | 1st payout median  84d | payouts/eval 2.45 net/eval $2,467
+                                             | 2022-25 pass  82% evalfail  18% paid  73% fundedlost   9% | 1st payout median  47d | payouts/eval 2.50 net/eval $3,275
+X2 no noise break by 11:00 -> x0             | ALL pass  86% evalfail  14% paid  78% fundedlost   8% | 1st payout median  73d | payouts/eval 2.20 net/eval $2,510
+                                             | 2018-21 pass  92% evalfail   8% paid  84% fundedlost   9% | 1st payout median  85d | payouts/eval 2.23 net/eval $2,229
+                                             | 2022-25 pass  78% evalfail  22% paid  71% fundedlost   7% | 1st payout median  51d | payouts/eval 2.16 net/eval $2,826
+X2h same -> x0.5                             | ALL pass  86% evalfail  14% paid  77% fundedlost   9% | 1st payout median  66d | payouts/eval 2.15 net/eval $2,427
+                                             | 2018-21 pass  93% evalfail   7% paid  85% fundedlost   8% | 1st payout median  80d | payouts/eval 2.16 net/eval $2,134
+                                             | 2022-25 pass  78% evalfail  22% paid  69% fundedlost  10% | 1st payout median  48d | payouts/eval 2.13 net/eval $2,757
+X2b no break by 10:30 -> x0.5                | ALL pass  86% evalfail  14% paid  79% fundedlost   7% | 1st payout median  67d | payouts/eval 2.28 net/eval $2,505
+                                             | 2018-21 pass  93% evalfail   7% paid  86% fundedlost   7% | 1st payout median  81d | payouts/eval 2.36 net/eval $2,272
+                                             | 2022-25 pass  78% evalfail  22% paid  71% fundedlost   7% | 1st payout median  50d | payouts/eval 2.19 net/eval $2,767
+X3 crosses>=3 OR no break by 11:00 -> x0     | ALL pass  91% evalfail   9% paid  83% fundedlost   8% | 1st payout median  78d | payouts/eval 2.37 net/eval $2,723
+                                             | 2018-21 pass  99% evalfail   1% paid  90% fundedlost   9% | 1st payout median  93d | payouts/eval 2.38 net/eval $2,388
+                                             | 2022-25 pass  81% evalfail  19% paid  74% fundedlost   7% | 1st payout median  51d | payouts/eval 2.36 net/eval $3,098
+X3h same -> x0.5                             | ALL pass  87% evalfail  13% paid  79% fundedlost   8% | 1st payout median  69d | payouts/eval 2.42 net/eval $2,759
+                                             | 2018-21 pass  93% evalfail   7% paid  86% fundedlost   8% | 1st payout median  85d | payouts/eval 2.50 net/eval $2,549
+                                             | 2022-25 pass  79% evalfail  21% paid  70% fundedlost   9% | 1st payout median  48d | payouts/eval 2.33 net/eval $2,995
+X4 first break failed by 11:00 -> x0.5       | ALL pass  86% evalfail  14% paid  78% fundedlost   8% | 1st payout median  65d | payouts/eval 2.24 net/eval $2,613
+                                             | 2018-21 pass  92% evalfail   8% paid  87% fundedlost   6% | 1st payout median  83d | payouts/eval 2.26 net/eval $2,184
+                                             | 2022-25 pass  78% evalfail  22% paid  69% fundedlost  10% | 1st payout median  46d | payouts/eval 2.20 net/eval $3,095
+X4b first break failed by 11:30 -> x0        | ALL pass  87% evalfail  13% paid  79% fundedlost   8% | 1st payout median  66d | payouts/eval 2.19 net/eval $2,513
+                                             | 2018-21 pass  94% evalfail   6% paid  88% fundedlost   6% | 1st payout median  85d | payouts/eval 2.15 net/eval $2,011
+                                             | 2022-25 pass  80% evalfail  20% paid  70% fundedlost  10% | 1st payout median  47d | payouts/eval 2.23 net/eval $3,076
+X5 >=5 VWAP crosses by 11:30 -> x0           | ALL pass  86% evalfail  14% paid  78% fundedlost   7% | 1st payout median  66d | payouts/eval 2.56 net/eval $2,983
+                                             | 2018-21 pass  93% evalfail   7% paid  86% fundedlost   7% | 1st payout median  84d | payouts/eval 2.62 net/eval $2,702
+                                             | 2022-25 pass  78% evalfail  22% paid  70% fundedlost   8% | 1st payout median  45d | payouts/eval 2.49 net/eval $3,298
+  X1 >=3 VWAP crosses by 11:00 -> x0           days flagged 54%
+  X1h same -> x0.5                             days flagged 54%
+  X2 no noise break by 11:00 -> x0             days flagged 59%
+  X2h same -> x0.5                             days flagged 59%
+  X2b no break by 10:30 -> x0.5                days flagged 64%
+  X3 crosses>=3 OR no break by 11:00 -> x0     days flagged 74%
+  X3h same -> x0.5                             days flagged 74%
+  X4 first break failed by 11:00 -> x0.5       days flagged 12%
+  X4b first break failed by 11:30 -> x0        days flagged 14%
+  X5 >=5 VWAP crosses by 11:30 -> x0           days flagged 30%
