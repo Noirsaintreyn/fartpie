@@ -1,0 +1,11 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+starts inside delta window: 86 (2024-12-18 .. 2025-08-28); overlapping, effectively ~4-5 independent evals
+=== DELTA RULES on RA+V15a (eval AND funded), Flex 50K, starts 2024-12..2025-08 ===
+base (no delta)                | pass  86% evalfail  14% paid  79% fundedlost   7% | 1st payout median  34d <=45d  49% <=60d  62% | net/eval $2,803
+veto opposing                  | pass  90% evalfail  10% paid  83% fundedlost   7% | 1st payout median  38d <=45d  47% <=60d  60% | net/eval $2,519
+x1.5 confirm / x0.5 oppose     | pass  88% evalfail  12% paid  81% fundedlost   7% | 1st payout median  36d <=45d  45% <=60d  60% | net/eval $2,467
+x1.5 confirm / veto opposing   | pass  90% evalfail  10% paid  83% fundedlost   7% | 1st payout median  37d <=45d  47% <=60d  60% | net/eval $2,580
+x2 confirm / veto opposing     | pass  80% evalfail  20% paid  74% fundedlost   6% | 1st payout median  33d <=45d  44% <=60d  56% | net/eval $2,013
