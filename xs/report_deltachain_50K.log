@@ -9,3 +9,8 @@ veto opposing                  | pass  90% evalfail  10% paid  83% fundedlost   
 x1.5 confirm / x0.5 oppose     | pass  88% evalfail  12% paid  81% fundedlost   7% | 1st payout median  36d <=45d  45% <=60d  60% | net/eval $2,467
 x1.5 confirm / veto opposing   | pass  90% evalfail  10% paid  83% fundedlost   7% | 1st payout median  37d <=45d  47% <=60d  60% | net/eval $2,580
 x2 confirm / veto opposing     | pass  80% evalfail  20% paid  74% fundedlost   6% | 1st payout median  33d <=45d  44% <=60d  56% | net/eval $2,013
+=== EVAL-ONLY delta, funded unchanged, same starts (2024-12..2025-08 window) ===
+base (no delta)              | pass  86% evalfail  14% paid  79% fundedlost   7% | 1st payout median  34d <=45d  49% <=60d  62% | net/eval $2,803 | days start->pass median 20 mean 29
+eval veto opposing           | pass  90% evalfail  10% paid  83% fundedlost   7% | 1st payout median  38d <=45d  47% <=60d  60% | net/eval $2,545 | days start->pass median 27 mean 31
+eval x1.5 conf / x0.5 opp    | pass  88% evalfail  12% paid  83% fundedlost   6% | 1st payout median  37d <=45d  45% <=60d  59% | net/eval $2,165 | days start->pass median 26 mean 33
+eval x1.5 conf / veto opp    | pass  90% evalfail  10% paid  84% fundedlost   6% | 1st payout median  37d <=45d  47% <=60d  60% | net/eval $2,263 | days start->pass median 26 mean 32
