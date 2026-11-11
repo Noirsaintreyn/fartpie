@@ -119,13 +119,14 @@ print('\n--- family mixes: tier by era-A terciles; spread = mean pts(top third) 
 print(f' {"mix":34} spreadA  spreadB  tB')
 res.sort(key=lambda r: -min(r[1], r[2]))
 for S, dA, dB, tB, *_ in res[:15]: print(f' {"+".join(S):34} {dA:+6.1f}  {dB:+6.1f}  {tB:+.1f}', flush=True)
+print('\n--- VP+ECON ---'); [print(' ', '+'.join(r[0]), f'A {r[1]:+.1f} B {r[2]:+.1f} tB {r[3]:+.1f}') for r in res if r[0] in (('VP','ECON'),('VP','ECON','TA'))]
 print('\n--- single-family spreads ---')
 for S, dA, dB, tB, *_ in [r for r in res if len(r[0]) == 1]: print(f' {S[0]:34} {dA:+6.1f}  {dB:+6.1f}  {tB:+.1f}')
 best_obs = res[0][2] if res else np.nan; best_obs_t = max(r[3] for r in res if min(r[1], r[2]) > 0) if res else np.nan
 # placebo: shuffle pts within leg, rerun select+mixes
 print('\n--- placebo (200 shuffles of pts within leg and era): distribution of best-mix min(spreadA, spreadB) ---', flush=True)
 nul = []
-for it in range(200):
+for it in range(int(__import__('os').environ.get('NPERM', 200))):
     y = pts.copy()
     for lg in ('V15a', 'RA'):
         for e in ('A', 'B'):
@@ -137,7 +138,7 @@ print(f' observed best min(spreadA,spreadB) {obs:+.1f} | placebo median {np.medi
 # save tiers for the top mixes for the chain run
 out = {'sel': [(names[j], s) for j, s in sel], 'rows': ALLT[['leg', 'day', 'm', 'dir', 'era', 'pts']].copy()}
 tops = {}
-for S, dA, dB, tB, top, bot, s in res[:8] + [r for r in res if len(r[0]) in (1, 7)]:
+for S, dA, dB, tB, top, bot, s in res[:8] + [r for r in res if len(r[0]) in (1, 7) or r[0] in (('VP', 'ECON'), ('VP', 'ECON', 'TA'))]:
     tops['+'.join(S)] = dict(top=top, bot=bot, s=s, spreadA=dA, spreadB=dB)
 out['tops'] = tops; pickle.dump(out, open(SC + 'mix_tiers.pkl', 'wb'))
 print('saved', len(tops), 'mixes')

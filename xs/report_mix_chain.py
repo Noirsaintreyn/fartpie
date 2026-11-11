@@ -412,7 +412,10 @@ if __name__ == '__main__':
             s_ = s_[~s_.index.duplicated()]; FE[lg]['mx_' + key] = s_.reindex(FE[lg].index)
     def mxrule(key, lo=.5, hi=1.5): return both(lambda F: np.where(F['mx_' + key].isna(), 1.0, np.where(F['mx_' + key] == -1, lo, np.where(F['mx_' + key] == 1, hi, 1.0))))
     VARS2 = {'base': {}, 'STK-N4 (reference)': N4R}
-    for k in KEYS: VARS2['MIX ' + k] = mxrule(k)
+    ONLY = __import__('os').environ.get('MIXONLY')
+    for k in KEYS:
+        if ONLY is None or k in ONLY.split(','): VARS2['MIX ' + k] = mxrule(k)
+    if ONLY: VARS2 = {k: v for k, v in VARS2.items() if k.startswith('MIX')}
     def h2(R, f): return f(R[H2[:len(R)]])
     print('=== MIX CHAIN. thirds from era A; x0.5 bottom / x1.5 top. Lucid Flex 50K. ALL starts 2018-25 | and 2022+ starts only (out-of-sample era for the screen).', flush=True)
     for nm, rules in VARS2.items():
