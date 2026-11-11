@@ -1,0 +1,22 @@
+['dt', 'sym', 'open', 'high', 'low', 'close', 'volume', 'm', 'rth', 'day', 'roll']
+1190 trades with features
+
+feature          fam      | with: n  mean(t) A / B    | without: mean A / B | PASS
+spring_with      Wyckoff  | A n 158   -0.6 (-0.1) | B n  93   +8.7 (+0.8) | 
+spring_against   Wyckoff  | A n 144   +0.4 (+0.1) | B n  75   -1.6 (-0.1) | 
+sc_with          Wyckoff  | A n   3   +nan (+nan) | B n   0   +nan (+nan) | 
+sc_against       Wyckoff  | A n  12   +nan (+nan) | B n   1   +nan (+nan) | 
+sos_with         Wyckoff  | A n 429   +3.3 (+1.1) | B n 268   -8.4 (-0.9) | 
+volz_hi          Wyckoff  | A n 252   +6.0 (+1.8) | B n 160   -6.2 (-0.7) | 
+volz_lo          Wyckoff  | A n 251   -4.5 (-1.3) | B n 146   +1.1 (+0.1) | 
+vr5_hi           Wyckoff  | A n 252   +6.7 (+1.9) | B n 116  -12.8 (-1.3) | 
+vr5_lo           Wyckoff  | A n 253   -2.8 (-0.9) | B n  89   -0.4 (-0.0) | 
+comp10_hi        Wyckoff  | A n 252   +0.0 (+0.0) | B n 172   -8.3 (-0.9) | 
+comp10_lo        Wyckoff  | A n 251   -0.6 (-0.2) | B n 126  +12.0 (+1.1) | 
+loc20_hi         Wyckoff  | A n 251   -1.5 (-0.5) | B n 160   -6.3 (-0.7) | 
+loc20_lo         Wyckoff  | A n 251   +2.6 (+0.8) | B n 147   -4.8 (-0.5) | 
+absorb           Wyckoff  | A n  14   +nan (+nan) | B n  14   +nan (+nan) | 
+asia_tight       AMD      | A n 252   -5.7 (-1.9) | B n 169  +14.6 (+1.5) | 
+amd_with         AMD      | A n 144   -5.3 (-1.3) | B n  96   +8.1 (+0.7) | 
+amd_against      AMD      | A n 149   -4.4 (-1.2) | B n  80  +25.4 (+1.9) | 
+amd_clean        AMD      | A n  59   -3.5 (-0.8) | B n  45  +27.8 (+1.7) | 
