@@ -1,0 +1,11 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== FLAT BY 5PM: remove the ON+ overnight leg (ON- already off), Flex 50K, full history ===
+current stack (with ON+)      | ALL pass  94% evalfail   6% paid  89% fundedlost   5% | 1st payout median  80d <=45d  14% <=60d  25% | net/eval $4,386 | days to pass median 54
+                              | 2018-21 pass  99% evalfail   1% paid  93% fundedlost   6% | 1st payout median  97d <=45d   4% <=60d  10% | net/eval $4,655
+                              | 2022-25 pass  89% evalfail  11% paid  85% fundedlost   3% | 1st payout median  57d <=45d  26% <=60d  43% | net/eval $4,084
+NO overnight (RTH legs only)  | ALL pass  96% evalfail   4% paid  87% fundedlost   9% | 1st payout median  95d <=45d   9% <=60d  19% | net/eval $5,473 | days to pass median 58
+                              | 2018-21 pass  94% evalfail   6% paid  84% fundedlost  10% | 1st payout median 114d <=45d   3% <=60d   6% | net/eval $5,158
+                              | 2022-25 pass  98% evalfail   2% paid  90% fundedlost   8% | 1st payout median  72d <=45d  15% <=60d  34% | net/eval $5,826
