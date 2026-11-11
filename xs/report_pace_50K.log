@@ -7,3 +7,5 @@ funded days sampled 37266; mean daily pnl $120; share of days >= qualifying thre
 FIRST payout after funding: n 263 | trading days to payout median 30 mean 37 p25 20 p75 42 | day the 5th qualifying day arrives (median) 30 | day balance first reaches $1,000 (median) 15 | binding = qualifying days in 89%, balance in 11% | payout size median $1,457
 LATER payouts (after a payout): n 953 | trading days to payout median 23 mean 27 p25 16 p75 32 | day the 5th qualifying day arrives (median) 23 | day balance first reaches $1,000 (median) 1 | binding = qualifying days in 100%, balance in 0% | payout size median $2,000
 what-if funded size multiplier (same signals): pace and loss rate
+  funded x1.0: median trading days between payouts 23 (n 953) | funded accounts lost 20%
+  funded x1.25: median trading days between payouts 23 (n 797) | funded accounts lost 34%
