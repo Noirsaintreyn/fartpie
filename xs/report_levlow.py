@@ -388,14 +388,12 @@ if __name__ == '__main__':
     def both(f): return {'V15a': f, 'RA': f}
     def sc_rule(lo_m, hi_m, lo=2, hi=5): return lambda F: np.where(F.score <= lo, lo_m, np.where(F.score >= hi, hi_m, 1.0))
     VARS = {
-        '7 RA x2 swept / x0.5 Asia held': {'RA': lambda F: np.where(F.AL == 1, 2.0, np.where(F.al == 0, 0.5, 1.0))},
-        '7a RA x0.5 Asia held': {'RA': lambda F: np.where(F.al == 0, 0.5, 1.0)},
-        '7b RA x1.5 swept / x0.75 held': {'RA': lambda F: np.where(F.AL == 1, 1.5, np.where(F.al == 0, 0.75, 1.0))},
-        'N1 skip score<=2': {'V15a': sc_rule(0, 1), 'RA': sc_rule(0, 1)},
         'STK-N3 x1.5 tier 3': both(lambda F: np.where(F.tier == 3, 1.5, 1.0)),
         'STK-N4 x0.5 tier<=1 / x1.5 tier 3': both(lambda F: np.where(F.tier.isna(), 1.0, np.where(F.tier <= 1, .5, np.where(F.tier == 3, 1.5, 1.0)))),
         'STK-N5 x0.5 tier<=1 / x2 tier 3': both(lambda F: np.where(F.tier.isna(), 1.0, np.where(F.tier <= 1, .5, np.where(F.tier == 3, 2.0, 1.0)))),
+        'STK-N6 x0.5 tier<=1 / x1.25 tier>=2': both(lambda F: np.where(F.tier.isna(), 1.0, np.where(F.tier <= 1, .5, 1.25))),
         'MAP+ENV x0.5 neither / x1.5 both': both(lambda F: np.where(F.me.isna(), 1.0, np.where(F.me == 0, .5, np.where(F.me == 2, 1.5, 1.0)))),
+        'HEDGING x0.5 H=0 / x1.5 H=2': both(lambda F: np.where(F.H.isna(), 1.0, np.where(F.H == 0, .5, np.where(F.H == 2, 1.5, 1.0)))),
     }
     def Pk(K, a): return lambda cu, pr: float(np.clip(K * max(cu, 0) ** a, .3 * min(K, 1), K))
     def eval_stats(spec, pol=E2):
@@ -421,5 +419,5 @@ if __name__ == '__main__':
     Pm = lambda K: (lambda cu, pr: K * E2(cu, pr))
     for nm, rules in VARS.items():
         V = vmod(BASEP, rules)
-        for K in (1.0, 1.25, 1.5, 2.0, 2.5):
+        for K in (1.0, 1.25, 1.5, 1.75, 2.0, 2.5):
             oe, _ = eval_stats(V, Pm(K)); print(f'{nm} | K={K}\n   {pe(oe)}', flush=True)
