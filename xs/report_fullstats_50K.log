@@ -1,0 +1,72 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== FULL STATS, Lucid Flex 50K, 5 RTH legs, starts every 2nd day 2018-02..2025-07 (trading days). EVAL = eval-phase sizing only. FUNDED = funded model run directly from day 0 with the variant applied to the funded account only (not conditioned on passing an eval). ===
+base
+   EVAL  pass  96% FAIL   4% | pass<=30d  19% <=60d  51% <=90d  69% | still running >30d  80% >60d  46% >90d  27% | fee-months/eval 4.13
+   FUNDED paid  88% lost-before-1st  12% lost-ever  35% | 1st payout <=30d  45% <=60d  75% <=90d  84% (median 30d) | payouts in 90d 2.05 / 180d 3.40 | $ in 90d 3,041 / 180d 5,284 | $ total 5,704
+1 V15a skip vs disp/mss
+   EVAL  pass  97% FAIL   3% | pass<=30d  17% <=60d  51% <=90d  69% | still running >30d  81% >60d  47% >90d  28% | fee-months/eval 4.18
+   FUNDED paid  87% lost-before-1st  13% lost-ever  38% | 1st payout <=30d  45% <=60d  76% <=90d  84% (median 30d) | payouts in 90d 2.05 / 180d 3.38 | $ in 90d 3,006 / 180d 5,185 | $ total 5,553
+2 V15a skip low ADX (tercile)
+   EVAL  pass  96% FAIL   4% | pass<=30d  20% <=60d  50% <=90d  70% | still running >30d  79% >60d  47% >90d  27% | fee-months/eval 4.07
+   FUNDED paid  88% lost-before-1st  12% lost-ever  36% | 1st payout <=30d  46% <=60d  75% <=90d  84% (median 29d) | payouts in 90d 2.07 / 180d 3.39 | $ in 90d 3,072 / 180d 5,288 | $ total 5,720
+2b V15a skip ADX < median
+   EVAL  pass  97% FAIL   3% | pass<=30d  19% <=60d  50% <=90d  70% | still running >30d  80% >60d  48% >90d  27% | fee-months/eval 4.11
+   FUNDED paid  89% lost-before-1st  11% lost-ever  32% | 1st payout <=30d  46% <=60d  76% <=90d  85% (median 30d) | payouts in 90d 2.08 / 180d 3.47 | $ in 90d 3,068 / 180d 5,396 | $ total 5,903
+2c V15a x0.5 low ADX
+   EVAL  pass  96% FAIL   4% | pass<=30d  20% <=60d  51% <=90d  69% | still running >30d  79% >60d  45% >90d  27% | fee-months/eval 4.06
+   FUNDED paid  88% lost-before-1st  12% lost-ever  35% | 1st payout <=30d  44% <=60d  74% <=90d  84% (median 30d) | payouts in 90d 2.06 / 180d 3.40 | $ in 90d 3,078 / 180d 5,325 | $ total 5,761
+5 RA skip vs structure
+   EVAL  pass  94% FAIL   6% | pass<=30d  17% <=60d  53% <=90d  70% | still running >30d  81% >60d  43% >90d  24% | fee-months/eval 3.99
+   FUNDED paid  88% lost-before-1st  12% lost-ever  37% | 1st payout <=30d  45% <=60d  74% <=90d  84% (median 30d) | payouts in 90d 2.05 / 180d 3.37 | $ in 90d 3,008 / 180d 5,213 | $ total 5,741
+6 RA x2 London swept Asia
+   EVAL  pass  97% FAIL   3% | pass<=30d  20% <=60d  50% <=90d  70% | still running >30d  79% >60d  47% >90d  27% | fee-months/eval 4.03
+   FUNDED paid  86% lost-before-1st  14% lost-ever  40% | 1st payout <=30d  46% <=60d  75% <=90d  84% (median 29d) | payouts in 90d 2.08 / 180d 3.31 | $ in 90d 3,098 / 180d 5,150 | $ total 5,499
+7 RA x2 swept / x0.5 Asia held
+   EVAL  pass 100% FAIL   0% | pass<=30d  19% <=60d  52% <=90d  69% | still running >30d  81% >60d  48% >90d  31% | fee-months/eval 4.18
+   FUNDED paid  89% lost-before-1st  11% lost-ever  35% | 1st payout <=30d  46% <=60d  76% <=90d  86% (median 29d) | payouts in 90d 2.13 / 180d 3.42 | $ in 90d 3,151 / 180d 5,249 | $ total 5,751
+7a RA x0.5 Asia held
+   EVAL  pass  99% FAIL   1% | pass<=30d  19% <=60d  52% <=90d  69% | still running >30d  81% >60d  48% >90d  30% | fee-months/eval 4.23
+   FUNDED paid  90% lost-before-1st  10% lost-ever  31% | 1st payout <=30d  45% <=60d  76% <=90d  86% (median 30d) | payouts in 90d 2.12 / 180d 3.57 | $ in 90d 3,118 / 180d 5,484 | $ total 6,069
+7b RA x1.5 swept / x0.75 held
+   EVAL  pass 100% FAIL   0% | pass<=30d  19% <=60d  51% <=90d  70% | still running >30d  81% >60d  48% >90d  29% | fee-months/eval 4.19
+   FUNDED paid  88% lost-before-1st  12% lost-ever  38% | 1st payout <=30d  46% <=60d  75% <=90d  85% (median 29d) | payouts in 90d 2.11 / 180d 3.43 | $ in 90d 3,146 / 180d 5,315 | $ total 5,704
+7c RA x2 swept / x0.25 held
+   EVAL  pass  97% FAIL   3% | pass<=30d  20% <=60d  51% <=90d  69% | still running >30d  80% >60d  49% >90d  31% | fee-months/eval 4.05
+   FUNDED paid  89% lost-before-1st  11% lost-ever  35% | 1st payout <=30d  46% <=60d  77% <=90d  87% (median 29d) | payouts in 90d 2.16 / 180d 3.44 | $ in 90d 3,193 / 180d 5,266 | $ total 5,788
+10 combo (ADX/disp/mss skip + RA skip + RA x2 AL)
+   EVAL  pass  95% FAIL   5% | pass<=30d  17% <=60d  51% <=90d  70% | still running >30d  82% >60d  45% >90d  25% | fee-months/eval 4.06
+   FUNDED paid  87% lost-before-1st  13% lost-ever  39% | 1st payout <=30d  47% <=60d  75% <=90d  84% (median 29d) | payouts in 90d 2.09 / 180d 3.30 | $ in 90d 3,040 / 180d 5,029 | $ total 5,580
+N1 skip score<=2
+   EVAL  pass  99% FAIL   1% | pass<=30d  17% <=60d  52% <=90d  69% | still running >30d  82% >60d  48% >90d  30% | fee-months/eval 4.29
+   FUNDED paid  88% lost-before-1st  12% lost-ever  36% | 1st payout <=30d  44% <=60d  75% <=90d  83% (median 30d) | payouts in 90d 2.06 / 180d 3.42 | $ in 90d 3,036 / 180d 5,283 | $ total 5,706
+N2 x0.5 score<=2
+   EVAL  pass  97% FAIL   3% | pass<=30d  19% <=60d  51% <=90d  70% | still running >30d  80% >60d  46% >90d  27% | fee-months/eval 4.07
+   FUNDED paid  88% lost-before-1st  12% lost-ever  33% | 1st payout <=30d  45% <=60d  75% <=90d  84% (median 30d) | payouts in 90d 2.08 / 180d 3.47 | $ in 90d 3,101 / 180d 5,414 | $ total 5,861
+N3 x1.5 score>=5
+   EVAL  pass  96% FAIL   4% | pass<=30d  20% <=60d  51% <=90d  71% | still running >30d  78% >60d  45% >90d  24% | fee-months/eval 3.94
+   FUNDED paid  87% lost-before-1st  13% lost-ever  34% | 1st payout <=30d  46% <=60d  76% <=90d  84% (median 29d) | payouts in 90d 2.10 / 180d 3.46 | $ in 90d 3,225 / 180d 5,551 | $ total 5,937
+N4 x0.5 <=2 / x1.5 >=5
+   EVAL  pass  95% FAIL   5% | pass<=30d  19% <=60d  51% <=90d  72% | still running >30d  78% >60d  44% >90d  24% | fee-months/eval 3.90
+   FUNDED paid  87% lost-before-1st  13% lost-ever  34% | 1st payout <=30d  46% <=60d  77% <=90d  84% (median 29d) | payouts in 90d 2.10 / 180d 3.44 | $ in 90d 3,230 / 180d 5,500 | $ total 5,922
+N5 x0.5 <=2 / x2 >=5
+   EVAL  pass  93% FAIL   7% | pass<=30d  19% <=60d  51% <=90d  71% | still running >30d  80% >60d  44% >90d  23% | fee-months/eval 3.78
+   FUNDED paid  87% lost-before-1st  13% lost-ever  33% | 1st payout <=30d  48% <=60d  75% <=90d  82% (median 28d) | payouts in 90d 2.09 / 180d 3.49 | $ in 90d 3,256 / 180d 5,660 | $ total 6,042
+N6 N4 on V15a only
+   EVAL  pass  96% FAIL   4% | pass<=30d  20% <=60d  51% <=90d  71% | still running >30d  78% >60d  46% >90d  25% | fee-months/eval 4.06
+   FUNDED paid  87% lost-before-1st  13% lost-ever  33% | 1st payout <=30d  44% <=60d  76% <=90d  83% (median 30d) | payouts in 90d 2.09 / 180d 3.46 | $ in 90d 3,173 / 180d 5,502 | $ total 5,950
+N7 N4 on RA only
+   EVAL  pass  96% FAIL   4% | pass<=30d  19% <=60d  51% <=90d  72% | still running >30d  79% >60d  45% >90d  24% | fee-months/eval 3.91
+   FUNDED paid  88% lost-before-1st  12% lost-ever  36% | 1st payout <=30d  46% <=60d  76% <=90d  84% (median 29d) | payouts in 90d 2.08 / 180d 3.41 | $ in 90d 3,135 / 180d 5,380 | $ total 5,778
+N8 x2 on score 6 only
+   EVAL  pass  96% FAIL   4% | pass<=30d  18% <=60d  51% <=90d  71% | still running >30d  80% >60d  46% >90d  25% | fee-months/eval 3.94
+   FUNDED paid  88% lost-before-1st  12% lost-ever  34% | 1st payout <=30d  45% <=60d  76% <=90d  84% (median 30d) | payouts in 90d 2.05 / 180d 3.44 | $ in 90d 3,077 / 180d 5,438 | $ total 5,924
+--- eval-sizing policies (eval phase only; funded unchanged) ---
+K=1.5 a=2
+   EVAL  pass  77% FAIL  23% | pass<=30d  21% <=60d  51% <=90d  62% | still running >30d  71% >60d  36% >90d  20% | fee-months/eval 3.32
+K=2 a=2
+   EVAL  pass  69% FAIL  31% | pass<=30d  24% <=60d  48% <=90d  58% | still running >30d  63% >60d  31% >90d  16% | fee-months/eval 2.94
+K=2 a=3
+   EVAL  pass  72% FAIL  28% | pass<=30d  22% <=60d  47% <=90d  56% | still running >30d  67% >60d  36% >90d  21% | fee-months/eval 3.36
