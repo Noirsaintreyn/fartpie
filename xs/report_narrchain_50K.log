@@ -7,3 +7,16 @@ base                                    | pass  96% FAIL   4% (n=35/924) days-to
 N1 skip score<=2 (both legs) [E]        | pass  99% FAIL   1% (n=9/924) days-to-pass med  58 p25  36 p75 114 p90 168 | paid  90% lost   9% | 1st payout med 100d | net/eval $5,306
 N1 skip score<=2 (both legs) [F]        | pass  96% FAIL   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | paid  87% lost   9% | 1st payout med  97d | net/eval $5,444
 N2 x0.5 score<=2 [E]                    | pass  97% FAIL   3% (n=31/924) days-to-pass med  58 p25  35 p75 100 p90 164 | paid  87% lost  10% | 1st payout med  97d | net/eval $5,402
+N2 x0.5 score<=2 [F]                    | pass  96% FAIL   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | paid  87% lost   9% | 1st payout med  97d | net/eval $5,530
+N3 x1.5 score>=5 [E]                    | pass  96% FAIL   4% (n=40/924) days-to-pass med  58 p25  34 p75  92 p90 160 | paid  86% lost  10% | 1st payout med  96d | net/eval $5,443
+N3 x1.5 score>=5 [F]                    | pass  96% FAIL   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | paid  84% lost  12% | 1st payout med 101d | net/eval $5,571
+N4 x0.5 <=2 / x1.5 >=5 [E]              | pass  95% FAIL   5% (n=42/924) days-to-pass med  57 p25  35 p75  90 p90 158 | paid  85% lost  10% | 1st payout med  94d | net/eval $5,309
+N4 x0.5 <=2 / x1.5 >=5 [F]              | pass  96% FAIL   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | paid  84% lost  12% | 1st payout med  99d | net/eval $5,882
+N5 x0.5 <=2 / x2 >=5 [E]                | pass  93% FAIL   7% (n=62/924) days-to-pass med  56 p25  34 p75  86 p90 142 | paid  84% lost   9% | 1st payout med  95d | net/eval $5,355
+N5 x0.5 <=2 / x2 >=5 [F]                | pass  96% FAIL   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | paid  84% lost  12% | 1st payout med 103d | net/eval $5,813
+N6 x0.5 <=2 / x1.5 >=5, V15a only [E]   | pass  96% FAIL   4% (n=34/924) days-to-pass med  58 p25  34 p75  95 p90 171 | paid  87% lost  10% | 1st payout med  97d | net/eval $5,465
+N6 x0.5 <=2 / x1.5 >=5, V15a only [F]   | pass  96% FAIL   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | paid  85% lost  11% | 1st payout med 100d | net/eval $5,592
+N7 x0.5 <=2 / x1.5 >=5, RA only [E]     | pass  96% FAIL   4% (n=41/924) days-to-pass med  58 p25  34 p75  90 p90 159 | paid  85% lost  11% | 1st payout med  95d | net/eval $5,116
+N7 x0.5 <=2 / x1.5 >=5, RA only [F]     | pass  96% FAIL   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | paid  86% lost  10% | 1st payout med  97d | net/eval $5,558
+N8 x1 / x2 on score 6 only, both [E]    | pass  96% FAIL   4% (n=33/924) days-to-pass med  58 p25  35 p75  94 p90 151 | paid  85% lost  11% | 1st payout med  98d | net/eval $5,390
+N8 x1 / x2 on score 6 only, both [F]    | pass  96% FAIL   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | paid  87% lost   9% | 1st payout med 103d | net/eval $6,004
