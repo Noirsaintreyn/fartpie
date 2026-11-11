@@ -1,0 +1,19 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== CONSTANT leverage on the eval (no de-risk, mult fixed), Flex 50K, 5 RTH legs, eval cap 40 micros ===
+x0.5
+   EVAL  pass  95% FAIL   5% | pass<=30d  11% <=60d  36% <=90d  58% | still running >30d  89% >60d  64% >90d  40% | fee-months/eval 4.58
+x0.75
+   EVAL  pass  84% FAIL  16% | pass<=30d  19% <=60d  47% <=90d  67% | still running >30d  77% >60d  42% >90d  19% | fee-months/eval 3.32
+x1.0
+   EVAL  pass  79% FAIL  21% | pass<=30d  20% <=60d  55% <=90d  71% | still running >30d  70% >60d  27% >90d   9% | fee-months/eval 2.80
+x1.25
+   EVAL  pass  70% FAIL  30% | pass<=30d  23% <=60d  57% <=90d  66% | still running >30d  61% >60d  17% >90d   4% | fee-months/eval 2.44
+x1.5
+   EVAL  pass  64% FAIL  36% | pass<=30d  23% <=60d  56% <=90d  61% | still running >30d  54% >60d  11% >90d   3% | fee-months/eval 2.19
+x2.0
+   EVAL  pass  56% FAIL  44% | pass<=30d  25% <=60d  50% <=90d  54% | still running >30d  41% >60d   9% >90d   4% | fee-months/eval 1.96
+x3.0
+   EVAL  pass  46% FAIL  54% | pass<=30d  23% <=60d  43% <=90d  46% | still running >30d  29% >60d   6% >90d   2% | fee-months/eval 1.69
