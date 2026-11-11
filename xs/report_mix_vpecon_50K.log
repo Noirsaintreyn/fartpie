@@ -1,0 +1,13 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== MIX CHAIN. thirds from era A; x0.5 bottom / x1.5 top. Lucid Flex 50K. ALL starts 2018-25 | and 2022+ starts only (out-of-sample era for the screen).
+MIX VP+ECON
+   EVAL  pass  96% FAIL   4% | pass<=30d  15% <=60d  49% <=90d  68% | still running >30d  83% >60d  47% >90d  27% | fee-months/eval 4.16
+   FUNDED paid  90% lost-before-1st  10% lost-ever  28% | 1st payout <=30d  44% <=60d  77% <=90d  85% (median 31d) | payouts in 90d 2.11 / 180d 3.59 | $ in 90d 3,235 / 180d 5,779 | $ total 6,269
+   2022+ only: eval pass 97% fail 3% pass<=30/60/90d 19%/59%/76% | funded lost-ever 26% 1st payout<=30/60/90d 62%/85%/89% total $6,492
+MIX VP+ECON+TA
+   EVAL  pass  96% FAIL   4% | pass<=30d  17% <=60d  52% <=90d  70% | still running >30d  81% >60d  44% >90d  26% | fee-months/eval 4.01
+   FUNDED paid  90% lost-before-1st  10% lost-ever  31% | 1st payout <=30d  46% <=60d  78% <=90d  84% (median 30d) | payouts in 90d 2.09 / 180d 3.53 | $ in 90d 3,216 / 180d 5,683 | $ total 6,170
+   2022+ only: eval pass 97% fail 3% pass<=30/60/90d 24%/63%/78% | funded lost-ever 32% 1st payout<=30/60/90d 62%/86%/89% total $6,201
