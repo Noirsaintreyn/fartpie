@@ -1,0 +1,153 @@
+
+== V15a: 931 trades, mean +8.0, win 31%
+- FVG net (+1 w/ trade)
+    -1                              n   91 win 22% mean   +2.7 | A n 63   +1.4 (+0.2) | B n 28   +5.5 (+0.4) 
+    0                               n  147 win 27% mean   +2.3 | A n101   +2.7 (+0.6) | B n 46   +1.6 (+0.1) 
+    1                               n  693 win 34% mean   +9.9 | A n469   +4.3 (+2.4) | B n224  +21.5 (+2.9) PASS
+- displacement (+1 w/ trade)
+    -1                              n  122 win 16% mean   -5.1 | A n 84   +0.5 (+0.1) | B n 38  -17.6 (-1.5) 
+    0                               n   27 win 37% mean   +3.8 | A n 18   +2.5 (+0.3) | B n  9   +6.5 (+0.4) 
+    1                               n  782 win 34% mean  +10.2 | A n531   +4.3 (+2.5) | B n251  +22.6 (+3.2) PASS
+- structure state (+1 = MSS w/ trade)
+    -1                              n  115 win 20% mean   -1.7 | A n 73   +3.1 (+0.4) | B n 42  -10.1 (-1.1) 
+    1                               n  816 win 33% mean   +9.3 | A n560   +3.8 (+2.4) | B n256  +21.4 (+3.1) PASS
+- PD range: +1 = buy discount/sell prem
+    -1.0                            n  745 win 31% mean   +7.7 | A n508   +3.8 (+2.0) | B n237  +16.0 (+2.3) PASS
+    1.0                             n  186 win 33% mean   +9.2 | A n125   +3.6 (+0.9) | B n 61  +20.6 (+1.5) 
+- session range: +1 disc
+    -1.0                            n  860 win 31% mean   +8.2 | A n583   +4.1 (+2.3) | B n277  +16.9 (+2.6) PASS
+    0.0                             n    1 win  0% mean   -5.5 | A n  1   -5.5 (+nan) | B n  0   +0.0 (+nan) 
+    1.0                             n   70 win 34% mean   +5.3 | A n 49   -0.1 (-0.0) | B n 21  +17.9 (+0.9) 
+- midnight open: +1 buy below
+    -1.0                            n  774 win 31% mean   +8.9 | A n524   +4.3 (+2.3) | B n250  +18.6 (+2.7) PASS
+    0.0                             n    2 win 50% mean   +2.7 | A n  1  +39.5 (+nan) | B n  1  -34.1 (+nan) 
+    1.0                             n  155 win 33% mean   +3.2 | A n108   +0.6 (+0.1) | B n 47   +9.3 (+0.7) 
+- 8:30 open: +1 buy below
+    -1.0                            n  777 win 32% mean   +8.8 | A n523   +4.1 (+2.4) | B n254  +18.4 (+2.7) PASS
+    0.0                             n    2 win 50% mean   +3.9 | A n  2   +3.9 (+nan) | B n  0   +0.0 (+nan) 
+    1.0                             n  152 win 27% mean   +3.9 | A n108   +1.8 (+0.3) | B n 44   +8.9 (+0.7) 
+- 9:30 open: +1 buy below
+    -1.0                            n  780 win 33% mean   +9.5 | A n533   +3.9 (+2.3) | B n247  +21.6 (+3.2) PASS
+    0.0                             n    1 win  0% mean   -5.9 | A n  1   -5.9 (+nan) | B n  0   +0.0 (+nan) 
+    1.0                             n  150 win 23% mean   -0.0 | A n 99   +2.9 (+0.5) | B n 51   -5.7 (-0.4) 
+- NWOG gap (+1 = w/ gap)
+    -1.0                            n  267 win 33% mean   +5.5 | A n183   +0.3 (+0.1) | B n 84  +16.8 (+1.5) 
+    0.0                             n  141 win 26% mean   +4.1 | A n 94   -1.0 (-0.3) | B n 47  +14.4 (+0.8) 
+    1.0                             n  523 win 32% mean  +10.3 | A n356   +6.8 (+2.5) | B n167  +17.7 (+2.2) PASS
+- prior day candle (+1 w/)
+    -1.0                            n  553 win 33% mean   +9.7 | A n376   +4.4 (+1.9) | B n177  +21.0 (+2.6) 
+    0.0                             n    2 win  0% mean  -38.1 | A n  0   +0.0 (+nan) | B n  2  -38.1 (+nan) 
+    1.0                             n  376 win 29% mean   +5.6 | A n257   +2.7 (+1.1) | B n119  +12.0 (+1.2) 
+- prior close loc (+1 w/)
+    -1                              n  381 win 32% mean  +12.7 | A n262   +4.4 (+1.5) | B n119  +31.0 (+2.7) 
+    0                               n  283 win 30% mean   +3.2 | A n178   +3.2 (+1.1) | B n105   +3.3 (+0.4) 
+    1                               n  267 win 31% mean   +6.2 | A n193   +3.4 (+1.1) | B n 74  +13.8 (+1.2) 
+- SMT vs ES (+1 = w/ trade)
+    -1                              n  137 win 30% mean   +1.3 | A n108   -3.5 (-1.8) | B n 29  +19.0 (+1.1) 
+    0                               n  726 win 32% mean   +9.6 | A n478   +5.7 (+2.8) | B n248  +17.2 (+2.5) PASS
+    1                               n   68 win 31% mean   +3.5 | A n 47   -0.0 (-0.0) | B n 21  +11.5 (+0.6) 
+- time window
+    late 11+                        n  433 win 37% mean   +6.1 | A n300   +1.4 (+0.8) | B n133  +16.5 (+1.8) 
+    open 9:30-10                    n  288 win 26% mean   +7.9 | A n189   +3.9 (+1.2) | B n 99  +15.5 (+1.4) 
+    silver 10-11                    n  210 win 27% mean  +12.0 | A n144   +8.3 (+1.7) | B n 66  +20.1 (+1.5) 
+- OTE
+    OTE 62-79%                      n    2 win  0% mean   -9.5 | A n  2   -9.5 (+nan) | B n  0   +0.0 (+nan) 
+    deep >79                        n   54 win 17% mean   -5.5 | A n 35   +0.3 (+0.0) | B n 19  -16.2 (-1.0) 
+    no leg                          n  670 win 33% mean   +9.1 | A n448   +4.8 (+2.3) | B n222  +17.7 (+2.5) PASS
+    shallow <62                     n  205 win 31% mean   +8.1 | A n148   +1.6 (+0.5) | B n 57  +25.1 (+1.6) 
+- draw on liquidity (dist to PDH long / PDL short)
+    PDH/L taken                     n  446 win 30% mean   +8.2 | A n305   +4.7 (+1.8) | B n141  +15.6 (+1.7) 
+    <0.3 ADR                        n  181 win 31% mean   +4.2 | A n125   +0.3 (+0.1) | B n 56  +12.8 (+1.0) 
+    0.3-0.7                         n  196 win 36% mean   +9.8 | A n127   +4.0 (+1.3) | B n 69  +20.5 (+1.6) 
+    >0.7 ADR                        n  108 win 31% mean  +10.3 | A n 76   +5.1 (+0.9) | B n 32  +22.5 (+1.2) 
+- RSI aligned terciles
+    low                             n  311 win 28% mean   +3.6 | A n203   +2.6 (+0.7) | B n108   +5.7 (+0.6) 
+    mid                             n  310 win 31% mean   +5.2 | A n216   +1.4 (+0.6) | B n 94  +14.0 (+1.4) 
+    high                            n  310 win 35% mean  +15.1 | A n214   +7.3 (+2.5) | B n 96  +32.6 (+2.5) PASS
+- ADX(14) terciles
+    low                             n  311 win 29% mean   +1.0 | A n231   +0.5 (+0.2) | B n 80   +2.5 (+0.3) 
+    mid                             n  310 win 35% mean  +12.1 | A n197   +1.6 (+0.5) | B n113  +30.5 (+2.8) 
+    high                            n  310 win 31% mean  +10.8 | A n205   +9.4 (+2.7) | B n105  +13.4 (+1.3) 
+- BB width vs 500-bar median (squeeze<1) terciles
+    low                             n  311 win 31% mean   +6.4 | A n235   +4.8 (+1.4) | B n 76  +11.3 (+1.0) 
+    mid                             n  310 win 29% mean   +1.0 | A n224   +0.3 (+0.2) | B n 86   +2.7 (+0.3) 
+    high                            n  310 win 34% mean  +16.6 | A n174   +6.7 (+2.1) | B n136  +29.1 (+2.8) PASS
+- Kaufman efficiency (24 bars) terciles
+    low                             n  311 win 32% mean   +6.6 | A n221   +7.1 (+2.0) | B n 90   +5.3 (+0.6) 
+    mid                             n  310 win 29% mean   +4.6 | A n203   -5.2 (-3.0) | B n107  +23.0 (+2.2) 
+    high                            n  310 win 33% mean  +12.8 | A n209   +8.8 (+2.9) | B n101  +21.0 (+1.7) 
+ >> PASS buckets (V15a): ['   1', '   1', '   1', '   -1.0', '   -1.0', '   -1.0', '   -1.0', '   -1.0', '   1.0', '   0', '   no leg', '   high', '   high']
+
+== RA: 262 trades, mean +8.0, win 52%
+- FVG net (+1 w/ trade)
+    -1                              n   39 win 54% mean   +6.4 | A n 20  +12.3 (+1.2) | B n 19   +0.2 (+0.0) 
+    0                               n   33 win 52% mean   +7.1 | A n 18   +4.3 (+0.4) | B n 15  +10.6 (+0.8) 
+    1                               n  190 win 52% mean   +8.5 | A n 84   +5.0 (+1.0) | B n106  +11.2 (+2.1) 
+- displacement (+1 w/ trade)
+    -1                              n   51 win 47% mean   +1.7 | A n 26   +5.9 (+0.7) | B n 25   -2.6 (-0.2) 
+    1                               n  211 win 53% mean   +9.5 | A n 96   +6.1 (+1.3) | B n115  +12.3 (+2.4) 
+- structure state (+1 = MSS w/ trade)
+    -1                              n   43 win 42% mean   -4.3 | A n 18   -2.4 (-0.2) | B n 25   -5.7 (-0.5) 
+    1                               n  219 win 54% mean  +10.4 | A n104   +7.5 (+1.7) | B n115  +13.0 (+2.5) 
+- PD range: +1 = buy discount/sell prem
+    -1.0                            n  224 win 51% mean   +8.1 | A n106   +5.4 (+1.2) | B n118  +10.5 (+2.1) 
+    1.0                             n   38 win 55% mean   +7.2 | A n 16  +10.2 (+1.0) | B n 22   +5.0 (+0.4) 
+- session range: +1 disc
+    -1.0                            n  246 win 52% mean   +7.9 | A n114   +5.8 (+1.4) | B n132   +9.7 (+2.0) 
+    1.0                             n   16 win 56% mean   +9.7 | A n  8   +9.4 (+nan) | B n  8  +10.0 (+nan) 
+- midnight open: +1 buy below
+    -1.0                            n  227 win 53% mean   +9.1 | A n106   +6.9 (+1.6) | B n121  +11.1 (+2.2) 
+    0.0                             n    1 win  0% mean   -2.2 | A n  1   -2.2 (+nan) | B n  0   +0.0 (+nan) 
+    1.0                             n   34 win 47% mean   +0.8 | A n 15   +1.1 (+0.1) | B n 19   +0.5 (+0.0) 
+- 8:30 open: +1 buy below
+    -1.0                            n  218 win 55% mean  +11.1 | A n 96  +11.1 (+2.4) | B n122  +11.1 (+2.2) PASS
+    1.0                             n   44 win 39% mean   -7.4 | A n 26  -12.5 (-1.5) | B n 18   -0.1 (-0.0) 
+- 9:30 open: +1 buy below
+    -1.0                            n  213 win 54% mean  +10.3 | A n 96   +7.2 (+1.6) | B n117  +12.9 (+2.6) 
+    1.0                             n   49 win 41% mean   -2.0 | A n 26   +2.0 (+0.2) | B n 23   -6.5 (-0.5) 
+- NWOG gap (+1 = w/ gap)
+    -1.0                            n   62 win 60% mean   +7.6 | A n 27  +10.9 (+1.5) | B n 35   +5.2 (+0.6) 
+    0.0                             n   33 win 48% mean   +5.4 | A n 16   -6.3 (-0.6) | B n 17  +16.5 (+1.3) 
+    1.0                             n  167 win 50% mean   +8.6 | A n 79   +6.9 (+1.3) | B n 88  +10.2 (+1.7) 
+- prior day candle (+1 w/)
+    -1.0                            n  147 win 50% mean   +6.6 | A n 66   +8.1 (+1.5) | B n 81   +5.3 (+0.9) 
+    1.0                             n  115 win 54% mean   +9.8 | A n 56   +3.7 (+0.6) | B n 59  +15.6 (+2.2) 
+- prior close loc (+1 w/)
+    -1                              n   98 win 49% mean   +5.1 | A n 44   +2.8 (+0.4) | B n 54   +7.1 (+0.9) 
+    0                               n   84 win 56% mean  +11.0 | A n 34   +8.4 (+1.2) | B n 50  +12.7 (+1.6) 
+    1                               n   80 win 51% mean   +8.4 | A n 44   +7.5 (+1.0) | B n 36   +9.4 (+1.0) 
+- SMT vs ES (+1 = w/ trade)
+    -1                              n   23 win 52% mean   +0.8 | A n 13   +3.2 (+0.3) | B n 10   -2.2 (-0.1) 
+    0                               n  211 win 51% mean   +8.6 | A n 95   +6.4 (+1.4) | B n116  +10.4 (+2.0) 
+    1                               n   28 win 57% mean   +9.5 | A n 14   +6.5 (+0.5) | B n 14  +12.5 (+0.9) 
+- time window
+    late 11+                        n   43 win 58% mean   +9.8 | A n 16   +3.7 (+0.3) | B n 27  +13.4 (+1.6) 
+    open 9:30-10                    n  125 win 50% mean   +9.8 | A n 62   +6.5 (+1.0) | B n 63  +13.0 (+1.7) 
+    silver 10-11                    n   94 win 51% mean   +4.8 | A n 44   +6.3 (+1.1) | B n 50   +3.4 (+0.5) 
+- OTE
+    OTE 62-79%                      n    3 win 33% mean  -17.8 | A n  2   -1.2 (+nan) | B n  1  -51.0 (+nan) 
+    deep >79                        n   26 win 46% mean   +1.6 | A n 13   -5.2 (-0.4) | B n 13   +8.4 (+0.5) 
+    no leg                          n  177 win 51% mean   +7.0 | A n 83   +4.4 (+0.9) | B n 94   +9.3 (+1.7) 
+    shallow <62                     n   56 win 59% mean  +15.4 | A n 24  +18.4 (+2.0) | B n 32  +13.1 (+1.3) 
+- draw on liquidity (dist to PDH long / PDL short)
+    PDH/L taken                     n  155 win 57% mean  +13.2 | A n 71  +11.0 (+2.0) | B n 84  +15.1 (+2.4) PASS
+    <0.3 ADR                        n   52 win 38% mean   -1.5 | A n 29   -6.5 (-0.8) | B n 23   +4.9 (+0.5) 
+    0.3-0.7                         n   39 win 54% mean  +10.9 | A n 13  +15.2 (+1.2) | B n 26   +8.7 (+0.9) 
+    >0.7 ADR                        n   16 win 44% mean  -18.9 | A n  9   -5.3 (-0.6) | B n  7  -36.4 (+nan) 
+- RSI aligned terciles
+    low                             n   88 win 42% mean   -1.0 | A n 43   +0.3 (+0.0) | B n 45   -2.3 (-0.3) 
+    mid                             n   87 win 54% mean  +10.0 | A n 40   +1.9 (+0.3) | B n 47  +17.0 (+2.3) 
+    high                            n   87 win 60% mean  +15.1 | A n 39  +16.6 (+2.5) | B n 48  +13.8 (+1.7) 
+- ADX(14) terciles
+    low                             n   88 win 44% mean   +2.7 | A n 39   -1.8 (-0.2) | B n 49   +6.3 (+0.8) 
+    mid                             n   87 win 49% mean   +7.1 | A n 44   -1.4 (-0.2) | B n 43  +15.8 (+1.8) 
+    high                            n   87 win 62% mean  +14.3 | A n 39  +22.4 (+3.4) | B n 48   +7.7 (+0.9) 
+- BB width vs 500-bar median (squeeze<1) terciles
+    low                             n   88 win 42% mean   +1.5 | A n 53   -3.2 (-0.5) | B n 35   +8.6 (+0.8) 
+    mid                             n   87 win 54% mean  +10.1 | A n 42   +7.5 (+1.1) | B n 45  +12.5 (+1.6) 
+    high                            n   87 win 60% mean  +12.5 | A n 27  +22.1 (+2.9) | B n 60   +8.2 (+1.2) 
+- Kaufman efficiency (24 bars) terciles
+    low                             n   88 win 40% mean   -1.1 | A n 47   -0.9 (-0.1) | B n 41   -1.4 (-0.2) 
+    mid                             n   87 win 60% mean  +11.9 | A n 39   +3.5 (+0.5) | B n 48  +18.8 (+2.4) 
+    high                            n   87 win 56% mean  +13.3 | A n 36  +18.0 (+2.5) | B n 51   +9.9 (+1.3) 
+ >> PASS buckets (RA): ['   -1.0', '   PDH/L taken']
