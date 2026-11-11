@@ -1,0 +1,17 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== CONSISTENCY RULE CHECK: Lucid standard is 40% (50% is a PAID ADD-ON per proptradingvibes/tradetanto); sim had been using 50% ===
+current stack (skip small-gap + 3-cross  consistency 50% | ALL pass  94% evalfail   6% paid  89% fundedlost   5% | days to pass median  54 | 1st payout median  80d <=45d  14% <=60d  25% | net/eval $4,386
+                                                       | 2018-21 pass  99% evalfail   1% paid  93% fundedlost   6% | days to pass median  62 | 1st payout median  97d <=45d   4% <=60d  10% | net/eval $4,655
+                                                       | 2022-25 pass  89% evalfail  11% paid  85% fundedlost   3% | days to pass median  39 | 1st payout median  57d <=45d  26% <=60d  43% | net/eval $4,084
+current stack (skip small-gap + 3-cross  consistency 40% | ALL pass  94% evalfail   6% paid  88% fundedlost   6% | days to pass median  63 | 1st payout median  89d <=45d  10% <=60d  20% | net/eval $4,010
+                                                       | 2018-21 pass  99% evalfail   1% paid  90% fundedlost   9% | days to pass median  70 | 1st payout median 108d <=45d   3% <=60d   8% | net/eval $4,344
+                                                       | 2022-25 pass  88% evalfail  12% paid  85% fundedlost   3% | days to pass median  50 | 1st payout median  67d <=45d  18% <=60d  35% | net/eval $3,635
+stack, 40%, E1 softer de-risk (c,.4-1)   | ALL pass  84% evalfail  16% paid  78% fundedlost   6% | days to pass median  58 | 1st payout median  78d <=45d  10% <=60d  21% | net/eval $3,988
+                                                       | 2018-21 pass  94% evalfail   6% paid  86% fundedlost   9% | days to pass median  68 | 1st payout median  98d <=45d   3% <=60d   8% | net/eval $4,420
+                                                       | 2022-25 pass  73% evalfail  27% paid  69% fundedlost   3% | days to pass median  41 | 1st payout median  54d <=45d  17% <=60d  35% | net/eval $3,502
+stack, 40%, E0 full size                 | ALL pass  72% evalfail  28% paid  66% fundedlost   6% | days to pass median  50 | 1st payout median  62d <=45d  10% <=60d  21% | net/eval $3,582
+                                                       | 2018-21 pass  73% evalfail  27% paid  66% fundedlost   7% | days to pass median  57 | 1st payout median  78d <=45d   3% <=60d   9% | net/eval $3,419
+                                                       | 2022-25 pass  72% evalfail  28% paid  67% fundedlost   5% | days to pass median  39 | 1st payout median  48d <=45d  18% <=60d  35% | net/eval $3,765
