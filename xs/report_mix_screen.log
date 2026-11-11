@@ -1,0 +1,75 @@
+V15a 931 features 67
+RA 262 features 67
+
+conditions selected on era A (|t|>=1.5): 39 of 162
+
+--- single conditions: A-selected, B validation (oriented good=1) ---
+ condition                    fam   dirn | A effect (t)      | B effect (t)   n1_B
+ gapz>=hi                     ECON  +    |  +19.4 (+4.9) |  +24.2 (+2.6)  171
+ score>=hi                    ICT   +    |   +6.6 (+2.1) |  +17.6 (+2.0)  216
+ score<=lo                    ICT   NOT  |   +6.6 (+2.1) |  +17.6 (+2.0)  216
+ tr2050<=lo                   TA    +    |   +5.9 (+1.5) |  +19.1 (+1.9)  157
+ rsi>=hi                      TA    +    |   +6.4 (+1.9) |  +18.5 (+1.8)  145
+ ewx<=lo                      ECON  +    |   +7.2 (+2.1) |  +16.3 (+1.6)  129
+ volx>=hi                     ECON  NOT  |   +7.9 (+2.4) |  +17.0 (+1.6)  323
+ rng_x<=lo                    ECON  NOT  |   +6.0 (+1.9) |  +13.7 (+1.6)  284
+ adx<=lo                      TA    NOT  |   +5.9 (+1.9) |  +12.7 (+1.4)  325
+ dow2=0                       CAL   +    |   +7.4 (+2.3) |  +14.0 (+1.4)  329
+ dow2=1                       CAL   NOT  |   +7.4 (+2.3) |  +14.0 (+1.4)  329
+ dol<=lo                      TA    +    |   +8.3 (+2.3) |  +12.9 (+1.3)  150
+ volx<=lo                     ECON  +    |   +7.0 (+2.2) |  +10.2 (+1.1)  124
+ ewx>=hi                      ECON  NOT  |   +8.2 (+2.4) |   +9.9 (+0.9)  314
+ bbr>=hi                      TA    +    |   +7.5 (+2.3) |   +7.9 (+0.9)  235
+ dev_poc=1                    VP    +    |   +5.5 (+1.6) |   +6.5 (+0.7)  283
+ er>=hi                       TA    +    |   +9.2 (+2.7) |   +6.6 (+0.7)  160
+ smt=0                        ICT   +    |   +7.2 (+2.2) |   +2.2 (+0.2)  364
+ migr=1                       VP    NOT  |   +9.4 (+3.3) |   +1.9 (+0.2)  296
+ ar1>=hi                      ECON  NOT  |   +4.8 (+1.6) |   +1.4 (+0.2)  263
+ gap=1                        ICT   +    |   +6.3 (+2.1) |   +1.2 (+0.1)  255
+ AN=-1                        ICT   +    |   +7.1 (+2.2) |   +0.8 (+0.1)  184
+ smt=-1                       ICT   NOT  |   +8.2 (+2.9) |   +1.2 (+0.1)  399
+ vr<=lo                       ECON  +    |  +10.3 (+2.6) |   +0.7 (+0.1)  169
+ ar1<=lo                      ECON  +    |   +5.7 (+1.5) |   +0.5 (+0.0)  121
+ gap=0                        ICT   NOT  |   +6.9 (+1.8) |   -0.4 (-0.0)  374
+ open_drive=0                 VP    NOT  |   +9.6 (+2.4) |   -0.4 (-0.0)  103
+ HTF=0                        ICT   NOT  |   +6.4 (+1.8) |   -3.4 (-0.3)  107
+ AN=1                         ICT   NOT  |   +5.6 (+1.9) |   -3.4 (-0.3)  318
+ gapz<=lo                     ECON  NOT  |   +5.7 (+1.9) |   -5.7 (-0.5)  310
+ adx>=hi                      TA    +    |  +11.6 (+3.3) |   -6.0 (-0.6)  161
+ ret1>=hi                     TA    NOT  |   +6.3 (+2.0) |  -11.2 (-1.1)  280
+ ret1<=lo                     TA    +    |   +9.2 (+2.4) |  -13.4 (-1.5)  181
+ open_drive=1                 VP    +    |  +11.2 (+2.4) |  -18.2 (-1.6)   60
+ al=1                         ICT   NOT  |   +6.0 (+1.9) |  -17.0 (-1.7)  293
+ AL=0                         ICT   +    |   +6.8 (+1.6) |  -23.8 (-2.2)   86
+ al=0                         ICT   +    |   +6.8 (+1.6) |  -23.8 (-2.2)   86
+ dow0=0                       CAL   NOT  |  +12.3 (+2.2) |  -28.4 (-3.3)   81
+ dow0=1                       CAL   +    |  +12.3 (+2.2) |  -28.4 (-3.3)   81
+
+--- family mixes: tier by era-A terciles; spread = mean pts(top third) - mean pts(bottom third) ---
+ mix                                spreadA  spreadB  tB
+ ECON+TA                             +20.6   +18.6  +1.8
+ OPT+ECON+TA                         +20.6   +18.6  +1.8
+ ECON+TA+XA                          +20.6   +18.6  +1.8
+ OPT+ECON+TA+XA                      +20.6   +18.6  +1.8
+ ECON                                +18.0   +19.6  +2.0
+ OPT+ECON                            +18.0   +19.6  +2.0
+ ECON+XA                             +18.0   +19.6  +2.0
+ OPT+ECON+XA                         +18.0   +19.6  +2.0
+ VP+ECON+CAL                         +23.5   +17.0  +1.6
+ VP+OPT+ECON+CAL                     +23.5   +17.0  +1.6
+ VP+ECON+CAL+XA                      +23.5   +17.0  +1.6
+ VP+OPT+ECON+CAL+XA                  +23.5   +17.0  +1.6
+ ICT+ECON+TA                         +23.7   +16.5  +1.6
+ ICT+OPT+ECON+TA                     +23.7   +16.5  +1.6
+ ICT+ECON+TA+XA                      +23.7   +16.5  +1.6
+
+--- single-family spreads ---
+ ECON                                +18.0   +19.6  +2.0
+ VP                                  +10.0    +3.9  +0.4
+ TA                                  +13.3    -0.4  -0.0
+ ICT                                 +14.9    -1.8  -0.2
+ CAL                                 +12.3   -28.4  -3.3
+
+--- placebo (200 shuffles of pts within leg and era): distribution of best-mix min(spreadA, spreadB) ---
+ observed best min(spreadA,spreadB) +18.6 | placebo median +11.0 90th +16.7 95th +17.8 | p = 0.025
+saved 13 mixes
