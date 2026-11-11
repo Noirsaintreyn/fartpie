@@ -344,7 +344,7 @@ if __name__ == '__main__':
         return pd.DataFrame(rows)
     def line2(R):
         return (f"pass {1-np.mean(R.out=='evalfail')-np.mean(R.out=='open'):4.0%} evalfail {np.mean(R.out=='evalfail'):4.0%} paid {np.mean(R.out=='paid'):4.0%} fundedlost {np.mean(R.out=='fundedlost'):4.0%} | 1st payout median {R.t.median():3.0f}d <=45d {np.mean((R.out=='paid')&(R.t<=45)):4.0%} <=60d {np.mean((R.out=='paid')&(R.t<=60)):4.0%} | net/eval ${R.net.mean():,.0f}")
-    SCORE = pickle.load(open('/tmp/claude-0/-home-claude/6d3c83e1-1a4a-5a0a-8647-c2590d1d30a4/scratchpad/vflip_score.pkl', 'rb'))
+    import pickle; SCORE = pickle.load(open('/tmp/claude-0/-home-claude/6d3c83e1-1a4a-5a0a-8647-c2590d1d30a4/scratchpad/vflip_score.pkl', 'rb'))
     def smul(spec, f_hi, f_lo):
         out = []
         for (T_, u, yz), en in zip(spec, NAMES):
