@@ -18,27 +18,28 @@ def wf(cols, C=.05, retq=False):
     return (P, Q) if retq else P
 def auc(P, mask=None):
     ok = ~np.isnan(P) & (np.ones(len(P), bool) if mask is None else mask); return roc_auc_score(y[ok], P[ok]) if ok.sum() > 50 and len(set(y[ok])) > 1 else np.nan
-cols = list(ALLX.columns); P, Q = wf(cols, retq=True)
+import os; PR = os.environ.get('PRUNE'); cols = [c for c in ALLX.columns if (not PR) or FAM[c] in PR.split(',')]; P, Q = wf(cols, retq=True)
 ok = ~np.isnan(P); era2 = yr >= 2022
 print(f'\nALL FAMILIES walk-forward OOS: AUC {auc(P):.3f} (n {ok.sum()}) | 2016-21 {auc(P, ~era2):.3f} | 2022+ {auc(P, era2):.3f}', flush=True)
 for Y in range(2016, 2027):
     m = yr == Y; print(f'   {Y}: AUC {auc(P, m):.3f} n {int((m & ok).sum())}', end='')
 print()
-# placebo: shuffle y within year-leg, AUC distribution
-rng = np.random.default_rng(3); nul = []
-for it in range(40):
-    y0 = y.copy()
-    for Y in np.unique(yr):
-        m = np.where(yr == Y)[0]; y0[m] = rng.permutation(y0[m])
-    ysave = y; y = y0; nul.append(auc(wf(cols))); y = ysave
-nul = np.array(nul); print(f'placebo AUC (40 label shuffles): mean {nul.mean():.3f} sd {nul.std():.3f} max {nul.max():.3f} | observed z = {(auc(P) - nul.mean()) / nul.std():.1f}', flush=True)
-print('\n--- AUDIT by family: OOS AUC alone | AUC with the family left out (all-families AUC %.3f) ---' % auc(P))
-for f in ['ICT', 'VP', 'OPT', 'ECON', 'TA', 'CAL', 'XA']:
-    fc = [c for c in cols if FAM[c] == f]; rest = [c for c in cols if FAM[c] != f]
-    print(f'  {f:5} ({len(fc):2d} features): alone {auc(wf(fc)):.3f} | left out {auc(wf(rest)):.3f}', flush=True)
-print('\n--- AUDIT by single feature (OOS AUC alone, top 15 by |AUC-0.5|) ---')
-sa = sorted(((c, auc(wf([c]))) for c in cols), key=lambda t: -abs(np.nan_to_num(t[1], nan=.5) - .5))
-for c, a in sa[:15]: print(f'  {c:16} {FAM[c]:5} {a:.3f}')
+if not PR:
+    # placebo: shuffle y within year-leg, AUC distribution
+    rng = np.random.default_rng(3); nul = []
+    for it in range(40):
+        y0 = y.copy()
+        for Y in np.unique(yr):
+            m = np.where(yr == Y)[0]; y0[m] = rng.permutation(y0[m])
+        ysave = y; y = y0; nul.append(auc(wf(cols))); y = ysave
+    nul = np.array(nul); print(f'placebo AUC (40 label shuffles): mean {nul.mean():.3f} sd {nul.std():.3f} max {nul.max():.3f} | observed z = {(auc(P) - nul.mean()) / nul.std():.1f}', flush=True)
+    print('\n--- AUDIT by family: OOS AUC alone | AUC with the family left out (all-families AUC %.3f) ---' % auc(P))
+    for f in ['ICT', 'VP', 'OPT', 'ECON', 'TA', 'CAL', 'XA']:
+        fc = [c for c in cols if FAM[c] == f]; rest = [c for c in cols if FAM[c] != f]
+        print(f'  {f:5} ({len(fc):2d} features): alone {auc(wf(fc)):.3f} | left out {auc(wf(rest)):.3f}', flush=True)
+    print('\n--- AUDIT by single feature (OOS AUC alone, top 15 by |AUC-0.5|) ---')
+    sa = sorted(((c, auc(wf([c]))) for c in cols), key=lambda t: -abs(np.nan_to_num(t[1], nan=.5) - .5))
+    for c, a in sa[:15]: print(f'  {c:16} {FAM[c]:5} {a:.3f}')
 print('\n--- calibration (OOS), probability deciles ---')
 d = pd.DataFrame({'p': P, 'w': y, 'pts': ALLT.pts.values})[ok]; d['q'] = pd.qcut(d.p, 10, labels=False)
 print(d.groupby('q').agg(p=('p', 'mean'), win=('w', 'mean'), pts=('pts', 'mean'), n=('w', 'size')).round(3).to_string())
@@ -46,4 +47,4 @@ lo, hi = Q[:, 0], Q[:, 1]; tier = np.where(np.isnan(P), np.nan, np.where(P >= hi
 print('\ntiers (thresholds from training predictions): bottom/mid/top  win rate | mean pts | n')
 for t, nm in ((-1, 'bottom'), (0, 'mid'), (1, 'top')):
     m = tier == t; print(f'  {nm:6} {y[m].mean():.1%} | {ALLT.pts.values[m].mean():+.1f} | {int(m.sum())}   (2022+: {y[m & era2].mean():.1%} | {ALLT.pts.values[m & era2].mean():+.1f} | {int((m & era2).sum())})')
-pickle.dump(dict(rows=ALLT[['leg', 'day', 'm']].copy(), P=P, tier=tier, pbar=float(np.nanmean(y))), open(SC + 'pwin.pkl', 'wb')); print('saved')
+pickle.dump(dict(rows=ALLT[['leg', 'day', 'm']].copy(), P=P, tier=tier, pbar=float(np.nanmean(y))), open(SC + ('pwin_' + PR.replace(',', '_') + '.pkl' if PR else 'pwin.pkl'), 'wb')); print('saved')

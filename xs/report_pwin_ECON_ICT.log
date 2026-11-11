@@ -1,0 +1,26 @@
+V15a 931 features 67
+RA 262 features 67
+trades 1193 base win rate 36.0%; features 67
+
+ALL FAMILIES walk-forward OOS: AUC 0.586 (n 1027) | 2016-21 0.555 | 2022+ 0.614
+   2016: AUC 0.546 n 70   2017: AUC 0.581 n 95   2018: AUC 0.531 n 123   2019: AUC 0.506 n 98   2020: AUC 0.640 n 106   2021: AUC 0.631 n 97   2022: AUC 0.643 n 126   2023: AUC 0.656 n 104   2024: AUC 0.692 n 100   2025: AUC 0.573 n 92   2026: AUC nan n 16
+
+--- calibration (OOS), probability deciles ---
+       p    win     pts    n
+q                           
+0  0.172  0.194 -21.281  103
+1  0.234  0.282  -4.717  103
+2  0.270  0.373  10.756  102
+3  0.299  0.330  12.693  103
+4  0.326  0.262  -1.296  103
+5  0.351  0.451  22.759  102
+6  0.382  0.408  15.152  103
+7  0.413  0.379  11.887  103
+8  0.454  0.451  29.297  102
+9  0.546  0.456  15.297  103
+
+tiers (thresholds from training predictions): bottom/mid/top  win rate | mean pts | n
+  bottom 29.2% | -1.9 | 329   (2022+: 30.2% | +2.8 | 139)
+  mid    35.0% | +9.7 | 354   (2022+: 35.7% | +9.3 | 129)
+  top    43.0% | +18.7 | 344   (2022+: 47.6% | +28.3 | 170)
+saved
