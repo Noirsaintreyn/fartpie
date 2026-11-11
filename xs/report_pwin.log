@@ -1,0 +1,53 @@
+V15a 931 features 67
+RA 262 features 67
+trades 1193 base win rate 36.0%; features 67
+
+ALL FAMILIES walk-forward OOS: AUC 0.576 (n 1027) | 2016-21 0.541 | 2022+ 0.610
+   2016: AUC 0.418 n 70   2017: AUC 0.523 n 95   2018: AUC 0.552 n 123   2019: AUC 0.560 n 98   2020: AUC 0.612 n 106   2021: AUC 0.595 n 97   2022: AUC 0.607 n 126   2023: AUC 0.635 n 104   2024: AUC 0.649 n 100   2025: AUC 0.566 n 92   2026: AUC nan n 16
+placebo AUC (40 label shuffles): mean 0.505 sd 0.019 max 0.553 | observed z = 3.8
+
+--- AUDIT by family: OOS AUC alone | AUC with the family left out (all-families AUC 0.576) ---
+  ICT   (19 features): alone 0.537 | left out 0.563
+  VP    ( 9 features): alone 0.518 | left out 0.573
+  OPT   ( 9 features): alone 0.500 | left out 0.577
+  ECON  ( 7 features): alone 0.549 | left out 0.536
+  TA    (13 features): alone 0.514 | left out 0.586
+  CAL   ( 9 features): alone 0.515 | left out 0.579
+  XA    ( 1 features): alone 0.518 | left out 0.573
+
+--- AUDIT by single feature (OOS AUC alone, top 15 by |AUC-0.5|) ---
+  score            ICT   0.560
+  rsi              TA    0.556
+  gapz             ECON  0.553
+  volx             ECON  0.535
+  mss              ICT   0.531
+  disp             ICT   0.531
+  open_930         ICT   0.530
+  bbr              TA    0.527
+  dow2             CAL   0.525
+  dev_va           VP    0.524
+  migr             VP    0.523
+  prior_loc        ICT   0.479
+  d200             TA    0.479
+  gex_neg          OPT   0.480
+  fvg_with         ICT   0.519
+
+--- calibration (OOS), probability deciles ---
+       p    win     pts    n
+q                           
+0  0.125  0.136 -21.701  103
+1  0.196  0.337   2.533  104
+2  0.243  0.356   5.120  101
+3  0.282  0.404  21.422  104
+4  0.326  0.343   9.011  102
+5  0.367  0.422  13.036  102
+6  0.414  0.340   6.456  103
+7  0.468  0.333   7.908  102
+8  0.534  0.466  22.271  103
+9  0.662  0.447  24.038  103
+
+tiers (thresholds from training predictions): bottom/mid/top  win rate | mean pts | n
+  bottom 27.1% | -5.3 | 295   (2022+: 22.1% | -14.8 | 95)
+  mid    36.4% | +12.1 | 319   (2022+: 41.5% | +19.4 | 135)
+  top    41.6% | +16.9 | 413   (2022+: 44.2% | +25.0 | 208)
+saved
