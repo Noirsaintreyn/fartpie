@@ -1,0 +1,38 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== ICT/PO3 gates + leverage through the Lucid chain: Flex 50K, 50% consistency, RTH only, all 5 RTH legs, full history (start every 2nd day 2018-25) ===
+0. baseline: all RTH legs                     | ALL pass  96% evalfail   4% paid  87% fundedlost   9% | 1st payout median  95d <=45d   9% <=60d  19% | net/eval $5,473 | days to pass median 58
+                                              | 2018-21 pass  94% evalfail   6% paid  84% fundedlost  10% | 1st payout median 114d <=45d   3% <=60d   6% | net/eval $5,158
+                                              | 2022-25 pass  98% evalfail   2% paid  90% fundedlost   8% | 1st payout median  72d <=45d  15% <=60d  34% | net/eval $5,826
+1. V15a skip vs displacement/structure        | ALL pass  97% evalfail   3% paid  86% fundedlost  11% | 1st payout median  97d <=45d   8% <=60d  19% | net/eval $4,862 | days to pass median 59
+                                              | 2018-21 pass  95% evalfail   5% paid  83% fundedlost  11% | 1st payout median 118d <=45d   3% <=60d   6% | net/eval $4,043
+                                              | 2022-25 pass 100% evalfail   0% paid  90% fundedlost  10% | 1st payout median  72d <=45d  14% <=60d  34% | net/eval $5,783
+2. V15a skip low ADX                          | ALL pass  96% evalfail   4% paid  86% fundedlost  10% | 1st payout median  94d <=45d   9% <=60d  20% | net/eval $5,527 | days to pass median 59
+                                              | 2018-21 pass  94% evalfail   6% paid  83% fundedlost  11% | 1st payout median 116d <=45d   4% <=60d   6% | net/eval $5,322
+                                              | 2022-25 pass  99% evalfail   1% paid  89% fundedlost   9% | 1st payout median  67d <=45d  15% <=60d  35% | net/eval $5,757
+3. V15a skip (disp/mss against OR low ADX)    | ALL pass  97% evalfail   3% paid  86% fundedlost  11% | 1st payout median  98d <=45d   9% <=60d  19% | net/eval $5,034 | days to pass median 60
+                                              | 2018-21 pass  94% evalfail   6% paid  83% fundedlost  11% | 1st payout median 120d <=45d   3% <=60d   6% | net/eval $4,574
+                                              | 2022-25 pass 100% evalfail   0% paid  89% fundedlost  11% | 1st payout median  72d <=45d  15% <=60d  33% | net/eval $5,552
+4. V15a skip low RSI-aligned                  | ALL pass  97% evalfail   3% paid  86% fundedlost  11% | 1st payout median  98d <=45d   9% <=60d  19% | net/eval $5,161 | days to pass median 61
+                                              | 2018-21 pass  95% evalfail   5% paid  83% fundedlost  12% | 1st payout median 120d <=45d   3% <=60d   6% | net/eval $4,517
+                                              | 2022-25 pass 100% evalfail   0% paid  89% fundedlost  11% | 1st payout median  72d <=45d  16% <=60d  35% | net/eval $5,885
+5. RA skip vs structure                       | ALL pass  94% evalfail   6% paid  86% fundedlost   8% | 1st payout median  88d <=45d   7% <=60d  19% | net/eval $5,230 | days to pass median 55
+                                              | 2018-21 pass  95% evalfail   5% paid  84% fundedlost  10% | 1st payout median 116d <=45d   3% <=60d   6% | net/eval $4,807
+                                              | 2022-25 pass  93% evalfail   7% paid  88% fundedlost   5% | 1st payout median  66d <=45d  13% <=60d  33% | net/eval $5,705
+6. RA x2 if London swept Asia (with it)       | ALL pass  97% evalfail   3% paid  86% fundedlost  11% | 1st payout median  92d <=45d   9% <=60d  20% | net/eval $5,010 | days to pass median 59
+                                              | 2018-21 pass  94% evalfail   6% paid  83% fundedlost  12% | 1st payout median 116d <=45d   3% <=60d   6% | net/eval $4,671
+                                              | 2022-25 pass 100% evalfail   0% paid  89% fundedlost  10% | 1st payout median  72d <=45d  17% <=60d  36% | net/eval $5,391
+7. RA x2 if London swept Asia, x0.5 if Asia held| ALL pass 100% evalfail   0% paid  90% fundedlost  10% | 1st payout median  97d <=45d  10% <=60d  21% | net/eval $5,382 | days to pass median 59
+                                              | 2018-21 pass 100% evalfail   0% paid  90% fundedlost   9% | 1st payout median 130d <=45d   3% <=60d   6% | net/eval $4,869
+                                              | 2022-25 pass 100% evalfail   0% paid  90% fundedlost  10% | 1st payout median  67d <=45d  17% <=60d  37% | net/eval $5,959
+8. RA x1.5 if wk/month swept with             | ALL pass  97% evalfail   3% paid  86% fundedlost  10% | 1st payout median  95d <=45d   9% <=60d  19% | net/eval $5,255 | days to pass median 59
+                                              | 2018-21 pass  94% evalfail   6% paid  84% fundedlost  10% | 1st payout median 115d <=45d   3% <=60d   6% | net/eval $4,935
+                                              | 2022-25 pass  99% evalfail   1% paid  89% fundedlost  10% | 1st payout median  70d <=45d  15% <=60d  34% | net/eval $5,616
+9. V15a x1.5 if >=2 levels swept with         | ALL pass  96% evalfail   4% paid  86% fundedlost  10% | 1st payout median  93d <=45d   9% <=60d  20% | net/eval $5,338 | days to pass median 58
+                                              | 2018-21 pass  94% evalfail   6% paid  84% fundedlost  10% | 1st payout median 114d <=45d   3% <=60d   6% | net/eval $5,190
+                                              | 2022-25 pass  97% evalfail   3% paid  89% fundedlost   9% | 1st payout median  70d <=45d  15% <=60d  35% | net/eval $5,504
+10. COMBO 3 + RA skip vs structure + RA x2 AL | ALL pass  95% evalfail   5% paid  86% fundedlost   9% | 1st payout median  93d <=45d   7% <=60d  21% | net/eval $5,179 | days to pass median 58
+                                              | 2018-21 pass  95% evalfail   5% paid  82% fundedlost  13% | 1st payout median 124d <=45d   2% <=60d   5% | net/eval $4,611
+                                              | 2022-25 pass  96% evalfail   4% paid  91% fundedlost   5% | 1st payout median  64d <=45d  12% <=60d  39% | net/eval $5,818
