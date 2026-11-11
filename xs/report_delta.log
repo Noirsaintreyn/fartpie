@@ -1,0 +1,31 @@
+days with delta+system outcomes: 224
+
+== DAY-LEVEL: system day pts vs morning delta (corrected)
+ |dr30| corr w/ day pts +0.15; signed corr -0.02
+   small  n  75 mean   +2.9 terrible 16% great 13%
+   mid    n  74 mean   +5.1 terrible 12% great 22%
+   large  n  75 mean  +17.7 terrible 9% great 24%
+ |dr60| corr w/ day pts +0.17; signed corr -0.07
+   small  n  75 mean   +3.4 terrible 12% great 15%
+   mid    n  74 mean   +3.9 terrible 16% great 15%
+   large  n  75 mean  +18.4 terrible 9% great 29%
+ delta agrees with price over first hour:
+   agree                  n 203 mean   +9.8 t +3.47 terrible 12% great 21%
+   DIVERGE (absorption)   n  21 mean   -3.1 t -0.61 terrible 19% great 5%
+
+== LIVE LEGS (RA+V15a) n 80  mean pts*sz +10.08
+ veto opposing (x0)           total    +1027 vs base     +806 | mean/trade +12.84 | halves    +343/   +684 (base +14/+792) | worst trade -68 (base -68)
+ halve opposing               total     +917 vs base     +806 | mean/trade +11.46 | halves    +179/   +738 (base +14/+792) | worst trade -68 (base -68)
+ x1.5 confirm / x0.5 oppose   total    +1430 vs base     +806 | mean/trade +17.88 | halves    +350/  +1080 (base +14/+792) | worst trade -102 (base -68)
+ x2 confirm / x0 oppose       total    +2055 vs base     +806 | mean/trade +25.68 | halves    +686/  +1369 (base +14/+792) | worst trade -136 (base -68)
+ x1.5 confirm / x0 oppose     total    +1541 vs base     +806 | mean/trade +19.26 | halves    +514/  +1026 (base +14/+792) | worst trade -102 (base -68)
+
+== NEW TRADE TYPES, stop 40 pts, exit 15:55, 1 MNQ-pt = 1 NQ pt
+ A: delta momentum 10:00              n 114 mean   +5.8 win 28% t +0.72 | halves  +12.0(t +0.9) /   -0.4(t -0.0) | total +658
+ B: absorption fade 10:30             n   1 mean  -40.0 win  0% t +nan | halves   +nan(t +nan) /  -40.0(t +nan) | total -40
+ C: delta+price strong 10:30 follow   n  76 mean  +10.9 win 33% t +1.14 | halves   +6.0(t +0.4) /  +15.9(t +1.2) | total +831
+
+== NEW TRADE TYPES, stop 60 pts, exit 15:55, 1 MNQ-pt = 1 NQ pt
+ A: delta momentum 10:00              n 114 mean   +5.1 win 36% t +0.56 | halves   +7.8(t +0.6) /   +2.4(t +0.2) | total +586
+ B: absorption fade 10:30             n   1 mean  -60.0 win  0% t +nan | halves   +nan(t +nan) /  -60.0(t +nan) | total -60
+ C: delta+price strong 10:30 follow   n  76 mean  +17.4 win 43% t +1.62 | halves  +21.3(t +1.3) /  +13.5(t +0.9) | total +1322
