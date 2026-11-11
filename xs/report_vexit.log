@@ -1,0 +1,12 @@
+
+=== V15a: 586 entries (recorded leg pts/trade +11.89) ===
+ A vector-flip exit (else close)    n  586 mean +11.89 win  31% avg win +109.5 avg loss  -32.4 (RR 3.38) | 18-21  +6.64 (t +1.9) 22-26 +16.96 (t +2.8) | worst -101 | total +6968
+ B time exit 12:00                  n  586 mean  +2.02 win  38% avg win  +46.9 avg loss  -25.7 (RR 1.82) | 18-21  +1.02 (t +0.5) 22-26  +3.00 (t +0.8) | worst -101 | total +1185
+ C hold to close, no vector exit    n  586 mean +11.81 win  31% avg win +109.5 avg loss  -32.5 (RR 3.36) | 18-21  +6.64 (t +1.9) 22-26 +16.79 (t +2.7) | worst -101 | total +6918
+ D vector exit only after 12:00     n  586 mean +11.81 win  31% avg win +109.5 avg loss  -32.5 (RR 3.36) | 18-21  +6.64 (t +1.9) 22-26 +16.79 (t +2.7) | worst -101 | total +6918
+
+=== RA: 257 entries (recorded leg pts/trade +8.31) ===
+ A vector-flip exit (else close)    n  257 mean +16.82 win  31% avg win +124.2 avg loss  -31.7 (RR 3.92) | 18-21  +6.20 (t +1.0) 22-26 +25.69 (t +2.7) | worst -101 | total +4322
+ B time exit 12:00                  n  257 mean  +6.14 win  36% avg win  +72.2 avg loss  -30.7 (RR 2.35) | 18-21  +2.10 (t +0.5) 22-26  +9.51 (t +1.6) | worst -101 | total +1577
+ C hold to close, no vector exit    n  257 mean +17.85 win  30% avg win +133.9 avg loss  -32.7 (RR 4.09) | 18-21  +6.31 (t +1.1) 22-26 +27.50 (t +2.8) | worst -101 | total +4588
+ D vector exit only after 12:00     n  257 mean +18.01 win  31% avg win +130.2 avg loss  -32.7 (RR 3.98) | 18-21  +6.33 (t +1.1) 22-26 +27.77 (t +2.9) | worst -101 | total +4628
