@@ -23,3 +23,43 @@ MIX ECON+TA+XA
    EVAL  pass  96% FAIL   4% | pass<=30d  18% <=60d  52% <=90d  70% | still running >30d  81% >60d  44% >90d  26% | fee-months/eval 4.04
    FUNDED paid  89% lost-before-1st  11% lost-ever  31% | 1st payout <=30d  46% <=60d  77% <=90d  84% (median 30d) | payouts in 90d 2.11 / 180d 3.56 | $ in 90d 3,294 / 180d 5,791 | $ total 6,233
    2022+ only: eval pass 97% fail 3% pass<=30/60/90d 26%/64%/77% | funded lost-ever 29% 1st payout<=30/60/90d 62%/85%/88% total $6,436
+MIX OPT+ECON+TA+XA
+   EVAL  pass  96% FAIL   4% | pass<=30d  18% <=60d  52% <=90d  70% | still running >30d  81% >60d  44% >90d  26% | fee-months/eval 4.04
+   FUNDED paid  89% lost-before-1st  11% lost-ever  31% | 1st payout <=30d  46% <=60d  77% <=90d  84% (median 30d) | payouts in 90d 2.11 / 180d 3.56 | $ in 90d 3,294 / 180d 5,791 | $ total 6,233
+   2022+ only: eval pass 97% fail 3% pass<=30/60/90d 26%/64%/77% | funded lost-ever 29% 1st payout<=30/60/90d 62%/85%/88% total $6,436
+MIX ECON
+   EVAL  pass  96% FAIL   4% | pass<=30d  17% <=60d  51% <=90d  70% | still running >30d  81% >60d  45% >90d  26% | fee-months/eval 4.01
+   FUNDED paid  90% lost-before-1st  10% lost-ever  29% | 1st payout <=30d  46% <=60d  77% <=90d  85% (median 30d) | payouts in 90d 2.15 / 180d 3.60 | $ in 90d 3,311 / 180d 5,810 | $ total 6,314
+   2022+ only: eval pass 98% fail 2% pass<=30/60/90d 22%/61%/77% | funded lost-ever 26% 1st payout<=30/60/90d 63%/85%/89% total $6,538
+MIX OPT+ECON
+   EVAL  pass  96% FAIL   4% | pass<=30d  17% <=60d  51% <=90d  70% | still running >30d  81% >60d  45% >90d  26% | fee-months/eval 4.01
+   FUNDED paid  90% lost-before-1st  10% lost-ever  29% | 1st payout <=30d  46% <=60d  77% <=90d  85% (median 30d) | payouts in 90d 2.15 / 180d 3.60 | $ in 90d 3,311 / 180d 5,810 | $ total 6,314
+   2022+ only: eval pass 98% fail 2% pass<=30/60/90d 22%/61%/77% | funded lost-ever 26% 1st payout<=30/60/90d 63%/85%/89% total $6,538
+MIX ECON+XA
+   EVAL  pass  96% FAIL   4% | pass<=30d  17% <=60d  51% <=90d  70% | still running >30d  81% >60d  45% >90d  26% | fee-months/eval 4.01
+   FUNDED paid  90% lost-before-1st  10% lost-ever  29% | 1st payout <=30d  46% <=60d  77% <=90d  85% (median 30d) | payouts in 90d 2.15 / 180d 3.60 | $ in 90d 3,311 / 180d 5,810 | $ total 6,314
+   2022+ only: eval pass 98% fail 2% pass<=30/60/90d 22%/61%/77% | funded lost-ever 26% 1st payout<=30/60/90d 63%/85%/89% total $6,538
+MIX OPT+ECON+XA
+   EVAL  pass  96% FAIL   4% | pass<=30d  17% <=60d  51% <=90d  70% | still running >30d  81% >60d  45% >90d  26% | fee-months/eval 4.01
+   FUNDED paid  90% lost-before-1st  10% lost-ever  29% | 1st payout <=30d  46% <=60d  77% <=90d  85% (median 30d) | payouts in 90d 2.15 / 180d 3.60 | $ in 90d 3,311 / 180d 5,810 | $ total 6,314
+   2022+ only: eval pass 98% fail 2% pass<=30/60/90d 22%/61%/77% | funded lost-ever 26% 1st payout<=30/60/90d 63%/85%/89% total $6,538
+MIX ICT+VP+OPT+ECON+TA+CAL+XA
+   EVAL  pass  94% FAIL   6% | pass<=30d  18% <=60d  51% <=90d  69% | still running >30d  81% >60d  44% >90d  24% | fee-months/eval 3.84
+   FUNDED paid  89% lost-before-1st  11% lost-ever  30% | 1st payout <=30d  46% <=60d  77% <=90d  84% (median 30d) | payouts in 90d 2.09 / 180d 3.53 | $ in 90d 3,244 / 180d 5,731 | $ total 6,218
+   2022+ only: eval pass 93% fail 7% pass<=30/60/90d 26%/62%/75% | funded lost-ever 30% 1st payout<=30/60/90d 62%/85%/88% total $6,291
+MIX VP
+   EVAL  pass 100% FAIL   0% | pass<=30d  17% <=60d  47% <=90d  67% | still running >30d  83% >60d  53% >90d  33% | fee-months/eval 4.25
+   FUNDED paid  97% lost-before-1st   3% lost-ever  21% | 1st payout <=30d  43% <=60d  80% <=90d  89% (median 34d) | payouts in 90d 2.09 / 180d 3.71 | $ in 90d 3,007 / 180d 5,667 | $ total 6,554
+   2022+ only: eval pass 100% fail 0% pass<=30/60/90d 26%/62%/78% | funded lost-ever 22% 1st payout<=30/60/90d 60%/90%/97% total $6,770
+MIX TA
+   EVAL  pass  96% FAIL   4% | pass<=30d  19% <=60d  50% <=90d  71% | still running >30d  79% >60d  46% >90d  25% | fee-months/eval 4.04
+   FUNDED paid  86% lost-before-1st  14% lost-ever  33% | 1st payout <=30d  45% <=60d  75% <=90d  82% (median 29d) | payouts in 90d 2.04 / 180d 3.37 | $ in 90d 3,193 / 180d 5,443 | $ total 5,984
+   2022+ only: eval pass 97% fail 3% pass<=30/60/90d 29%/63%/79% | funded lost-ever 31% 1st payout<=30/60/90d 61%/85%/88% total $6,369
+MIX ICT
+   EVAL  pass  90% FAIL  10% | pass<=30d  14% <=60d  48% <=90d  66% | still running >30d  82% >60d  45% >90d  24% | fee-months/eval 3.92
+   FUNDED paid  85% lost-before-1st  15% lost-ever  38% | 1st payout <=30d  45% <=60d  75% <=90d  83% (median 29d) | payouts in 90d 2.02 / 180d 3.19 | $ in 90d 3,063 / 180d 5,041 | $ total 5,630
+   2022+ only: eval pass 84% fail 16% pass<=30/60/90d 21%/55%/68% | funded lost-ever 47% 1st payout<=30/60/90d 60%/82%/85% total $5,413
+MIX CAL
+   EVAL  pass  97% FAIL   3% | pass<=30d  14% <=60d  42% <=90d  60% | still running >30d  85% >60d  55% >90d  37% | fee-months/eval 4.67
+   FUNDED paid  91% lost-before-1st   9% lost-ever  34% | 1st payout <=30d  42% <=60d  73% <=90d  85% (median 33d) | payouts in 90d 1.92 / 180d 3.39 | $ in 90d 2,684 / 180d 5,039 | $ total 5,695
+   2022+ only: eval pass 100% fail 0% pass<=30/60/90d 20%/54%/67% | funded lost-ever 29% 1st payout<=30/60/90d 57%/82%/92% total $6,005
