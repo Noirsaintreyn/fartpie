@@ -1,0 +1,25 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== MIX CHAIN. thirds from era A; x0.5 bottom / x1.5 top. Lucid Flex 50K. ALL starts 2018-25 | and 2022+ starts only (out-of-sample era for the screen).
+base
+   EVAL  pass  96% FAIL   4% | pass<=30d  19% <=60d  51% <=90d  69% | still running >30d  80% >60d  46% >90d  27% | fee-months/eval 4.13
+   FUNDED paid  88% lost-before-1st  12% lost-ever  35% | 1st payout <=30d  45% <=60d  75% <=90d  84% (median 30d) | payouts in 90d 2.05 / 180d 3.40 | $ in 90d 3,041 / 180d 5,284 | $ total 5,704
+   2022+ only: eval pass 98% fail 2% pass<=30/60/90d 29%/65%/79% | funded lost-ever 29% 1st payout<=30/60/90d 62%/84%/89% total $6,350
+STK-N4 (reference)
+   EVAL  pass  97% FAIL   3% | pass<=30d  16% <=60d  49% <=90d  68% | still running >30d  82% >60d  48% >90d  28% | fee-months/eval 4.20
+   FUNDED paid  89% lost-before-1st  11% lost-ever  31% | 1st payout <=30d  45% <=60d  76% <=90d  83% (median 30d) | payouts in 90d 2.09 / 180d 3.54 | $ in 90d 3,121 / 180d 5,558 | $ total 6,103
+   2022+ only: eval pass 99% fail 1% pass<=30/60/90d 26%/66%/78% | funded lost-ever 25% 1st payout<=30/60/90d 63%/86%/89% total $6,685
+MIX ECON+TA
+   EVAL  pass  96% FAIL   4% | pass<=30d  18% <=60d  52% <=90d  70% | still running >30d  81% >60d  44% >90d  26% | fee-months/eval 4.04
+   FUNDED paid  89% lost-before-1st  11% lost-ever  31% | 1st payout <=30d  46% <=60d  77% <=90d  84% (median 30d) | payouts in 90d 2.11 / 180d 3.56 | $ in 90d 3,294 / 180d 5,791 | $ total 6,233
+   2022+ only: eval pass 97% fail 3% pass<=30/60/90d 26%/64%/77% | funded lost-ever 29% 1st payout<=30/60/90d 62%/85%/88% total $6,436
+MIX OPT+ECON+TA
+   EVAL  pass  96% FAIL   4% | pass<=30d  18% <=60d  52% <=90d  70% | still running >30d  81% >60d  44% >90d  26% | fee-months/eval 4.04
+   FUNDED paid  89% lost-before-1st  11% lost-ever  31% | 1st payout <=30d  46% <=60d  77% <=90d  84% (median 30d) | payouts in 90d 2.11 / 180d 3.56 | $ in 90d 3,294 / 180d 5,791 | $ total 6,233
+   2022+ only: eval pass 97% fail 3% pass<=30/60/90d 26%/64%/77% | funded lost-ever 29% 1st payout<=30/60/90d 62%/85%/88% total $6,436
+MIX ECON+TA+XA
+   EVAL  pass  96% FAIL   4% | pass<=30d  18% <=60d  52% <=90d  70% | still running >30d  81% >60d  44% >90d  26% | fee-months/eval 4.04
+   FUNDED paid  89% lost-before-1st  11% lost-ever  31% | 1st payout <=30d  46% <=60d  77% <=90d  84% (median 30d) | payouts in 90d 2.11 / 180d 3.56 | $ in 90d 3,294 / 180d 5,791 | $ total 6,233
+   2022+ only: eval pass 97% fail 3% pass<=30/60/90d 26%/64%/77% | funded lost-ever 29% 1st payout<=30/60/90d 62%/85%/88% total $6,436
