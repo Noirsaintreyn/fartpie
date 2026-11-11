@@ -375,3 +375,15 @@ if __name__ == '__main__':
     print('=== DELTA RULES on RA+V15a (eval AND funded), Flex 50K, starts 2024-12..2025-08 ===', flush=True)
     for nm, (cm, om) in (('base (no delta)', (1, 1)), ('veto opposing', (1, 0)), ('x1.5 confirm / x0.5 oppose', (1.5, .5)), ('x1.5 confirm / veto opposing', (1.5, 0)), ('x2 confirm / veto opposing', (2, 0))):
         R = chain3(BASE if (cm, om) == (1, 1) else dmul(BASE, cm, om)); print(f'{nm:30} | {line2(R)}', flush=True)
+    # ---- EVAL-ONLY delta (funded model unchanged), also days to pass ----
+    def chain_e(spec):
+        LE = lists_cap2(spec, 'e', 1.75); rows = []
+        for s_ in starts:
+            r, k2 = EV(LE, A, s_, NS, E2, True)
+            if r != 'pass': rows.append(dict(out='evalfail' if r == 'fail' else 'open', dp=np.nan, t=k2 - s_ + 1, net=-fee, npay=0)); continue
+            fr, k3, pays = FU(LF_base, A, k2 + 1, NS, FPOL, True)
+            rows.append(dict(out='paid' if pays else ('fundedlost' if fr == 'lost' else 'open'), dp=k2 - s_ + 1, t=(pays[0][0] - s_ + 1) if pays else np.nan, net=sum(x for _, x in pays) - fee, npay=len(pays)))
+        return pd.DataFrame(rows)
+    print('=== EVAL-ONLY delta, funded unchanged, same starts (2024-12..2025-08 window) ===', flush=True)
+    for nm, (cm, om) in (('base (no delta)', (1, 1)), ('eval veto opposing', (1, 0)), ('eval x1.5 conf / x0.5 opp', (1.5, .5)), ('eval x1.5 conf / veto opp', (1.5, 0))):
+        R = chain_e(BASE if (cm, om) == (1, 1) else dmul(BASE, cm, om)); print(f'{nm:28} | {line2(R)} | days start->pass median {R.dp.median():.0f} mean {R.dp.mean():.0f}', flush=True)
