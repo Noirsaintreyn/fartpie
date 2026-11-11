@@ -1,0 +1,20 @@
+
+== V15a: base n 931 total +7421 mean +8.0 win 31% worst-year -274
+ skip against displacement           skipped n 122 (mean   -5.1, win 16%) | kept n 809 mean  +9.9 win 34% total  +8048 worst-yr  -274 | kept-vs-skipped t: A +0.6 B +2.8
+ skip against structure (MSS)        skipped n 115 (mean   -1.7, win 20%) | kept n 816 mean  +9.3 win 33% total  +7620 worst-yr  -193 | kept-vs-skipped t: A +0.1 B +2.7
+ skip against disp OR mss            skipped n 175 (mean   -2.0, win 20%) | kept n 756 mean +10.3 win 34% total  +7768 worst-yr  -193 | kept-vs-skipped t: A +0.5 B +2.6
+ skip buying below 9:30 open         skipped n 150 (mean   -0.0, win 23%) | kept n 781 mean  +9.5 win 33% total  +7426 worst-yr  -237 | kept-vs-skipped t: A +0.2 B +1.8
+ skip ADX low tercile                skipped n 311 (mean   +1.0, win 29%) | kept n 620 mean +11.5 win 33% total  +7100 worst-yr  -358 | kept-vs-skipped t: A +1.5 B +1.7
+ skip RSI-aligned low tercile        skipped n 311 (mean   +3.6, win 28%) | kept n 620 mean +10.1 win 33% total  +6287 worst-yr  -156 | kept-vs-skipped t: A +0.4 B +1.5
+ skip disp/mss against OR ADX low    skipped n 415 (mean   +0.9, win 27%) | kept n 516 mean +13.7 win 35% total  +7059 worst-yr  -277 | kept-vs-skipped t: A +1.3 B +2.6
+ skip any SMT present                skipped n 205 (mean   +2.0, win 30%) | kept n 726 mean  +9.6 win 32% total  +7004 worst-yr  -316 | kept-vs-skipped t: A +2.4 B +0.1
+
+== RA: base n 262 total +2095 mean +8.0 win 52% worst-year -181
+ skip against displacement           skipped n  51 (mean   +1.7, win 47%) | kept n 211 mean  +9.5 win 53% total  +2008 worst-yr  -181 | kept-vs-skipped t: A +0.0 B +1.2
+ skip against structure (MSS)        skipped n  43 (mean   -4.3, win 42%) | kept n 219 mean +10.4 win 54% total  +2280 worst-yr   -86 | kept-vs-skipped t: A +0.8 B +1.5
+ skip against disp OR mss            skipped n  67 (mean   +0.8, win 46%) | kept n 195 mean +10.5 win 54% total  +2039 worst-yr   -79 | kept-vs-skipped t: A -0.0 B +1.7
+ skip buying below 9:30 open         skipped n  49 (mean   -2.0, win 41%) | kept n 213 mean +10.3 win 54% total  +2192 worst-yr  -181 | kept-vs-skipped t: A +0.5 B +1.4
+ skip ADX low tercile                skipped n  88 (mean   +2.7, win 44%) | kept n 174 mean +10.7 win 56% total  +1859 worst-yr  -135 | kept-vs-skipped t: A +1.3 B +0.5
+ skip RSI-aligned low tercile        skipped n  88 (mean   -1.0, win 42%) | kept n 174 mean +12.6 win 57% total  +2184 worst-yr  -130 | kept-vs-skipped t: A +1.0 B +1.7
+ skip disp/mss against OR ADX low    skipped n 131 (mean   +3.9, win 46%) | kept n 131 mean +12.1 win 58% total  +1579 worst-yr   -28 | kept-vs-skipped t: A +0.2 B +1.5
+ skip any SMT present                skipped n  51 (mean   +5.6, win 55%) | kept n 211 mean  +8.6 win 51% total  +1809 worst-yr  -183 | kept-vs-skipped t: A +0.2 B +0.3
