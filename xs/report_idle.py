@@ -446,10 +446,10 @@ if __name__ == '__main__':
     # engines that already exist: NZ on idle vs trading days
     nz = [T_ for (T_, u, yz), en in zip(BASEP, NAMES) if en == 'NZ']
     print('NZ in BASEP list:', len(nz), flush=True)
-    NZt = [T_ for (T_, u, yz), en in zip(variant(True, relm), NAMES) if en == 'NZ'][0].copy(); NZt['day'] = pd.to_datetime(NZt.day); NZt['idle'] = ~NZt.day.isin(tdays); NZt['era'] = np.where(NZt.day < '2022-01-01', 'A', 'B')
+    NZt = [T_ for (T_, u, yz), en in zip(BASEP, NAMES) if en == 'NZ'][0].copy(); NZt['day'] = pd.to_datetime(NZt.day); NZt['idle'] = ~NZt.day.isin(tdays); NZt['era'] = np.where(NZt.day < '2022-01-01', 'A', 'B')
     print(f'\n=== NZ noise engine (RTH, has direction): {len(NZt)} trades; on idle days {NZt.idle.sum()} ===', flush=True)
     for lab, m in (('idle days', NZt.idle), ('core-trading days', ~NZt.idle)):
         for e in ('A', 'B'):
-            x = NZt.pts[m & (NZt.era == e) & (NZt.sz > 0)] if 'sz' in NZt else NZt.pts[m & (NZt.era == e)]
+            x = NZt.pts[m & (NZt.era == e)]
             print(f'  {lab:18} {e}: n {len(x):4d} mean {x.mean():+6.2f} pts/trade win {np.mean(x > 0):.0%} t {x.mean() / (x.std(ddof=1) / np.sqrt(len(x))):+.1f} | pts per day-of-that-type {x.sum() / max(((st.era == e) & (~st.trade if lab == "idle days" else st.trade)).sum(), 1):+.2f}', flush=True)
     st.to_pickle(SCq + 'idle_state.pkl')

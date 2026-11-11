@@ -56,8 +56,9 @@ days 1992; core legs trade on 39.0%; 2018-21 35.6%, 2022+ 42.3%
 
 === OPPORTUNITY on idle days (n 1215): range median 147 pts (trading days 157); |open->close| median 0 (trading 0); trend efficiency median 0.48 (trading 0.50); idle days with |open->close| >= 100 pts: 0% (trading days 0%)
 NZ in BASEP list: 1
-Traceback (most recent call last):
-  File "/home/claude/fartpie/xs/report_idle.py", line 449, in <module>
-    NZt = [T_ for (T_, u, yz), en in zip(variant(True, relm), NAMES) if en == 'NZ'][0].copy(); NZt['day'] = pd.to_datetime(NZt.day); NZt['idle'] = ~NZt.day.isin(tdays); NZt['era'] = np.where(NZt.day < '2022-01-01', 'A', 'B')
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
-IndexError: list index out of range
+
+=== NZ noise engine (RTH, has direction): 2956 trades; on idle days 1578 ===
+  idle days          A: n 1109 mean  -1.11 pts/trade win 30% t -1.3 | pts per day-of-that-type -1.95
+  idle days          B: n  469 mean  -1.00 pts/trade win 23% t -0.3 | pts per day-of-that-type -0.81
+  core-trading days  A: n  807 mean  +6.88 pts/trade win 40% t +4.8 | pts per day-of-that-type +15.95
+  core-trading days  B: n  571 mean +10.07 pts/trade win 30% t +3.4 | pts per day-of-that-type +13.40
