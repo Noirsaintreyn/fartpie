@@ -1,0 +1,15 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+fee per eval $88; data ends 2026-01-30 (last NQ day, not today); one account at a time: buy eval -> pass -> funded until lost -> buy again. Fees paid out of pocket/payouts, net = payouts - fees.
+
+BASE (old sizing): 20 start days in Jan-Mar 2022 -> end 2026-01-30
+   total net: mean $35,420 median $35,570 min $34,357 max $36,700 | per month: mean $745 median $743 | evals bought mean 7.5 | payouts mean 21.4 = 0.45/month, months with a payout 40% | days to 1st payout median 57 | worst cash dip (peak to trough) median $-264 worst $-264 | lowest cumulative cash median $-88
+
+N4 x ECON, eval K=1.0: 20 start days in Jan-Mar 2022 -> end 2026-01-30
+   total net: mean $37,684 median $37,954 min $36,606 max $38,068 | per month: mean $793 median $790 | evals bought mean 6.0 | payouts mean 23.0 = 0.48/month, months with a payout 44% | days to 1st payout median 58 | worst cash dip (peak to trough) median $-88 worst $-88 | lowest cumulative cash median $-88
+
+N4 x ECON, eval K=1.25 (new model): 20 start days in Jan-Mar 2022 -> end 2026-01-30
+   total net: mean $36,550 median $37,056 min $34,901 max $37,169 | per month: mean $769 median $770 | evals bought mean 8.0 | payouts mean 22.7 = 0.48/month, months with a payout 44% | days to 1st payout median 56 | worst cash dip (peak to trough) median $-264 worst $-264 | lowest cumulative cash median $-88
+   path from 2022-01-03: 2022: fees $176 payouts $11,352 (7 payouts) | 2023: fees $176 payouts $7,996 (6 payouts) | 2024: fees $0 payouts $7,079 (4 payouts) | 2025: fees $264 payouts $10,199 (6 payouts) | 2026: fees $88 payouts $0 (0 payouts)
