@@ -10,3 +10,4 @@
  B time exit 12:00                  n  257 mean  +6.14 win  36% avg win  +72.2 avg loss  -30.7 (RR 2.35) | 18-21  +2.10 (t +0.5) 22-26  +9.51 (t +1.6) | worst -101 | total +1577
  C hold to close, no vector exit    n  257 mean +17.85 win  30% avg win +133.9 avg loss  -32.7 (RR 4.09) | 18-21  +6.31 (t +1.1) 22-26 +27.50 (t +2.8) | worst -101 | total +4588
  D vector exit only after 12:00     n  257 mean +18.01 win  31% avg win +130.2 avg loss  -32.7 (RR 3.98) | 18-21  +6.33 (t +1.1) 22-26 +27.77 (t +2.9) | worst -101 | total +4628
+saved ra_hold.pkl 329

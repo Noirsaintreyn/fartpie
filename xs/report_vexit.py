@@ -28,3 +28,21 @@ for nm in ('V15a', 'RA'):
         r = np.array([sim(d, int(mm), int(dr), mode) for d, mm, dr in zip(T.day, T.m, T.dir)]); ok = np.isfinite(r); w, ls = r[ok & (r > 0)], r[ok & (r <= 0)]
         a, b = r[ok & (yr < 2022)], r[ok & (yr >= 2022)]
         print(f' {lab:34} n {ok.sum():4d} mean {np.nanmean(r):+6.2f} win {np.mean(r[ok]>0):4.0%} avg win {w.mean():+6.1f} avg loss {ls.mean():+6.1f} (RR {abs(w.mean()/ls.mean()):.2f}) | 18-21 {a.mean():+6.2f} (t {tt(a):+.1f}) 22-26 {b.mean():+6.2f} (t {tt(b):+.1f}) | worst {r[ok].min():+.0f} | total {np.nansum(r):+.0f}')
+
+def sim2(d, mm, dr, mode, stop_k=.15, cost=1.0):
+    ix = gi[d]; mi = m[ix]; w = np.where(mi == mm)[0]
+    if len(w) == 0: return (np.nan, np.nan)
+    j = int(w[0]); i0 = ix[j]; e = o[i0]; S = e - dr * stop_k * DY.adr[d]; worst = 0.0
+    for p in range(j, len(ix)):
+        ii = ix[p]
+        if m[ii] >= 955: return (((c[ix[p - 1]] - e) * dr) - cost, worst - cost)
+        if (l[ii] <= S) if dr > 0 else (h[ii] >= S): worst = min(worst, (S - e) * dr); return (((S - e) * dr) - cost, worst - cost)
+        worst = min(worst, ((l[ii] if dr > 0 else h[ii]) - e) * dr)
+        if mode in ('A', 'D') and (m[ii] + 5) % 15 == 0 and p + 1 < len(ix) and (mode == 'A' or m[ii] >= 720):
+            r = regmap.get(hv[ii] - np.timedelta64(10, 'm'))
+            if r is not None and r == -dr: return (((o[ix[p + 1]] - e) * dr) - cost, worst - cost)
+    return (((c[ix[-1]] - e) * dr) - cost, worst - cost)
+RA = legs['RA'][0].copy(); RA['day'] = pd.to_datetime(RA.day); rows = []
+for r_ in RA.itertuples():
+    pts, mae = sim2(r_.day, int(r_.m), int(r_.dir), 'D'); rows.append((r_.day, int(r_.m), pts, mae))
+pd.DataFrame(rows, columns=['day', 'm', 'pts_D', 'mae_D']).to_pickle(SC + 'ra_hold.pkl'); print('saved ra_hold.pkl', len(rows))
