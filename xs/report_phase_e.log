@@ -1,0 +1,50 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+
+##### PHASE e: fit 2018-21 -> test 2022-25 | start (single model = variant I) fit: score    1.34 | pass  95% fail   5% | median d   60
+  round 0 leg RA     -> 1.0  fit score    1.34 | pass  95% fail   5% | median d   60
+  round 0 leg M1     -> 2.0  fit score    1.45 | pass  92% fail   8% | median d   50
+  round 0 leg R1     -> 2.0  fit score    1.49 | pass  90% fail  10% | median d   46
+  round 0 leg ON+    -> 2.0  fit score    1.59 | pass  87% fail  13% | median d   42
+  round 0 leg ON-    -> 1.0  fit score    1.59 | pass  87% fail  13% | median d   42
+  round 0 leg RULES  -> 1.0  fit score    1.59 | pass  87% fail  13% | median d   42
+  round 0 leg V15a   -> 1.0  fit score    1.59 | pass  87% fail  13% | median d   42
+  round 0 leg NZ     -> 0.5  fit score    1.62 | pass  68% fail  32% | median d   35
+  round 1 leg RA     -> 2.0  fit score    1.74 | pass  67% fail  33% | median d   34
+  round 1 leg M1     -> 2.0  fit score    1.74 | pass  67% fail  33% | median d   34
+  round 1 leg R1     -> 2.0  fit score    1.74 | pass  67% fail  33% | median d   34
+  round 1 leg ON+    -> 2.0  fit score    1.74 | pass  67% fail  33% | median d   34
+  round 1 leg ON-    -> 2.0  fit score    1.80 | pass  67% fail  33% | median d   32
+  round 1 leg RULES  -> 1.5  fit score    1.86 | pass  68% fail  32% | median d   32
+  round 1 leg V15a   -> 1.0  fit score    1.86 | pass  68% fail  32% | median d   32
+  round 1 leg NZ     -> 0.5  fit score    1.86 | pass  68% fail  32% | median d   32
+  WEIGHTS {'RA': 2.0, 'M1': 2.0, 'R1': 2.0, 'ON+': 2.0, 'ON-': 2.0, 'RULES': 1.5, 'V15a': 1.0, 'NZ': 0.5}  (12s)
+  fit  single score    1.34 | pass  95% fail   5% | median d   60
+  fit  tuned  score    1.86 | pass  68% fail  32% | median d   32
+  TEST single score    2.23 | pass  80% fail  20% | median d   35
+  TEST tuned  score    2.26 | pass  44% fail  56% | median d   18
+
+##### PHASE e: fit 2022-25 -> test 2018-21 | start (single model = variant I) fit: score    2.23 | pass  80% fail  20% | median d   35
+  round 0 leg RA     -> 1.0  fit score    2.23 | pass  80% fail  20% | median d   35
+  round 0 leg M1     -> 1.0  fit score    2.23 | pass  80% fail  20% | median d   35
+  round 0 leg R1     -> 1.5  fit score    2.33 | pass  80% fail  20% | median d   33
+  round 0 leg ON+    -> 1.0  fit score    2.33 | pass  80% fail  20% | median d   33
+  round 0 leg ON-    -> 1.0  fit score    2.33 | pass  80% fail  20% | median d   33
+  round 0 leg RULES  -> 2.0  fit score    2.65 | pass  75% fail  25% | median d   24
+  round 0 leg V15a   -> 1.0  fit score    2.65 | pass  75% fail  25% | median d   24
+  round 0 leg NZ     -> 0.0  fit score    2.65 | pass  75% fail  25% | median d   24
+  round 1 leg RA     -> 1.0  fit score    2.65 | pass  75% fail  25% | median d   24
+  round 1 leg M1     -> 2.0  fit score    2.78 | pass  67% fail  33% | median d   22
+  round 1 leg R1     -> 2.0  fit score    2.87 | pass  67% fail  33% | median d   22
+  round 1 leg ON+    -> 1.0  fit score    2.87 | pass  67% fail  33% | median d   22
+  round 1 leg ON-    -> 1.0  fit score    2.87 | pass  67% fail  33% | median d   22
+  round 1 leg RULES  -> 2.0  fit score    2.87 | pass  67% fail  33% | median d   22
+  round 1 leg V15a   -> 1.0  fit score    2.87 | pass  67% fail  33% | median d   22
+  round 1 leg NZ     -> 0.0  fit score    2.87 | pass  67% fail  33% | median d   22
+  WEIGHTS {'RA': 1.0, 'M1': 2.0, 'R1': 2.0, 'ON+': 1.0, 'ON-': 1.0, 'RULES': 2.0, 'V15a': 1.0, 'NZ': 0.0}  (10s)
+  fit  single score    2.23 | pass  80% fail  20% | median d   35
+  fit  tuned  score    2.87 | pass  67% fail  33% | median d   22
+  TEST single score    1.34 | pass  95% fail   5% | median d   60
+  TEST tuned  score    1.48 | pass  86% fail  14% | median d   47

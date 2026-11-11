@@ -1,0 +1,50 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+
+##### PHASE f: fit 2018-21 -> test 2022-25 | start (single model = variant I) fit: score 2151.40 | paid  89% lost-before-1st  11% | median d   22 | avg $ in 120d   2151
+  round 0 leg RA     -> 2.0  fit score 2211.19 | paid  84% lost-before-1st  16% | median d   22 | avg $ in 120d   2211
+  round 0 leg M1     -> 2.0  fit score 2705.43 | paid  82% lost-before-1st  18% | median d   21 | avg $ in 120d   2705
+  round 0 leg R1     -> 0.0  fit score 2789.16 | paid  80% lost-before-1st  20% | median d   20 | avg $ in 120d   2789
+  round 0 leg ON+    -> 1.0  fit score 2789.16 | paid  80% lost-before-1st  20% | median d   20 | avg $ in 120d   2789
+  round 0 leg ON-    -> 0.0  fit score 3338.96 | paid  81% lost-before-1st  19% | median d   23 | avg $ in 120d   3339
+  round 0 leg RULES  -> 1.5  fit score 3505.07 | paid  81% lost-before-1st  19% | median d   21 | avg $ in 120d   3505
+  round 0 leg V15a   -> 2.0  fit score 3651.47 | paid  79% lost-before-1st  21% | median d   21 | avg $ in 120d   3651
+  round 0 leg NZ     -> 0.0  fit score 3651.47 | paid  79% lost-before-1st  21% | median d   21 | avg $ in 120d   3651
+  round 1 leg RA     -> 2.0  fit score 3651.47 | paid  79% lost-before-1st  21% | median d   21 | avg $ in 120d   3651
+  round 1 leg M1     -> 2.0  fit score 3651.47 | paid  79% lost-before-1st  21% | median d   21 | avg $ in 120d   3651
+  round 1 leg R1     -> 0.0  fit score 3651.47 | paid  79% lost-before-1st  21% | median d   21 | avg $ in 120d   3651
+  round 1 leg ON+    -> 1.0  fit score 3651.47 | paid  79% lost-before-1st  21% | median d   21 | avg $ in 120d   3651
+  round 1 leg ON-    -> 0.0  fit score 3651.47 | paid  79% lost-before-1st  21% | median d   21 | avg $ in 120d   3651
+  round 1 leg RULES  -> 1.5  fit score 3651.47 | paid  79% lost-before-1st  21% | median d   21 | avg $ in 120d   3651
+  round 1 leg V15a   -> 2.0  fit score 3651.47 | paid  79% lost-before-1st  21% | median d   21 | avg $ in 120d   3651
+  round 1 leg NZ     -> 0.0  fit score 3651.47 | paid  79% lost-before-1st  21% | median d   21 | avg $ in 120d   3651
+  WEIGHTS {'RA': 2.0, 'M1': 2.0, 'R1': 0.0, 'ON+': 1.0, 'ON-': 0.0, 'RULES': 1.5, 'V15a': 2.0, 'NZ': 0.0}  (11s)
+  fit  single score 2151.40 | paid  89% lost-before-1st  11% | median d   22 | avg $ in 120d   2151
+  fit  tuned  score 3651.47 | paid  79% lost-before-1st  21% | median d   21 | avg $ in 120d   3651
+  TEST single score 3584.11 | paid  83% lost-before-1st  17% | median d   14 | avg $ in 120d   3584
+  TEST tuned  score 3249.52 | paid  67% lost-before-1st  33% | median d   13 | avg $ in 120d   3250
+
+##### PHASE f: fit 2022-25 -> test 2018-21 | start (single model = variant I) fit: score 3584.11 | paid  83% lost-before-1st  17% | median d   14 | avg $ in 120d   3584
+  round 0 leg RA     -> 1.0  fit score 3584.11 | paid  83% lost-before-1st  17% | median d   14 | avg $ in 120d   3584
+  round 0 leg M1     -> 1.0  fit score 3584.11 | paid  83% lost-before-1st  17% | median d   14 | avg $ in 120d   3584
+  round 0 leg R1     -> 2.0  fit score 3665.45 | paid  82% lost-before-1st  18% | median d   14 | avg $ in 120d   3665
+  round 0 leg ON+    -> 0.0  fit score 4181.72 | paid  89% lost-before-1st  11% | median d   17 | avg $ in 120d   4182
+  round 0 leg ON-    -> 0.0  fit score 4697.97 | paid  88% lost-before-1st  12% | median d   20 | avg $ in 120d   4698
+  round 0 leg RULES  -> 1.0  fit score 4697.97 | paid  88% lost-before-1st  12% | median d   20 | avg $ in 120d   4698
+  round 0 leg V15a   -> 1.5  fit score 4986.02 | paid  87% lost-before-1st  13% | median d   20 | avg $ in 120d   4986
+  round 0 leg NZ     -> 0.0  fit score 4986.02 | paid  87% lost-before-1st  13% | median d   20 | avg $ in 120d   4986
+  round 1 leg RA     -> 1.0  fit score 4986.02 | paid  87% lost-before-1st  13% | median d   20 | avg $ in 120d   4986
+  round 1 leg M1     -> 1.0  fit score 4986.02 | paid  87% lost-before-1st  13% | median d   20 | avg $ in 120d   4986
+  round 1 leg R1     -> 0.5  fit score 5096.06 | paid  90% lost-before-1st  10% | median d   21 | avg $ in 120d   5096
+  round 1 leg ON+    -> 0.0  fit score 5096.06 | paid  90% lost-before-1st  10% | median d   21 | avg $ in 120d   5096
+  round 1 leg ON-    -> 0.0  fit score 5096.06 | paid  90% lost-before-1st  10% | median d   21 | avg $ in 120d   5096
+  round 1 leg RULES  -> 1.0  fit score 5096.06 | paid  90% lost-before-1st  10% | median d   21 | avg $ in 120d   5096
+  round 1 leg V15a   -> 1.5  fit score 5096.06 | paid  90% lost-before-1st  10% | median d   21 | avg $ in 120d   5096
+  round 1 leg NZ     -> 0.0  fit score 5096.06 | paid  90% lost-before-1st  10% | median d   21 | avg $ in 120d   5096
+  WEIGHTS {'RA': 1.0, 'M1': 1.0, 'R1': 0.5, 'ON+': 0.0, 'ON-': 0.0, 'RULES': 1.0, 'V15a': 1.5, 'NZ': 0.0}  (10s)
+  fit  single score 3584.11 | paid  83% lost-before-1st  17% | median d   14 | avg $ in 120d   3584
+  fit  tuned  score 5096.06 | paid  90% lost-before-1st  10% | median d   21 | avg $ in 120d   5096
+  TEST single score 2151.40 | paid  89% lost-before-1st  11% | median d   22 | avg $ in 120d   2151
+  TEST tuned  score 2624.21 | paid  82% lost-before-1st  18% | median d   33 | avg $ in 120d   2624
