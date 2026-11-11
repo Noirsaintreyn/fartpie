@@ -1,0 +1,20 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+--- K=1.0: single eval pass 90%, fail 10% ---
+   N=1 spaced  0d: funded 90% | by 30/45/60/90 trading days 16%/34%/51%/71% | median days to funded 56 | one-time fees $88 per funded attempt-set | monthly-fee months 3.61 | $ per funded (one-time) $97
+   N=2 spaced  5d: funded 91% | by 30/45/60/90 trading days 17%/36%/52%/72% | median days to funded 55 | one-time fees $176 per funded attempt-set | monthly-fee months 6.90 | $ per funded (one-time) $193
+   N=3 spaced  5d: funded 92% | by 30/45/60/90 trading days 18%/38%/53%/73% | median days to funded 53 | one-time fees $263 per funded attempt-set | monthly-fee months 9.94 | $ per funded (one-time) $285
+   N=3 spaced 10d: funded 94% | by 30/45/60/90 trading days 17%/37%/54%/75% | median days to funded 54 | one-time fees $256 per funded attempt-set | monthly-fee months 9.13 | $ per funded (one-time) $272
+   N=5 spaced  5d: funded 94% | by 30/45/60/90 trading days 19%/39%/56%/76% | median days to funded 52 | one-time fees $432 per funded attempt-set | monthly-fee months 15.29 | $ per funded (one-time) $460
+   N=5 spaced 10d: funded 97% | by 30/45/60/90 trading days 17%/36%/54%/76% | median days to funded 56 | one-time fees $391 per funded attempt-set | monthly-fee months 13.04 | $ per funded (one-time) $402
+   N=5 spaced 20d: funded 100% | by 30/45/60/90 trading days 15%/33%/51%/74% | median days to funded 60 | one-time fees $305 per funded attempt-set | monthly-fee months 10.15 | $ per funded (one-time) $305
+--- K=1.5: single eval pass 87%, fail 13% ---
+   N=1 spaced  0d: funded 87% | by 30/45/60/90 trading days 22%/41%/58%/73% | median days to funded 48 | one-time fees $88 per funded attempt-set | monthly-fee months 3.06 | $ per funded (one-time) $101
+   N=2 spaced  5d: funded 89% | by 30/45/60/90 trading days 24%/44%/61%/75% | median days to funded 45 | one-time fees $176 per funded attempt-set | monthly-fee months 5.78 | $ per funded (one-time) $199
+   N=3 spaced  5d: funded 90% | by 30/45/60/90 trading days 26%/46%/63%/76% | median days to funded 45 | one-time fees $263 per funded attempt-set | monthly-fee months 8.28 | $ per funded (one-time) $293
+   N=3 spaced 10d: funded 92% | by 30/45/60/90 trading days 24%/47%/64%/79% | median days to funded 45 | one-time fees $252 per funded attempt-set | monthly-fee months 7.49 | $ per funded (one-time) $275
+   N=5 spaced  5d: funded 91% | by 30/45/60/90 trading days 27%/49%/66%/78% | median days to funded 43 | one-time fees $430 per funded attempt-set | monthly-fee months 12.62 | $ per funded (one-time) $470
+   N=5 spaced 10d: funded 95% | by 30/45/60/90 trading days 24%/46%/65%/82% | median days to funded 47 | one-time fees $374 per funded attempt-set | monthly-fee months 10.30 | $ per funded (one-time) $394
+   N=5 spaced 20d: funded 98% | by 30/45/60/90 trading days 20%/42%/61%/80% | median days to funded 51 | one-time fees $282 per funded attempt-set | monthly-fee months 8.02 | $ per funded (one-time) $289
