@@ -9,3 +9,4 @@ LATER payouts (after a payout): n 953 | trading days to payout median 23 mean 27
 what-if funded size multiplier (same signals): pace and loss rate
   funded x1.0: median trading days between payouts 23 (n 953) | funded accounts lost 20%
   funded x1.25: median trading days between payouts 23 (n 797) | funded accounts lost 34%
+  funded x1.5: median trading days between payouts 21 (n 780) | funded accounts lost 33%
