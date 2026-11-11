@@ -28,7 +28,7 @@ for nm in ('V15a', 'RA'):
         asia, lon = rng(as0, as1), rng(as1, lo1)
         if asia is None or lon is None: continue
         dr = int(r.dir); al = sweep(asia, as1, lo1); an = sweep(asia, lo1, te); ln = sweep(lon, lo1, te)
-        rows.append(dict(day=d, pts=r.pts, dir=dr, AL=dr * al, AN=dr * an, LN=dr * ln, al=al,
+        rows.append(dict(day=d, m=int(r.m), pts=r.pts, dir=dr, AL=dr * al, AN=dr * an, LN=dr * ln, al=al,
                          asia_w=asia[0] - asia[1], lon_w=lon[0] - lon[1]))
     R = pd.DataFrame(rows); R['era'] = np.where(R.day < '2022-01-01', 'A', 'B')
     print(f'\n== {nm}: {len(R)} trades, mean {R.pts.mean():+.1f}, win {np.mean(R.pts>0):.0%}')

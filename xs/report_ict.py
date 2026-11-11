@@ -91,7 +91,7 @@ for nm in ('V15a', 'RA'):
     T = L[nm][0]; T = T[T.sz > 0].copy(); T['day'] = pd.to_datetime(T.day); rows = []
     for r in T.itertuples():
         D = pd.Timestamp(r.day).normalize(); f = feats(D, D + pd.Timedelta(minutes=int(r.m)), int(r.dir))
-        if f: f.update(day=D, pts=r.pts, dir=int(r.dir)); rows.append(f)
+        if f: f.update(day=D, m=int(r.m), pts=r.pts, dir=int(r.dir)); rows.append(f)
     R = pd.DataFrame(rows); R['era'] = np.where(R.day < '2022-01-01', 'A', 'B'); passes = []
     print(f'\n== {nm}: {len(R)} trades, mean {R.pts.mean():+.1f}, win {np.mean(R.pts>0):.0%}')
     for col, lab in (('fvg_with', 'FVG net (+1 w/ trade)'), ('disp', 'displacement (+1 w/ trade)'), ('mss', 'structure state (+1 = MSS w/ trade)'), ('pd_disc', 'PD range: +1 = buy discount/sell prem'),

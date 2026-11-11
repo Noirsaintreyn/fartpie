@@ -42,7 +42,7 @@ for nm in ('V15a', 'RA'):
         if d not in A: continue
         jb = int((int(r.m) - 570) // 5) - 1
         if jb < 2: continue
-        S = {k: sweeps(d, jb, k) for k in KINDS}; row = dict(day=d, pts=r.pts, dir=int(r.dir))
+        S = {k: sweeps(d, jb, k) for k in KINDS}; row = dict(day=d, m=int(r.m), pts=r.pts, dir=int(r.dir))
         for k in KINDS: row[k] = int(r.dir) * st(S[k])
         row['HTF'] = int(r.dir) * st(S['PW'] + S['PM']); row['ANY'] = int(r.dir) * st(sum(S.values(), []))
         row['n_with'] = sum(1 for k in KINDS if row[k] == 1); rows.append(row)
