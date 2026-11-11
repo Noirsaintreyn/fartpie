@@ -1,0 +1,33 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+score2 quantiles (12/52/82%) from 2014-21: {'V15a': array([4., 7., 9.]), 'RA': array([4., 7., 8.])}
+=== FULL STATS, Lucid Flex 50K, 5 RTH legs, starts every 2nd day 2018-02..2025-07 (trading days). EVAL = eval-phase sizing only. FUNDED = funded model run directly from day 0 with the variant applied to the funded account only (not conditioned on passing an eval). ===
+base
+   EVAL  pass  96% FAIL   4% | pass<=30d  19% <=60d  51% <=90d  69% | still running >30d  80% >60d  46% >90d  27% | fee-months/eval 4.13
+   FUNDED paid  88% lost-before-1st  12% lost-ever  35% | 1st payout <=30d  45% <=60d  75% <=90d  84% (median 30d) | payouts in 90d 2.05 / 180d 3.40 | $ in 90d 3,041 / 180d 5,284 | $ total 5,704
+N4 (old score) x0.5 <=2 / x1.5 >=5
+   EVAL  pass  95% FAIL   5% | pass<=30d  19% <=60d  51% <=90d  72% | still running >30d  78% >60d  44% >90d  24% | fee-months/eval 3.90
+   FUNDED paid  87% lost-before-1st  13% lost-ever  34% | 1st payout <=30d  46% <=60d  77% <=90d  84% (median 29d) | payouts in 90d 2.10 / 180d 3.44 | $ in 90d 3,230 / 180d 5,500 | $ total 5,922
+S2-N3 x1.5 top half (score2)
+   EVAL  pass  95% FAIL   5% | pass<=30d  18% <=60d  50% <=90d  71% | still running >30d  80% >60d  46% >90d  25% | fee-months/eval 3.99
+   FUNDED paid  89% lost-before-1st  11% lost-ever  32% | 1st payout <=30d  46% <=60d  76% <=90d  84% (median 30d) | payouts in 90d 2.10 / 180d 3.52 | $ in 90d 3,248 / 180d 5,681 | $ total 6,113
+S2-N4 x0.5 bottom 12% / x1.5 top half
+   EVAL  pass  96% FAIL   4% | pass<=30d  18% <=60d  52% <=90d  71% | still running >30d  80% >60d  45% >90d  24% | fee-months/eval 3.97
+   FUNDED paid  90% lost-before-1st  10% lost-ever  28% | 1st payout <=30d  47% <=60d  78% <=90d  85% (median 29d) | payouts in 90d 2.17 / 180d 3.59 | $ in 90d 3,365 / 180d 5,822 | $ total 6,381
+S2-N5 x0.5 bottom 12% / x2 top half
+   EVAL  pass  93% FAIL   7% | pass<=30d  18% <=60d  51% <=90d  70% | still running >30d  80% >60d  44% >90d  24% | fee-months/eval 3.82
+   FUNDED paid  89% lost-before-1st  11% lost-ever  27% | 1st payout <=30d  49% <=60d  76% <=90d  84% (median 28d) | payouts in 90d 2.15 / 180d 3.58 | $ in 90d 3,388 / 180d 5,849 | $ total 6,425
+S2-N8 x2 top 18% only
+   EVAL  pass  94% FAIL   6% | pass<=30d  19% <=60d  51% <=90d  71% | still running >30d  79% >60d  45% >90d  24% | fee-months/eval 3.83
+   FUNDED paid  87% lost-before-1st  13% lost-ever  37% | 1st payout <=30d  46% <=60d  76% <=90d  83% (median 29d) | payouts in 90d 2.06 / 180d 3.33 | $ in 90d 3,133 / 180d 5,316 | $ total 5,745
+AMT-only x0.5 / x1.5 on price vs developing POC
+   EVAL  pass  99% FAIL   1% | pass<=30d  16% <=60d  47% <=90d  67% | still running >30d  84% >60d  52% >90d  32% | fee-months/eval 4.32
+   FUNDED paid  94% lost-before-1st   6% lost-ever  29% | 1st payout <=30d  43% <=60d  79% <=90d  87% (median 33d) | payouts in 90d 2.08 / 180d 3.60 | $ in 90d 3,015 / 180d 5,496 | $ total 6,175
+OPT-only x0.5 (0 of 3) / x1.5 (>=2 of 3)
+   EVAL  pass  94% FAIL   6% | pass<=30d  19% <=60d  50% <=90d  71% | still running >30d  79% >60d  45% >90d  24% | fee-months/eval 3.84
+   FUNDED paid  86% lost-before-1st  14% lost-ever  39% | 1st payout <=30d  46% <=60d  76% <=90d  84% (median 29d) | payouts in 90d 2.10 / 180d 3.36 | $ in 90d 3,251 / 180d 5,415 | $ total 5,708
+OPT-only x1.5 when GEX<0 & vanna aligned & DEX aligned (3 of 3)
+   EVAL  pass  96% FAIL   4% | pass<=30d  18% <=60d  49% <=90d  69% | still running >30d  80% >60d  47% >90d  27% | fee-months/eval 4.05
+   FUNDED paid  87% lost-before-1st  13% lost-ever  37% | 1st payout <=30d  46% <=60d  75% <=90d  83% (median 29d) | payouts in 90d 2.04 / 180d 3.35 | $ in 90d 3,082 / 180d 5,278 | $ total 5,697
