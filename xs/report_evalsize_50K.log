@@ -1,0 +1,17 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== EVAL sizing policy: mult = K * cushion^a (cushion = distance to trailing floor / 2000, 1.0 at a fresh peak). Base 10 micros x leg size; eval cap 40 micros. Funded unchanged. Flex 50K, 5 RTH legs ===
+E2 (current: clip(c^2,.3,1))          | pass  96% FAIL   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | paid  87% lost   9% | 1st payout med  99d | net/eval $5,473
+K=1.5 a=2                             | pass  77% FAIL  23% (n=216/924) days-to-pass med  45 p25  29 p75  71 p90 135 | paid  67% lost   9% | 1st payout med  82d | net/eval $4,300
+K=2.0 a=2                             | pass  69% FAIL  31% (n=288/924) days-to-pass med  41 p25  25 p75  67 p90 116 | paid  62% lost   6% | 1st payout med  78d | net/eval $4,133
+K=2.0 a=3                             | pass  72% FAIL  28% (n=257/924) days-to-pass med  45 p25  27 p75  78 p90 136 | paid  65% lost   7% | 1st payout med  84d | net/eval $4,210
+K=2.0 a=4                             | pass  75% FAIL  25% (n=235/924) days-to-pass med  52 p25  28 p75 101 p90 168 | paid  67% lost   7% | 1st payout med  94d | net/eval $4,528
+K=3.0 a=3                             | pass  67% FAIL  33% (n=301/924) days-to-pass med  42 p25  26 p75  81 p90 138 | paid  60% lost   7% | 1st payout med  84d | net/eval $3,857
+K=3.0 a=4                             | pass  70% FAIL  30% (n=273/924) days-to-pass med  47 p25  27 p75 102 p90 171 | paid  63% lost   8% | 1st payout med  92d | net/eval $4,016
+K=4.0 a=4                             | pass  56% FAIL  44% (n=406/924) days-to-pass med  41 p25  25 p75  96 p90 132 | paid  49% lost   7% | 1st payout med  91d | net/eval $3,098
+K=4.0 a=6                             | pass  62% FAIL  38% (n=348/924) days-to-pass med  58 p25  27 p75 118 p90 203 | paid  50% lost  12% | 1st payout med  91d | net/eval $3,113
+--- same with 7a (RA x0.5 Asia held) ---
+7a + K=2.0 a=3                        | pass  82% FAIL  18% (n=167/924) days-to-pass med  49 p25  30 p75  91 p90 150 | paid  72% lost  10% | 1st payout med  92d | net/eval $4,653
+7a + K=3.0 a=4                        | pass  75% FAIL  25% (n=228/924) days-to-pass med  49 p25  29 p75 104 p90 195 | paid  66% lost   9% | 1st payout med  97d | net/eval $4,282
