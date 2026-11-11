@@ -1,0 +1,28 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== Lucid Flex 50K, all 5 RTH legs. E = variant on EVAL only, F = variant on FUNDED only, B = both. starts 924 ===
+base                                  | EVAL pass  96% fail   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | FUNDED paid  87% lost   9% pass->1st payout med  27d | 1st payout from start med  99d | net/eval $5,473
+1 V15a skip vs disp/mss [E]           | EVAL pass  97% fail   3% (n=25/924) days-to-pass med  59 p25  37 p75 101 p90 164 | FUNDED paid  87% lost  10% pass->1st payout med  27d | 1st payout from start med 100d | net/eval $5,340
+1 V15a skip vs disp/mss [F]           | EVAL pass  96% fail   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | FUNDED paid  86% lost  10% pass->1st payout med  29d | 1st payout from start med  98d | net/eval $4,994
+2 V15a skip low ADX (tercile) [E]     | EVAL pass  96% fail   4% (n=33/924) days-to-pass med  59 p25  34 p75 100 p90 166 | FUNDED paid  86% lost  10% pass->1st payout med  27d | 1st payout from start med  97d | net/eval $5,624
+2 V15a skip low ADX (tercile) [F]     | EVAL pass  96% fail   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | FUNDED paid  87% lost   9% pass->1st payout med  27d | 1st payout from start med 100d | net/eval $5,606
+2b V15a skip low ADX (<median) [E]    | EVAL pass  97% fail   3% (n=31/924) days-to-pass med  59 p25  35 p75  99 p90 167 | FUNDED paid  86% lost  10% pass->1st payout med  27d | 1st payout from start med  97d | net/eval $5,550
+2b V15a skip low ADX (<median) [F]    | EVAL pass  96% fail   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | FUNDED paid  90% lost   7% pass->1st payout med  27d | 1st payout from start med 102d | net/eval $5,785
+2c V15a x0.5 low ADX (not skip) [E]   | EVAL pass  96% fail   4% (n=36/924) days-to-pass med  57 p25  34 p75 100 p90 169 | FUNDED paid  87% lost   9% pass->1st payout med  27d | 1st payout from start med  99d | net/eval $5,569
+2c V15a x0.5 low ADX (not skip) [F]   | EVAL pass  96% fail   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | FUNDED paid  87% lost   9% pass->1st payout med  27d | 1st payout from start med  98d | net/eval $5,518
+5 RA skip vs structure [E]            | EVAL pass  94% fail   6% (n=54/924) days-to-pass med  55 p25  35 p75  94 p90 160 | FUNDED paid  86% lost   8% pass->1st payout med  25d | 1st payout from start med  91d | net/eval $5,295
+5 RA skip vs structure [F]            | EVAL pass  96% fail   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | FUNDED paid  87% lost   9% pass->1st payout med  27d | 1st payout from start med  97d | net/eval $5,207
+6 RA x2 London swept Asia [E]         | EVAL pass  97% fail   3% (n=28/924) days-to-pass med  59 p25  34 p75  97 p90 164 | FUNDED paid  86% lost  11% pass->1st payout med  25d | 1st payout from start med  97d | net/eval $5,466
+6 RA x2 London swept Asia [F]         | EVAL pass  96% fail   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | FUNDED paid  87% lost   9% pass->1st payout med  25d | 1st payout from start med  96d | net/eval $4,994
+7 RA x2 swept / x0.5 Asia held [E]    | EVAL pass 100% fail   0% (n=3/924) days-to-pass med  59 p25  35 p75 108 p90 159 | FUNDED paid  89% lost  11% pass->1st payout med  27d | 1st payout from start med  98d | net/eval $5,532
+7 RA x2 swept / x0.5 Asia held [F]    | EVAL pass  96% fail   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | FUNDED paid  88% lost   8% pass->1st payout med  25d | 1st payout from start med  97d | net/eval $5,260
+7a RA x0.5 Asia held only (no 2x) [E] | EVAL pass  99% fail   1% (n=8/924) days-to-pass med  58 p25  35 p75 107 p90 168 | FUNDED paid  90% lost  10% pass->1st payout med  27d | 1st payout from start med  97d | net/eval $5,690
+7a RA x0.5 Asia held only (no 2x) [F] | EVAL pass  96% fail   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | FUNDED paid  88% lost   8% pass->1st payout med  27d | 1st payout from start med  98d | net/eval $5,518
+7b RA x1.5 swept / x0.75 held [E]     | EVAL pass 100% fail   0% (n=3/924) days-to-pass med  59 p25  35 p75 106 p90 161 | FUNDED paid  90% lost  10% pass->1st payout med  27d | 1st payout from start med 101d | net/eval $5,531
+7b RA x1.5 swept / x0.75 held [F]     | EVAL pass  96% fail   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | FUNDED paid  88% lost   8% pass->1st payout med  27d | 1st payout from start med  98d | net/eval $5,187
+7c RA x2 swept / x0.25 held [E]       | EVAL pass  97% fail   3% (n=25/924) days-to-pass med  58 p25  34 p75 100 p90 144 | FUNDED paid  86% lost  11% pass->1st payout med  27d | 1st payout from start med  96d | net/eval $5,529
+7c RA x2 swept / x0.25 held [F]       | EVAL pass  96% fail   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | FUNDED paid  88% lost   8% pass->1st payout med  25d | 1st payout from start med  97d | net/eval $5,502
+10 combo (3 + RA skip + RA x2 AL) [E] | EVAL pass  95% fail   5% (n=43/924) days-to-pass med  58 p25  35 p75  97 p90 159 | FUNDED paid  87% lost   9% pass->1st payout med  27d | 1st payout from start med  97d | net/eval $5,290
+10 combo (3 + RA skip + RA x2 AL) [F] | EVAL pass  96% fail   4% (n=35/924) days-to-pass med  58 p25  35 p75 100 p90 175 | FUNDED paid  86% lost  10% pass->1st payout med  26d | 1st payout from start med 100d | net/eval $5,655
