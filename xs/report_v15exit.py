@@ -370,5 +370,5 @@ if __name__ == '__main__':
             return pd.DataFrame(rows)
         finally: END['V15a'] = old
     print('=== V15a EXIT = THE VECTOR (RTH legs only, flat by close), Flex 50K, FULL history ===', flush=True)
-    for nm, sp, e_ in (('live V15a (0.15 ADR stop, my reference)', NOON, 720), ('replica: my engine, 0.15 ADR stop', swap(NOON, 'stop15'), 720), ('PURE vector exit (no stop)', swap(NOON, 'pure'), 960), ('vector exit + 0.5 ADR catastrophe stop', swap(NOON, 'cat05'), 960)):
+    for nm, sp, e_ in (('live V15a (0.15 ADR stop, my reference)', NOON, 720), ('replica: my engine, 0.15 ADR stop', swap(NOON, 'stop15'), 720), ('PURE vector exit (no stop)', swap(NOON, 'pure'), 960), ('vector exit + 0.5 ADR catastrophe stop', swap(NOON, 'cat05'), 960), ('vector exit + stop min(0.5 ADR, 100 pts)', swap(NOON, 'cap100'), 960), ('vector exit + flat 100 pt stop', swap(NOON, 'p100'), 960)):
         R = chain_end(sp, e_); print(f'{nm:42}| ALL {line2(R)} | days to pass median {R.dp.median():.0f}\n{"":42}| 2018-21 {line2(R[~H2])}\n{"":42}| 2022-25 {line2(R[H2])}', flush=True)
