@@ -1,0 +1,35 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== LEVERAGE (eval phase only; funded unchanged) on stack = skip small-gap + 3-cross gate + no ON-; Flex 50K; E2 de-risk still applies; max position cap raised accordingly ===
+base stack (no leverage)                     | ALL pass  94% evalfail   6% paid  89% fundedlost   5% | 1st payout median  80d <=45d  14% <=60d  25% | net/eval $4,386
+                                             | 2018-21 pass  99% evalfail   1% paid  93% fundedlost   6% | 1st payout median  97d <=45d   4% <=60d  10% | net/eval $4,655
+                                             | 2022-25 pass  89% evalfail  11% paid  85% fundedlost   3% | 1st payout median  57d <=45d  26% <=60d  43% | net/eval $4,084
+EVAL x1.5 all legs                           | ALL pass  76% evalfail  24% paid  71% fundedlost   5% | 1st payout median  66d <=45d  15% <=60d  28% | net/eval $3,605
+                                             | 2018-21 pass  73% evalfail  27% paid  67% fundedlost   5% | 1st payout median  77d <=45d   7% <=60d  15% | net/eval $3,677
+                                             | 2022-25 pass  80% evalfail  20% paid  75% fundedlost   5% | 1st payout median  49d <=45d  23% <=60d  44% | net/eval $3,525
+EVAL x2 all legs                             | ALL pass  69% evalfail  31% paid  61% fundedlost   7% | 1st payout median  51d <=45d  16% <=60d  28% | net/eval $3,212
+                                             | 2018-21 pass  70% evalfail  30% paid  62% fundedlost   8% | 1st payout median  67d <=45d   8% <=60d  15% | net/eval $3,374
+                                             | 2022-25 pass  68% evalfail  32% paid  60% fundedlost   7% | 1st payout median  41d <=45d  26% <=60d  43% | net/eval $3,028
+EVAL x1.5 top-third-gap days                 | ALL pass  77% evalfail  23% paid  71% fundedlost   6% | 1st payout median  68d <=45d  14% <=60d  27% | net/eval $3,675
+                                             | 2018-21 pass  78% evalfail  22% paid  73% fundedlost   5% | 1st payout median  81d <=45d   7% <=60d  15% | net/eval $3,701
+                                             | 2022-25 pass  77% evalfail  23% paid  70% fundedlost   7% | 1st payout median  51d <=45d  21% <=60d  41% | net/eval $3,646
+EVAL x2 top-third-gap days                   | ALL pass  70% evalfail  30% paid  64% fundedlost   6% | 1st payout median  55d <=45d  15% <=60d  27% | net/eval $3,219
+                                             | 2018-21 pass  75% evalfail  25% paid  67% fundedlost   8% | 1st payout median  72d <=45d   8% <=60d  16% | net/eval $3,413
+                                             | 2022-25 pass  64% evalfail  36% paid  60% fundedlost   4% | 1st payout median  40d <=45d  23% <=60d  40% | net/eval $3,000
+EVAL x2 on RA + V15a only                    | ALL pass  67% evalfail  33% paid  60% fundedlost   6% | 1st payout median  62d <=45d  12% <=60d  21% | net/eval $3,218
+                                             | 2018-21 pass  70% evalfail  30% paid  61% fundedlost   9% | 1st payout median  83d <=45d   5% <=60d   9% | net/eval $3,402
+                                             | 2022-25 pass  63% evalfail  37% paid  60% fundedlost   3% | 1st payout median  46d <=45d  20% <=60d  36% | net/eval $3,011
+EVAL x3 on RA + V15a only                    | ALL pass  59% evalfail  41% paid  53% fundedlost   6% | 1st payout median  49d <=45d  11% <=60d  19% | net/eval $3,043
+                                             | 2018-21 pass  69% evalfail  31% paid  59% fundedlost  10% | 1st payout median  78d <=45d   4% <=60d  10% | net/eval $3,508
+                                             | 2022-25 pass  49% evalfail  51% paid  46% fundedlost   3% | 1st payout median  30d <=45d  19% <=60d  30% | net/eval $2,520
+EVAL x1.5 RTH entries before 10:30           | ALL pass  72% evalfail  28% paid  65% fundedlost   6% | 1st payout median  64d <=45d  15% <=60d  27% | net/eval $3,528
+                                             | 2018-21 pass  67% evalfail  33% paid  61% fundedlost   7% | 1st payout median  79d <=45d   6% <=60d  12% | net/eval $3,240
+                                             | 2022-25 pass  77% evalfail  23% paid  71% fundedlost   6% | 1st payout median  48d <=45d  25% <=60d  43% | net/eval $3,851
+EVAL x2 RTH entries before 10:30             | ALL pass  66% evalfail  34% paid  60% fundedlost   6% | 1st payout median  54d <=45d  15% <=60d  26% | net/eval $3,204
+                                             | 2018-21 pass  65% evalfail  35% paid  57% fundedlost   8% | 1st payout median  71d <=45d   7% <=60d  13% | net/eval $3,122
+                                             | 2022-25 pass  68% evalfail  32% paid  63% fundedlost   5% | 1st payout median  44d <=45d  23% <=60d  40% | net/eval $3,295
+EVAL x2 RA+V15a AND x1.5 top-gap days        | ALL pass  65% evalfail  35% paid  58% fundedlost   6% | 1st payout median  53d <=45d  13% <=60d  23% | net/eval $3,139
+                                             | 2018-21 pass  71% evalfail  29% paid  62% fundedlost   9% | 1st payout median  77d <=45d   5% <=60d  11% | net/eval $3,246
+                                             | 2022-25 pass  57% evalfail  43% paid  54% fundedlost   3% | 1st payout median  40d <=45d  21% <=60d  36% | net/eval $3,020
