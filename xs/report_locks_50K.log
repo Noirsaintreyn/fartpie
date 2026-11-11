@@ -1,0 +1,79 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== EVAL day locks (lock = stop for the day once day P&L >= lock; loss = daily loss stop $), Flex 50K variant I, starts every 2nd day 2018-2025 ===
+  lock None  loss  1000 | ALL pass  87% fail  13% | days to pass median  47 mean  58 p90 114 | pass<=25d  20%
+                      | 2018-21 pass  95% fail   5% | days to pass median  60 mean  73 p90 147 | pass<=25d  11%
+                      | 2022-25 pass  79% fail  21% | days to pass median  34 mean  38 p90  72 | pass<=25d  29%
+  lock None  loss   600 | ALL pass  88% fail  12% | days to pass median  48 mean  59 p90 112 | pass<=25d  18%
+                      | 2018-21 pass  95% fail   5% | days to pass median  59 mean  73 p90 146 | pass<=25d  11%
+                      | 2022-25 pass  80% fail  20% | days to pass median  38 mean  40 p90  71 | pass<=25d  26%
+  lock None  loss   400 | ALL pass  87% fail  13% | days to pass median  48 mean  58 p90 111 | pass<=25d  18%
+                      | 2018-21 pass  92% fail   8% | days to pass median  56 mean  72 p90 148 | pass<=25d  11%
+                      | 2022-25 pass  81% fail  19% | days to pass median  39 mean  41 p90  75 | pass<=25d  26%
+  lock 2000  loss  1000 | ALL pass  88% fail  12% | days to pass median  47 mean  58 p90 113 | pass<=25d  21%
+                      | 2018-21 pass  95% fail   5% | days to pass median  59 mean  73 p90 147 | pass<=25d  12%
+                      | 2022-25 pass  80% fail  20% | days to pass median  32 mean  37 p90  72 | pass<=25d  31%
+  lock 2000  loss   600 | ALL pass  88% fail  12% | days to pass median  47 mean  57 p90 111 | pass<=25d  20%
+                      | 2018-21 pass  95% fail   5% | days to pass median  57 mean  72 p90 146 | pass<=25d  12%
+                      | 2022-25 pass  81% fail  19% | days to pass median  36 mean  39 p90  72 | pass<=25d  29%
+  lock 2000  loss   400 | ALL pass  87% fail  13% | days to pass median  45 mean  56 p90 111 | pass<=25d  20%
+                      | 2018-21 pass  92% fail   8% | days to pass median  55 mean  70 p90 148 | pass<=25d  12%
+                      | 2022-25 pass  81% fail  19% | days to pass median  35 mean  38 p90  71 | pass<=25d  29%
+  lock 1400  loss  1000 | ALL pass  88% fail  12% | days to pass median  47 mean  58 p90 114 | pass<=25d  21%
+                      | 2018-21 pass  95% fail   5% | days to pass median  58 mean  73 p90 146 | pass<=25d  12%
+                      | 2022-25 pass  80% fail  20% | days to pass median  32 mean  38 p90  74 | pass<=25d  31%
+  lock 1400  loss   600 | ALL pass  88% fail  12% | days to pass median  47 mean  58 p90 112 | pass<=25d  20%
+                      | 2018-21 pass  95% fail   5% | days to pass median  57 mean  71 p90 146 | pass<=25d  12%
+                      | 2022-25 pass  80% fail  20% | days to pass median  36 mean  40 p90  76 | pass<=25d  29%
+  lock 1400  loss   400 | ALL pass  87% fail  13% | days to pass median  44 mean  56 p90 111 | pass<=25d  21%
+                      | 2018-21 pass  92% fail   8% | days to pass median  55 mean  70 p90 147 | pass<=25d  13%
+                      | 2022-25 pass  80% fail  20% | days to pass median  34 mean  38 p90  74 | pass<=25d  30%
+  lock 1000  loss  1000 | ALL pass  87% fail  13% | days to pass median  49 mean  59 p90 114 | pass<=25d  20%
+                      | 2018-21 pass  95% fail   5% | days to pass median  60 mean  73 p90 146 | pass<=25d  12%
+                      | 2022-25 pass  79% fail  21% | days to pass median  33 mean  39 p90  76 | pass<=25d  29%
+  lock 1000  loss   600 | ALL pass  87% fail  13% | days to pass median  48 mean  58 p90 112 | pass<=25d  19%
+                      | 2018-21 pass  95% fail   5% | days to pass median  57 mean  72 p90 146 | pass<=25d  12%
+                      | 2022-25 pass  79% fail  21% | days to pass median  35 mean  40 p90  76 | pass<=25d  27%
+  lock 1000  loss   400 | ALL pass  86% fail  14% | days to pass median  45 mean  57 p90 111 | pass<=25d  20%
+                      | 2018-21 pass  92% fail   8% | days to pass median  55 mean  70 p90 147 | pass<=25d  12%
+                      | 2022-25 pass  80% fail  20% | days to pass median  34 mean  39 p90  74 | pass<=25d  28%
+
+=== FUNDED day locks (funded account started fresh on every start day), F policy clip(c,.5,1.5) ===
+  lock None  loss  1000 | ALL paid  86% lost-before-1st  14% | days to 1st payout median  18 mean  24 p90  39 | <=10d  14% <=14d  32%
+                      | 2018-21 paid  89% lost-before-1st  11% | days to 1st payout median  22 mean  30 p90  54 | <=10d   6% <=14d  21%
+                      | 2022-25 paid  82% lost-before-1st  18% | days to 1st payout median  14 mean  16 p90  26 | <=10d  24% <=14d  43%
+  lock None  loss   500 | ALL paid  87% lost-before-1st  13% | days to 1st payout median  18 mean  24 p90  40 | <=10d  13% <=14d  31%
+                      | 2018-21 paid  91% lost-before-1st   9% | days to 1st payout median  22 mean  30 p90  57 | <=10d   6% <=14d  22%
+                      | 2022-25 paid  83% lost-before-1st  17% | days to 1st payout median  14 mean  16 p90  26 | <=10d  21% <=14d  42%
+  lock None  loss   300 | ALL paid  89% lost-before-1st  11% | days to 1st payout median  19 mean  25 p90  41 | <=10d  12% <=14d  28%
+                      | 2018-21 paid  92% lost-before-1st   8% | days to 1st payout median  23 mean  31 p90  66 | <=10d   5% <=14d  19%
+                      | 2022-25 paid  85% lost-before-1st  15% | days to 1st payout median  15 mean  17 p90  28 | <=10d  19% <=14d  39%
+  lock 500   loss  1000 | ALL paid  86% lost-before-1st  14% | days to 1st payout median  19 mean  25 p90  43 | <=10d  15% <=14d  30%
+                      | 2018-21 paid  89% lost-before-1st  11% | days to 1st payout median  23 mean  31 p90  62 | <=10d   6% <=14d  20%
+                      | 2022-25 paid  82% lost-before-1st  18% | days to 1st payout median  14 mean  17 p90  30 | <=10d  25% <=14d  42%
+  lock 500   loss   500 | ALL paid  86% lost-before-1st  14% | days to 1st payout median  19 mean  25 p90  43 | <=10d  14% <=14d  30%
+                      | 2018-21 paid  91% lost-before-1st   9% | days to 1st payout median  23 mean  31 p90  65 | <=10d   6% <=14d  20%
+                      | 2022-25 paid  82% lost-before-1st  18% | days to 1st payout median  14 mean  17 p90  30 | <=10d  23% <=14d  41%
+  lock 500   loss   300 | ALL paid  89% lost-before-1st  11% | days to 1st payout median  19 mean  26 p90  49 | <=10d  12% <=14d  29%
+                      | 2018-21 paid  93% lost-before-1st   7% | days to 1st payout median  23 mean  32 p90  67 | <=10d   5% <=14d  19%
+                      | 2022-25 paid  85% lost-before-1st  15% | days to 1st payout median  16 mean  19 p90  32 | <=10d  20% <=14d  40%
+  lock 300   loss  1000 | ALL paid  85% lost-before-1st  15% | days to 1st payout median  19 mean  25 p90  46 | <=10d  15% <=14d  29%
+                      | 2018-21 paid  89% lost-before-1st  11% | days to 1st payout median  24 mean  32 p90  59 | <=10d   6% <=14d  19%
+                      | 2022-25 paid  80% lost-before-1st  20% | days to 1st payout median  14 mean  17 p90  31 | <=10d  27% <=14d  41%
+  lock 300   loss   500 | ALL paid  86% lost-before-1st  14% | days to 1st payout median  19 mean  26 p90  46 | <=10d  15% <=14d  30%
+                      | 2018-21 paid  91% lost-before-1st   9% | days to 1st payout median  23 mean  32 p90  64 | <=10d   6% <=14d  20%
+                      | 2022-25 paid  82% lost-before-1st  18% | days to 1st payout median  15 mean  17 p90  32 | <=10d  25% <=14d  41%
+  lock 300   loss   300 | ALL paid  89% lost-before-1st  11% | days to 1st payout median  20 mean  26 p90  51 | <=10d  13% <=14d  28%
+                      | 2018-21 paid  92% lost-before-1st   8% | days to 1st payout median  24 mean  32 p90  69 | <=10d   5% <=14d  19%
+                      | 2022-25 paid  86% lost-before-1st  14% | days to 1st payout median  15 mean  20 p90  39 | <=10d  22% <=14d  39%
+  lock 200   loss  1000 | ALL paid  86% lost-before-1st  14% | days to 1st payout median  19 mean  25 p90  47 | <=10d  17% <=14d  30%
+                      | 2018-21 paid  89% lost-before-1st  11% | days to 1st payout median  24 mean  32 p90  60 | <=10d   7% <=14d  19%
+                      | 2022-25 paid  82% lost-before-1st  18% | days to 1st payout median  14 mean  17 p90  31 | <=10d  29% <=14d  42%
+  lock 200   loss   500 | ALL paid  85% lost-before-1st  15% | days to 1st payout median  19 mean  24 p90  44 | <=10d  17% <=14d  31%
+                      | 2018-21 paid  87% lost-before-1st  13% | days to 1st payout median  24 mean  30 p90  51 | <=10d   8% <=14d  21%
+                      | 2022-25 paid  83% lost-before-1st  17% | days to 1st payout median  14 mean  18 p90  32 | <=10d  27% <=14d  43%
+  lock 200   loss   300 | ALL paid  90% lost-before-1st  10% | days to 1st payout median  20 mean  28 p90  53 | <=10d  15% <=14d  29%
+                      | 2018-21 paid  93% lost-before-1st   7% | days to 1st payout median  25 mean  34 p90  69 | <=10d   6% <=14d  19%
+                      | 2022-25 paid  86% lost-before-1st  14% | days to 1st payout median  15 mean  20 p90  38 | <=10d  25% <=14d  40%
