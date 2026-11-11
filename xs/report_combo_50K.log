@@ -1,0 +1,33 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== COMBO. Lucid Flex 50K. Each variant applied to BOTH phases (eval and funded lines are separate sims). Then eval-only K sweep on N4, and funded-only variants.
+N4
+   EVAL  pass  97% FAIL   3% | pass<=30d  16% <=60d  49% <=90d  68% | still running >30d  82% >60d  48% >90d  28% | fee-months/eval 4.20
+   FUNDED paid  89% lost-before-1st  11% lost-ever  31% | 1st payout <=30d  45% <=60d  76% <=90d  83% (median 30d) | payouts in 90d 2.09 / 180d 3.54 | $ in 90d 3,121 / 180d 5,558 | $ total 6,103
+   2022+ only: eval pass 99% fail 1% pass<=30/60/90d 26%/66%/78% | funded lost-ever 25% 1st payout<=30/60/90d 63%/86%/89% total $6,685
+ECON only
+   EVAL  pass  96% FAIL   4% | pass<=30d  17% <=60d  51% <=90d  70% | still running >30d  81% >60d  45% >90d  26% | fee-months/eval 4.01
+   FUNDED paid  90% lost-before-1st  10% lost-ever  29% | 1st payout <=30d  46% <=60d  77% <=90d  85% (median 30d) | payouts in 90d 2.15 / 180d 3.60 | $ in 90d 3,311 / 180d 5,810 | $ total 6,314
+   2022+ only: eval pass 98% fail 2% pass<=30/60/90d 22%/61%/77% | funded lost-ever 26% 1st payout<=30/60/90d 63%/85%/89% total $6,538
+N4 x ECON(.5/1.5)
+   EVAL  pass  90% FAIL  10% | pass<=30d  16% <=60d  51% <=90d  71% | still running >30d  82% >60d  44% >90d  23% | fee-months/eval 3.61
+   FUNDED paid  89% lost-before-1st  11% lost-ever  26% | 1st payout <=30d  45% <=60d  77% <=90d  85% (median 30d) | payouts in 90d 2.17 / 180d 3.71 | $ in 90d 3,293 / 180d 5,947 | $ total 6,412
+   2022+ only: eval pass 94% fail 6% pass<=30/60/90d 23%/62%/78% | funded lost-ever 23% 1st payout<=30/60/90d 63%/86%/90% total $6,757
+N4 x ECON(.75/1.25)
+   EVAL  pass  94% FAIL   6% | pass<=30d  16% <=60d  50% <=90d  71% | still running >30d  82% >60d  45% >90d  23% | fee-months/eval 3.84
+   FUNDED paid  89% lost-before-1st  11% lost-ever  28% | 1st payout <=30d  45% <=60d  77% <=90d  85% (median 30d) | payouts in 90d 2.15 / 180d 3.64 | $ in 90d 3,235 / 180d 5,776 | $ total 6,276
+   2022+ only: eval pass 94% fail 6% pass<=30/60/90d 26%/62%/81% | funded lost-ever 25% 1st payout<=30/60/90d 62%/86%/90% total $6,640
+EVALK N4 K=1.25
+   EVAL  pass  89% FAIL  11% | pass<=30d  21% <=60d  52% <=90d  72% | still running >30d  76% >60d  43% >90d  20% | fee-months/eval 3.37
+EVALK N4 x ECON(.5/1.5) K=1.25
+   EVAL  pass  89% FAIL  11% | pass<=30d  20% <=60d  56% <=90d  74% | still running >30d  77% >60d  37% >90d  17% | fee-months/eval 3.26
+EVALK N4 x ECON(.75/1.25) K=1.25
+   EVAL  pass  89% FAIL  11% | pass<=30d  20% <=60d  55% <=90d  73% | still running >30d  76% >60d  38% >90d  19% | fee-months/eval 3.27
+EVALK N4 K=1.5
+   EVAL  pass  86% FAIL  14% | pass<=30d  21% <=60d  53% <=90d  70% | still running >30d  74% >60d  37% >90d  19% | fee-months/eval 3.20
+EVALK N4 x ECON(.5/1.5) K=1.5
+   EVAL  pass  87% FAIL  13% | pass<=30d  22% <=60d  58% <=90d  73% | still running >30d  73% >60d  34% >90d  16% | fee-months/eval 3.06
+EVALK N4 x ECON(.75/1.25) K=1.5
+   EVAL  pass  86% FAIL  14% | pass<=30d  21% <=60d  57% <=90d  72% | still running >30d  73% >60d  35% >90d  17% | fee-months/eval 3.11
