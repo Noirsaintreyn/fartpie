@@ -1,0 +1,4 @@
+['dt', 'sym', 'open', 'high', 'low', 'close', 'volume', 'm', 'rth', 'day', 'roll']
+with 0.15 ADR stop             n 1109 pts/trade   +4.9 win 32% t  +2.3 worst -100 | 2014-17   +1.3 (+1.5) | 2018-21   +4.2 (+1.5) | 2022-26   +9.3 (+1.7) | pts/day +6.5
+PURE vector exit (no stop)     n 1109 pts/trade   +6.6 win 49% t  +2.3 worst -325 | 2014-17   +0.8 (+0.7) | 2018-21  +13.0 (+3.2) | 2022-26   +6.3 (+0.9) | pts/day +8.7
+wide 0.5 ADR catastrophe stop  n 1109 pts/trade   +8.0 win 49% t  +3.0 worst -297 | 2014-17   +1.1 (+1.0) | 2018-21  +12.9 (+3.3) | 2022-26  +10.2 (+1.5) | pts/day +10.6
