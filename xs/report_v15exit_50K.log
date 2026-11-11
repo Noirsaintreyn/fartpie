@@ -1,0 +1,17 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== V15a EXIT = THE VECTOR (RTH legs only, flat by close), Flex 50K, FULL history ===
+live V15a (0.15 ADR stop, my reference)   | ALL pass  96% evalfail   4% paid  87% fundedlost   9% | 1st payout median  95d <=45d   9% <=60d  19% | net/eval $5,473 | days to pass median 58
+                                          | 2018-21 pass  94% evalfail   6% paid  84% fundedlost  10% | 1st payout median 114d <=45d   3% <=60d   6% | net/eval $5,158
+                                          | 2022-25 pass  98% evalfail   2% paid  90% fundedlost   8% | 1st payout median  72d <=45d  15% <=60d  34% | net/eval $5,826
+replica: my engine, 0.15 ADR stop         | ALL pass  96% evalfail   4% paid  88% fundedlost   8% | 1st payout median 104d <=45d   9% <=60d  19% | net/eval $5,806 | days to pass median 65
+                                          | 2018-21 pass  93% evalfail   7% paid  89% fundedlost   4% | 1st payout median 137d <=45d   3% <=60d   6% | net/eval $6,075
+                                          | 2022-25 pass  98% evalfail   2% paid  87% fundedlost  11% | 1st payout median  70d <=45d  15% <=60d  34% | net/eval $5,505
+PURE vector exit (no stop)                | ALL pass  90% evalfail  10% paid  80% fundedlost  10% | 1st payout median 106d <=45d   9% <=60d  18% | net/eval $5,466 | days to pass median 66
+                                          | 2018-21 pass  92% evalfail   8% paid  84% fundedlost   9% | 1st payout median 131d <=45d   4% <=60d   8% | net/eval $5,657
+                                          | 2022-25 pass  88% evalfail  12% paid  76% fundedlost  11% | 1st payout median  70d <=45d  15% <=60d  31% | net/eval $5,251
+vector exit + 0.5 ADR catastrophe stop    | ALL pass  91% evalfail   9% paid  80% fundedlost  11% | 1st payout median 110d <=45d   9% <=60d  18% | net/eval $5,604 | days to pass median 67
+                                          | 2018-21 pass  92% evalfail   8% paid  83% fundedlost  10% | 1st payout median 132d <=45d   4% <=60d   7% | net/eval $5,648
+                                          | 2022-25 pass  89% evalfail  11% paid  76% fundedlost  13% | 1st payout median  71d <=45d  14% <=60d  30% | net/eval $5,555
