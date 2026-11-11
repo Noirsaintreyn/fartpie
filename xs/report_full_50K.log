@@ -1,0 +1,40 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== EVAL PHASE counterfactuals (50K, variant I, starts every 2nd day 2018-2025): which rule costs time / adds failures ===
+  baseline (all rules on)            pass  87% | fail  13% | open  0% | days to pass median  48 mean  59 p90 128 | de-risk days/eval 39.5 | daily-stop days 0.1 | cap-bound days 0.0 | blocked by consistency 3.6d
+  no daily loss stop (-$1000)        pass  88% | fail  12% | open  0% | days to pass median  49 mean  59 p90 126 | de-risk days/eval 39.6 | daily-stop days 0.0 | cap-bound days 0.0 | blocked by consistency 3.9d
+  no policy de-risk (always full size) pass  69% | fail  31% | open  0% | days to pass median  34 mean  37 p90  63 | de-risk days/eval  0.0 | daily-stop days 0.1 | cap-bound days 0.0 | blocked by consistency 8.0d
+  no contract cap (40)               pass  87% | fail  13% | open  0% | days to pass median  48 mean  59 p90 128 | de-risk days/eval 39.5 | daily-stop days 0.1 | cap-bound days 0.0 | blocked by consistency 3.6d
+  no consistency rule                pass  87% | fail  13% | open  0% | days to pass median  40 mean  53 p90 116 | de-risk days/eval 38.3 | daily-stop days 0.1 | cap-bound days 0.0 | blocked by consistency 0.0d
+  ALL off (pure strategy)            pass  69% | fail  31% | open  0% | days to pass median  24 mean  29 p90  54 | de-risk days/eval  0.0 | daily-stop days 0.0 | cap-bound days 0.0 | blocked by consistency 0.0d
+
+PASSED evals: 800 | days to pass: median 48 | days with a trade 100% of days | days at/over target but blocked by consistency 3.6 avg (35% of evals) | worst single day during eval median $-555
+FAILED evals: 124 (13%) | survived median 32 days | killed by one day >= -$1,000: 7%, >= -$1,500: 7% | peak balance before the fail median $1,079 | balance at fail median $-752 | failed within 10 days 15%, 20 days 32%
+  fail rate by start year: {2018: '25%', 2019: '0%', 2020: '0%', 2021: '4%', 2022: '1%', 2023: '47%', 2024: '10%', 2025: '31%'}
+
+DAILY P&L at 1.0 sizing: mean $112 | median $12 | no-trade days 0% | days >= +$150 30% | days <= -$300 13% | std $635 -> a $3,000 target at $112/day is 27 days if smooth; actual median 48
+
+=== FUNDED PHASE: time from pass to first payout ===
+  funded accounts 800 | paid 91% | lost before first payout 9% | open 0%
+  trading days pass->first payout: median 14 mean 20 p90 36 | days to FIVE +$150 days: median 14 | extra days after the 5th win day waiting for balance/payout floor: median 0 (29% of accounts delayed)
+  fraction of funded days that are a +$150 qualifying day (5 needed): 30% -> expected 17 days if independent
+
+=== 50K, ONE ACCOUNT (per eval started every 2nd trading day), Lucid caps, room rule, cost 0.5 pt ===
+  I. current best: x0.5 bottom-third gap
+    2018-21 starts: pass 95% | paid once 85% | payouts/eval 2.03 (0.49 evals per payout) | avg payout $946 | net $1,831/eval | days: start->pass 60, funded->1st payout 19, start->1st payout 89, between 19
+    2022-25 starts: pass 79% | paid once 65% | payouts/eval 1.99 (0.50 evals per payout) | avg payout $1,328 | net $2,558/eval | days: start->pass 34, funded->1st payout 12, start->1st payout 49, between 14
+    TIMING chain (trading days; x1.4 = calendar): between consecutive payouts avg 38 | median 21 | max 205 (53 cal avg, 287 cal max) | first payout of chain day 56
+    EVALS BOUGHT per paying eval-group (chain, incl. the paying one): avg 1.12 | max 2 | payouts total 50 over 7.9 yrs
+    2018-21 starts: start->first payout days avg 102 | median 89 | max 262 (367 cal) | never paid 15%
+    2022-25 starts: start->first payout days avg 53 | median 49 | max 110 (154 cal) | never paid 35%
+    one account at a time 2018-26: 21 evals, 50 payouts, longest run without a payout 3 evals
+  Z. drop bottom-third gap (x0)
+    2018-21 starts: pass 93% | paid once 87% | payouts/eval 2.22 (0.45 evals per payout) | avg payout $988 | net $2,108/eval | days: start->pass 60, funded->1st payout 15, start->1st payout 83, between 21
+    2022-25 starts: pass 79% | paid once 69% | payouts/eval 2.17 (0.46 evals per payout) | avg payout $1,423 | net $2,997/eval | days: start->pass 32, funded->1st payout 12, start->1st payout 49, between 13
+    TIMING chain (trading days; x1.4 = calendar): between consecutive payouts avg 41 | median 25 | max 202 (58 cal avg, 283 cal max) | first payout of chain day 196
+    EVALS BOUGHT per paying eval-group (chain, incl. the paying one): avg 1.31 | max 2 | payouts total 46 over 7.9 yrs
+    2018-21 starts: start->first payout days avg 98 | median 83 | max 224 (314 cal) | never paid 13%
+    2022-25 starts: start->first payout days avg 54 | median 49 | max 126 (176 cal) | never paid 31%
+    one account at a time 2018-26: 23 evals, 46 payouts, longest run without a payout 2 evals
