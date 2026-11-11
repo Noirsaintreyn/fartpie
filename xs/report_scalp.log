@@ -1,0 +1,65 @@
+events 6259 over 1992 days | per day 3.1 | band1 55% | hivol cut yz_pct>0.73: 32% | VP-confluent 29%
+
+--- ALL events band 1: n 3464 events | best combos by pooled expectancy (pts per trade, net of cost) ---
+   fade|20|30     mean -0.68 win  58% | A -0.74 (t -1.4) B -0.62 (t -1.1) 
+   fade|15|30     mean -0.78 win  64% | A -0.49 (t -1.0) B -1.05 (t -2.1) 
+   cont|20|30     mean -1.01 win  57% | A -0.26 (t -0.5) B -1.72 (t -2.9) 
+   fade|20|10     mean -1.18 win  32% | A -0.53 (t -1.6) B -1.81 (t -5.6) 
+   fade|20|20     mean -1.33 win  48% | A -0.83 (t -1.8) B -1.80 (t -3.8) 
+   cont|15|30     mean -1.34 win  63% | A -0.26 (t -0.6) B -2.38 (t -4.6) 
+
+--- ALL events band 2: n 2795 events | best combos by pooled expectancy (pts per trade, net of cost) ---
+   cont|20|30     mean -0.81 win  57% | A -0.48 (t -0.8) B -1.12 (t -1.7) 
+   cont|15|30     mean -1.14 win  62% | A -0.46 (t -0.9) B -1.81 (t -3.2) 
+   cont|20|20     mean -1.19 win  48% | A -0.48 (t -1.0) B -1.89 (t -3.6) 
+   fade|20|30     mean -1.35 win  56% | A -1.34 (t -2.3) B -1.37 (t -2.1) 
+   fade|15|30     mean -1.37 win  62% | A -1.30 (t -2.5) B -1.44 (t -2.5) 
+   fade|20|10     mean -1.46 win  31% | A -1.09 (t -3.0) B -1.81 (t -5.0) 
+
+--- HIGH-VOL band 1: n 1087 events | best combos by pooled expectancy (pts per trade, net of cost) ---
+   fade|20|30     mean -0.93 win  58% | A -0.61 (t -0.6) B -1.26 (t -1.2) 
+   fade|15|30     mean -1.35 win  63% | A -0.52 (t -0.6) B -2.19 (t -2.3) 
+   fade|20|20     mean -1.77 win  47% | A -0.83 (t -1.0) B -2.71 (t -3.2) 
+   fade|20|10     mean -1.80 win  29% | A -0.35 (t -0.6) B -3.25 (t -5.9) 
+   fade|10|30     mean -2.10 win  70% | A -0.64 (t -0.9) B -3.56 (t -4.4) 
+   cont|20|30     mean -2.16 win  56% | A -0.21 (t -0.2) B -4.12 (t -3.8) 
+
+--- HIGH-VOL band 2: n 908 events | best combos by pooled expectancy (pts per trade, net of cost) ---
+   cont|20|30     mean -1.25 win  57% | A -0.11 (t -0.1) B -2.45 (t -2.1) 
+   cont|20|20     mean -1.30 win  48% | A +0.04 (t +0.0) B -2.72 (t -2.9) 
+   cont|20|10     mean -1.57 win  30% | A -0.15 (t -0.2) B -3.09 (t -5.0) 
+   cont|15|30     mean -1.84 win  62% | A -0.84 (t -0.9) B -2.90 (t -2.8) 
+   cont|15|20     mean -2.29 win  52% | A -0.90 (t -1.2) B -3.75 (t -4.5) 
+   cont|15|10     mean -2.29 win  33% | A -0.75 (t -1.3) B -3.92 (t -7.5) 
+
+--- VP-confluent band 1: n 1036 events | best combos by pooled expectancy (pts per trade, net of cost) ---
+   fade|20|30     mean -0.06 win  58% | A -0.07 (t -0.1) B -0.04 (t -0.0) 
+   fade|20|10     mean -0.37 win  35% | A -0.05 (t -0.1) B -0.92 (t -1.3) 
+   fade|15|30     mean -0.39 win  63% | A -0.21 (t -0.3) B -0.70 (t -0.6) 
+   cont|20|30     mean -0.78 win  56% | A -1.08 (t -1.3) B -0.27 (t -0.2) 
+   fade|20|20     mean -0.80 win  49% | A -0.31 (t -0.4) B -1.65 (t -1.6) 
+   fade|15|10     mean -0.84 win  39% | A -0.36 (t -0.8) B -1.66 (t -2.7) 
+
+--- VP-confluent band 2: n 791 events | best combos by pooled expectancy (pts per trade, net of cost) ---
+   fade|20|30     mean +0.30 win  59% | A +0.37 (t +0.4) B +0.19 (t +0.1) 
+   fade|20|20     mean -0.14 win  51% | A +0.20 (t +0.2) B -0.70 (t -0.6) 
+   fade|15|30     mean -0.28 win  63% | A -0.60 (t -0.7) B +0.23 (t +0.2) 
+   fade|10|30     mean -0.66 win  71% | A -0.49 (t -0.7) B -0.94 (t -0.9) 
+   fade|20|10     mean -0.76 win  34% | A -1.15 (t -1.9) B -0.13 (t -0.2) 
+   fade|15|20     mean -0.91 win  55% | A -0.81 (t -1.1) B -1.08 (t -1.1) 
+
+--- HIGH-VOL + VP-confluent band 1: n 277 events | best combos by pooled expectancy (pts per trade, net of cost) ---
+   cont|20|30     mean +1.06 win  62% | A +1.96 (t +1.2) B -0.60 (t -0.2) 
+   cont|15|30     mean -0.17 win  66% | A +1.17 (t +0.8) B -2.66 (t -1.2) 
+   cont|20|20     mean -0.24 win  51% | A +0.46 (t +0.3) B -1.53 (t -0.8) 
+   cont|20|10     mean -0.99 win  32% | A -0.37 (t -0.4) B -2.15 (t -1.6) 
+   fade|20|10     mean -1.38 win  31% | A -0.47 (t -0.4) B -3.08 (t -2.3) 
+   fade|20|30     mean -1.48 win  56% | A -0.56 (t -0.3) B -3.18 (t -1.3) 
+
+--- HIGH-VOL + VP-confluent band 2: n 223 events | best combos by pooled expectancy (pts per trade, net of cost) ---
+   fade|20|30     mean +0.77 win  60% | A +1.17 (t +0.6) B +0.01 (t +0.0) 
+   fade|15|30     mean -0.32 win  64% | A -0.15 (t -0.1) B -0.65 (t -0.3) 
+   cont|20|30     mean -0.58 win  58% | A -0.42 (t -0.2) B -0.89 (t -0.3) 
+   fade|20|20     mean -0.83 win  48% | A +0.36 (t +0.2) B -3.13 (t -1.4) 
+   cont|10|30     mean -1.28 win  72% | A -0.32 (t -0.2) B -3.13 (t -1.5) 
+   cont|15|30     mean -1.32 win  63% | A -0.92 (t -0.6) B -2.08 (t -0.8) 
