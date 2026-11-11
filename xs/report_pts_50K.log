@@ -1,0 +1,15 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+NQ points per 1-contract base (leg size 1 = 10 micros = 1 NQ), summed over the 5 legs, size multipliers applied, before account caps. 21 trading days = 1 month.
+old base (flat sizing)         2018-26  days 1992 trading days  777 (39%) | pts/day on all days +8.30 | pts/day on days with a trade +21.28 | pts/month +174.3 | avg size on trading days 1.62 legs-units | share of days >= +7.5 pts 17%
+old base (flat sizing)         2022+    days 1014 trading days  429 (42%) | pts/day on all days +11.52 | pts/day on days with a trade +27.22 | pts/month +241.8 | avg size on trading days 1.58 legs-units | share of days >= +7.5 pts 20%
+N4                             2018-26  days 1992 trading days  777 (39%) | pts/day on all days +8.82 | pts/day on days with a trade +22.60 | pts/month +185.1 | avg size on trading days 1.61 legs-units | share of days >= +7.5 pts 17%
+N4                             2022+    days 1014 trading days  429 (42%) | pts/day on all days +12.62 | pts/day on days with a trade +29.83 | pts/month +265.0 | avg size on trading days 1.56 legs-units | share of days >= +7.5 pts 20%
+ECON                           2018-26  days 1992 trading days  777 (39%) | pts/day on all days +9.59 | pts/day on days with a trade +24.58 | pts/month +201.4 | avg size on trading days 1.68 legs-units | share of days >= +7.5 pts 17%
+ECON                           2022+    days 1014 trading days  429 (42%) | pts/day on all days +12.55 | pts/day on days with a trade +29.65 | pts/month +263.5 | avg size on trading days 1.64 legs-units | share of days >= +7.5 pts 20%
+N4 x ECON                      2018-26  days 1992 trading days  777 (39%) | pts/day on all days +9.44 | pts/day on days with a trade +24.20 | pts/month +198.2 | avg size on trading days 1.65 legs-units | share of days >= +7.5 pts 17%
+N4 x ECON                      2022+    days 1014 trading days  429 (42%) | pts/day on all days +12.55 | pts/day on days with a trade +29.67 | pts/month +263.6 | avg size on trading days 1.59 legs-units | share of days >= +7.5 pts 20%
+P(win) continuous (ECON+ICT)   2018-26  days 1992 trading days  777 (39%) | pts/day on all days +9.11 | pts/day on days with a trade +23.34 | pts/month +191.2 | avg size on trading days 1.62 legs-units | share of days >= +7.5 pts 17%
+P(win) continuous (ECON+ICT)   2022+    days 1014 trading days  429 (42%) | pts/day on all days +12.94 | pts/day on days with a trade +30.58 | pts/month +271.7 | avg size on trading days 1.61 legs-units | share of days >= +7.5 pts 20%
