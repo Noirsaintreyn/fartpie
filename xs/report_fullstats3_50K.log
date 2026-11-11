@@ -1,0 +1,23 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== FULL STATS, Lucid Flex 50K, 5 RTH legs, starts every 2nd day 2018-02..2025-07 (trading days). EVAL = eval-phase sizing only. FUNDED = funded model run directly from day 0 with the variant applied to the funded account only (not conditioned on passing an eval). ===
+base
+   EVAL  pass  96% FAIL   4% | pass<=30d  19% <=60d  51% <=90d  69% | still running >30d  80% >60d  46% >90d  27% | fee-months/eval 4.13
+   FUNDED paid  88% lost-before-1st  12% lost-ever  35% | 1st payout <=30d  45% <=60d  75% <=90d  84% (median 30d) | payouts in 90d 2.05 / 180d 3.40 | $ in 90d 3,041 / 180d 5,284 | $ total 5,704
+STK-N3 x1.5 tier 3
+   EVAL  pass  97% FAIL   3% | pass<=30d  18% <=60d  49% <=90d  69% | still running >30d  80% >60d  48% >90d  28% | fee-months/eval 4.15
+   FUNDED paid  87% lost-before-1st  13% lost-ever  35% | 1st payout <=30d  45% <=60d  76% <=90d  84% (median 30d) | payouts in 90d 2.09 / 180d 3.47 | $ in 90d 3,142 / 180d 5,484 | $ total 5,866
+STK-N4 x0.5 tier<=1 / x1.5 tier 3
+   EVAL  pass  97% FAIL   3% | pass<=30d  16% <=60d  49% <=90d  68% | still running >30d  82% >60d  48% >90d  28% | fee-months/eval 4.20
+   FUNDED paid  89% lost-before-1st  11% lost-ever  31% | 1st payout <=30d  45% <=60d  76% <=90d  83% (median 30d) | payouts in 90d 2.09 / 180d 3.54 | $ in 90d 3,121 / 180d 5,558 | $ total 6,103
+STK-N5 x0.5 tier<=1 / x2 tier 3
+   EVAL  pass  98% FAIL   2% | pass<=30d  16% <=60d  49% <=90d  69% | still running >30d  84% >60d  49% >90d  29% | fee-months/eval 4.18
+   FUNDED paid  89% lost-before-1st  11% lost-ever  32% | 1st payout <=30d  46% <=60d  76% <=90d  83% (median 30d) | payouts in 90d 2.09 / 180d 3.54 | $ in 90d 3,131 / 180d 5,586 | $ total 6,085
+STK-N6 x0.5 tier<=1 / x1.25 tier>=2
+   EVAL  pass  93% FAIL   7% | pass<=30d  15% <=60d  49% <=90d  69% | still running >30d  83% >60d  46% >90d  24% | fee-months/eval 3.96
+   FUNDED paid  90% lost-before-1st  10% lost-ever  29% | 1st payout <=30d  45% <=60d  77% <=90d  83% (median 30d) | payouts in 90d 2.11 / 180d 3.56 | $ in 90d 3,179 / 180d 5,632 | $ total 6,237
+MAP+ENV only (no greeks): x0.5 neither / x1.5 both
+   EVAL  pass  97% FAIL   3% | pass<=30d  16% <=60d  50% <=90d  69% | still running >30d  83% >60d  47% >90d  28% | fee-months/eval 4.18
+   FUNDED paid  89% lost-before-1st  11% lost-ever  31% | 1st payout <=30d  45% <=60d  77% <=90d  84% (median 30d) | payouts in 90d 2.11 / 180d 3.56 | $ in 90d 3,179 / 180d 5,625 | $ total 6,123
