@@ -1,0 +1,35 @@
+4372 trades
+=== ICT flags (1 vs 0), by era
+swlo 19-21 | ON                        n   219  +61.3bp win 41% t +2.5 | OFF                        n  1049  +78.4bp win 38% t +5.9
+swlo 22-26 | ON                        n   515  +31.2bp win 30% t +1.5 | OFF                        n  2589  +44.3bp win 34% t +5.0
+swhi 19-21 | ON                        n   330  +88.0bp win 35% t +3.5 | OFF                        n   938  +71.1bp win 40% t +5.3
+swhi 22-26 | ON                        n   852  +45.9bp win 35% t +2.9 | OFF                        n  2252  +40.7bp win 33% t +4.3
+mss 19-21 | ON                        n   251  +91.4bp win 37% t +3.1 | OFF                        n  1017  +71.5bp win 39% t +5.6
+mss 22-26 | ON                        n   617  +45.6bp win 30% t +2.4 | OFF                        n  2487  +41.3bp win 34% t +4.6
+dsp 19-21 | ON                        n   356 +112.4bp win 46% t +4.5 | OFF                        n   912  +61.0bp win 36% t +4.6
+dsp 22-26 | ON                        n  1009  +49.2bp win 38% t +3.3 | OFF                        n  2095  +38.7bp win 31% t +4.0
+fvg 19-21 | ON                        n   566  +85.8bp win 40% t +4.8 | OFF                        n   702  +67.1bp win 38% t +4.3
+fvg 22-26 | ON                        n  1351  +46.9bp win 32% t +3.6 | OFF                        n  1753  +38.4bp win 34% t +3.7
+=== ECON terciles (cut on 19-21), by era
+gz 19-21 | low                        n   423  +87.7bp win 38% t +3.6 | mid                        n   422  +76.0bp win 37% t +4.0 | high                        n   423  +62.7bp win 41% t +3.6
+gz 22-26 | low                        n   995  +31.2bp win 31% t +2.2 | mid                        n  1091  +39.7bp win 33% t +3.2 | high                        n  1018  +55.4bp win 35% t +3.5
+volr 19-21 | low                        n   423 +128.2bp win 40% t +5.3 | mid                        n   423  +48.4bp win 38% t +3.0 | high                        n   422  +49.7bp win 39% t +2.4
+volr 22-26 | low                        n  1094  +57.5bp win 36% t +4.2 | mid                        n   992  +39.1bp win 33% t +2.9 | high                        n  1018  +28.5bp win 31% t +1.9
+vr 19-21 | low                        n   423  +80.2bp win 42% t +4.3 | mid                        n   422  +84.6bp win 37% t +3.9 | high                        n   423  +61.6bp win 37% t +3.0
+vr 22-26 | low                        n   537  +58.3bp win 35% t +3.1 | mid                        n  1050  +28.4bp win 32% t +2.2 | high                        n  1517  +45.9bp win 33% t +3.7
+ac 19-21 | low                        n   423 +123.4bp win 43% t +5.1 | mid                        n   423  +34.5bp win 34% t +2.1 | high                        n   422  +68.5bp win 39% t +3.5
+ac 22-26 | low                        n   574  +25.3bp win 32% t +1.5 | mid                        n   916  +65.4bp win 36% t +3.9 | high                        n  1614  +34.9bp win 32% t +3.2
+tt 19-21 | low                        n   424  +81.3bp win 42% t +3.9 | mid                        n   421 +105.5bp win 38% t +4.2 | high                        n   423  +39.7bp win 37% t +2.9
+tt 22-26 | low                        n  1385  +34.0bp win 33% t +2.7 | mid                        n   984  +39.7bp win 32% t +2.7 | high                        n   735  +60.8bp win 36% t +3.9
+econ signs from 19-21: {'gz': np.float64(-1.0), 'volr': np.float64(1.0), 'vr': np.float64(-1.0), 'ac': np.float64(-1.0), 'tt': np.float64(-1.0)}
+mean ret by econ third / ict count:
+19-21 econ [np.float64(62.6), np.float64(78.1), np.float64(85.7)] ict0/1/2+ [np.float64(50.6), np.float64(86.9), np.float64(96.4)]
+22-26 econ [np.float64(60.3), np.float64(36.9), np.float64(14.7)] ict0/1/2+ [np.float64(43.0), np.float64(24.4), np.float64(50.6)]
+=== slot sim (weights scale position size; slots unchanged)
+base                           19-21: n 1020 ann~+48.3% | 22-26: n 1889 ann~+31.0% | all: n 2909 ann~+37.3%
+ECON tilt .5/1.5               19-21: n 996 ann~+50.5% | 22-26: n 1898 ann~+25.2% | all: n 2894 ann~+34.3%
+ICT tilt .75/1.25              19-21: n 1016 ann~+52.1% | 22-26: n 1891 ann~+32.7% | all: n 2907 ann~+39.8%
+ICT x ECON                     19-21: n 987 ann~+59.8% | 22-26: n 1884 ann~+27.6% | all: n 2871 ann~+39.1%
+skip ECON bottom third         19-21: n 752 ann~+38.1% | 22-26: n 1414 ann~+12.5% | all: n 2166 ann~+21.7%
+skip ICT==0                    19-21: n 691 ann~+41.0% | 22-26: n 1474 ann~+20.1% | all: n 2165 ann~+27.7%
+skip both (econ low & ict 0)   19-21: n 903 ann~+45.7% | 22-26: n 1744 ann~+20.0% | all: n 2647 ann~+29.2%
