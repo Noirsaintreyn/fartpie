@@ -1,0 +1,18 @@
+panel 78,061 stock-days, 257 tickers | base rate UP>=20%/5d 9.56% (train 9.90% test 9.22%), DOWN<=-20% 3.80%
+feature                                | UP AUC train/test  lift top-decile tr/te | DOWN AUC tr/te lift tr/te | any-big |move| AUC test
+H0 past volatility (ATR%) HIGH         | 0.705 / 0.715   2.32x / 2.45x | 0.703 / 0.679  2.51x / 2.25x | 0.715
+H1 compression LOW (5d/20d range)      | 0.485 / 0.491   1.13x / 1.04x | 0.454 / 0.451  0.81x / 0.66x | 0.480
+H2 volume dry-up LOW (3d/20d)          | 0.458 / 0.483   0.99x / 1.06x | 0.459 / 0.434  0.97x / 0.87x | 0.469
+H3 attention: volume today/20d HIGH    | 0.546 / 0.528   1.57x / 1.36x | 0.547 / 0.561  1.65x / 1.75x | 0.538
+H4 below 52w high HIGH                 | 0.623 / 0.585   1.97x / 1.76x | 0.612 / 0.546  2.16x / 1.54x | 0.579
+H5 lottery MAX21 HIGH                  | 0.670 / 0.675   2.11x / 2.10x | 0.660 / 0.650  2.21x / 2.28x | 0.675
+H6 short-sale vol share HIGH           | 0.524 / 0.470   1.05x / 0.83x | 0.528 / 0.520  1.27x / 1.02x | 0.482
+H7a close above EMA50                  | 0.519 / 0.542   1.10x / 1.19x | 0.529 / 0.553  1.16x / 1.26x | 0.547
+H7b 20d momentum HIGH                  | 0.501 / 0.537   1.83x / 2.06x | 0.530 / 0.561  2.12x / 2.30x | 0.544
+== simple combos (top-decile of an equal-weight rank score), UP hit rate vs base, train / test
+  compression + attention + dist   UP top-decile 16.8% vs 10.0% base (train) | 12.9% vs 9.2% (test) | DOWN rate 3.9% | n(test top decile) 3,921
+  att + dist + maxr                UP top-decile 19.9% vs 10.0% base (train) | 18.0% vs 9.2% (test) | DOWN rate 5.9% | n(test top decile) 3,923
+  compression + dry-up + dist      UP top-decile 14.3% vs 10.0% base (train) | 11.9% vs 9.2% (test) | DOWN rate 2.4% | n(test top decile) 3,920
+  att + maxr + svr                 UP top-decile 18.6% vs 9.9% base (train) | 14.6% vs 9.2% (test) | DOWN rate 6.0% | n(test top decile) 3,926
+  vol(ATR) + att + dist            UP top-decile 20.3% vs 10.0% base (train) | 18.3% vs 9.2% (test) | DOWN rate 5.9% | n(test top decile) 3,923
+  vol(ATR) alone                   UP top-decile 22.3% vs 9.9% base (train) | 22.0% vs 9.2% (test) | DOWN rate 7.2% | n(test top decile) 3,936
