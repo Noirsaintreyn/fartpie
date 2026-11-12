@@ -3,7 +3,7 @@ Universe A: 10 stocks drawn at random (seed 11), stratified 4 large / 3 mid / 3 
 Bars: 04:00-16:00 ET (premarket + RTH, as live). State at bar close t-1 -> next bar's open-to-close return. TEST 1 'per-bar edge' = mean(sign(state) x ret) in bp vs 1000 circular shifts of the state series (keeps persistence and long/short share, so drift is controlled).
 TEST 2 'flip trades': enter next open after a flip, exit next open after the opposite flip (long on bull flip, short on bear flip), mean return per trade vs 1000 random entries of the same direction and holding length on the same ticker.
 Day classes: ALL | HV-pre = previous day's range / its trailing 20-day mean is in the top third of the ticker's history so far (known at the open, tradable) | HV-post = today's range in the top third (known only after the fact; look-ahead, shown for reference)."""
-import sys, glob, numpy as np, pandas as pd, warnings; warnings.filterwarnings('ignore'); sys.path.insert(0, 'xs')
+import os, sys, glob, numpy as np, pandas as pd, warnings; warnings.filterwarnings('ignore'); sys.path.insert(0, 'xs')
 from vector_pine import run_state_machine
 import yfinance as yf
 rng = np.random.default_rng(11)
@@ -15,9 +15,9 @@ print('Universe A (random, stratified):', ', '.join(f'{t}({SECT[t]})' for t in P
 def clean(df):
     df = df.copy(); df.index = pd.to_datetime(df.index); df.index = df.index.tz_convert('America/New_York').tz_localize(None) if df.index.tz is not None else df.index
     df.columns = [str(c[0]).lower() if isinstance(c, tuple) else str(c).lower() for c in df.columns]; df = df[['open', 'high', 'low', 'close']].dropna()
-    m = df.index.hour * 60 + df.index.minute; return df[(m >= 240) & (m < 960)]
+    m = df.index.hour * 60 + df.index.minute; return df[(m >= (570 if os.environ.get('RTH_ONLY') == '1' else 240)) & (m < 960)]
 def yf_bars(tk, interval, period):
-    d = yf.download(tk, period=period, interval=interval, prepost=True, progress=False, auto_adjust=False); return clean(d) if len(d) else None
+    d = yf.download(tk, period=period, interval=interval, prepost=(os.environ.get('RTH_ONLY') != '1'), progress=False, auto_adjust=False); return clean(d) if len(d) else None
 def local_bars(tk):
     f = glob.glob(f'/mnt/user-data/uploads/fartpie/lse_clean/{tk}_15m_2018-01-01_*.parquet')[0]; H = pd.read_parquet(f, columns=['datetime', 'open', 'high', 'low', 'close'])
     H.index = pd.to_datetime(H.datetime, utc=True).dt.tz_convert('America/New_York').dt.tz_localize(None); return clean(H.drop(columns='datetime')).sort_index()

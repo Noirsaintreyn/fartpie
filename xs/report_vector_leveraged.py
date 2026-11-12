@@ -3,13 +3,13 @@ Signal = the vector on the UNDERLYING's 1h bars (pre+RTH, as live). Instruments 
 S0 = baseline, same signal on the underlying itself (long when bull, flat otherwise). Fills at the next RTH bar's open; return = open-to-open of the held bar (gaps included). 1h bars from Yahoo (Dec 2023+; AMDD/PLTx from listing).
 Per-bar edge (bp) vs 1000 circular shifts of the state series (same time in market). Classes: ALL | HV-pre (previous day's range in the top third of its history, known at the open).
 Also: compounded return and max drawdown of S1/S2 vs buy-and-hold of the same ETF."""
-import numpy as np, pandas as pd, sys, warnings; warnings.filterwarnings('ignore')
+import os, numpy as np, pandas as pd, sys, warnings; warnings.filterwarnings('ignore')
 src = open('xs/report_vector_random.py').read(); exec(src[:src.index('# ---------------- Universe A')].replace("print('Universe A (random, stratified):'", "(lambda *a, **k: None)('Universe A'"))
 PAIRS = [('NVDA', 'NVDL', 'NVDD'), ('TSLA', 'TSLL', 'TSLQ'), ('AAPL', 'AAPU', 'AAPD'), ('MSFT', 'MSFU', 'MSFD'), ('GOOGL', 'GGLL', 'GGLS'), ('AMZN', 'AMZU', 'AMZD'), ('COIN', 'CONL', None), ('PLTR', 'PLTU', 'PLTD'), ('AMD', None, 'AMDD'), ('BTC-USD', 'BITX', None)]
 def rth_df(B):
     m = B.index.hour * 60 + B.index.minute; return B[(m >= 570) & (m < 960)]
 def get(tk):
-    d = yf.download(tk, period='730d', interval='1h', prepost=True, progress=False, auto_adjust=False); return clean(d) if len(d) else None
+    d = yf.download(tk, period='730d', interval='1h', prepost=(os.environ.get('RTH_ONLY') != '1'), progress=False, auto_adjust=False); return clean(d) if len(d) else None
 def sim_pair(U, L, I):
     BU = get(U)
     if BU is None or len(BU) < 500: return None
