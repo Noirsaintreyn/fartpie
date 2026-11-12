@@ -43,6 +43,8 @@ if os.getenv('VECTOR_ENGINE', 'pine') == 'pine':
 else:
     from vector_core import run_state_machine
 import live_cards as LC
+try: import signal_context as SC_CTX                             # Nov 12 2026: news / upcoming earnings / market context lines for the Discord posts
+except Exception as _e: SC_CTX = None; print(f'  ! signal_context unavailable: {_e}')
 START = LC.START       # positions are only counted from signals at/after this time (SCREENER_START in .env)
 
 CUT, UP_SWITCH, BREAK_ATR, RTH0, RTH1 = float(os.getenv('OPT_CUT', '2.5')), 0.02, 0.35, 570, 960   # OPT_CUT: options-ratio bar
@@ -78,7 +80,25 @@ def now_et(): return pd.Timestamp.now(tz=ET).tz_localize(None)
 
 # ================================================================ data
 LSE_SYM = {'BRKB': 'BRK.B'}; YF_SYM = {'BRKB': 'BRK-B'}                   # feed symbols for tickers stored without the class dot
-LSE_DOWN = {'on': False}
+LSE_DOWN = {'on': os.getenv('LSE_ENABLED', '0') != '1'}      # Nov 12 2026: the LSE API is retired (410s since Oct 26) -> never try it unless LSE_ENABLED=1 (saved a failing call per ticker per scan)
+_YF_BATCH = {}
+def prefetch_bars(tks):
+    """Nov 12 2026: ONE multi-threaded Yahoo call for every ticker in the scan (was one sequential history() call per ticker = the main reason alerts were minutes late)"""
+    _YF_BATCH.clear(); tks = list(tks)
+    if not tks: return
+    t0 = time.time()
+    try:
+        import yfinance as yf
+        syms = [YF_SYM.get(t, t) for t in tks]; inv = {YF_SYM.get(t, t): t for t in tks}
+        D = yf.download(syms, period='5d', interval='15m', prepost=True, group_by='ticker', threads=True, progress=False, auto_adjust=False)
+        for sy in syms:
+            try:
+                Y = (D[sy] if len(syms) > 1 else D).dropna(subset=['Close'])
+                if len(Y): _YF_BATCH[inv[sy]] = Y
+            except Exception: pass
+    except Exception as e: print(f'  ! batch prefetch failed ({str(e)[:60]}); per-ticker fallback')
+    print(f'  prefetch: {len(_YF_BATCH)}/{len(tks)} tickers in {time.time() - t0:.1f}s')
+
 def load_bars(tk, fetch, first=None):
     first = RTH0 if first is None else first
     live_f = f'{LIVE}/{tk}_15m.parquet'
@@ -111,7 +131,8 @@ def load_bars(tk, fetch, first=None):
             if not LSE_DOWN.get('said'): print(f'  ! {tk}: LSE fetch failed ({str(e)[:40]}); trying yfinance'); LSE_DOWN['said'] = LSE_DOWN['on']
             try:                                                           # fallback feed so a rate-limited LSE never blinds the screener
                 import yfinance as yf
-                Y = yf.Ticker(YF_SYM.get(tk, tk)).history(period='5d', interval='15m', prepost=True)
+                Y = _YF_BATCH.get(tk)
+                if Y is None: Y = yf.Ticker(YF_SYM.get(tk, tk)).history(period='5d', interval='15m', prepost=True)
                 if len(Y):
                     Y = Y.reset_index(); t = pd.to_datetime(Y.pop(Y.columns[0]), utc=True)
                     Y = Y.rename(columns=str.lower)[['open', 'high', 'low', 'close', 'volume']]; Y.insert(0, 'datetime', t.values)
@@ -232,10 +253,35 @@ def pm_blocked(t):
     t = pd.Timestamp(t); m = t.hour * 60 + t.minute
     return t >= NO_PM and PM_CUT <= m < RTH1
 
+ANCHOR_START = pd.Timestamp(os.getenv('ANCHOR_START', '2262-01-01'))   # Nov 5 2026: anchored-vol entry filter, REJECTED on the honest harness (xs/screener_anchor_wide.py: 22-26 +24% vs live +29%) - keep off
+def anchor_arrays(H):
+    """per bar: RTH low of the day before this bar, RTH low of the week's earlier days, 20-day daily sigma at the prior close"""
+    m = (H.dt.dt.hour * 60 + H.dt.dt.minute).values; rth = (m >= RTH0) & (m < RTH1); day = H.dt.dt.normalize()
+    lo = np.where(rth, H.low.values, np.inf); cm = pd.Series(lo).groupby(day.values).cummin().values
+    lowD = np.r_[np.inf, cm[:-1]]; lowD[np.r_[True, day.values[1:] != day.values[:-1]]] = np.inf
+    R = H[rth]; D = R.groupby(R.dt.dt.normalize()).agg(l=('low', 'min'), c=('close', 'last'))
+    sig = np.log(D.c).diff().rolling(20).std(); wk = D.index.to_period('W-FRI')
+    wlow = pd.Series(D.l.values, index=D.index).groupby(wk).transform(lambda s: s.cummin().shift(1)).fillna(np.inf)
+    last = dict(day=day.iloc[-1], m=m[-1], cm=cm[-1], sig_today=sig.iloc[-1] if len(sig) else np.nan, sig_prev=sig.shift(1).iloc[-1] if len(sig) else np.nan,
+                wl_today=wlow.iloc[-1] if len(D) and D.index[-1] == day.iloc[-1] else np.inf)
+    return lowD, wlow.reindex(day).values, sig.shift(1).reindex(day).values, last
+def anchor_blocked(AN, j, px, t):
+    """skip an entry already more than 1 sigma above the day's low or 1 weekly sigma (sigma x sqrt 5) above the week's low (the site's anchored projection)"""
+    if pd.Timestamp(t) < ANCHOR_START: return False
+    lowD, lowW, sig, L = AN
+    if j < len(lowD): s, ld, lw = sig[j], lowD[j], lowW[j]
+    elif L['m'] < RTH1 - 15: s, ld, lw = L['sig_prev'], L['cm'], L['wl_today']           # next open is later today: day low so far incl. the last bar
+    else:                                                                              # next open is tomorrow: today's close-based sigma, week low incl. today
+        s, ld = L['sig_today'], np.inf; nxt = pd.Timestamp(t).normalize()
+        lw = min(L['wl_today'], L['cm']) if nxt.to_period('W-FRI') == pd.Timestamp(L['day']).to_period('W-FRI') else np.inf
+    if not np.isfinite(s) or s <= 0: return False
+    ld = min(ld, px); lw = min(lw, ld)
+    return (px - ld) / (px * s) > 1 or (px - lw) / (px * s * np.sqrt(5)) > 1
 def replay_track(H, elig, track='15m', carry=None):
     """All trades of one track (15m flips / 1h flips) on premarket+RTH bars, entries/exits at RTH opens only.
     Returns trade dicts: status CLOSED / HOLD / BUY (enter at the next open) / SELL (exit at the next open)."""
     reg, s1, o, c, hi = H.reg.values, H.s1.values, H.open.values, H.close.values, H.high.values; n = len(H)
+    AN = anchor_arrays(H) if ANCHOR_START < pd.Timestamp('2262-01-01') else None
     m = (H.dt.dt.hour * 60 + H.dt.dt.minute).values; dts = H.dt.values; lk0 = np.datetime64(MODEL2)
     g = [j for j in range(1, n) if m[j] >= RTH0] + [n]
     KR = [reg[j - 1] for j in g]; KS = [s1[j - 1] for j in g]; EL = [elig[j] if j < n else elig[-1] for j in g]
@@ -249,6 +295,7 @@ def replay_track(H, elig, track='15m', carry=None):
         if not inpos:
             sig = (KS[p] == 1 and KS[p - 1] != 1) if track == '1h' else (KR[p] == 1 and KR[p - 1] != 1)
             if sig and EL[p] and pm_blocked(dts[j] if not virt else pd.Timestamp(dts[-1]) + pd.Timedelta('15min')): continue
+            if sig and EL[p] and AN is not None and anchor_blocked(AN, j, o[j] if not virt else c[-1], dts[j] if not virt else pd.Timestamp(dts[-1]) + pd.Timedelta('15min')): continue
             if sig and EL[p]:
                 if virt: T.append(dict(status='BUY', e=None, px=None, t0=VIRT, t1=INF, h1=track == '1h', pg=0.0, lock=False)); break
                 inpos, e, px, b1, peak, hs = True, j, o[j], False, o[j], False
@@ -350,6 +397,11 @@ def allocate(trades):
 def scan(args):
     if args.update_gamma and theta_up(): update_gamma()
     RAT, rat_thru = options_ratio()
+    try:                                                                                      # Nov 12 2026: say it when the options-ratio data is stale (the IBKR pull needs TWS logged in at 16:20 ET)
+        age = int(np.busday_count(rat_thru.date(), now_et().date())); ok = age <= 4
+        print(f"  options ratio: data through {rat_thru:%Y-%m-%d} ({age} trading days old){'' if ok else '  <-- STALE: check TWS / tools/daily_ratio.sh / live/daily_ratio.log'}")
+        json.dump(dict(through=str(rat_thru.date()), age_trading_days=age, ok=ok, checked=str(now_et())), open(f'{LIVE}/ratio_status.json', 'w'))
+    except Exception as e: print(f'  ! ratio status: {str(e)[:60]}')
     last_ratio = RAT.attrs.get('now', RAT.ffill().iloc[-1])
     cut_now = CUT2 if now_et() >= CUT2_SWITCH else CUT
     elig_now = sorted(t for t in RAT.columns if t not in NO_ETF and ((last_ratio.get(t, 0) >= min(cut_now, CUT2) and in_sp(t, now_et())) or (t in OLD_UNIVERSE and last_ratio.get(t, 0) >= 1.5)))   # scan the >= 1.5 list now; entries are gated per bar
@@ -361,7 +413,8 @@ def scan(args):
     elig_now = sorted(set(elig_now) | was | (lg_open & set(RAT.columns)))
     gf = 'xs/ext/gex/QQQ.csv'                                             # only needed for the (off by default) QQQ slot
     G = pd.read_csv(gf, parse_dates=['date']).sort_values('date').set_index('date').net_gex if os.path.exists(gf) else pd.Series([0.0], index=[pd.Timestamp('2000-01-01')])
-    slots = SLOTS; out = []; TR = []; HS = {}
+    slots = SLOTS; out = []; TR = []; HS = {}; _t_scan = time.time()
+    if not args.no_fetch: prefetch_bars(elig_now + (['QQQ'] if INCLUDE_QQQ else []))
     for tk in elig_now + (['QQQ'] if INCLUDE_QQQ else []):
         pre = SESSION == 'pre' and tk != 'QQQ'
         H = load_bars(tk, not args.no_fetch, PRE0 if pre else RTH0)
@@ -385,6 +438,7 @@ def scan(args):
         if tk != 'QQQ': tr += replay_track(H, elig & (H.dt >= MODEL2).values, '1h')
         for t in tr: t['tk'] = tk; t['ratio'] = float(last_ratio.get(tk, 0) or 0)
         TR += tr; HS[tk] = H
+    print(f'  scan: {len(HS)} names, data+vector+replay {time.time() - _t_scan:.1f}s')
     for t in TR:                                                      # realized return of closed trades (for the drawdown breaker)
         if t['status'] == 'CLOSED': t['r'] = float(HS[t['tk']].open.values[t['x']]) / t['px'] - 1
     # ---- trade ledger (Oct 21 2026): a trade is written down when it is taken and never recomputed after that.
@@ -654,6 +708,24 @@ def xt_history(meta):
         for e in v: seen[(e['tk'], e['date'], e['side'])] = e
     return sorted(seen.values(), key=lambda e: (e['date'], e['time']), reverse=True)[:60]
 
+def recent_reads(n=14):
+    """the saved daily reads (daily_read.py), newest first: one per trading day, kept on the worker disk"""
+    d = f'{LIVE}/reads'
+    if not os.path.isdir(d): return []
+    out = []
+    for f in sorted(os.listdir(d), reverse=True)[:n]:
+        try: out.append(json.load(open(f'{d}/{f}')))
+        except Exception: pass
+    return out
+
+def save_daily_read():
+    """09:40 ET: build the facts-only daily read once the open is in, archive it as live/reads/YYYY-MM-DD.json"""
+    import daily_read as DRD
+    try: snap = json.load(open(f'{LIVE}/site_snapshot.json'))
+    except Exception: snap = None
+    r = DRD.build(snap); os.makedirs(f'{LIVE}/reads', exist_ok=True)
+    json.dump(r, open(f"{LIVE}/reads/{r['date']}.json", 'w')); return r
+
 def latest_note():
     """the most recent morning note: today's once written, else the previous one (Friday's over the weekend)"""
     for fa in (f'{LIVE}/analysis.json', 'live_data/analysis.json'):
@@ -747,6 +819,8 @@ def write_site_snapshot(rows, meta):
                 slots=meta['slots'], cutoff=CUT2, positions=pos, signals=sig, watch=watch, history=hist)
     note = latest_note()                                                            # the 09:00 write-up (frozen) + its session's range chart, live every scan
     snap['analysis'] = note; snap['ranges'] = site_ranges(rows, meta, note)
+    try: snap['reads'] = recent_reads()
+    except Exception as e: print(f'  ! site reads: {str(e)[:80]}')
     try: snap['xt'] = xt_history(meta)
     except Exception as e: print(f'  ! site xt: {str(e)[:80]}')
     tmp = f'{LIVE}/site_snapshot.json.tmp'; json.dump(snap, open(tmp, 'w')); os.replace(tmp, f'{LIVE}/site_snapshot.json')
@@ -1004,7 +1078,7 @@ def post_long(text, channel=None):
     return (post(chunk, [], channel=channel) if chunk.strip() else True) and ok
 
 def post(text, files, channel=None):
-    ch, tok, hook = channel or os.getenv('VECTOR_CHANNEL_ID'), os.getenv('DISCORD_TOKEN'), os.getenv('DISCORD_WEBHOOK_URL')
+    ch, tok, hook = channel or os.getenv('LARGECAP_CHANNEL_ID') or '1570332365186793522', os.getenv('DISCORD_TOKEN'), os.getenv('DISCORD_WEBHOOK_URL')   # Nov 12 2026: the mega-cap screener posts to #large-cap (LARGECAP_CHANNEL_ID); the mid/small one has its own (MIDSMALL_CHANNEL_ID)
     if ch and tok: url, hdr = f'https://discord.com/api/v10/channels/{ch}/messages', {'Authorization': f'Bot {tok}'}
     elif hook: url, hdr = hook, {}
     else: print('  ! no Discord target: set VECTOR_CHANNEL_ID (bot) or DISCORD_WEBHOOK_URL in .env'); return False
@@ -1018,6 +1092,20 @@ def post(text, files, channel=None):
         print(f'  ! discord post failed: {e}'); return False
     finally:
         [h.close() for h in fh]
+
+def wait_for_bar(target, timeout=90):
+    """poll Yahoo (SPY) until the 15m bar that closes at `target` ET is published, so the scan starts seconds after the close"""
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        try:
+            import yfinance as yf
+            y = yf.Ticker('SPY').history(period='1d', interval='15m', prepost=True)
+            if len(y):
+                ix = y.index[-1]; last = (ix.tz_convert(ET).tz_localize(None) if ix.tzinfo else ix)
+                if last >= target or (now_et() >= target + pd.Timedelta('20s') and last >= target - pd.Timedelta('15min')): print(f'  bar {target:%H:%M} ready after {time.time() - t0:.0f}s'); return True
+        except Exception: pass
+        time.sleep(2)
+    print(f'  ! bar {target:%H:%M} not seen after {timeout}s; scanning anyway'); return False
 
 STATE = f'{LIVE}/posted.json'
 def _state():
@@ -1247,7 +1335,7 @@ def extreme_chart(tk, H, z, side, path):
 def day_extremes(rows, st):
     """Oct 27 2026: chart when the day's low / high is likely in, by the time-of-day x vector model (range_path), for held names"""
     now = now_et(); mins = now.hour * 60 + now.minute
-    if not (10 * 60 + 15 <= mins < RTH1) or os.getenv('EXTREME_ALERTS', '1') != '1': return
+    if not (10 * 60 + 15 <= mins < RTH1) or os.getenv('EXTREME_ALERTS', '0') != '1': return
     today = f'{now:%Y-%m-%d}'; done = set()
     for r in rows:
         if r['action'] not in ('HOLD', 'SELL') or r['base'] in done: continue
@@ -1271,8 +1359,7 @@ def day_extremes(rows, st):
             if post(msg, files, channel=os.getenv('EXTREME_CHANNEL_ID')): st['signals'].append(key); _save(st)
 
 def post_new_signals(rows, meta, st):
-    try: day_extremes(rows, st)
-    except Exception as ex: print(f'  ! day extremes: {str(ex)[:80]}')
+    # Nov 11 2026: HIGH/LOW LIKELY IN alerts removed from Discord (Rey); day_extremes() kept for reference but not called
     held = st.setdefault('held', {}); today = now_et().strftime('%Y-%m-%d')
     bk = f'breaker|{today}'
     if meta.get('breaker') and bk not in st['signals']:
@@ -1330,6 +1417,14 @@ def post_new_signals(rows, meta, st):
         if key in st['signals']: continue
         if r['action'] == 'SELL' and now_et().hour * 60 + now_et().minute < RTH0:
             late = f"\u26a0\ufe0f PREMARKET FLIP: {tk} vector turned bearish premarket ({r['bar']:%H:%M} bar, last {r['last']:.2f}). Rule exits at the 09:30 open."
+        fk = key + '|fast'                                                # Nov 12 2026: one-line alert goes out FIRST; the chart card (slow to render/upload) follows
+        if fk not in st['signals']:
+            try:
+                stp = r.get('stop'); stxt = f", stop {stp:.2f}" if stp is not None and stp == stp else ''
+                ftxt = (f"\u26a1 BUY {tk}: vector flipped bull on the {r['bar']:%H:%M} bar. Entry next open (~{r['last']:.2f}){stxt}. Chart follows." if r['action'] == 'BUY' else
+                        f"\u26a1 SELL {tk}: exit signal on the {r['bar']:%H:%M} bar (last {r['last']:.2f}). Chart follows.")
+                if post(ftxt, []): st['signals'].append(fk); _save(st)
+            except Exception as e: print(f'  ! fast alert: {str(e)[:60]}')
         p = f"{LIVE}/card_{tk.replace(' ', '_')}_{r['action']}.png"
         try: LC.signal_dash(r, meta, p) if r['action'] == 'BUY' else signal_card(r, meta, p)
         except Exception as e: print(f'  ! signal dash failed ({str(e)[:80]}); simple card'); signal_card(r, meta, p)
@@ -1342,6 +1437,11 @@ def post_new_signals(rows, meta, st):
                 late = (late + '\n' if late else '') + grade_line((ranked.index(tk) + 1, len(ranked)) if tk in ranked else None)
                 d_ = spy_downtrend(); save_score(tk, dict(grade='A+' if (d_ and d_['down']) else 'STD', score=0.0))
             except Exception as e: print(f'  ! grade: {str(e)[:60]}')
+        if SC_CTX is not None:                                           # Nov 12 2026: market context + recent news + upcoming/last earnings under every signal (signal_context.py; fails soft)
+            try:
+                cb = SC_CTX.block(r.get('base') or tk.split(' ')[0], r['action'])
+                if cb: late = (late + '\n' if late else '') + cb
+            except Exception as e: print(f'  ! context: {str(e)[:60]}')
         if not post(late, [p]): continue
         st['signals'].append(key); _save(st)
         log = f'{LIVE}/signal_log.csv'
@@ -1493,7 +1593,7 @@ def brief_text(rows, meta, fetch=True):
             x = extreme_info(r['H']) or {}
             room = r['last'] / r['stop'] - 1
             out.append(f"  {r['ticker']}: {r['pnl']:+.1%} · stop {r['stop']:.2f} " + (f"(BELOW the stop: sells at the 09:30 open)" if room < 0 or r['action'] == 'SELL' else f"({room:.1%} room)") + f" · vol {vol_word(x.get('pct', .5))}"
-                       + (' · low in' if x.get('low') else '') + (' · high in' if x.get('high') else ''))
+                       )
     bull = [r for r in U if r['state15'] == 1]; bull1 = [r for r in U if r['state1h'] == 1]
     out.append(f"**Universe** ({len(U)} names): {len(bull)} bull on 15m, {len(bull1)} on 1h")
     near = sorted([r for r in U if r['state15'] == -1 and r['trig'] == r['trig'] and r['last'] / r['trig'] - 1 > -.006], key=lambda r: r['last'] / r['trig'], reverse=True)
@@ -1698,11 +1798,14 @@ if __name__ == '__main__':
         if MID_BOOK and t.dayofweek == 0 and mins >= 9 * 60 and st.get('midpost') != today:  # Monday 09:00: mid/small book card
             subprocess.Popen([sys.executable, 'mid_book.py', '--post'], stdout=open(f'{LIVE}/mid_book.log', 'a'), stderr=subprocess.STDOUT)
             st['midpost'] = today; _save(st)
+        if mins >= 9 * 60 + 40 and st.get('read') != today:
+            try: save_daily_read(); st['read'] = today; _save(st); print('  daily read saved')
+            except Exception as ex: print(f'  ! daily read: {str(ex)[:100]}')
         if mins >= 9 * 60 and st.get('morning') != today:                    # 09:00 ET: open positions
             args.update_gamma = INCLUDE_QQQ; rows, meta = scan(args); args.update_gamma = False; show(rows, meta)
-            if post_positions(rows, meta): st['morning'] = today; _save(st)
+            if os.getenv('POSITIONS_POST', '1') != '1' or post_positions(rows, meta): st['morning'] = today; _save(st)   # Nov 10 2026: Discord = signals + open positions (set POSITIONS_POST=0 to silence)
             check_stale(rows, st); post_new_signals(rows, meta, st)             # premarket flips on held names -> exit-at-open alert
-            if os.getenv('DAILY_BRIEF', '1') == '1' and st.get('brief') != today:  # 09:00 ET: the /brief, posted every weekday
+            if st.get('brief') != today:  # 09:00 ET: the /brief, posted every weekday
                 try:
                     import daily_report as DR
                     fs = DR.build(sys.modules[__name__], mark_live(rows, True), meta, f'{LIVE}/report_{today}', True)
@@ -1710,7 +1813,7 @@ if __name__ == '__main__':
                         shutil.copy(f'{LIVE}/report_{today}/analysis.json', f'{LIVE}/analysis.json'); os.makedirs(f'{LIVE}/notes', exist_ok=True)
                         shutil.copy(f'{LIVE}/analysis.json', f'{LIVE}/notes/{today}.json'); write_site_snapshot(rows, meta)
                     except Exception as ex: print(f'  ! site analysis: {str(ex)[:80]}')
-                    if post(f"\U0001f4f0 Morning report · {now_et():%a %b %d}", fs[:10], channel=os.getenv('BRIEF_CHANNEL_ID')): st['brief'] = today; _save(st)
+                    st['brief'] = today; _save(st)   # Nov 11 2026: the morning report is website-only (Daily Analysis tab); never posted to Discord (Rey)
                 except Exception as ex: print(f'  ! daily brief: {str(ex)[:80]}')
         elif 9 * 60 + 15 <= mins < RTH0:                                        # ~09:16 pre-open recheck
             rows, meta = scan(args); show(rows, meta); check_stale(rows, st); post_new_signals(rows, meta, st)
@@ -1719,11 +1822,15 @@ if __name__ == '__main__':
             for r in rows:
                 if r['action'] == 'HOLD' and r['px'] and RTH0 < mins <= RTH1: check_milestone(r, r['last'], st)
             if mins >= RTH1 and st.get('close') != today and post_positions(rows, meta): st['close'] = today; _save(st)   # 4:01 PM closing board
-        nxt = t.floor('15min') + pd.Timedelta('15min') + pd.Timedelta('75s')
+        nxt = t.floor('15min') + pd.Timedelta('15min') + pd.Timedelta(os.getenv('BAR_DELAY', '3s'))      # Nov 12 2026: was +75s fixed; now poll Yahoo for the closed bar
         if mins < 9 * 60: nxt = min(nxt, t.normalize() + pd.Timedelta('9h'))
         if t.dayofweek < 5 and 9 * 60 <= mins < RTH1 and 'rows' in globals():
             try:
                 check_failed(rows, st)
                 watch_crosses(rows, st, min(nxt, now_et().floor('15min') + pd.Timedelta('14min57s')))
             except Exception as ex: print(f'  ! cross watch: {ex}')
-        time.sleep(max(20, (nxt - now_et()).total_seconds()))
+        time.sleep(max(5, (nxt - now_et()).total_seconds()))
+        try:
+            tg = nxt.floor('15min'); mm = tg.hour * 60 + tg.minute
+            if t.dayofweek < 5 and RTH0 <= mm <= RTH1 + 15: wait_for_bar(tg)
+        except Exception as ex: print(f'  ! bar wait: {str(ex)[:80]}')

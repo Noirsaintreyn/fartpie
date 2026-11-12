@@ -21,7 +21,7 @@ else: sys.exit('TWS not reachable - open TWS / IB Gateway, API on port 7497')
 ib.reqMarketDataType(1)
 today = pd.Timestamp.now(tz='America/New_York').normalize().tz_localize(None)
 got, miss = {}, []
-B = 80                                                                           # stay under the 100 market-data-line limit
+B = int(os.getenv('IB_BATCH', '40'))                                             # TWS watchlists/charts also use lines: 40 + yours stays under the 100-line limit
 for i in range(0, len(tks), B):
     batch = tks[i:i + B]; cs = []
     for tk in batch:
@@ -39,6 +39,22 @@ for i in range(0, len(tks), B):
         ib.cancelMktData(c)
     print(f'{min(i + B, len(tks))}/{len(tks)} names, {len(got)} with option volume', flush=True)
 ib.disconnect()
+def yf_optvol(tk):                                                               # Nov 12 2026 fallback: yfinance chains, summed over ALL expiries (same definition as IBKR's day total; after the close it is the full day)
+    import yfinance as yf
+    t = yf.Ticker(SYM.get(tk, tk).replace(' ', '-')); cv = pv = 0.0
+    for e in t.options:
+        ch = t.option_chain(e); cv += float(ch.calls.volume.fillna(0).sum()); pv += float(ch.puts.volume.fillna(0).sum())
+    return cv, pv
+if os.getenv('NO_YF') != '1' and miss:
+    from concurrent.futures import ThreadPoolExecutor
+    def one(tk):
+        try: return tk, yf_optvol(tk)
+        except Exception: return tk, None
+    with ThreadPoolExecutor(4) as ex: res = list(ex.map(one, sorted(set(miss) - set(got))))
+    n_yf = 0
+    for tk, v in res:
+        if v and v[0] + v[1] > 0: got[tk] = v; n_yf += 1
+    miss = [tk for tk in miss if tk not in got]; print(f'yfinance fallback filled {n_yf} names; still missing {len(miss)}', flush=True)
 if TEST:
     for tk, (cv, pv) in got.items(): print(f'{tk}: calls {cv:,.0f}  puts {pv:,.0f}  total {cv + pv:,.0f}')
     print('missing:', miss); sys.exit()
