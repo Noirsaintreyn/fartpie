@@ -1,0 +1,47 @@
+train 3195 test 2793
+coverage 0.999
+
+UNIVARIATE Spearman IC vs net return
+   svr_dev   train +0.018 (p 0.305, n 3190)  test -0.020 (p 0.294, n 2790)
+   svr3dev   train +0.028 (p 0.111, n 3190)  test +0.012 (p 0.528, n 2790)
+   svr20     train -0.058 (p 0.001, n 3190)  test -0.041 (p 0.030, n 2790)
+   svr1      train -0.027 (p 0.123, n 3190)  test -0.042 (p 0.027, n 2790)
+   svsurge   train +0.001 (p 0.960, n 3190)  test -0.027 (p 0.150, n 2790)
+
+svr_dev  (train tercile cuts [-0.042  0.065])
+         period      n    mean  median   win  P>10%  P<-8%
+   low   train    1064  +0.21%  -3.36%   23%  11.3%   9.8%
+   mid   train    1063  +1.53%  -3.08%   26%  11.8%   9.1%
+   high  train    1063  +2.86%  -3.20%   27%  15.8%  11.1%
+   low   test      929  +1.29%  -2.80%   29%  13.8%   8.9%
+   mid   test     1023  +0.58%  -3.05%   25%  12.3%  10.4%
+   high  test      838  +1.95%  -3.06%   28%  14.2%   9.3%
+
+svr3dev  (train tercile cuts [-0.029  0.045])
+         period      n    mean  median   win  P>10%  P<-8%
+   low   train    1064  +0.78%  -3.32%   24%  11.4%  10.1%
+   mid   train    1063  +1.43%  -3.26%   24%  12.7%   9.4%
+   high  train    1063  +2.38%  -3.08%   27%  14.8%  10.5%
+   low   test      922  +0.83%  -2.93%   27%  12.8%  10.2%
+   mid   test     1032  +1.04%  -3.05%   26%  12.5%   9.9%
+   high  test      836  +1.90%  -2.86%   29%  15.1%   8.5%
+
+svr20  (train tercile cuts [0.446 0.532])
+         period      n    mean  median   win  P>10%  P<-8%
+   low   train    1064  +2.53%  -3.00%   28%  13.6%   8.8%
+   mid   train    1063  +0.51%  -3.24%   24%  12.1%  10.2%
+   high  train    1063  +1.56%  -3.50%   24%  13.1%  11.0%
+   low   test     1186  +1.88%  -2.96%   29%  13.4%   9.6%
+   mid   test      811  +1.84%  -2.65%   28%  14.4%   8.3%
+   high  test      793  -0.37%  -3.29%   25%  12.2%  10.8%
+
+8-slot books (cuts frozen from TRAIN):
+rule                               TRAIN n    ann   DD | TEST n    ann   DD  mean/tr
+B vol>=1.5x                           1487  +283%  -39 |   1268   +53%  -23   +1.59%
+B & E+V                                940  +239%  -20 |    821   +65%  -22   +1.97%
+E+V & svr_dev not high                 619   +43%  -20 |    557   +34%  -33   +1.42%
+E+V & svr_dev low                      290    -6%  -40 |    266   +58%  -19   +1.87%
+E+V & svr3dev not high                 640   +47%  -22 |    573   +36%  -33   +1.77%
+E+V & svr20 high (squeeze fuel)        298   +18%  -35 |    228   -17%  -43   -0.82%
+E+V & svr20 not high                   641  +146%  -15 |    593   +63%  -25   +3.04%
+B & svr_dev not high                   949   +90%  -27 |    866   +56%  -19   +1.46%
