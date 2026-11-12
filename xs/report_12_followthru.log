@@ -1,0 +1,20 @@
+== K&E1: 265 trades
+  first bar closes BELOW the entry open: 49% of trades | mean final net: first bar red +4.38% (win 25%), first bar green +11.18% (win 46%)
+  median trade length 49 bars; mean worst dip in first 3 bars -2.8%; winners (net>0): worst dip -2.0% vs losers -3.2%
+  baseline                  265 tr | mean +7.82% med -3.5% win 36% p10 -10.6% | train +7.18% (154) test +8.70% (111) | book +95%/yr DD -19%
+  CONF-H (close > flip high)   63 tr | mean +12.03% med -2.5% win 44% p10 -12.5% | train +9.75% (25) test +13.53% (38) | book +36%/yr DD -11%
+  CONF-G (entry bar green)  119 tr | mean +7.04% med -4.0% win 39% p10 -11.4% | train +3.02% (58) test +10.86% (61) | book +38%/yr DD -19%
+  FAIL 1 (exit if red after bar 1)  265 tr | mean +4.49% med -1.7% win 25% p10 -7.4% | train +2.68% (154) test +7.01% (111) | book +44%/yr DD -21% | fired 47%
+  FAIL 2 (exit if red after bar 2)  265 tr | mean +3.42% med -2.3% win 22% p10 -8.2% | train +1.48% (154) test +6.11% (111) | book +28%/yr DD -21% | fired 48%
+  FAIL 3 (exit if red after bar 3)  265 tr | mean +4.31% med -2.4% win 22% p10 -9.0% | train +3.63% (154) test +5.25% (111) | book +41%/yr DD -22% | fired 43%
+  FAIL -3% in first 3 bars  265 tr | mean +5.96% med -3.7% win 31% p10 -8.4% | train +5.41% (154) test +6.71% (111) | book +65%/yr DD -20% | fired 18%
+== K&E1&E4: 114 trades
+  first bar closes BELOW the entry open: 44% of trades | mean final net: first bar red +5.36% (win 24%), first bar green +17.37% (win 50%)
+  median trade length 47 bars; mean worst dip in first 3 bars -2.7%; winners (net>0): worst dip -2.1% vs losers -3.1%
+  baseline                  114 tr | mean +12.11% med -3.0% win 39% p10 -11.1% | train +9.91% (53) test +14.02% (61) | book +75%/yr DD -12%
+  CONF-H (close > flip high)   32 tr | mean +18.29% med +1.1% win 50% p10 -12.7% | train +3.87% (13) test +28.15% (19) | book +33%/yr DD -11%
+  CONF-G (entry bar green)   57 tr | mean +11.53% med -1.2% win 46% p10 -11.5% | train +0.61% (24) test +19.47% (33) | book +32%/yr DD -10%
+  FAIL 1 (exit if red after bar 1)  114 tr | mean +8.76% med -1.6% win 28% p10 -7.5% | train +5.07% (53) test +11.97% (61) | book +48%/yr DD -13% | fired 41%
+  FAIL 2 (exit if red after bar 2)  114 tr | mean +6.83% med -1.7% win 25% p10 -7.6% | train +1.24% (53) test +11.69% (61) | book +35%/yr DD -13% | fired 51%
+  FAIL 3 (exit if red after bar 3)  114 tr | mean +5.97% med -2.1% win 23% p10 -9.0% | train +1.46% (53) test +9.88% (61) | book +29%/yr DD -12% | fired 46%
+  FAIL -3% in first 3 bars  114 tr | mean +8.80% med -3.4% win 33% p10 -8.4% | train +5.49% (53) test +11.68% (61) | book +49%/yr DD -13% | fired 16%
