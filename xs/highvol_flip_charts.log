@@ -1,0 +1,13 @@
+qualifying days 15
+chosen 10
+ 1 LCID  Aug 20 vol 1.6x move -5.0% | BEAR entry 08:15 @ 5.91; BULL entry 09:30 @ 5.92; BEAR entry 10:15 @ 5.82
+ 2 LCID  Aug 27 vol 3.0x move +1.8% | BULL entry 10:45 @ 5.02
+ 3 LCID  Sep 17 vol 1.6x move +1.8% | BULL entry 08:15 @ 4.18
+ 4 Z     Oct 08 vol 2.2x move +8.0% | BULL entry 10:15 @ 27.60
+ 5 KGS   Oct 14 vol 1.6x move -3.4% | BEAR entry 11:15 @ 49.94
+ 6 LCID  Oct 20 vol 2.5x move +6.7% | BULL entry 12:30 @ 3.14; BEAR entry 13:45 @ 3.02; BULL entry 14:15 @ 3.10
+ 7 KGS   Oct 22 vol 1.6x move -11.2% | BEAR entry 09:45 @ 46.57
+ 8 RIOT  Nov 04 vol 4.3x move -1.6% | BULL entry 08:00 @ 15.00
+ 9 KGS   Nov 05 vol 2.1x move -4.7% | BULL entry 08:45 @ 41.20; BEAR entry 09:30 @ 40.86
+10 RIOT  Nov 05 vol 2.1x move -1.1% | BEAR entry 08:00 @ 15.09
+FILES ['xs/hvflip_01_LCID_0820.png', 'xs/hvflip_02_LCID_0827.png', 'xs/hvflip_03_LCID_0917.png', 'xs/hvflip_04_Z_1008.png', 'xs/hvflip_05_KGS_1014.png', 'xs/hvflip_06_LCID_1020.png', 'xs/hvflip_07_KGS_1022.png', 'xs/hvflip_08_RIOT_1104.png', 'xs/hvflip_09_KGS_1105.png', 'xs/hvflip_10_RIOT_1105.png']
