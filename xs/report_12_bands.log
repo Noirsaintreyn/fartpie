@@ -1,0 +1,31 @@
+B flips <$5: 2671
+== < $1: 69 B flips
+  B                        69 tr  25/yr | mean +35.42% med -3.8% win 41% | train +43.60% (52) test +10.43% (17) | book +103%/yr DD -25% ex-top1 +22.8%
+  D (daily bull)           13 tr  10/yr | mean +11.68% med -3.8% win 31% | train +4.42% (10) test +35.91% (3) | book +14%/yr DD -7% p=0.795 ex-top1 +2.7%
+  K (Kalman up)            57 tr  20/yr | mean +34.96% med -4.0% win 39% | train +42.86% (44) test +8.22% (13) | book +81%/yr DD -24% p=0.673 ex-top1 +19.6%
+  A+ = B&D&K             8 trades (too few)
+  TOP = A+ & 1h&4h EMA200 5 trades (too few)
+== < $1 @150bp: 69 B flips
+  B                        69 tr  25/yr | mean +34.32% med -4.9% win 38% | train +42.50% (52) test +9.33% (17) | book +97%/yr DD -25% ex-top1 +21.7%
+  D (daily bull)           13 tr  10/yr | mean +10.58% med -4.9% win 23% | train +3.32% (10) test +34.81% (3) | book +13%/yr DD -8% p=0.783 ex-top1 +1.6%
+  K (Kalman up)            57 tr  20/yr | mean +33.86% med -5.1% win 37% | train +41.76% (44) test +7.12% (13) | book +77%/yr DD -23% p=0.673 ex-top1 +18.5%
+  A+ = B&D&K             8 trades (too few)
+  TOP = A+ & 1h&4h EMA200 5 trades (too few)
+== $1-2: 571 B flips
+  B                       571 tr 202/yr | mean +3.96% med -3.8% win 32% | train +3.27% (328) test +4.88% (243) | book +67%/yr DD -28% ex-top1 +3.3%
+  D (daily bull)          163 tr  61/yr | mean +8.04% med -3.2% win 36% | train +4.09% (75) test +11.41% (88) | book +60%/yr DD -13% p=0.025 ex-top1 +6.8%
+  K (Kalman up)           465 tr 165/yr | mean +4.96% med -3.7% win 32% | train +4.31% (271) test +5.86% (194) | book +87%/yr DD -24% p=0.030 ex-top1 +4.2%
+  A+ = B&D&K              122 tr  47/yr | mean +10.69% med -2.8% win 39% | train +6.61% (57) test +14.26% (65) | book +66%/yr DD -11% p=0.005 ex-top1 +9.1%
+  TOP = A+ & 1h&4h EMA200   80 tr  34/yr | mean +13.31% med -2.5% win 41% | train +8.00% (35) test +17.44% (45) | book +55%/yr DD -12% p=0.005 ex-top1 +10.9%
+== $2-5: 2031 B flips
+  B                      2031 tr 721/yr | mean +1.79% med -3.4% win 27% | train +3.25% (1053) test +0.21% (978) | book +63%/yr DD -31% ex-top1 +1.4%
+  D (daily bull)          661 tr 248/yr | mean +1.52% med -3.6% win 28% | train +3.01% (281) test +0.43% (380) | book +29%/yr DD -30% p=0.599 ex-top1 +1.2%
+  K (Kalman up)          1612 tr 572/yr | mean +2.21% med -3.3% win 28% | train +3.86% (843) test +0.40% (769) | book +62%/yr DD -35% p=0.064 ex-top1 +1.7%
+  A+ = B&D&K              487 tr 183/yr | mean +1.48% med -3.5% win 28% | train +2.85% (201) test +0.52% (286) | book +22%/yr DD -31% p=0.587 ex-top1 +1.0%
+  TOP = A+ & 1h&4h EMA200  376 tr 151/yr | mean +1.40% med -3.7% win 27% | train +2.79% (146) test +0.51% (230) | book +12%/yr DD -33% p=0.575 ex-top1 +0.7%
+== < $5 (all): 2671 B flips
+  B                      2671 tr 947/yr | mean +3.12% med -3.5% win 28% | train +4.72% (1433) test +1.27% (1238) | book +118%/yr DD -39% ex-top1 +2.8%
+  D (daily bull)          837 tr 314/yr | mean +2.95% med -3.5% win 30% | train +3.27% (366) test +2.71% (471) | book +66%/yr DD -21% p=0.540 ex-top1 +2.7%
+  K (Kalman up)          2134 tr 757/yr | mean +3.69% med -3.4% win 29% | train +5.45% (1158) test +1.59% (976) | book +115%/yr DD -40% p=0.024 ex-top1 +3.3%
+  A+ = B&D&K              617 tr 232/yr | mean +3.57% med -3.4% win 30% | train +3.87% (263) test +3.34% (354) | book +57%/yr DD -25% p=0.354 ex-top1 +3.2%
+  TOP = A+ & 1h&4h EMA200  461 tr 185/yr | mean +3.86% med -3.5% win 29% | train +4.09% (185) test +3.71% (276) | book +47%/yr DD -21% p=0.292 ex-top1 +3.3%

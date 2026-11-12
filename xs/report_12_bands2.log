@@ -1,0 +1,30 @@
+== $1-2: 571 B flips
+  B (volume only)         571 tr 202/yr | mean +3.96% med -3.8% win 32% | train +3.27% (328) test +4.88% (243) | book +67%/yr DD -28% ex-top1 +3.3%
+  K                       465 tr 165/yr | mean +4.96% med -3.7% win 32% | train +4.31% (271) test +5.86% (194) | book +87%/yr DD -24% p=0.031 ex-top1 +4.2%
+  E1 (1h EMA200)          329 tr 117/yr | mean +5.97% med -3.8% win 34% | train +5.04% (190) test +7.25% (139) | book +82%/yr DD -25% p=0.025 ex-top1 +4.8%
+  E4 (4h EMA200)          152 tr  61/yr | mean +8.95% med -3.5% win 36% | train +6.66% (69) test +10.85% (83) | book +65%/yr DD -15% p=0.010 ex-top1 +7.6%
+  K & E1                  265 tr  94/yr | mean +7.82% med -3.5% win 36% | train +7.18% (154) test +8.70% (111) | book +95%/yr DD -19% p=0.002 ex-top1 +6.4%
+  E1 & E4                 143 tr  57/yr | mean +9.81% med -3.3% win 36% | train +7.61% (64) test +11.60% (79) | book +68%/yr DD -16% p=0.004 ex-top1 +8.4%
+  K & E1 & E4             114 tr  46/yr | mean +12.11% med -3.0% win 39% | train +9.91% (53) test +14.02% (61) | book +75%/yr DD -12% p=0.001 ex-top1 +10.4%
+  any 2 of K,E1,E4        301 tr 107/yr | mean +6.84% med -3.7% win 35% | train +6.12% (170) test +7.77% (131) | book +89%/yr DD -21% p=0.004 ex-top1 +5.6%
+  A+ (D&K) ref            122 tr  47/yr | mean +10.69% med -2.8% win 39% | train +6.61% (57) test +14.26% (65) | book +66%/yr DD -11% p=0.006 ex-top1 +9.1%
+== $2-5: 2031 B flips
+  B (volume only)        2031 tr 721/yr | mean +1.79% med -3.4% win 27% | train +3.25% (1053) test +0.21% (978) | book +63%/yr DD -31% ex-top1 +1.4%
+  K                      1612 tr 572/yr | mean +2.21% med -3.3% win 28% | train +3.86% (843) test +0.40% (769) | book +62%/yr DD -35% p=0.067 ex-top1 +1.7%
+  E1 (1h EMA200)         1233 tr 440/yr | mean +1.63% med -3.4% win 28% | train +2.69% (633) test +0.51% (600) | book +51%/yr DD -28% p=0.628 ex-top1 +1.4%
+  E4 (4h EMA200)          723 tr 290/yr | mean +1.18% med -3.6% win 27% | train +2.41% (304) test +0.28% (419) | book +47%/yr DD -27% p=0.735 ex-top1 +0.8%
+  K & E1                  985 tr 352/yr | mean +1.92% med -3.3% win 29% | train +3.08% (500) test +0.73% (485) | book +49%/yr DD -23% p=0.424 ex-top1 +1.6%
+  E1 & E4                 667 tr 268/yr | mean +1.28% med -3.6% win 27% | train +2.65% (287) test +0.24% (380) | book +43%/yr DD -30% p=0.698 ex-top1 +0.9%
+  K & E1 & E4             512 tr 206/yr | mean +1.32% med -3.6% win 27% | train +2.68% (217) test +0.32% (295) | book +29%/yr DD -34% p=0.624 ex-top1 +0.8%
+  any 2 of K,E1,E4       1176 tr 420/yr | mean +1.78% med -3.4% win 29% | train +2.88% (582) test +0.69% (594) | book +66%/yr DD -27% p=0.508 ex-top1 +1.5%
+  A+ (D&K) ref            487 tr 183/yr | mean +1.48% med -3.5% win 28% | train +2.85% (201) test +0.52% (286) | book +22%/yr DD -31% p=0.550 ex-top1 +1.0%
+== < $5 (all): 2671 B flips
+  B (volume only)        2671 tr 947/yr | mean +3.12% med -3.5% win 28% | train +4.72% (1433) test +1.27% (1238) | book +118%/yr DD -39% ex-top1 +2.8%
+  K                      2134 tr 757/yr | mean +3.69% med -3.4% win 29% | train +5.45% (1158) test +1.59% (976) | book +115%/yr DD -40% p=0.028 ex-top1 +3.3%
+  E1 (1h EMA200)         1588 tr 563/yr | mean +3.59% med -3.4% win 29% | train +5.08% (842) test +1.91% (746) | book +56%/yr DD -30% p=0.198 ex-top1 +3.0%
+  E4 (4h EMA200)          885 tr 353/yr | mean +2.90% med -3.6% win 29% | train +3.73% (382) test +2.27% (503) | book +58%/yr DD -25% p=0.584 ex-top1 +2.6%
+  K & E1                 1271 tr 451/yr | mean +4.23% med -3.3% win 31% | train +5.92% (670) test +2.35% (601) | book +81%/yr DD -27% p=0.057 ex-top1 +3.5%
+  E1 & E4                 819 tr 327/yr | mean +3.18% med -3.5% win 29% | train +4.10% (359) test +2.45% (460) | book +49%/yr DD -26% p=0.467 ex-top1 +2.9%
+  K & E1 & E4             633 tr 252/yr | mean +3.81% med -3.5% win 30% | train +4.85% (276) test +3.00% (357) | book +67%/yr DD -21% p=0.279 ex-top1 +3.4%
+  any 2 of K,E1,E4       1500 tr 532/yr | mean +3.70% med -3.4% win 30% | train +5.24% (770) test +2.09% (730) | book +67%/yr DD -27% p=0.176 ex-top1 +3.1%
+  A+ (D&K) ref            617 tr 232/yr | mean +3.57% med -3.4% win 30% | train +3.87% (263) test +3.34% (354) | book +57%/yr DD -25% p=0.340 ex-top1 +3.2%
