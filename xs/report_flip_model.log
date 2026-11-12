@@ -1,0 +1,34 @@
+screener flips with features: 4372
+--- SCREENER: does confluence ("together") matter? mean bp by # of TFs with price on the trade side of its pivot (n_side) and # fresh crosses
+   <=2021 n_side: 0: n28 +188.7 | 1: n158 +79.9 | 2: n425 +59.8 | 3: n657 +79.7   || fresh-cross TFs: 0: n493 +72.3 | 1: n562 +84.6 | 2: n199 +53.7
+   2022+ n_side: 0: n86 +7.0 | 1: n531 +61.3 | 2: n1147 +40.4 | 3: n1340 +38.3   || fresh-cross TFs: 0: n1130 +35.1 | 1: n1370 +51.0 | 2: n543 +21.4 | 3: n61 +155.9
+
+######## SCREENER 9 tickers, long flips: train n 1268 (<=2021) | test n 3104 (2022+) | base win train 38.9% test 33.2% | avg bp train +75.46 test +42.12 | features 35
+  logit    OOS AUC 0.511 (perm-null mean 0.496, 95th 0.516) | Spearman(score,ret) -0.015 | quintile mean bp: +47.4 +33.5 +31.6 +30.9 +67.1 | top-bottom +19.7 [-30.8,+71.2]
+  gboost   OOS AUC 0.494 (perm-null mean 0.503, 95th 0.521) | Spearman(score,ret) -0.031 | quintile mean bp: +40.8 +49.3 +42.3 +24.4 +53.9 | top-bottom +13.1 [-38.3,+64.9]
+  rforest  OOS AUC 0.492 (perm-null mean 0.499, 95th 0.518) | Spearman(score,ret) -0.047 | quintile mean bp: +52.4 +25.9 +67.2 +22.0 +43.2 | top-bottom -9.2 [-55.2,+38.9]
+  top permutation importances (rforest, test AUC drop): atrp_1d 0.003, ret20 0.003, room_15m 0.002, ratio 0.002, hour 0.002, room_1d 0.002, atrp_1h 0.002, gap 0.001, atrp_15m 0.001, age_1h 0.001
+  expanding walk-forward AUC by year (screener): 2022: logit 0.53 gboost 0.51 (n575) | 2023: logit 0.51 gboost 0.53 (n665) | 2024: logit 0.48 gboost 0.45 (n655) | 2025: logit 0.53 gboost 0.53 (n743) | 2026: logit 0.54 gboost 0.52 (n466)
+--- slot sim 2022+ (6 slots, breaker as live): base vs skip flips whose frozen train-fit score is below a train-score quantile
+   base: n 1886 ann~+31.6%
+   logit    skip below train-pct 20%: n 1814 ann~+28.6%
+   logit    skip below train-pct 35%: n 1666 ann~+26.6%
+   logit    skip below train-pct 50%: n 1413 ann~+18.8%
+   gboost   skip below train-pct 20%: n 1794 ann~+23.3%
+   gboost   skip below train-pct 35%: n 1660 ann~+19.6%
+   gboost   skip below train-pct 50%: n 1364 ann~+12.8%
+   rforest  skip below train-pct 20%: n 1829 ann~+27.4%
+   rforest  skip below train-pct 35%: n 1765 ann~+28.5%
+   rforest  skip below train-pct 50%: n 1481 ann~+20.1%
+
+NQ entries with features 2018+: 862 (train <=2021: 424, test 2022+: 438)
+--- NQ V15a/RA: does confluence ("together") matter? mean pts by # of TFs with price on the trade side of its pivot (n_side) and # fresh crosses
+   <=2021 n_side: 2: n79 +3.3 | 3: n165 +11.8 | 4: n171 +2.3   || fresh-cross TFs: 0: n126 +3.1 | 1: n179 +4.0 | 2: n96 +10.2
+   2022+ n_side: 2: n68 +8.1 | 3: n168 +26.0 | 4: n189 +10.3   || fresh-cross TFs: 0: n84 -3.7 | 1: n204 +20.0 | 2: n116 +4.2 | 3: n31 +58.1
+
+######## NQ V15a+RA entries: train n 424 (<=2021) | test n 438 (2022+) | base win train 36.3% test 38.6% | avg pts train +6.33 test +14.63 | features 40
+  logit    OOS AUC 0.538 (perm-null mean 0.499, 95th 0.557) | Spearman(score,ret) -0.049 | quintile mean pts: +28.1 +26.8 +3.9 +15.4 -1.0 | top-bottom -29.1 [-52.8,-2.4]
+  gboost   OOS AUC 0.544 (perm-null mean 0.518, 95th 0.581) | Spearman(score,ret) +0.035 | quintile mean pts: +20.0 +10.0 +15.2 +11.1 +16.8 | top-bottom -3.2 [-32.4,+24.1]
+  rforest  OOS AUC 0.565 (perm-null mean 0.504, 95th 0.535) | Spearman(score,ret) +0.054 | quintile mean pts: +12.2 +20.0 +1.1 +14.1 +25.8 | top-bottom +13.6 [-13.8,+38.5]
+  top permutation importances (rforest, test AUC drop): is_ra 0.059, dw10_5m 0.007, min_dw 0.007, age_5m 0.006, spread 0.004, gap 0.003, age_15m 0.003, dw_1h 0.003, room_5m 0.003, room_1d 0.003
+  expanding walk-forward AUC by year (NQ): 2022: logit 0.49 gboost 0.60 (n126) | 2023: logit 0.60 gboost 0.53 (n104) | 2024: logit 0.57 gboost 0.62 (n100) | 2025: logit 0.55 gboost 0.57 (n92)
