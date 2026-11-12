@@ -1,0 +1,115 @@
+rows 21697 {('1-5', 'V0'): 5445, ('1-5', 'V1'): 3680, ('1-5', 'V2'): 3982, ('BIG', 'V0'): 3695, ('BIG', 'V1'): 2316, ('BIG', 'V2'): 2579}
+
+==================== BOOK $1-5
+-- TRAIN
+  V0 all      n2775 win 26% mean  +1.8% med  -3.2% ex-top1  -0.1%
+  V0 grade A  n551  win 29% mean  +2.6% med  -3.5% ex-top1  +0.7%
+  V0 grade B  n926  win 28% mean  +3.8% med  -3.3% ex-top1  +0.8%
+  V0 grade C  n1298 win 23% mean  +0.0% med  -3.0% ex-top1  -0.7%
+  V1 all      n1884 win 26% mean  +0.8% med  -3.5% ex-top1  -0.5%
+  V1 grade A  n344  win 30% mean  +2.2% med  -3.7% ex-top1  +0.3%
+  V1 grade B  n599  win 28% mean  +1.6% med  -3.6% ex-top1  -0.3%
+  V1 grade C  n941  win 24% mean  -0.2% med  -3.2% ex-top1  -0.9%
+  V2 all      n2032 win 26% mean  +0.7% med  -3.5% ex-top1  -0.6%
+  V2 grade A  n367  win 29% mean  +1.9% med  -3.8% ex-top1  +0.1%
+  V2 grade B  n652  win 28% mean  +1.6% med  -3.7% ex-top1  -0.3%
+  V2 grade C  n1013 win 24% mean  -0.3% med  -3.3% ex-top1  -1.0%
+  book(8 slots) V0 all: cagr +36% dd -33% n394 | grade A: cagr +108% dd -29% n287 | grade A+B: cagr +235% dd -60% n328
+  book(8 slots) V1 all: cagr +27% dd -51% n394 | grade A: cagr +41% dd -41% n258 | grade A+B: cagr +99% dd -52% n312
+-- TEST 
+  V0 all      n2670 win 26% mean  +1.0% med  -3.0% ex-top1  -0.2%
+  V0 grade A  n629  win 27% mean  +2.2% med  -3.2% ex-top1  +0.6%
+  V0 grade B  n877  win 27% mean  +1.2% med  -3.1% ex-top1  +0.1%
+  V0 grade C  n1164 win 25% mean  +0.3% med  -2.8% ex-top1  -0.8%
+  V1 all      n1796 win 27% mean  +1.0% med  -3.2% ex-top1  -0.2%
+  V1 grade A  n390  win 28% mean  +1.9% med  -3.3% ex-top1  +0.5%
+  V1 grade B  n575  win 29% mean  +1.4% med  -3.2% ex-top1  +0.1%
+  V1 grade C  n831  win 26% mean  +0.2% med  -3.2% ex-top1  -0.8%
+  V2 all      n1950 win 27% mean  +1.1% med  -3.2% ex-top1  -0.1%
+  V2 grade A  n436  win 28% mean  +2.5% med  -3.2% ex-top1  +0.8%
+  V2 grade B  n624  win 28% mean  +1.3% med  -3.4% ex-top1  +0.0%
+  V2 grade C  n890  win 26% mean  +0.2% med  -3.1% ex-top1  -0.7%
+  book(8 slots) V0 all: cagr +46% dd -41% n370 | grade A: cagr +11% dd -45% n307 | grade A+B: cagr +26% dd -35% n339
+  book(8 slots) V1 all: cagr +56% dd -39% n322 | grade A: cagr +17% dd -35% n253 | grade A+B: cagr +2% dd -38% n307
+  PRIMARY (test): V1+gradeA kept n390  win 28% mean  +1.9% med  -3.3% ex-top1  +0.5% | V0 all n2670 win 26% mean  +1.0% med  -3.0% ex-top1  -0.2% | random-skip p vs V0 pool 0.137
+  gate marginal on V1 (mean when gate on vs off):g1 tr +2.0/-0.0 te +1.5/+0.6; g2 tr +1.1/+0.8 te +1.6/+0.7; g3 tr +1.3/+0.6 te +1.5/+0.6; g4 tr +1.2/-0.4 te +1.2/+0.1; g5 tr +0.9/-0.2 te +0.9/+1.1
+  bq tr: lowB n652  win 28% mean  +1.5% med  -3.5% ex-top1  -0.1% | midB n584  win 27% mean  +0.9% med  -3.3% ex-top1  -0.4% | highB n648  win 25% mean  +0.1% med  -3.5% ex-top1  -1.1%
+  bq te: lowB n578  win 25% mean  +0.3% med  -3.3% ex-top1  -0.8% | midB n639  win 28% mean  +1.7% med  -3.3% ex-top1  +0.4% | highB n579  win 28% mean  +0.8% med  -3.1% ex-top1  -0.5%
+  hb tr: 9:30 n651  win 29% mean  +1.1% med  -3.7% ex-top1  -0.4% | 10-12 n737  win 28% mean  +1.1% med  -3.1% ex-top1  -0.2% | 13-14 n351  win 20% mean  +0.2% med  -3.6% ex-top1  -1.4% | 15:30 n145  win 23% mean  -0.2% med  -3.5% ex-top1  -1.1%
+  hb te: 9:30 n671  win 31% mean  +1.4% med  -3.7% ex-top1  +0.2% | 10-12 n623  win 26% mean  +0.7% med  -3.0% ex-top1  -0.8% | 13-14 n344  win 21% mean  +0.5% med  -3.1% ex-top1  -0.5% | 15:30 n158  win 26% mean  +1.1% med  -3.1% ex-top1  -0.0%
+
+==================== BOOK $1-2
+-- TRAIN
+  V0 all      n606  win 25% mean  +2.5% med  -3.8% ex-top1  +0.2%
+  V0 grade A  n106  win 24% mean  +3.8% med  -5.0% ex-top1  +0.8%
+  V0 grade B  n222  win 28% mean  +4.3% med  -4.0% ex-top1  +0.8%
+  V0 grade C  n278  win 23% mean  +0.6% med  -3.6% ex-top1  -0.5%
+  V1 all      n442  win 25% mean  +1.3% med  -4.3% ex-top1  -0.6%
+  V1 grade A  n64   win 25% mean  +4.0% med  -5.5% ex-top1  +0.8%
+  V1 grade B  n159  win 26% mean  +1.8% med  -4.5% ex-top1  -0.7%
+  V1 grade C  n219  win 24% mean  +0.1% med  -3.8% ex-top1  -0.9%
+  V2 all      n473  win 25% mean  +1.2% med  -4.5% ex-top1  -0.6%
+  V2 grade A  n70   win 24% mean  +3.3% med  -5.7% ex-top1  +0.4%
+  V2 grade B  n173  win 25% mean  +1.9% med  -4.6% ex-top1  -0.4%
+  V2 grade C  n230  win 24% mean  -0.0% med  -3.9% ex-top1  -0.9%
+  book(8 slots) V0 all: cagr +87% dd -31% n329 | grade A: cagr +35% dd -17% n106 | grade A+B: cagr +99% dd -25% n238
+  book(8 slots) V1 all: cagr +75% dd -32% n288 | grade A: cagr +20% dd -14% n64 | grade A+B: cagr +55% dd -32% n206
+-- TEST 
+  V0 all      n471  win 34% mean  +4.2% med  -3.2% ex-top1  +2.3%
+  V0 grade A  n105  win 42% mean +11.7% med  -2.8% ex-top1  +8.6%
+  V0 grade B  n153  win 30% mean  +3.4% med  -3.2% ex-top1  +1.5%
+  V0 grade C  n213  win 32% mean  +1.1% med  -3.3% ex-top1  -0.7%
+  V1 all      n317  win 34% mean  +4.2% med  -3.9% ex-top1  +2.2%
+  V1 grade A  n73   win 42% mean +12.1% med  -2.4% ex-top1  +9.5%
+  V1 grade B  n92   win 30% mean  +4.5% med  -4.0% ex-top1  +2.6%
+  V1 grade C  n152  win 32% mean  +0.1% med  -4.0% ex-top1  -0.8%
+  V2 all      n340  win 33% mean  +3.8% med  -3.9% ex-top1  +2.0%
+  V2 grade A  n77   win 42% mean +11.9% med  -2.4% ex-top1  +9.5%
+  V2 grade B  n100  win 29% mean  +3.8% med  -4.1% ex-top1  +2.0%
+  V2 grade C  n163  win 32% mean  +0.0% med  -3.9% ex-top1  -0.8%
+  book(8 slots) V0 all: cagr +118% dd -51% n274 | grade A: cagr +136% dd -36% n94 | grade A+B: cagr +182% dd -41% n199
+  book(8 slots) V1 all: cagr +115% dd -33% n226 | grade A: cagr +97% dd -22% n69 | grade A+B: cagr +145% dd -32% n145
+  PRIMARY (test): V1+gradeA kept n73   win 42% mean +12.1% med  -2.4% ex-top1  +9.5% | V0 all n471  win 34% mean  +4.2% med  -3.2% ex-top1  +2.3% | random-skip p vs V0 pool 0.006
+  gate marginal on V1 (mean when gate on vs off):g1 tr +2.2/+0.5 te +7.1/+1.4; g2 tr +1.3/+1.3 te +5.9/+3.6; g3 tr +4.2/+0.5 te +11.3/+1.2; g4 tr +1.3/+1.0 te +5.3/+0.1; g5 tr +1.3/+1.5 te +4.6/+0.2
+  bq tr: lowB n150  win 24% mean  +1.3% med  -4.9% ex-top1  -1.4% | midB n148  win 23% mean  -0.7% med  -3.9% ex-top1  -1.6% | highB n144  win 28% mean  +3.3% med  -3.9% ex-top1  +0.9%
+  bq te: lowB n103  win 32% mean  +4.5% med  -3.7% ex-top1  +2.0% | midB n105  win 34% mean  +3.7% med  -3.9% ex-top1  +1.5% | highB n109  win 36% mean  +4.3% med  -3.8% ex-top1  +1.5%
+  hb tr: 9:30 n129  win 26% mean  +0.8% med  -4.7% ex-top1  -1.8% | 10-12 n185  win 26% mean  +1.5% med  -3.8% ex-top1  -0.2% | 13-14 n95   win 20% mean  +1.5% med  -4.5% ex-top1  -0.7% | 15:30 n33   win 24% mean  +1.5% med  -3.9% ex-top1  +0.1%
+  hb te: 9:30 n118  win 40% mean  +8.2% med  -3.9% ex-top1  +5.7% | 10-12 n109  win 32% mean  +2.2% med  -3.7% ex-top1  -0.7% | 13-14 n61   win 30% mean  +1.7% med  -3.7% ex-top1  +0.5% | 15:30 n29   win 28% mean  +0.2% med  -4.1% ex-top1  -1.8%
+
+==================== BOOK BIG proxy
+-- TRAIN
+  V0 all      n1867 win 23% mean  -0.2% med  -2.7% ex-top1  -1.1%
+  V0 grade A  n470  win 27% mean  +0.5% med  -2.7% ex-top1  -0.4%
+  V0 grade B  n628  win 24% mean  -0.8% med  -2.9% ex-top1  -1.6%
+  V0 grade C  n769  win 21% mean  -0.1% med  -2.6% ex-top1  -1.0%
+  V1 all      n1179 win 25% mean  -0.2% med  -2.9% ex-top1  -1.2%
+  V1 grade A  n282  win 29% mean  +0.6% med  -2.9% ex-top1  -0.4%
+  V1 grade B  n383  win 25% mean  -1.3% med  -3.1% ex-top1  -1.9%
+  V1 grade C  n514  win 23% mean  +0.1% med  -2.8% ex-top1  -1.2%
+  V2 all      n1297 win 25% mean  -0.1% med  -2.9% ex-top1  -1.1%
+  V2 grade A  n323  win 29% mean  +0.7% med  -2.9% ex-top1  -0.5%
+  V2 grade B  n420  win 26% mean  -0.9% med  -3.1% ex-top1  -1.7%
+  V2 grade C  n554  win 23% mean  +0.1% med  -2.8% ex-top1  -1.1%
+  book(8 slots) V0 all: cagr +7% dd -33% n374 | grade A: cagr +7% dd -24% n263 | grade A+B: cagr -25% dd -54% n375
+  book(8 slots) V1 all: cagr +14% dd -36% n349 | grade A: cagr +4% dd -24% n203 | grade A+B: cagr -20% dd -45% n316
+-- TEST 
+  V0 all      n1828 win 22% mean  -1.1% med  -3.2% ex-top1  -1.9%
+  V0 grade A  n474  win 22% mean  -1.2% med  -3.6% ex-top1  -2.2%
+  V0 grade B  n603  win 23% mean  -1.4% med  -3.5% ex-top1  -2.3%
+  V0 grade C  n751  win 21% mean  -0.9% med  -2.9% ex-top1  -1.5%
+  V1 all      n1137 win 23% mean  -1.2% med  -3.3% ex-top1  -1.9%
+  V1 grade A  n278  win 24% mean  -1.6% med  -3.5% ex-top1  -2.3%
+  V1 grade B  n356  win 24% mean  -1.0% med  -3.8% ex-top1  -2.0%
+  V1 grade C  n503  win 21% mean  -1.2% med  -3.1% ex-top1  -1.7%
+  V2 all      n1282 win 23% mean  -1.2% med  -3.4% ex-top1  -1.9%
+  V2 grade A  n319  win 24% mean  -1.7% med  -3.7% ex-top1  -2.5%
+  V2 grade B  n404  win 24% mean  -1.3% med  -3.9% ex-top1  -2.3%
+  V2 grade C  n559  win 23% mean  -0.8% med  -3.1% ex-top1  -1.4%
+  book(8 slots) V0 all: cagr -53% dd -65% n410 | grade A: cagr -42% dd -56% n306 | grade A+B: cagr -29% dd -56% n370
+  book(8 slots) V1 all: cagr -46% dd -59% n357 | grade A: cagr -35% dd -51% n219 | grade A+B: cagr -44% dd -57% n329
+  PRIMARY (test): V1+gradeA kept n278  win 24% mean  -1.6% med  -3.5% ex-top1  -2.3% | V0 all n1828 win 22% mean  -1.1% med  -3.2% ex-top1  -1.9% | random-skip p vs V0 pool 0.769
+  gate marginal on V1 (mean when gate on vs off):g1 tr -0.3/-0.2 te -1.3/-1.2; g2 tr +0.2/-0.4 te -1.7/-1.0; g3 tr +0.3/-0.6 te -0.9/-1.5; g4 tr -0.6/+0.7 te -1.1/-1.6; g5 tr -0.3/+1.0 te -1.5/+1.1
+  bq tr: lowB n431  win 30% mean  +0.8% med  -2.8% ex-top1  -0.7% | midB n362  win 24% mean  -0.5% med  -3.0% ex-top1  -1.3% | highB n386  win 21% mean  -1.1% med  -3.1% ex-top1  -1.8%
+  bq te: lowB n341  win 25% mean  -1.6% med  -3.7% ex-top1  -2.1% | midB n417  win 17% mean  -2.0% med  -3.4% ex-top1  -2.8% | highB n379  win 28% mean  -0.1% med  -3.1% ex-top1  -0.9%
+  hb tr: 9:30 n485  win 28% mean  +0.2% med  -3.2% ex-top1  -0.8% | 10-12 n405  win 26% mean  +0.0% med  -2.6% ex-top1  -1.0% | 13-14 n204  win 18% mean  -2.3% med  -2.9% ex-top1  -2.7% | 15:30 n85   win 20% mean  +1.0% med  -2.9% ex-top1  -1.1%
+  hb te: 9:30 n466  win 23% mean  -2.2% med  -4.3% ex-top1  -2.7% | 10-12 n382  win 26% mean  -0.7% med  -3.1% ex-top1  -1.3% | 13-14 n182  win 19% mean  -1.1% med  -2.8% ex-top1  -1.9% | 15:30 n107  win 20% mean  +1.1% med  -2.8% ex-top1  -1.3%
