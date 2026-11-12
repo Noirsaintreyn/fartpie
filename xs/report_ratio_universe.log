@@ -1,0 +1,62 @@
+reference live (S&P, ratio>=1.5): 40 matched runs, 2019-21 / 2022-26
+  L live                             ret +53.2% / +21.5%   DD -10% / -20%   ret/DD 5.08 / 1.13
+
+=== ratio >= 1.5
+  S&P (live) cut 1.5: 54 tickers, 17447 trades (3945/13502), avg +0.60% / +0.23%, win 35% / 32%
+    book S&P (live) 1.5              ret +53.2% / +21.5%   DD -10% / -20%   ret/DD 5.08 / 1.13   beats live 0% / 0%
+  Nasdaq-100 cut 1.5: 26 tickers, 10801 trades (2716/8085), avg +0.79% / +0.31%, win 37% / 33%
+    book Nasdaq-100 1.5              ret +72.9% / +28.2%   DD -12% / -20%   ret/DD 5.63 / 1.26   beats live 57% / 52%
+  Dow 30 cut 1.5: 15 tickers, 6920 trades (2033/4887), avg +0.59% / +0.28%, win 36% / 32%
+    book Dow 30 1.5                  ret +44.6% / +21.7%   DD -9% / -15%   ret/DD 4.80 / 1.44   beats live 25% / 80%
+  S&P+NDX cut 1.5: 56 tickers, 18805 trades (4495/14310), avg +0.70% / +0.23%, win 35% / 32%
+    book S&P+NDX 1.5                 ret +76.4% / +24.1%   DD -15% / -21%   ret/DD 5.00 / 1.24   beats live 38% / 75%
+  ALL ex-ETF cut 1.5: 99 tickers, 27837 trades (6922/20915), avg +0.60% / +0.19%, win 36% / 34%
+    book ALL ex-ETF 1.5              ret +78.9% / +5.2%   DD -16% / -32%   ret/DD 5.42 / 0.15   beats live 57% / 0%
+
+=== ratio >= 2
+  S&P (live) cut 2: 39 tickers, 11621 trades (2647/8974), avg +0.56% / +0.25%, win 34% / 32%
+    book S&P (live) 2                ret +46.7% / +20.5%   DD -10% / -20%   ret/DD 4.43 / 0.99   beats live 18% / 32%
+  Nasdaq-100 cut 2: 24 tickers, 8403 trades (2147/6256), avg +0.89% / +0.33%, win 37% / 33%
+    book Nasdaq-100 2                ret +86.0% / +22.6%   DD -10% / -28%   ret/DD 8.87 / 0.74   beats live 100% / 38%
+  Dow 30 cut 2: 11 tickers, 4524 trades (1578/2946), avg +0.62% / +0.32%, win 35% / 32%
+    book Dow 30 2                    ret +43.6% / +22.6%   DD -9% / -17%   ret/DD 5.14 / 1.29   beats live 52% / 78%
+  S&P+NDX cut 2: 42 tickers, 12351 trades (3055/9296), avg +0.73% / +0.25%, win 35% / 33%
+    book S&P+NDX 2                   ret +73.2% / +19.9%   DD -15% / -21%   ret/DD 5.22 / 0.93   beats live 48% / 25%
+  ALL ex-ETF cut 2: 71 tickers, 17504 trades (4355/13149), avg +0.56% / +0.20%, win 36% / 34%
+    book ALL ex-ETF 2                ret +67.9% / +0.8%   DD -18% / -38%   ret/DD 3.87 / 0.02   beats live 2% / 0%
+
+=== ratio >= 2.5
+  S&P (live) cut 2.5: 32 tickers, 8552 trades (1960/6592), avg +0.55% / +0.27%, win 35% / 32%
+    book S&P (live) 2.5              ret +44.5% / +20.4%   DD -10% / -20%   ret/DD 4.35 / 1.04   beats live 0% / 30%
+  Nasdaq-100 cut 2.5: 21 tickers, 6512 trades (1701/4811), avg +1.01% / +0.32%, win 38% / 33%
+    book Nasdaq-100 2.5              ret +83.6% / +19.8%   DD -10% / -31%   ret/DD 8.76 / 0.66   beats live 100% / 15%
+  Dow 30 cut 2.5: 8 tickers, 3694 trades (1112/2582), avg +0.65% / +0.32%, win 37% / 32%
+    book Dow 30 2.5                  ret +38.9% / +20.7%   DD -9% / -18%   ret/DD 4.24 / 1.20   beats live 8% / 52%
+  S&P+NDX cut 2.5: 34 tickers, 9083 trades (2296/6787), avg +0.79% / +0.28%, win 36% / 33%
+    book S&P+NDX 2.5                 ret +76.1% / +20.9%   DD -15% / -20%   ret/DD 5.38 / 1.08   beats live 60% / 35%
+  ALL ex-ETF cut 2.5: 52 tickers, 12421 trades (3112/9309), avg +0.65% / +0.20%, win 37% / 34%
+    book ALL ex-ETF 2.5              ret +73.0% / +6.7%   DD -16% / -31%   ret/DD 4.45 / 0.22   beats live 28% / 0%
+
+=== ratio >= 3
+  S&P (live) cut 3: 23 tickers, 6485 trades (1433/5052), avg +0.57% / +0.28%, win 35% / 33%
+    book S&P (live) 3                ret +40.7% / +19.2%   DD -10% / -20%   ret/DD 4.07 / 0.92   beats live 0% / 25%
+  Nasdaq-100 cut 3: 17 tickers, 5424 trades (1420/4004), avg +1.05% / +0.31%, win 38% / 33%
+    book Nasdaq-100 3                ret +82.9% / +18.8%   DD -9% / -31%   ret/DD 9.06 / 0.58   beats live 100% / 18%
+  Dow 30 cut 3: 7 tickers, 3019 trades (812/2207), avg +0.69% / +0.34%, win 36% / 33%
+    book Dow 30 3                    ret +33.9% / +22.4%   DD -6% / -16%   ret/DD 5.13 / 1.35   beats live 50% / 72%
+  S&P+NDX cut 3: 25 tickers, 6992 trades (1763/5229), avg +0.87% / +0.29%, win 37% / 33%
+    book S&P+NDX 3                   ret +82.9% / +22.3%   DD -10% / -23%   ret/DD 8.60 / 1.02   beats live 100% / 32%
+  ALL ex-ETF cut 3: 40 tickers, 9492 trades (2501/6991), avg +0.69% / +0.20%, win 38% / 35%
+    book ALL ex-ETF 3                ret +87.4% / +9.2%   DD -13% / -36%   ret/DD 6.80 / 0.25   beats live 85% / 0%
+
+=== ratio >= 4
+  S&P (live) cut 4: 17 tickers, 3351 trades (801/2550), avg +0.65% / +0.35%, win 38% / 33%
+    book S&P (live) 4                ret +32.1% / +15.4%   DD -10% / -21%   ret/DD 3.36 / 0.67   beats live 0% / 0%
+  Nasdaq-100 cut 4: 14 tickers, 3240 trades (943/2297), avg +1.15% / +0.34%, win 39% / 33%
+    book Nasdaq-100 4                ret +68.5% / +16.6%   DD -8% / -21%   ret/DD 8.17 / 0.78   beats live 100% / 0%
+  Dow 30 cut 4: 6 tickers, 1350 trades (464/886), avg +0.78% / +0.52%, win 38% / 34%
+    book Dow 30 4                    ret +20.2% / +16.1%   DD -7% / -14%   ret/DD 2.87 / 1.19   beats live 0% / 57%
+  S&P+NDX cut 4: 19 tickers, 3708 trades (1038/2670), avg +1.08% / +0.33%, win 38% / 33%
+    book S&P+NDX 4                   ret +70.9% / +16.6%   DD -9% / -22%   ret/DD 8.00 / 0.75   beats live 90% / 2%
+  ALL ex-ETF cut 4: 27 tickers, 5424 trades (1652/3772), avg +0.78% / +0.26%, win 40% / 36%
+    book ALL ex-ETF 4                ret +78.9% / +10.8%   DD -12% / -30%   ret/DD 6.67 / 0.38   beats live 98% / 0%
