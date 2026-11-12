@@ -1,0 +1,107 @@
+panel1 trades 11908
+
+################ PANEL 1: 8 mega-caps 15m (train 2019-21 / test 2022+): trades train 5278 test 6630 | mean ret train +10.5 bp test +6.6 bp | win% train 30.2 test 30.3
+feature       IC train   FWER-p(train)   IC test   p(test,single)   tercile spread test (top-bottom, bp)   verdict
+atr_pct      -0.072      0.000       -0.058      0.000            -7.5      REPLICATES
+stop_atr     -0.067      0.000       -0.096      0.000            -2.0      REPLICATES
+impulse      -0.038      0.093       -0.032      0.009           +15.5      REPLICATES
+d1           +0.028      0.493       +0.011      0.376            +8.3      
+ema          -0.023      0.837       +0.008      0.508            +2.4      
+h1           +0.022      0.870       -0.016      0.189            -6.4      
+gap          +0.021      0.893       +0.037      0.008           +20.6      
+day_mv       -0.018      0.973       +0.003      0.835           +14.2      
+rs           -0.018      0.987       +0.005      0.710            +8.0      
+vol_rel      -0.017      0.987       -0.034      0.006            +5.4      
+er           +0.016      0.993       +0.004      0.733           +12.6      
+body         -0.016      0.997       -0.036      0.003           +11.7      
+chop         +0.016      0.997       +0.008      0.526            -2.7      
+pos_rng      -0.015      0.997       -0.027      0.051            +2.6      
+tod          -0.013      1.000       +0.017      0.166            +3.1      
+dow          -0.012      1.000       +0.004      0.766            +3.3      
+ret5         +0.009      1.000       -0.009      0.452            -1.7      
+prev_len     +0.006      1.000       +0.012      0.322           +21.9      
+mkt          +0.004      1.000       -0.005      0.694            +6.2      
+d20          -0.001      1.000       -0.002      0.890           -31.9      
+panel2 trades 2198
+
+################ PANEL 2: 22 small/mid names 1h (half 1 = Dec23-24 / half 2 = 2025+): trades train 793 test 1405 | mean ret train -53.2 bp test +59.0 bp | win% train 27.7 test 24.9
+feature       IC train   FWER-p(train)   IC test   p(test,single)   tercile spread test (top-bottom, bp)   verdict
+vol_rel      -0.128      0.000       -0.118      0.000          -181.1      REPLICATES
+stop_atr     -0.127      0.003       -0.170      0.000           -16.3      REPLICATES
+day_mv       -0.117      0.017       -0.127      0.000           -65.9      REPLICATES
+gap          -0.100      0.060       -0.084      0.002           -47.9      REPLICATES
+impulse      -0.093      0.103       -0.096      0.000           +18.1      
+atr_pct      -0.088      0.153       -0.085      0.002          -125.6      
+ema          -0.069      0.543       -0.012      0.647            +9.4      
+tod          +0.063      0.647       +0.021      0.436           -60.5      
+d1           -0.054      0.843       -0.002      0.947            -5.9      
+dow          -0.032      0.997       -0.024      0.372            -5.0      
+body         -0.031      1.000       -0.099      0.000          -268.0      
+pos_rng      +0.027      1.000       -0.024      0.377          -126.9      
+er           +0.023      1.000       -0.033      0.219           +20.4      
+prev_len     +0.020      1.000       -0.021      0.440           +80.4      
+ret5         +0.012      1.000       +0.047      0.079           +65.0      
+chop         +0.005      1.000       +0.014      0.610          -107.5      
+d20          +0.002      1.000       +0.044      0.099          -204.8      
+h1             +nan      0.000         +nan        nan            +0.0      
+
+#### STOP-DISTANCE BUCKETS (cut points = TRAIN terciles, applied unchanged to test): mean bp / win% / n
+  mega-caps by stop_atr (cuts 1.19/2.03)
+    train  low third:    +2.7 bp 24.4% n=1760 | mid third:   +11.2 bp 29.9% n=1759 | high third:   +17.4 bp 36.3% n=1759
+    test   low third:    +7.2 bp 23.4% n=2065 | mid third:    +8.0 bp 30.3% n=2074 | high third:    +5.0 bp 36.0% n=2491
+  mega-caps by atr_pct (cuts 0.35/0.69)
+    train  low third:   +14.2 bp 27.9% n=1766 | mid third:   +12.4 bp 30.8% n=1758 | high third:    +4.7 bp 31.9% n=1754
+    test   low third:   +10.8 bp 28.9% n=2005 | mid third:    +7.8 bp 29.9% n=2194 | high third:    +2.1 bp 31.9% n=2431
+  small/mid 1h by stop_atr (cuts 1.00/1.80)
+    train  low third:   -43.8 bp 23.8% n=265 | mid third:   -63.6 bp 24.2% n=264 | high third:   -52.3 bp 35.2% n=264
+    test   low third:   +49.0 bp 19.3% n=457 | mid third:   +97.5 bp 23.4% n=496 | high third:   +26.8 bp 32.3% n=452
+  small/mid 1h by atr_pct (cuts 0.36/0.74)
+    train  low third:   -12.7 bp 26.4% n=265 | mid third:   -50.0 bp 30.7% n=264 | high third:   -97.2 bp 26.1% n=264
+    test   low third:   +77.7 bp 23.6% n=513 | mid third:  +136.2 bp 25.1% n=442 | high third:   -38.2 bp 26.2% n=450
+
+
+================ SECOND PASS: outcome = R-multiple (return / stop distance, clipped +-10) so wide-stop trades are not scored just for being bigger ================
+
+################ PANEL 1 (R): trades train 5278 test 6630 | mean ret train -0.1 bp test -0.1 bp | win% train 30.2 test 30.3
+feature       IC train   FWER-p(train)   IC test   p(test,single)   tercile spread test (top-bottom, bp)   verdict
+stop_atr     +0.333      0.000       +0.335      0.000            +0.4      REPLICATES
+vol_rel      +0.173      0.000       +0.161      0.000            +0.3      REPLICATES
+impulse      +0.161      0.000       +0.188      0.000            +0.3      REPLICATES
+body         +0.136      0.000       +0.133      0.000            +0.2      REPLICATES
+atr_pct      +0.098      0.000       +0.111      0.000            +0.1      REPLICATES
+er           +0.077      0.000       +0.075      0.000            +0.2      REPLICATES
+day_mv       +0.069      0.000       +0.113      0.000            +0.2      REPLICATES
+pos_rng      +0.069      0.000       +0.080      0.000            +0.1      REPLICATES
+prev_len     +0.054      0.000       +0.049      0.000            +0.2      REPLICATES
+ema          +0.051      0.003       +0.074      0.000            +0.0      REPLICATES
+mkt          +0.045      0.017       +0.035      0.005            +0.2      REPLICATES
+tod          -0.041      0.023       -0.051      0.000            -0.0      REPLICATES
+dow          -0.028      0.513       +0.006      0.637            +0.1      
+d20          -0.025      0.717       -0.027      0.030            -0.4      
+ret5         -0.021      0.903       -0.028      0.023            -0.0      
+h1           -0.019      0.933       -0.038      0.002            -0.1      
+chop         -0.016      0.997       -0.008      0.491            -0.0      
+d1           +0.011      1.000       +0.007      0.583            +0.1      
+rs           +0.010      1.000       +0.054      0.000            -0.0      
+gap          -0.010      1.000       +0.016      0.250            +0.2      
+
+################ PANEL 2 (R): trades train 793 test 1405 | mean ret train -0.4 bp test -0.4 bp | win% train 27.7 test 24.9
+feature       IC train   FWER-p(train)   IC test   p(test,single)   tercile spread test (top-bottom, bp)   verdict
+stop_atr     +0.366      0.000       +0.397      0.000            +0.7      REPLICATES
+body         +0.154      0.000       +0.140      0.000            +0.1      REPLICATES
+impulse      +0.153      0.003       +0.158      0.000            +0.3      REPLICATES
+pos_rng      +0.137      0.003       +0.056      0.037            -0.1      REPLICATES
+day_mv       +0.114      0.017       +0.135      0.000            +0.0      REPLICATES
+vol_rel      +0.097      0.070       +0.079      0.003            -0.0      REPLICATES
+tod          -0.093      0.110       -0.174      0.000            -0.6      
+ret5         -0.058      0.777       -0.037      0.165            -0.2      
+atr_pct      +0.054      0.860       +0.090      0.001            +0.0      
+d20          -0.045      0.973       -0.021      0.442            -0.2      
+er           +0.044      0.973       +0.026      0.330            -0.2      
+prev_len     +0.027      1.000       -0.009      0.748            -0.2      
+dow          -0.023      1.000       -0.043      0.106            -0.2      
+chop         -0.013      1.000       +0.002      0.931            -0.0      
+ema          -0.010      1.000       +0.093      0.001            +0.0      
+gap          -0.009      1.000       -0.005      0.861            -0.0      
+d1           +0.009      1.000       +0.074      0.006            +0.1      
+h1             +nan      0.000         +nan        nan            +0.0      
