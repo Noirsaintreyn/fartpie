@@ -30,7 +30,9 @@ from vector_pine import run_state_machine
 ET = 'America/New_York'; LIVE = 'live'; os.makedirs(LIVE, exist_ok=True)
 STATE_F = f'{LIVE}/midsmall_state.json'; SLOTS = int(os.getenv('MIDSMALL_SLOTS', '8')); VOL_X = float(os.getenv('MIDSMALL_VOL_X', '1.5'))
 MAX_PX = float(os.getenv('MIDSMALL_MAX_PX', '2')); MIN_PX = float(os.getenv('MIDSMALL_MIN_PX', '1'));  # Nov 12 2026: $1-2 only (most consistent price band, xs/report_12_tf.log); MIDSMALL_MIN_PX=0 MIDSMALL_MAX_PX=5 restores the sub-$5 book
+GRADE_TXT = {'TOP': 'Grade TOP: Kalman trend up + above the 1h and 4h EMA200. Backtest ($1-2, vol>=1.5x flips): +12.1% avg per trade, 39% win, ~46 signals/yr, -12% book drawdown (in-sample, small sample).', 'STRONG': 'Grade STRONG: Kalman trend up + above the 1h EMA200. Backtest ($1-2, vol>=1.5x flips): +7.8% avg per trade, 36% win, ~94 signals/yr, -19% book drawdown (in-sample).', 'WEAK': ''}
 DAILY_TXT = {True: 'Daily trend: BULL - 1h flip inside a daily uptrend. Backtest $1-2 names, vol>=1.5x: +8.0% avg per trade, 36% win (p=0.02) vs +2.1% when the daily vector was not bull.', False: 'Daily trend: NOT bull - lone 1h flip against the daily vector; weaker in the backtest (+2.1% avg per trade vs +8.0% with daily bull, $1-2 names).', None: ''}
+REQ_LV = os.getenv('MIDSMALL_REQ_LOWVOL', '0') == '1'; MIN_GRADE = os.getenv('MIDSMALL_MIN_GRADE', 'STRONG'); FH = {}; LV = {}
 DAILY_GATE = os.getenv('MIDSMALL_DAILY_GATE', '0') == '1'; DBULL = {}; MA = {}; EMA200_GATE = os.getenv('MIDSMALL_EMA200_GATE', '0') == '1'; KAL_GATE = os.getenv('MIDSMALL_KALMAN_GATE', '0') == '1'; VWAP_X = float(os.getenv('MIDSMALL_VWAP_X', '1.0')); EARN_SKIP = int(os.getenv('MIDSMALL_EARN_SKIP', '3'))
 try: import signal_context as SC
 except Exception as _e: SC = None; print(f'  ! signal_context unavailable ({_e}); posts will have no context, no earnings/short rules')
@@ -113,7 +115,7 @@ def events(F):
     for i in range(1, len(F)):
         if r[i] == r[i - 1] or r[i] == 0: continue
         px_ok = (MAX_PX <= 0 or F.close.iat[i] < MAX_PX) and F.close.iat[i] >= MIN_PX; vw_ok = not (F.vwx.iat[i] > VWAP_X)      # NaN vwx (warm-up) passes
-        if r[i] == 1 and F.vrel.iat[i] >= VOL_X and F.lv.iat[i] and not np.isnan(F.vrel.iat[i]) and px_ok and vw_ok: ev.append((F.index[i], 'BUY', float(F.vrel.iat[i]), float(F.close.iat[i])))
+        if r[i] == 1 and F.vrel.iat[i] >= VOL_X and (F.lv.iat[i] or not REQ_LV) and not np.isnan(F.vrel.iat[i]) and px_ok and vw_ok: ev.append((F.index[i], 'BUY', float(F.vrel.iat[i]), float(F.close.iat[i])))
         elif r[i] == 1: ev.append((F.index[i], 'FLIP_FILTERED', float(F.vrel.iat[i]) if not np.isnan(F.vrel.iat[i]) else np.nan, float(F.close.iat[i])))
         elif r[i] == -1: ev.append((F.index[i], 'SELL', float(F.vrel.iat[i]) if not np.isnan(F.vrel.iat[i]) else np.nan, float(F.close.iat[i])))
     return ev
@@ -168,10 +170,18 @@ def post(text):
 
 def scan_once(dry, data=None, asof=None):
     tks = universe(); data = data or get_data(tks); st = load_state(); fired = []; ctxs = []; t = asof
-    cand = []
+    cand = []; conf_msgs = []
     for tk, Y in data.items():
         Yc = closed_only(Y, t)
         if len(Yc) < 300: continue
+        p0 = st['pos'].get(tk)
+        if p0 and p0.get('fh') and p0.get('conf') is None:                                                          # follow-through check: did the entry bar close above the flip bar's high?
+            try:
+                ix = Yc.index.get_loc(pd.Timestamp(p0['t']))
+                if ix + 1 < len(Yc):
+                    cb = float(Yc.close.iat[ix + 1]); ok = cb > p0['fh']; p0['conf'] = bool(ok)
+                    conf_msgs.append(f"\U0001f50e FOLLOW-THROUGH {tk}: entry bar closed {cb:.2f}, " + (f"ABOVE the flip-bar high {p0['fh']:.2f} - CONFIRMED. Backtest ($1-2, Kalman + 1h EMA200): confirmed trades 44% win, +12.0% avg per trade (63 trades, in-sample)." if ok else f"below the flip-bar high {p0['fh']:.2f} - NOT confirmed. These still averaged about +6% in the backtest, so use it to size down, not as a stop (exiting early on weak starts lost money in every test)."))
+            except Exception: pass
         if tk not in st['pos']:                                                                                      # cheap prefilter: a BUY needs this bar's volume >= VOL_X x prior-20 mean and price < MAX_PX
             v = Yc.volume.values.astype(float); m20 = v[-21:-1].mean()
             if not (m20 > 0 and v[-1] / m20 >= VOL_X and (MAX_PX <= 0 or Yc.close.iat[-1] < MAX_PX) and Yc.close.iat[-1] >= MIN_PX): continue
@@ -179,7 +189,7 @@ def scan_once(dry, data=None, asof=None):
         if (now_et() if t is None else t) - bar_close(last) > pd.Timedelta('3h') and t is None: continue          # stale feed / market closed overnight: ignore
         for (ts, kind, vr, px) in events(F):
             if ts != last: continue                                                                              # only the newest closed bar can fire
-            if kind == 'BUY': DBULL[tk] = daily_bull(Yc); MA[tk] = ma_context(Yc)
+            if kind == 'BUY': DBULL[tk] = daily_bull(Yc); MA[tk] = ma_context(Yc); FH[tk] = float(Yc.high.iat[-1]); LV[tk] = bool(F.lv.iat[-1])
             cand.append((tk, ts, kind, vr, px, float(F.vwx.iat[-1]) if F.vwx.iat[-1] == F.vwx.iat[-1] else 0.0))
     # exits first (free slots), then entries by flip-volume ratio
     for tk, ts, kind, vr, px, vwx in cand:
@@ -197,6 +207,9 @@ def scan_once(dry, data=None, asof=None):
             print(f"  skipped {tk}: bull flip but earnings reaction in {ses} sessions ({e['next']:%b %d})"); st['seen'].append(key); continue
         if DAILY_GATE and DBULL.get(tk) is False: print(f'  skipped {tk}: daily vector not bull (MIDSMALL_DAILY_GATE=1)'); st['seen'].append(key); continue
         if EMA200_GATE and MA.get(tk) and not MA[tk]['a200']: print(f'  skipped {tk}: below the 1h 200 EMA (MIDSMALL_EMA200_GATE=1)'); st['seen'].append(key); continue
+        m_ = MA.get(tk); a4_ = bool(m_ and m_.get('e4') and m_['px'] > m_['e4'])
+        grade = 'TOP' if (m_ and m_.get('kal') and m_['a200'] and a4_) else ('STRONG' if (m_ and m_.get('kal') and m_['a200']) else 'WEAK')
+        if MIN_GRADE == 'TOP' and grade != 'TOP' or MIN_GRADE == 'STRONG' and grade == 'WEAK': print(f'  skipped {tk}: grade {grade} (needs Kalman up + above the 1h EMA200{" + 4h EMA200" if MIN_GRADE == "TOP" else ""}; MIDSMALL_MIN_GRADE={MIN_GRADE})'); st['seen'].append(key); continue
         if KAL_GATE and MA.get(tk) and MA[tk].get('kal') is False: print(f'  skipped {tk}: Kalman trend down (MIDSMALL_KALMAN_GATE=1)'); st['seen'].append(key); continue
         svr = SC.short_share(tk) if SC else None; half = svr is not None and svr > SC.SVR_CUT
         size_txt = (f"Size: HALF slot - short sellers are {svr:.0%} of its volume (20-day), the persistent-short-pressure group that underperformed in the backtest." if half else
@@ -204,9 +217,10 @@ def scan_once(dry, data=None, asof=None):
         flags = SC.midsmall_flags(vr, svr, ses, vwx, iwm_up) + (BACKTEST_NOTE,) if SC else None
         if len(st['pos']) >= SLOTS:
             fired.append(f"\u2b50 HONORABLE MENTION {tk}: low-vol day + high-volume bull flip on the {ts:%H:%M} bar ({vr:.1f}x volume, last {px:.2f}), but all {SLOTS} slots are full."); ctxs.append(None); st['seen'].append(key); continue
-        st['pos'][tk] = {'px': px, 't': str(ts), 'vr': vr, 'size': 0.5 if half else 1.0}; st['seen'].append(key)
-        fired.append(f"\u26a1 BUY {tk}: 1h vector bull flip on the {ts:%H:%M} bar with {vr:.1f}x volume on a low-volatility day, {vwx:+.1f} ATR vs VWAP. Entry next open (~{px:.2f}). Exit = the vector's bear flip (no other stop). Slot {len(st['pos'])}/{SLOTS}." + (' HALF SIZE.' if half else '') + (' Below 1h 200 EMA.' if MA.get(tk) and not MA[tk]['a200'] else '') + (' A+ GRADE: daily vector bull AND Kalman trend up.' if DBULL.get(tk) and MA.get(tk) and MA[tk].get('kal') else ' A-GRADE: daily vector is also bull.' if DBULL.get(tk) else (' Daily vector NOT bull (lone 1h flip).' if DBULL.get(tk) is False else '')))
-        ctxs.append(SC.block(tk, 'BUY', extra=[x for x in (size_txt, DAILY_TXT.get(DBULL.get(tk), ''), ma_text(MA.get(tk))) if x], flags=flags) if SC else None)
+        st['pos'][tk] = {'px': px, 't': str(ts), 'vr': vr, 'size': 0.5 if half else 1.0, 'fh': FH.get(tk), 'conf': None, 'grade': grade}; st['seen'].append(key)
+        fired.append(f"\u26a1 BUY {tk}: [{grade}] 1h vector bull flip on the {ts:%H:%M} bar with {vr:.1f}x volume{' on a low-volatility day' if LV.get(tk) else ''}, {vwx:+.1f} ATR vs VWAP. Entry next open (~{px:.2f}). Exit = the vector's bear flip (no other stop). Slot {len(st['pos'])}/{SLOTS}." + (' HALF SIZE.' if half else '') + (' Below 1h 200 EMA.' if MA.get(tk) and not MA[tk]['a200'] else '') + (' A+ GRADE: daily vector bull AND Kalman trend up.' if DBULL.get(tk) and MA.get(tk) and MA[tk].get('kal') else ' A-GRADE: daily vector is also bull.' if DBULL.get(tk) else (' Daily vector NOT bull (lone 1h flip).' if DBULL.get(tk) is False else '')))
+        ctxs.append(SC.block(tk, 'BUY', extra=[x for x in (size_txt, GRADE_TXT.get(grade, ''), DAILY_TXT.get(DBULL.get(tk), ''), ma_text(MA.get(tk))) if x], flags=flags) if SC else None)
+    for m in conf_msgs: fired.append(m); ctxs.append(None)
     for m in fired: print(m); (None if dry else post(m))                                                           # alerts first (fast) ...
     for m, c in zip(fired, ctxs):                                                                                   # ... then the context for each
         if c: print(c); (None if dry else post(c))
@@ -242,7 +256,7 @@ def wait_for_bar(target, timeout=120):
         time.sleep(3)
     return False
 def loop():
-    print(f'midsmall screener up: {len(universe())} names, {SLOTS} slots, volume >= {VOL_X}x, price ${MIN_PX:g}-{MAX_PX:g}'); post(f'\U0001f7e2 Mid/small-cap screener online: {len(universe())} names, {SLOTS} slots. 1h vector bull flips under ${MAX_PX:g} on low-vol days with >= {VOL_X}x volume, not extended above VWAP, not within {EARN_SKIP} sessions of earnings; half size when short selling is heavy. Exit = bear flip. Each alert comes with market context, news and setup flags.')
+    print(f'midsmall screener up: {len(universe())} names, {SLOTS} slots, volume >= {VOL_X}x, price ${MIN_PX:g}-{MAX_PX:g}'); post(f'\U0001f7e2 Mid/small-cap screener online: {len(universe())} names, {SLOTS} slots. 1h vector bull flips on ${MIN_PX:g}-{MAX_PX:g} names with >= {VOL_X}x volume, graded TOP (Kalman trend up + above 1h and 4h EMA200) / STRONG (Kalman up + above 1h EMA200); weaker flips are skipped (MIDSMALL_MIN_GRADE). Not extended above VWAP, not within {EARN_SKIP} sessions of earnings; half size when short selling is heavy. A follow-through note posts after the entry bar closes. Exit = bear flip. Each alert comes with market context, MA context, news and setup flags.')
     while True:
         t = now_et(); mins = t.hour * 60 + t.minute
         if t.dayofweek >= 5 or mins > 16 * 60 + 5: print('market closed - exiting'); return
