@@ -1,0 +1,26 @@
+universe 44
+events 403
+
+#### variant C, K=8, cost 15 bp
+  FULL Dec2023-Nov2026     total  +175.7%  annualised   +41.1%  maxDD  -25.3%  trades  354 (120/yr)  win 26.6%  avg hold 10.2d  median hold  6.0d  p90 hold 25.0d
+  2024 (Dec23-Dec24)       total   +68.4%  annualised   +61.8%  maxDD  -14.5%  trades  116 (107/yr)  win 28.4%  avg hold 10.6d  median hold  7.0d  p90 hold 26.5d
+  2025                     total   +96.9%  annualised   +96.9%  maxDD  -24.7%  trades  150 (150/yr)  win 29.3%  avg hold 10.6d  median hold  6.0d  p90 hold 27.0d
+  2026 YTD (to Nov 10)     total   -16.6%  annualised   -19.1%  maxDD  -18.3%  trades   88 (103/yr)  win 19.3%  avg hold  8.8d  median hold  5.5d  p90 hold 19.5d
+
+#### variant C, K=8, cost 30 bp
+  FULL Dec2023-Nov2026     total  +159.7%  annualised   +38.3%  maxDD  -26.3%  trades  354 (120/yr)  win 26.0%  avg hold 10.2d  median hold  6.0d  p90 hold 25.0d
+  2024 (Dec23-Dec24)       total   +65.2%  annualised   +59.0%  maxDD  -15.0%  trades  116 (107/yr)  win 28.4%  avg hold 10.6d  median hold  7.0d  p90 hold 26.5d
+  2025                     total   +92.1%  annualised   +92.1%  maxDD  -25.5%  trades  150 (150/yr)  win 28.7%  avg hold 10.6d  median hold  6.0d  p90 hold 27.0d
+  2026 YTD (to Nov 10)     total   -18.0%  annualised   -20.6%  maxDD  -19.0%  trades   88 (103/yr)  win 18.2%  avg hold  8.8d  median hold  5.5d  p90 hold 19.5d
+
+#### variant C, K=6, cost 15 bp
+  FULL Dec2023-Nov2026     total  +275.2%  annualised   +56.7%  maxDD  -32.2%  trades  303 (103/yr)  win 26.1%  avg hold 10.5d  median hold  6.1d  p90 hold 26.1d
+  2024 (Dec23-Dec24)       total  +119.7%  annualised  +106.8%  maxDD  -13.8%  trades   93 (86/yr)  win 32.3%  avg hold 11.6d  median hold  8.0d  p90 hold 28.7d
+  2025                     total  +118.7%  annualised  +118.7%  maxDD  -30.2%  trades  126 (126/yr)  win 26.2%  avg hold 10.9d  median hold  6.0d  p90 hold 28.0d
+  2026 YTD (to Nov 10)     total   -20.2%  annualised   -23.1%  maxDD  -22.7%  trades   85 (99/yr)  win 20.0%  avg hold  9.1d  median hold  6.0d  p90 hold 20.1d
+
+#### variant C, K=6, cost 30 bp
+  FULL Dec2023-Nov2026     total  +250.5%  annualised   +53.1%  maxDD  -33.1%  trades  303 (103/yr)  win 25.4%  avg hold 10.5d  median hold  6.1d  p90 hold 26.1d
+  2024 (Dec23-Dec24)       total  +115.4%  annualised  +103.1%  maxDD  -14.3%  trades   93 (86/yr)  win 32.3%  avg hold 11.6d  median hold  8.0d  p90 hold 28.7d
+  2025                     total  +112.8%  annualised  +112.8%  maxDD  -31.2%  trades  126 (126/yr)  win 25.4%  avg hold 10.9d  median hold  6.0d  p90 hold 28.0d
+  2026 YTD (to Nov 10)     total   -21.9%  annualised   -25.0%  maxDD  -23.6%  trades   85 (99/yr)  win 18.8%  avg hold  9.1d  median hold  6.0d  p90 hold 20.1d

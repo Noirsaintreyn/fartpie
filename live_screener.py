@@ -78,7 +78,25 @@ def now_et(): return pd.Timestamp.now(tz=ET).tz_localize(None)
 
 # ================================================================ data
 LSE_SYM = {'BRKB': 'BRK.B'}; YF_SYM = {'BRKB': 'BRK-B'}                   # feed symbols for tickers stored without the class dot
-LSE_DOWN = {'on': False}
+LSE_DOWN = {'on': os.getenv('LSE_ENABLED', '0') != '1'}      # Nov 12 2026: the LSE API is retired (410s since Oct 26) -> never try it unless LSE_ENABLED=1 (saved a failing call per ticker per scan)
+_YF_BATCH = {}
+def prefetch_bars(tks):
+    """Nov 12 2026: ONE multi-threaded Yahoo call for every ticker in the scan (was one sequential history() call per ticker = the main reason alerts were minutes late)"""
+    _YF_BATCH.clear(); tks = list(tks)
+    if not tks: return
+    t0 = time.time()
+    try:
+        import yfinance as yf
+        syms = [YF_SYM.get(t, t) for t in tks]; inv = {YF_SYM.get(t, t): t for t in tks}
+        D = yf.download(syms, period='5d', interval='15m', prepost=True, group_by='ticker', threads=True, progress=False, auto_adjust=False)
+        for sy in syms:
+            try:
+                Y = (D[sy] if len(syms) > 1 else D).dropna(subset=['Close'])
+                if len(Y): _YF_BATCH[inv[sy]] = Y
+            except Exception: pass
+    except Exception as e: print(f'  ! batch prefetch failed ({str(e)[:60]}); per-ticker fallback')
+    print(f'  prefetch: {len(_YF_BATCH)}/{len(tks)} tickers in {time.time() - t0:.1f}s')
+
 def load_bars(tk, fetch, first=None):
     first = RTH0 if first is None else first
     live_f = f'{LIVE}/{tk}_15m.parquet'
@@ -111,7 +129,8 @@ def load_bars(tk, fetch, first=None):
             if not LSE_DOWN.get('said'): print(f'  ! {tk}: LSE fetch failed ({str(e)[:40]}); trying yfinance'); LSE_DOWN['said'] = LSE_DOWN['on']
             try:                                                           # fallback feed so a rate-limited LSE never blinds the screener
                 import yfinance as yf
-                Y = yf.Ticker(YF_SYM.get(tk, tk)).history(period='5d', interval='15m', prepost=True)
+                Y = _YF_BATCH.get(tk)
+                if Y is None: Y = yf.Ticker(YF_SYM.get(tk, tk)).history(period='5d', interval='15m', prepost=True)
                 if len(Y):
                     Y = Y.reset_index(); t = pd.to_datetime(Y.pop(Y.columns[0]), utc=True)
                     Y = Y.rename(columns=str.lower)[['open', 'high', 'low', 'close', 'volume']]; Y.insert(0, 'datetime', t.values)
@@ -387,7 +406,8 @@ def scan(args):
     elig_now = sorted(set(elig_now) | was | (lg_open & set(RAT.columns)))
     gf = 'xs/ext/gex/QQQ.csv'                                             # only needed for the (off by default) QQQ slot
     G = pd.read_csv(gf, parse_dates=['date']).sort_values('date').set_index('date').net_gex if os.path.exists(gf) else pd.Series([0.0], index=[pd.Timestamp('2000-01-01')])
-    slots = SLOTS; out = []; TR = []; HS = {}
+    slots = SLOTS; out = []; TR = []; HS = {}; _t_scan = time.time()
+    if not args.no_fetch: prefetch_bars(elig_now + (['QQQ'] if INCLUDE_QQQ else []))
     for tk in elig_now + (['QQQ'] if INCLUDE_QQQ else []):
         pre = SESSION == 'pre' and tk != 'QQQ'
         H = load_bars(tk, not args.no_fetch, PRE0 if pre else RTH0)
@@ -411,6 +431,7 @@ def scan(args):
         if tk != 'QQQ': tr += replay_track(H, elig & (H.dt >= MODEL2).values, '1h')
         for t in tr: t['tk'] = tk; t['ratio'] = float(last_ratio.get(tk, 0) or 0)
         TR += tr; HS[tk] = H
+    print(f'  scan: {len(HS)} names, data+vector+replay {time.time() - _t_scan:.1f}s')
     for t in TR:                                                      # realized return of closed trades (for the drawdown breaker)
         if t['status'] == 'CLOSED': t['r'] = float(HS[t['tk']].open.values[t['x']]) / t['px'] - 1
     # ---- trade ledger (Oct 21 2026): a trade is written down when it is taken and never recomputed after that.
@@ -1065,6 +1086,20 @@ def post(text, files, channel=None):
     finally:
         [h.close() for h in fh]
 
+def wait_for_bar(target, timeout=90):
+    """poll Yahoo (SPY) until the 15m bar that closes at `target` ET is published, so the scan starts seconds after the close"""
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        try:
+            import yfinance as yf
+            y = yf.Ticker('SPY').history(period='1d', interval='15m', prepost=True)
+            if len(y):
+                ix = y.index[-1]; last = (ix.tz_convert(ET).tz_localize(None) if ix.tzinfo else ix)
+                if last >= target or (now_et() >= target + pd.Timedelta('20s') and last >= target - pd.Timedelta('15min')): print(f'  bar {target:%H:%M} ready after {time.time() - t0:.0f}s'); return True
+        except Exception: pass
+        time.sleep(2)
+    print(f'  ! bar {target:%H:%M} not seen after {timeout}s; scanning anyway'); return False
+
 STATE = f'{LIVE}/posted.json'
 def _state():
     try: return json.load(open(STATE))
@@ -1375,6 +1410,14 @@ def post_new_signals(rows, meta, st):
         if key in st['signals']: continue
         if r['action'] == 'SELL' and now_et().hour * 60 + now_et().minute < RTH0:
             late = f"\u26a0\ufe0f PREMARKET FLIP: {tk} vector turned bearish premarket ({r['bar']:%H:%M} bar, last {r['last']:.2f}). Rule exits at the 09:30 open."
+        fk = key + '|fast'                                                # Nov 12 2026: one-line alert goes out FIRST; the chart card (slow to render/upload) follows
+        if fk not in st['signals']:
+            try:
+                stp = r.get('stop'); stxt = f", stop {stp:.2f}" if stp is not None and stp == stp else ''
+                ftxt = (f"\u26a1 BUY {tk}: vector flipped bull on the {r['bar']:%H:%M} bar. Entry next open (~{r['last']:.2f}){stxt}. Chart follows." if r['action'] == 'BUY' else
+                        f"\u26a1 SELL {tk}: exit signal on the {r['bar']:%H:%M} bar (last {r['last']:.2f}). Chart follows.")
+                if post(ftxt, []): st['signals'].append(fk); _save(st)
+            except Exception as e: print(f'  ! fast alert: {str(e)[:60]}')
         p = f"{LIVE}/card_{tk.replace(' ', '_')}_{r['action']}.png"
         try: LC.signal_dash(r, meta, p) if r['action'] == 'BUY' else signal_card(r, meta, p)
         except Exception as e: print(f'  ! signal dash failed ({str(e)[:80]}); simple card'); signal_card(r, meta, p)
@@ -1767,11 +1810,15 @@ if __name__ == '__main__':
             for r in rows:
                 if r['action'] == 'HOLD' and r['px'] and RTH0 < mins <= RTH1: check_milestone(r, r['last'], st)
             if mins >= RTH1 and st.get('close') != today and post_positions(rows, meta): st['close'] = today; _save(st)   # 4:01 PM closing board
-        nxt = t.floor('15min') + pd.Timedelta('15min') + pd.Timedelta('75s')
+        nxt = t.floor('15min') + pd.Timedelta('15min') + pd.Timedelta(os.getenv('BAR_DELAY', '3s'))      # Nov 12 2026: was +75s fixed; now poll Yahoo for the closed bar
         if mins < 9 * 60: nxt = min(nxt, t.normalize() + pd.Timedelta('9h'))
         if t.dayofweek < 5 and 9 * 60 <= mins < RTH1 and 'rows' in globals():
             try:
                 check_failed(rows, st)
                 watch_crosses(rows, st, min(nxt, now_et().floor('15min') + pd.Timedelta('14min57s')))
             except Exception as ex: print(f'  ! cross watch: {ex}')
-        time.sleep(max(20, (nxt - now_et()).total_seconds()))
+        time.sleep(max(5, (nxt - now_et()).total_seconds()))
+        try:
+            tg = nxt.floor('15min'); mm = tg.hour * 60 + tg.minute
+            if t.dayofweek < 5 and RTH0 <= mm <= RTH1 + 15: wait_for_bar(tg)
+        except Exception as ex: print(f'  ! bar wait: {str(ex)[:80]}')
