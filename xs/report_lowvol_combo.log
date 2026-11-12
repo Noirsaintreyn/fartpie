@@ -1,0 +1,70 @@
+Crumb fetch rate-limited (HTTP 429), continuing without crumb
+small/mid universe 44
+
+######## SMALL/MID 1h HALF 1 (Dec23-2024)
+  condition                           n   obs bp  null bp(LV rand)   p   win%  (obs-null)
+  LV-day (reference)                   503   +92.8     +29.2       0.15  26.6   +63.6
+  LV + gap >= +0.5 ADR (with trade)     67   +53.7    +104.6       0.64  25.4   -50.9
+  LV + gap <= -0.5 ADR (against)        16 (too few)
+  LV + |gap| < 0.5 ADR                 420   +74.7      +0.5       0.17  26.0   +74.2
+  LV + flip vol >= 1.5x                236  +227.6     +38.0       0.07  30.5  +189.6
+  LV + flip vol < 1.5x                 267   -26.4     +14.7       0.76  23.2   -41.1
+  LV + EMA20 agrees                    481   +62.2     +21.9       0.30  26.2   +40.3
+  LV + EMA20 disagrees                  22 (too few)
+  LV + EMA50 agrees                    457   +76.8      +2.7       0.19  26.5   +74.0
+  LV + EMA50 disagrees                  46  +251.7    +185.6       0.30  28.3   +66.1
+  LV + SMA50 agrees                    432   +95.8      +6.0       0.17  27.1   +89.7
+  LV + SMA50 disagrees                  71   +74.5     +94.2       0.51  23.9   -19.7
+  LV + SMA200 agrees                   268  +146.0     +37.7       0.15  25.4  +108.3
+  LV + SMA200 disagrees                235   +32.1     -12.3       0.34  28.1   +44.4
+
+######## SMALL/MID 1h HALF 2 (2025+)
+  condition                           n   obs bp  null bp(LV rand)   p   win%  (obs-null)
+  LV-day (reference)                  1044   +59.6      +3.1       0.12  24.8   +56.5
+  LV + gap >= +0.5 ADR (with trade)    149   -36.1     -66.2       0.62  21.5   +30.1
+  LV + gap <= -0.5 ADR (against)        27 (too few)
+  LV + |gap| < 0.5 ADR                 868   +80.4     +16.6       0.07  25.5   +63.8
+  LV + flip vol >= 1.5x                477  +153.8      +6.9       0.04  27.7  +146.9
+  LV + flip vol < 1.5x                 567   -19.6      +1.2       0.65  22.4   -20.9
+  LV + EMA20 agrees                   1000   +68.1      +7.4       0.12  25.1   +60.7
+  LV + EMA20 disagrees                  44  -133.9     -13.2       0.83  18.2  -120.7
+  LV + EMA50 agrees                    940   +66.6     +13.0       0.11  24.9   +53.6
+  LV + EMA50 disagrees                 104    -4.1     -18.2       0.49  24.0   +14.1
+  LV + SMA50 agrees                    875   +91.0      +6.8       0.04  25.7   +84.2
+  LV + SMA50 disagrees                 169  -102.8      -8.3       0.88  20.1   -94.5
+  LV + SMA200 agrees                   587  +121.9      +0.2       0.05  26.6  +121.7
+  LV + SMA200 disagrees                457   -20.4      +7.4       0.68  22.5   -27.8
+
+######## MEGA-CAPS 15m TRAIN 2019-21
+  condition                           n   obs bp  null bp(LV rand)   p   win%  (obs-null)
+  LV-day (reference)                  1557    +8.4      +0.9       0.10  29.2    +7.5
+  LV + gap >= +0.5 ADR (with trade)     52   +70.8      +0.6       0.06  40.4   +70.3
+  LV + gap <= -0.5 ADR (against)        70   -17.0      +3.4       0.70  27.1   -20.4
+  LV + |gap| < 0.5 ADR                1435    +7.4      +0.9       0.12  28.9    +6.5
+  LV + flip vol >= 1.5x                961   +15.1      -0.1       0.04  31.5   +15.2
+  LV + flip vol < 1.5x                 596    -2.4      +3.3       0.73  25.3    -5.7
+  LV + EMA20 agrees                   1495    +8.6      +1.5       0.14  29.4    +7.1
+  LV + EMA20 disagrees                  62    +5.1     +11.2       0.62  24.2    -6.1
+  LV + EMA50 agrees                   1422    +7.3      +0.8       0.12  29.4    +6.5
+  LV + EMA50 disagrees                 135   +20.2      +6.2       0.24  26.7   +14.0
+  LV + SMA50 agrees                   1347    +7.0      +0.2       0.11  29.3    +6.7
+  LV + SMA50 disagrees                 210   +17.8      +5.2       0.21  28.6   +12.5
+  LV + SMA200 agrees                   952   +14.2      +7.5       0.15  31.2    +6.8
+  LV + SMA200 disagrees                605    -0.7     -10.2       0.18  26.0    +9.4
+
+######## MEGA-CAPS 15m TEST 2022+
+  condition                           n   obs bp  null bp(LV rand)   p   win%  (obs-null)
+  LV-day (reference)                  2231   +14.0      -0.7       0.01  31.2   +14.7
+  LV + gap >= +0.5 ADR (with trade)    123    +0.2      -1.7       0.46  35.0    +1.9
+  LV + gap <= -0.5 ADR (against)       126   -26.6      -0.1       0.89  22.2   -26.5
+  LV + |gap| < 0.5 ADR                1982   +17.5      -1.0       0.00  31.6   +18.4
+  LV + flip vol >= 1.5x               1422   +20.1      -2.4       0.01  34.5   +22.6
+  LV + flip vol < 1.5x                 803    +3.1      -0.3       0.34  25.4    +3.4
+  LV + EMA20 agrees                   2180   +15.4      -0.8       0.00  31.5   +16.1
+  LV + EMA20 disagrees                  51   -43.0      +0.7       0.93  19.6   -43.7
+  LV + EMA50 agrees                   2093   +17.1      -0.3       0.00  31.9   +17.4
+  LV + EMA50 disagrees                 138   -33.0      -0.2       0.97  21.7   -32.8
+  LV + SMA50 agrees                   1976   +15.0      -1.3       0.01  31.3   +16.2
+  LV + SMA50 disagrees                 255    +6.7      -0.9       0.30  31.0    +7.6
+  LV + SMA200 agrees                  1362    +7.6      -0.1       0.17  30.2    +7.6
+  LV + SMA200 disagrees                869   +24.1      -1.8       0.00  32.8   +26.0
