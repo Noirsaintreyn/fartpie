@@ -1,0 +1,98 @@
+names 753
+trades 36603
+
+######## filter A all flips
+  Dec23-Dec24: n=13047 baseline mean +0.17%/trade win 23.7%
+     rule        mean %/trade   win%   paired diff vs baseline (t)
+     holdF2        -0.03     15.2    -0.21% (-2.30)
+     holdF3        -0.03     14.5    -0.20% (-2.19)
+     holdE2        -0.02     14.5    -0.19% (-2.13)
+     holdE3        -0.02     13.6    -0.20% (-2.18)
+     prog3_.5      +0.07     20.6    -0.10% (-1.69)
+     prog3_1       +0.02     24.8    -0.15% (-1.98)
+     prog5_.5      +0.11     21.6    -0.06% (-1.35)
+     prog5_1       +0.03     23.3    -0.14% (-2.05)
+     TP1           -0.25     68.5    -0.42% (-3.26)
+     TP2           -0.21     54.4    -0.38% (-3.03)
+     skip vwap>1 keeps 9274/13047: mean    +0.01%  win  22.9   removed trades averaged +0.58%
+     skip vwap>2 keeps 12738/13047: mean    +0.15%  win  23.6   removed trades averaged +0.93%
+     skip gap>1  keeps 12267/13047: mean    +0.11%  win  23.1   removed trades averaged +1.17%
+  2025+: n=23556 baseline mean -0.07%/trade win 23.8%
+     rule        mean %/trade   win%   paired diff vs baseline (t)
+     holdF2        -0.22     14.4    -0.15% (-2.20)
+     holdF3        -0.21     13.6    -0.15% (-2.06)
+     holdE2        -0.20     13.5    -0.13% (-1.92)
+     holdE3        -0.21     12.6    -0.15% (-2.07)
+     prog3_.5      -0.17     20.5    -0.11% (-2.49)
+     prog3_1       -0.20     25.4    -0.14% (-1.98)
+     prog5_.5      -0.17     21.8    -0.10% (-2.94)
+     prog5_1       -0.20     24.1    -0.14% (-2.28)
+     TP1           -0.34     68.5    -0.27% (-3.13)
+     TP2           -0.36     53.3    -0.29% (-3.43)
+     skip vwap>1 keeps 16979/23556: mean    -0.00%  win  23.2   removed trades averaged -0.23%
+     skip vwap>2 keeps 23094/23556: mean    -0.02%  win  23.8   removed trades averaged -2.21%
+     skip gap>1  keeps 22257/23556: mean    -0.04%  win  23.8   removed trades averaged -0.47%
+
+######## filter B vol>=1.5x
+  Dec23-Dec24: n=4722 baseline mean +0.81%/trade win 26.9%
+     rule        mean %/trade   win%   paired diff vs baseline (t)
+     holdF2        +0.37     17.2    -0.44% (-2.20)
+     holdF3        +0.36     16.2    -0.45% (-2.24)
+     holdE2        +0.42     16.3    -0.39% (-1.98)
+     holdE3        +0.40     15.3    -0.41% (-2.03)
+     prog3_.5      +0.56     22.4    -0.25% (-1.84)
+     prog3_1       +0.48     24.4    -0.33% (-2.03)
+     prog5_.5      +0.65     24.1    -0.16% (-1.57)
+     prog5_1       +0.53     24.2    -0.29% (-1.91)
+     TP1           -0.22     72.1    -1.03% (-3.36)
+     TP2           -0.15     58.5    -0.96% (-3.19)
+     skip vwap>1 keeps 3231/4722: mean    +0.37%  win  26.0   removed trades averaged +1.76%
+     skip vwap>2 keeps 4588/4722: mean    +0.73%  win  27.0   removed trades averaged +3.45%
+     skip gap>1  keeps 4108/4722: mean    +0.74%  win  25.6   removed trades averaged +1.30%
+  2025+: n=8669 baseline mean +0.22%/trade win 25.6%
+     rule        mean %/trade   win%   paired diff vs baseline (t)
+     holdF2        -0.20     15.3    -0.42% (-2.76)
+     holdF3        -0.20     14.4    -0.43% (-2.72)
+     holdE2        -0.19     13.9    -0.41% (-2.65)
+     holdE3        -0.21     12.9    -0.43% (-2.71)
+     prog3_.5      -0.02     21.4    -0.24% (-2.95)
+     prog3_1       -0.18     24.6    -0.40% (-2.63)
+     prog5_.5      +0.01     22.5    -0.22% (-3.00)
+     prog5_1       -0.13     24.0    -0.36% (-2.54)
+     TP1           -0.40     70.2    -0.63% (-3.36)
+     TP2           -0.41     55.4    -0.64% (-3.50)
+     skip vwap>1 keeps 6108/8669: mean    +0.48%  win  24.6   removed trades averaged -0.38%
+     skip vwap>2 keeps 8444/8669: mean    +0.31%  win  25.6   removed trades averaged -3.16%
+     skip gap>1  keeps 7569/8669: mean    +0.33%  win  25.8   removed trades averaged -0.49%
+
+######## filter C vol>=1.5x + low-vol day
+  Dec23-Dec24: n=1507 baseline mean +0.62%/trade win 27.1%
+     rule        mean %/trade   win%   paired diff vs baseline (t)
+     holdF2        +0.14     17.7    -0.48% (-1.25)
+     holdF3        +0.13     16.9    -0.49% (-1.26)
+     holdE2        +0.17     16.9    -0.45% (-1.18)
+     holdE3        +0.11     15.9    -0.50% (-1.30)
+     prog3_.5      +0.18     22.8    -0.43% (-1.42)
+     prog3_1       -0.04     23.8    -0.66% (-1.87)
+     prog5_.5      +0.43     24.4    -0.19% (-1.17)
+     prog5_1       -0.06     23.4    -0.67% (-1.97)
+     TP1           -0.25     72.7    -0.87% (-2.01)
+     TP2           -0.17     59.9    -0.79% (-1.88)
+     skip vwap>1 keeps  995/1507: mean    +1.05%  win  27.0   removed trades averaged -0.23%
+     skip vwap>2 keeps 1460/1507: mean    +0.65%  win  27.3   removed trades averaged -0.40%
+     skip gap>1  keeps 1328/1507: mean    +0.59%  win  26.7   removed trades averaged +0.80%
+  2025+: n=3517 baseline mean +0.28%/trade win 26.0%
+     rule        mean %/trade   win%   paired diff vs baseline (t)
+     holdF2        -0.22     15.8    -0.50% (-2.66)
+     holdF3        -0.26     14.6    -0.54% (-2.64)
+     holdE2        -0.13     14.1    -0.41% (-2.22)
+     holdE3        -0.20     12.7    -0.48% (-2.36)
+     prog3_.5      -0.05     21.4    -0.33% (-2.61)
+     prog3_1       -0.11     23.6    -0.39% (-2.29)
+     prog5_.5      +0.01     23.0    -0.27% (-2.34)
+     prog5_1       -0.01     23.8    -0.29% (-1.96)
+     TP1           -0.39     70.6    -0.67% (-2.68)
+     TP2           -0.41     56.8    -0.69% (-2.84)
+     skip vwap>1 keeps 2387/3517: mean    +0.54%  win  25.7   removed trades averaged -0.27%
+     skip vwap>2 keeps 3433/3517: mean    +0.33%  win  25.9   removed trades averaged -1.85%
+     skip gap>1  keeps 3142/3517: mean    +0.37%  win  26.5   removed trades averaged -0.48%
