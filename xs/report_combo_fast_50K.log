@@ -1,0 +1,73 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+core RTH legs 2018-26: n 3342  avg pts era1 +5.29 era2 +9.05
+=== walk-forward size tilt (x0.5 if bucket<half avg, x1.5 if >1.5x avg, learned on one era, scored on the other); gain = extra pts per trade
+        factor  1->2  1->2 t  2->1  2->1 t  both
+     m_gap_rel  2.58    2.60  2.88    5.62  True
+   m_rng20_pct  2.44    3.01  1.07    1.91  True
+       f_month  0.95    0.98 -0.72   -1.66 False
+         f_dom  0.81    2.47 -0.15   -0.33 False
+         f_leg  0.07    0.27  0.27    0.70  True
+  f_qtr_end_wk  0.06    0.36 -0.49   -2.18 False
+m_rng_prev_rel  0.00    0.00  0.00    0.00 False
+       f_last2  0.00    0.00  0.00    0.00 False
+  f_turn_month  0.00    0.00  0.00    0.00 False
+       f_fomc1  0.00    0.00 -0.05   -0.60 False
+ m_trend_eff10  0.00    0.00  0.00    0.00 False
+   f_first_day  0.00    0.00 -0.15   -0.93 False
+     f_pre_hol  0.00    0.00 -0.02   -0.28 False
+     f_vix_exp -0.00   -0.03  0.15    1.60 False
+    f_opex_fri -0.02   -0.17 -0.02   -0.25 False
+     f_opex_wk -0.02   -0.17 -0.02   -0.25 False
+        f_fomc -0.10   -0.75  0.00    0.00 False
+    m_vxn_chg5 -0.15   -0.24  0.00    0.00 False
+     m_qqq_z20 -0.89   -2.39 -0.35   -1.87 False
+        f_time -0.98   -1.57 -0.37   -1.93 False
+         f_dow -1.23   -1.74 -1.16   -3.81 False
+     m_vxn_pct -1.36   -3.02  0.00    0.00 False
+
+=== bucket tables for factors positive both ways
+f_leg
+       size        mean      
+era2  False True  False True 
+f_leg                        
+M1      543   563   7.0   8.7
+R1       63    78   3.7   8.7
+RA      145   178   9.4  11.4
+RULES   433   655   2.1   2.7
+V15a    333   351   5.2  20.4
+m_rng20_pct
+             size        mean      
+era2        False True  False True 
+m_rng20_pct                        
+high          610   623   8.3  14.3
+low           363   635   3.1  10.1
+mid           543   566   3.3   2.0
+na              1     1  74.5  74.5
+m_gap_rel
+           size        mean      
+era2      False True  False True 
+m_gap_rel                        
+high        622   788  14.2  16.4
+low         416   468   0.2  -3.3
+mid         454   554  -2.1   9.1
+na           25    15   3.7   8.9
+=== EVAL only: pass rate + days-to-pass. tilt = gap+range regime (learned 2018-21); LG = large-gap (top tercile) leverage / stop
+C0 base N4xECON                                      pass  90% fail  10% | <=30d  16% <=60d  51% <=90d  71% | pass-days min 4 p10 23 p25 36 med 56 | 2022+: pass 94% <=30d 23% med 47d | fee-mo 3.61
+C1 gap+range tilt                                    pass  92% fail   8% | <=30d  18% <=60d  56% <=90d  74% | pass-days min 4 p10 22 p25 35 med 54 | 2022+: pass 99% <=30d 24% med 48d | fee-mo 3.51
+C2 LG x1.5                                           pass  89% fail  11% | <=30d  20% <=60d  56% <=90d  73% | pass-days min 4 p10 20 p25 33 med 51 | 2022+: pass 93% <=30d 26% med 45d | fee-mo 3.34
+C3 LG x2.0                                           pass  87% fail  13% | <=30d  23% <=60d  56% <=90d  73% | pass-days min 4 p10 18 p25 30 med 48 | 2022+: pass 89% <=30d 30% med 43d | fee-mo 3.09
+C4 tilt + LG x1.5                                    pass  86% fail  14% | <=30d  19% <=60d  56% <=90d  70% | pass-days min 4 p10 20 p25 33 med 47 | 2022+: pass 91% <=30d 24% med 46d | fee-mo 3.14
+C5 tilt + LG x2.0                                    pass  84% fail  16% | <=30d  19% <=60d  53% <=90d  69% | pass-days min 4 p10 20 p25 32 med 49 | 2022+: pass 86% <=30d 24% med 46d | fee-mo 3.12
+C5b tilt + LG x2.5                                   pass  77% fail  23% | <=30d  18% <=60d  52% <=90d  66% | pass-days min 4 p10 18 p25 32 med 47 | 2022+: pass 77% <=30d 22% med 44d | fee-mo 2.88
+C6 tilt + LG x1.5 + 40pt stop on LG                  pass  81% fail  19% | <=30d  18% <=60d  51% <=90d  64% | pass-days min 4 p10 20 p25 33 med 48 | 2022+: pass 77% <=30d 25% med 43d | fee-mo 3.45
+C7 tilt + LG x2.0 + 40pt stop on LG                  pass  80% fail  20% | <=30d  19% <=60d  52% <=90d  63% | pass-days min 4 p10 20 p25 31 med 49 | 2022+: pass 73% <=30d 25% med 44d | fee-mo 3.31
+C8 tilt + LG x2.0 + 30pt stop on LG                  pass  75% fail  25% | <=30d  17% <=60d  41% <=90d  58% | pass-days min 5 p10 20 p25 33 med 56 | 2022+: pass 69% <=30d 19% med 56d | fee-mo 3.42
+C9 tilt + LG x2.0, eval size K=1.25 cushion^2        pass  68% fail  32% | <=30d  19% <=60d  48% <=90d  60% | pass-days min 4 p10 16 p25 29 med 43 | 2022+: pass 66% <=30d 23% med 37d | fee-mo 2.57
+C10 tilt + LG x1.5, eval size K=1.25 cushion^2       pass  79% fail  21% | <=30d  20% <=60d  56% <=90d  69% | pass-days min 4 p10 18 p25 30 med 45 | 2022+: pass 76% <=30d 26% med 41d | fee-mo 2.80
+C11 tilt + LG x2.0, K=1.25, halve below 40% cushion  pass  62% fail  38% | <=30d  23% <=60d  48% <=90d  58% | pass-days min 4 p10 16 p25 25 med 38 | 2022+: pass 61% <=30d 27% med 33d | fee-mo 2.22
+C9 tilt + LG x2.0, eval size K=1.5 cushion^2         pass  66% fail  34% | <=30d  22% <=60d  50% <=90d  61% | pass-days min 4 p10 15 p25 25 med 41 | 2022+: pass 62% <=30d 31% med 31d | fee-mo 2.35
+C10 tilt + LG x1.5, eval size K=1.5 cushion^2        pass  68% fail  32% | <=30d  21% <=60d  51% <=90d  61% | pass-days min 4 p10 16 p25 28 med 41 | 2022+: pass 66% <=30d 27% med 37d | fee-mo 2.49
+C11 tilt + LG x2.0, K=1.5, halve below 40% cushion   pass  55% fail  45% | <=30d  23% <=60d  43% <=90d  52% | pass-days min 4 p10 14 p25 21 med 35 | 2022+: pass 51% <=30d 30% med 26d | fee-mo 2.07
