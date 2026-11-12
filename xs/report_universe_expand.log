@@ -1,0 +1,101 @@
+S1 44 S2 591 sub5 list 150 download 771
+$ALMS: 1h data not available for startTime=1719581400 and endTime=1794462022. The requested range must be within the last 730 days.
+
+1 Failed download:
+['ALMS']: 1h data not available for startTime=1719581400 and endTime=1794462022. The requested range must be within the last 730 days.
+  downloaded 60/771  (have 57)
+$BKV: 1h data not available for startTime=1727357400 and endTime=1794462033. The requested range must be within the last 730 days.
+
+1 Failed download:
+['BKV']: 1h data not available for startTime=1727357400 and endTime=1794462033. The requested range must be within the last 730 days.
+  downloaded 120/771  (have 116)
+$CORZ: 1h data not available for startTime=1706106600 and endTime=1794462042. The requested range must be within the last 730 days.
+
+1 Failed download:
+['CORZ']: 1h data not available for startTime=1706106600 and endTime=1794462042. The requested range must be within the last 730 days.
+  downloaded 180/771  (have 174)
+$CURB: 1h data not available for startTime=1727357400 and endTime=1794462054. The requested range must be within the last 730 days.
+$DXYZ: 1h data not available for startTime=1711459800 and endTime=1794462055. The requested range must be within the last 730 days.
+$CTNM: 1h data not available for startTime=1712323800 and endTime=1794462058. The requested range must be within the last 730 days.
+$CTRI: 1h data not available for startTime=1713533400 and endTime=1794462063. The requested range must be within the last 730 days.
+
+4 Failed downloads:
+['CURB']: 1h data not available for startTime=1727357400 and endTime=1794462054. The requested range must be within the last 730 days.
+['DXYZ']: 1h data not available for startTime=1711459800 and endTime=1794462055. The requested range must be within the last 730 days.
+['CTNM']: 1h data not available for startTime=1712323800 and endTime=1794462058. The requested range must be within the last 730 days.
+['CTRI']: 1h data not available for startTime=1713533400 and endTime=1794462063. The requested range must be within the last 730 days.
+  downloaded 240/771  (have 230)
+  downloaded 300/771  (have 290)
+  downloaded 360/771  (have 348)
+$IMSR: 1h data not available for startTime=1728567000 and endTime=1794462092. The requested range must be within the last 730 days.
+$KYTX: 1h data not available for startTime=1707489000 and endTime=1794462098. The requested range must be within the last 730 days.
+
+2 Failed downloads:
+['IMSR']: 1h data not available for startTime=1728567000 and endTime=1794462092. The requested range must be within the last 730 days.
+['KYTX']: 1h data not available for startTime=1707489000 and endTime=1794462098. The requested range must be within the last 730 days.
+  downloaded 420/771  (have 406)
+  downloaded 480/771  (have 465)
+  downloaded 540/771  (have 524)
+  downloaded 600/771  (have 584)
+  downloaded 660/771  (have 644)
+  downloaded 720/771  (have 704)
+$XXI: 1h data not available for startTime=1723555800 and endTime=1794462170. The requested range must be within the last 730 days.
+
+1 Failed download:
+['XXI']: 1h data not available for startTime=1723555800 and endTime=1794462170. The requested range must be within the last 730 days.
+  downloaded 771/771  (have 753)
+trades 37016 names 753
+
+######## TRADE-LEVEL (mean % per trade after costs, win%, n) - is the filter real on NEW names?
+ S1 original 44
+    A all flips                  n= 2308  mean  +0.66%  median  -3.14%  win 23.6%
+    B vol>=1.5x                  n= 1175  mean  +1.67%  median  -3.89%  win 24.9%
+    C vol>=1.5x + low-vol day    n=  423  mean  +1.97%  median  -3.54%  win 25.8%
+ S2 small-cap proxy (IWM-like)
+    A all flips                  n=28261  mean  +0.15%  median  -1.94%  win 24.9%
+    B vol>=1.5x                  n= 9539  mean  +0.49%  median  -2.19%  win 27.7%
+    C vol>=1.5x + low-vol day    n= 3527  mean  +0.54%  median  -2.14%  win 27.8%
+ S3 sub-$5 entries (all lists)
+    A all flips                  n= 5989  mean  +1.87%  median  -3.10%  win 26.2%
+    B vol>=1.5x                  n= 2756  mean  +3.14%  median  -3.47%  win 28.6%
+    C vol>=1.5x + low-vol day    n= 1097  mean  +2.68%  median  -3.34%  win 29.1%
+ S4 everything (S1+S2+sub-$5)
+    A all flips                  n=37016  mean  +0.13%  median  -2.13%  win 24.3%
+    B vol>=1.5x                  n=13543  mean  +0.54%  median  -2.51%  win 26.6%
+    C vol>=1.5x + low-vol day    n= 5070  mean  +0.50%  median  -2.50%  win 26.9%
+
+######## PORTFOLIO K=8 slots, equal weight, higher flip-volume first
+ S1 original 44
+    A all flips                  Dec23-Dec24:    +39% (DD  -18%) | 2025:    -18% (DD  -45%) | 2026 YTD:    -11% (DD  -29%) | FULL:     -2% =    -1%/yr DD  -47% n=735 win 26.1% hold 10.2d
+    B vol>=1.5x                  Dec23-Dec24:    +39% (DD  -27%) | 2025:     +0% (DD  -47%) | 2026 YTD:     -9% (DD  -25%) | FULL:    +36% =   +11%/yr DD  -45% n=605 win 26.3% hold 11.1d
+    C vol>=1.5x + low-vol day    Dec23-Dec24:    +72% (DD  -15%) | 2025:    +60% (DD  -29%) | 2026 YTD:    -22% (DD  -22%) | FULL:   +117% =   +30%/yr DD  -29% n=372 win 26.9% hold 10.1d
+ S2 small-cap proxy (IWM-like)
+    A all flips                  Dec23-Dec24:    +40% (DD  -16%) | 2025:    +19% (DD  -24%) | 2026 YTD:     +9% (DD  -23%) | FULL:   +118% =   +30%/yr DD  -24% n=745 win 27.9% hold 11.2d
+    B vol>=1.5x                  Dec23-Dec24:    +44% (DD  -17%) | 2025:     +1% (DD  -39%) | 2026 YTD:    -15% (DD  -31%) | FULL:     +5% =    +2%/yr DD  -41% n=759 win 29.0% hold 10.7d
+    C vol>=1.5x + low-vol day    Dec23-Dec24:    +20% (DD  -11%) | 2025:    +50% (DD  -24%) | 2026 YTD:     +5% (DD  -14%) | FULL:    +43% =   +13%/yr DD  -26% n=610 win 27.2% hold 11.4d
+ S3 sub-$5 entries (all lists)
+    A all flips                  Dec23-Dec24:    +60% (DD  -23%) | 2025:   +337% (DD  -42%) | 2026 YTD:    +10% (DD  -24%) | FULL:   +568% =   +91%/yr DD  -42% n=760 win 24.5% hold 10.7d
+    B vol>=1.5x                  Dec23-Dec24:   +297% (DD  -14%) | 2025:   +162% (DD  -40%) | 2026 YTD:    +27% (DD  -23%) | FULL:  +1163% =  +137%/yr DD  -39% n=656 win 28.2% hold 11.9d
+    C vol>=1.5x + low-vol day    Dec23-Dec24:    +28% (DD  -20%) | 2025:    +43% (DD  -16%) | 2026 YTD:    -12% (DD  -26%) | FULL:    +60% =   +17%/yr DD  -37% n=558 win 26.9% hold 10.2d
+ S4 everything (S1+S2+sub-$5)
+    A all flips                  Dec23-Dec24:    +49% (DD  -25%) | 2025:    +21% (DD  -37%) | 2026 YTD:     -9% (DD  -29%) | FULL:    +85% =   +23%/yr DD  -33% n=762 win 25.7% hold 11.0d
+    B vol>=1.5x                  Dec23-Dec24:    +68% (DD  -31%) | 2025:    +13% (DD  -42%) | 2026 YTD:    -22% (DD  -37%) | FULL:    +23% =    +7%/yr DD  -44% n=764 win 25.7% hold 10.7d
+    C vol>=1.5x + low-vol day    Dec23-Dec24:    +11% (DD  -14%) | 2025:    +65% (DD  -25%) | 2026 YTD:     -6% (DD  -20%) | FULL:    +41% =   +12%/yr DD  -26% n=643 win 28.0% hold 11.0d
+
+######## PORTFOLIO K=12 slots, equal weight, higher flip-volume first
+ S1 original 44
+    A all flips                  Dec23-Dec24:    +46% (DD  -22%) | 2025:    +66% (DD  -38%) | 2026 YTD:    -14% (DD  -34%) | FULL:    +75% =   +21%/yr DD  -43% n=1097 win 24.9% hold  9.8d
+    B vol>=1.5x                  Dec23-Dec24:    +52% (DD  -22%) | 2025:    +30% (DD  -36%) | 2026 YTD:    -10% (DD  -27%) | FULL:    +69% =   +20%/yr DD  -40% n=837 win 26.5% hold 10.9d
+    C vol>=1.5x + low-vol day    Dec23-Dec24:    +43% (DD  -10%) | 2025:    +37% (DD  -23%) | 2026 YTD:    -15% (DD  -15%) | FULL:    +67% =   +19%/yr DD  -24% n=404 win 26.0% hold  9.9d
+ S2 small-cap proxy (IWM-like)
+    A all flips                  Dec23-Dec24:    +43% (DD  -16%) | 2025:   +105% (DD  -22%) | 2026 YTD:     -2% (DD  -24%) | FULL:   +195% =   +44%/yr DD  -26% n=1115 win 28.0% hold 11.2d
+    B vol>=1.5x                  Dec23-Dec24:    +20% (DD  -16%) | 2025:    +17% (DD  -28%) | 2026 YTD:     -2% (DD  -20%) | FULL:    +18% =    +6%/yr DD  -29% n=1124 win 28.2% hold 10.8d
+    C vol>=1.5x + low-vol day    Dec23-Dec24:    +27% (DD   -8%) | 2025:    +44% (DD  -20%) | 2026 YTD:     +2% (DD  -16%) | FULL:    +51% =   +15%/yr DD  -24% n=916 win 28.2% hold 11.1d
+ S3 sub-$5 entries (all lists)
+    A all flips                  Dec23-Dec24:    +32% (DD  -29%) | 2025:   +221% (DD  -35%) | 2026 YTD:    +45% (DD  -15%) | FULL:   +450% =   +78%/yr DD  -36% n=1109 win 25.1% hold 10.9d
+    B vol>=1.5x                  Dec23-Dec24:   +188% (DD  -15%) | 2025:   +117% (DD  -34%) | 2026 YTD:    +23% (DD  -17%) | FULL:   +707% =  +103%/yr DD  -31% n=999 win 27.1% hold 11.5d
+    C vol>=1.5x + low-vol day    Dec23-Dec24:    +23% (DD  -15%) | 2025:    +45% (DD  -17%) | 2026 YTD:    +12% (DD  -23%) | FULL:   +108% =   +28%/yr DD  -23% n=743 win 28.8% hold 10.6d
+ S4 everything (S1+S2+sub-$5)
+    A all flips                  Dec23-Dec24:    +21% (DD  -28%) | 2025:    +31% (DD  -37%) | 2026 YTD:     -7% (DD  -23%) | FULL:    +38% =   +12%/yr DD  -34% n=1173 win 25.8% hold 10.7d
+    B vol>=1.5x                  Dec23-Dec24:    +60% (DD  -24%) | 2025:    +44% (DD  -37%) | 2026 YTD:    -27% (DD  -39%) | FULL:    +72% =   +20%/yr DD  -36% n=1134 win 26.0% hold 10.8d
+    C vol>=1.5x + low-vol day    Dec23-Dec24:    +25% (DD  -15%) | 2025:    +22% (DD  -28%) | 2026 YTD:     -4% (DD  -24%) | FULL:    +15% =    +5%/yr DD  -30% n=980 win 26.4% hold 10.7d
