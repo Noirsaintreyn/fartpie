@@ -1,0 +1,41 @@
+{'V15a': 931, 'RA': 262}
+/home/claude/fartpie/xs/report_maximin_nq.py:8: RuntimeWarning: The 'offset' keyword does not take effect when resampling with a 'freq' that is not Tick-like (h, m, s, ms, us, ns)
+  x=bars.set_index('dt').resample(rule,origin='start_day',offset='30min' if rule!='1D' else '0min').agg({'open':'first','high':'max','low':'min','close':'last'}).dropna()
+/home/claude/fartpie/xs/report_maximin_nq.py:8: RuntimeWarning: The 'offset' keyword does not take effect when resampling with a 'freq' that is not Tick-like (h, m, s, ms, us, ns)
+  x=bars.set_index('dt').resample(rule,origin='start_day',offset='30min' if rule!='1D' else '0min').agg({'open':'first','high':'max','low':'min','close':'last'}).dropna()
+927 trades with features
+== 5m L=10: aligned-distance (below pivot / 0-0.5 ATR / 0.5-1.5 / >1.5 ATR on trade side)
+   era A: n 17 | n 6 | n 11 | n  455   +6.1pt win 34%
+   era B: n 14 | n 0 | n 8 | n  416  +14.1pt win 38%
+== 15m L=10: aligned-distance (below pivot / 0-0.5 ATR / 0.5-1.5 / >1.5 ATR on trade side)
+   era A: n   40   +6.7pt win 40% | n 8 | n   37   +4.7pt win 27% | n  404   +6.0pt win 35%
+   era B: n   32   +8.9pt win 34% | n 10 | n   34  +34.6pt win 38% | n  362  +12.5pt win 38%
+== 1h L=10: aligned-distance (below pivot / 0-0.5 ATR / 0.5-1.5 / >1.5 ATR on trade side)
+   era A: n  140  +14.8pt win 39% | n   72   -0.1pt win 40% | n  127   +2.9pt win 34% | n  150   +2.9pt win 29%
+   era B: n  132  +28.0pt win 41% | n   61  +13.4pt win 34% | n  122   +9.4pt win 39% | n  123   +6.1pt win 37%
+== 1d L=10: aligned-distance (below pivot / 0-0.5 ATR / 0.5-1.5 / >1.5 ATR on trade side)
+   era A: n  175   +3.5pt win 34% | n   58   +7.5pt win 34% | n  105   +6.0pt win 36% | n  151   +7.8pt win 34%
+   era B: n  156  +18.9pt win 40% | n   42   +3.7pt win 36% | n  103   +1.5pt win 35% | n  137  +23.0pt win 40%
+== 5m L=20: aligned-distance (below pivot / 0-0.5 ATR / 0.5-1.5 / >1.5 ATR on trade side)
+   era A: n   27   -4.7pt win 33% | n 14 | n 20 | n  428   +5.2pt win 34%
+   era B: n   32   +9.9pt win 34% | n 2 | n 16 | n  388  +14.8pt win 39%
+== 15m L=20: aligned-distance (below pivot / 0-0.5 ATR / 0.5-1.5 / >1.5 ATR on trade side)
+   era A: n   32   -2.3pt win 38% | n 13 | n   49  +15.9pt win 41% | n  395   +5.0pt win 33%
+   era B: n 24 | n 13 | n   46  +28.7pt win 37% | n  355  +13.9pt win 39%
+== 1h L=20: aligned-distance (below pivot / 0-0.5 ATR / 0.5-1.5 / >1.5 ATR on trade side)
+   era A: n  151  +10.7pt win 40% | n   52   -0.1pt win 25% | n  118   +4.6pt win 33% | n  168   +4.2pt win 35%
+   era B: n  139  +16.3pt win 40% | n   46  +21.4pt win 37% | n  111   +4.9pt win 32% | n  142  +18.4pt win 43%
+== 1d L=20: aligned-distance (below pivot / 0-0.5 ATR / 0.5-1.5 / >1.5 ATR on trade side)
+   era A: n  196   +7.0pt win 35% | n 24 | n   73   -1.3pt win 25% | n  196   +6.2pt win 37%
+   era B: n  148  +10.1pt win 37% | n   41  +26.0pt win 44% | n   62  +38.0pt win 50% | n  187   +7.9pt win 35%
+=== skip rule effect on total points per era (all legs pooled)
+ skip wrong-side 5m L10: A: keep 472/489 avg +5.8 vs +5.8 total +2727 vs +2859 | B: keep 424/438 avg +14.1 vs +14.6 total +5976 vs +6409
+ skip wrong-side 15m L10: A: keep 449/489 avg +5.8 vs +5.8 total +2591 vs +2859 | B: keep 406/438 avg +15.1 vs +14.6 total +6124 vs +6409
+ skip wrong-side 1h L10: A: keep 349/489 avg +2.3 vs +5.8 total +788 vs +2859 | B: keep 306/438 avg +8.9 vs +14.6 total +2714 vs +6409
+ skip wrong-side 1d L10: A: keep 314/489 avg +7.1 vs +5.8 total +2239 vs +2859 | B: keep 282/438 avg +12.3 vs +14.6 total +3458 vs +6409
+ skip wrong-side 5m L20: A: keep 462/489 avg +6.5 vs +5.8 total +2987 vs +2859 | B: keep 406/438 avg +15.0 vs +14.6 total +6093 vs +6409
+ skip wrong-side 15m L20: A: keep 457/489 avg +6.4 vs +5.8 total +2932 vs +2859 | B: keep 414/438 avg +15.5 vs +14.6 total +6408 vs +6409
+ skip wrong-side 1h L20: A: keep 338/489 avg +3.7 vs +5.8 total +1250 vs +2859 | B: keep 299/438 avg +13.8 vs +14.6 total +4137 vs +6409
+ skip wrong-side 1d L20: A: keep 293/489 avg +5.1 vs +5.8 total +1494 vs +2859 | B: keep 290/438 avg +16.9 vs +14.6 total +4909 vs +6409
+V15a 665 | 15m L20 wrong-side avg [np.float64(-2.5), np.float64(4.1)] right-side [np.float64(6.4), np.float64(17.6)]
+RA 262 | 15m L20 wrong-side avg [np.float64(-1.6), np.float64(-6.7)] right-side [np.float64(6.5), np.float64(10.8)]

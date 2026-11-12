@@ -1,0 +1,31 @@
+4372 trades
+== LB 15m L=10: close vs maximin pivot (below / 0-1% / 1-3% / >3% above)
+   19-21: n  126  +43.3bp win 41% | n  548  +75.0bp win 39% | n  496  +83.6bp win 37% | n   98  +78.3bp win 47%
+   22-26: n  357  +99.4bp win 36% | n 1130  +16.9bp win 30% | n 1305  +47.7bp win 34% | n  312  +44.5bp win 38%
+== LB 1h L=10: close vs maximin pivot (below / 0-1% / 1-3% / >3% above)
+   19-21: n  324  +63.8bp win 42% | n  383  +89.9bp win 38% | n  424  +82.0bp win 39% | n  137  +42.5bp win 34%
+   22-26: n  894  +46.2bp win 32% | n  819  +30.8bp win 33% | n  966  +36.8bp win 31% | n  425  +67.5bp win 40%
+== LB 1d L=10: close vs maximin pivot (below / 0-1% / 1-3% / >3% above)
+   19-21: n  338  +66.2bp win 41% | n  119 +172.7bp win 45% | n  313  +56.7bp win 38% | n  498  +70.3bp win 37%
+   22-26: n 1201  +32.2bp win 31% | n  279  -37.0bp win 23% | n  530  +69.4bp win 38% | n 1094  +60.0bp win 36%
+== LB 15m L=20: close vs maximin pivot (below / 0-1% / 1-3% / >3% above)
+   19-21: n  152 +105.3bp win 44% | n  443  +74.6bp win 39% | n  541  +73.3bp win 37% | n  132  +52.9bp win 39%
+   22-26: n  356  +97.9bp win 37% | n  928  +43.8bp win 32% | n 1412  +30.9bp win 32% | n  408  +28.4bp win 36%
+== LB 1h L=20: close vs maximin pivot (below / 0-1% / 1-3% / >3% above)
+   19-21: n  387  +84.2bp win 44% | n  289  +70.5bp win 33% | n  424  +91.8bp win 39% | n  168  +22.5bp win 36%
+   22-26: n 1079  +31.8bp win 31% | n  664  +36.8bp win 33% | n  845  +45.1bp win 33% | n  516  +65.6bp win 39%
+== LB 1d L=20: close vs maximin pivot (below / 0-1% / 1-3% / >3% above)
+   19-21: n  272  +55.4bp win 42% | n   60 +198.2bp win 40% | n  164  +82.5bp win 42% | n  772  +71.5bp win 37%
+   22-26: n 1028  +42.1bp win 34% | n  161  -45.4bp win 24% | n  341  +36.8bp win 34% | n 1574  +52.2bp win 34%
+== reclaim cross (15m L=10) ON/OFF [('19-21', 'n  335  +67.6bp win 40%', 'n  933  +78.3bp win 38%'), ('22-26', 'n  877  +47.1bp win 33%', 'n 2227  +40.2bp win 33%')]
+== reclaim cross (15m L=20) ON/OFF [('19-21', 'n  281  +74.7bp win 40%', 'n  987  +75.7bp win 39%'), ('22-26', 'n  723  +32.7bp win 32%', 'n 2381  +45.0bp win 34%')]
+=== slot sim
+base                               19-21: n 1017 ann~+48.3% | 22-26: n 1887 ann~+31.4% | all: n 2904 ann~+37.6%
+skip below LB 15m L20              19-21: n 925 ann~+41.7% | 22-26: n 1784 ann~+21.9% | all: n 2709 ann~+29.1%
+only 0-3% above LB 15m L20         19-21: n 851 ann~+40.7% | 22-26: n 1724 ann~+23.5% | all: n 2575 ann~+29.8%
+skip below LB 1h L20               19-21: n 761 ann~+34.9% | 22-26: n 1474 ann~+22.8% | all: n 2235 ann~+27.2%
+only 0-3% above LB 1h L20          19-21: n 656 ann~+31.1% | 22-26: n 1288 ann~+19.3% | all: n 1944 ann~+23.7%
+skip below LB 1d L20               19-21: n 831 ann~+45.1% | 22-26: n 1522 ann~+23.0% | all: n 2353 ann~+31.0%
+only 0-3% above LB 1d L20          19-21: n 219 ann~+13.5% | 22-26: n 500 ann~+1.8% | all: n 719 ann~+6.2%
+skip below LB on 1d AND 1h         19-21: n 645 ann~+35.2% | 22-26: n 1170 ann~+20.8% | all: n 1815 ann~+26.2%
+reclaim only (15m L20)             19-21: n 281 ann~+12.3% | 22-26: n 699 ann~+7.1% | all: n 980 ann~+9.0%
