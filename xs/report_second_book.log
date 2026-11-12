@@ -1,0 +1,28 @@
+IWM in data: False | tickers total 103
+  book Nasdaq-100 ex-S&P (no overlap): 7 tickers, 1358 trades (550/808), avg ret +1.41% / +0.31%
+  book Non-S&P non-ETF (no overlap): 56 tickers, 10390 trades (2977/7413), avg ret +0.61% / +0.12%
+  book Nasdaq-100 full (overlap ok): 26 tickers, 10801 trades (2716/8085), avg ret +0.79% / +0.31%
+  book Dow 30 (overlap ok): 15 tickers, 6920 trades (2033/4887), avg ret +0.59% / +0.28%
+
+=== (2019-21 / 2022-26), median of 40 matched runs
+A: live S&P book alone                               ret +53.2% / +21.5%  DD -10% / -20%  ret/DD 5.08 / 1.13
+
+-- B = Nasdaq-100 ex-S&P (no overlap): daily-return corr with A 0.13 / 0.05; share of B trades overlapping an A position in same ticker (first 800) 0%
+   B alone                                           ret +52.2% / +7.0%  DD -9% / -17%  ret/DD 5.55 / 0.40
+   A 70% + B 30% (capital split)                     ret +53.2% / +18.0%  DD -9% / -17%  ret/DD 5.58 / 1.07   ret/DD beats A alone 95% / 32%
+   A 50% + B 50% (capital split)                     ret +52.9% / +15.4%  DD -9% / -16%  ret/DD 5.96 / 0.96   ret/DD beats A alone 85% / 10%
+
+-- B = Non-S&P non-ETF (no overlap): daily-return corr with A 0.17 / 0.13; share of B trades overlapping an A position in same ticker (first 800) 0%
+   B alone                                           ret +69.6% / -5.0%  DD -22% / -47%  ret/DD 3.15 / -0.11
+   A 70% + B 30% (capital split)                     ret +58.3% / +14.8%  DD -10% / -22%  ret/DD 6.06 / 0.70   ret/DD beats A alone 85% / 0%
+   A 50% + B 50% (capital split)                     ret +62.2% / +9.9%  DD -13% / -23%  ret/DD 4.61 / 0.42   ret/DD beats A alone 22% / 0%
+
+-- B = Nasdaq-100 full (overlap ok): daily-return corr with A 0.45 / 0.64; share of B trades overlapping an A position in same ticker (first 800) 80%
+   B alone                                           ret +72.9% / +28.2%  DD -12% / -20%  ret/DD 5.63 / 1.26
+   A 70% + B 30% (capital split)                     ret +59.6% / +24.0%  DD -9% / -19%  ret/DD 6.49 / 1.29   ret/DD beats A alone 100% / 75%
+   A 50% + B 50% (capital split)                     ret +63.2% / +25.9%  DD -9% / -19%  ret/DD 6.76 / 1.35   ret/DD beats A alone 100% / 72%
+
+-- B = Dow 30 (overlap ok): daily-return corr with A 0.69 / 0.55; share of B trades overlapping an A position in same ticker (first 800) 100%
+   B alone                                           ret +44.6% / +21.7%  DD -9% / -15%  ret/DD 4.80 / 1.44
+   A 70% + B 30% (capital split)                     ret +50.7% / +21.9%  DD -10% / -17%  ret/DD 5.20 / 1.29   ret/DD beats A alone 68% / 95%
+   A 50% + B 50% (capital split)                     ret +49.0% / +22.2%  DD -10% / -16%  ret/DD 5.13 / 1.40   ret/DD beats A alone 50% / 95%
