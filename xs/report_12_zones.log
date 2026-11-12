@@ -1,0 +1,87 @@
+flips 8770 {'1-5': 5226, 'BIG': 3544}
+
+================ 1-5 train 2558 test 2668 | hold12 train 66% test 66% | win train 26% test 26%
+-- single-feature AUC train/test  [WIN]  and [HOLD12]  (* = same side of .5 and |AUC-.5|>=.02 in both halves)
+  n_zone     WIN 0.485/0.507    HOLD 0.522/0.500   
+  fail_zone  WIN 0.494/0.484    HOLD 0.490/0.497   
+  last_fail  WIN n/a            HOLD n/a           
+  zone_rej   WIN 0.500/0.521    HOLD 0.496/0.507   
+  sup_n      WIN 0.484/0.508    HOLD 0.524/0.520*  
+  sup_d      WIN 0.508/0.496    HOLD 0.475/0.496   
+  dem_n      WIN 0.488/0.505    HOLD 0.489/0.494   
+  dist_open  WIN 0.533/0.548*   HOLD 0.578/0.582*  
+  gap        WIN 0.523/0.482    HOLD 0.492/0.476   
+  z5         WIN 0.560/0.519    HOLD 0.544/0.534*  
+  z20        WIN 0.511/0.501    HOLD 0.545/0.525*  
+  z60        WIN 0.503/0.512    HOLD 0.512/0.516   
+  pr20       WIN 0.519/0.487    HOLD 0.541/0.515   
+  pr60       WIN 0.507/0.513    HOLD 0.518/0.513   
+  dist_hi60  WIN 0.489/0.483    HOLD 0.472/0.477*  
+-- ZONE MEMORY: flips at an area where a prior bull flip (same ticker, last 60 sessions) already exited
+  train no prior flip in zone : n1523 hold 64% win 27% mean +1.98% ex-top1 +0.15%
+  train prior flip(s), LAST FAILED: n953  hold 68% win 25% mean +1.52% ex-top1 -0.68%
+  train prior flip(s), LAST WORKED: n82   hold 71% win 26% mean +0.60% ex-top1 -0.43%
+  train 2+ prior in zone       : n373  hold 69% win 22% mean +0.33% ex-top1 -1.08%
+  test  no prior flip in zone : n1558 hold 66% win 25% mean +1.05% ex-top1 -0.24%
+  test  prior flip(s), LAST FAILED: n1017 hold 67% win 27% mean +0.97% ex-top1 -0.24%
+  test  prior flip(s), LAST WORKED: n93   hold 63% win 30% mean +1.54% ex-top1 +0.61%
+  test  2+ prior in zone       : n453  hold 65% win 25% mean +0.10% ex-top1 -0.85%
+-- OVERHEAD SUPPLY (confirmed pivot highs within +1.5 ATR above the flip)
+  train sup_n=0: n849  hold 62% win 27% mean +2.23% ex-top1 +0.55% | sup_n>=1: n1709 hold 67% win 25% mean +1.54% ex-top1 -0.55% | sup_n>=3: n651  hold 68% win 25% mean +1.40% ex-top1 -0.22%
+  test  sup_n=0: n865  hold 64% win 25% mean +1.60% ex-top1 +0.17% | sup_n>=1: n1803 hold 67% win 27% mean +0.77% ex-top1 -0.37% | sup_n>=3: n662  hold 69% win 24% mean +0.21% ex-top1 -0.91%
+-- QUINTILES (train cut points)
+  dist_open train Q0 n512  h55% w22% m+0.89%x1 -0.46% | Q1 n511  h63% w25% m+0.87%x1 +0.04% | Q2 n512  h67% w26% m+0.86%x1 -0.65% | Q3 n511  h68% w26% m+3.90%x1 +0.33% | Q4 n512  h74% w30% m+2.32%x1 -0.17%
+  dist_open test  Q0 n449  h53% w19% m-0.39%x1 -1.26% | Q1 n458  h64% w24% m+0.15%x1 -0.73% | Q2 n621  h66% w28% m+1.59%x1 +0.45% | Q3 n601  h73% w28% m+1.66%x1 +0.04% | Q4 n539  h73% w30% m+1.67%x1 -0.05%
+  z20       train Q0 n512  h64% w28% m+0.84%x1 -0.08% | Q1 n511  h61% w25% m+1.62%x1 -0.10% | Q2 n512  h63% w23% m+0.38%x1 -0.64% | Q3 n511  h68% w24% m+0.83%x1 -1.22% | Q4 n512  h71% w30% m+5.16%x1 +1.21%
+  z20       test  Q0 n477  h62% w26% m+0.58%x1 -0.24% | Q1 n532  h68% w25% m+1.04%x1 -0.17% | Q2 n530  h65% w25% m-0.27%x1 -1.26% | Q3 n578  h69% w28% m+1.85%x1 +0.43% | Q4 n551  h68% w26% m+1.83%x1 +0.16%
+  z60       train Q0 n512  h65% w27% m+2.43%x1 -0.26% | Q1 n511  h64% w24% m+1.53%x1 +0.20% | Q2 n512  h66% w25% m+1.34%x1 -0.58% | Q3 n511  h68% w26% m+1.32%x1 -0.87% | Q4 n512  h66% w28% m+2.21%x1 +0.25%
+  z60       test  Q0 n479  h64% w24% m+0.04%x1 -0.92% | Q1 n457  h64% w25% m-0.01%x1 -0.82% | Q2 n534  h68% w27% m+1.32%x1 +0.07% | Q3 n514  h67% w28% m+1.25%x1 -0.13% | Q4 n684  h68% w26% m+2.06%x1 +0.43%
+  pr60      train Q0 n512  h62% w25% m+2.41%x1 -0.37% | Q1 n511  h67% w28% m+1.46%x1 +0.31% | Q2 n512  h66% w23% m+1.84%x1 -0.68% | Q3 n511  h66% w26% m+1.06%x1 -0.84% | Q4 n512  h67% w28% m+2.07%x1 +0.29%
+  pr60      test  Q0 n512  h65% w24% m-0.16%x1 -1.08% | Q1 n484  h65% w27% m+0.93%x1 -0.18% | Q2 n503  h67% w25% m+0.64%x1 -0.83% | Q3 n511  h69% w28% m+2.34%x1 +0.80% | Q4 n658  h67% w27% m+1.35%x1 -0.03%
+  dist_hi60 train Q0 n512  h69% w28% m+2.26%x1 +0.25% | Q1 n511  h67% w26% m+1.43%x1 -0.69% | Q2 n512  h66% w24% m+0.96%x1 -0.59% | Q3 n511  h64% w27% m+1.58%x1 +0.03% | Q4 n512  h62% w25% m+2.61%x1 -0.20%
+  dist_hi60 test  Q0 n649  h69% w28% m+1.90%x1 +0.45% | Q1 n566  h65% w26% m+0.36%x1 -0.47% | Q2 n493  h70% w26% m+0.64%x1 -0.48% | Q3 n496  h65% w26% m+1.87%x1 +0.15% | Q4 n464  h63% w24% m+0.19%x1 -0.83%
+  gap       train Q0 n512  h64% w22% m+0.41%x1 -1.27% | Q1 n511  h68% w28% m+1.21%x1 +0.05% | Q2 n512  h67% w26% m+1.69%x1 -0.19% | Q3 n511  h66% w25% m+1.42%x1 -0.61% | Q4 n512  h63% w29% m+4.10%x1 +0.91%
+  gap       test  Q0 n624  h67% w25% m+0.65%x1 -0.93% | Q1 n534  h71% w32% m+2.52%x1 +1.27% | Q2 n606  h66% w26% m+0.79%x1 -0.42% | Q3 n452  h67% w24% m+0.55%x1 -0.61% | Q4 n452  h60% w23% m+0.64%x1 -0.55%
+
+================ BIG train 1719 test 1825 | hold12 train 66% test 66% | win train 24% test 23%
+-- single-feature AUC train/test  [WIN]  and [HOLD12]  (* = same side of .5 and |AUC-.5|>=.02 in both halves)
+  n_zone     WIN 0.476/0.499    HOLD 0.494/0.490   
+  fail_zone  WIN 0.487/0.503    HOLD 0.495/0.500   
+  last_fail  WIN n/a            HOLD n/a           
+  zone_rej   WIN 0.494/0.470    HOLD 0.529/0.480   
+  sup_n      WIN 0.501/0.492    HOLD 0.515/0.487   
+  sup_d      WIN 0.499/0.503    HOLD 0.496/0.509   
+  dem_n      WIN 0.480/0.510    HOLD 0.484/0.469   
+  dist_open  WIN 0.547/0.556*   HOLD 0.573/0.600*  
+  gap        WIN 0.522/0.473    HOLD 0.529/0.494   
+  z5         WIN 0.550/0.518    HOLD 0.560/0.538*  
+  z20        WIN 0.522/0.511    HOLD 0.535/0.533*  
+  z60        WIN 0.518/0.498    HOLD 0.525/0.510   
+  pr20       WIN 0.531/0.506    HOLD 0.531/0.526*  
+  pr60       WIN 0.528/0.497    HOLD 0.529/0.514   
+  dist_hi60  WIN 0.477/0.504    HOLD 0.468/0.487   
+-- ZONE MEMORY: flips at an area where a prior bull flip (same ticker, last 60 sessions) already exited
+  train no prior flip in zone : n992  hold 66% win 26% mean +0.26% ex-top1 -0.63%
+  train prior flip(s), LAST FAILED: n664  hold 64% win 22% mean -0.31% ex-top1 -1.02%
+  train prior flip(s), LAST WORKED: n63   hold 73% win 25% mean +1.40% ex-top1 -1.73%
+  train 2+ prior in zone       : n283  hold 67% win 22% mean -0.37% ex-top1 -1.28%
+  test  no prior flip in zone : n1098 hold 67% win 23% mean -0.70% ex-top1 -1.47%
+  test  prior flip(s), LAST FAILED: n679  hold 66% win 23% mean -1.23% ex-top1 -2.02%
+  test  prior flip(s), LAST WORKED: n48   hold 62% win 17% mean -0.82% ex-top1 -1.66%
+  test  2+ prior in zone       : n267  hold 64% win 23% mean -1.38% ex-top1 -1.91%
+-- OVERHEAD SUPPLY (confirmed pivot highs within +1.5 ATR above the flip)
+  train sup_n=0: n586  hold 64% win 24% mean -0.22% ex-top1 -0.96% | sup_n>=1: n1133 hold 66% win 24% mean +0.24% ex-top1 -0.74% | sup_n>=3: n344  hold 68% win 26% mean +0.38% ex-top1 -0.56%
+  test  sup_n=0: n613  hold 67% win 23% mean -0.88% ex-top1 -1.45% | sup_n>=1: n1212 hold 66% win 22% mean -0.91% ex-top1 -1.82% | sup_n>=3: n315  hold 63% win 23% mean -1.41% ex-top1 -1.99%
+-- QUINTILES (train cut points)
+  dist_open train Q0 n344  h55% w19% m+0.35%x1 -0.72% | Q1 n344  h61% w23% m+0.05%x1 -0.61% | Q2 n343  h71% w26% m+0.48%x1 -0.60% | Q3 n344  h66% w26% m+0.72%x1 -0.50% | Q4 n344  h74% w28% m-1.19%x1 -1.76%
+  dist_open test  Q0 n308  h53% w18% m-1.48%x1 -2.05% | Q1 n330  h63% w18% m-1.10%x1 -1.82% | Q2 n354  h65% w22% m-0.87%x1 -1.35% | Q3 n404  h69% w26% m+0.20%x1 -1.36% | Q4 n429  h78% w26% m-1.40%x1 -2.07%
+  z20       train Q0 n344  h65% w22% m-0.70%x1 -1.23% | Q1 n344  h62% w25% m+0.92%x1 -0.59% | Q2 n343  h65% w22% m-0.63%x1 -1.33% | Q3 n344  h60% w24% m-0.63%x1 -1.11% | Q4 n344  h76% w28% m+1.45%x1 +0.23%
+  z20       test  Q0 n329  h65% w23% m-0.71%x1 -1.35% | Q1 n326  h64% w22% m-0.72%x1 -1.37% | Q2 n356  h60% w20% m-1.41%x1 -1.91% | Q3 n364  h70% w23% m-1.04%x1 -2.16% | Q4 n450  h71% w25% m-0.68%x1 -1.69%
+  z60       train Q0 n344  h65% w24% m-0.77%x1 -1.74% | Q1 n344  h60% w21% m-0.11%x1 -1.02% | Q2 n343  h67% w24% m+0.34%x1 -0.71% | Q3 n344  h70% w28% m+0.16%x1 -0.69% | Q4 n344  h66% w24% m+0.80%x1 -0.12%
+  z60       test  Q0 n415  h65% w24% m-0.54%x1 -1.24% | Q1 n283  h69% w23% m-1.19%x1 -1.76% | Q2 n339  h63% w20% m-1.26%x1 -1.92% | Q3 n421  h68% w23% m-0.57%x1 -1.56% | Q4 n367  h68% w23% m-1.15%x1 -2.21%
+  pr60      train Q0 n344  h67% w26% m-0.40%x1 -1.33% | Q1 n344  h58% w19% m-0.67%x1 -1.57% | Q2 n343  h67% w22% m+0.13%x1 -1.02% | Q3 n344  h65% w28% m-0.02%x1 -0.82% | Q4 n344  h71% w26% m+1.37%x1 +0.43%
+  pr60      test  Q0 n397  h64% w24% m-0.45%x1 -1.10% | Q1 n300  h68% w22% m-1.36%x1 -1.83% | Q2 n388  h66% w21% m-1.13%x1 -1.75% | Q3 n392  h67% w22% m-0.12%x1 -1.46% | Q4 n348  h67% w23% m-1.65%x1 -2.21%
+  dist_hi60 train Q0 n344  h72% w27% m+1.11%x1 +0.19% | Q1 n344  h65% w25% m-0.39%x1 -1.09% | Q2 n343  h65% w22% m+0.14%x1 -1.11% | Q3 n344  h62% w22% m-0.65%x1 -1.48% | Q4 n344  h65% w25% m+0.20%x1 -0.84%
+  dist_hi60 test  Q0 n412  h68% w23% m-1.64%x1 -2.25% | Q1 n352  h64% w21% m-0.21%x1 -1.70% | Q2 n344  h67% w22% m-0.92%x1 -1.51% | Q3 n320  h69% w25% m-0.53%x1 -1.37% | Q4 n397  h64% w22% m-1.05%x1 -1.58%
+  gap       train Q0 n344  h62% w23% m-1.37%x1 -1.81% | Q1 n344  h65% w23% m+0.40%x1 -0.83% | Q2 n343  h66% w24% m+0.79%x1 -0.52% | Q3 n344  h65% w24% m-0.06%x1 -0.87% | Q4 n344  h70% w28% m+0.65%x1 -0.14%
+  gap       test  Q0 n379  h63% w22% m-1.30%x1 -2.07% | Q1 n373  h70% w26% m-0.32%x1 -1.00% | Q2 n351  h67% w23% m-0.46%x1 -1.15% | Q3 n373  h69% w21% m-1.04%x1 -2.00% | Q4 n349  h63% w20% m-1.40%x1 -2.13%
