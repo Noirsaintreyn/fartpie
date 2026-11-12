@@ -29,7 +29,8 @@ except Exception: pass
 from vector_pine import run_state_machine
 ET = 'America/New_York'; LIVE = 'live'; os.makedirs(LIVE, exist_ok=True)
 STATE_F = f'{LIVE}/midsmall_state.json'; SLOTS = int(os.getenv('MIDSMALL_SLOTS', '8')); VOL_X = float(os.getenv('MIDSMALL_VOL_X', '1.5'))
-MAX_PX = float(os.getenv('MIDSMALL_MAX_PX', '5')); VWAP_X = float(os.getenv('MIDSMALL_VWAP_X', '1.0')); EARN_SKIP = int(os.getenv('MIDSMALL_EARN_SKIP', '3'))
+MAX_PX = float(os.getenv('MIDSMALL_MAX_PX', '2')); MIN_PX = float(os.getenv('MIDSMALL_MIN_PX', '1'));  # Nov 12 2026: $1-2 only (most consistent price band, xs/report_12_tf.log); MIDSMALL_MIN_PX=0 MIDSMALL_MAX_PX=5 restores the sub-$5 book
+VWAP_X = float(os.getenv('MIDSMALL_VWAP_X', '1.0')); EARN_SKIP = int(os.getenv('MIDSMALL_EARN_SKIP', '3'))
 try: import signal_context as SC
 except Exception as _e: SC = None; print(f'  ! signal_context unavailable ({_e}); posts will have no context, no earnings/short rules')
 BACKTEST_NOTE = 'Backtest (in-sample, sub-$5): setups with >=3 flags averaged about +4-6% per trade vs about +1% with <=2; win rate ~29% either way (median trade -3%), so size small.'
@@ -110,7 +111,7 @@ def events(F):
     ev = []; r = F.reg.values
     for i in range(1, len(F)):
         if r[i] == r[i - 1] or r[i] == 0: continue
-        px_ok = MAX_PX <= 0 or F.close.iat[i] < MAX_PX; vw_ok = not (F.vwx.iat[i] > VWAP_X)      # NaN vwx (warm-up) passes
+        px_ok = (MAX_PX <= 0 or F.close.iat[i] < MAX_PX) and F.close.iat[i] >= MIN_PX; vw_ok = not (F.vwx.iat[i] > VWAP_X)      # NaN vwx (warm-up) passes
         if r[i] == 1 and F.vrel.iat[i] >= VOL_X and F.lv.iat[i] and not np.isnan(F.vrel.iat[i]) and px_ok and vw_ok: ev.append((F.index[i], 'BUY', float(F.vrel.iat[i]), float(F.close.iat[i])))
         elif r[i] == 1: ev.append((F.index[i], 'FLIP_FILTERED', float(F.vrel.iat[i]) if not np.isnan(F.vrel.iat[i]) else np.nan, float(F.close.iat[i])))
         elif r[i] == -1: ev.append((F.index[i], 'SELL', float(F.vrel.iat[i]) if not np.isnan(F.vrel.iat[i]) else np.nan, float(F.close.iat[i])))
@@ -140,7 +141,7 @@ def scan_once(dry, data=None, asof=None):
         if len(Yc) < 300: continue
         if tk not in st['pos']:                                                                                      # cheap prefilter: a BUY needs this bar's volume >= VOL_X x prior-20 mean and price < MAX_PX
             v = Yc.volume.values.astype(float); m20 = v[-21:-1].mean()
-            if not (m20 > 0 and v[-1] / m20 >= VOL_X and (MAX_PX <= 0 or Yc.close.iat[-1] < MAX_PX)): continue
+            if not (m20 > 0 and v[-1] / m20 >= VOL_X and (MAX_PX <= 0 or Yc.close.iat[-1] < MAX_PX) and Yc.close.iat[-1] >= MIN_PX): continue
         F = features(Yc); last = F.index[-1]
         if (now_et() if t is None else t) - bar_close(last) > pd.Timedelta('3h') and t is None: continue          # stale feed / market closed overnight: ignore
         for (ts, kind, vr, px) in events(F):
@@ -204,7 +205,7 @@ def wait_for_bar(target, timeout=120):
         time.sleep(3)
     return False
 def loop():
-    print(f'midsmall screener up: {len(universe())} names, {SLOTS} slots, volume >= {VOL_X}x, price < {MAX_PX}'); post(f'\U0001f7e2 Mid/small-cap screener online: {len(universe())} names, {SLOTS} slots. 1h vector bull flips under ${MAX_PX:g} on low-vol days with >= {VOL_X}x volume, not extended above VWAP, not within {EARN_SKIP} sessions of earnings; half size when short selling is heavy. Exit = bear flip. Each alert comes with market context, news and setup flags.')
+    print(f'midsmall screener up: {len(universe())} names, {SLOTS} slots, volume >= {VOL_X}x, price ${MIN_PX:g}-{MAX_PX:g}'); post(f'\U0001f7e2 Mid/small-cap screener online: {len(universe())} names, {SLOTS} slots. 1h vector bull flips under ${MAX_PX:g} on low-vol days with >= {VOL_X}x volume, not extended above VWAP, not within {EARN_SKIP} sessions of earnings; half size when short selling is heavy. Exit = bear flip. Each alert comes with market context, news and setup flags.')
     while True:
         t = now_et(); mins = t.hour * 60 + t.minute
         if t.dayofweek >= 5 or mins > 16 * 60 + 5: print('market closed - exiting'); return

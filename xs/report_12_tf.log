@@ -1,0 +1,12 @@
+== 1h: entries since 2024-01, price $1-2
+  all flips               1125 tr   394/yr | mean +2.93% med -3.6% win 28% | train +2.23% (653) test +3.89% (472) | book +79%/yr DD -28%
+  volume >= 1.5x (B)       580 tr   203/yr | mean +3.78% med -3.8% win 31% | train +2.98% (337) test +4.88% (243) | book +61%/yr DD -29%
+  volume >= 2.5x           324 tr   113/yr | mean +4.61% med -4.5% win 32% | train +3.72% (191) test +5.89% (133) | book +55%/yr DD -33%
+== 4h: entries since 2024-01, price $1-2
+  all flips                344 tr   123/yr | mean +7.83% med -5.7% win 27% | train +8.45% (208) test +6.87% (136) | book +48%/yr DD -27%
+  volume >= 1.5x (B)       162 tr    58/yr | mean +10.68% med -6.2% win 29% | train +9.43% (102) test +12.81% (60) | book +46%/yr DD -22%
+  volume >= 2.5x            77 tr    29/yr | mean +10.75% med -6.0% win 31% | train +10.26% (50) test +11.65% (27) | book +36%/yr DD -17%
+== 1d: entries since 2024-01, price $1-2
+  all flips                179 tr    67/yr | mean +36.01% med -8.5% win 30% | train +55.58% (96) test +13.38% (83) | book +46%/yr DD -27%
+  volume >= 1.5x (B)        97 tr    36/yr | mean +57.22% med -9.7% win 33% | train +90.40% (52) test +18.89% (45) | book +106%/yr DD -24%
+  volume >= 2.5x            43 tr    17/yr | mean +34.63% med -13.6% win 33% | train +35.37% (24) test +33.70% (19) | book +62%/yr DD -23%
