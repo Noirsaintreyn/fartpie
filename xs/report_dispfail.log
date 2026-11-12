@@ -1,0 +1,56 @@
+=== DAY-TYPE call: walk-forward AUC / accuracy by decision time (label ROT = efficiency<0.30; base rate = share ROT)
+-- label rot
+  T=+  0m  19-21: AUC 0.510 acc 72% (base 72%) conf>=70%: 46% of days, right 74% | 22-26: AUC 0.498 acc 72% (base 72%) conf>=70%: 66% of days, right 72%
+  T=+ 15m  19-21: AUC 0.517 acc 72% (base 72%) conf>=70%: 46% of days, right 75% | 22-26: AUC 0.506 acc 72% (base 72%) conf>=70%: 65% of days, right 72%
+  T=+ 30m  19-21: AUC 0.529 acc 71% (base 72%) conf>=70%: 46% of days, right 75% | 22-26: AUC 0.524 acc 72% (base 72%) conf>=70%: 63% of days, right 72%
+  T=+ 60m  19-21: AUC 0.533 acc 71% (base 72%) conf>=70%: 46% of days, right 73% | 22-26: AUC 0.588 acc 72% (base 72%) conf>=70%: 59% of days, right 76%
+  T=+ 90m  19-21: AUC 0.544 acc 69% (base 72%) conf>=70%: 44% of days, right 74% | 22-26: AUC 0.625 acc 72% (base 72%) conf>=70%: 59% of days, right 77%
+  T=+150m  19-21: AUC 0.613 acc 69% (base 72%) conf>=70%: 50% of days, right 78% | 22-26: AUC 0.689 acc 72% (base 72%) conf>=70%: 56% of days, right 82%
+  T=+210m  19-21: AUC 0.700 acc 70% (base 72%) conf>=70%: 52% of days, right 83% | 22-26: AUC 0.749 acc 74% (base 72%) conf>=70%: 59% of days, right 85%
+-- label idle
+  T=+  0m  19-21: AUC 0.524 acc 62% (base 65%) conf>=70%: 27% of days, right 68% | 22-26: AUC 0.609 acc 59% (base 58%) conf>=70%: 9% of days, right 73%
+  T=+ 15m  19-21: AUC 0.616 acc 66% (base 65%) conf>=70%: 50% of days, right 72% | 22-26: AUC 0.660 acc 64% (base 58%) conf>=70%: 38% of days, right 72%
+  T=+ 30m  19-21: AUC 0.659 acc 68% (base 65%) conf>=70%: 58% of days, right 73% | 22-26: AUC 0.690 acc 68% (base 58%) conf>=70%: 46% of days, right 75%
+  T=+ 60m  19-21: AUC 0.682 acc 69% (base 65%) conf>=70%: 54% of days, right 75% | 22-26: AUC 0.747 acc 69% (base 58%) conf>=70%: 51% of days, right 77%
+  T=+ 90m  19-21: AUC 0.676 acc 69% (base 65%) conf>=70%: 59% of days, right 73% | 22-26: AUC 0.729 acc 65% (base 58%) conf>=70%: 49% of days, right 78%
+  T=+150m  19-21: AUC 0.664 acc 67% (base 65%) conf>=70%: 52% of days, right 74% | 22-26: AUC 0.704 acc 65% (base 58%) conf>=70%: 45% of days, right 75%
+  T=+210m  19-21: AUC 0.646 acc 66% (base 65%) conf>=70%: 52% of days, right 74% | 22-26: AUC 0.692 acc 65% (base 58%) conf>=70%: 41% of days, right 74%
+9506 trades; ADR20-scaled legs on NQ 5m
+M0.25 E0.35 DEC0.35 1R   ALL: 19-21 n  183 avg  -2.58 win 42% t -1.2 || 22-26 n  238 avg  -3.47 win 46% t -1.4  | IDLE: 19-21 n  119 avg  -2.98 win 41% t -1.2 || 22-26 n  118 avg  -2.50 win 47% t -0.7
+M0.25 E0.35 DEC0.35 HALF ALL: 19-21 n  152 avg  -1.36 win 57% t -0.7 || 22-26 n  221 avg  -5.92 win 53% t -2.8  | IDLE: 19-21 n   98 avg  -1.49 win 56% t -0.6 || 22-26 n  104 avg  -5.56 win 55% t -1.8
+M0.25 E0.35 DEC0.35 ORIG ALL: 19-21 n  178 avg  -1.36 win 39% t -0.5 || 22-26 n  238 avg  -3.82 win 37% t -1.2  | IDLE: 19-21 n  117 avg  -2.53 win 39% t -0.9 || 22-26 n  118 avg  -2.73 win 42% t -0.6
+M0.25 E0.35 DEC0.6 1R   ALL: 19-21 n  303 avg  -1.44 win 47% t -0.9 || 22-26 n  390 avg  -0.99 win 50% t -0.5  | IDLE: 19-21 n  195 avg  -1.30 win 48% t -0.7 || 22-26 n  196 avg  +3.16 win 55% t +1.2
+M0.25 E0.35 DEC0.6 HALF ALL: 19-21 n  253 avg  -1.42 win 58% t -1.0 || 22-26 n  362 avg  -2.16 win 56% t -1.2  | IDLE: 19-21 n  165 avg  -1.65 win 59% t -0.9 || 22-26 n  175 avg  +1.51 win 61% t +0.6
+M0.25 E0.35 DEC0.6 ORIG ALL: 19-21 n  297 avg  -3.12 win 39% t -1.7 || 22-26 n  390 avg  +0.47 win 40% t +0.2  | IDLE: 19-21 n  192 avg  -3.84 win 40% t -1.8 || 22-26 n  196 avg  +4.54 win 46% t +1.2
+M0.25 E0.5 DEC0.35 1R   ALL: 19-21 n  111 avg  -4.53 win 38% t -1.7 || 22-26 n  154 avg  -0.14 win 48% t -0.0  | IDLE: 19-21 n   72 avg  -6.78 win 33% t -2.3 || 22-26 n   76 avg  -0.67 win 46% t -0.1
+M0.25 E0.5 DEC0.35 HALF ALL: 19-21 n   95 avg  -0.20 win 59% t -0.1 || 22-26 n  142 avg  -4.99 win 54% t -1.8  | IDLE: 19-21 n   61 avg  -2.31 win 56% t -0.8 || 22-26 n   67 avg  -4.97 win 55% t -1.3
+M0.25 E0.5 DEC0.35 ORIG ALL: 19-21 n  108 avg  -1.92 win 35% t -0.6 || 22-26 n  154 avg  -0.15 win 41% t -0.0  | IDLE: 19-21 n   71 avg  -6.64 win 30% t -2.0 || 22-26 n   76 avg  -2.88 win 41% t -0.5
+M0.25 E0.5 DEC0.6 1R   ALL: 19-21 n  194 avg  -2.91 win 44% t -1.5 || 22-26 n  262 avg  +0.41 win 50% t +0.2  | IDLE: 19-21 n  127 avg  -3.45 win 44% t -1.5 || 22-26 n  133 avg  +4.08 win 53% t +1.2
+M0.25 E0.5 DEC0.6 HALF ALL: 19-21 n  164 avg  -1.71 win 58% t -0.9 || 22-26 n  245 avg  -2.68 win 54% t -1.2  | IDLE: 19-21 n  110 avg  -2.01 win 59% t -1.0 || 22-26 n  123 avg  +0.99 win 59% t +0.3
+M0.25 E0.5 DEC0.6 ORIG ALL: 19-21 n  191 avg  -3.74 win 36% t -1.6 || 22-26 n  262 avg  +3.57 win 42% t +1.1  | IDLE: 19-21 n  126 avg  -6.90 win 33% t -2.8 || 22-26 n  133 avg  +6.92 win 46% t +1.5
+M0.35 E0.35 DEC0.35 1R   ALL: 19-21 n  142 avg  -1.82 win 42% t -0.8 || 22-26 n  179 avg  -4.37 win 45% t -1.5  | IDLE: 19-21 n   89 avg  -2.07 win 42% t -0.7 || 22-26 n   81 avg  -5.21 win 43% t -1.2
+M0.35 E0.35 DEC0.35 HALF ALL: 19-21 n  124 avg  +0.21 win 57% t +0.1 || 22-26 n  173 avg  -7.20 win 50% t -2.7  | IDLE: 19-21 n   78 avg  -0.11 win 56% t -0.0 || 22-26 n   78 avg  -5.69 win 51% t -1.4
+M0.35 E0.35 DEC0.35 ORIG ALL: 19-21 n  140 avg  -0.11 win 39% t -0.0 || 22-26 n  179 avg  -5.37 win 34% t -1.4  | IDLE: 19-21 n   88 avg  -1.07 win 39% t -0.3 || 22-26 n   81 avg  -6.45 win 35% t -1.1
+M0.35 E0.35 DEC0.6 1R   ALL: 19-21 n  245 avg  -0.34 win 49% t -0.2 || 22-26 n  314 avg  -1.28 win 49% t -0.6  | IDLE: 19-21 n  154 avg  -0.23 win 50% t -0.1 || 22-26 n  150 avg  +3.41 win 55% t +1.0
+M0.35 E0.35 DEC0.6 HALF ALL: 19-21 n  210 avg  -0.91 win 58% t -0.5 || 22-26 n  303 avg  -2.45 win 54% t -1.1  | IDLE: 19-21 n  135 avg  -1.51 win 58% t -0.7 || 22-26 n  142 avg  +3.05 win 61% t +1.0
+M0.35 E0.35 DEC0.6 ORIG ALL: 19-21 n  243 avg  -1.89 win 41% t -0.9 || 22-26 n  314 avg  -0.07 win 38% t -0.0  | IDLE: 19-21 n  153 avg  -2.55 win 41% t -1.0 || 22-26 n  150 avg  +4.92 win 43% t +1.1
+M0.35 E0.5 DEC0.35 1R   ALL: 19-21 n   84 avg  -3.28 win 39% t -1.1 || 22-26 n  117 avg  -0.52 win 49% t -0.1  | IDLE: 19-21 n   52 avg  -5.18 win 35% t -1.6 || 22-26 n   53 avg  -1.07 win 47% t -0.2
+M0.35 E0.5 DEC0.35 HALF ALL: 19-21 n   74 avg  +1.72 win 59% t +0.6 || 22-26 n  112 avg  -5.09 win 53% t -1.5  | IDLE: 19-21 n   45 avg  -0.50 win 56% t -0.1 || 22-26 n   51 avg  -4.78 win 53% t -1.0
+M0.35 E0.5 DEC0.35 ORIG ALL: 19-21 n   84 avg  +0.20 win 36% t +0.1 || 22-26 n  117 avg  -2.58 win 38% t -0.6  | IDLE: 19-21 n   52 avg  -4.21 win 31% t -1.1 || 22-26 n   53 avg  -6.12 win 36% t -0.9
+M0.35 E0.5 DEC0.6 1R   ALL: 19-21 n  153 avg  -2.59 win 44% t -1.1 || 22-26 n  211 avg  +0.33 win 50% t +0.1  | IDLE: 19-21 n   97 avg  -2.82 win 45% t -1.1 || 22-26 n  105 avg  +4.48 win 53% t +1.1
+M0.35 E0.5 DEC0.6 HALF ALL: 19-21 n  132 avg  -1.66 win 56% t -0.8 || 22-26 n  205 avg  -2.66 win 53% t -1.0  | IDLE: 19-21 n   86 avg  -1.93 win 58% t -0.8 || 22-26 n  102 avg  +2.00 win 58% t +0.5
+M0.35 E0.5 DEC0.6 ORIG ALL: 19-21 n  153 avg  -2.59 win 38% t -1.0 || 22-26 n  211 avg  +3.00 win 39% t +0.8  | IDLE: 19-21 n   97 avg  -5.33 win 36% t -1.9 || 22-26 n  105 avg  +7.25 win 43% t +1.3
+--- median across grid cells, by exit (avg pts per trade)
+1R cells positive in both eras: 0 of 8  median 19-21 -2.58 22-26 -0.76
+HALF cells positive in both eras: 0 of 8  median 19-21 -1.13 22-26 -3.84
+ORIG cells positive in both eras: 0 of 8  median 19-21 -1.91 22-26 -0.11
+--- loosest cell, gated by P(idle) at the 10:00 call (rank cuts) ; note entries before ~10:00 excluded by m>=30
+1R   all    : 19-21 n  303 avg  -1.44 win 47% t -0.9 || 22-26 n  358 avg  -0.17 win 51% t -0.1
+1R   top50% : 19-21 n  169 avg  +0.22 win 51% t +0.1 || 22-26 n  162 avg  +2.24 win 54% t +0.7
+1R   top33% : 19-21 n  116 avg  +0.93 win 51% t +0.4 || 22-26 n  102 avg  +1.37 win 53% t +0.3
+HALF all    : 19-21 n  253 avg  -1.42 win 58% t -1.0 || 22-26 n  331 avg  -1.19 win 58% t -0.6
+HALF top50% : 19-21 n  146 avg  +0.68 win 63% t +0.3 || 22-26 n  146 avg  -2.34 win 55% t -0.8
+HALF top33% : 19-21 n  103 avg  +0.72 win 61% t +0.3 || 22-26 n   90 avg  -3.57 win 54% t -0.9
+ORIG all    : 19-21 n  297 avg  -3.12 win 39% t -1.7 || 22-26 n  358 avg  +0.71 win 41% t +0.3
+ORIG top50% : 19-21 n  167 avg  -0.28 win 44% t -0.1 || 22-26 n  161 avg  -0.11 win 42% t -0.0
+ORIG top33% : 19-21 n  114 avg  -0.40 win 43% t -0.1 || 22-26 n  102 avg  -0.30 win 44% t -0.1

@@ -1,0 +1,113 @@
+=== DAY-TYPE call: walk-forward AUC / accuracy by decision time (label ROT = efficiency<0.30; base rate = share ROT)
+-- label rot
+  T=+  0m  19-21: AUC 0.510 acc 72% (base 72%) conf>=70%: 46% of days, right 74% | 22-26: AUC 0.498 acc 72% (base 72%) conf>=70%: 66% of days, right 72%
+  T=+ 15m  19-21: AUC 0.517 acc 72% (base 72%) conf>=70%: 46% of days, right 75% | 22-26: AUC 0.506 acc 72% (base 72%) conf>=70%: 65% of days, right 72%
+  T=+ 30m  19-21: AUC 0.529 acc 71% (base 72%) conf>=70%: 46% of days, right 75% | 22-26: AUC 0.524 acc 72% (base 72%) conf>=70%: 63% of days, right 72%
+  T=+ 60m  19-21: AUC 0.533 acc 71% (base 72%) conf>=70%: 46% of days, right 73% | 22-26: AUC 0.588 acc 72% (base 72%) conf>=70%: 59% of days, right 76%
+  T=+ 90m  19-21: AUC 0.544 acc 69% (base 72%) conf>=70%: 44% of days, right 74% | 22-26: AUC 0.625 acc 72% (base 72%) conf>=70%: 59% of days, right 77%
+  T=+150m  19-21: AUC 0.613 acc 69% (base 72%) conf>=70%: 50% of days, right 78% | 22-26: AUC 0.689 acc 72% (base 72%) conf>=70%: 56% of days, right 82%
+  T=+210m  19-21: AUC 0.700 acc 70% (base 72%) conf>=70%: 52% of days, right 83% | 22-26: AUC 0.749 acc 74% (base 72%) conf>=70%: 59% of days, right 85%
+-- label idle
+  T=+  0m  19-21: AUC 0.524 acc 62% (base 65%) conf>=70%: 27% of days, right 68% | 22-26: AUC 0.609 acc 59% (base 58%) conf>=70%: 9% of days, right 73%
+  T=+ 15m  19-21: AUC 0.616 acc 66% (base 65%) conf>=70%: 50% of days, right 72% | 22-26: AUC 0.660 acc 64% (base 58%) conf>=70%: 38% of days, right 72%
+  T=+ 30m  19-21: AUC 0.659 acc 68% (base 65%) conf>=70%: 58% of days, right 73% | 22-26: AUC 0.690 acc 68% (base 58%) conf>=70%: 46% of days, right 75%
+  T=+ 60m  19-21: AUC 0.682 acc 69% (base 65%) conf>=70%: 54% of days, right 75% | 22-26: AUC 0.747 acc 69% (base 58%) conf>=70%: 51% of days, right 77%
+  T=+ 90m  19-21: AUC 0.676 acc 69% (base 65%) conf>=70%: 59% of days, right 73% | 22-26: AUC 0.729 acc 65% (base 58%) conf>=70%: 49% of days, right 78%
+  T=+150m  19-21: AUC 0.664 acc 67% (base 65%) conf>=70%: 52% of days, right 74% | 22-26: AUC 0.704 acc 65% (base 58%) conf>=70%: 45% of days, right 75%
+  T=+210m  19-21: AUC 0.646 acc 66% (base 65%) conf>=70%: 52% of days, right 74% | 22-26: AUC 0.692 acc 65% (base 58%) conf>=70%: 41% of days, right 74%
+
+=== fades after 10:05 gated by P(rotation) at the 10:00 call (rank cuts)
+A ONH     1R   all                         : 19-21 n  142 avg  -0.50 win 47% t -0.4 || 22-26 n  146 avg  -0.43 win 50% t -0.2
+A ONH     1R   top50% p>=0.30              : 19-21 n   84 avg  +1.07 win 46% t +0.6 || 22-26 n   56 avg  -0.96 win 50% t -0.3
+A ONH     1R   top33% p>=0.33              : 19-21 n   62 avg  +1.33 win 45% t +0.6 || 22-26 n   25 avg  -4.68 win 44% t -1.1
+A ONH     MID  all                         : 19-21 n  117 avg  +1.44 win 32% t +0.5 || 22-26 n  107 avg  -1.43 win 27% t -0.4
+A ONH     MID  top50% p>=0.30              : 19-21 n   66 avg  +7.42 win 33% t +1.4 || 22-26 n   40 avg  +5.44 win 35% t +0.8
+A ONH     MID  top33% p>=0.33              : 19-21 n   49 avg  +9.80 win 31% t +1.5 || 22-26 n   18
+A ONL     1R   all                         : 19-21 n  122 avg  -0.73 win 50% t -0.4 || 22-26 n  149 avg  +1.13 win 47% t +0.6
+A ONL     1R   top50% p>=0.30              : 19-21 n   69 avg  -0.90 win 51% t -0.4 || 22-26 n   64 avg  +1.35 win 45% t +0.5
+A ONL     1R   top33% p>=0.33              : 19-21 n   52 avg  -1.27 win 52% t -0.4 || 22-26 n   33 avg  +5.60 win 58% t +1.6
+A ONL     MID  all                         : 19-21 n   79 avg  +0.94 win 35% t +0.2 || 22-26 n   87 avg  +1.98 win 29% t +0.4
+A ONL     MID  top50% p>=0.30              : 19-21 n   48 avg  +0.61 win 40% t +0.1 || 22-26 n   34 avg  +9.44 win 29% t +1.1
+A ONL     MID  top33% p>=0.33              : 19-21 n   37 avg  +0.92 win 38% t +0.2 || 22-26 n   21 avg  +5.16 win 29% t +0.5
+A PDH     1R   all                         : 19-21 n   81 avg  +0.91 win 53% t +0.5 || 22-26 n   78 avg  +0.29 win 51% t +0.1
+A PDH     1R   top50% p>=0.30              : 19-21 n   52 avg  +0.49 win 54% t +0.2 || 22-26 n   28 avg  -2.81 win 46% t -0.7
+A PDH     1R   top33% p>=0.33              : 19-21 n   42 avg  +0.07 win 52% t +0.0 || 22-26 n   12
+A PDH     MID  all                         : 19-21 n   81 avg  +1.97 win 30% t +0.5 || 22-26 n   78 avg  -8.84 win 13% t -2.5
+A PDH     MID  top50% p>=0.30              : 19-21 n   52 avg  -0.50 win 31% t -0.1 || 22-26 n   28 avg  -8.77 win 14% t -1.6
+A PDH     MID  top33% p>=0.33              : 19-21 n   42 avg  +2.17 win 33% t +0.5 || 22-26 n   12
+A PDL     1R   all                         : 19-21 n   77 avg  +1.93 win 52% t +0.9 || 22-26 n   79 avg  -0.85 win 48% t -0.3
+A PDL     1R   top50% p>=0.30              : 19-21 n   53 avg  -0.01 win 47% t -0.0 || 22-26 n   28 avg  +2.76 win 54% t +0.6
+A PDL     1R   top33% p>=0.33              : 19-21 n   42 avg  -0.43 win 48% t -0.1 || 22-26 n   15
+A PDL     MID  all                         : 19-21 n   77 avg  +8.82 win 42% t +1.8 || 22-26 n   79 avg  -0.06 win 27% t -0.0
+A PDL     MID  top50% p>=0.30              : 19-21 n   53 avg  +9.67 win 40% t +1.5 || 22-26 n   28 avg  +0.85 win 29% t +0.1
+A PDL     MID  top33% p>=0.33              : 19-21 n   42 avg +12.32 win 43% t +1.5 || 22-26 n   15
+D edge    MID  all                         : 19-21 n  150 avg  +4.64 win 40% t +1.0 || 22-26 n  203 avg  -2.96 win 35% t -0.6
+D edge    MID  top50% p>=0.30              : 19-21 n  109 avg  +4.28 win 41% t +0.9 || 22-26 n   83 avg  -0.28 win 42% t -0.0
+D edge    MID  top33% p>=0.33              : 19-21 n   85 avg  +6.52 win 42% t +1.1 || 22-26 n   50 avg  +4.02 win 44% t +0.5
+V VA-edge POC  all                         : 19-21 n  275 avg  -0.34 win 40% t -0.2 || 22-26 n  352 avg  +0.28 win 46% t +0.1
+V VA-edge POC  top50% p>=0.30              : 19-21 n  173 avg  -0.31 win 38% t -0.1 || 22-26 n  136 avg  +2.58 win 49% t +0.6
+V VA-edge POC  top33% p>=0.33              : 19-21 n  132 avg  +0.58 win 39% t +0.2 || 22-26 n   68 avg +10.96 win 56% t +1.5
+--- pooled, first signal per day (p)
+A 1R   all                         : 19-21 n  339 avg  +0.65 win 51% t +0.7 || 22-26 n  366 avg  +0.33 win 49% t +0.3
+A 1R   top50% p>=0.30              : 19-21 n  202 avg  +0.51 win 50% t +0.4 || 22-26 n  144 avg  +0.02 win 47% t +0.0
+A 1R   top33% p>=0.33              : 19-21 n  150 avg  +0.10 win 49% t +0.1 || 22-26 n   70 avg  +0.47 win 50% t +0.2
+A 2R   all                         : 19-21 n  339 avg  +0.15 win 37% t +0.1 || 22-26 n  366 avg  -0.89 win 33% t -0.6
+A 2R   top50% p>=0.30              : 19-21 n  202 avg  +0.21 win 36% t +0.1 || 22-26 n  144 avg  -0.73 win 33% t -0.3
+A 2R   top33% p>=0.33              : 19-21 n  150 avg  +0.28 win 35% t +0.1 || 22-26 n   70 avg  +0.97 win 39% t +0.3
+A MID  all                         : 19-21 n  283 avg  +2.10 win 31% t +1.0 || 22-26 n  284 avg  -0.91 win 25% t -0.4
+A MID  top50% p>=0.30              : 19-21 n  170 avg  +2.65 win 32% t +1.0 || 22-26 n  109 avg  +3.17 win 28% t +0.8
+A MID  top33% p>=0.33              : 19-21 n  129 avg  +4.01 win 30% t +1.1 || 22-26 n   56 avg  +4.94 win 30% t +0.9
+D MID  all                         : 19-21 n  150 avg  +4.64 win 40% t +1.0 || 22-26 n  203 avg  -2.96 win 35% t -0.6
+D MID  top50% p>=0.30              : 19-21 n  109 avg  +4.28 win 41% t +0.9 || 22-26 n   83 avg  -0.28 win 42% t -0.0
+D MID  top33% p>=0.33              : 19-21 n   85 avg  +6.52 win 42% t +1.1 || 22-26 n   50 avg  +4.02 win 44% t +0.5
+V POC  all                         : 19-21 n  275 avg  -0.34 win 40% t -0.2 || 22-26 n  352 avg  +0.28 win 46% t +0.1
+V POC  top50% p>=0.30              : 19-21 n  173 avg  -0.31 win 38% t -0.1 || 22-26 n  136 avg  +2.58 win 49% t +0.6
+V POC  top33% p>=0.33              : 19-21 n  132 avg  +0.58 win 39% t +0.2 || 22-26 n   68 avg +10.96 win 56% t +1.5
+
+=== fades after 10:05 gated by P(idle) at the 10:00 call (rank cuts)
+A ONH     1R   all                         : 19-21 n  142 avg  -0.50 win 47% t -0.4 || 22-26 n  146 avg  -0.43 win 50% t -0.2
+A ONH     1R   top50% pi>=0.73             : 19-21 n   73 avg  +1.25 win 51% t +0.6 || 22-26 n   72 avg  -1.02 win 50% t -0.4
+A ONH     1R   top33% pi>=0.78             : 19-21 n   56 avg  +1.73 win 54% t +0.7 || 22-26 n   46 avg  -1.67 win 48% t -0.5
+A ONH     MID  all                         : 19-21 n  117 avg  +1.44 win 32% t +0.5 || 22-26 n  107 avg  -1.43 win 27% t -0.4
+A ONH     MID  top50% pi>=0.73             : 19-21 n   59 avg  +7.26 win 32% t +1.3 || 22-26 n   51 avg  +2.21 win 33% t +0.4
+A ONH     MID  top33% pi>=0.78             : 19-21 n   44 avg +11.21 win 34% t +1.5 || 22-26 n   33 avg  +5.86 win 39% t +0.8
+A ONL     1R   all                         : 19-21 n  122 avg  -0.73 win 50% t -0.4 || 22-26 n  149 avg  +1.13 win 47% t +0.6
+A ONL     1R   top50% pi>=0.73             : 19-21 n   64 avg  -1.27 win 52% t -0.5 || 22-26 n   64 avg  -0.97 win 41% t -0.4
+A ONL     1R   top33% pi>=0.78             : 19-21 n   48 avg  -0.15 win 54% t -0.0 || 22-26 n   31 avg  -1.25 win 39% t -0.3
+A ONL     MID  all                         : 19-21 n   79 avg  +0.94 win 35% t +0.2 || 22-26 n   87 avg  +1.98 win 29% t +0.4
+A ONL     MID  top50% pi>=0.73             : 19-21 n   48 avg  +3.22 win 42% t +0.6 || 22-26 n   35 avg  -0.23 win 26% t -0.0
+A ONL     MID  top33% pi>=0.78             : 19-21 n   35 avg  +5.85 win 43% t +0.9 || 22-26 n   17
+A PDH     1R   all                         : 19-21 n   81 avg  +0.91 win 53% t +0.5 || 22-26 n   78 avg  +0.29 win 51% t +0.1
+A PDH     1R   top50% pi>=0.73             : 19-21 n   42 avg  +1.47 win 62% t +0.6 || 22-26 n   36 avg  -4.19 win 44% t -1.1
+A PDH     1R   top33% pi>=0.78             : 19-21 n   33 avg  +0.41 win 58% t +0.1 || 22-26 n   24 avg  -0.96 win 50% t -0.2
+A PDH     MID  all                         : 19-21 n   81 avg  +1.97 win 30% t +0.5 || 22-26 n   78 avg  -8.84 win 13% t -2.5
+A PDH     MID  top50% pi>=0.73             : 19-21 n   42 avg  +0.97 win 33% t +0.2 || 22-26 n   36 avg  -7.56 win 19% t -1.4
+A PDH     MID  top33% pi>=0.78             : 19-21 n   33 avg  +1.25 win 33% t +0.3 || 22-26 n   24 avg  -2.89 win 25% t -0.4
+A PDL     1R   all                         : 19-21 n   77 avg  +1.93 win 52% t +0.9 || 22-26 n   79 avg  -0.85 win 48% t -0.3
+A PDL     1R   top50% pi>=0.73             : 19-21 n   46 avg  +3.23 win 52% t +1.0 || 22-26 n   32 avg  -0.39 win 47% t -0.1
+A PDL     1R   top33% pi>=0.78             : 19-21 n   28 avg  +0.56 win 50% t +0.1 || 22-26 n   16
+A PDL     MID  all                         : 19-21 n   77 avg  +8.82 win 42% t +1.8 || 22-26 n   79 avg  -0.06 win 27% t -0.0
+A PDL     MID  top50% pi>=0.73             : 19-21 n   46 avg +12.33 win 50% t +1.8 || 22-26 n   32 avg  +0.05 win 28% t +0.0
+A PDL     MID  top33% pi>=0.78             : 19-21 n   28 avg  +8.96 win 50% t +1.6 || 22-26 n   16
+D edge    MID  all                         : 19-21 n  150 avg  +4.64 win 40% t +1.0 || 22-26 n  203 avg  -2.96 win 35% t -0.6
+D edge    MID  top50% pi>=0.73             : 19-21 n   90 avg  +2.06 win 38% t +0.4 || 22-26 n   99 avg  -9.02 win 34% t -1.7
+D edge    MID  top33% pi>=0.78             : 19-21 n   66 avg  +3.33 win 41% t +0.6 || 22-26 n   60 avg  -9.48 win 33% t -1.5
+V VA-edge POC  all                         : 19-21 n  275 avg  -0.34 win 40% t -0.2 || 22-26 n  352 avg  +0.28 win 46% t +0.1
+V VA-edge POC  top50% pi>=0.73             : 19-21 n  161 avg  +0.50 win 41% t +0.2 || 22-26 n  167 avg  +0.86 win 47% t +0.2
+V VA-edge POC  top33% pi>=0.78             : 19-21 n  114 avg  +1.65 win 45% t +0.5 || 22-26 n  100 avg  +0.08 win 44% t +0.0
+--- pooled, first signal per day (pi)
+A 1R   all                         : 19-21 n  339 avg  +0.65 win 51% t +0.7 || 22-26 n  366 avg  +0.33 win 49% t +0.3
+A 1R   top50% pi>=0.73             : 19-21 n  170 avg  +1.79 win 54% t +1.3 || 22-26 n  163 avg  -1.49 win 45% t -0.8
+A 1R   top33% pi>=0.78             : 19-21 n  126 avg  +1.59 win 56% t +1.0 || 22-26 n   92 avg  -1.14 win 47% t -0.5
+A 2R   all                         : 19-21 n  339 avg  +0.15 win 37% t +0.1 || 22-26 n  366 avg  -0.89 win 33% t -0.6
+A 2R   top50% pi>=0.73             : 19-21 n  170 avg  +2.19 win 39% t +1.1 || 22-26 n  163 avg  -2.25 win 31% t -1.0
+A 2R   top33% pi>=0.78             : 19-21 n  126 avg  +2.69 win 40% t +1.1 || 22-26 n   92 avg  +0.34 win 35% t +0.1
+A MID  all                         : 19-21 n  283 avg  +2.10 win 31% t +1.0 || 22-26 n  284 avg  -0.91 win 25% t -0.4
+A MID  top50% pi>=0.73             : 19-21 n  147 avg  +6.15 win 35% t +1.9 || 22-26 n  125 avg  +0.25 win 28% t +0.1
+A MID  top33% pi>=0.78             : 19-21 n  107 avg  +6.07 win 36% t +1.7 || 22-26 n   73 avg  +4.07 win 32% t +0.8
+D MID  all                         : 19-21 n  150 avg  +4.64 win 40% t +1.0 || 22-26 n  203 avg  -2.96 win 35% t -0.6
+D MID  top50% pi>=0.73             : 19-21 n   90 avg  +2.06 win 38% t +0.4 || 22-26 n   99 avg  -9.02 win 34% t -1.7
+D MID  top33% pi>=0.78             : 19-21 n   66 avg  +3.33 win 41% t +0.6 || 22-26 n   60 avg  -9.48 win 33% t -1.5
+V POC  all                         : 19-21 n  275 avg  -0.34 win 40% t -0.2 || 22-26 n  352 avg  +0.28 win 46% t +0.1
+V POC  top50% pi>=0.73             : 19-21 n  161 avg  +0.50 win 41% t +0.2 || 22-26 n  167 avg  +0.86 win 47% t +0.2
+V POC  top33% pi>=0.78             : 19-21 n  114 avg  +1.65 win 45% t +0.5 || 22-26 n  100 avg  +0.08 win 44% t +0.0

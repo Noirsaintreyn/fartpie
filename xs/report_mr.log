@@ -1,0 +1,38 @@
+10727 signals
+A ONH     1R    | ALL: A n  441 avg  -0.50 win 48% t -0.6 || B n  312 avg  -2.55 win 45% t -1.9 
+                  | IDLE: A n  273 avg  +0.74 win 51% t +0.7 || B n  207 avg  -0.78 win 48% t -0.5
+A ONH     2R    | ALL: A n  441 avg  +0.29 win 35% t +0.3 || B n  312 avg  -1.65 win 33% t -0.9 
+                  | IDLE: A n  273 avg  +1.22 win 37% t +0.8 || B n  207 avg  +1.19 win 36% t +0.5
+A ONH     MID   | ALL: A n  360 avg  +1.81 win 34% t +1.1 || B n  237 avg  -4.37 win 24% t -1.9 
+                  | IDLE: A n  222 avg  +4.41 win 36% t +1.8 || B n  156 avg  -1.35 win 27% t -0.4
+A ONL     1R    | ALL: A n  398 avg  -0.56 win 48% t -0.6 || B n  270 avg  -2.15 win 43% t -1.5 
+                  | IDLE: A n  226 avg  +1.07 win 51% t +0.8 || B n  160 avg  +1.27 win 49% t +0.7
+A ONL     2R    | ALL: A n  398 avg  -0.98 win 37% t -0.8 || B n  270 avg  -1.43 win 31% t -0.7 
+                  | IDLE: A n  226 avg  +1.18 win 41% t +0.7 || B n  160 avg  +1.91 win 34% t +0.7
+A ONL     MID   | ALL: A n  245 avg  -0.40 win 40% t -0.2 || B n  168 avg  +2.39 win 29% t +0.7 
+                  | IDLE: A n  137 avg  +0.83 win 43% t +0.4 || B n   93 avg  +6.28 win 35% t +1.3
+A PDH     1R    | ALL: A n  281 avg  -0.50 win 48% t -0.5 || B n  183 avg  -0.31 win 50% t -0.2 
+                  | IDLE: A n  172 avg  +0.62 win 54% t +0.4 || B n  112 avg  +1.22 win 53% t +0.6
+A PDH     2R    | ALL: A n  281 avg  -0.92 win 33% t -0.7 || B n  183 avg  -2.48 win 32% t -1.1 
+                  | IDLE: A n  172 avg  -0.21 win 37% t -0.1 || B n  112 avg  -2.82 win 31% t -1.0
+A PDH     MID   | ALL: A n  281 avg  -0.45 win 32% t -0.3 || B n  183 avg  -3.56 win 20% t -1.2 
+                  | IDLE: A n  172 avg  -0.16 win 33% t -0.1 || B n  112 avg  -3.44 win 22% t -0.9
+A PDL     1R    | ALL: A n  206 avg  +1.77 win 55% t +1.3 || B n  146 avg  -1.00 win 48% t -0.5 
+                  | IDLE: A n  122 avg  +3.84 win 61% t +2.1 || B n   80 avg  +2.30 win 54% t +0.9
+A PDL     2R    | ALL: A n  206 avg  +1.19 win 42% t +0.7 || B n  146 avg  +1.29 win 37% t +0.5 
+                  | IDLE: A n  122 avg  +3.56 win 48% t +1.5 || B n   80 avg  +1.52 win 38% t +0.4
+A PDL     MID   | ALL: A n  206 avg  +3.06 win 41% t +1.3 || B n  146 avg  +2.65 win 29% t +0.7 
+                  | IDLE: A n  122 avg  +5.99 win 45% t +1.8 || B n   80 avg  +8.01 win 36% t +1.6
+C stretch 1R    | ALL: A n  840 avg  -2.04 win 46% t -2.8 || B n  869 avg  -1.97 win 49% t -1.4 
+                  | IDLE: A n  433 avg  -1.33 win 49% t -1.2 || B n  427 avg  -0.08 win 52% t -0.0
+C stretch VWAP  | ALL: A n  838 avg  -2.12 win 35% t -2.2 || B n  866 avg  -1.37 win 38% t -0.7 
+                  | IDLE: A n  431 avg  -1.10 win 38% t -0.8 || B n  426 avg  +1.18 win 41% t +0.5
+D edge    MID   | ALL: A n  496 avg  -0.25 win 36% t -0.1 || B n  518 avg  -4.46 win 34% t -1.5 
+                  | IDLE: A n  280 avg  +3.17 win 40% t +1.2 || B n  297 avg  +0.86 win 39% t +0.2
+--- model-level (first signal per day, best-known exit not chosen): per idle day pts
+A 1R    A: 511 trades on 630 idle days, +1.34 pts/idle-day, avg +1.65 | B: 390 trades on 585 idle days, +0.09 pts/idle-day, avg +0.14
+A 2R    A: 511 trades on 630 idle days, +0.79 pts/idle-day, avg +0.97 | B: 390 trades on 585 idle days, +0.58 pts/idle-day, avg +0.88
+A MID   A: 453 trades on 630 idle days, +2.17 pts/idle-day, avg +3.02 | B: 323 trades on 585 idle days, +0.90 pts/idle-day, avg +1.64
+C 1R    A: 433 trades on 630 idle days, -0.91 pts/idle-day, avg -1.33 | B: 427 trades on 585 idle days, -0.06 pts/idle-day, avg -0.08
+C VWAP  A: 431 trades on 630 idle days, -0.75 pts/idle-day, avg -1.10 | B: 426 trades on 585 idle days, +0.86 pts/idle-day, avg +1.18
+D MID   A: 280 trades on 630 idle days, +1.41 pts/idle-day, avg +3.17 | B: 297 trades on 585 idle days, +0.44 pts/idle-day, avg +0.86
