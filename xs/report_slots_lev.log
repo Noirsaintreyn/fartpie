@@ -1,0 +1,34 @@
+
+######## S&P live book: 17447 flips
+who gets taken vs skipped (no deletions, 6 slots): count, mean ret, win%
+   19-21: breaker: n 217 avg +0.04% win 35% | full: n 2454 avg +0.63% win 35% | taken: n 1274 avg +0.63% win 33%
+   22-26: breaker: n 1028 avg +0.28% win 36% | full: n 10034 avg +0.20% win 32% | taken: n 2440 avg +0.31% win 33%
+   share of flips skipped because all slots full: 72%; skipped by breaker: 7%
+  6 slots, size 1/6 (live)                       ret +53.2% / +21.5%   DD -10% / -20%   ret/DD 5.08 / 1.13
+  8 slots, size 1/6 each (exposure up to 1.33x)  ret +75.4% / +26.1%   DD -11% / -23%   ret/DD 7.00 / 1.17   ret/DD beats live 98% / 60%
+  10 slots, size 1/6 each (exposure up to 1.67x) ret +94.8% / +32.4%   DD -12% / -25%   ret/DD 8.15 / 1.27   ret/DD beats live 100% / 57%
+  12 slots, size 1/6 each (exposure up to 2.00x) ret +105.8% / +28.2%   DD -12% / -34%   ret/DD 8.59 / 0.82   ret/DD beats live 100% / 20%
+  8 slots, size 1/8 each (same total exposure)   ret +50.9% / +24.5%   DD -10% / -17%   ret/DD 5.18 / 1.31   ret/DD beats live 55% / 72%
+  10 slots, size 1/10 each (same total exposure) ret +48.3% / +24.6%   DD -10% / -19%   ret/DD 4.83 / 1.31   ret/DD beats live 25% / 65%
+  12 slots, size 1/12 each (same total exposure) ret +43.7% / +21.7%   DD -10% / -19%   ret/DD 4.37 / 1.11   ret/DD beats live 2% / 45%
+  6 slots, flat leverage x1.25                   ret +70.6% / +25.2%   DD -11% / -24%   ret/DD 6.39 / 1.07   ret/DD beats live 92% / 48%
+  6 slots, flat leverage x1.5                    ret +88.7% / +26.2%   DD -12% / -27%   ret/DD 7.64 / 1.01   ret/DD beats live 100% / 30%
+  6 slots, flat leverage x2.0                    ret +120.5% / +30.7%   DD -13% / -33%   ret/DD 8.72 / 0.98   ret/DD beats live 100% / 40%
+  8 slots size 1/6 + breaker as live, lev x1.0   ret +75.4% / +26.1%   DD -11% / -23%   ret/DD 7.00 / 1.17   ret/DD beats live 98% / 60%
+
+######## S&P + Nasdaq-100: 18805 flips
+who gets taken vs skipped (no deletions, 6 slots): count, mean ret, win%
+   19-21: breaker: n 282 avg -0.25% win 31% | full: n 2934 avg +0.75% win 37% | taken: n 1279 avg +0.80% win 34%
+   22-26: breaker: n 1306 avg +0.24% win 37% | full: n 10564 avg +0.21% win 32% | taken: n 2440 avg +0.32% win 32%
+   share of flips skipped because all slots full: 72%; skipped by breaker: 8%
+  6 slots, size 1/6 (live)                       ret +76.4% / +24.1%   DD -15% / -21%   ret/DD 5.00 / 1.24
+  8 slots, size 1/6 each (exposure up to 1.33x)  ret +103.6% / +26.0%   DD -14% / -24%   ret/DD 7.37 / 1.09   ret/DD beats live 100% / 40%
+  10 slots, size 1/6 each (exposure up to 1.67x) ret +125.9% / +30.9%   DD -14% / -27%   ret/DD 8.73 / 1.16   ret/DD beats live 95% / 55%
+  12 slots, size 1/6 each (exposure up to 2.00x) ret +154.4% / +31.7%   DD -13% / -43%   ret/DD 11.94 / 0.73   ret/DD beats live 95% / 5%
+  8 slots, size 1/8 each (same total exposure)   ret +70.3% / +25.9%   DD -10% / -18%   ret/DD 7.28 / 1.40   ret/DD beats live 60% / 75%
+  10 slots, size 1/10 each (same total exposure) ret +65.2% / +25.9%   DD -9% / -19%   ret/DD 7.34 / 1.43   ret/DD beats live 82% / 75%
+  12 slots, size 1/12 each (same total exposure) ret +62.4% / +24.0%   DD -9% / -20%   ret/DD 6.79 / 1.20   ret/DD beats live 80% / 45%
+  6 slots, flat leverage x1.25                   ret +107.0% / +21.9%   DD -12% / -25%   ret/DD 8.67 / 0.86   ret/DD beats live 92% / 12%
+  6 slots, flat leverage x1.5                    ret +133.5% / +22.8%   DD -12% / -33%   ret/DD 10.46 / 0.69   ret/DD beats live 92% / 15%
+  6 slots, flat leverage x2.0                    ret +206.8% / +22.7%   DD -20% / -40%   ret/DD 10.57 / 0.55   ret/DD beats live 95% / 12%
+  8 slots size 1/6 + breaker as live, lev x1.0   ret +103.6% / +26.0%   DD -14% / -24%   ret/DD 7.37 / 1.09   ret/DD beats live 100% / 40%
