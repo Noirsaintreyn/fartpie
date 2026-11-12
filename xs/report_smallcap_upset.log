@@ -1,0 +1,74 @@
+universe 22 ['KGS', 'LCID', 'RIOT', 'Z', 'IREN', 'PLUG', 'UPST', 'CLOV', 'TLRY', 'BB', 'SOFI', 'FUBO', 'OPEN', 'ETSY', 'DKNG', 'ROKU', 'CROX', 'FIVE', 'CHWY', 'MTCH', 'LYFT', 'BBWI']
+
+#### PART A | SMALL/MID 1h half 1 (Dec23-24) | all days, both directions
+TP rule             n   obs bp  null bp    p   win%  (obs-null)
+none                 793   -53.2    +14.6   0.91  27.7   -67.8
+1.0 x ADR            793   -17.3     -2.4   0.73  47.8   -14.9
+own p50              485   -18.6    -17.7   0.56  68.5    -0.9
+own p70              485   -28.5    -22.2   0.59  58.6    -6.4
+own p85              485   -52.2    -14.9   0.88  48.5   -37.2
+own p95              485   -28.4    -11.3   0.75  41.2   -17.2
+own biggest day      485   -41.2    -10.7   0.73  31.1   -30.4
+
+#### PART A | SMALL/MID 1h half 2 (2025+) | all days, both directions
+TP rule             n   obs bp  null bp    p   win%  (obs-null)
+none                1405   +59.0    +15.8   0.13  24.9   +43.2
+1.0 x ADR           1405    -1.5    -25.9   0.25  46.0   +24.4
+own p50             1405   -13.8    -24.0   0.34  66.3   +10.2
+own p70             1405   -13.1    -21.9   0.41  56.5    +8.8
+own p85             1405    -5.5    -23.4   0.23  48.0   +17.9
+own p95             1405   +11.0    -20.9   0.13  40.2   +31.9
+own biggest day     1405   +11.1    -14.2   0.27  28.0   +25.3
+
+#### PART B | earnings window (reaction day..+4 trading days), mega-caps, vector exit, no TP and TP=own p85
+
+  -- no TP
+  class     n   obs bp   null bp    p   win%
+  agree       97    +97.5    +21.0   0.20  25.8
+  disagree   114    -28.3    -49.8   0.52  31.6
+  none      1987    +17.3    +13.6   0.45  25.6
+
+  -- TP own p85
+  class     n   obs bp   null bp    p   win%
+  agree       85    -65.1    -50.7   0.61  50.6
+  disagree    90    +46.1    -15.3   0.32  58.9
+  none      1715    -18.5    -10.0   0.65  47.4
+
+#### C1 | position view | long & short | move in position direction (ADRs) | overnight = close->next open, next day = open->close, both in position direction (bp)
+bucket    n   overnight bp  (null)   p     | next-day o->c bp  (null)   p
+-3..-2      36     +75.5   ( -40.9)  0.00  |    -52.6   ( +93.2)  1.00
+-2..-1     428      +0.3   ( -17.0)  0.00  |    +15.2   ( +18.6)  0.63
+-1..0     5586      -4.5   (  -4.4)  0.52  |     +5.3   (  +5.7)  0.53
+0..1      7659      +3.6   (  +3.8)  0.53  |     -6.7   (  -6.2)  0.55
+1..2      1556     +19.4   ( +13.2)  0.19  |    -19.4   ( -18.5)  0.54
+2..3       214     +47.0   ( +17.4)  0.12  |   -117.0   ( -92.2)  0.78
+>3         108     +42.9   ( +46.1)  0.50  |    -90.5   ( -80.7)  0.59
+
+#### C1 | position view | long-only (state=+1 only) | move in position direction (ADRs) | overnight = close->next open, next day = open->close, both in position direction (bp)
+bucket    n   overnight bp  (null)   p     | next-day o->c bp  (null)   p
+-2..-1     188      +5.4   (  -6.6)  0.08  |    +31.9   ( +28.6)  0.44
+-1..0     2824      +6.3   (  +6.9)  0.58  |     -5.9   (  +3.3)  0.99
+0..1      3532     +14.9   ( +14.5)  0.45  |     -1.3   (  -7.0)  0.11
+1..2       826     +28.8   ( +18.4)  0.18  |    -11.1   (  -7.9)  0.60
+2..3       141     +80.5   ( +40.0)  0.10  |   -115.3   ( -74.2)  0.86
+>3          66     +95.2   ( +98.5)  0.49  |   -135.9   (-113.1)  0.62
+
+#### C2 | move view (no vector) | continuation = sign(day move) x next return (bp); t = mean/se
+|move|>=1.5 ADR earnings day up    n=  61 overnight    +8.1 (t +0.42) | next day o->c   +37.6 (t +0.62)
+|move|>=1.5 ADR earnings day down  n=  77 overnight   +20.6 (t +0.89) | next day o->c   -28.1 (t -0.52)
+|move|>=1.5 ADR earnings day both  n= 138 overnight   +15.1 (t +0.97) | next day o->c    +1.0 (t +0.02)
+|move|>=1.5 ADR other days   up    n= 439 overnight   +71.3 (t +2.93) | next day o->c   -83.5 (t -3.37)
+|move|>=1.5 ADR other days   down  n= 224 overnight   -36.6 (t -1.58) | next day o->c   -31.4 (t -1.04)
+|move|>=1.5 ADR other days   both  n= 663 overnight   +34.8 (t +1.93) | next day o->c   -65.9 (t -3.41)
+|move|>=2 ADR earnings day up    n=  49 overnight   +13.9 (t +0.71) | next day o->c   +55.1 (t +0.92)
+|move|>=2 ADR earnings day down  n=  58 overnight   +20.2 (t +0.75) | next day o->c   -32.1 (t -0.51)
+|move|>=2 ADR earnings day both  n= 107 overnight   +17.3 (t +1.01) | next day o->c    +7.8 (t +0.18)
+|move|>=2 ADR other days   up    n= 191 overnight   +84.9 (t +2.35) | next day o->c  -147.1 (t -3.54)
+|move|>=2 ADR other days   down  n=  68 overnight   -66.1 (t -1.21) | next day o->c  -120.4 (t -2.02)
+|move|>=2 ADR other days   both  n= 259 overnight   +45.2 (t +1.48) | next day o->c  -140.1 (t -4.07)
+|move|>=3 ADR earnings day up    n=  24 overnight   +31.2 (t +1.34) | next day o->c   +20.3 (t +0.22)
+|move|>=3 ADR earnings day down  n=  28 overnight    +9.1 (t +0.24) | next day o->c   -28.1 (t -0.27)
+|move|>=3 ADR earnings day both  n=  52 overnight   +19.3 (t +0.83) | next day o->c    -5.7 (t -0.08)
+|move|>=3 ADR other days   up    n=  48 overnight  +143.8 (t +1.43) | next day o->c  -240.7 (t -2.32)
+|move|>=3 ADR other days   down  n=  16 overnight  -104.6 (t -0.90) | next day o->c   -27.7 (t -0.23)
+|move|>=3 ADR other days   both  n=  64 overnight   +81.7 (t +1.00) | next day o->c  -187.4 (t -2.23)
