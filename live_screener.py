@@ -1442,7 +1442,14 @@ def post_new_signals(rows, meta, st):
                 cb = SC_CTX.block(r.get('base') or tk.split(' ')[0], r['action'])
                 if cb: late = (late + '\n' if late else '') + cb
             except Exception as e: print(f'  ! context: {str(e)[:60]}')
-        if not post(late, [p]): continue
+        files = [p]
+        if os.getenv('PRO_CHART', '1') == '1' and r.get('h1'):                       # Nov 12 2026: shared pro chart (signal_chart.py) under the 1h-vector signals; fails soft
+            try:
+                import signal_chart as SCH
+                Y1 = resample_1h(r['H']); end1 = Y1.dt + pd.to_timedelta(np.where(Y1.dt.dt.hour == 15, 30, 60), unit='m'); Y1 = Y1[end1 <= r['H'].dt.iloc[-1] + pd.Timedelta('15min')].set_index('dt')
+                pth = f"{LIVE}/chart_{tk.replace(' ', '_')}_{r['action']}.png"; SCH.make_chart(r.get('base') or tk, Y1, pth, r['action'], dict(tag='large-cap screener', entry=r['last'])); files.append(pth)
+            except Exception as e: print(f'  ! pro chart: {str(e)[:80]}')
+        if not post(late, files): continue
         st['signals'].append(key); _save(st)
         log = f'{LIVE}/signal_log.csv'
         pd.DataFrame([dict(run_at=now_et(), ticker=r['ticker'], action=r['action'], bar=r['bar'], price=r['last'], stop=r['stop'], entry=r['px'], pnl=r['pnl'])]).to_csv(log, mode='a', header=not os.path.exists(log), index=False)
