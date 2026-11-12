@@ -1,0 +1,10 @@
+V15 cols ['day', 'm', 'dir', 'pts', 'mae'] 1523
+V60 trades 414 V15 trades 1523
+  V15a 2014-21: n 707 avg +2.95 pts win 31% total +2084 (+263/yr) trade-days 505 (64/yr)
+  V15a 2022+: n 351 avg +20.08 pts win 32% total +7047 (+1740/yr) trade-days 249 (61/yr)
+  V60  2014-21: n 222 avg +1.74 pts win 32% total +387 (+51/yr) trade-days 202 (27/yr)
+  V60  2022+: n 109 avg +1.57 pts win 31% total +171 (+42/yr) trade-days 100 (25/yr)
+V60 on days V15a is idle:
+  V60-new-days 2014-21: n 112 avg -1.34 pts win 32% total -150 (-20/yr) trade-days 102 (13/yr)
+  V60-new-days 2022+: n 54 avg +2.33 pts win 31% total +126 (+31/yr) trade-days 51 (13/yr)
+days with V15a 754 days with V60 302 union 907
