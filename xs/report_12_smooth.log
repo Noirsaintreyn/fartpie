@@ -1,0 +1,39 @@
+B trades 571
+== B ($1-2, vol>=1.5x)
+  base                            571 tr | mean +3.96% med -3.8% win 32% | train +3.27% (328) test +4.88% (243) | book +67%/yr DD -28%
+  close > EMA200 (ref)            329 tr | mean +5.97% med -3.8% win 34% | train +5.04% (190) test +7.25% (139) | book +82%/yr DD -25%
+    NOT close > EMA200 (ref)      242 tr | mean +1.22% med -3.8% win 29% | train +0.85% (138) test +1.72% (104) | book +12%/yr DD -22%
+      p vs random skips 0.020
+  EWMA10>30 & rising              407 tr | mean +5.34% med -3.7% win 32% | train +5.16% (235) test +5.58% (172) | book +72%/yr DD -28%
+    NOT EWMA10>30 & rising        164 tr | mean +0.53% med -4.0% win 31% | train -1.49% (93) test +3.18% (71) | book +2%/yr DD -27%
+      p vs random skips 0.025
+  Kalman slope > 0                465 tr | mean +4.96% med -3.7% win 32% | train +4.31% (271) test +5.86% (194) | book +87%/yr DD -24%
+    NOT Kalman slope > 0          106 tr | mean -0.43% med -3.9% win 30% | train -1.67% (57) test +1.01% (49) | book -3%/yr DD -21%
+      p vs random skips 0.027
+  Kalman slope t > 1              300 tr | mean +4.32% med -3.7% win 32% | train +2.96% (175) test +6.23% (125) | book +61%/yr DD -32%
+    NOT Kalman slope t > 1        271 tr | mean +3.56% med -3.8% win 32% | train +3.64% (153) test +3.45% (118) | book +43%/yr DD -19%
+      p vs random skips 0.380
+  Wavelet level rising            539 tr | mean +4.21% med -3.8% win 32% | train +3.59% (312) test +5.05% (227) | book +70%/yr DD -26%
+    NOT Wavelet level rising       32 tr | mean -0.20% med -2.8% win 34% | train -2.95% (16) test +2.55% (16) | book -0%/yr DD -8%
+      p vs random skips 0.210
+  Wavelet rising & close above    538 tr | mean +4.22% med -3.8% win 32% | train +3.62% (311) test +5.05% (227) | book +70%/yr DD -26%
+    NOT Wavelet rising & close above   33 tr | mean -0.29% med -3.0% win 33% | train -2.97% (17) test +2.55% (16) | book -1%/yr DD -8%
+      p vs random skips 0.181
+== A (B + daily bull)
+  base                            163 tr | mean +8.04% med -3.2% win 36% | train +4.09% (75) test +11.41% (88) | book +60%/yr DD -13%
+  close > EMA200                  139 tr | mean +9.33% med -3.2% win 37% | train +5.10% (63) test +12.83% (76) | book +58%/yr DD -12%
+    NOT close > EMA200             24 tr | mean +0.60% med -3.4% win 29% | train -1.20% (12) test +2.40% (12) | book +1%/yr DD -8%
+  EWMA10>30 & rising              101 tr | mean +10.88% med -2.3% win 39% | train +8.82% (48) test +12.75% (53) | book +57%/yr DD -12%
+    NOT EWMA10>30 & rising         62 tr | mean +3.42% med -4.3% win 32% | train -4.31% (27) test +9.39% (35) | book +9%/yr DD -15%
+  Kalman slope > 0                122 tr | mean +10.69% med -2.8% win 39% | train +6.61% (57) test +14.26% (65) | book +66%/yr DD -11%
+    NOT Kalman slope > 0           41 tr | mean +0.18% med -4.0% win 29% | train -3.89% (18) test +3.35% (23) | book +0%/yr DD -9%
+  Wavelet level rising            155 tr | mean +8.50% med -3.2% win 36% | train +4.43% (71) test +11.94% (84) | book +60%/yr DD -13%
+    NOT Wavelet level rising     8 trades (too few)
+== do the big winners align?  share of trades >= +10% net that are aligned vs share of ALL trades aligned
+  big winners 97 of 571
+  EMA200       aligned: big winners 64% | all 58% | P(big | aligned) 19% vs P(big | not) 14%
+  EWMA         aligned: big winners 74% | all 71% | P(big | aligned) 18% vs P(big | not) 15%
+  Kalman       aligned: big winners 85% | all 81% | P(big | aligned) 18% vs P(big | not) 14%
+  Kalman t>1   aligned: big winners 53% | all 53% | P(big | aligned) 17% vs P(big | not) 17%
+  Wavelet      aligned: big winners 97% | all 94% | P(big | aligned) 17% vs P(big | not) 9%
+  Wavelet+above aligned: big winners 97% | all 94% | P(big | aligned) 17% vs P(big | not) 9%
