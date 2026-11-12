@@ -8,3 +8,16 @@ parity w=252 vs stored: corr 0.9999603427235916  trades gated both ways 17446 mi
   G w=126                     17927 tr | CAGR +42.7% / +10.7%  DD -12% / -29%  ret/DD 3.52 / 0.38  beats252 12% / 0%
 == R: gate = live 252 membership, rank by window-w
   R w=5                       17449 tr | CAGR +53.8% / +22.7%  DD -10% / -21%  ret/DD 5.18 / 1.07  beats252 65% / 50%
+  R w=21                      17449 tr | CAGR +47.8% / +20.0%  DD -10% / -21%  ret/DD 4.82 / 0.94  beats252 15% / 35%
+  R w=63                      17449 tr | CAGR +48.6% / +17.9%  DD -10% / -21%  ret/DD 4.91 / 0.84  beats252 12% / 12%
+  R w=126                     17449 tr | CAGR +50.5% / +19.7%  DD -11% / -21%  ret/DD 4.76 / 0.94  beats252 0% / 25%
+== Q: window-w gate keeping the same trade share as the 252 gate
+  Q w=5 (thr 1.52)            17449 tr | CAGR +38.1% / +19.5%  DD -11% / -20%  ret/DD 3.31 / 1.00  beats252 0% / 42%
+  Q w=21 (thr 1.53)           17449 tr | CAGR +44.1% / +15.1%  DD -11% / -21%  ret/DD 3.99 / 0.76  beats252 8% / 5%
+  Q w=63 (thr 1.53)           17449 tr | CAGR +44.3% / +11.9%  DD -12% / -23%  ret/DD 3.55 / 0.54  beats252 15% / 0%
+  Q w=126 (thr 1.53)          17449 tr | CAGR +47.3% / +11.8%  DD -12% / -26%  ret/DD 3.92 / 0.48  beats252 20% / 0%
+== per-trade (gate set only): mean ret, win rate, by period
+  252     17449 | +0.60% 35% / +0.23% 32%
+  w=5     17695 | +0.44% 33% / +0.23% 31%
+  w=21    17951 | +0.43% 33% / +0.19% 31%
+  w=63    18028 | +0.43% 34% / +0.20% 31%
