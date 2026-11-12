@@ -134,6 +134,7 @@ body,button,input,select,table,th,td{font-style:italic}
 <div class="brand">L'Argent Parle</div>
 <nav aria-label="Main" id="nav">
 <button data-tab="analysis">Daily Analysis</button>
+<button data-tab="morning">Morning Report</button>
 <button data-tab="screener">Screener</button>
 <button data-tab="futures">Futures</button>
 <button data-tab="history">History</button>
@@ -188,6 +189,11 @@ body,button,input,select,table,th,td{font-style:italic}
 <!-- DAILY ANALYSIS -->
 <section id="tab-analysis" hidden>
 <div class="note-wrap tnr" id="anWrap"><div class="empty">Loading…</div></div>
+</section>
+
+<!-- MORNING REPORT (the 09:00 write-up, website only; Nov 11 2026: split from Daily Analysis) -->
+<section id="tab-morning" hidden>
+<div class="note-wrap tnr" id="moWrap"><div class="empty">Loading…</div></div>
 </section>
 
 <!-- FUTURES -->
@@ -321,7 +327,7 @@ body,button,input,select,table,th,td{font-style:italic}
   var getJSON = function (u) { return fetch(u, { credentials: 'same-origin' }).then(function (r) { if (r.status === 401) { location.href = '/login'; throw new Error('login'); } return r.json(); }); };
 
   // ---------------------------------------------------------------- tabs
-  var TITLES = { futures: ['Futures', 'The NQ model: today\'s plan, the levels, the log and the results.'], extremes: ['Highs / Lows', 'When the day\'s low or high is likely in, from the time of day × vector model. Context, not a signal.'], screener: ['Screener', 'Vector flips on the names the options market is watching.'], analysis: ['Daily Analysis', 'Facts for the day: events, price profile, options, and what they mean for the screener and futures.'], mid: ['Mid / Small Book', 'Thirty names, rebalanced every four weeks.'],
+  var TITLES = { futures: ['Futures', 'The NQ model: today\'s plan, the levels, the log and the results.'], extremes: ['Highs / Lows', 'When the day\'s low or high is likely in, from the time of day × vector model. Context, not a signal.'], screener: ['Screener', 'Vector flips on the names the options market is watching.'], morning: ['Morning Report', 'The 09:00 write-up: the market, sectors, calendar, headlines and a page for each open position.'], analysis: ['Daily Analysis', 'Facts for the day: events, price profile, options, and what they mean for the screener and futures.'], mid: ['Mid / Small Book', 'Thirty names, rebalanced every four weeks.'],
     charts: ['Charts', 'Vector, THOD / TLOD and quantile bands, each on its own timeframe.'], history: ['History', 'Every live trade, at the rule’s fills.'], backtest: ['Backtest', 'The screener against the indexes, 2019 – 2026.'] };
   var tab = 'analysis';
   function setTab(t) {
@@ -519,7 +525,7 @@ body,button,input,select,table,th,td{font-style:italic}
     return h + '</div>';
   }
   function renderAnalysis(S) {
-    var el = $('anWrap'), A = S && S.analysis, R = (S && S.ranges) || {}, P = (S && S.positions) || [];
+    var el = $('moWrap'), A = S && S.analysis, R = (S && S.ranges) || {}, P = (S && S.positions) || [];
     if (!A) { el.innerHTML = '<div class="empty">The first note is written at 09:00 ET on the next trading day.</div>'; return; }
     var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), isToday = (A.asof || '').slice(0, 10) === today;
     var live = {}; P.forEach(function (p) { if (!live[p.base]) live[p.base] = p; });
