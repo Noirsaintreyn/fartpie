@@ -1,0 +1,23 @@
+Crumb fetch rate-limited (HTTP 429), continuing without crumb
+pairs with data: 9  NVDA(NVDL/NVDD, n=5070), TSLA(TSLL/TSLQ, n=5095), AAPL(AAPU/AAPD, n=5089), MSFT(MSFU/MSFD, n=4978), GOOGL(GGLL/GGLS, n=4872), AMZN(AMZU/AMZD, n=4974), COIN(CONL/-, n=5095), PLTR(PLTU/PLTD, n=3343), AMD(-/AMDD, n=2696)
+
+######## day class: ALL  (per-bar edge in bp per RTH hour-bar; random = circular-shift null; p = share of random >= observed)
+  S0 underlying itself, long/flat      pooled edge   +1.27 bp/bar (random mean +1.21) p=0.410 | pairs p<.10: 0/9 | NVDA:+1.5 TSLA:+1.0 AAPL:+0.9 MSFT:+0.0 GOOGL:+1.5 AMZN:+0.5 COIN:+0.7 PLTR:+2.5 AMD:+4.8
+  S1 bull ETF only                     pooled edge   +1.49 bp/bar (random mean +1.54) p=0.532 | pairs p<.10: 0/8 | NVDA:+2.5 TSLA:+1.7 AAPL:+1.2 MSFT:-0.5 GOOGL:+2.6 AMZN:+0.5 COIN:+0.8 PLTR:+4.1
+  S2 bull ETF / inverse ETF switch     pooled edge   +0.44 bp/bar (random mean +0.34) p=0.466 | pairs p<.10: 0/8 | NVDA:+1.0 TSLA:-0.2 AAPL:+0.8 MSFT:-1.3 GOOGL:+2.4 AMZN:-0.3 PLTR:+3.1 AMD:-2.4
+
+######## day class: HV-pre  (per-bar edge in bp per RTH hour-bar; random = circular-shift null; p = share of random >= observed)
+  S0 underlying itself, long/flat      pooled edge   +0.48 bp/bar (random mean +1.33) p=0.912 | pairs p<.10: 0/9 | NVDA:+0.4 TSLA:+1.1 AAPL:+2.8 MSFT:-0.7 GOOGL:+0.8 AMZN:+0.4 COIN:-3.1 PLTR:-3.1 AMD:+5.5
+  S1 bull ETF only                     pooled edge   -0.28 bp/bar (random mean +1.78) p=0.964 | pairs p<.10: 0/8 | NVDA:+0.8 TSLA:+2.2 AAPL:+5.6 MSFT:-1.7 GOOGL:+1.3 AMZN:+0.5 COIN:-7.0 PLTR:-6.7
+  S2 bull ETF / inverse ETF switch     pooled edge   -1.58 bp/bar (random mean +0.33) p=0.878 | pairs p<.10: 0/8 | NVDA:+1.5 TSLA:-6.6 AAPL:+4.3 MSFT:-3.3 GOOGL:+0.4 AMZN:-1.1 PLTR:-6.6 AMD:-2.7
+
+######## compounded over the whole sample (all days, open-to-open, no costs): total return / max drawdown
+  NVDA     S0 +90%/-35% | S1 +99%/-63% | S2 -21%/-75% | hold NVDA +261%/-42% | hold NVDL +283%/-74% | hold NVDD -84%/-88%
+  TSLA     S0 +37%/-37% | S1 +9%/-64% | S2 -83%/-89% | hold TSLA +62%/-54% | hold TSLL -25%/-84% | hold TSLQ -98%/-98%
+  AAPL     S0 +47%/-18% | S1 +44%/-44% | S2 +10%/-43% | hold AAPL +79%/-34% | hold AAPU +71%/-62% | hold AAPD -51%/-59%
+  MSFT     S0 -6%/-36% | S1 -41%/-64% | S2 -61%/-68% | hold MSFT +40%/-36% | hold MSFU -1%/-68% | hold MSFD -38%/-44%
+  GOOGL    S0 +95%/-30% | S1 +156%/-54% | S2 +122%/-60% | hold GOOGL +121%/-32% | hold GGLL +133%/-59% | hold GGLS -63%/-73%
+  AMZN     S0 +19%/-26% | S1 -7%/-51% | S2 -42%/-63% | hold AMZN +78%/-33% | hold AMZU +40%/-57% | hold AMZD -54%/-58%
+  COIN     S0 -3%/-61% | S1 -69%/-92% | hold COIN -10%/-70% | hold CONL -90%/-97%
+  PLTR     S0 +89%/-43% | S1 +87%/-77% | S2 +8%/-89% | hold PLTR +139%/-48% | hold PLTU +75%/-83% | hold PLTD -79%/-84%
+  AMD      S0 +186%/-36% | S2 -56%/-71% | hold AMD +401%/-37% | hold AMDD -91%/-94%
