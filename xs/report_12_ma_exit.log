@@ -1,0 +1,37 @@
+trades regenerated 35950 of 35950
+== (1) MA context at the flip, $1-2, vol>=1.5x (B)
+  B base                      580 tr | mean +3.78% med -3.8% win 31% p10 -10.2% | train +2.98% (337) test +4.88% (243) | book +61%/yr DD -29%
+  B & close > EMA50           543 tr | mean +4.00% med -3.8% win 31% p10 -10.2% | train +3.14% (317) test +5.21% (226) | book +67%/yr DD -28%
+  B & NOT close > EMA50        37 tr | mean +0.52% med -3.3% win 32% p10 -9.5% | train +0.52% (20) test +0.52% (17) | book +1%/yr DD -7%
+  B & close > EMA200          336 tr | mean +5.68% med -3.9% win 33% p10 -10.6% | train +4.58% (197) test +7.25% (139) | book +77%/yr DD -26%
+  B & NOT close > EMA200      244 tr | mean +1.15% med -3.8% win 29% p10 -9.2% | train +0.74% (140) test +1.72% (104) | book +11%/yr DD -22%
+  B & EMA50 > EMA200          129 tr | mean +5.19% med -4.1% win 32% p10 -11.4% | train +1.52% (71) test +9.69% (58) | book +29%/yr DD -14%
+  B & NOT EMA50 > EMA200      451 tr | mean +3.37% med -3.8% win 31% p10 -9.6% | train +3.37% (266) test +3.38% (185) | book +49%/yr DD -25%
+  B & close > quarterly VWAP  363 tr | mean +4.65% med -3.8% win 31% p10 -10.5% | train +3.36% (215) test +6.53% (148) | book +42%/yr DD -29%
+  B & NOT close > quarterly VWAP  217 tr | mean +2.31% med -3.8% win 31% p10 -9.3% | train +2.30% (122) test +2.32% (95) | book +21%/yr DD -19%
+  B & all four                100 tr | mean +6.75% med -4.3% win 31% p10 -11.4% | train +2.32% (52) test +11.56% (48) | book +30%/yr DD -13%
+  B & none of four             16 tr | mean -2.91% med -5.4% win 19% p10 -9.9% | train +0.42% (7) test -5.51% (9) | book -2%/yr DD -6%
+   on A (B + daily bull):
+  A base                      163 tr | mean +8.04% med -3.2% win 36% p10 -10.1% | train +4.09% (75) test +11.41% (88) | book +60%/yr DD -13%
+  A & close > EMA200          139 tr | mean +9.33% med -3.2% win 37% p10 -10.3% | train +5.10% (63) test +12.83% (76) | book +58%/yr DD -12%
+  A & NOT close > EMA200       24 tr | mean +0.60% med -3.4% win 29% p10 -7.5% | train -1.20% (12) test +2.40% (12) | book +1%/yr DD -8%
+  A & close > qVWAP           120 tr | mean +7.93% med -3.3% win 36% p10 -10.8% | train +2.99% (52) test +11.70% (68) | book +42%/yr DD -14%
+  A & NOT > qVWAP              43 tr | mean +8.37% med -3.0% win 37% p10 -7.4% | train +6.59% (23) test +10.41% (20) | book +18%/yr DD -7%
+== (2) exits on B: baseline (close-based flip) vs early exits (fraction of trades the early rule fired)
+  baseline                    580 tr | mean +3.78% med -3.8% win 31% p10 -10.2% | train +2.98% (337) test +4.88% (243) | book +61%/yr DD -29%
+  L0 fired 100%               580 tr | mean +2.85% med -3.1% win 25% p10 -8.2% | train +1.78% (337) test +4.33% (243) | book +49%/yr DD -24%
+  L.25 fired 100%             580 tr | mean +2.98% med -3.5% win 27% p10 -8.8% | train +1.42% (337) test +5.14% (243) | book +49%/yr DD -29%
+  L.5 fired 96%               580 tr | mean +3.41% med -3.8% win 29% p10 -9.5% | train +1.99% (337) test +5.38% (243) | book +60%/yr DD -26%
+  L1 fired 50%                580 tr | mean +3.80% med -4.0% win 31% p10 -9.8% | train +2.83% (337) test +5.15% (243) | book +59%/yr DD -27%
+  S1 fired 96%                580 tr | mean -0.49% med -1.9% win 32% p10 -4.8% | train -0.68% (337) test -0.21% (243) | book -11%/yr DD -30%
+  S1.5 fired 80%              580 tr | mean +0.12% med -2.3% win 35% p10 -7.7% | train -0.39% (337) test +0.81% (243) | book -3%/yr DD -18%
+  S2 fired 56%                580 tr | mean +1.49% med -2.9% win 35% p10 -9.0% | train +0.82% (337) test +2.43% (243) | book +21%/yr DD -20%
+== (2) exits on A: baseline (close-based flip) vs early exits (fraction of trades the early rule fired)
+  baseline                    163 tr | mean +8.04% med -3.2% win 36% p10 -10.1% | train +4.09% (75) test +11.41% (88) | book +60%/yr DD -13%
+  L0 fired 100%               163 tr | mean +6.40% med -3.0% win 31% p10 -7.9% | train +1.45% (75) test +10.62% (88) | book +50%/yr DD -15%
+  L.25 fired 100%             163 tr | mean +7.05% med -3.0% win 33% p10 -8.5% | train +0.93% (75) test +12.27% (88) | book +49%/yr DD -17%
+  L.5 fired 95%               163 tr | mean +7.26% med -3.2% win 35% p10 -8.9% | train +1.35% (75) test +12.30% (88) | book +51%/yr DD -17%
+  L1 fired 55%                163 tr | mean +7.79% med -3.2% win 37% p10 -9.5% | train +3.17% (75) test +11.73% (88) | book +57%/yr DD -13%
+  S1 fired 98%                163 tr | mean -0.54% med -2.1% win 30% p10 -5.1% | train -1.40% (75) test +0.19% (88) | book -4%/yr DD -17%
+  S1.5 fired 83%              163 tr | mean +0.75% med -2.2% win 36% p10 -7.8% | train -1.50% (75) test +2.66% (88) | book +5%/yr DD -16%
+  S2 fired 55%                163 tr | mean +4.18% med -2.8% win 37% p10 -9.4% | train +1.13% (75) test +6.78% (88) | book +32%/yr DD -13%
