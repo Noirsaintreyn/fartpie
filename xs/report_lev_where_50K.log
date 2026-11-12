@@ -1,0 +1,69 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+core RTH legs 2018-26: n 3342  avg pts era1 +5.29 era2 +9.05
+=== walk-forward size tilt (x0.5 if bucket<half avg, x1.5 if >1.5x avg, learned on one era, scored on the other); gain = extra pts per trade
+        factor  1->2  1->2 t  2->1  2->1 t  both
+     m_gap_rel  2.58    2.60  2.88    5.62  True
+   m_rng20_pct  2.44    3.01  1.07    1.91  True
+       f_month  0.95    0.98 -0.72   -1.66 False
+         f_dom  0.81    2.47 -0.15   -0.33 False
+         f_leg  0.07    0.27  0.27    0.70  True
+  f_qtr_end_wk  0.06    0.36 -0.49   -2.18 False
+m_rng_prev_rel  0.00    0.00  0.00    0.00 False
+       f_last2  0.00    0.00  0.00    0.00 False
+  f_turn_month  0.00    0.00  0.00    0.00 False
+       f_fomc1  0.00    0.00 -0.05   -0.60 False
+ m_trend_eff10  0.00    0.00  0.00    0.00 False
+   f_first_day  0.00    0.00 -0.15   -0.93 False
+     f_pre_hol  0.00    0.00 -0.02   -0.28 False
+     f_vix_exp -0.00   -0.03  0.15    1.60 False
+    f_opex_fri -0.02   -0.17 -0.02   -0.25 False
+     f_opex_wk -0.02   -0.17 -0.02   -0.25 False
+        f_fomc -0.10   -0.75  0.00    0.00 False
+    m_vxn_chg5 -0.15   -0.24  0.00    0.00 False
+     m_qqq_z20 -0.89   -2.39 -0.35   -1.87 False
+        f_time -0.98   -1.57 -0.37   -1.93 False
+         f_dow -1.23   -1.74 -1.16   -3.81 False
+     m_vxn_pct -1.36   -3.02  0.00    0.00 False
+
+=== bucket tables for factors positive both ways
+f_leg
+       size        mean      
+era2  False True  False True 
+f_leg                        
+M1      543   563   7.0   8.7
+R1       63    78   3.7   8.7
+RA      145   178   9.4  11.4
+RULES   433   655   2.1   2.7
+V15a    333   351   5.2  20.4
+m_rng20_pct
+             size        mean      
+era2        False True  False True 
+m_rng20_pct                        
+high          610   623   8.3  14.3
+low           363   635   3.1  10.1
+mid           543   566   3.3   2.0
+na              1     1  74.5  74.5
+m_gap_rel
+           size        mean      
+era2      False True  False True 
+m_gap_rel                        
+high        622   788  14.2  16.4
+low         416   468   0.2  -3.3
+mid         454   554  -2.1   9.1
+na           25    15   3.7   8.9
+overall avg pts era1 +5.3 era2 +9.0. Buckets with edge in BOTH eras (>1.5x overall each, n>=60 each):
+        fac  val  n1  n2    p1    p2   mae1   mae2  eff1  eff2   ok
+  m_gap_rel high 622 788 14.17 16.35 -15.22 -27.57  0.93  0.59 True
+    f_month    4 134 196  9.96 30.59 -18.37 -34.38  0.54  0.89 True
+m_rng20_pct high 610 623  8.27 14.27 -21.38 -34.90  0.39  0.41 True
+BASE                                         EVAL pass  90% fail  10% <=30/60/90d 16%/51%/71% med 56d p25 36d | 2022+ pass 94% <=30d 23% || FUNDED lost-ever 26% 1st<=30d 45% total $6,412
+LG x1.5 (reference)                          EVAL pass  89% fail  11% <=30/60/90d 20%/56%/73% med 51d p25 33d | 2022+ pass 93% <=30d 26% || FUNDED lost-ever 29% 1st<=30d 50% total $6,303
++ f_month=4 x1.5                             EVAL pass  91% fail   9% <=30/60/90d 18%/52%/73% med 54d p25 35d | 2022+ pass 93% <=30d 25% || FUNDED lost-ever 27% 1st<=30d 47% total $6,434
++ f_month=4 x2.0                             EVAL pass  91% fail   9% <=30/60/90d 18%/52%/73% med 54d p25 35d | 2022+ pass 93% <=30d 24% || FUNDED lost-ever 26% 1st<=30d 48% total $6,443
++ m_rng20_pct=high x1.5                      EVAL pass  91% fail   9% <=30/60/90d 17%/52%/70% med 54d p25 36d | 2022+ pass 97% <=30d 23% || FUNDED lost-ever 29% 1st<=30d 51% total $6,319
++ m_rng20_pct=high x2.0                      EVAL pass  90% fail  10% <=30/60/90d 18%/52%/70% med 53d p25 35d | 2022+ pass 93% <=30d 22% || FUNDED lost-ever 30% 1st<=30d 55% total $6,212
+LG + top3 buckets x1.5                       EVAL pass  89% fail  11% <=30/60/90d 20%/57%/74% med 49d p25 33d | 2022+ pass 93% <=30d 24% || FUNDED lost-ever 31% 1st<=30d 53% total $6,134
+LG x2 + top3 x1.5                            EVAL pass  86% fail  14% <=30/60/90d 23%/56%/73% med 47d p25 29d | 2022+ pass 89% <=30d 30% || FUNDED lost-ever 40% 1st<=30d 55% total $5,460
