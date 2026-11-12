@@ -1,0 +1,69 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== BALANCE-CALLED continuation leg (follow to 15:55, stop 0.5 ADR). Gate = OOS RF accept-prob bottom 40% at 10:30. Score exists from 2019 only.
+  on_pos 13:00 thr.20      gated           19-21: n 236 avg  +11.7 win 56% t +2.7
+  on_pos 13:00 thr.20      gated           22-26: n 313 avg  +12.2 win 56% t +1.5
+  on_pos 13:00 thr.20      ungated(2019+)  19-21: n 594 avg   +3.7 win 52% t +1.6
+  on_pos 13:00 thr.20      ungated(2019+)  22-26: n 912 avg   +9.8 win 56% t +2.6
+  ret_open 13:00 thr.30    gated           19-21: n 160 avg  +15.8 win 59% t +2.9
+  ret_open 13:00 thr.30    gated           22-26: n 208 avg  +12.5 win 57% t +1.1
+  ret_open 13:00 thr.30    ungated(2019+)  19-21: n 415 avg   +6.6 win 53% t +2.2
+  ret_open 13:00 thr.30    ungated(2019+)  22-26: n 634 avg  +10.6 win 57% t +2.2
+  pdc_dev 11:00 thr.30     gated           19-21: n 140 avg  +18.8 win 59% t +2.6
+  pdc_dev 11:00 thr.30     gated           22-26: n 169 avg   +8.1 win 52% t +0.8
+  pdc_dev 11:00 thr.30     ungated(2019+)  19-21: n 444 avg  +10.2 win 55% t +2.8
+  pdc_dev 11:00 thr.30     ungated(2019+)  22-26: n 667 avg   +5.9 win 53% t +1.2
+BASE (current full model)
+   EVAL  pass  96% FAIL   4% | pass<=30d  19% <=60d  51% <=90d  69% | still running >30d  80% >60d  46% >90d  27% | fee-months/eval 4.13
+   FUNDED paid  88% lost-before-1st  12% lost-ever  35% | 1st payout <=30d  45% <=60d  75% <=90d  84% (median 30d) | payouts in 90d 2.05 / 180d 3.40 | $ in 90d 3,041 / 180d 5,284 | $ total 5,704
+   2022+ only: eval pass 98% fail 2% pass<=30/60/90d 29%/65%/79% | funded lost-ever 29% 1st payout<=30/60/90d 62%/84%/89% total $6,350
++BC [on_pos 13:00 thr.20] gated u=0.5
+   EVAL  pass  69% FAIL  31% | pass<=30d  25% <=60d  46% <=90d  57% | still running >30d  62% >60d  31% >90d  16% | fee-months/eval 3.22
+   FUNDED paid  75% lost-before-1st  25% lost-ever  70% | 1st payout <=30d  53% <=60d  72% <=90d  74% (median 20d) | payouts in 90d 1.90 / 180d 2.23 | $ in 90d 2,668 / 180d 3,144 | $ total 3,204
+   2022+ only: eval pass 61% fail 39% pass<=30/60/90d 36%/51%/58% | funded lost-ever 75% 1st payout<=30/60/90d 60%/64%/64% total $2,764
++BC [on_pos 13:00 thr.20] gated u=1.0
+   EVAL  pass  54% FAIL  46% | pass<=30d  25% <=60d  37% <=90d  43% | still running >30d  38% >60d  18% >90d  11% | fee-months/eval 2.54
+   FUNDED paid  52% lost-before-1st  48% lost-ever  86% | 1st payout <=30d  38% <=60d  50% <=90d  52% (median 17d) | payouts in 90d 1.13 / 180d 1.28 | $ in 90d 1,658 / 180d 1,914 | $ total 1,967
+   2022+ only: eval pass 40% fail 60% pass<=30/60/90d 33%/39%/40% | funded lost-ever 90% 1st payout<=30/60/90d 39%/41%/41% total $1,763
++BC [on_pos 13:00 thr.20] ungated u=0.5
+   EVAL  pass  61% FAIL  39% | pass<=30d  23% <=60d  42% <=90d  50% | still running >30d  53% >60d  25% >90d  13% | fee-months/eval 2.71
+   FUNDED paid  65% lost-before-1st  35% lost-ever  85% | 1st payout <=30d  51% <=60d  62% <=90d  64% (median 14d) | payouts in 90d 1.44 / 180d 1.60 | $ in 90d 1,870 / 180d 2,087 | $ total 2,089
+   2022+ only: eval pass 49% fail 51% pass<=30/60/90d 31%/47%/49% | funded lost-ever 86% 1st payout<=30/60/90d 51%/53%/53% total $1,990
++BC [on_pos 13:00 thr.20] ungated u=1.0
+   EVAL  pass  28% FAIL  72% | pass<=30d  19% <=60d  24% <=90d  27% | still running >30d  25% >60d  14% >90d   8% | fee-months/eval 1.89
+   FUNDED paid  36% lost-before-1st  64% lost-ever  94% | 1st payout <=30d  27% <=60d  36% <=90d  36% (median 12d) | payouts in 90d 0.69 / 180d 0.80 | $ in 90d 957 / 180d 1,082 | $ total 1,082
+   2022+ only: eval pass 23% fail 77% pass<=30/60/90d 21%/23%/23% | funded lost-ever 94% 1st payout<=30/60/90d 23%/23%/23% total $942
++BC [ret_open 13:00 thr.30] gated u=0.5
+   EVAL  pass  70% FAIL  30% | pass<=30d  25% <=60d  48% <=90d  59% | still running >30d  67% >60d  32% >90d  16% | fee-months/eval 3.02
+   FUNDED paid  76% lost-before-1st  24% lost-ever  63% | 1st payout <=30d  52% <=60d  70% <=90d  75% (median 22d) | payouts in 90d 2.05 / 180d 2.52 | $ in 90d 2,955 / 180d 3,693 | $ total 3,747
+   2022+ only: eval pass 69% fail 31% pass<=30/60/90d 33%/51%/57% | funded lost-ever 56% 1st payout<=30/60/90d 61%/67%/70% total $3,975
++BC [ret_open 13:00 thr.30] gated u=1.0
+   EVAL  pass  42% FAIL  58% | pass<=30d  25% <=60d  37% <=90d  41% | still running >30d  39% >60d  16% >90d   6% | fee-months/eval 2.16
+   FUNDED paid  51% lost-before-1st  49% lost-ever  79% | 1st payout <=30d  38% <=60d  49% <=90d  51% (median 18d) | payouts in 90d 1.34 / 180d 1.53 | $ in 90d 2,081 / 180d 2,377 | $ total 2,431
+   2022+ only: eval pass 35% fail 65% pass<=30/60/90d 29%/35%/35% | funded lost-ever 83% 1st payout<=30/60/90d 38%/38%/38% total $1,912
++BC [ret_open 13:00 thr.30] ungated u=0.5
+   EVAL  pass  54% FAIL  46% | pass<=30d  26% <=60d  43% <=90d  50% | still running >30d  52% >60d  26% >90d  10% | fee-months/eval 2.58
+   FUNDED paid  67% lost-before-1st  33% lost-ever  80% | 1st payout <=30d  50% <=60d  64% <=90d  65% (median 17d) | payouts in 90d 1.63 / 180d 1.85 | $ in 90d 2,276 / 180d 2,590 | $ total 2,600
+   2022+ only: eval pass 48% fail 51% pass<=30/60/90d 36%/47%/48% | funded lost-ever 80% 1st payout<=30/60/90d 56%/57%/57% total $2,561
++BC [ret_open 13:00 thr.30] ungated u=1.0
+   EVAL  pass  35% FAIL  65% | pass<=30d  24% <=60d  32% <=90d  34% | still running >30d  29% >60d  12% >90d   6% | fee-months/eval 1.86
+   FUNDED paid  44% lost-before-1st  56% lost-ever  90% | 1st payout <=30d  33% <=60d  42% <=90d  43% (median 14d) | payouts in 90d 0.95 / 180d 1.08 | $ in 90d 1,423 / 180d 1,603 | $ total 1,604
+   2022+ only: eval pass 30% fail 70% pass<=30/60/90d 27%/30%/30% | funded lost-ever 89% 1st payout<=30/60/90d 31%/31%/31% total $1,407
++BC [pdc_dev 11:00 thr.30] gated u=0.5
+   EVAL  pass  62% FAIL  38% | pass<=30d  25% <=60d  45% <=90d  55% | still running >30d  64% >60d  31% >90d  13% | fee-months/eval 2.87
+   FUNDED paid  77% lost-before-1st  23% lost-ever  67% | 1st payout <=30d  50% <=60d  73% <=90d  76% (median 24d) | payouts in 90d 1.88 / 180d 2.39 | $ in 90d 2,615 / 180d 3,417 | $ total 3,499
+   2022+ only: eval pass 54% fail 46% pass<=30/60/90d 31%/48%/53% | funded lost-ever 65% 1st payout<=30/60/90d 56%/69%/69% total $3,522
++BC [pdc_dev 11:00 thr.30] gated u=1.0
+   EVAL  pass  45% FAIL  55% | pass<=30d  22% <=60d  33% <=90d  39% | still running >30d  41% >60d  19% >90d   9% | fee-months/eval 2.24
+   FUNDED paid  48% lost-before-1st  52% lost-ever  82% | 1st payout <=30d  33% <=60d  46% <=90d  48% (median 19d) | payouts in 90d 1.13 / 180d 1.40 | $ in 90d 1,691 / 180d 2,144 | $ total 2,201
+   2022+ only: eval pass 35% fail 65% pass<=30/60/90d 23%/31%/33% | funded lost-ever 87% 1st payout<=30/60/90d 31%/35%/35% total $1,644
++BC [pdc_dev 11:00 thr.30] ungated u=0.5
+   EVAL  pass  50% FAIL  50% | pass<=30d  27% <=60d  38% <=90d  44% | still running >30d  39% >60d  16% >90d   8% | fee-months/eval 2.19
+   FUNDED paid  61% lost-before-1st  39% lost-ever  83% | 1st payout <=30d  46% <=60d  58% <=90d  60% (median 16d) | payouts in 90d 1.37 / 180d 1.60 | $ in 90d 1,846 / 180d 2,192 | $ total 2,195
+   2022+ only: eval pass 34% fail 66% pass<=30/60/90d 26%/33%/34% | funded lost-ever 89% 1st payout<=30/60/90d 42%/43%/43% total $1,563
++BC [pdc_dev 11:00 thr.30] ungated u=1.0
+   EVAL  pass  33% FAIL  67% | pass<=30d  23% <=60d  29% <=90d  31% | still running >30d  22% >60d  10% >90d   5% | fee-months/eval 1.74
+   FUNDED paid  35% lost-before-1st  65% lost-ever  86% | 1st payout <=30d  28% <=60d  35% <=90d  35% (median 14d) | payouts in 90d 0.81 / 180d 1.00 | $ in 90d 1,300 / 180d 1,652 | $ total 1,652
+   2022+ only: eval pass 20% fail 80% pass<=30/60/90d 19%/20%/20% | funded lost-ever 91% 1st payout<=30/60/90d 21%/21%/21% total $1,123
