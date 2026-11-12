@@ -1,0 +1,14 @@
+
+######## MEGA-CAPS 15m TRAIN 2019-21 (vector exit, no TP)
+  class                 n   obs bp  null bp   p   win%  (obs-null)
+  ALL                   3983   +11.8     +2.9  0.03  30.4    +8.9
+  LV-day                1557    +8.4     +1.5  0.10  29.2    +6.9
+  NOT low (day)         2426   +14.0     +3.9  0.03  31.1   +10.1
+  HV-day (top third)    1029   +13.8     +5.9  0.20  31.4    +7.9
+
+######## MEGA-CAPS 15m TEST 2022+ (vector exit, no TP)
+  class                 n   obs bp  null bp   p   win%  (obs-null)
+  ALL                   6630    +6.6     +0.2  0.03  30.3    +6.4
+  LV-day                2231   +14.0     +0.2  0.01  31.2   +13.8
+  NOT low (day)         4399    +2.8     +1.5  0.36  29.8    +1.4
+  HV-day (top third)    1968    +1.7     +2.2  0.54  30.2    -0.5
