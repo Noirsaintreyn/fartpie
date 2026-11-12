@@ -1,0 +1,33 @@
+events 5150 train 2478 test 2672
+
+Spearman IC vs: trade ret | first-bar ret | 4-bar MAE   (train / test)   [declared sign vs fwd return]
+zA  [-1] ret tr -0.033 te -0.021 | fb tr -0.013 te +0.050 | mae4 tr -0.021 te +0.017
+zB  [-1] ret tr +0.006 te -0.001 | fb tr -0.014 te +0.045 | mae4 tr +0.003 te +0.038
+zC  [-1] ret tr -0.020 te -0.039 | fb tr +0.001 te +0.041 | mae4 tr -0.016 te +0.005
+zH  [-1] ret tr -0.034 te -0.028 | fb tr -0.009 te +0.055 | mae4 tr -0.031 te +0.007
+acc [+1] ret tr -0.005 te -0.008 | fb tr -0.022 te +0.021 | mae4 tr -0.026 te +0.007
+
+Quintiles (train cut points): win%, mean, ex-top1% mean, first-bar mean%, MAE4 mean%
+zA
+ train Q0 n496 w25 +0.0 x-0.7 fb-0.0 ma-2.1 | Q1 n495 w27 +1.6 x+0.4 fb-0.1 ma-2.5 | Q2 n496 w24 +0.9 x-0.4 fb+0.0 ma-2.4 | Q3 n495 w24 +0.7 x-1.2 fb-0.0 ma-2.2 | Q4 n496 w30 +5.5 x+1.8 fb-0.1 ma-2.6
+ test  Q0 n507 w25 +1.0 x-0.2 fb-0.1 ma-2.0 | Q1 n539 w28 +1.3 x+0.0 fb+0.1 ma-2.0 | Q2 n501 w25 +0.6 x-0.6 fb-0.1 ma-2.1 | Q3 n535 w27 +1.2 x-0.0 fb-0.0 ma-2.1 | Q4 n590 w26 +1.1 x-0.5 fb+0.2 ma-2.0
+zB
+ train Q0 n496 w24 +0.0 x-0.9 fb-0.0 ma-2.4 | Q1 n495 w25 +1.8 x-0.3 fb-0.2 ma-2.6 | Q2 n496 w24 +0.6 x-0.6 fb+0.0 ma-2.0 | Q3 n495 w27 +3.1 x+0.3 fb-0.1 ma-2.2 | Q4 n496 w28 +3.3 x+1.0 fb+0.0 ma-2.4
+ test  Q0 n548 w22 +1.0 x-0.2 fb-0.1 ma-2.2 | Q1 n511 w28 +1.2 x-0.1 fb+0.0 ma-2.0 | Q2 n553 w24 +0.5 x-0.9 fb-0.0 ma-2.0 | Q3 n488 w28 +1.5 x+0.3 fb+0.1 ma-1.9 | Q4 n572 w27 +1.0 x-0.2 fb+0.1 ma-2.0
+zC
+ train Q0 n496 w26 +0.3 x-0.6 fb-0.0 ma-2.2 | Q1 n495 w26 +1.3 x-0.4 fb-0.1 ma-2.4 | Q2 n496 w22 +0.9 x-0.1 fb-0.1 ma-2.2 | Q3 n495 w26 +1.0 x-0.6 fb+0.1 ma-2.2 | Q4 n496 w30 +5.1 x+1.5 fb-0.1 ma-2.6
+ test  Q0 n532 w28 +1.6 x+0.2 fb-0.1 ma-2.0 | Q1 n535 w27 +1.3 x+0.2 fb+0.1 ma-2.1 | Q2 n510 w25 +1.0 x-0.4 fb-0.0 ma-2.0 | Q3 n517 w25 +0.4 x-0.7 fb+0.1 ma-2.0 | Q4 n578 w26 +0.9 x-0.6 fb+0.1 ma-2.1
+zH
+ train Q0 n496 w25 +0.2 x-0.5 fb-0.1 ma-2.2 | Q1 n495 w26 +1.4 x+0.2 fb-0.1 ma-2.4 | Q2 n496 w24 +0.8 x-0.5 fb+0.1 ma-2.2 | Q3 n495 w24 +0.8 x-1.0 fb-0.1 ma-2.3 | Q4 n496 w30 +5.5 x+1.9 fb-0.1 ma-2.7
+ test  Q0 n504 w26 +1.0 x-0.3 fb-0.1 ma-2.2 | Q1 n538 w27 +1.2 x+0.1 fb+0.1 ma-1.9 | Q2 n502 w24 +0.1 x-1.1 fb-0.1 ma-2.0 | Q3 n576 w28 +1.2 x+0.1 fb-0.0 ma-1.9 | Q4 n552 w26 +1.6 x-0.1 fb+0.2 ma-2.2
+acc
+ train Q0 n1924 w25 +0.9 x-0.4 fb-0.0 ma-2.3 | Q1 n58 w19 -1.8 x-2.3 fb-0.3 ma-2.2 | Q2 n496 w28 +5.3 x+1.7 fb-0.1 ma-2.5
+ test  Q0 n2033 w26 +1.1 x-0.2 fb+0.0 ma-2.0 | Q1 n80 w31 +4.4 x+1.4 fb-0.1 ma-1.8 | Q2 n559 w25 +0.4 x-0.5 fb+0.1 ma-2.1
+
+ALL-BARS forward 6-bar return by z bucket (train cut points). n train 48052 test 45536
+zA cuts [-2.08 -1.38 -0.76  0.01  0.96  1.93]
+ train B0 n2403 -0.05% | B1 n7208 +0.18% | B2 n9610 +0.19% | B3 n9610 +0.19% | B4 n9610 +0.13% | B5 n7208 +0.22% | B6 n2403 +0.30%
+ test  B0 n2289 +0.18% | B1 n6929 +0.05% | B2 n8596 +0.23% | B3 n8705 +0.23% | B4 n9152 +0.21% | B5 n7286 +0.19% | B6 n2579 +0.23%
+zC cuts [-1.62 -0.94 -0.31  0.04  0.49  1.46]
+ train B0 n2403 +0.01% | B1 n7208 +0.15% | B2 n9610 +0.22% | B3 n9610 +0.15% | B4 n9610 +0.16% | B5 n7208 +0.19% | B6 n2403 +0.36%
+ test  B0 n2362 +0.12% | B1 n6714 +0.16% | B2 n8757 +0.22% | B3 n9082 +0.20% | B4 n9058 +0.18% | B5 n7097 +0.19% | B6 n2466 +0.25%
