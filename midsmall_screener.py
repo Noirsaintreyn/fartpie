@@ -255,8 +255,33 @@ def wait_for_bar(target, timeout=120):
         except Exception: pass
         time.sleep(3)
     return False
+def watchlist(data, n=12):
+    """Nov 12 2026: JUMP WATCHLIST - the most volatile names in the price band (14-day ATR%), NOT signals. xs/report_12_jump.py: top-decile past volatility had a 22% chance of a +20% move within 5 sessions (base 9%) but a 7% chance of a -20% move (base 3.8%): it finds big-move candidates, not direction."""
+    rows = []
+    for tk, Y in data.items():
+        try:
+            Yc = closed_only(Y)
+            if len(Yc) < 300: continue
+            D = Yc.groupby(Yc.index.normalize()).agg(h=('high', 'max'), l=('low', 'min'), c=('close', 'last'), v=('volume', 'sum')); c = D.c; px = float(c.iat[-1])
+            if not (MIN_PX <= px < MAX_PX if MAX_PX > 0 else px >= MIN_PX): continue
+            if float((c * D.v).rolling(20).mean().iat[-1]) < 2e5: continue
+            pc = c.shift(); tr = pd.concat([D.h - D.l, (D.h - pc).abs(), (D.l - pc).abs()], axis=1).max(axis=1); atr = float(tr.rolling(14).mean().iat[-1] / px)
+            rows.append(dict(tk=tk, px=px, atr=atr, maxr=float(c.pct_change().rolling(21).max().iat[-1]), dist=float(1 - px / D.h.rolling(252, min_periods=120).max().iat[-1]), rv=float(D.v.iat[-1] / D.v.rolling(20).mean().iat[-1])))
+        except Exception: continue
+    if not rows: return None
+    W = pd.DataFrame(rows).sort_values('atr', ascending=False).head(n); L = []
+    for r in W.itertuples():
+        Yc = closed_only(data[r.tk]); m = ma_context(Yc) or {}; reg = int(run_state_machine(Yc.assign(datetime=Yc.index))[0][-1]); a4 = bool(m.get('e4') and m['px'] > m['e4'])
+        L.append(f"{r.tk:<6}{r.px:>5.2f}  ATR {r.atr:>4.0%}  MAX21 {r.maxr:>+4.0%}  {('-' + format(r.dist, '.0%')) if r.dist == r.dist else 'n/a':>4} from 52wH  vol {r.rv:>3.1f}x | 1h vector {'BULL' if reg == 1 else 'BEAR'} | Kalman {'up' if m.get('kal') else 'dn'}  1hEMA200 {'Y' if m.get('a200') else 'n'}  4hEMA200 {'Y' if a4 else 'n'}")
+    return (f"\U0001f52d JUMP WATCHLIST ${MIN_PX:g}-{MAX_PX:g} (volatile names, NOT signals) - ranked by 14-day ATR%. Backtest: the top decile by past volatility had a 22% chance of a +20% move within 5 sessions (base 9%), but also a 7% chance of -20% (base 3.8%): it finds where big moves are likely, not which way. Trade only when a BUY alert fires (grade TOP/STRONG).\n```\n" + '\n'.join(L) + "\n```")
 def loop():
     print(f'midsmall screener up: {len(universe())} names, {SLOTS} slots, volume >= {VOL_X}x, price ${MIN_PX:g}-{MAX_PX:g}'); post(f'\U0001f7e2 Mid/small-cap screener online: {len(universe())} names, {SLOTS} slots. 1h vector bull flips on ${MIN_PX:g}-{MAX_PX:g} names with >= {VOL_X}x volume, graded TOP (Kalman trend up + above 1h and 4h EMA200) / STRONG (Kalman up + above 1h EMA200); weaker flips are skipped (MIDSMALL_MIN_GRADE). Not extended above VWAP, not within {EARN_SKIP} sessions of earnings; half size when short selling is heavy. A follow-through note posts after the entry bar closes. Exit = bear flip. Each alert comes with market context, MA context, news and setup flags.')
+    try:
+        st0 = load_state(); today = str(now_et().date())
+        if st0.get('wl_date') != today and now_et().hour < 16:
+            w = watchlist(get_data(universe()))
+            if w: print(w); post(w); st0['wl_date'] = today; save_state(st0)
+    except Exception as e: print(f'  ! watchlist failed: {e}')
     while True:
         t = now_et(); mins = t.hour * 60 + t.minute
         if t.dayofweek >= 5 or mins > 16 * 60 + 5: print('market closed - exiting'); return
@@ -269,9 +294,10 @@ def loop():
         except Exception as e: print(f'  ! scan failed: {e}')
         time.sleep(5)
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser(); ap.add_argument('--once', action='store_true'); ap.add_argument('--dry', action='store_true'); ap.add_argument('--loop', action='store_true'); ap.add_argument('--replay', type=int, default=0); ap.add_argument('--refresh-universe', action='store_true')
+    ap = argparse.ArgumentParser(); ap.add_argument('--once', action='store_true'); ap.add_argument('--dry', action='store_true'); ap.add_argument('--loop', action='store_true'); ap.add_argument('--replay', type=int, default=0); ap.add_argument('--refresh-universe', action='store_true'); ap.add_argument('--watchlist', action='store_true')
     a = ap.parse_args()
     if a.refresh_universe: refresh_universe()
+    elif a.watchlist: w = watchlist(get_data(universe())); print(w); (None if a.dry else post(w))
     elif a.replay: replay(a.replay)
     elif a.loop: loop()
     else: scan_once(a.dry)
