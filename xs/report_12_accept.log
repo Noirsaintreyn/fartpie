@@ -1,0 +1,81 @@
+events 9382 {'BIG': 3799, 'SMALL': 5583} | train 4882 test 4500
+
+================ SMALL  train 2912 test 2671 | win% train 26 test 26 | bad% train 53 test 50
+
+-- label WIN  (AUC on TEST; 0.5=nothing)
+  GBM CANDLE   train-AUC 0.650  test-AUC 0.553
+  GBM ACCEPT   train-AUC 0.688  test-AUC 0.534
+  GBM CONTEXT  train-AUC 0.636  test-AUC 0.554
+  GBM ALL      train-AUC 0.697  test-AUC 0.557
+  GaussNB   test-AUC 0.564
+  Logit     test-AUC 0.562
+  LightGBM  test-AUC 0.557
+  CatNB     test-AUC 0.555
+  CNN       test-AUC 0.548
+
+-- FILTER: skip lowest-30%% P(win) candidates in TEST (primary = LightGBM)
+  GaussNB                kept n1870 win 28% mean +1.07% ex-top1 -0.23% | all mean +1.03% win 26% | p(random-skip) 0.451
+  Logit                  kept n1870 win 28% mean +0.98% ex-top1 -0.30% | all mean +1.03% win 26% | p(random-skip) 0.600
+  LightGBM  <PRIMARY     kept n1870 win 28% mean +1.11% ex-top1 -0.13% | all mean +1.03% win 26% | p(random-skip) 0.374
+  CatNB                  kept n1870 win 28% mean +1.31% ex-top1 -0.08% | all mean +1.03% win 26% | p(random-skip) 0.107
+  CNN                    kept n1870 win 27% mean +0.96% ex-top1 -0.28% | all mean +1.03% win 26% | p(random-skip) 0.637
+
+-- label BAD  (AUC on TEST; 0.5=nothing)
+  GBM CANDLE   train-AUC 0.649  test-AUC 0.595
+  GBM ACCEPT   train-AUC 0.669  test-AUC 0.564
+  GBM CONTEXT  train-AUC 0.723  test-AUC 0.685
+  GBM ALL      train-AUC 0.742  test-AUC 0.686
+  GaussNB   test-AUC 0.627
+  Logit     test-AUC 0.648
+  LightGBM  test-AUC 0.686
+  CatNB     test-AUC 0.652
+  CNN       test-AUC 0.565
+
+-- FILTER: skip highest-30%% P(bad)
+  GaussNB                kept n1870 win 23% mean +0.21% ex-top1 -0.67% | all mean +1.03% win 26% | p(random-skip) 1.000
+  Logit                  kept n1870 win 24% mean +0.42% ex-top1 -0.43% | all mean +1.03% win 26% | p(random-skip) 0.998
+  LightGBM               kept n1870 win 25% mean +0.64% ex-top1 -0.38% | all mean +1.03% win 26% | p(random-skip) 0.962
+  CatNB                  kept n1870 win 24% mean +0.74% ex-top1 -0.36% | all mean +1.03% win 26% | p(random-skip) 0.908
+  CNN                    kept n1870 win 25% mean +1.20% ex-top1 -0.05% | all mean +1.03% win 26% | p(random-skip) 0.225
+
+LightGBM(WIN) gain share: ext 11%, c_rng 11%, reff 10%, va_width 9%, vp_skew 7%, lpx 6%, rv5 4%, c_p1 4% | family totals: CANDLE 27% ACCEPT 54% CONTEXT 20%
+
+================ BIG  train 1970 test 1829 | win% train 23 test 22 | bad% train 45 test 53
+
+-- label WIN  (AUC on TEST; 0.5=nothing)
+  GBM CANDLE   train-AUC 0.685  test-AUC 0.533
+  GBM ACCEPT   train-AUC 0.721  test-AUC 0.531
+  GBM CONTEXT  train-AUC 0.680  test-AUC 0.565
+  GBM ALL      train-AUC 0.736  test-AUC 0.554
+  GaussNB   test-AUC 0.551
+  Logit     test-AUC 0.546
+  LightGBM  test-AUC 0.554
+  CatNB     test-AUC 0.548
+  CNN       test-AUC 0.552
+
+-- FILTER: skip lowest-30%% P(win) candidates in TEST (primary = LightGBM)
+  GaussNB                kept n1280 win 23% mean -1.34% ex-top1 -2.17% | all mean -1.14% win 22% | p(random-skip) 0.861
+  Logit                  kept n1280 win 23% mean -1.30% ex-top1 -2.13% | all mean -1.14% win 22% | p(random-skip) 0.824
+  LightGBM  <PRIMARY     kept n1280 win 24% mean -1.11% ex-top1 -1.97% | all mean -1.14% win 22% | p(random-skip) 0.446
+  CatNB                  kept n1280 win 24% mean -1.07% ex-top1 -1.95% | all mean -1.14% win 22% | p(random-skip) 0.356
+  CNN                    kept n1280 win 24% mean -1.22% ex-top1 -1.92% | all mean -1.14% win 22% | p(random-skip) 0.699
+
+-- label BAD  (AUC on TEST; 0.5=nothing)
+  GBM CANDLE   train-AUC 0.685  test-AUC 0.612
+  GBM ACCEPT   train-AUC 0.716  test-AUC 0.578
+  GBM CONTEXT  train-AUC 0.762  test-AUC 0.720
+  GBM ALL      train-AUC 0.780  test-AUC 0.712
+  GaussNB   test-AUC 0.661
+  Logit     test-AUC 0.685
+  LightGBM  test-AUC 0.712
+  CatNB     test-AUC 0.670
+  CNN       test-AUC 0.609
+
+-- FILTER: skip highest-30%% P(bad)
+  GaussNB                kept n1280 win 21% mean -0.84% ex-top1 -1.54% | all mean -1.14% win 22% | p(random-skip) 0.046
+  Logit                  kept n1280 win 21% mean -0.91% ex-top1 -1.49% | all mean -1.14% win 22% | p(random-skip) 0.096
+  LightGBM               kept n1280 win 21% mean -0.81% ex-top1 -1.52% | all mean -1.14% win 22% | p(random-skip) 0.034
+  CatNB                  kept n1280 win 21% mean -0.86% ex-top1 -1.55% | all mean -1.14% win 22% | p(random-skip) 0.054
+  CNN                    kept n1280 win 21% mean -0.86% ex-top1 -1.57% | all mean -1.14% win 22% | p(random-skip) 0.056
+
+LightGBM(WIN) gain share: ext 19%, atrp 11%, upvol10 8%, reff 6%, rv5 6%, clv5 6%, clv20 5%, c_clv 4% | family totals: CANDLE 18% ACCEPT 49% CONTEXT 33%
