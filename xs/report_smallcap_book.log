@@ -1,0 +1,41 @@
+universe 44
+
+######## K=4 slots, cost 15 bp round trip
+  half 1 Dec23-Dec24: buy&hold equal-weight same names +34%
+     A all bull flips             total   +74.9%  maxDD  -16.3%  trades  112  win 30.4%  avg hold 11.9d
+     B flip vol >= 1.5x           total   +23.9%  maxDD  -37.5%  trades  104  win 26.0%  avg hold 11.7d
+     C low-vol day + vol >= 1.5x  total   +21.5%  maxDD  -21.9%  trades   71  win 31.0%  avg hold 10.9d
+  half 2 2025+: buy&hold equal-weight same names +7%
+     A all bull flips             total   -60.3%  maxDD  -61.8%  trades  271  win 23.2%  avg hold  9.1d
+     B flip vol >= 1.5x           total   -57.4%  maxDD  -58.9%  trades  226  win 24.8%  avg hold 10.3d
+     C low-vol day + vol >= 1.5x  total   +38.2%  maxDD  -34.2%  trades  163  win 25.2%  avg hold 10.3d
+
+######## K=4 slots, cost 30 bp round trip
+  half 1 Dec23-Dec24: buy&hold equal-weight same names +34%
+     A all bull flips             total   +68.4%  maxDD  -16.5%  trades  112  win 30.4%  avg hold 11.9d
+     B flip vol >= 1.5x           total   +19.5%  maxDD  -38.8%  trades  104  win 26.0%  avg hold 11.7d
+     C low-vol day + vol >= 1.5x  total   +18.4%  maxDD  -22.8%  trades   71  win 31.0%  avg hold 10.9d
+  half 2 2025+: buy&hold equal-weight same names +7%
+     A all bull flips             total   -64.0%  maxDD  -65.3%  trades  271  win 22.9%  avg hold  9.1d
+     B flip vol >= 1.5x           total   -60.8%  maxDD  -62.1%  trades  226  win 24.3%  avg hold 10.3d
+     C low-vol day + vol >= 1.5x  total   +30.5%  maxDD  -36.4%  trades  163  win 24.5%  avg hold 10.3d
+
+######## K=8 slots, cost 15 bp round trip
+  half 1 Dec23-Dec24: buy&hold equal-weight same names +34%
+     A all bull flips             total   +39.3%  maxDD  -16.5%  trades  237  win 27.0%  avg hold 10.7d
+     B flip vol >= 1.5x           total   +51.9%  maxDD  -20.9%  trades  192  win 26.6%  avg hold 11.9d
+     C low-vol day + vol >= 1.5x  total   +68.4%  maxDD  -14.5%  trades  116  win 28.4%  avg hold 10.6d
+  half 2 2025+: buy&hold equal-weight same names +7%
+     A all bull flips             total   -39.8%  maxDD  -44.7%  trades  505  win 23.6%  avg hold  9.5d
+     B flip vol >= 1.5x           total   -11.6%  maxDD  -46.4%  trades  404  win 25.0%  avg hold 10.8d
+     C low-vol day + vol >= 1.5x  total   +64.2%  maxDD  -24.7%  trades  238  win 25.6%  avg hold 10.0d
+
+######## K=8 slots, cost 30 bp round trip
+  half 1 Dec23-Dec24: buy&hold equal-weight same names +34%
+     A all bull flips             total   +33.8%  maxDD  -16.8%  trades  237  win 27.0%  avg hold 10.7d
+     B flip vol >= 1.5x           total   +47.1%  maxDD  -21.5%  trades  192  win 26.6%  avg hold 11.9d
+     C low-vol day + vol >= 1.5x  total   +65.2%  maxDD  -15.0%  trades  116  win 28.4%  avg hold 10.6d
+  half 2 2025+: buy&hold equal-weight same names +7%
+     A all bull flips             total   -45.0%  maxDD  -46.0%  trades  505  win 23.4%  avg hold  9.5d
+     B flip vol >= 1.5x           total   -17.6%  maxDD  -47.4%  trades  404  win 24.5%  avg hold 10.8d
+     C low-vol day + vol >= 1.5x  total   +57.6%  maxDD  -26.3%  trades  238  win 24.8%  avg hold 10.0d
