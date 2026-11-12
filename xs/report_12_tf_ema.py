@@ -43,3 +43,14 @@ print('== on A+ (D + K): add EMA alignment')
 P = T[T.ad & T.kal]; rep('A+ base', P)
 for col, nm in (('a200', '1h EMA200'), ('4h200', '4h EMA200'), ('4h50', '4h EMA50'), ('d50', 'daily EMA50')):
     rep(f'  & above {nm}', P[P[col] == 1]); rep(f'  & NOT above {nm}', P[P[col] == 0])
+print('== STACK COMPARISON (B = $1-2, vol>=1.5x flips)')
+Pp = T[T.ad & T.kal]; c4 = T['4h200'] == 1; c1 = T.a200 == 1; cd = T['d200'] == 1
+cands = [('B', T), ('A (B+D)', T[T.ad]), ('A+ (B+D+K)', Pp), ('A+ & 1h EMA200', Pp[Pp.a200 == 1]), ('A+ & 4h EMA200', Pp[Pp['4h200'] == 1]), ('A+ & 1h & 4h EMA200', Pp[(Pp.a200 == 1) & (Pp['4h200'] == 1)]), ('A+ & >=2 of 3 EMA200s', Pp[Pp.cnt >= 2]), ('A+ & 3 of 3 EMA200s', Pp[Pp.cnt == 3]), ('A+ & 4h EMA200 & low-vol', Pp[(Pp['4h200'] == 1) & Pp.lv.fillna(False).astype(bool)])]
+for nm, Z in cands: rep(nm, Z)
+rng = np.random.default_rng(5); r = (T.ret - COST).values
+print('== p vs random same-size draws from B:')
+for nm, Z in cands[2:]:
+    k = (Z.ret - COST).values; dr = [rng.choice(r, len(k), replace=False).mean() for _ in range(4000)]; print(f'  {nm:<26} n={len(k):>3} p={(np.array(dr) >= k.mean()).mean():.3f}')
+print('== drop the single best trade (RXT-style outlier check):')
+for nm, Z in cands[2:7]:
+    k = (Z.ret - COST).sort_values(); print(f'  {nm:<26} mean {k.mean()*100:+.2f}% -> without top 1 {k.iloc[:-1].mean()*100:+.2f}% -> without top 3 {k.iloc[:-3].mean()*100:+.2f}%  (top trade {k.iloc[-1]*100:+.0f}%)')

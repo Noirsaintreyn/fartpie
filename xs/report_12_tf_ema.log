@@ -35,3 +35,27 @@
     & NOT above 4h EMA50               18 tr   7/yr | mean +3.00% med -2.2% win 33% p10 -7.1% | train -3.27% (8) test +8.01% (10) | book +3%/yr DD -4%
     & above daily EMA50               101 tr  39/yr | mean +10.98% med -3.0% win 39% p10 -10.3% | train +5.38% (46) test +15.67% (55) | book +52%/yr DD -11%
     & NOT above daily EMA50            21 tr   9/yr | mean +9.27% med -1.5% win 38% p10 -7.7% | train +11.76% (11) test +6.54% (10) | book +10%/yr DD -4%
+== STACK COMPARISON (B = $1-2, vol>=1.5x flips)
+  B                                   571 tr 202/yr | mean +3.96% med -3.8% win 32% p10 -10.1% | train +3.27% (328) test +4.88% (243) | book +67%/yr DD -28%
+  A (B+D)                             163 tr  61/yr | mean +8.04% med -3.2% win 36% p10 -10.1% | train +4.09% (75) test +11.41% (88) | book +60%/yr DD -13%
+  A+ (B+D+K)                          122 tr  47/yr | mean +10.69% med -2.8% win 39% p10 -10.1% | train +6.61% (57) test +14.26% (65) | book +66%/yr DD -11%
+  A+ & 1h EMA200                      103 tr  40/yr | mean +12.36% med -2.8% win 40% p10 -10.2% | train +7.96% (48) test +16.21% (55) | book +63%/yr DD -11%
+  A+ & 4h EMA200                       84 tr  35/yr | mean +12.57% med -2.5% win 40% p10 -10.6% | train +7.02% (38) test +17.16% (46) | book +54%/yr DD -12%
+  A+ & 1h & 4h EMA200                  80 tr  34/yr | mean +13.31% med -2.5% win 41% p10 -10.9% | train +8.00% (35) test +17.44% (45) | book +55%/yr DD -12%
+  A+ & >=2 of 3 EMA200s                67 tr  33/yr | mean +11.50% med -3.0% win 40% p10 -10.0% | train +4.99% (24) test +15.13% (43) | book +51%/yr DD -12%
+  A+ & 3 of 3 EMA200s                  45 tr  23/yr | mean +13.15% med -2.0% win 44% p10 -9.8% | train +5.50% (19) test +18.74% (26) | book +41%/yr DD -5%
+  A+ & 4h EMA200 & low-vol             33 tr  15/yr | mean +13.81% med -2.2% win 42% p10 -11.3% | train +8.24% (17) test +19.73% (16) | book +26%/yr DD -8%
+== p vs random same-size draws from B:
+  A+ (B+D+K)                 n=122 p=0.006
+  A+ & 1h EMA200             n=103 p=0.003
+  A+ & 4h EMA200             n= 84 p=0.007
+  A+ & 1h & 4h EMA200        n= 80 p=0.002
+  A+ & >=2 of 3 EMA200s      n= 67 p=0.022
+  A+ & 3 of 3 EMA200s        n= 45 p=0.030
+  A+ & 4h EMA200 & low-vol   n= 33 p=0.042
+== drop the single best trade (RXT-style outlier check):
+  A+ (B+D+K)                 mean +10.69% -> without top 1 +9.07% -> without top 3 +7.07%  (top trade +206%)
+  A+ & 1h EMA200             mean +12.36% -> without top 1 +10.46% -> without top 3 +8.11%  (top trade +206%)
+  A+ & 4h EMA200             mean +12.57% -> without top 1 +10.24% -> without top 3 +7.33%  (top trade +206%)
+  A+ & 1h & 4h EMA200        mean +13.31% -> without top 1 +10.87% -> without top 3 +7.82%  (top trade +206%)
+  A+ & >=2 of 3 EMA200s      mean +11.50% -> without top 1 +8.55% -> without top 3 +4.93%  (top trade +206%)
