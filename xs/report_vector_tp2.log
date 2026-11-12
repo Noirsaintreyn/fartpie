@@ -1,0 +1,51 @@
+
+#### PART A | mega-caps TRAIN 2019-21 | all days, both directions
+TP rule             n   obs bp  null bp    p   win%  (obs-null)
+none                3983   +11.8     +2.9   0.03  30.4    +8.9
+1.0 x ADR           3983    +6.0     -0.4   0.04  33.5    +6.4
+own p50             3983    +1.0     -3.6   0.03  49.5    +4.6
+own p70             3983    +3.7     -2.9   0.01  39.6    +6.6
+own p85             3983    +5.4     -0.8   0.04  34.4    +6.2
+own p95             3983    +7.5     +0.6   0.05  31.6    +6.9
+own biggest day     3983   +10.9     +3.7   0.04  30.4    +7.2
+
+#### PART A | mega-caps TEST 2022+ | all days, both directions
+TP rule             n   obs bp  null bp    p   win%  (obs-null)
+none                6630    +6.6     +0.3   0.03  30.3    +6.4
+1.0 x ADR           6630    +6.7     -2.3   0.00  33.2    +9.0
+own p50             6630    -0.2     -3.9   0.03  50.0    +3.8
+own p70             6630    +2.0     -4.0   0.00  39.8    +6.0
+own p85             6630    +5.2     -2.8   0.00  34.6    +8.1
+own p95             6630    +6.9     -2.0   0.00  31.7    +8.9
+own biggest day     6630    +9.1     -0.4   0.00  30.4    +9.5
+
+#### PART A | charted small/mid caps last 60d (indicative; own-history TP needs >=120d so many trades dropped) | all days, both directions
+TP rule             n   obs bp  null bp    p   win%  (obs-null)
+none                 112   -27.8     +5.0   0.77  25.9   -32.8
+1.0 x ADR            112   +27.7     +3.5   0.26  32.1   +24.1
+own p50                0 (too few)
+own p70                0 (too few)
+own p85                0 (too few)
+own p95                0 (too few)
+own biggest day        0 (too few)
+
+#### PART B | earnings window (reaction day..+4 trading days), mega-caps, vector exit, no TP and TP=own p85
+
+  -- no TP
+  class     n   obs bp   null bp    p   win%
+  agree      424    +29.5    +18.3   0.21  33.7
+  disagree   414     +5.1    -14.4   0.08  31.6
+  none      9775     +7.8     +1.0   0.01  30.1
+
+  -- TP own p85
+  class     n   obs bp   null bp    p   win%
+  agree      424     +7.2     +7.1   0.51  38.4
+  disagree   414    +11.3    -11.6   0.03  35.3
+  none      9775     +4.9     -2.7   0.00  34.4
+
+Small-cap earnings (Yahoo, last 3):
+KGS [(Timestamp('2026-11-09 00:00:00'), 5.38), (Timestamp('2026-08-07 00:00:00'), -23.05), (Timestamp('2026-05-11 00:00:00'), 9.5)]
+LCID [(Timestamp('2026-11-10 00:00:00'), -4.19), (Timestamp('2026-08-05 00:00:00'), -15.35), (Timestamp('2026-05-06 00:00:00'), -22.79)]
+RIOT [(Timestamp('2026-11-04 00:00:00'), 141.5), (Timestamp('2026-08-11 00:00:00'), -83.47), (Timestamp('2026-05-01 00:00:00'), -25.29)]
+Z [(Timestamp('2026-11-05 00:00:00'), -5.96), (Timestamp('2026-08-06 00:00:00'), 14.83), (Timestamp('2026-05-07 00:00:00'), 15.52)]
+IREN [(Timestamp('2026-08-28 00:00:00'), 44.09), (Timestamp('2026-05-08 00:00:00'), 38.42), (Timestamp('2026-02-06 00:00:00'), 88.44)]
