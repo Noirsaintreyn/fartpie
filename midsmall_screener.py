@@ -36,6 +36,9 @@ REQ_LV = os.getenv('MIDSMALL_REQ_LOWVOL', '0') == '1'; MIN_GRADE = os.getenv('MI
 DAILY_GATE = os.getenv('MIDSMALL_DAILY_GATE', '0') == '1'; DBULL = {}; MA = {}; EMA200_GATE = os.getenv('MIDSMALL_EMA200_GATE', '0') == '1'; KAL_GATE = os.getenv('MIDSMALL_KALMAN_GATE', '0') == '1'; VWAP_X = float(os.getenv('MIDSMALL_VWAP_X', '1.0')); EARN_SKIP = int(os.getenv('MIDSMALL_EARN_SKIP', '3'))
 try: import signal_context as SC
 except Exception as _e: SC = None; print(f'  ! signal_context unavailable ({_e}); posts will have no context, no earnings/short rules')
+try: import signal_chart as SCH
+except Exception as _e: SCH = None; print(f'  ! signal_chart unavailable ({_e}); alerts will have no chart')
+CH = {}; PGR = {}
 BACKTEST_NOTE = 'Backtest (in-sample, sub-$5): setups with >=3 flags averaged about +4-6% per trade vs about +1% with <=2; win rate ~29% either way (median trade -3%), so size small.'
 DEFAULT = ['KGS', 'LCID', 'RIOT', 'Z', 'IREN', 'PLUG', 'UPST', 'CLOV', 'TLRY', 'BB', 'SOFI', 'FUBO', 'OPEN', 'ETSY', 'DKNG', 'ROKU', 'CROX', 'FIVE', 'CHWY', 'MTCH', 'LYFT', 'BBWI',
            'RIVN', 'SNAP', 'PINS', 'HOOD', 'AFRM', 'RKLB', 'SOUN', 'MARA', 'CLSK', 'HIMS', 'CELH', 'JOBY', 'ACHR', 'PATH', 'NIO', 'LI', 'W', 'CHPT', 'RUN', 'ENPH', 'SEDG', 'LUMN']
@@ -184,9 +187,21 @@ def _post1(text):
         r.raise_for_status(); return True
     except Exception as e: print(f'  ! discord post failed: {e}'); return False
 
+def post_file(text, path):
+    """upload a PNG to the mid/small channel (bot token) or webhook"""
+    ch, tok, hook = os.getenv('MIDSMALL_CHANNEL_ID') or '1570332394714562681', os.getenv('DISCORD_TOKEN'), os.getenv('MIDSMALL_WEBHOOK_URL')
+    try:
+        with open(path, 'rb') as fh:
+            files = {'files[0]': (os.path.basename(path), fh, 'image/png')}; data = {'payload_json': json.dumps({'content': text})}
+            if ch and tok: r = requests.post(f'https://discord.com/api/v10/channels/{ch}/messages', headers={'Authorization': f'Bot {tok}'}, data=data, files=files, timeout=40)
+            elif hook: r = requests.post(hook, data=data, files=files, timeout=40)
+            else: print('  ! no Discord target for the chart'); return False
+            r.raise_for_status(); return True
+    except Exception as e: print(f'  ! chart upload failed: {e}'); return False
+
 def scan_once(dry, data=None, asof=None):
     tks = universe(); data = data or get_data(tks); st = load_state(); fired = []; ctxs = []; t = asof
-    cand = []; conf_msgs = []
+    cand = []; conf_msgs = []; charts = []
     for tk, Y in data.items():
         Yc = closed_only(Y, t)
         if len(Yc) < 300: continue
@@ -206,13 +221,14 @@ def scan_once(dry, data=None, asof=None):
         for (ts, kind, vr, px) in events(F):
             if ts != last: continue                                                                              # only the newest closed bar can fire
             if kind == 'BUY': DBULL[tk] = daily_bull(Yc); MA[tk] = ma_context(Yc); FH[tk] = float(Yc.high.iat[-1]); LV[tk] = bool(F.lv.iat[-1])
+            if kind in ('BUY', 'SELL'): CH[tk] = Yc
             cand.append((tk, ts, kind, vr, px, float(F.vwx.iat[-1]) if F.vwx.iat[-1] == F.vwx.iat[-1] else 0.0))
     # exits first (free slots), then entries by flip-volume ratio
     for tk, ts, kind, vr, px, vwx in cand:
         if kind != 'SELL' or tk not in st['pos']: continue
         key = f'{tk}|SELL|{ts}'
         if key in st['seen']: continue
-        p = st['pos'].pop(tk); fired.append(f"\u26a1 SELL {tk}: 1h vector turned bearish on the {ts:%H:%M} bar (last {px:.2f}). Exit at the next open. Entry was {p['px']:.2f} ({px / p['px'] - 1:+.1%}), held since {p['t'][:16]}.")
+        p = st['pos'].pop(tk); charts.append((tk, 'SELL', None)); fired.append(f"\u26a1 SELL {tk}: 1h vector turned bearish on the {ts:%H:%M} bar (last {px:.2f}). Exit at the next open. Entry was {p['px']:.2f} ({px / p['px'] - 1:+.1%}), held since {p['t'][:16]}.")
         ctxs.append(SC.block(tk, 'SELL') if SC else None); st['seen'].append(key)
     buys = sorted([c for c in cand if c[2] == 'BUY'], key=lambda c: -c[3]); iwm_up = SC.market_line()[1] if (SC and buys) else None
     for tk, ts, kind, vr, px, vwx in buys:
@@ -233,13 +249,23 @@ def scan_once(dry, data=None, asof=None):
         flags = SC.midsmall_flags(vr, svr, ses, vwx, iwm_up) + (BACKTEST_NOTE,) if SC else None
         if len(st['pos']) >= SLOTS:
             fired.append(f"\u2b50 HONORABLE MENTION {tk}: low-vol day + high-volume bull flip on the {ts:%H:%M} bar ({vr:.1f}x volume, last {px:.2f}), but all {SLOTS} slots are full."); ctxs.append(None); st['seen'].append(key); continue
-        st['pos'][tk] = {'px': px, 't': str(ts), 'vr': vr, 'size': 0.5 if half else 1.0, 'fh': FH.get(tk), 'conf': None, 'grade': grade}; st['seen'].append(key)
-        fired.append(f"\u26a1 BUY {tk}: [{grade}] 1h vector bull flip on the {ts:%H:%M} bar with {vr:.1f}x volume{' on a low-volatility day' if LV.get(tk) else ''}, {vwx:+.1f} ATR vs VWAP. Entry next open (~{px:.2f}). Exit = the vector's bear flip (no other stop). Slot {len(st['pos'])}/{SLOTS}." + (' HALF SIZE.' if half else '') + (' Below 1h 200 EMA.' if MA.get(tk) and not MA[tk]['a200'] else '') + (' A+ GRADE: daily vector bull AND Kalman trend up.' if DBULL.get(tk) and MA.get(tk) and MA[tk].get('kal') else ' A-GRADE: daily vector is also bull.' if DBULL.get(tk) else (' Daily vector NOT bull (lone 1h flip).' if DBULL.get(tk) is False else '')))
+        charts.append((tk, 'BUY', px)); st['pos'][tk] = {'px': px, 't': str(ts), 'vr': vr, 'size': 0.5 if half else 1.0, 'fh': FH.get(tk), 'conf': None, 'grade': grade}; st['seen'].append(key)
+        try: PGR[tk] = SCH.score_gates(CH[tk]) if SCH and tk in CH else None
+        except Exception as _e: PGR[tk] = None; print(f'  ! score_gates {tk}: {str(_e)[:60]}')
+        _pg = PGR.get(tk); _gt = f"{_pg['grade']} {_pg['pts']}/5 \u00b7 {grade}" if _pg else grade
+        if _pg: st['pos'][tk]['pts'] = _pg['pts']
+        fired.append(f"\u26a1 BUY {tk}: [{_gt}] 1h vector bull flip on the {ts:%H:%M} bar with {vr:.1f}x volume{' on a low-volatility day' if LV.get(tk) else ''}, {vwx:+.1f} ATR vs VWAP. Entry next open (~{px:.2f}). Exit = the vector's bear flip (no other stop). Slot {len(st['pos'])}/{SLOTS}." + (' HALF SIZE.' if half else '') + (' Below 1h 200 EMA.' if MA.get(tk) and not MA[tk]['a200'] else '') + (' A+ GRADE: daily vector bull AND Kalman trend up.' if DBULL.get(tk) and MA.get(tk) and MA[tk].get('kal') else ' A-GRADE: daily vector is also bull.' if DBULL.get(tk) else (' Daily vector NOT bull (lone 1h flip).' if DBULL.get(tk) is False else '')))
         ctxs.append(SC.block(tk, 'BUY', extra=[x for x in (size_txt, GRADE_TXT.get(grade, ''), DAILY_TXT.get(DBULL.get(tk), ''), ma_text(MA.get(tk))) if x], flags=flags) if SC else None)
     for m in conf_msgs: fired.append(m); ctxs.append(None)
     for m in fired: print(m); (None if dry else post(m))                                                           # alerts first (fast) ...
     for m, c in zip(fired, ctxs):                                                                                   # ... then the context for each
         if c: print(c); (None if dry else post(c))
+    for tk_, kind_, px_ in charts:                                                                                  # chart under each BUY / SELL (fails soft)
+        try:
+            if SCH is None or tk_ not in CH: continue
+            pth = f'{LIVE}/chart_{tk_}_{kind_}.png'; SCH.make_chart(tk_, CH[tk_], pth, kind_, dict(tag='mid/small screener', entry=px_)); print(f'  chart -> {pth}')
+            if not dry: post_file(f'{kind_} {tk_} chart', pth)
+        except Exception as e: print(f'  ! chart {tk_}: {str(e)[:80]}')
     if not dry: save_state(st)
     if not fired: print(f'  no new signals ({len(data)} names scanned, {len(st["pos"])} open: {", ".join(sorted(st["pos"])) or "-"})')
     return fired
