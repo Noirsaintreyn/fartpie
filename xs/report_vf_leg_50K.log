@@ -1,0 +1,87 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== VIX / VXN buy-the-fear leg (long at open, flat 15:55). trade-level, then Lucid Flex 50K chain (eval and funded separately)
+  VIX spike>8%               18-21: n 131 avg  +21.1 win 61% t +2.1
+  VIX spike>8%               22-26: n 133 avg  +37.9 win 58% t +1.5
+  VIX backwd>1               18-21: n 121 avg  +15.2 win 58% t +1.1
+  VIX backwd>1               22-26: n  63 avg  +58.8 win 52% t +1.1
+  VIX spike OR backwd        18-21: n 210 avg  +14.2 win 58% t +1.6
+  VIX spike OR backwd        22-26: n 169 avg  +27.5 win 54% t +1.2
+  VXN spike>8%               18-21: n 108 avg  +24.0 win 62% t +2.1
+  VXN spike>8%               22-26: n  94 avg  +23.6 win 56% t +1.0
+  VXN spike>5%               18-21: n 196 avg  +22.0 win 58% t +2.4
+  VXN spike>5%               22-26: n 186 avg  +11.1 win 55% t +0.7
+  VIX OR VXN spike>8%        18-21: n 149 avg  +18.8 win 58% t +2.0
+  VIX OR VXN spike>8%        22-26: n 144 avg  +29.6 win 56% t +1.3
+  VIX/VXN spike OR backwd    18-21: n 225 avg  +13.3 win 57% t +1.5
+  VIX/VXN spike OR backwd    22-26: n 180 avg  +21.5 win 53% t +1.0
+BASE (current full model)
+   EVAL  pass  96% FAIL   4% | pass<=30d  19% <=60d  51% <=90d  69% | still running >30d  80% >60d  46% >90d  27% | fee-months/eval 4.13
+   FUNDED paid  88% lost-before-1st  12% lost-ever  35% | 1st payout <=30d  45% <=60d  75% <=90d  84% (median 30d) | payouts in 90d 2.05 / 180d 3.40 | $ in 90d 3,041 / 180d 5,284 | $ total 5,704
+   2022+ only: eval pass 98% fail 2% pass<=30/60/90d 29%/65%/79% | funded lost-ever 29% 1st payout<=30/60/90d 62%/84%/89% total $6,350
++VF [VIX spike OR backwd] u=0.3 stop=None
+   EVAL  pass  53% FAIL  47% | pass<=30d  19% <=60d  38% <=90d  45% | still running >30d  59% >60d  28% >90d  17% | fee-months/eval 2.84
+   FUNDED paid  56% lost-before-1st  44% lost-ever  82% | 1st payout <=30d  44% <=60d  54% <=90d  56% (median 19d) | payouts in 90d 1.46 / 180d 1.60 | $ in 90d 2,120 / 180d 2,328 | $ total 2,336
+   2022+ only: eval pass 49% fail 51% pass<=30/60/90d 28%/45%/49% | funded lost-ever 77% 1st payout<=30/60/90d 49%/53%/53% total $2,778
++VF [VIX spike OR backwd] u=0.5 stop=None
+   EVAL  pass  38% FAIL  62% | pass<=30d  20% <=60d  35% <=90d  38% | still running >30d  38% >60d  10% >90d   3% | fee-months/eval 1.92
+   FUNDED paid  48% lost-before-1st  52% lost-ever  84% | 1st payout <=30d  40% <=60d  48% <=90d  48% (median 19d) | payouts in 90d 1.27 / 180d 1.36 | $ in 90d 1,925 / 180d 2,083 | $ total 2,091
+   2022+ only: eval pass 40% fail 60% pass<=30/60/90d 25%/39%/40% | funded lost-ever 84% 1st payout<=30/60/90d 43%/45%/45% total $2,285
++VF [VIX spike OR backwd] u=0.3 stop=150
+   EVAL  pass  78% FAIL  22% | pass<=30d  20% <=60d  47% <=90d  61% | still running >30d  73% >60d  39% >90d  23% | fee-months/eval 3.38
+   FUNDED paid  68% lost-before-1st  32% lost-ever  75% | 1st payout <=30d  53% <=60d  65% <=90d  68% (median 20d) | payouts in 90d 1.77 / 180d 2.02 | $ in 90d 2,479 / 180d 2,866 | $ total 2,883
+   2022+ only: eval pass 76% fail 24% pass<=30/60/90d 29%/60%/69% | funded lost-ever 69% 1st payout<=30/60/90d 59%/63%/63% total $3,343
++VF [VIX spike OR backwd] u=0.5 stop=150
+   EVAL  pass  49% FAIL  51% | pass<=30d  22% <=60d  41% <=90d  48% | still running >30d  51% >60d  20% >90d   8% | fee-months/eval 2.35
+   FUNDED paid  56% lost-before-1st  44% lost-ever  80% | 1st payout <=30d  45% <=60d  56% <=90d  56% (median 19d) | payouts in 90d 1.50 / 180d 1.63 | $ in 90d 2,199 / 180d 2,423 | $ total 2,431
+   2022+ only: eval pass 46% fail 54% pass<=30/60/90d 26%/44%/46% | funded lost-ever 77% 1st payout<=30/60/90d 50%/53%/53% total $2,815
++VF [VIX OR VXN spike>8%] u=0.3 stop=None
+   EVAL  pass  64% FAIL  36% | pass<=30d  19% <=60d  43% <=90d  55% | still running >30d  66% >60d  30% >90d  15% | fee-months/eval 2.95
+   FUNDED paid  65% lost-before-1st  35% lost-ever  75% | 1st payout <=30d  47% <=60d  62% <=90d  65% (median 22d) | payouts in 90d 1.68 / 180d 1.98 | $ in 90d 2,363 / 180d 2,835 | $ total 2,836
+   2022+ only: eval pass 54% fail 46% pass<=30/60/90d 27%/48%/54% | funded lost-ever 75% 1st payout<=30/60/90d 52%/56%/56% total $2,898
++VF [VIX OR VXN spike>8%] u=0.5 stop=None
+   EVAL  pass  45% FAIL  55% | pass<=30d  17% <=60d  34% <=90d  40% | still running >30d  47% >60d  18% >90d   7% | fee-months/eval 2.30
+   FUNDED paid  54% lost-before-1st  46% lost-ever  83% | 1st payout <=30d  41% <=60d  52% <=90d  54% (median 20d) | payouts in 90d 1.35 / 180d 1.52 | $ in 90d 1,946 / 180d 2,217 | $ total 2,217
+   2022+ only: eval pass 38% fail 62% pass<=30/60/90d 24%/37%/38% | funded lost-ever 86% 1st payout<=30/60/90d 45%/49%/49% total $2,221
++VF [VIX OR VXN spike>8%] u=0.3 stop=150
+   EVAL  pass  86% FAIL  14% | pass<=30d  18% <=60d  46% <=90d  61% | still running >30d  78% >60d  45% >90d  28% | fee-months/eval 3.78
+   FUNDED paid  71% lost-before-1st  29% lost-ever  70% | 1st payout <=30d  51% <=60d  68% <=90d  70% (median 22d) | payouts in 90d 1.76 / 180d 2.21 | $ in 90d 2,411 / 180d 3,121 | $ total 3,212
+   2022+ only: eval pass 84% fail 15% pass<=30/60/90d 29%/63%/74% | funded lost-ever 72% 1st payout<=30/60/90d 58%/63%/63% total $3,195
++VF [VIX OR VXN spike>8%] u=0.5 stop=150
+   EVAL  pass  52% FAIL  48% | pass<=30d  18% <=60d  35% <=90d  42% | still running >30d  60% >60d  30% >90d  16% | fee-months/eval 2.92
+   FUNDED paid  62% lost-before-1st  38% lost-ever  77% | 1st payout <=30d  46% <=60d  60% <=90d  62% (median 21d) | payouts in 90d 1.52 / 180d 1.83 | $ in 90d 2,148 / 180d 2,635 | $ total 2,645
+   2022+ only: eval pass 44% fail 56% pass<=30/60/90d 26%/41%/43% | funded lost-ever 78% 1st payout<=30/60/90d 52%/57%/57% total $2,747
++VF [VIX/VXN spike OR backwd] u=0.3 stop=None
+   EVAL  pass  50% FAIL  50% | pass<=30d  18% <=60d  37% <=90d  44% | still running >30d  61% >60d  29% >90d  16% | fee-months/eval 2.87
+   FUNDED paid  56% lost-before-1st  44% lost-ever  82% | 1st payout <=30d  43% <=60d  54% <=90d  56% (median 20d) | payouts in 90d 1.45 / 180d 1.57 | $ in 90d 2,060 / 180d 2,239 | $ total 2,239
+   2022+ only: eval pass 49% fail 51% pass<=30/60/90d 28%/44%/49% | funded lost-ever 77% 1st payout<=30/60/90d 49%/53%/53% total $2,726
++VF [VIX/VXN spike OR backwd] u=0.5 stop=None
+   EVAL  pass  34% FAIL  66% | pass<=30d  18% <=60d  31% <=90d  34% | still running >30d  40% >60d  14% >90d   6% | fee-months/eval 2.06
+   FUNDED paid  47% lost-before-1st  53% lost-ever  86% | 1st payout <=30d  39% <=60d  46% <=90d  47% (median 19d) | payouts in 90d 1.21 / 180d 1.27 | $ in 90d 1,782 / 180d 1,888 | $ total 1,888
+   2022+ only: eval pass 38% fail 62% pass<=30/60/90d 25%/37%/38% | funded lost-ever 85% 1st payout<=30/60/90d 43%/47%/47% total $2,212
++VF [VIX/VXN spike OR backwd] u=0.3 stop=150
+   EVAL  pass  78% FAIL  21% | pass<=30d  19% <=60d  45% <=90d  60% | still running >30d  74% >60d  41% >90d  23% | fee-months/eval 3.47
+   FUNDED paid  67% lost-before-1st  33% lost-ever  79% | 1st payout <=30d  51% <=60d  65% <=90d  67% (median 20d) | payouts in 90d 1.73 / 180d 1.89 | $ in 90d 2,353 / 180d 2,613 | $ total 2,634
+   2022+ only: eval pass 81% fail 19% pass<=30/60/90d 29%/60%/70% | funded lost-ever 70% 1st payout<=30/60/90d 58%/62%/62% total $3,293
++VF [VIX/VXN spike OR backwd] u=0.5 stop=150
+   EVAL  pass  48% FAIL  52% | pass<=30d  19% <=60d  36% <=90d  42% | still running >30d  54% >60d  26% >90d  13% | fee-months/eval 2.64
+   FUNDED paid  57% lost-before-1st  43% lost-ever  84% | 1st payout <=30d  44% <=60d  56% <=90d  57% (median 20d) | payouts in 90d 1.39 / 180d 1.50 | $ in 90d 1,974 / 180d 2,146 | $ total 2,148
+   2022+ only: eval pass 45% fail 55% pass<=30/60/90d 27%/42%/44% | funded lost-ever 78% 1st payout<=30/60/90d 50%/54%/54% total $2,709
++VF [VXN spike>8%] u=0.3 stop=None
+   EVAL  pass  69% FAIL  31% | pass<=30d  19% <=60d  43% <=90d  56% | still running >30d  68% >60d  36% >90d  18% | fee-months/eval 3.40
+   FUNDED paid  69% lost-before-1st  31% lost-ever  68% | 1st payout <=30d  48% <=60d  67% <=90d  69% (median 23d) | payouts in 90d 1.84 / 180d 2.27 | $ in 90d 2,628 / 180d 3,336 | $ total 3,365
+   2022+ only: eval pass 69% fail 31% pass<=30/60/90d 26%/55%/66% | funded lost-ever 66% 1st payout<=30/60/90d 56%/66%/66% total $3,624
++VF [VXN spike>8%] u=0.5 stop=None
+   EVAL  pass  62% FAIL  38% | pass<=30d  19% <=60d  39% <=90d  47% | still running >30d  54% >60d  25% >90d  15% | fee-months/eval 2.89
+   FUNDED paid  60% lost-before-1st  40% lost-ever  72% | 1st payout <=30d  44% <=60d  58% <=90d  60% (median 22d) | payouts in 90d 1.64 / 180d 1.99 | $ in 90d 2,407 / 180d 2,999 | $ total 3,038
+   2022+ only: eval pass 50% fail 50% pass<=30/60/90d 26%/45%/50% | funded lost-ever 71% 1st payout<=30/60/90d 50%/60%/60% total $3,184
++VF [VXN spike>8%] u=0.3 stop=150
+   EVAL  pass  96% FAIL   4% | pass<=30d  18% <=60d  41% <=90d  60% | still running >30d  81% >60d  55% >90d  36% | fee-months/eval 4.47
+   FUNDED paid  79% lost-before-1st  21% lost-ever  56% | 1st payout <=30d  50% <=60d  72% <=90d  78% (median 25d) | payouts in 90d 1.97 / 180d 2.70 | $ in 90d 2,702 / 180d 3,836 | $ total 4,026
+   2022+ only: eval pass 91% fail 9% pass<=30/60/90d 26%/58%/75% | funded lost-ever 54% 1st payout<=30/60/90d 60%/74%/77% total $4,392
++VF [VXN spike>8%] u=0.5 stop=150
+   EVAL  pass  66% FAIL  34% | pass<=30d  18% <=60d  39% <=90d  49% | still running >30d  68% >60d  37% >90d  22% | fee-months/eval 3.50
+   FUNDED paid  65% lost-before-1st  35% lost-ever  72% | 1st payout <=30d  46% <=60d  62% <=90d  65% (median 23d) | payouts in 90d 1.65 / 180d 2.03 | $ in 90d 2,379 / 180d 3,027 | $ total 3,097
+   2022+ only: eval pass 57% fail 43% pass<=30/60/90d 25%/48%/56% | funded lost-ever 69% 1st payout<=30/60/90d 53%/63%/63% total $3,374
