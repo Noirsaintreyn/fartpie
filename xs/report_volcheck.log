@@ -1,0 +1,34 @@
+=========== CLASS all
+######## SMALL/MID 1h HALF 1 (Dec23-2024)
+  class itself (reference)                  1574   +19.4     +31.7       0.62  26.3   -12.4
+  class + flip vol >= 1.5x                768   +97.3     +54.9       0.23  27.6   +42.3
+  class + flip vol < 1.5x                 806   -54.9      +9.8       0.94  25.1   -64.6
+######## SMALL/MID 1h HALF 2 (2025+)
+  class itself (reference)                  2872    +1.6      +6.4       0.59  24.4    -4.8
+  class + flip vol >= 1.5x               1334   +41.0      +8.6       0.23  26.2   +32.5
+  class + flip vol < 1.5x                1538   -32.6      +2.3       0.83  23.0   -35.0
+######## MEGA-CAPS 15m TRAIN 2019-21
+  class itself (reference)                  3983   +11.8      +3.4       0.01  30.4    +8.4
+  class + flip vol >= 1.5x               2382   +16.1      +1.9       0.01  33.0   +14.2
+  class + flip vol < 1.5x                1601    +5.5      +4.2       0.41  26.4    +1.3
+######## MEGA-CAPS 15m TEST 2022+
+  class itself (reference)                  6630    +6.6      +0.5       0.05  30.3    +6.1
+  class + flip vol >= 1.5x               4042   +11.7      -0.2       0.01  33.4   +11.9
+  class + flip vol < 1.5x                2569    -1.3      +1.3       0.71  25.4    -2.6
+=========== CLASS notlv
+######## SMALL/MID 1h HALF 1 (Dec23-2024)
+  class itself (reference)                  1071   -15.1     +37.5       0.85  26.1   -52.6
+  class + flip vol >= 1.5x                532   +39.5     +69.3       0.67  26.3   -29.9
+  class + flip vol < 1.5x                 539   -69.0     +15.4       0.93  26.0   -84.4
+######## SMALL/MID 1h HALF 2 (2025+)
+  class itself (reference)                  1828   -31.3      +5.7       0.86  24.2   -37.0
+  class + flip vol >= 1.5x                857   -21.8     +14.4       0.78  25.3   -36.3
+  class + flip vol < 1.5x                 971   -39.7      -1.3       0.80  23.3   -38.5
+######## MEGA-CAPS 15m TRAIN 2019-21
+  class itself (reference)                  2426   +14.0      +4.0       0.04  31.1   +10.0
+  class + flip vol >= 1.5x               1421   +16.8      +3.5       0.03  34.0   +13.3
+  class + flip vol < 1.5x                1005   +10.1      +3.5       0.20  27.1    +6.6
+######## MEGA-CAPS 15m TEST 2022+
+  class itself (reference)                  4399    +2.8      +1.3       0.39  29.8    +1.5
+  class + flip vol >= 1.5x               2620    +7.2      +1.1       0.14  32.8    +6.1
+  class + flip vol < 1.5x                1766    -3.3      +2.0       0.82  25.4    -5.3
