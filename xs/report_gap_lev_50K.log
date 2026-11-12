@@ -1,0 +1,83 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+large-gap = gap_rel > 0.63 (top tercile of 2018-21)
+  large-gap  18-21: n  622 avg pts  +14.2 avg MAE  -15.2 win 56% losers avg  -20.6 | MAE<-20: 29% <-30: 11% <-40: 3%
+  large-gap  22-26: n  788 avg pts  +16.4 avg MAE  -27.6 win 54% losers avg  -38.6 | MAE<-20: 63% <-30: 46% <-40: 25%
+  other      18-21: n  895 avg pts   -0.9 avg MAE  -19.9 win 40% losers avg  -23.9 | MAE<-20: 40% <-30: 20% <-40: 10%
+  other      22-26: n 1037 avg pts   +3.5 avg MAE  -29.3 win 47% losers avg  -38.6 | MAE<-20: 68% <-30: 50% <-40: 27%
+BASE N4xECON
+   EVAL  pass  90% FAIL  10% | pass<=30d  16% <=60d  51% <=90d  71% | still running >30d  82% >60d  44% >90d  23% | fee-months/eval 3.61
+   FUNDED paid  89% lost-before-1st  11% lost-ever  26% | 1st payout <=30d  45% <=60d  77% <=90d  85% (median 30d) | payouts in 90d 2.17 / 180d 3.71 | $ in 90d 3,293 / 180d 5,947 | $ total 6,412
+   2022+ only: eval pass 94% fail 6% pass<=30/60/90d 23%/62%/78% | funded lost-ever 23% 1st payout<=30/60/90d 63%/86%/90% total $6,757
+
+LARGE-GAP stop=None lev x1.5
+   EVAL  pass  89% FAIL  11% | pass<=30d  20% <=60d  56% <=90d  73% | still running >30d  78% >60d  39% >90d  19% | fee-months/eval 3.34
+   FUNDED paid  88% lost-before-1st  12% lost-ever  29% | 1st payout <=30d  50% <=60d  80% <=90d  85% (median 27d) | payouts in 90d 2.31 / 180d 3.69 | $ in 90d 3,658 / 180d 6,081 | $ total 6,303
+   2022+ only: eval pass 93% fail 7% pass<=30/60/90d 26%/62%/76% | funded lost-ever 29% 1st payout<=30/60/90d 68%/89%/90% total $6,474
+
+LARGE-GAP stop=None lev x2.0
+   EVAL  pass  87% FAIL  13% | pass<=30d  23% <=60d  56% <=90d  73% | still running >30d  73% >60d  34% >90d  15% | fee-months/eval 3.09
+   FUNDED paid  83% lost-before-1st  17% lost-ever  36% | 1st payout <=30d  53% <=60d  78% <=90d  82% (median 25d) | payouts in 90d 2.20 / 180d 3.36 | $ in 90d 3,507 / 180d 5,569 | $ total 5,765
+   2022+ only: eval pass 89% fail 11% pass<=30/60/90d 30%/62%/78% | funded lost-ever 32% 1st payout<=30/60/90d 70%/87%/88% total $6,185
+
+LARGE-GAP stop=40 lev x1.0
+   EVAL  pass  91% FAIL   9% | pass<=30d  13% <=60d  47% <=90d  67% | still running >30d  86% >60d  49% >90d  27% | fee-months/eval 3.89
+   FUNDED paid  88% lost-before-1st  12% lost-ever  32% | 1st payout <=30d  43% <=60d  76% <=90d  84% (median 31d) | payouts in 90d 2.06 / 180d 3.40 | $ in 90d 3,064 / 180d 5,275 | $ total 5,846
+   2022+ only: eval pass 92% fail 8% pass<=30/60/90d 20%/55%/70% | funded lost-ever 30% 1st payout<=30/60/90d 60%/83%/86% total $5,943
+
+LARGE-GAP stop=40 lev x1.5
+   EVAL  pass  91% FAIL   9% | pass<=30d  18% <=60d  54% <=90d  70% | still running >30d  80% >60d  41% >90d  24% | fee-months/eval 3.60
+   FUNDED paid  88% lost-before-1st  12% lost-ever  34% | 1st payout <=30d  50% <=60d  78% <=90d  85% (median 28d) | payouts in 90d 2.22 / 180d 3.48 | $ in 90d 3,405 / 180d 5,561 | $ total 5,837
+   2022+ only: eval pass 92% fail 8% pass<=30/60/90d 25%/59%/74% | funded lost-ever 35% 1st payout<=30/60/90d 68%/86%/88% total $5,818
+
+LARGE-GAP stop=40 lev x2.0
+   EVAL  pass  83% FAIL  17% | pass<=30d  21% <=60d  55% <=90d  69% | still running >30d  76% >60d  37% >90d  19% | fee-months/eval 3.34
+   FUNDED paid  83% lost-before-1st  17% lost-ever  41% | 1st payout <=30d  53% <=60d  78% <=90d  82% (median 26d) | payouts in 90d 2.10 / 180d 3.19 | $ in 90d 3,247 / 180d 5,095 | $ total 5,314
+   2022+ only: eval pass 84% fail 16% pass<=30/60/90d 28%/59%/71% | funded lost-ever 41% 1st payout<=30/60/90d 69%/88%/88% total $5,363
+
+LARGE-GAP stop=30 lev x1.0
+   EVAL  pass  95% FAIL   5% | pass<=30d  10% <=60d  42% <=90d  63% | still running >30d  89% >60d  56% >90d  32% | fee-months/eval 4.45
+   FUNDED paid  90% lost-before-1st  10% lost-ever  30% | 1st payout <=30d  39% <=60d  74% <=90d  83% (median 34d) | payouts in 90d 1.83 / 180d 3.30 | $ in 90d 2,579 / 180d 4,887 | $ total 5,661
+   2022+ only: eval pass 90% fail 10% pass<=30/60/90d 15%/46%/67% | funded lost-ever 35% 1st payout<=30/60/90d 54%/78%/83% total $5,293
+
+LARGE-GAP stop=30 lev x1.5
+   EVAL  pass  89% FAIL  11% | pass<=30d  17% <=60d  51% <=90d  65% | still running >30d  82% >60d  45% >90d  28% | fee-months/eval 3.83
+   FUNDED paid  86% lost-before-1st  14% lost-ever  33% | 1st payout <=30d  46% <=60d  75% <=90d  82% (median 29d) | payouts in 90d 1.92 / 180d 3.31 | $ in 90d 2,888 / 180d 5,230 | $ total 5,740
+   2022+ only: eval pass 89% fail 11% pass<=30/60/90d 23%/53%/66% | funded lost-ever 39% 1st payout<=30/60/90d 60%/79%/83% total $5,367
+
+LARGE-GAP stop=30 lev x2.0
+   EVAL  pass  85% FAIL  15% | pass<=30d  19% <=60d  49% <=90d  65% | still running >30d  77% >60d  42% >90d  23% | fee-months/eval 3.55
+   FUNDED paid  78% lost-before-1st  22% lost-ever  45% | 1st payout <=30d  50% <=60d  73% <=90d  78% (median 26d) | payouts in 90d 1.87 / 180d 2.94 | $ in 90d 2,876 / 180d 4,739 | $ total 5,000
+   2022+ only: eval pass 80% fail 20% pass<=30/60/90d 26%/47%/64% | funded lost-ever 52% 1st payout<=30/60/90d 61%/77%/77% total $4,496
+
+LARGE-GAP stop=20 lev x1.0
+   EVAL  pass  95% FAIL   5% | pass<=30d  10% <=60d  37% <=90d  58% | still running >30d  89% >60d  60% >90d  38% | fee-months/eval 5.01
+   FUNDED paid  85% lost-before-1st  15% lost-ever  46% | 1st payout <=30d  32% <=60d  70% <=90d  78% (median 36d) | payouts in 90d 1.49 / 180d 2.72 | $ in 90d 1,975 / 180d 3,810 | $ total 4,732
+   2022+ only: eval pass 90% fail 10% pass<=30/60/90d 15%/44%/63% | funded lost-ever 46% 1st payout<=30/60/90d 44%/78%/83% total $4,761
+
+LARGE-GAP stop=20 lev x1.5
+   EVAL  pass  86% FAIL  14% | pass<=30d  12% <=60d  41% <=90d  58% | still running >30d  85% >60d  51% >90d  31% | fee-months/eval 4.46
+   FUNDED paid  83% lost-before-1st  17% lost-ever  48% | 1st payout <=30d  38% <=60d  72% <=90d  79% (median 32d) | payouts in 90d 1.62 / 180d 2.85 | $ in 90d 2,280 / 180d 4,245 | $ total 4,750
+   2022+ only: eval pass 86% fail 14% pass<=30/60/90d 17%/45%/63% | funded lost-ever 52% 1st payout<=30/60/90d 49%/77%/81% total $4,529
+
+LARGE-GAP stop=20 lev x2.0
+   EVAL  pass  85% FAIL  15% | pass<=30d  15% <=60d  43% <=90d  61% | still running >30d  81% >60d  48% >90d  27% | fee-months/eval 4.20
+   FUNDED paid  80% lost-before-1st  20% lost-ever  49% | 1st payout <=30d  42% <=60d  72% <=90d  78% (median 30d) | payouts in 90d 1.71 / 180d 2.87 | $ in 90d 2,527 / 180d 4,470 | $ total 4,812
+   2022+ only: eval pass 82% fail 18% pass<=30/60/90d 19%/43%/63% | funded lost-ever 54% 1st payout<=30/60/90d 49%/72%/75% total $4,541
+
+LARGE-GAP stop=15 lev x1.0
+   EVAL  pass  91% FAIL   9% | pass<=30d   9% <=60d  33% <=90d  53% | still running >30d  89% >60d  63% >90d  41% | fee-months/eval 4.96
+   FUNDED paid  82% lost-before-1st  18% lost-ever  52% | 1st payout <=30d  29% <=60d  65% <=90d  75% (median 38d) | payouts in 90d 1.34 / 180d 2.39 | $ in 90d 1,753 / 180d 3,327 | $ total 4,325
+   2022+ only: eval pass 81% fail 19% pass<=30/60/90d 14%/42%/61% | funded lost-ever 52% 1st payout<=30/60/90d 38%/70%/77% total $4,586
+
+LARGE-GAP stop=15 lev x1.5
+   EVAL  pass  91% FAIL   9% | pass<=30d  12% <=60d  37% <=90d  56% | still running >30d  86% >60d  59% >90d  37% | fee-months/eval 4.66
+   FUNDED paid  79% lost-before-1st  21% lost-ever  54% | 1st payout <=30d  32% <=60d  67% <=90d  74% (median 34d) | payouts in 90d 1.43 / 180d 2.51 | $ in 90d 1,996 / 180d 3,762 | $ total 4,396
+   2022+ only: eval pass 81% fail 19% pass<=30/60/90d 16%/43%/62% | funded lost-ever 53% 1st payout<=30/60/90d 40%/67%/71% total $4,497
+
+LARGE-GAP stop=15 lev x2.0
+   EVAL  pass  82% FAIL  18% | pass<=30d  12% <=60d  37% <=90d  55% | still running >30d  84% >60d  55% >90d  32% | fee-months/eval 4.27
+   FUNDED paid  75% lost-before-1st  25% lost-ever  53% | 1st payout <=30d  34% <=60d  67% <=90d  72% (median 32d) | payouts in 90d 1.46 / 180d 2.54 | $ in 90d 2,146 / 180d 3,964 | $ total 4,459
+   2022+ only: eval pass 76% fail 24% pass<=30/60/90d 15%/39%/58% | funded lost-ever 57% 1st payout<=30/60/90d 40%/66%/69% total $4,406
