@@ -1,0 +1,66 @@
+AAPL AMD signals 1547 WYC 554
+AMZN AMD signals 1550 WYC 562
+AVGO AMD signals 1376 WYC 414
+GOOGL AMD signals 1567 WYC 525
+META AMD signals 1552 WYC 598
+MSFT AMD signals 1574 WYC 554
+NVDA AMD signals 1514 WYC 510
+TSLA AMD signals 1553 WYC 576
+
+######## TRAIN 2019-21 | ALL | exit = day close (null = same minute-of-day random entries, same direction)
+  AMD/PO3 sweep-reclaim alone        n= 4199 obs    +0.0 bp  null    +0.1  p=0.53  win 49.3%  (obs-null   -0.0)
+  AMD/PO3 sweep-reclaim + vector AGREES n= 1461 obs    -6.9 bp  null    +0.7  p=0.94  win 47.7%  (obs-null   -7.6)
+  AMD/PO3 sweep-reclaim + vector DISAGREES n= 2738 obs    +3.8 bp  null    -0.3  p=0.10  win 50.2%  (obs-null   +4.1)
+  vector flip within 8b AFTER AMD    n=  618 obs    -3.6 bp  null    +0.8  p=0.75  win 49.2%  (obs-null   -4.3)
+  vector flip NOT preceded by AMD    n= 3365 obs    +8.5 bp  null    -0.3  p=0.00  win 51.6%  (obs-null   +8.8)
+  Wyckoff spring/upthrust alone      n= 1375 obs    -4.2 bp  null    +0.3  p=0.92  win 48.7%  (obs-null   -4.4)
+  Wyckoff spring/upthrust + vector AGREES n=  155 obs    +3.7 bp  null    +2.0  p=0.40  win 48.4%  (obs-null   +1.6)
+  Wyckoff spring/upthrust + vector DISAGREES n= 1220 obs    -5.2 bp  null    +0.2  p=0.91  win 48.7%  (obs-null   -5.3)
+  vector flip within 8b AFTER WYC    n=   53 obs    +6.2 bp  null    +2.0  p=0.35  win 50.9%  (obs-null   +4.3)
+  vector flip NOT preceded by WYC    n= 3930 obs    +6.6 bp  null    -0.3  p=0.00  win 51.2%  (obs-null   +6.9)
+  -- secondary exit: vector next opposite flip
+  AMD alone (vector exit)            n= 4199 obs    +0.5 bp  null    +2.0  p=0.64  win 43.2%  (obs-null   -1.5)
+  AMD + vector agrees (vector exit)  n= 1461 obs    +4.0 bp  null    +7.3  p=0.57  win 27.5%  (obs-null   -3.3)
+  Wyckoff alone (vector exit)        n= 1375 obs    -5.3 bp  null    +3.5  p=0.89  win 51.0%  (obs-null   -8.8)
+  Wyckoff + vector agrees (vector exit) n=  155 obs    +2.8 bp  null   +16.3  p=0.71  win 22.6%  (obs-null  -13.4)
+
+######## TRAIN 2019-21 | HV-pre | exit = day close (null = same minute-of-day random entries, same direction)
+  AMD/PO3 sweep-reclaim alone        n= 1349 obs    +2.3 bp  null    +0.4  p=0.35  win 50.0%  (obs-null   +1.9)
+  AMD/PO3 sweep-reclaim + vector AGREES n=  483 obs    -7.4 bp  null    +0.6  p=0.83  win 48.2%  (obs-null   -8.0)
+  AMD/PO3 sweep-reclaim + vector DISAGREES n=  866 obs    +7.7 bp  null    +0.9  p=0.12  win 50.9%  (obs-null   +6.8)
+  vector flip within 8b AFTER AMD    n=  171 obs   -16.6 bp  null    +1.2  p=0.92  win 50.3%  (obs-null  -17.7)
+  vector flip NOT preceded by AMD    n=  914 obs   +11.3 bp  null    -0.6  p=0.01  win 53.3%  (obs-null  +11.9)
+  Wyckoff spring/upthrust alone      n=  312 obs    +6.7 bp  null    -0.2  p=0.20  win 49.7%  (obs-null   +6.9)
+  Wyckoff spring/upthrust + vector AGREES n=   47 obs   +11.0 bp  null    -0.3  p=0.28  win 57.4%  (obs-null  +11.4)
+  Wyckoff spring/upthrust + vector DISAGREES n=  265 obs    +5.9 bp  null    +0.4  p=0.29  win 48.3%  (obs-null   +5.5)
+  vector flip within 8b AFTER WYC    n=12 (too few)
+  vector flip NOT preceded by WYC    n= 1073 obs    +6.8 bp  null    -0.2  p=0.07  win 52.9%  (obs-null   +7.1)
+
+######## TEST 2022+ | ALL | exit = day close (null = same minute-of-day random entries, same direction)
+  AMD/PO3 sweep-reclaim alone        n= 6678 obs    -1.3 bp  null    +0.2  p=0.79  win 49.3%  (obs-null   -1.5)
+  AMD/PO3 sweep-reclaim + vector AGREES n= 2045 obs    -4.3 bp  null    +0.3  p=0.88  win 50.2%  (obs-null   -4.6)
+  AMD/PO3 sweep-reclaim + vector DISAGREES n= 4633 obs    -0.0 bp  null    -0.1  p=0.47  win 49.0%  (obs-null   +0.1)
+  vector flip within 8b AFTER AMD    n= 1044 obs    +4.3 bp  null    -0.4  p=0.17  win 49.5%  (obs-null   +4.7)
+  vector flip NOT preceded by AMD    n= 5591 obs    +2.3 bp  null    -1.5  p=0.00  win 50.5%  (obs-null   +3.8)
+  Wyckoff spring/upthrust alone      n= 2478 obs    -5.0 bp  null    +0.1  p=0.97  win 48.7%  (obs-null   -5.1)
+  Wyckoff spring/upthrust + vector AGREES n=  288 obs    -6.3 bp  null    +0.6  p=0.82  win 50.7%  (obs-null   -6.8)
+  Wyckoff spring/upthrust + vector DISAGREES n= 2190 obs    -4.8 bp  null    -0.2  p=0.96  win 48.4%  (obs-null   -4.6)
+  vector flip within 8b AFTER WYC    n=  101 obs    +9.1 bp  null    -0.2  p=0.22  win 57.4%  (obs-null   +9.3)
+  vector flip NOT preceded by WYC    n= 6534 obs    +2.5 bp  null    -1.5  p=0.01  win 50.3%  (obs-null   +4.0)
+  -- secondary exit: vector next opposite flip
+  AMD alone (vector exit)            n= 6669 obs    +4.4 bp  null    +3.6  p=0.42  win 45.3%  (obs-null   +0.8)
+  AMD + vector agrees (vector exit)  n= 2044 obs   -10.1 bp  null    +5.6  p=0.99  win 28.1%  (obs-null  -15.7)
+  Wyckoff alone (vector exit)        n= 2470 obs    +2.2 bp  null    +3.3  p=0.52  win 49.5%  (obs-null   -1.1)
+  Wyckoff + vector agrees (vector exit) n=  288 obs    +5.9 bp  null    +2.4  p=0.43  win 19.1%  (obs-null   +3.5)
+
+######## TEST 2022+ | HV-pre | exit = day close (null = same minute-of-day random entries, same direction)
+  AMD/PO3 sweep-reclaim alone        n= 2144 obs    -5.2 bp  null    +0.1  p=0.91  win 49.6%  (obs-null   -5.3)
+  AMD/PO3 sweep-reclaim + vector AGREES n=  724 obs   -18.3 bp  null    -0.3  p=0.99  win 49.0%  (obs-null  -18.0)
+  AMD/PO3 sweep-reclaim + vector DISAGREES n= 1420 obs    +1.5 bp  null    -0.1  p=0.36  win 49.9%  (obs-null   +1.6)
+  vector flip within 8b AFTER AMD    n=  275 obs    +6.5 bp  null    -0.7  p=0.23  win 51.3%  (obs-null   +7.2)
+  vector flip NOT preceded by AMD    n= 1638 obs    +3.7 bp  null    -1.0  p=0.09  win 50.4%  (obs-null   +4.7)
+  Wyckoff spring/upthrust alone      n=  621 obs   -11.0 bp  null    -0.0  p=0.95  win 50.6%  (obs-null  -11.0)
+  Wyckoff spring/upthrust + vector AGREES n=   85 obs   -25.0 bp  null    +0.6  p=0.94  win 47.1%  (obs-null  -25.5)
+  Wyckoff spring/upthrust + vector DISAGREES n=  536 obs    -8.8 bp  null    -0.5  p=0.91  win 51.1%  (obs-null   -8.3)
+  vector flip within 8b AFTER WYC    n=   24 obs   -55.2 bp  null    -5.1  p=0.97  win 33.3%  (obs-null  -50.1)
+  vector flip NOT preceded by WYC    n= 1889 obs    +4.9 bp  null    -0.6  p=0.06  win 50.8%  (obs-null   +5.4)
