@@ -1,0 +1,29 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+=== V15a (15m vector) ALONE vs full model. Lucid Flex 50K, eval and funded separately, all starts and 2022+
+current: full model (base)
+   EVAL  pass  96% FAIL   4% | pass<=30d  19% <=60d  51% <=90d  69% | still running >30d  80% >60d  46% >90d  27% | fee-months/eval 4.13
+   FUNDED paid  88% lost-before-1st  12% lost-ever  35% | 1st payout <=30d  45% <=60d  75% <=90d  84% (median 30d) | payouts in 90d 2.05 / 180d 3.40 | $ in 90d 3,041 / 180d 5,284 | $ total 5,704
+   2022+ only: eval pass 98% fail 2% pass<=30/60/90d 29%/65%/79% | funded lost-ever 29% 1st payout<=30/60/90d 62%/84%/89% total $6,350
+current + N4 x ECON(.5/1.5)
+   EVAL  pass  90% FAIL  10% | pass<=30d  16% <=60d  51% <=90d  71% | still running >30d  82% >60d  44% >90d  23% | fee-months/eval 3.61
+   FUNDED paid  89% lost-before-1st  11% lost-ever  26% | 1st payout <=30d  45% <=60d  77% <=90d  85% (median 30d) | payouts in 90d 2.17 / 180d 3.71 | $ in 90d 3,293 / 180d 5,947 | $ total 6,412
+   2022+ only: eval pass 94% fail 6% pass<=30/60/90d 23%/62%/78% | funded lost-ever 23% 1st payout<=30/60/90d 63%/86%/90% total $6,757
+V15a only, with its tilts/filters
+   EVAL  pass  90% FAIL   0% | pass<=30d   3% <=60d  12% <=90d  21% | still running >30d  97% >60d  88% >90d  79% | fee-months/eval 11.82
+   FUNDED paid  98% lost-before-1st   0% lost-ever  10% | 1st payout <=30d   0% <=60d  12% <=90d  26% (median 148d) | payouts in 90d 0.26 / 180d 0.78 | $ in 90d 391 / 180d 1,045 | $ total 6,000
+   2022+ only: eval pass 78% fail 0% pass<=30/60/90d 6%/26%/44% | funded lost-ever 15% 1st payout<=30/60/90d 1%/25%/40% total $5,676
+V15a only, RAW (sz=1, no filters)
+   EVAL  pass  96% FAIL   0% | pass<=30d   2% <=60d   7% <=90d  14% | still running >30d  98% >60d  92% >90d  86% | fee-months/eval 14.53
+   FUNDED paid  74% lost-before-1st  26% lost-ever  79% | 1st payout <=30d   5% <=60d  39% <=90d  57% (median 59d) | payouts in 90d 0.71 / 180d 1.33 | $ in 90d 745 / 180d 1,501 | $ total 2,166
+   2022+ only: eval pass 91% fail 1% pass<=30/60/90d 3%/14%/26% | funded lost-ever 56% 1st payout<=30/60/90d 8%/53%/81% total $3,906
+V15a + RA, raw sizes
+   EVAL  pass  60% FAIL  38% | pass<=30d  13% <=60d  27% <=90d  40% | still running >30d  81% >60d  58% >90d  41% | fee-months/eval 5.19
+   FUNDED paid  60% lost-before-1st  40% lost-ever  84% | 1st payout <=30d  20% <=60d  52% <=90d  57% (median 37d) | payouts in 90d 0.83 / 180d 1.31 | $ in 90d 1,123 / 180d 1,920 | $ total 2,142
+   2022+ only: eval pass 60% fail 37% pass<=30/60/90d 18%/37%/52% | funded lost-ever 75% 1st payout<=30/60/90d 23%/56%/60% total $2,791
+EVALK raw V15a K=1.0
+   EVAL  pass  96% FAIL   0% | pass<=30d   2% <=60d   7% <=90d  14% | still running >30d  98% >60d  92% >90d  86% | fee-months/eval 14.53
+EVALK raw V15a K=1.5
+   EVAL  pass  85% FAIL   8% | pass<=30d   4% <=60d  15% <=90d  19% | still running >30d  96% >60d  85% >90d  81% | fee-months/eval 13.90
