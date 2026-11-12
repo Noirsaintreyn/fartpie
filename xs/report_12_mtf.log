@@ -1,0 +1,52 @@
+== $1-2: 1125 flips
+ [base]
+  all flips                 1125 tr  394/yr | mean +2.93% win 28% p10 -8.9% | train +2.23% (653) test +3.89% (472) | book +79%/yr DD -28%
+  vol>=1.5x (B)              580 tr  203/yr | mean +3.78% win 31% p10 -10.2% | train +2.98% (337) test +4.88% (243) | book +61%/yr DD -29%
+  B + lowvol (C)             229 tr   89/yr | mean +4.16% win 31% p10 -10.1% | train +4.79% (132) test +3.29% (97) | book +46%/yr DD -29%
+  lowvol only                412 tr  160/yr | mean +3.07% win 29% p10 -8.9% | train +4.03% (243) test +1.69% (169) | book +62%/yr DD -33%
+ [+4h bull]
+  all flips                  327 tr  118/yr | mean +2.60% win 25% p10 -9.1% | train +0.90% (171) test +4.47% (156) | book +25%/yr DD -29%
+  vol>=1.5x (B)              159 tr   57/yr | mean +4.42% win 33% p10 -10.6% | train +1.79% (75) test +6.77% (84) | book +26%/yr DD -22%
+  B + lowvol (C)              57 tr   23/yr | mean +2.27% win 33% p10 -10.6% | train +4.45% (25) test +0.56% (32) | book +6%/yr DD -14%
+  lowvol only                112 tr   44/yr | mean +0.52% win 26% p10 -8.5% | train +1.56% (61) test -0.74% (51) | book +2%/yr DD -19%
+ [+D bull]
+  all flips                  304 tr  114/yr | mean +5.47% win 29% p10 -8.7% | train +2.62% (152) test +8.32% (152) | book +68%/yr DD -18%
+  vol>=1.5x (B)              163 tr   61/yr | mean +8.04% win 36% p10 -10.1% | train +4.09% (75) test +11.41% (88) | book +60%/yr DD -13%
+  B + lowvol (C)              68 tr   28/yr | mean +8.57% win 37% p10 -9.5% | train +7.79% (33) test +9.31% (35) | book +30%/yr DD -12%
+  lowvol only                121 tr   49/yr | mean +4.88% win 30% p10 -7.8% | train +4.46% (65) test +5.37% (56) | book +30%/yr DD -19%
+ [+4h & D bull]
+  all flips                  226 tr   85/yr | mean +4.75% win 27% p10 -9.2% | train +2.45% (114) test +7.09% (112) | book +40%/yr DD -21%
+  vol>=1.5x (B)              114 tr   43/yr | mean +7.21% win 36% p10 -10.9% | train +4.70% (49) test +9.09% (65) | book +33%/yr DD -16%
+  B + lowvol (C)              44 tr   18/yr | mean +4.63% win 36% p10 -9.8% | train +7.36% (21) test +2.13% (23) | book +10%/yr DD -11%
+  lowvol only                 85 tr   34/yr | mean +1.55% win 26% p10 -7.6% | train +2.51% (49) test +0.25% (36) | book +6%/yr DD -17%
+ [NOT 4h bull]
+  all flips                  798 tr  279/yr | mean +3.06% win 29% p10 -8.9% | train +2.70% (482) test +3.61% (316) | book +87%/yr DD -22%
+  vol>=1.5x (B)              421 tr  147/yr | mean +3.53% win 31% p10 -9.7% | train +3.32% (262) test +3.89% (159) | book +45%/yr DD -26%
+  B + lowvol (C)             172 tr   67/yr | mean +4.78% win 31% p10 -10.0% | train +4.87% (107) test +4.64% (65) | book +39%/yr DD -19%
+  lowvol only                300 tr  116/yr | mean +4.02% win 31% p10 -9.0% | train +4.86% (182) test +2.74% (118) | book +58%/yr DD -23%
+== $1-5: 5658 flips
+ [base]
+  all flips                 5658 tr 1979/yr | mean +1.34% win 26% p10 -8.0% | train +1.68% (2981) test +0.98% (2677) | book +29%/yr DD -48%
+  vol>=1.5x (B)             2637 tr  923/yr | mean +2.20% win 28% p10 -9.3% | train +3.11% (1416) test +1.14% (1221) | book +59%/yr DD -36%
+  B + lowvol (C)            1059 tr  411/yr | mean +2.13% win 28% p10 -8.9% | train +2.67% (551) test +1.55% (508) | book +7%/yr DD -38%
+  lowvol only               2192 tr  849/yr | mean +1.18% win 26% p10 -7.6% | train +1.67% (1131) test +0.67% (1061) | book +6%/yr DD -43%
+ [+4h bull]
+  all flips                 1786 tr  640/yr | mean +1.25% win 25% p10 -8.2% | train +0.89% (863) test +1.57% (923) | book +18%/yr DD -30%
+  vol>=1.5x (B)              801 tr  289/yr | mean +1.58% win 27% p10 -10.0% | train +1.72% (389) test +1.45% (412) | book +17%/yr DD -36%
+  B + lowvol (C)             327 tr  128/yr | mean +1.39% win 26% p10 -9.3% | train +1.68% (147) test +1.15% (180) | book +9%/yr DD -26%
+  lowvol only                687 tr  267/yr | mean +0.94% win 25% p10 -7.8% | train +1.00% (329) test +0.88% (358) | book +11%/yr DD -27%
+ [+D bull]
+  all flips                 1774 tr  661/yr | mean +1.82% win 27% p10 -8.2% | train +1.53% (782) test +2.05% (992) | book +49%/yr DD -23%
+  vol>=1.5x (B)              824 tr  309/yr | mean +2.81% win 29% p10 -10.1% | train +3.23% (356) test +2.49% (468) | book +71%/yr DD -21%
+  B + lowvol (C)             366 tr  144/yr | mean +2.71% win 29% p10 -9.7% | train +2.92% (158) test +2.54% (208) | book +30%/yr DD -28%
+  lowvol only                719 tr  280/yr | mean +1.62% win 27% p10 -8.1% | train +1.56% (334) test +1.67% (385) | book +34%/yr DD -29%
+ [+4h & D bull]
+  all flips                 1269 tr  473/yr | mean +1.80% win 26% p10 -8.3% | train +1.49% (557) test +2.04% (712) | book +38%/yr DD -23%
+  vol>=1.5x (B)              574 tr  215/yr | mean +2.54% win 29% p10 -10.1% | train +2.89% (247) test +2.28% (327) | book +28%/yr DD -21%
+  B + lowvol (C)             256 tr  101/yr | mean +2.00% win 28% p10 -9.7% | train +2.47% (109) test +1.66% (147) | book +18%/yr DD -23%
+  lowvol only                515 tr  201/yr | mean +1.31% win 26% p10 -8.1% | train +1.44% (237) test +1.19% (278) | book +19%/yr DD -25%
+ [NOT 4h bull]
+  all flips                 3872 tr 1355/yr | mean +1.39% win 26% p10 -7.9% | train +1.99% (2118) test +0.66% (1754) | book +37%/yr DD -35%
+  vol>=1.5x (B)             1836 tr  642/yr | mean +2.47% win 28% p10 -9.1% | train +3.64% (1027) test +0.99% (809) | book +41%/yr DD -51%
+  B + lowvol (C)             732 tr  284/yr | mean +2.47% win 29% p10 -8.5% | train +3.03% (404) test +1.77% (328) | book +43%/yr DD -31%
+  lowvol only               1505 tr  583/yr | mean +1.29% win 26% p10 -7.5% | train +1.94% (802) test +0.56% (703) | book +17%/yr DD -36%

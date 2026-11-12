@@ -30,7 +30,8 @@ from vector_pine import run_state_machine
 ET = 'America/New_York'; LIVE = 'live'; os.makedirs(LIVE, exist_ok=True)
 STATE_F = f'{LIVE}/midsmall_state.json'; SLOTS = int(os.getenv('MIDSMALL_SLOTS', '8')); VOL_X = float(os.getenv('MIDSMALL_VOL_X', '1.5'))
 MAX_PX = float(os.getenv('MIDSMALL_MAX_PX', '2')); MIN_PX = float(os.getenv('MIDSMALL_MIN_PX', '1'));  # Nov 12 2026: $1-2 only (most consistent price band, xs/report_12_tf.log); MIDSMALL_MIN_PX=0 MIDSMALL_MAX_PX=5 restores the sub-$5 book
-VWAP_X = float(os.getenv('MIDSMALL_VWAP_X', '1.0')); EARN_SKIP = int(os.getenv('MIDSMALL_EARN_SKIP', '3'))
+DAILY_TXT = {True: 'Daily trend: BULL - 1h flip inside a daily uptrend. Backtest $1-2 names, vol>=1.5x: +8.0% avg per trade, 36% win (p=0.02) vs +2.1% when the daily vector was not bull.', False: 'Daily trend: NOT bull - lone 1h flip against the daily vector; weaker in the backtest (+2.1% avg per trade vs +8.0% with daily bull, $1-2 names).', None: ''}
+DAILY_GATE = os.getenv('MIDSMALL_DAILY_GATE', '0') == '1'; DBULL = {}; VWAP_X = float(os.getenv('MIDSMALL_VWAP_X', '1.0')); EARN_SKIP = int(os.getenv('MIDSMALL_EARN_SKIP', '3'))
 try: import signal_context as SC
 except Exception as _e: SC = None; print(f'  ! signal_context unavailable ({_e}); posts will have no context, no earnings/short rules')
 BACKTEST_NOTE = 'Backtest (in-sample, sub-$5): setups with >=3 flags averaged about +4-6% per trade vs about +1% with <=2; win rate ~29% either way (median trade -3%), so size small.'
@@ -119,6 +120,13 @@ def events(F):
 def bar_close(ts):
     ts = pd.Timestamp(ts); return ts + (pd.Timedelta('30min') if (ts.hour == 15 and ts.minute == 30) else pd.Timedelta('60min'))
 
+def daily_bull(Yc):
+    """Nov 12 2026: is the DAILY vector regime bull on the last completed daily bar (daily = the 1h bars resampled by session)? xs/report_12_mtf.py"""
+    try:
+        d = Yc.index.normalize(); G = Yc.groupby(d); o = G.agg(open=('open', 'first'), high=('high', 'max'), low=('low', 'min'), close=('close', 'last'), volume=('volume', 'sum')); o.index = pd.DatetimeIndex(G.apply(lambda x: x.index[0]).values)
+        if Yc.index[-1].hour < 15: o = o.iloc[:-1]                                                              # today's daily bar is not complete yet
+        return bool(run_state_machine(o.assign(datetime=o.index))[0][-1] == 1)
+    except Exception: return None
 # ---------------------------------------------------------------- state + Discord
 def load_state():
     try: return json.load(open(STATE_F))
@@ -146,6 +154,7 @@ def scan_once(dry, data=None, asof=None):
         if (now_et() if t is None else t) - bar_close(last) > pd.Timedelta('3h') and t is None: continue          # stale feed / market closed overnight: ignore
         for (ts, kind, vr, px) in events(F):
             if ts != last: continue                                                                              # only the newest closed bar can fire
+            if kind == 'BUY': DBULL[tk] = daily_bull(Yc)
             cand.append((tk, ts, kind, vr, px, float(F.vwx.iat[-1]) if F.vwx.iat[-1] == F.vwx.iat[-1] else 0.0))
     # exits first (free slots), then entries by flip-volume ratio
     for tk, ts, kind, vr, px, vwx in cand:
@@ -161,6 +170,7 @@ def scan_once(dry, data=None, asof=None):
         e = SC.earnings_info(tk) if SC else {}; ses = e.get('sessions')
         if ses is not None and ses <= EARN_SKIP:                                                                   # EARN rule: binary gap risk right before a report
             print(f"  skipped {tk}: bull flip but earnings reaction in {ses} sessions ({e['next']:%b %d})"); st['seen'].append(key); continue
+        if DAILY_GATE and DBULL.get(tk) is False: print(f'  skipped {tk}: daily vector not bull (MIDSMALL_DAILY_GATE=1)'); st['seen'].append(key); continue
         svr = SC.short_share(tk) if SC else None; half = svr is not None and svr > SC.SVR_CUT
         size_txt = (f"Size: HALF slot - short sellers are {svr:.0%} of its volume (20-day), the persistent-short-pressure group that underperformed in the backtest." if half else
                     f"Size: full slot (1/{SLOTS} of the book)" + (f" - short share {svr:.0%} of volume." if svr is not None else '.'))
@@ -168,8 +178,8 @@ def scan_once(dry, data=None, asof=None):
         if len(st['pos']) >= SLOTS:
             fired.append(f"\u2b50 HONORABLE MENTION {tk}: low-vol day + high-volume bull flip on the {ts:%H:%M} bar ({vr:.1f}x volume, last {px:.2f}), but all {SLOTS} slots are full."); ctxs.append(None); st['seen'].append(key); continue
         st['pos'][tk] = {'px': px, 't': str(ts), 'vr': vr, 'size': 0.5 if half else 1.0}; st['seen'].append(key)
-        fired.append(f"\u26a1 BUY {tk}: 1h vector bull flip on the {ts:%H:%M} bar with {vr:.1f}x volume on a low-volatility day, {vwx:+.1f} ATR vs VWAP. Entry next open (~{px:.2f}). Exit = the vector's bear flip (no other stop). Slot {len(st['pos'])}/{SLOTS}." + (' HALF SIZE.' if half else ''))
-        ctxs.append(SC.block(tk, 'BUY', extra=[size_txt], flags=flags) if SC else None)
+        fired.append(f"\u26a1 BUY {tk}: 1h vector bull flip on the {ts:%H:%M} bar with {vr:.1f}x volume on a low-volatility day, {vwx:+.1f} ATR vs VWAP. Entry next open (~{px:.2f}). Exit = the vector's bear flip (no other stop). Slot {len(st['pos'])}/{SLOTS}." + (' HALF SIZE.' if half else '') + (' A-GRADE: daily vector is also bull.' if DBULL.get(tk) else (' Daily vector NOT bull (lone 1h flip).' if DBULL.get(tk) is False else '')))
+        ctxs.append(SC.block(tk, 'BUY', extra=[x for x in (size_txt, DAILY_TXT.get(DBULL.get(tk), '')) if x], flags=flags) if SC else None)
     for m in fired: print(m); (None if dry else post(m))                                                           # alerts first (fast) ...
     for m, c in zip(fired, ctxs):                                                                                   # ... then the context for each
         if c: print(c); (None if dry else post(c))
