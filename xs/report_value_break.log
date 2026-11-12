@@ -1,0 +1,8 @@
+OPTICS    1R  BREAK: 19-21 n  269 avg  -2.77 win 46% t -1.3 || 22-26 n  293 avg  +1.77 win 53% t +0.6  | long n  344 avg  +0.23 win 52% t +0.1 | short n  218 avg  -1.40 win 45% t -0.4
+OPTICS    2R  BREAK: 19-21 n  269 avg  -3.62 win 41% t -1.4 || 22-26 n  293 avg  +0.86 win 46% t +0.2  | long n  344 avg  -0.35 win 49% t -0.1 | short n  218 avg  -2.76 win 34% t -0.7
+Spectral  1R  BREAK: 19-21 n  221 avg  -1.74 win 48% t -0.8 || 22-26 n  266 avg  +1.09 win 53% t +0.3  | long n  321 avg  -2.54 win 49% t -1.1 | short n  166 avg  +4.33 win 53% t +1.1
+Spectral  2R  BREAK: 19-21 n  221 avg  -2.46 win 41% t -0.9 || 22-26 n  266 avg  +0.86 win 47% t +0.2  | long n  321 avg  -3.79 win 45% t -1.5 | short n  166 avg  +5.43 win 43% t +1.1
+TDA       1R  BREAK: 19-21 n  230 avg  -3.96 win 47% t -1.7 || 22-26 n  276 avg  -1.57 win 51% t -0.5  | long n  329 avg  -4.25 win 49% t -1.9 | short n  177 avg  +0.30 win 49% t +0.1
+TDA       2R  BREAK: 19-21 n  230 avg  -3.97 win 41% t -1.4 || 22-26 n  276 avg  -2.00 win 45% t -0.5  | long n  329 avg  -4.64 win 46% t -1.9 | short n  177 avg  +0.34 win 40% t +0.1
+VP5       1R  BREAK: 19-21 n  255 avg  -0.63 win 49% t -0.3 || 22-26 n  312 avg  +1.04 win 50% t +0.4  | long n  327 avg  +0.84 win 51% t +0.4 | short n  240 avg  -0.46 win 48% t -0.1
+VP5       2R  BREAK: 19-21 n  255 avg  -1.57 win 42% t -0.6 || 22-26 n  312 avg  +3.34 win 45% t +0.9  | long n  327 avg  +0.57 win 48% t +0.2 | short n  240 avg  +1.90 win 38% t +0.5
