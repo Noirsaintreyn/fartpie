@@ -1,0 +1,39 @@
+sub-5 trades 5988 names 246
+
+## A all flips  (all sub-$5 flips passing: 5988)
+   2024 (Dec23-Dec24)     return   +60.4% (annualised    +55%)  maxDD -23.0%  trades  275  win 21.8%  avg hold 10.7d  mean/trade +2.51%
+   2025                   return  +336.5% (annualised   +337%)  maxDD -41.6%  trades  258  win 29.1%  avg hold 11.3d  mean/trade +2.75%
+   2026 YTD (to Nov 10)   return   +10.3% (annualised    +12%)  maxDD -24.4%  trades  226  win 25.7%  avg hold 10.9d  mean/trade +0.14%
+   FULL                   return  +567.6% (annualised    +91%)  maxDD -41.6%  trades  760  win 24.5%  avg hold 10.7d  mean/trade +1.88%
+
+## B vol>=1.5x  (all sub-$5 flips passing: 2755)
+   2024 (Dec23-Dec24)     return  +297.1% (annualised   +257%)  maxDD -14.0%  trades  219  win 30.1%  avg hold 13.5d  mean/trade +4.76%
+   2025                   return  +162.4% (annualised   +162%)  maxDD -39.7%  trades  244  win 28.3%  avg hold 11.6d  mean/trade +3.68%
+   2026 YTD (to Nov 10)   return   +27.1% (annualised    +32%)  maxDD -22.6%  trades  222  win 27.0%  avg hold 10.7d  mean/trade +0.55%
+   FULL                   return +1162.7% (annualised   +137%)  maxDD -39.4%  trades  656  win 28.2%  avg hold 11.9d  mean/trade +3.14%
+
+## C vol>=1.5x + low-vol day  (all sub-$5 flips passing: 1096)
+   2024 (Dec23-Dec24)     return   +28.4% (annualised    +26%)  maxDD -19.7%  trades  166  win 25.3%  avg hold  9.8d  mean/trade +3.33%
+   2025                   return   +42.8% (annualised    +43%)  maxDD -16.4%  trades  198  win 31.3%  avg hold 12.0d  mean/trade +3.68%
+   2026 YTD (to Nov 10)   return   -12.1% (annualised    -14%)  maxDD -27.6%  trades  216  win 24.5%  avg hold  8.6d  mean/trade +0.64%
+   FULL                   return   +60.1% (annualised    +17%)  maxDD -37.7%  trades  559  win 27.0%  avg hold 10.2d  mean/trade +2.69%
+
+## C+V (C, not >1 ATR above VWAP)  (all sub-$5 flips passing: 697)
+   2024 (Dec23-Dec24)     return  +114.7% (annualised   +102%)  maxDD -13.9%  trades  142  win 23.2%  avg hold  9.9d  mean/trade +4.25%
+   2025                   return   +99.0% (annualised    +99%)  maxDD -16.9%  trades  169  win 33.1%  avg hold 12.1d  mean/trade +4.71%
+   2026 YTD (to Nov 10)   return    +5.5% (annualised     +6%)  maxDD -21.6%  trades  173  win 24.3%  avg hold  8.5d  mean/trade +1.06%
+   FULL                   return  +384.3% (annualised    +71%)  maxDD -21.8%  trades  475  win 27.6%  avg hold 10.3d  mean/trade +3.52%
+
+## B+V (B, not >1 ATR above VWAP)  (all sub-$5 flips passing: 1878)
+   2024 (Dec23-Dec24)     return  +139.5% (annualised   +124%)  maxDD -14.7%  trades  226  win 26.5%  avg hold 12.3d  mean/trade +2.76%
+   2025                   return  +283.6% (annualised   +284%)  maxDD -23.3%  trades  221  win 31.2%  avg hold 11.5d  mean/trade +4.90%
+   2026 YTD (to Nov 10)   return   +32.1% (annualised    +38%)  maxDD -23.0%  trades  198  win 26.3%  avg hold 11.4d  mean/trade +0.99%
+   FULL                   return +1053.2% (annualised   +130%)  maxDD -23.0%  trades  634  win 27.9%  avg hold 11.8d  mean/trade +2.98%
+
+LAST 5 sub-$5 signals (filter C):
+1 ZIP   BUY Nov 04 10:30 @ 4.82 -> 4.15  -13.8% (net -14.2%)  closed Nov 05  vol 2.0x  vwap +1.0ATR
+2 NCMI  BUY Nov 09 15:30 @ 1.72 -> 1.61  -6.1% (net -6.5%)  closed Nov 10  vol 4.7x  vwap +1.5ATR
+3 ANGX  BUY Nov 11 10:30 @ 3.97 -> 4.29  +8.1% (net +7.7%)  OPEN  vol 4.9x  vwap -1.0ATR
+4 TIGR  BUY Nov 11 10:30 @ 4.01 -> 4.01  +0.1% (net -0.3%)  OPEN  vol 2.5x  vwap +0.8ATR
+5 FRMI  BUY Nov 11 10:30 @ 1.79 -> 1.83  +2.0% (net +1.6%)  OPEN  vol 2.4x  vwap +0.5ATR
+FILES ['xs/sub5_recent_1_ZIP.png', 'xs/sub5_recent_2_NCMI.png', 'xs/sub5_recent_3_ANGX.png', 'xs/sub5_recent_4_TIGR.png', 'xs/sub5_recent_5_FRMI.png']
