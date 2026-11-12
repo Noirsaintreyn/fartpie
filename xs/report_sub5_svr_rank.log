@@ -1,0 +1,11 @@
+train 3195 test 2793
+coverage 0.999
+set     variant                           | TRAIN ann   DD | TEST ann   DD
+E+V     baseline (vol order, equal size)  |     +239%  -20 |     +65%  -22
+E+V     order: low svr20 first            |     +128%  -17 |     +68%  -20
+E+V     size: high svr20 half size        |     +220%  -16 |     +72%  -18
+E+V     order low svr20 + half size high  |     +114%  -14 |     +81%  -15
+B       baseline (vol order, equal size)  |     +283%  -39 |     +53%  -23
+B       order: low svr20 first            |     +118%  -40 |     +53%  -19
+B       size: high svr20 half size        |     +246%  -32 |     +59%  -19
+B       order low svr20 + half size high  |      +95%  -34 |     +57%  -19
