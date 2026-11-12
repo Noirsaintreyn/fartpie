@@ -1,0 +1,26 @@
+HAR beta [-1.388  0.151  0.208  0.458] n 241624
+events 5150 train 2478 test 2672 | mean ret train 1.75% test 1.03%
+
+Spearman IC feature vs trade return  (pre-declared sign in brackets)
+ext    [-1]  train IC -0.185 (p 0.000) | test IC -0.182 (p 0.000)
+run    [-1]  train IC -0.087 (p 0.000) | test IC -0.108 (p 0.000)
+shock  [+1]  train IC -0.165 (p 0.000) | test IC -0.152 (p 0.000)
+emaz   [-1]  train IC -0.051 (p 0.011) | test IC -0.085 (p 0.000)
+vsur   [+1]  train IC -0.101 (p 0.000) | test IC -0.058 (p 0.003)
+vlvl   [+1]  train IC -0.231 (p 0.000) | test IC -0.207 (p 0.000)
+vcmp   [-1]  train IC -0.058 (p 0.004) | test IC -0.035 (p 0.068)
+gapz   [+1]  train IC +0.023 (p 0.247) | test IC -0.023 (p 0.230)
+
+Quintiles (train cut points) mean ret %, n
+ext Q0 tr -0.1(496) te +0.9(568) | Q1 tr +1.0(495) te +0.7(484) | Q2 tr +1.1(496) te +1.1(516) | Q3 tr +2.4(495) te +1.0(548) | Q4 tr +4.2(496) te +1.5(556)
+run Q0 tr -0.4(496) te +1.3(521) | Q1 tr +0.4(495) te +1.2(533) | Q2 tr +2.2(496) te -0.2(537) | Q3 tr +4.2(495) te +1.0(565) | Q4 tr +2.3(496) te +1.8(516)
+shock Q0 tr +1.0(496) te +0.6(491) | Q1 tr +0.4(495) te +1.5(506) | Q2 tr +1.2(496) te +0.9(525) | Q3 tr +1.9(495) te +1.1(552) | Q4 tr +4.2(496) te +1.2(598)
+emaz Q0 tr -0.2(496) te +1.2(561) | Q1 tr +0.8(495) te +0.7(524) | Q2 tr +1.1(496) te +1.0(544) | Q3 tr +2.4(495) te +1.2(540) | Q4 tr +4.6(496) te +1.0(503)
+vsur Q0 tr +1.4(496) te +0.1(523) | Q1 tr +1.7(495) te -0.1(619) | Q2 tr +1.1(496) te +2.7(555) | Q3 tr +1.4(495) te +1.6(516) | Q4 tr +3.2(496) te +1.0(459)
+vlvl Q0 tr +0.5(496) te -0.1(652) | Q1 tr +1.1(495) te +0.1(582) | Q2 tr +2.4(496) te +0.8(500) | Q3 tr +1.0(495) te +1.8(499) | Q4 tr +3.7(496) te +3.4(439)
+vcmp Q0 tr +3.9(496) te +2.1(494) | Q1 tr +2.4(495) te +0.4(437) | Q2 tr +1.9(496) te +0.7(623) | Q3 tr -0.2(495) te +1.4(588) | Q4 tr +0.8(496) te +0.6(530)
+gapz Q0 tr +0.3(496) te +0.6(633) | Q1 tr +1.1(495) te +2.9(531) | Q2 tr +1.5(496) te +0.5(610) | Q3 tr +1.4(495) te +0.5(454) | Q4 tr +4.3(496) te +0.7(444)
+
+train: comp>train-median: n 1239 mean +1.51% win 23% vs all +1.75% | p(random-skip) 0.664 | IC -0.091
+
+test: comp>train-median: n 1202 mean +2.03% win 26% vs all +1.03% | p(random-skip) 0.003 | IC -0.039
