@@ -1,0 +1,86 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+core RTH legs 2018-26: n 3342  avg pts era1 +5.29 era2 +9.05
+=== walk-forward size tilt (x0.5 if bucket<half avg, x1.5 if >1.5x avg, learned on one era, scored on the other); gain = extra pts per trade
+        factor  1->2  1->2 t  2->1  2->1 t  both
+     m_gap_rel  2.58    2.60  2.88    5.62  True
+   m_rng20_pct  2.44    3.01  1.07    1.91  True
+       f_month  0.95    0.98 -0.72   -1.66 False
+         f_dom  0.81    2.47 -0.15   -0.33 False
+         f_leg  0.07    0.27  0.27    0.70  True
+  f_qtr_end_wk  0.06    0.36 -0.49   -2.18 False
+m_rng_prev_rel  0.00    0.00  0.00    0.00 False
+       f_last2  0.00    0.00  0.00    0.00 False
+  f_turn_month  0.00    0.00  0.00    0.00 False
+       f_fomc1  0.00    0.00 -0.05   -0.60 False
+ m_trend_eff10  0.00    0.00  0.00    0.00 False
+   f_first_day  0.00    0.00 -0.15   -0.93 False
+     f_pre_hol  0.00    0.00 -0.02   -0.28 False
+     f_vix_exp -0.00   -0.03  0.15    1.60 False
+    f_opex_fri -0.02   -0.17 -0.02   -0.25 False
+     f_opex_wk -0.02   -0.17 -0.02   -0.25 False
+        f_fomc -0.10   -0.75  0.00    0.00 False
+    m_vxn_chg5 -0.15   -0.24  0.00    0.00 False
+     m_qqq_z20 -0.89   -2.39 -0.35   -1.87 False
+        f_time -0.98   -1.57 -0.37   -1.93 False
+         f_dow -1.23   -1.74 -1.16   -3.81 False
+     m_vxn_pct -1.36   -3.02  0.00    0.00 False
+
+=== bucket tables for factors positive both ways
+f_leg
+       size        mean      
+era2  False True  False True 
+f_leg                        
+M1      543   563   7.0   8.7
+R1       63    78   3.7   8.7
+RA      145   178   9.4  11.4
+RULES   433   655   2.1   2.7
+V15a    333   351   5.2  20.4
+m_rng20_pct
+             size        mean      
+era2        False True  False True 
+m_rng20_pct                        
+high          610   623   8.3  14.3
+low           363   635   3.1  10.1
+mid           543   566   3.3   2.0
+na              1     1  74.5  74.5
+m_gap_rel
+           size        mean      
+era2      False True  False True 
+m_gap_rel                        
+high        622   788  14.2  16.4
+low         416   468   0.2  -3.3
+mid         454   554  -2.1   9.1
+na           25    15   3.7   8.9
+
+BASE N4xECON
+   EVAL  pass  90% FAIL  10% | pass<=30d  16% <=60d  51% <=90d  71% | still running >30d  82% >60d  44% >90d  23% | fee-months/eval 3.61
+   FUNDED paid  89% lost-before-1st  11% lost-ever  26% | 1st payout <=30d  45% <=60d  77% <=90d  85% (median 30d) | payouts in 90d 2.17 / 180d 3.71 | $ in 90d 3,293 / 180d 5,947 | $ total 6,412
+   2022+ only: eval pass 94% fail 6% pass<=30/60/90d 23%/62%/78% | funded lost-ever 23% 1st payout<=30/60/90d 63%/86%/90% total $6,757
+
++TILT ['m_gap_rel'] (learned 2018-21, applied all years)
+   EVAL  pass  91% FAIL   9% | pass<=30d  17% <=60d  53% <=90d  72% | still running >30d  82% >60d  44% >90d  22% | fee-months/eval 3.68
+   FUNDED paid  88% lost-before-1st  12% lost-ever  25% | 1st payout <=30d  42% <=60d  77% <=90d  85% (median 31d) | payouts in 90d 2.08 / 180d 3.63 | $ in 90d 3,364 / 180d 6,105 | $ total 6,584
+   2022+ only: eval pass 99% fail 1% pass<=30/60/90d 22%/61%/78% | funded lost-ever 24% 1st payout<=30/60/90d 57%/85%/89% total $6,777
+
++TILT ['m_rng20_pct'] (learned 2018-21, applied all years)
+   EVAL  pass  91% FAIL   9% | pass<=30d  17% <=60d  52% <=90d  70% | still running >30d  82% >60d  45% >90d  24% | fee-months/eval 3.59
+   FUNDED paid  90% lost-before-1st  10% lost-ever  29% | 1st payout <=30d  51% <=60d  80% <=90d  87% (median 27d) | payouts in 90d 2.32 / 180d 3.75 | $ in 90d 3,595 / 180d 6,050 | $ total 6,319
+   2022+ only: eval pass 97% fail 3% pass<=30/60/90d 23%/61%/77% | funded lost-ever 25% 1st payout<=30/60/90d 67%/88%/91% total $6,647
+
++TILT ['f_leg'] (learned 2018-21, applied all years)
+   EVAL  pass  92% FAIL   8% | pass<=30d  14% <=60d  45% <=90d  67% | still running >30d  85% >60d  51% >90d  27% | fee-months/eval 4.00
+   FUNDED paid  86% lost-before-1st  14% lost-ever  29% | 1st payout <=30d  31% <=60d  69% <=90d  81% (median 36d) | payouts in 90d 1.64 / 180d 3.22 | $ in 90d 2,577 / 180d 5,298 | $ total 6,322
+   2022+ only: eval pass 93% fail 7% pass<=30/60/90d 21%/57%/76% | funded lost-ever 24% 1st payout<=30/60/90d 42%/80%/86% total $6,819
+
++TILT ['m_gap_rel', 'm_rng20_pct'] (learned 2018-21, applied all years)
+   EVAL  pass  92% FAIL   8% | pass<=30d  18% <=60d  56% <=90d  74% | still running >30d  80% >60d  40% >90d  21% | fee-months/eval 3.51
+   FUNDED paid  88% lost-before-1st  12% lost-ever  27% | 1st payout <=30d  47% <=60d  81% <=90d  86% (median 29d) | payouts in 90d 2.18 / 180d 3.68 | $ in 90d 3,482 / 180d 6,141 | $ total 6,448
+   2022+ only: eval pass 99% fail 1% pass<=30/60/90d 24%/64%/80% | funded lost-ever 25% 1st payout<=30/60/90d 62%/87%/89% total $6,689
+
++TILT ['m_gap_rel', 'm_rng20_pct', 'f_leg'] (learned 2018-21, applied all years)
+   EVAL  pass  90% FAIL  10% | pass<=30d  16% <=60d  49% <=90d  70% | still running >30d  81% >60d  44% >90d  21% | fee-months/eval 3.52
+   FUNDED paid  83% lost-before-1st  17% lost-ever  27% | 1st payout <=30d  33% <=60d  70% <=90d  80% (median 35d) | payouts in 90d 1.82 / 180d 3.43 | $ in 90d 3,064 / 180d 5,943 | $ total 6,572
+   2022+ only: eval pass 93% fail 7% pass<=30/60/90d 22%/54%/76% | funded lost-ever 24% 1st payout<=30/60/90d 45%/76%/82% total $6,815
