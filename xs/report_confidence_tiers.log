@@ -1,0 +1,23 @@
+train 3195 test 2793
+coverage 0.999
+C+E+V trades 652
+  f1: share true 0.48 | mean true +5.00% (n316) vs false +2.83% | win true 28% vs 30%
+  f2: share true 0.69 | mean true +4.49% (n448) vs false +2.55% | win true 31% vs 26%
+  f3: share true 0.85 | mean true +3.31% (n553) vs false +7.04% | win true 29% vs 29%
+  f4: share true 0.47 | mean true +3.46% (n305) vs false +4.25% | win true 26% vs 32%
+  f5: share true 0.58 | mean true +5.68% (n375) vs false +1.45% | win true 31% vs 27%
+
+ALL
+   score 0-2  n  195 mean  +1.12% median -3.15% win  29% P>10% 14.9% P<-8% 10.8%
+   score 3    n  219 mean  +6.11% median -3.43% win  30% P>10% 12.3% P<-8% 10.0%
+   score 4-5  n  238 mean  +4.09% median -3.08% win  29% P>10% 16.4% P<-8%  9.7%
+
+TRAIN
+   score 0-2  n  120 mean  +0.65% median -3.30% win  27% P>10% 15.8% P<-8%  8.3%
+   score 3    n  114 mean  +9.02% median -3.58% win  30% P>10% 12.3% P<-8% 10.5%
+   score 4-5  n  110 mean  +6.19% median -3.25% win  29% P>10% 14.5% P<-8%  9.1%
+
+TEST
+   score 0-2  n   75 mean  +1.88% median -2.56% win  33% P>10% 13.3% P<-8% 14.7%
+   score 3    n  105 mean  +2.95% median -3.31% win  30% P>10% 12.4% P<-8%  9.5%
+   score 4-5  n  128 mean  +2.29% median -3.02% win  28% P>10% 18.0% P<-8% 10.2%

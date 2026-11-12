@@ -43,6 +43,8 @@ if os.getenv('VECTOR_ENGINE', 'pine') == 'pine':
 else:
     from vector_core import run_state_machine
 import live_cards as LC
+try: import signal_context as SC_CTX                             # Nov 12 2026: news / upcoming earnings / market context lines for the Discord posts
+except Exception as _e: SC_CTX = None; print(f'  ! signal_context unavailable: {_e}')
 START = LC.START       # positions are only counted from signals at/after this time (SCREENER_START in .env)
 
 CUT, UP_SWITCH, BREAK_ATR, RTH0, RTH1 = float(os.getenv('OPT_CUT', '2.5')), 0.02, 0.35, 570, 960   # OPT_CUT: options-ratio bar
@@ -1430,6 +1432,11 @@ def post_new_signals(rows, meta, st):
                 late = (late + '\n' if late else '') + grade_line((ranked.index(tk) + 1, len(ranked)) if tk in ranked else None)
                 d_ = spy_downtrend(); save_score(tk, dict(grade='A+' if (d_ and d_['down']) else 'STD', score=0.0))
             except Exception as e: print(f'  ! grade: {str(e)[:60]}')
+        if SC_CTX is not None:                                           # Nov 12 2026: market context + recent news + upcoming/last earnings under every signal (signal_context.py; fails soft)
+            try:
+                cb = SC_CTX.block(r.get('base') or tk.split(' ')[0], r['action'])
+                if cb: late = (late + '\n' if late else '') + cb
+            except Exception as e: print(f'  ! context: {str(e)[:60]}')
         if not post(late, [p]): continue
         st['signals'].append(key); _save(st)
         log = f'{LIVE}/signal_log.csv'
