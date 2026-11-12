@@ -1,0 +1,25 @@
+events 9140 {'1-5': 5445, 'BIG': 3695}
+
+================ 1-5 train 2775 test 2670 | win% train 26 test 26 | mean ret train +1.81% test +1.03%
+-- single feature test AUC for WIN (train/test): ext 0.569/0.581, rv 0.554/0.521, atrp 0.518/0.541, lpx 0.506/0.465, er20 0.534/0.526, er48 0.509/0.491
+  ER(20) trend-quality gate | low tercile: n892  win 24% mean -0.02% ex-top1 -0.91% || upper two terciles: n1778 win 27% mean +1.56% ex-top1 +0.17%
+  ER(48) trend-quality gate | low tercile: n892  win 27% mean +1.48% ex-top1 +0.24% || upper two terciles: n1778 win 26% mean +0.81% ex-top1 -0.38%
+  band-distance gate (close-vector in ATR) | low tercile: n857  win 20% mean +0.70% ex-top1 -0.46% || upper two terciles: n1813 win 29% mean +1.19% ex-top1 -0.08%
+-- S0 simple      train AUC 0.575  TEST AUC 0.584
+-- S1 simple+sig  train AUC 0.592  TEST AUC 0.563
+-- SIG only       train AUC 0.579  TEST AUC 0.532
+   S0 simple        keep top 70%: n1869 win 29% mean +1.42% ex-top1 +0.06% | all +1.03% | p(random-skip) 0.030
+   S1 simple+sig    keep top 70%: n1869 win 28% mean +1.08% ex-top1 -0.22% | all +1.03% | p(random-skip) 0.424
+   SIG only         keep top 70%: n1869 win 27% mean +1.15% ex-top1 -0.19% | all +1.03% | p(random-skip) 0.315
+
+================ BIG train 1867 test 1828 | win% train 24 test 23 | mean ret train +0.08% test -0.89%
+-- single feature test AUC for WIN (train/test): ext 0.592/0.558, rv 0.541/0.493, atrp 0.519/0.500, lpx 0.500/0.520, er20 0.505/0.491, er48 0.497/0.495
+  ER(20) trend-quality gate | low tercile: n599  win 23% mean -1.38% ex-top1 -1.95% || upper two terciles: n1229 win 22% mean -0.66% ex-top1 -1.52%
+  ER(48) trend-quality gate | low tercile: n600  win 22% mean -1.29% ex-top1 -1.78% || upper two terciles: n1228 win 23% mean -0.70% ex-top1 -1.61%
+  band-distance gate (close-vector in ATR) | low tercile: n584  win 19% mean -0.80% ex-top1 -1.35% || upper two terciles: n1244 win 24% mean -0.93% ex-top1 -1.81%
+-- S0 simple      train AUC 0.593  TEST AUC 0.552
+-- S1 simple+sig  train AUC 0.611  TEST AUC 0.551
+-- SIG only       train AUC 0.570  TEST AUC 0.518
+   S0 simple        keep top 70%: n1279 win 24% mean -1.06% ex-top1 -1.89% | all -0.89% | p(random-skip) 0.818
+   S1 simple+sig    keep top 70%: n1279 win 24% mean -0.91% ex-top1 -1.75% | all -0.89% | p(random-skip) 0.553
+   SIG only         keep top 70%: n1279 win 23% mean -0.78% ex-top1 -1.60% | all -0.89% | p(random-skip) 0.269
