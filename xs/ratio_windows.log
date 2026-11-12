@@ -1,0 +1,10 @@
+ratio history 2018-01-02 2026-10-16 508 tickers; wide_T S&P trades 31038 tickers 95
+parity w=252 vs stored: corr 0.9999603427235916  trades gated both ways 17446 mine 17449 stored 17447
+  252 gate+rank (live)        17449 tr | CAGR +54.4% / +20.9%  DD -10% / -20%  ret/DD 5.13 / 1.10
+== G: gate>=1.5 and rank by window-w value
+  G w=5                       17695 tr | CAGR +36.4% / +20.9%  DD -12% / -19%  ret/DD 3.06 / 1.08  beats252 0% / 50%
+  G w=21                      17951 tr | CAGR +43.3% / +14.6%  DD -11% / -21%  ret/DD 3.75 / 0.69  beats252 5% / 8%
+  G w=63                      18028 tr | CAGR +39.8% / +10.6%  DD -12% / -23%  ret/DD 3.16 / 0.45  beats252 8% / 0%
+  G w=126                     17927 tr | CAGR +42.7% / +10.7%  DD -12% / -29%  ret/DD 3.52 / 0.38  beats252 12% / 0%
+== R: gate = live 252 membership, rank by window-w
+  R w=5                       17449 tr | CAGR +53.8% / +22.7%  DD -10% / -21%  ret/DD 5.18 / 1.07  beats252 65% / 50%
