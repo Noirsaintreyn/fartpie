@@ -15,7 +15,7 @@
   US calendar, top news) and one page per position (15m chart with stop, model read: 15m/1h/daily vector, sector ETF vector, HAR range,
   earnings; why we hold / what we want to see / what would say it failed; news on the name and its sector). /brief sends the same pages.
   It posts every weekday at 09:00 ET
-  (BRIEF_CHANNEL_ID to route it, DAILY_BRIEF=0 to stop): headlines on held names, sector news for what you hold, market-moving
+  (Nov 11 2026: website-only, the Daily Analysis tab; no longer posted to Discord): headlines on held names, sector news for what you hold, market-moving
   universe news, top market news, US calendar.
 - **Honorable mentions:** flips skipped because all slots are full are alerted (HM_CHANNEL_ID or the main channel) and shown in /hm; never traded.
 - **Universe:** S&P 500 names (point-in-time membership) whose options ratio (option contracts x100 / shares, trailing 252-day median, lagged 1 day) is >= 1.5 (from Oct 22 09:30; 2.5 Oct 20-21). Ratio file: live_data/optvol_ratio_live.csv, refreshed Saturdays by tools/weekly_ratio.sh (needs Theta running).

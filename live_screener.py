@@ -1758,7 +1758,7 @@ if __name__ == '__main__':
                         shutil.copy(f'{LIVE}/report_{today}/analysis.json', f'{LIVE}/analysis.json'); os.makedirs(f'{LIVE}/notes', exist_ok=True)
                         shutil.copy(f'{LIVE}/analysis.json', f'{LIVE}/notes/{today}.json'); write_site_snapshot(rows, meta)
                     except Exception as ex: print(f'  ! site analysis: {str(ex)[:80]}')
-                    if os.getenv('DAILY_BRIEF', '0') != '1' or post(f"\U0001f4f0 Morning report · {now_et():%a %b %d}", fs[:10], channel=os.getenv('BRIEF_CHANNEL_ID')): st['brief'] = today; _save(st)   # site only unless DAILY_BRIEF=1
+                    st['brief'] = today; _save(st)   # Nov 11 2026: the morning report is website-only (Daily Analysis tab); never posted to Discord (Rey)
                 except Exception as ex: print(f'  ! daily brief: {str(ex)[:80]}')
         elif 9 * 60 + 15 <= mins < RTH0:                                        # ~09:16 pre-open recheck
             rows, meta = scan(args); show(rows, meta); check_stale(rows, st); post_new_signals(rows, meta, st)
