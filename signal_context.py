@@ -85,6 +85,18 @@ def macro_line():
     hi = [e for e in ev if e.get('impact') == 'High' and e.get('type') != 'auction'][:4]
     def nm(e): return str(e.get('title') or e.get('name') or e.get('event') or '')[:30]
     return ('Macro (Helious, US high impact): ' + '; '.join(f"{nm(e)}" + (f" {str(e.get('date') or e.get('time') or '')[11:16]}" if (e.get('date') or e.get('time')) else '') for e in hi)) if hi else ''
+def quote_line(tk):
+    """bid / ask / spread from Yahoo (may be delayed; for sub-$5 names the spread is the real cost - the backtest assumed 40 bp round trip)"""
+    def f():
+        import yfinance as yf
+        t = pd.Timestamp.now(tz='America/New_York')
+        if t.dayofweek >= 5 or not (570 <= t.hour * 60 + t.minute <= 960): return None          # after hours Yahoo's bid/ask is stale or empty
+        i = yf.Ticker(tk).get_info(); b, a = i.get('bid'), i.get('ask')
+        if not b or not a or a <= 0 or b <= 0: return None
+        mid = (a + b) / 2; sp = (a - b) / mid
+        if sp > .08 or sp < 0: return None                                                    # crossed / absurd quote = not usable
+        return f"Quote (Yahoo, may be delayed): bid {b:.2f} / ask {a:.2f}, spread {sp:.1%}" + (' - WIDER than the 40 bp round trip the backtest assumed, expect worse fills.' if sp > .004 else '.')
+    return _cached(f'quote|{tk}', 120, f) or ''
 def news_all(tk, n=4):
     """Helious (scored) + Massive (per-ticker sentiment) + Yahoo, de-duplicated, at most n lines"""
     name = ''
@@ -154,6 +166,9 @@ def block(tk, kind='BUY', extra=None, flags=None):
     if flags:
         n, F, lab, note = flags; L.append(f"Confidence: {lab} ({n}/5 flags: " + ', '.join(('✅ ' if v else '❌ ') + k for k, v in F.items()) + f"). {note}")
     mk = market_line()[0]; L.append(mk)
+    if kind == 'BUY':
+        q = quote_line(tk)
+        if q: L.append(q)
     if kind == 'BUY':
         e = earnings_info(tk)
         if e: L.append('Upcoming/last: ' + _fmt_earn(e))

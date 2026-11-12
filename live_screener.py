@@ -397,6 +397,11 @@ def allocate(trades):
 def scan(args):
     if args.update_gamma and theta_up(): update_gamma()
     RAT, rat_thru = options_ratio()
+    try:                                                                                      # Nov 12 2026: say it when the options-ratio data is stale (the IBKR pull needs TWS logged in at 16:20 ET)
+        age = int(np.busday_count(rat_thru.date(), now_et().date())); ok = age <= 4
+        print(f"  options ratio: data through {rat_thru:%Y-%m-%d} ({age} trading days old){'' if ok else '  <-- STALE: check TWS / tools/daily_ratio.sh / live/daily_ratio.log'}")
+        json.dump(dict(through=str(rat_thru.date()), age_trading_days=age, ok=ok, checked=str(now_et())), open(f'{LIVE}/ratio_status.json', 'w'))
+    except Exception as e: print(f'  ! ratio status: {str(e)[:60]}')
     last_ratio = RAT.attrs.get('now', RAT.ffill().iloc[-1])
     cut_now = CUT2 if now_et() >= CUT2_SWITCH else CUT
     elig_now = sorted(t for t in RAT.columns if t not in NO_ETF and ((last_ratio.get(t, 0) >= min(cut_now, CUT2) and in_sp(t, now_et())) or (t in OLD_UNIVERSE and last_ratio.get(t, 0) >= 1.5)))   # scan the >= 1.5 list now; entries are gated per bar
@@ -1073,7 +1078,7 @@ def post_long(text, channel=None):
     return (post(chunk, [], channel=channel) if chunk.strip() else True) and ok
 
 def post(text, files, channel=None):
-    ch, tok, hook = channel or os.getenv('VECTOR_CHANNEL_ID'), os.getenv('DISCORD_TOKEN'), os.getenv('DISCORD_WEBHOOK_URL')
+    ch, tok, hook = channel or os.getenv('LARGECAP_CHANNEL_ID') or os.getenv('VECTOR_CHANNEL_ID'), os.getenv('DISCORD_TOKEN'), os.getenv('DISCORD_WEBHOOK_URL')   # Nov 12 2026: the mega-cap screener posts to #large-cap (LARGECAP_CHANNEL_ID); the mid/small one has its own (MIDSMALL_CHANNEL_ID)
     if ch and tok: url, hdr = f'https://discord.com/api/v10/channels/{ch}/messages', {'Authorization': f'Bot {tok}'}
     elif hook: url, hdr = hook, {}
     else: print('  ! no Discord target: set VECTOR_CHANNEL_ID (bot) or DISCORD_WEBHOOK_URL in .env'); return False
