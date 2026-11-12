@@ -140,12 +140,17 @@ def ma_context(Yc):
     try:
         c = Yc.close; e50 = float(c.ewm(span=50, adjust=False).mean().iat[-1]); e200 = float(c.ewm(span=200, adjust=False).mean().iat[-1]); q = Yc.index.to_period('Q'); tp = (Yc.high + Yc.low + Yc.close) / 3
         qv = float(((tp * Yc.volume).groupby(q).cumsum() / (Yc.volume.groupby(q).cumsum() + 1e-9)).iat[-1]); px = float(c.iat[-1])
-        return dict(kal=kalman_up(Yc), px=px, e50=e50, e200=e200, qv=qv, a50=px > e50, a200=px > e200, avw=px > qv, x5020=e50 > e200)
+        def htf200(tf):                                                                                                     # EMA200 of the last COMPLETED 4h / daily bar built from the 1h bars
+            day = Yc.index.normalize(); G = Yc.groupby([day, (Yc.index.hour >= 13).astype(int)] if tf == '4h' else [day]); cl = G.close.last()
+            if Yc.index[-1].hour < 15 and tf == 'd' or (tf == '4h' and Yc.index[-1].hour not in (12, 15)): cl = cl.iloc[:-1]                  # drop the still-forming bar
+            return float(cl.ewm(span=200, adjust=False).mean().iat[-1]) if len(cl) >= 200 else None
+        h4, hd = htf200('4h'), htf200('d')
+        return dict(e4=h4, ed=hd, kal=kalman_up(Yc), px=px, e50=e50, e200=e200, qv=qv, a50=px > e50, a200=px > e200, avw=px > qv, x5020=e50 > e200)
     except Exception: return None
 def ma_text(m):
     if not m: return ''
     t = lambda ok: '\u2705' if ok else '\u274c'
-    return (f"MA context (1h): close {m['px']:.2f} | EMA50 {m['e50']:.2f} {t(m['a50'])} | EMA200 {m['e200']:.2f} {t(m['a200'])} | quarterly VWAP {m['qv']:.2f} {t(m['avw'])} | EMA50 {'above' if m['x5020'] else 'below'} EMA200 | Kalman-smoothed trend {'UP' if m['kal'] else 'DOWN' if m['kal'] is False else 'n/a'} {t(m['kal'])}. "
+    return (f"MA context (1h): close {m['px']:.2f} | EMA50 {m['e50']:.2f} {t(m['a50'])} | EMA200 {m['e200']:.2f} {t(m['a200'])} | quarterly VWAP {m['qv']:.2f} {t(m['avw'])} | EMA50 {'above' if m['x5020'] else 'below'} EMA200 | 4h EMA200 {m['e4']:.2f} {t(m['px'] > m['e4']) if m.get('e4') else 'n/a'} | daily EMA200 {m['ed']:.2f} {t(m['px'] > m['ed']) if m.get('ed') else 'n/a'} (flip above {sum(1 for ok in (m['a200'], bool(m.get('e4') and m['px'] > m['e4']), bool(m.get('ed') and m['px'] > m['ed'])) if ok)} of 3 EMA200s: backtest 0-1 of 3 ~ +1% avg, 3 of 3 ~ +9.9%) | Kalman-smoothed trend {'UP' if m['kal'] else 'DOWN' if m['kal'] is False else 'n/a'} {t(m['kal'])}. "
             + ("Backtest ($1-2, vol>=1.5x): above the 200 EMA +5.7% avg per trade, below it +1.2% (p=0.03); Kalman trend up +5.0%, down -0.4% (p=0.03); daily bull + Kalman up +10.7% avg, 39% win, 122 trades (in-sample)." if True else ''))
 # ---------------------------------------------------------------- state + Discord
 def load_state():

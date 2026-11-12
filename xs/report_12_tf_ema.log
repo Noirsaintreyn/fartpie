@@ -1,0 +1,37 @@
+== the stack (B = $1-2, flip vol >= 1.5x)
+  B                                   571 tr 202/yr | mean +3.96% med -3.8% win 32% p10 -10.1% | train +3.27% (328) test +4.88% (243) | book +67%/yr DD -28%
+  B + daily vector bull (D)           163 tr  61/yr | mean +8.04% med -3.2% win 36% p10 -10.1% | train +4.09% (75) test +11.41% (88) | book +60%/yr DD -13%
+  B + Kalman up (K)                   465 tr 165/yr | mean +4.96% med -3.7% win 32% p10 -10.1% | train +4.31% (271) test +5.86% (194) | book +87%/yr DD -24%
+  B + D + K  (A+)                     122 tr  47/yr | mean +10.69% med -2.8% win 39% p10 -10.1% | train +6.61% (57) test +14.26% (65) | book +66%/yr DD -11%
+  B + D + K + low-vol day              54 tr  22/yr | mean +11.45% med -2.1% win 41% p10 -10.0% | train +10.86% (26) test +11.99% (28) | book +32%/yr DD -10%
+== EMA alignment by timeframe, on B (above vs not above):
+ 1h EMA200: n with data 571
+     above                            329 tr 117/yr | mean +5.97% med -3.8% win 34% p10 -10.6% | train +5.04% (190) test +7.25% (139) | book +82%/yr DD -25%
+     not above                        242 tr  86/yr | mean +1.22% med -3.8% win 29% p10 -9.2% | train +0.85% (138) test +1.72% (104) | book +12%/yr DD -22%
+ 4h EMA50: n with data 571
+     above                            351 tr 125/yr | mean +5.61% med -3.8% win 33% p10 -10.7% | train +5.02% (198) test +6.38% (153) | book +77%/yr DD -25%
+     not above                        220 tr  78/yr | mean +1.33% med -3.8% win 30% p10 -8.7% | train +0.62% (130) test +2.34% (90) | book +12%/yr DD -19%
+ 4h EMA200: n with data 501
+     above                            152 tr  61/yr | mean +8.95% med -3.5% win 36% p10 -11.4% | train +6.66% (69) test +10.85% (83) | book +65%/yr DD -15%
+     not above                        349 tr 139/yr | mean +2.29% med -3.7% win 31% p10 -9.3% | train +2.63% (193) test +1.87% (156) | book +15%/yr DD -25%
+ daily EMA50: n with data 571
+     above                            215 tr  80/yr | mean +6.10% med -4.2% win 34% p10 -10.9% | train +3.11% (110) test +9.22% (105) | book +58%/yr DD -20%
+     not above                        356 tr 126/yr | mean +2.67% med -3.6% win 30% p10 -9.4% | train +3.36% (218) test +1.58% (138) | book +37%/yr DD -30%
+ daily EMA200: n with data 424
+     above                             85 tr  40/yr | mean +8.73% med -3.0% win 35% p10 -10.5% | train +5.66% (41) test +11.59% (44) | book +47%/yr DD -11%
+     not above                        339 tr 161/yr | mean +2.07% med -3.7% win 32% p10 -9.7% | train +1.02% (147) test +2.89% (192) | book +33%/yr DD -28%
+== count of EMA200s (1h,4h,D) the flip is above, on B (rows with all three)
+     0 of 3                           171 tr  85/yr | mean +0.75% med -3.5% win 30% p10 -9.4% | train -1.00% (72) test +2.03% (99) | book +7%/yr DD -18%
+     1 of 3                           128 tr  62/yr | mean +1.59% med -3.7% win 34% p10 -9.5% | train +1.68% (69) test +1.49% (59) | book +12%/yr DD -20%
+     2 of 3                            46 tr  22/yr | mean +7.28% med -3.8% win 33% p10 -11.3% | train +6.98% (11) test +7.37% (35) | book +19%/yr DD -10%
+     3 of 3                            79 tr  37/yr | mean +9.85% med -3.0% win 38% p10 -10.7% | train +7.25% (36) test +12.02% (43) | book +50%/yr DD -9%
+== on A+ (D + K): add EMA alignment
+  A+ base                             122 tr  47/yr | mean +10.69% med -2.8% win 39% p10 -10.1% | train +6.61% (57) test +14.26% (65) | book +66%/yr DD -11%
+    & above 1h EMA200                 103 tr  40/yr | mean +12.36% med -2.8% win 40% p10 -10.2% | train +7.96% (48) test +16.21% (55) | book +63%/yr DD -11%
+    & NOT above 1h EMA200              19 tr   8/yr | mean +1.60% med -3.0% win 32% p10 -7.7% | train -0.58% (9) test +3.56% (10) | book +1%/yr DD -7%
+    & above 4h EMA200                  84 tr  35/yr | mean +12.57% med -2.5% win 40% p10 -10.6% | train +7.02% (38) test +17.16% (46) | book +54%/yr DD -12%
+    & NOT above 4h EMA200              30 tr  13/yr | mean +9.37% med -2.2% win 40% p10 -7.9% | train +11.11% (12) test +8.21% (18) | book +16%/yr DD -6%
+    & above 4h EMA50                  104 tr  40/yr | mean +12.02% med -2.8% win 39% p10 -10.7% | train +8.23% (49) test +15.40% (55) | book +61%/yr DD -11%
+    & NOT above 4h EMA50               18 tr   7/yr | mean +3.00% med -2.2% win 33% p10 -7.1% | train -3.27% (8) test +8.01% (10) | book +3%/yr DD -4%
+    & above daily EMA50               101 tr  39/yr | mean +10.98% med -3.0% win 39% p10 -10.3% | train +5.38% (46) test +15.67% (55) | book +52%/yr DD -11%
+    & NOT above daily EMA50            21 tr   9/yr | mean +9.27% med -1.5% win 38% p10 -7.7% | train +11.76% (11) test +6.54% (10) | book +10%/yr DD -4%
