@@ -48,6 +48,57 @@ def news_lines(tk, days=5, n=3):
     r = _cached(f'news|{tk}', 1200, f)
     return r if r else []
 
+
+# ---------------------------------------------------------------- Helious (scored market feed + macro calendar) and Massive (per-ticker news with sentiment)
+def _helious(path, params, ttl=300):
+    key = os.getenv('HELIOUS_API_KEY', '')
+    def f():
+        r = requests.get('https://api.helious.io' + path, params=params, headers={'X-Api-Key': key} if key.startswith('hel_') else {}, timeout=15)
+        return r.json() if r.status_code == 200 else None
+    return _cached('hel|' + path + str(sorted(params.items())), ttl, f)
+def helious_news(tk, name='', n=2):
+    j = _helious('/v1/feed', dict(limit=100)) or {}; items = (j.get('data') or {}).get('items') or []; import re
+    pat = rf'\b{re.escape(tk)}\b' + (f'|\\b{re.escape(name)}' if name and len(name) >= 4 else ''); out = []
+    for it in items:
+        if not re.search(pat, f"{it.get('title', '')} {it.get('text', '')}", re.I): continue
+        try: when = pd.Timestamp(it['created_at']).tz_convert('America/New_York').strftime('%b %d %H:%M')
+        except Exception: when = ''
+        d = it.get('direction') or ''; sc = it.get('score'); tag = (f" [{d.lower()}" + (f" {sc:+g}" if sc else '') + ']') if d and d != 'NEUTRAL' else ''
+        out.append(f"Helious {when}: {it.get('title', '')[:90]}{tag}" + (f" - {it['helious_read'][:80]}" if it.get('helious_read') else ''))
+    return out[:n]
+def massive_news(tk, days=5, n=2):
+    key = os.getenv('MASSIVE_API_KEY', '')
+    if not key: return []
+    def f():
+        since = (pd.Timestamp.utcnow() - pd.Timedelta(days=days)).strftime('%Y-%m-%dT%H:%M:%SZ')
+        r = requests.get('https://api.massive.com/v2/reference/news', params={'ticker': tk.replace('-', '.'), 'published_utc.gte': since, 'order': 'desc', 'sort': 'published_utc', 'limit': 5, 'apiKey': key}, timeout=15)
+        if r.status_code != 200: return None
+        out = []
+        for it in r.json().get('results', []):
+            ins = next((i for i in it.get('insights') or [] if i.get('ticker') == tk), None); sent = (ins or {}).get('sentiment')
+            out.append(f"{(it.get('publisher') or {}).get('name', 'Massive')} {str(it.get('published_utc', ''))[5:10]}: {it.get('title', '')[:90]}" + (f" [{sent}]" if sent else ''))
+        return out
+    return (_cached(f'massive|{tk}', 1800, f) or [])[:n]
+def macro_line():
+    """US high-impact events today/tomorrow from Helious' calendar"""
+    j = _helious('/v1/calendar', dict(days_back=0, days_ahead=1, country='US', limit=40), ttl=3600) or {}; ev = (j.get('data') or {}).get('events') or []
+    hi = [e for e in ev if e.get('impact') == 'High' and e.get('type') != 'auction'][:4]
+    def nm(e): return str(e.get('title') or e.get('name') or e.get('event') or '')[:30]
+    return ('Macro (Helious, US high impact): ' + '; '.join(f"{nm(e)}" + (f" {str(e.get('date') or e.get('time') or '')[11:16]}" if (e.get('date') or e.get('time')) else '') for e in hi)) if hi else ''
+def news_all(tk, n=4):
+    """Helious (scored) + Massive (per-ticker sentiment) + Yahoo, de-duplicated, at most n lines"""
+    name = ''
+    try: name = _cached(f'name|{tk}', 86400, lambda: __import__('yfinance').Ticker(tk).get_info().get('shortName', '')) or ''
+    except Exception: pass
+    first = name.split(' ')[0].rstrip(',.') if name else ''; out = []; seen = set()
+    for src in (lambda: helious_news(tk, first), lambda: massive_news(tk), lambda: news_lines(tk)):
+        try:
+            for l in src():
+                k = l.split(':', 1)[-1].strip().lower()[:40]
+                if k not in seen: seen.add(k); out.append(l if l.startswith(('Helious', 'Yahoo')) or ':' in l[:22] else 'Yahoo ' + l)
+        except Exception: pass
+    return out[:n]
+
 # ---------------------------------------------------------------- earnings / upcoming
 def earnings_info(tk):
     def f():
@@ -107,6 +158,8 @@ def block(tk, kind='BUY', extra=None, flags=None):
         e = earnings_info(tk)
         if e: L.append('Upcoming/last: ' + _fmt_earn(e))
     if True:
-        nw = news_lines(tk)
-        L.append('Recent news (Yahoo headlines, unverified): ' + (' | '.join(nw) if nw else 'none found in Yahoo\'s recent feed for this name (feed is short-lived; absence is not proof of no news).'))
+        nw = news_all(tk)
+        L.append('Recent news (Helious / Massive / Yahoo, headlines unverified):\n' + '\n'.join('  - ' + x for x in nw) if nw else 'Recent news: none found in Helious, Massive or Yahoo (feeds are short-lived; absence is not proof of no news).')
+        mc = macro_line()
+        if mc: L.append(mc)
     out = '\n'.join(L); return out[:1700]
