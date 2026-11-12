@@ -160,6 +160,22 @@ def load_state():
     except Exception: return {'pos': {}, 'seen': []}
 def save_state(st): st['seen'] = st['seen'][-800:]; json.dump(st, open(STATE_F, 'w'), default=str)
 def post(text):
+    """Discord rejects messages over 2000 characters: send long texts as several messages, split on line breaks (keeps a ``` fence open across the split)"""
+    if len(text) > 1900:
+        parts, cur = [], ''
+        for ln in text.split('\n'):
+            if len(cur) + len(ln) + 1 > 1850 and cur: parts.append(cur); cur = ''
+            cur += ln + '\n'
+        parts.append(cur); fence = False; ok = True
+        for p in parts:
+            p = p.rstrip('\n'); n = p.count('```')
+            if fence: p = '```\n' + p
+            if (n % 2 == 1) != fence: p += '\n```'; fence = True
+            else: fence = False
+            ok = _post1(p) and ok
+        return ok
+    return _post1(text)
+def _post1(text):
     ch, tok, hook = os.getenv('MIDSMALL_CHANNEL_ID'), os.getenv('DISCORD_TOKEN'), os.getenv('MIDSMALL_WEBHOOK_URL')
     try:
         if ch and tok: r = requests.post(f'https://discord.com/api/v10/channels/{ch}/messages', headers={'Authorization': f'Bot {tok}'}, json={'content': text}, timeout=20)
