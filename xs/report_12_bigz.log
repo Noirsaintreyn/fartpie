@@ -1,0 +1,28 @@
+train upper-tercile cuts {'sp_d': np.float64(1.52), 'zd_200': np.float64(4.82), 'z4h_200': np.float64(4.17), 'sp_4h': np.float64(1.64)}
+
+=== hold up to 24 bars (or vector bear flip)
+  train  VB & rv>=1.5, no z filter: n4030 win 41% mean -0.19% ex-top1 -0.53%
+  test   VB & rv>=1.5, no z filter: n3817 win 40% mean -0.32% ex-top1 -0.66%
+  sp_d     train n1342 win 45% mean +0.15% ex-top1 -0.18% p(skip) 0.024 || test  n1416 win 41% mean -0.35% ex-top1 -0.70% p(skip) 0.566
+  zd_200   train n1366 win 44% mean -0.02% ex-top1 -0.40% p(skip) 0.162 || test  n1320 win 42% mean -0.45% ex-top1 -0.81% p(skip) 0.793
+  z4h_200  train n1400 win 43% mean -0.27% ex-top1 -0.63% p(skip) 0.686 || test  n1328 win 44% mean -0.13% ex-top1 -0.49% p(skip) 0.114
+  sp_4h    train n1347 win 43% mean -0.03% ex-top1 -0.37% p(skip) 0.175 || test  n1313 win 41% mean -0.24% ex-top1 -0.62% p(skip) 0.315
+  any2     train n1489 win 44% mean -0.07% ex-top1 -0.44% p(skip) 0.243 || test  n1451 win 41% mean -0.35% ex-top1 -0.73% p(skip) 0.588
+
+=== hold up to 48 bars (or vector bear flip)
+  train  VB & rv>=1.5, no z filter: n2772 win 35% mean -0.20% ex-top1 -0.61%
+  test   VB & rv>=1.5, no z filter: n2602 win 34% mean -0.41% ex-top1 -0.81%
+  sp_d     train n902  win 39% mean +0.29% ex-top1 -0.14% p(skip) 0.023 || test  n960  win 35% mean -0.48% ex-top1 -0.90% p(skip) 0.626
+  zd_200   train n916  win 41% mean +0.05% ex-top1 -0.34% p(skip) 0.136 || test  n888  win 35% mean -0.71% ex-top1 -1.17% p(skip) 0.907
+  z4h_200  train n952  win 41% mean -0.33% ex-top1 -0.73% p(skip) 0.705 || test  n886  win 38% mean -0.39% ex-top1 -0.88% p(skip) 0.471
+  sp_4h    train n912  win 38% mean +0.06% ex-top1 -0.37% p(skip) 0.129 || test  n884  win 35% mean -0.32% ex-top1 -0.79% p(skip) 0.335
+  any2     train n1003 win 40% mean -0.05% ex-top1 -0.46% p(skip) 0.241 || test  n976  win 35% mean -0.56% ex-top1 -1.03% p(skip) 0.742
+
+=== hold up to 120 bars (or vector bear flip)
+  train  VB & rv>=1.5, no z filter: n2024 win 27% mean -0.08% ex-top1 -0.80%
+  test   VB & rv>=1.5, no z filter: n1891 win 26% mean -0.75% ex-top1 -1.32%
+  sp_d     train n633  win 30% mean +1.01% ex-top1 +0.12% p(skip) 0.005 || test  n699  win 25% mean -0.91% ex-top1 -1.48% p(skip) 0.697
+  zd_200   train n638  win 31% mean +0.56% ex-top1 -0.36% p(skip) 0.054 || test  n625  win 28% mean -1.12% ex-top1 -1.83% p(skip) 0.867
+  z4h_200  train n666  win 31% mean +0.09% ex-top1 -0.87% p(skip) 0.319 || test  n621  win 28% mean -0.88% ex-top1 -1.52% p(skip) 0.658
+  sp_4h    train n656  win 27% mean +0.58% ex-top1 -0.30% p(skip) 0.040 || test  n636  win 25% mean -0.66% ex-top1 -1.45% p(skip) 0.418
+  any2     train n705  win 30% mean +0.39% ex-top1 -0.53% p(skip) 0.099 || test  n686  win 27% mean -1.03% ex-top1 -1.65% p(skip) 0.816

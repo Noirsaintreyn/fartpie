@@ -1,0 +1,41 @@
+flips 9138 {'1-5': 5443, 'BIG': 3695}
+
+================ 1-5 train 2768 test 2670 | HOLD12 rate train 66% test 66% | MOVE(+3ATR/24b) train 42% test 40%
+-- single-feature test AUC (>0.5 => higher value = more of the label); train/test, sign must agree
+  hold: dn_atr 0.48/0.49, dn_pct 0.49/0.50, dn_bars 0.49/0.50, bounce 0.54/0.54, up_prev 0.48/0.49, nflip60 0.52/0.49, dist_tr 0.51/0.52, ema5020 0.50/0.49, a200 0.51/0.53, a4 0.50/0.52, bD 0.49/0.51, b4 0.49/0.49, kal 0.51/0.50, rv 0.58/0.55, ext 0.70/0.71, atrp 0.51/0.53, lpx 0.50/0.48
+  move: dn_atr 0.52/0.53, dn_pct 0.51/0.54, dn_bars 0.52/0.53, bounce 0.50/0.47, up_prev 0.50/0.52, nflip60 0.49/0.47, dist_tr 0.52/0.51, ema5020 0.49/0.49, a200 0.50/0.51, a4 0.49/0.50, bD 0.50/0.50, b4 0.50/0.50, kal 0.53/0.51, rv 0.52/0.51, ext 0.51/0.50, atrp 0.49/0.51, lpx 0.50/0.48
+-- label hold: test AUC logit 0.697  lgbm 0.700  (train lgbm 0.733)
+   calibration (test, lgbm quintiles low->high): Q0 hold rate 47% ret mean +1.3% win 20% n534 | Q1 hold rate 55% ret mean +0.3% win 21% n534 | Q2 hold rate 65% ret mean +1.1% win 26% n533 | Q3 hold rate 75% ret mean +1.5% win 30% n534 | Q4 hold rate 90% ret mean +1.0% win 34% n534
+   top features: ext 73%, rv 4%, lpx 4%, up_prev 4%, bounce 3%, dn_pct 3%
+-- label move: test AUC logit 0.519  lgbm 0.512  (train lgbm 0.663)
+   calibration (test, lgbm quintiles low->high): Q0 move rate 38% ret mean +1.9% win 29% n534 | Q1 move rate 39% ret mean +1.3% win 26% n534 | Q2 move rate 42% ret mean +0.9% win 27% n534 | Q3 move rate 42% ret mean +0.5% win 26% n534 | Q4 move rate 40% ret mean +0.6% win 23% n534
+   top features: lpx 18%, rv 17%, atrp 13%, ext 10%, up_prev 7%, dn_pct 6%
+  prior-leg size terciles (dn_atr) train: small n923  win 24% mean  +1.7% med  -3.3% ex-top1  -0.4% hold 67% | mid n922  win 26% mean  +1.0% med  -3.2% ex-top1  -0.4% hold 66% | LARGE n923  win 28% mean  +2.7% med  -3.1% ex-top1  +0.5% hold 63%
+  prior-leg size terciles (dn_atr) test : small n918  win 24% mean  +0.7% med  -3.0% ex-top1  -0.6% hold 67% | mid n921  win 27% mean  +1.2% med  -3.0% ex-top1  -0.0% hold 67% | LARGE n831  win 27% mean  +1.2% med  -3.0% ex-top1  -0.1% hold 65%
+  trend-aligned (EMA50>200, >EMA200, daily bull) train: yes n487  win 24% mean  +0.7% med  -3.4% ex-top1  -0.6% hold 64% | no n2281 win 26% mean  +2.0% med  -3.1% ex-top1  +0.1% hold 66%
+  trend-aligned (EMA50>200, >EMA200, daily bull) test : yes n623  win 25% mean  +1.9% med  -3.1% ex-top1  +0.2% hold 66% | no n2047 win 26% mean  +0.8% med  -3.0% ex-top1  -0.3% hold 67%
+  RETEST entry (limit vector+0.3ATR, 12 bars):
+   train fill rate 50% (1380/2768) | retest n1380 win 18% mean  +0.9% med  -2.0% ex-top1  -0.6% | V0 same flips n1380 win 14% mean  -1.2% med  -3.6% ex-top1  -2.7% | V0 all n2768 win 26% mean  +1.8% med  -3.2% ex-top1  -0.1%
+       R multiple: median -2.89 mean 2.02, share R>=2: 17%, share stopped (R<=-0.9) 80% | trend-aligned retest n248  win 15% mean  +0.0% med  -2.2% ex-top1  -1.4%
+   test  fill rate 50% (1327/2670) | retest n1327 win 17% mean  +0.6% med  -1.9% ex-top1  -0.3% | V0 same flips n1327 win 14% mean  -1.4% med  -3.3% ex-top1  -2.3% | V0 all n2670 win 26% mean  +1.0% med  -3.0% ex-top1  -0.2%
+       R multiple: median -2.94 mean 1.43, share R>=2: 16%, share stopped (R<=-0.9) 81% | trend-aligned retest n319  win 17% mean  +1.3% med  -2.1% ex-top1  -0.1%
+
+================ BIG train 1864 test 1828 | HOLD12 rate train 66% test 66% | MOVE(+3ATR/24b) train 42% test 40%
+-- single-feature test AUC (>0.5 => higher value = more of the label); train/test, sign must agree
+  hold: dn_atr 0.48/0.51, dn_pct 0.50/0.52, dn_bars 0.49/0.51, bounce 0.54/0.53, up_prev 0.50/0.49, nflip60 0.50/0.49, dist_tr 0.52/0.54, ema5020 0.50/0.49, a200 0.52/0.52, a4 0.52/0.50, bD 0.50/0.49, b4 0.51/0.50, kal 0.50/0.50, rv 0.56/0.53, ext 0.70/0.71, atrp 0.52/0.52, lpx 0.50/0.48
+  move: dn_atr 0.51/0.49, dn_pct 0.49/0.46, dn_bars 0.51/0.49, bounce 0.51/0.48, up_prev 0.52/0.50, nflip60 0.50/0.50, dist_tr 0.52/0.48, ema5020 0.49/0.50, a200 0.51/0.49, a4 0.52/0.48, bD 0.49/0.49, b4 0.50/0.50, kal 0.51/0.48, rv 0.51/0.50, ext 0.51/0.49, atrp 0.46/0.45, lpx 0.48/0.48
+-- label hold: test AUC logit 0.708  lgbm 0.700  (train lgbm 0.745)
+   calibration (test, lgbm quintiles low->high): Q0 hold rate 46% ret mean -0.8% win 19% n366 | Q1 hold rate 59% ret mean -0.6% win 20% n365 | Q2 hold rate 61% ret mean -0.4% win 22% n365 | Q3 hold rate 73% ret mean -1.6% win 21% n365 | Q4 hold rate 92% ret mean -1.1% win 30% n366
+   top features: ext 66%, atrp 8%, up_prev 5%, dn_bars 4%, bounce 4%, rv 3%
+-- label move: test AUC logit 0.538  lgbm 0.522  (train lgbm 0.683)
+   calibration (test, lgbm quintiles low->high): Q0 move rate 39% ret mean -1.6% win 23% n366 | Q1 move rate 37% ret mean -1.0% win 23% n365 | Q2 move rate 39% ret mean -1.2% win 22% n366 | Q3 move rate 42% ret mean -1.1% win 23% n365 | Q4 move rate 43% ret mean +0.4% win 23% n366
+   top features: atrp 19%, lpx 18%, up_prev 12%, dist_tr 11%, bounce 10%, dn_pct 7%
+  prior-leg size terciles (dn_atr) train: small n622  win 25% mean  +0.1% med  -2.5% ex-top1  -0.9% hold 68% | mid n621  win 24% mean  +0.5% med  -2.6% ex-top1  -0.5% hold 65% | LARGE n621  win 24% mean  -0.3% med  -2.3% ex-top1  -1.2% hold 64%
+  prior-leg size terciles (dn_atr) test : small n642  win 22% mean  -1.4% med  -3.2% ex-top1  -2.1% hold 65% | mid n563  win 23% mean  -0.6% med  -2.9% ex-top1  -1.5% hold 67% | LARGE n623  win 24% mean  -0.6% med  -3.0% ex-top1  -1.5% hold 68%
+  trend-aligned (EMA50>200, >EMA200, daily bull) train: yes n459  win 24% mean  +0.6% med  -2.3% ex-top1  -0.3% hold 63% | no n1405 win 24% mean  -0.1% med  -2.5% ex-top1  -1.0% hold 67%
+  trend-aligned (EMA50>200, >EMA200, daily bull) test : yes n517  win 21% mean  -1.2% med  -3.3% ex-top1  -2.2% hold 65% | no n1311 win 23% mean  -0.8% med  -2.9% ex-top1  -1.5% hold 67%
+  RETEST entry (limit vector+0.3ATR, 12 bars):
+   train fill rate 49% (906/1864) | retest n906  win 17% mean  +0.5% med  -1.5% ex-top1  -0.4% | V0 same flips n906  win 14% mean  -1.2% med  -2.7% ex-top1  -2.1% | V0 all n1864 win 24% mean  +0.1% med  -2.5% ex-top1  -0.8%
+       R multiple: median -3.00 mean 0.90, share R>=2: 15%, share stopped (R<=-0.9) 81% | trend-aligned retest n225  win 15% mean  +0.5% med  -1.5% ex-top1  -0.4%
+   test  fill rate 49% (887/1828) | retest n887  win 16% mean  -0.5% med  -1.7% ex-top1  -1.0% | V0 same flips n887  win 13% mean  -2.3% med  -3.2% ex-top1  -2.8% | V0 all n1828 win 23% mean  -0.9% med  -3.0% ex-top1  -1.7%
+       R multiple: median -3.10 mean -0.80, share R>=2: 15%, share stopped (R<=-0.9) 82% | trend-aligned retest n245  win 14% mean  -1.0% med  -1.8% ex-top1  -1.6%
