@@ -1,0 +1,65 @@
+train 3195 test 2793
+
+UNIVARIATE (Spearman IC vs net return per trade)
+           feat  IC_train  p_train  IC_test  p_test  n_tr  n_te  bh_ok  same_sign_test
+        atr_pct    -0.247    0.000   -0.221   0.000  3012  2790   True            True
+       body_atr    -0.131    0.000   -0.117   0.000  3012  2790   True            True
+        rng_atr    -0.118    0.000   -0.116   0.000  3012  2790   True            True
+        dist60h     0.104    0.000    0.096   0.000  3012  2790   True            True
+             vr    -0.093    0.000   -0.087   0.000  3195  2793   True            True
+          logpx     0.091    0.000    0.019   0.322  3012  2790   True            True
+            dil    -0.075    0.000   -0.067   0.000  3150  2730   True            True
+           ret5     0.065    0.000    0.030   0.109  3012  2790   True            True
+           gap2    -0.061    0.001   -0.068   0.000  3012  2790   True            True
+            vwx    -0.059    0.001   -0.022   0.241  3195  2793   True            True
+      prev_lost     0.054    0.004    0.020   0.305  2813  2745   True            True
+        ema20_d    -0.048    0.009   -0.026   0.163  3012  2790   True            True
+             lv     0.043    0.015    0.021   0.270  3195  2793   True            True
+bars_since_flip    -0.024    0.196   -0.018   0.349  3002  2790  False            True
+           hour     0.023    0.211    0.030   0.111  3012  2790  False            True
+            vix     0.019    0.290   -0.002   0.936  3012  2790  False           False
+       flips20d     0.017    0.358    0.022   0.256  3012  2790  False            True
+             m1    -0.016    0.379    0.058   0.002  3195  2793  False           False
+days_since_prev     0.013    0.481   -0.000   0.990  2813  2745  False           False
+          iwm20     0.011    0.549    0.021   0.269  3012  2790  False            True
+            dse     0.010    0.596   -0.024   0.204  3110  2744  False           False
+          rel20    -0.007    0.691    0.029   0.131  3012  2790  False           False
+           surp     0.006    0.749   -0.007   0.727  3044  2689  False           False
+           dvol    -0.005    0.789   -0.045   0.018  3012  2790  False            True
+            dte     0.002    0.903    0.050   0.008  3165  2769  False            True
+          ret20    -0.002    0.926    0.028   0.143  3012  2790  False           False
+
+MODEL (trained on train only): TEST rank IC -0.066 (p 0.000508), n 2793
+              count   mean  median    win  P(>10%)
+q                                                 
+bottom third    931  0.010  -0.030  0.261    0.125
+middle          931  0.010  -0.028  0.260    0.127
+top third       931  0.017  -0.034  0.302    0.149
+
+within B (vol>=1.5x) only:
+              count   mean  median  <lambda_0>
+q                                             
+bottom third    423  0.015  -0.029       0.291
+middle          422  0.016  -0.032       0.280
+top third       423  0.013  -0.042       0.296
+
+permutation importance on TEST (drop in rank IC when shuffled):
+    feat    dIC
+ atr_pct 0.0135
+     vix 0.0081
+    dvol 0.0062
+     vwx 0.0032
+ dist60h 0.0032
+      m1 0.0013
+    hour 0.0010
+      lv 0.0007
+   rel20 0.0004
+flips20d 0.0001
+
+TEST-period 8-slot book (Jul25-Nov26), model chosen on train only:
+   all sub-$5 flips         n  2793  return     +88% (ann   +59%)  maxDD   -25%  mean/trade +1.33%
+   B: vol>=1.5x             n  1268  return     +78% (ann   +53%)  maxDD   -23%  mean/trade +1.59%
+   model top half           n  1397  return     +40% (ann   +28%)  maxDD   -33%  mean/trade +1.33%
+   model top third          n   931  return     +53% (ann   +37%)  maxDD   -33%  mean/trade +1.78%
+   B & model top half       n   634  return     +23% (ann   +17%)  maxDD   -36%  mean/trade +1.57%
+   B & E+V (hand rule)      n   821  return     +98% (ann   +65%)  maxDD   -22%  mean/trade +1.97%

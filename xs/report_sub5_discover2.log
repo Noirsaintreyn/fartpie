@@ -1,0 +1,69 @@
+train 3195 test 2793
+
+atr_pct  (train tercile cuts [0.016 0.023])
+           period      n    mean  median   win  P>10%  P<-8%
+   low     train    1004  +0.36%  -2.30%   24%   8.7%   2.7%
+   mid     train    1004  +1.89%  -3.56%   26%  14.9%   6.8%
+   high    train    1004  +3.00%  -4.79%   28%  16.9%  21.5%
+   low     test     1036  +0.03%  -2.36%   24%   8.1%   1.4%
+   mid     test      945  +1.17%  -3.42%   28%  14.0%   8.1%
+   high    test      809  +2.83%  -4.50%   32%  19.4%  21.6%
+
+body_atr  (train tercile cuts [0.699 1.343])
+           period      n    mean  median   win  P>10%  P<-8%
+   low     train    1004  +1.23%  -2.63%   23%  11.0%   5.3%
+   mid     train    1004  +0.67%  -3.38%   25%  12.5%   7.6%
+   high    train    1004  +3.34%  -4.02%   31%  17.0%  18.1%
+   low     test      857  +0.64%  -2.60%   22%  11.4%   4.4%
+   mid     test      929  +1.89%  -3.07%   27%  13.1%   6.4%
+   high    test     1004  +1.12%  -3.81%   32%  15.2%  16.9%
+
+dist60h  (train tercile cuts [-0.286 -0.151])
+           period      n    mean  median   win  P>10%  P<-8%
+   low     train    1004  +1.52%  -3.96%   26%  15.4%  14.5%
+   mid     train    1004  +2.61%  -2.96%   27%  14.4%   8.0%
+   high    train    1004  +1.12%  -2.69%   26%  10.7%   8.5%
+   low     test      819  +1.64%  -3.37%   28%  15.5%  12.6%
+   mid     test      958  +0.77%  -3.21%   26%  12.7%   9.5%
+   high    test     1013  +1.33%  -2.47%   28%  12.2%   7.2%
+
+vr  (train tercile cuts [1.032 1.997])
+           period      n    mean  median   win  P>10%  P<-8%
+   low     train    1065  +0.22%  -2.87%   21%  10.1%   4.0%
+   mid     train    1065  +1.08%  -3.30%   26%  12.7%   8.4%
+   high    train    1065  +3.27%  -3.73%   29%  16.0%  17.7%
+   low     test      914  +1.38%  -2.63%   26%  11.8%   5.3%
+   mid     test     1030  +0.97%  -3.03%   28%  12.5%   8.1%
+   high    test      849  +1.37%  -3.52%   29%  16.0%  16.0%
+
+dil  (train tercile cuts [0.01  0.075])
+           period      n    mean  median   win  P>10%  P<-8%
+   low     train    1050  +0.79%  -2.84%   26%  12.1%   7.3%
+   mid     train    1051  +1.59%  -3.31%   26%  13.0%  10.5%
+   high    train    1049  +2.27%  -3.54%   24%  13.7%  11.7%
+   low     test     1188  +0.24%  -2.78%   25%  10.6%   7.9%
+   mid     test      757  +2.04%  -2.84%   30%  14.5%   8.6%
+   high    test      785  +1.83%  -3.40%   28%  16.2%  12.0%
+
+gap2  (train tercile cuts [0.006 0.018])
+           period      n    mean  median   win  P>10%  P<-8%
+   low     train    1004  +0.62%  -2.85%   26%  12.1%   7.5%
+   mid     train    1004  +2.09%  -3.23%   25%  13.7%   8.1%
+   high    train    1004  +2.53%  -3.53%   28%  14.7%  15.4%
+   low     test     1065  +1.07%  -2.78%   29%  12.1%   7.8%
+   mid     test      967  +1.19%  -2.86%   27%  12.8%   6.5%
+   high    test      758  +1.49%  -3.63%   26%  15.8%  16.0%
+
+8-slot books, cut points FROZEN from TRAIN (Dec23-Jun25). ann = annualised over the period; TEST = Jul25-Nov26
+rule                                               TRAIN n    ret   DD | TEST n    ret   ann   DD  mean/tr  win
+all flips                                             3195  +302%  -42 |   2793   +88%   +59  -25   +1.33%   27
+B vol>=1.5x                                           1487  +662%  -39 |   1268   +78%   +53  -23   +1.59%   29
+B & E+V (hand rule)                                    940  +532%  -20 |    821   +98%   +65  -22   +1.97%   28
+atr_pct in low-or-mid third                           2008   +36%  -28 |   1981   +62%   +43  -15   +0.59%   26
+atr_pct in low third                                  1004   -16%  -27 |   1036    -9%    -7  -25   +0.06%   24
+dist60h not in low third                              2008   +51%  -31 |   1971   +72%   +49  -32   +1.12%   27
+body_atr not in high third                            2008  +161%  -27 |   1786   +93%   +62  -20   +1.42%   25
+E+V & atr_pct<=mid                                     588  +117%  -14 |    541   +39%   +28  -23   +1.16%   26
+E+V & atr_pct<=low                                     273   +29%  -16 |    266   +55%   +38  -10   +1.45%   27
+E+V & atr<=mid & dist60h>low                           457  +101%  -17 |    423   +42%   +29  -18   +1.09%   25
+all flips & atr<=mid & dist60h>low & body<=mid        1059   +29%  -18 |    986   +46%   +32  -19   +0.44%   22

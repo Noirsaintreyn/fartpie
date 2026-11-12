@@ -1,0 +1,8 @@
+train 3195 test 2793
+set                   sizing    | TRAIN ann   DD  ratio | TEST ann   DD  ratio
+all flips             equal     |     +151%  -42    3.6 |     +59%  -25    2.3
+all flips             inv       |      +65%  -32    2.0 |     +38%  -25    1.5
+B vol>=1.5x           equal     |     +283%  -39    7.2 |     +53%  -23    2.3
+B vol>=1.5x           inv       |     +152%  -27    5.7 |     +37%  -22    1.7
+B & E+V               equal     |     +239%  -20   11.8 |     +65%  -22    2.9
+B & E+V               inv       |     +160%  -15   10.6 |     +58%  -20    2.9
