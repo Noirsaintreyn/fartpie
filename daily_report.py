@@ -880,10 +880,7 @@ def build(LS, rows, meta, outdir, fetch=True):
             y = _wrap(bg, 0.66, y, f"From the low so far: expected high ~{rl['hi_typ']:.2f} (wide {rl['hi_wide']:.2f})", 44, size=9, color=GOOD)
             y = _wrap(bg, 0.66, y, f"From the high so far: expected low ~{rl['lo_typ']:.2f} (wide {rl['lo_wide']:.2f})", 44, size=9, color=CRIT)
             y = _wrap(bg, 0.66, y, "(the range stays the same size: a lower low moves the expected high down by the same amount)", 50, size=7.5, color=MUT)
-        if x.get('live') and (x.get('low') or x.get('high')):
-            for side in ('low', 'high'):
-                e_ = x.get(side)
-                if e_: y = _wrap(bg, 0.66, y, f"Today's {side} looks in ({e_['p']:.0%} it holds): other side ~{e_['tgt'][0]:.2f} typical, 80% band {e_['tgt'][1]:.2f}", 44, size=9, color=GOOD)
+        # Nov 11 2026: 'today's low/high looks in' line removed (Rey)
         yb = 0.515
         for head, body in (('WHY WE HOLD', p['why']), ('WHAT WE WANT TO SEE', p['want']), ('WHY IT WOULD FAIL', p['fail'])):
             bg.text(0.06, yb, head, fontsize=9.5, color=GOLD, fontweight='bold', va='top'); yb = _wrap(bg, 0.06, yb - 0.026, body, 100, size=8.6, color=T1, lh=1.32) - 0.010

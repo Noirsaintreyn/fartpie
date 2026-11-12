@@ -1317,8 +1317,7 @@ def day_extremes(rows, st):
             if post(msg, files, channel=os.getenv('EXTREME_CHANNEL_ID')): st['signals'].append(key); _save(st)
 
 def post_new_signals(rows, meta, st):
-    try: day_extremes(rows, st)
-    except Exception as ex: print(f'  ! day extremes: {str(ex)[:80]}')
+    # Nov 11 2026: HIGH/LOW LIKELY IN alerts removed from Discord (Rey); day_extremes() kept for reference but not called
     held = st.setdefault('held', {}); today = now_et().strftime('%Y-%m-%d')
     bk = f'breaker|{today}'
     if meta.get('breaker') and bk not in st['signals']:
@@ -1539,7 +1538,7 @@ def brief_text(rows, meta, fetch=True):
             x = extreme_info(r['H']) or {}
             room = r['last'] / r['stop'] - 1
             out.append(f"  {r['ticker']}: {r['pnl']:+.1%} · stop {r['stop']:.2f} " + (f"(BELOW the stop: sells at the 09:30 open)" if room < 0 or r['action'] == 'SELL' else f"({room:.1%} room)") + f" · vol {vol_word(x.get('pct', .5))}"
-                       + (' · low in' if x.get('low') else '') + (' · high in' if x.get('high') else ''))
+                       )
     bull = [r for r in U if r['state15'] == 1]; bull1 = [r for r in U if r['state1h'] == 1]
     out.append(f"**Universe** ({len(U)} names): {len(bull)} bull on 15m, {len(bull1)} on 1h")
     near = sorted([r for r in U if r['state15'] == -1 and r['trig'] == r['trig'] and r['last'] / r['trig'] - 1 > -.006], key=lambda r: r['last'] / r['trig'], reverse=True)
