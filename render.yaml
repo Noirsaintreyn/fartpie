@@ -43,7 +43,9 @@ services:
         fromService: {type: web, name: fartpie, envVarKey: SITE_TOKEN}
       - {key: DISCORD_TOKEN, sync: false}
       - {key: DISCORD_GUILD_ID, sync: false}
-      - {key: VECTOR_CHANNEL_ID, sync: false}
+      - {key: VECTOR_CHANNEL_ID, value: "1570332365186793522"}      # #large-cap (the old channel was deleted)
+      - {key: LARGECAP_CHANNEL_ID, value: "1570332365186793522"}
+      - {key: MIDSMALL_CHANNEL_ID, value: "1570332394714562681"}      # #mid-small-cap: the $1-2 screener (midsmall_screener.py) runs inside this worker
       - {key: HM_CHANNEL_ID, sync: false}
       - {key: HELIOUS_API_KEY, sync: false}    # helious.io news for /brief (free account key)
       - {key: MASSIVE_API_KEY, sync: false}    # Massive (Polygon) stock news + sentiment for the morning report      # optional: honorable-mention alerts go here (else the main channel)

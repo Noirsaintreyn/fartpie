@@ -28,7 +28,7 @@ def log(*a): print(dt.datetime.now(ET).strftime('%Y-%m-%d %H:%M:%S ET'), *a, flu
 
 
 def notify(text):
-    tok, ch = os.environ.get('DISCORD_TOKEN'), os.environ.get('VECTOR_CHANNEL_ID')
+    tok, ch = os.environ.get('DISCORD_TOKEN'), os.environ.get('LARGECAP_CHANNEL_ID') or '1570332365186793522'      # #large-cap (the old VECTOR_CHANNEL_ID channel was deleted)
     if not (tok and ch): return log('(not posted, no Discord config)', text)
     try: requests.post(f'https://discord.com/api/v10/channels/{ch}/messages', headers={'Authorization': f'Bot {tok}'}, json={'content': text}, timeout=30)
     except Exception as e: log('discord notify failed:', e)
@@ -125,8 +125,28 @@ def run_site_push():
     threading.Thread(target=loop, daemon=True).start()
 
 
+def run_midsmall():
+    """Nov 12 2026: the mid/small-cap ($1-2) screener runs in this same worker (no second paid service): started 09:25 ET on weekdays, it posts to #mid-small-cap and exits itself at the close; restarted if it crashes inside the session."""
+    import threading
+    args = os.environ.get('MIDSMALL_ARGS', '--loop').split()
+    def loop():
+        while True:
+            now = dt.datetime.now(ET); mins = now.hour * 60 + now.minute
+            if os.environ.get('MIDSMALL_OFF') == '1' or now.weekday() >= 5 or not (9 * 60 + 25 <= mins < 16 * 60 + 5) and not os.environ.get('FORCE_START'):
+                nxt = (now + dt.timedelta(days=1)).replace(hour=9, minute=25, second=0, microsecond=0) if (now.weekday() >= 5 or mins >= 16 * 60 + 5) else now.replace(hour=9, minute=25, second=0, microsecond=0)
+                while nxt.weekday() >= 5: nxt += dt.timedelta(days=1)
+                time.sleep(max(60, min(1800, (nxt - now).total_seconds()))); continue
+            log('starting midsmall_screener.py', *args); t0 = time.time(); rc, tail = run_tail([sys.executable, '-u', 'midsmall_screener.py'] + args)
+            log(f'midsmall screener exited ({rc}) after {time.time() - t0:.0f}s')
+            if rc != 0 and dt.datetime.now(ET).hour < 16: notify(f'⚠️ mid/small-cap screener stopped (exit {rc}); restarting in 60s:\n```{tail[-600:]}```')
+            if os.environ.get('SERVICE_ONCE'): return
+            time.sleep(60 if rc != 0 else 120)
+    threading.Thread(target=loop, daemon=True).start()
+
+
 def main():
     setup(); log('screener worker up; args', ARGS)
+    run_midsmall()
     if os.environ.get('RUN_BOT') == '1': run_bot()
     run_site_push()
     done, warned = None, None
