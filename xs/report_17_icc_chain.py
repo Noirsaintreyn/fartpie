@@ -18,12 +18,13 @@ def pivots(h,l,k):   # last confirmed 3-bar swing high/low strictly before bar k
         if not np.isnan(sh) and not np.isnan(sl): break
     return sh,sl
 def sim(h,l,c,o,f,ent,stop,dr,xend,Rm=2.0):
-    risk=abs(ent-stop); tgt=ent+dr*Rm*risk
+    risk=abs(ent-stop); tgt=ent+dr*Rm*risk; worst=0.0
     for q in range(f,xend+1):
-        if (l[q]<=stop) if dr>0 else (h[q]>=stop): return -risk-COST
-        if (h[q]>=tgt) if dr>0 else (l[q]<=tgt): return Rm*risk-COST
-    return (c[xend]-ent)*dr-COST
-R=[]
+        worst=min(worst,((l[q] if dr>0 else h[q])-ent)*dr)
+        if (l[q]<=stop) if dr>0 else (h[q]>=stop): SIMW[0]=worst-COST; return -risk-COST
+        if (h[q]>=tgt) if dr>0 else (l[q]<=tgt): SIMW[0]=worst-COST; return Rm*risk-COST
+    SIMW[0]=worst-COST; return (c[xend]-ent)*dr-COST
+R=[]; SIMW=[0.0]
 for i,D in enumerate(days):
     if i<21 or D<pd.Timestamp('2018-02-01') or D>pd.Timestamp('2026-01-30') or days[i-1] not in RT.index or D not in RT.index: continue
     p=by[days[i-1]]; p=p[p.m>=1080]; cD=by[D]; cD=cD[cD.m<960]
@@ -56,8 +57,8 @@ for i,D in enumerate(days):
                 if f is None: break
                 stop=ext-2*dr; risk=abs(ent-stop)
                 if not(6<=risk<=40): break
-                r=sim(h,l,c,o,f,ent,stop,dr,xend); rc=sim(h,l,c,o,f,ent,ent+dr*risk,-dr,xend)
-                tm=m[f]; R.append(dict(d=D,dr=dr,lvl=hit[0],pts=r,ctl=rc,risk=risk,bias=float(bias==dr),disc=float((ent<mid) if dr>0 else (ent>mid)),kz=float(570<=tm<=660),pdlv=float(hit[0] in('PDH','PDL')),tr5=float(tr5d==dr)))
+                r=sim(h,l,c,o,f,ent,stop,dr,xend); mae_=SIMW[0]; rc=sim(h,l,c,o,f,ent,ent+dr*risk,-dr,xend)
+                tm=m[f]; R.append(dict(d=D,dr=dr,m=int(m[f]),mae=mae_,lvl=hit[0],pts=r,ctl=rc,risk=risk,bias=float(bias==dr),disc=float((ent<mid) if dr>0 else (ent>mid)),kz=float(570<=tm<=660),pdlv=float(hit[0] in('PDH','PDL')),tr5=float(tr5d==dr)))
                 done=True; break
             if done: break
 T=pd.DataFrame(R); T['era']=np.where(T.d<pd.Timestamp('2022-01-01'),'A','B'); T['yr']=T.d.dt.year; T['n_al']=T.bias+T.disc+T.kz+T.tr5
