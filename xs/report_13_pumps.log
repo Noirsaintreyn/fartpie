@@ -1,0 +1,33 @@
+events 4553 tickers 524
+
+== TRAIN
+all events       n2409 f1 -0.06 f3 -0.14 f6 -0.61 day +0.01 next -0.14 | win6 39% med6 -0.74 ex-top1(6) -0.93 mae6  -3.5
+run20<10%        n1508 f1 -0.01 f3 -0.24 f6 -1.00 day -0.03 next -0.62 | win6 36% med6 -0.77 ex-top1(6) -1.21 mae6  -3.0
+run20 10-30%     n745  f1 -0.27 f3 -0.42 f6 -0.21 day -0.07 next +0.60 | win6 44% med6 -0.67 ex-top1(6) -0.54 mae6  -4.0
+run20>=30%       n156  f1 +0.42 f3 +2.12 f6 +1.26 day +0.79 next +0.93 | win6 46% med6 -0.46 ex-top1(6) +0.52 mae6  -6.4
+20d-high break   n914  f1 -0.08 f3 +0.37 f6 +0.44 day +0.20 next +0.81 | win6 45% med6 -0.33 ex-top1(6) +0.01 mae6  -3.3
+no break         n1495 f1 -0.05 f3 -0.45 f6 -1.25 day -0.10 next -0.73 | win6 35% med6 -1.03 ex-top1(6) -1.51 mae6  -3.7
+1st (no prior)   n2093 f1 -0.11 f3 -0.24 f6 -0.79 day -0.07 next -0.31 | win6 38% med6 -0.77 ex-top1(6) -1.04 mae6  -3.5
+2nd+ in 10 days  n316  f1 +0.23 f3 +0.51 f6 +0.60 day +0.52 next +0.99 | win6 44% med6 -0.44 ex-top1(6) -0.05 mae6  -3.8
+rv>=6            n854  f1 -0.04 f3 +0.21 f6 -0.15 day +0.19 next +0.45 | win6 43% med6 -0.62 ex-top1(6) -0.62 mae6  -4.2
+z>=5             n1035 f1 -0.20 f3 -0.06 f6 -0.21 day +0.03 next +0.40 | win6 41% med6 -0.62 ex-top1(6) -0.58 mae6  -3.5
+px<3             n350  f1 -0.30 f3 -0.46 f6 -0.70 day -0.16 next +0.54 | win6 36% med6 -1.41 ex-top1(6) -1.07 mae6  -4.9
+px 3-20          n2059 f1 -0.02 f3 -0.09 f6 -0.59 day +0.04 next -0.26 | win6 39% med6 -0.68 ex-top1(6) -0.91 mae6  -3.3
+EARLY(run20<10%,break,1st) n291  f1 -0.24 f3 -0.18 f6 -0.16 day -0.14 next +0.26 | win6 40% med6 -0.36 ex-top1(6) -0.30 mae6  -2.1
+LATE (run20>=30%)   n156  f1 +0.42 f3 +2.12 f6 +1.26 day +0.79 next +0.93 | win6 46% med6 -0.46 ex-top1(6) +0.52 mae6  -6.4
+
+== TEST
+all events       n2144 f1 -0.32 f3 -0.26 f6 -0.16 day -0.05 next -0.29 | win6 45% med6 -0.43 ex-top1(6) -0.40 mae6  -3.3
+run20<10%        n1255 f1 -0.39 f3 -0.36 f6 -0.31 day -0.14 next -0.30 | win6 44% med6 -0.40 ex-top1(6) -0.48 mae6  -2.7
+run20 10-30%     n757  f1 -0.28 f3 -0.23 f6 +0.04 day +0.07 next -0.25 | win6 45% med6 -0.52 ex-top1(6) -0.26 mae6  -3.8
+run20>=30%       n132  f1 +0.00 f3 +0.52 f6 +0.15 day +0.11 next -0.41 | win6 49% med6 -0.36 ex-top1(6) -0.27 mae6  -5.8
+20d-high break   n933  f1 -0.12 f3 -0.23 f6 -0.02 day +0.04 next -0.40 | win6 46% med6 -0.52 ex-top1(6) -0.26 mae6  -3.4
+no break         n1211 f1 -0.48 f3 -0.29 f6 -0.27 day -0.12 next -0.21 | win6 45% med6 -0.41 ex-top1(6) -0.50 mae6  -3.2
+1st (no prior)   n1838 f1 -0.35 f3 -0.25 f6 -0.13 day -0.01 next -0.21 | win6 45% med6 -0.41 ex-top1(6) -0.37 mae6  -3.3
+2nd+ in 10 days  n306  f1 -0.17 f3 -0.30 f6 -0.36 day -0.29 next -0.76 | win6 43% med6 -0.53 ex-top1(6) -0.60 mae6  -3.5
+rv>=6            n745  f1 -0.31 f3 -0.31 f6 -0.25 day -0.08 next -0.46 | win6 45% med6 -0.62 ex-top1(6) -0.56 mae6  -4.3
+z>=5             n959  f1 -0.32 f3 -0.32 f6 -0.21 day -0.09 next -0.31 | win6 45% med6 -0.56 ex-top1(6) -0.47 mae6  -3.5
+px<3             n340  f1 -0.49 f3 -0.49 f6 -0.34 day -0.19 next -0.27 | win6 46% med6 -0.48 ex-top1(6) -0.63 mae6  -4.3
+px 3-20          n1804 f1 -0.29 f3 -0.22 f6 -0.13 day -0.02 next -0.30 | win6 45% med6 -0.43 ex-top1(6) -0.36 mae6  -3.1
+EARLY(run20<10%,break,1st) n253  f1 -0.19 f3 -0.31 f6 -0.01 day -0.04 next -0.18 | win6 45% med6 -0.40 ex-top1(6) -0.21 mae6  -2.1
+LATE (run20>=30%)   n132  f1 +0.00 f3 +0.52 f6 +0.15 day +0.11 next -0.41 | win6 49% med6 -0.36 ex-top1(6) -0.27 mae6  -5.8
