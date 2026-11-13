@@ -1,0 +1,34 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+main-algo trading days 2499 of 1992
+
+FUNDED PHASE ONLY (eval phase = current best for everyone, same passes), 50K Lucid caps, F0 policy; leg trades only in the funded account
+BASE current best                          18-21: funded n=463 lost 86% paid-once 90% payouts/funded 1.94 $/funded 2,304 days->1st 18 | 22-25: funded n=344 lost 68% paid-once 64% payouts/funded 2.25 $/funded 3,519 days->1st 12
+AMT VA-B 0.25ct all days                   18-21: funded n=463 lost 87% paid-once 88% payouts/funded 1.96 $/funded 2,230 days->1st 15 | 22-25: funded n=344 lost 74% paid-once 68% payouts/funded 2.16 $/funded 3,393 days->1st 11
+AMT VA-B 0.5ct all days                    18-21: funded n=463 lost 86% paid-once 84% payouts/funded 2.13 $/funded 2,210 days->1st 14 | 22-25: funded n=344 lost 76% paid-once 67% payouts/funded 2.10 $/funded 3,282 days->1st 11
+AMT VA-B 0.5ct IDLE days only (n=1)        18-21: funded n=463 lost 86% paid-once 90% payouts/funded 1.94 $/funded 2,304 days->1st 18 | 22-25: funded n=344 lost 68% paid-once 64% payouts/funded 2.25 $/funded 3,519 days->1st 12
+AMT IB-B 0.25ct all days                   18-21: funded n=463 lost 82% paid-once 89% payouts/funded 2.11 $/funded 2,218 days->1st 14 | 22-25: funded n=344 lost 77% paid-once 63% payouts/funded 1.92 $/funded 2,908 days->1st 11
+AMT IB-B 0.5ct all days                    18-21: funded n=463 lost 99% paid-once 61% payouts/funded 0.96 $/funded 1,108 days->1st 12 | 22-25: funded n=344 lost 84% paid-once 43% payouts/funded 1.26 $/funded 2,078 days->1st 9
+AMT IB-B 0.5ct IDLE days only (n=4)        18-21: funded n=463 lost 83% paid-once 90% payouts/funded 2.05 $/funded 2,392 days->1st 18 | 22-25: funded n=344 lost 68% paid-once 64% payouts/funded 2.25 $/funded 3,519 days->1st 12
+AMT IB-Bn 0.25ct all days                  18-21: funded n=463 lost 78% paid-once 88% payouts/funded 2.13 $/funded 2,478 days->1st 16 | 22-25: funded n=344 lost 68% paid-once 62% payouts/funded 2.19 $/funded 3,436 days->1st 11
+AMT IB-Bn 0.5ct all days                   18-21: funded n=463 lost 82% paid-once 83% payouts/funded 1.87 $/funded 2,171 days->1st 14 | 22-25: funded n=344 lost 69% paid-once 62% payouts/funded 2.15 $/funded 3,393 days->1st 12
+AMT IB-Bn 0.5ct IDLE days only (n=1)       18-21: funded n=463 lost 86% paid-once 90% payouts/funded 1.94 $/funded 2,304 days->1st 18 | 22-25: funded n=344 lost 68% paid-once 64% payouts/funded 2.25 $/funded 3,519 days->1st 12
+AMT VA-80 0.25ct all days                  18-21: funded n=463 lost 79% paid-once 93% payouts/funded 2.30 $/funded 2,767 days->1st 16 | 22-25: funded n=344 lost 69% paid-once 62% payouts/funded 2.23 $/funded 3,456 days->1st 12
+AMT VA-80 0.5ct all days                   18-21: funded n=463 lost 68% paid-once 78% payouts/funded 2.17 $/funded 2,904 days->1st 13 | 22-25: funded n=344 lost 84% paid-once 52% payouts/funded 1.49 $/funded 2,306 days->1st 11
+AMT VA-80 0.5ct IDLE days only (n=2)       18-21: funded n=463 lost 83% paid-once 90% payouts/funded 2.05 $/funded 2,394 days->1st 18 | 22-25: funded n=344 lost 68% paid-once 64% payouts/funded 2.25 $/funded 3,519 days->1st 12
+AMT INV-C 0.25ct all days                  18-21: funded n=463 lost 86% paid-once 86% payouts/funded 1.95 $/funded 2,376 days->1st 20 | 22-25: funded n=344 lost 68% paid-once 60% payouts/funded 2.21 $/funded 3,596 days->1st 12
+AMT INV-C 0.5ct all days                   18-21: funded n=463 lost 75% paid-once 86% payouts/funded 2.27 $/funded 3,072 days->1st 21 | 22-25: funded n=344 lost 70% paid-once 59% payouts/funded 2.05 $/funded 3,324 days->1st 13
+AMT INV-C 0.5ct IDLE days only (n=0)       18-21: funded n=463 lost 86% paid-once 90% payouts/funded 1.94 $/funded 2,304 days->1st 18 | 22-25: funded n=344 lost 68% paid-once 64% payouts/funded 2.25 $/funded 3,519 days->1st 12
+AMT INV-S 0.25ct all days                  18-21: funded n=463 lost 78% paid-once 89% payouts/funded 2.30 $/funded 2,716 days->1st 18 | 22-25: funded n=344 lost 76% paid-once 56% payouts/funded 1.87 $/funded 2,856 days->1st 11
+AMT INV-S 0.5ct all days                   18-21: funded n=463 lost 80% paid-once 85% payouts/funded 2.15 $/funded 2,513 days->1st 16 | 22-25: funded n=344 lost 85% paid-once 52% payouts/funded 1.61 $/funded 2,397 days->1st 11
+AMT INV-S 0.5ct IDLE days only (n=1)       18-21: funded n=463 lost 86% paid-once 90% payouts/funded 1.94 $/funded 2,304 days->1st 18 | 22-25: funded n=344 lost 68% paid-once 64% payouts/funded 2.25 $/funded 3,519 days->1st 12
+AMT POOR-M 0.25ct all days                 18-21: funded n=463 lost 88% paid-once 87% payouts/funded 1.78 $/funded 1,912 days->1st 17 | 22-25: funded n=344 lost 72% paid-once 62% payouts/funded 2.13 $/funded 3,350 days->1st 11
+AMT POOR-M 0.5ct all days                  18-21: funded n=463 lost 96% paid-once 82% payouts/funded 1.47 $/funded 1,476 days->1st 16 | 22-25: funded n=344 lost 76% paid-once 59% payouts/funded 1.95 $/funded 3,042 days->1st 11
+AMT POOR-M 0.5ct IDLE days only (n=0)      18-21: funded n=463 lost 86% paid-once 90% payouts/funded 1.94 $/funded 2,304 days->1st 18 | 22-25: funded n=344 lost 68% paid-once 64% payouts/funded 2.25 $/funded 3,519 days->1st 12
+AMT SHAPE 0.25ct all days                  18-21: funded n=463 lost 89% paid-once 78% payouts/funded 1.57 $/funded 1,643 days->1st 19 | 22-25: funded n=344 lost 73% paid-once 58% payouts/funded 1.85 $/funded 2,930 days->1st 12
+AMT SHAPE 0.5ct all days                   18-21: funded n=463 lost 97% paid-once 53% payouts/funded 0.84 $/funded 1,017 days->1st 16 | 22-25: funded n=344 lost 84% paid-once 50% payouts/funded 1.28 $/funded 2,014 days->1st 14
+AMT SHAPE 0.5ct IDLE days only (n=2)       18-21: funded n=463 lost 86% paid-once 90% payouts/funded 1.94 $/funded 2,304 days->1st 18 | 22-25: funded n=344 lost 68% paid-once 64% payouts/funded 2.25 $/funded 3,519 days->1st 12
+AMT INV-F2 0.25ct all days                 18-21: funded n=463 lost 70% paid-once 83% payouts/funded 2.37 $/funded 2,894 days->1st 16 | 22-25: funded n=344 lost 86% paid-once 61% payouts/funded 1.75 $/funded 2,683 days->1st 11
+AMT INV-F2 0.5ct all days                  18-21: funded n=463 lost 81% paid-once 70% payouts/funded 1.56 $/funded 2,351 days->1st 16 | 22-25: funded n=344 lost 86% paid-once 44% payouts/funded 1.21 $/funded 1,927 days->1st 11
+AMT INV-F2 0.5ct IDLE days only (n=5)      18-21: funded n=463 lost 85% paid-once 90% payouts/funded 1.98 $/funded 2,304 days->1st 18 | 22-25: funded n=344 lost 68% paid-once 64% payouts/funded 2.25 $/funded 3,519 days->1st 12
