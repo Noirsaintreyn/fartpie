@@ -1,0 +1,67 @@
+chain by relation to inventory, era A | era B
+  ctr: A n= 44 mean   +1.4 win 36% | B n= 50 mean  +14.2 win 60%
+  wth: A n= 38 mean  +11.5 win 55% | B n= 26 mean   -8.5 win 31%
+  mid: A n= 79 mean   -1.1 win 34% | B n= 78 mean   -0.4 win 32%
+
+COUNTER by year:
+  2018: n=  7 mean  +18.9 win 71%
+  2019: n= 10 mean   -4.8 win 30%
+  2020: n= 16 mean   +2.1 win 31%
+  2021: n= 11 mean   -5.0 win 27%
+  2022: n=  6 mean   +6.8 win 50%
+  2023: n= 21 mean   +6.3 win 57%
+  2024: n= 12 mean  +16.5 win 67%
+  2025: n= 11 mean  +30.8 win 64%
+
+COUNTER by chain direction (long vs short):
+  dr=-1: A n= 30 mean   +0.2 win 37% | B n= 31 mean  +14.7 win 58%
+  dr=+1: A n= 14 mean   +4.0 win 36% | B n= 19 mean  +13.4 win 63%
+
+COUNTER by ON range/ADR (tercile on all days):
+  ON range tercile 0: A n= 13 mean  +13.1 win 54% | B n= 15 mean   -4.5 win 40%
+  ON range tercile 1: A n= 18 mean   -5.6 win 28% | B n= 13 mean  +14.8 win 62%
+  ON range tercile 2: A n= 13 mean   -0.6 win 31% | B n= 22 mean  +26.6 win 73%
+
+COUNTER by |ON return|/ADR (size of the overnight push) <0.15 / 0.15-0.4 / >0.4:
+  0: A n=  4 mean  +11.4 win 50% | B n=  4 mean  +15.1 win 75%
+  1: A n= 14 mean   +8.1 win 43% | B n= 18 mean   +4.9 win 44%
+  2: A n= 26 mean   -3.8 win 31% | B n= 28 mean  +20.0 win 68%
+
+COUNTER by entry hour:
+  9h: A n=  1 mean  +77.5 win 100% | B n=  4 mean  +12.8 win 50%
+  10h: A n= 14 mean   -2.3 win 29% | B n= 13 mean   +7.5 win 54%
+  11h: A n=  9 mean  -12.2 win 22% | B n=  6 mean  +25.9 win 67%
+  12h: A n=  8 mean   +3.3 win 38% | B n=  8 mean  +37.9 win 75%
+  13h: A n=  8 mean  +10.1 win 50% | B n=  8 mean   -0.3 win 50%
+  14h: A n=  3 mean   -2.7 win 33% | B n= 10 mean   +5.3 win 60%
+  15h: A n=  1 mean  +26.5 win 100% | B n=  1 mean  +52.4 win 100%
+
+COUNTER by swept level:
+  AsiaH: A n=  6 mean   +8.9 win 50% | B n=  8 mean  +18.0 win 62%
+  AsiaL: A n=  5 mean  +30.1 win 80% | B n=  7 mean  +21.8 win 71%
+  LonH: A n=  4 mean   -5.6 win 25% | B n=  1 mean  +78.0 win 100%
+  LonL: A n=0 | B n=  3 mean  -17.8 win 33%
+  ONH: A n= 11 mean   +1.1 win 45% | B n=  9 mean   -7.6 win 33%
+  ONL: A n=  4 mean  -14.6 win 0% | B n=  6 mean  +15.2 win 67%
+  PDH: A n=  9 mean   -4.2 win 22% | B n= 13 mean  +23.2 win 69%
+  PDL: A n=  5 mean   -7.1 win 20% | B n=  3 mean  +21.5 win 67%
+
+Share of days with strong inventory (>=.9 or <=.1) by year, and counter-auction rate (day closes against inventory):
+y             2018  2019  2020  2021  2022  2023  2024  2025  2026
+strong        0.51  0.54  0.56  0.53  0.48  0.52  0.58  0.54  0.60
+counter_rate  0.56  0.48  0.42  0.46  0.45  0.54  0.50  0.54  0.58
+
+=== REGIME SWITCH (hypothesis from the above: inventory relation flips sign between regimes, so follow the TRAILING counter-auction rate; no lookahead, prior days only) ===
+rule: trailing rate r = share of the last N strong-inventory days that closed against inventory (open->close). r>0.5 -> take chain trades AGAINST inventory; r<0.5 -> take chain trades WITH inventory; strong-inv days only. N in {20,40,60} all shown, none picked.
+N=20: switch  A n= 39 mean   +3.4 win 41% | B n= 40 mean   +9.1 win 52%   || all strong-inv chain (no switch) A n= 82 mean   +6.1 win 45% | B n= 76 mean   +6.4 win 50%
+     by year: 2018:-11.4(n5) 2019:-4.1(n13) 2020:+19.5(n6) 2021:+8.4(n15) 2022:+11.8(n2) 2023:+2.6(n14) 2024:+14.6(n15) 2025:+9.4(n9)
+N=40: switch  A n= 41 mean   +3.5 win 44% | B n= 37 mean  +15.7 win 62%   || all strong-inv chain (no switch) A n= 82 mean   +6.1 win 45% | B n= 76 mean   +6.4 win 50%
+     by year: 2018:-2.6(n6) 2019:-0.7(n13) 2020:+30.2(n7) 2021:-2.8(n15) 2022:+49.2(n1) 2023:+7.0(n12) 2024:+11.4(n15) 2025:+30.5(n9)
+N=60: switch  A n= 40 mean   +8.3 win 52% | B n= 39 mean  +17.7 win 67%   || all strong-inv chain (no switch) A n= 82 mean   +6.1 win 45% | B n= 76 mean   +6.4 win 50%
+     by year: 2018:+18.9(n7) 2019:-0.0(n12) 2020:+25.3(n6) 2021:+3.1(n15) 2022:+49.2(n1) 2023:+9.0(n14) 2024:+17.9(n15) 2025:+27.3(n9)
+
+=== t-stats and saved filtered sets ===
+strong-inventory chain (either relation) era A: n=82 mean +6.06 t +1.69 | balanced-inventory: n=79 mean -1.12 t -0.32
+strong-inventory chain (either relation) era B: n=76 mean +6.42 t +1.43 | balanced-inventory: n=78 mean -0.42 t -0.10
+switch N=60 era A: n=40 mean +8.26 t +1.68
+switch N=60 era B: n=39 mean +17.67 t +3.00
