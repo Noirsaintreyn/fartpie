@@ -152,7 +152,7 @@ if __name__ == '__main__':
     print(f'  NZ engine: {len(NZ)} trades; pts/day (1 contract) 2014-21 {pdp[pdp.index < "2022-01-01"].mean():+.2f} | 2022-26 {pdp[pdp.index >= "2022-01-01"].mean():+.2f}', flush=True)
     for sd, nm in ((1, 'long'), (-1, 'short')):
         z = NZ[NZ.dir == sd]; print(f'    {nm}: {len(z)} trades, avg {z.pts.mean():+.2f} pts | 2014-21 {z.pts[z.day < "2022-01-01"].mean():+.2f} | 2022-26 {z.pts[z.day >= "2022-01-01"].mean():+.2f}')
-    NAMES = list(NAMES) + ['NZ', 'CH']; END['NZ'] = 960; END['CH'] = 955
+    NAMES = list(NAMES) + ['NZ', 'CH', 'KH']; END['NZ'] = 960; END['CH'] = 955; END['KH'] = 955
     S6 = list(base_c); Z0 = [(T_, 0.0, yz) for T_, u, yz in S6]; NZl = NZ[NZ.dir > 0].copy()
     NZl = NZ[NZ.dir > 0].copy()
     import sys as _s; _s.path.insert(0, '/home/claude/fartpie/xs'); import nz_core as _Z
