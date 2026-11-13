@@ -1,0 +1,29 @@
+tickers with sales/share 562
+px 0 100
+px 100 200
+px 200 300
+px 300 400
+px 400 500
+px 500 562
+obs 53949 months 107
+train betas {'lvix': np.float64(-0.277), 'y10': np.float64(-0.111), 'curve': np.float64(0.231), 'cred': np.float64(0.051)}
+
+==== forward 21d excess return; cheap (low z) should win ====
+macro-conditioned z (fixed train fit)    2018-21 IN-SAMPLE      IC +0.206 (t +7.9) | D1-D10 +6.89% (t +7.4) n=48mo
+macro-conditioned z (fixed train fit)    2022+ OUT-OF-SAMPLE    IC -0.013 (t -0.6) | D1-D10 -0.42% (t -0.6) n=58mo
+macro z, expanding refit                 2018-21 IN-SAMPLE      IC +0.031 (t +0.7) | D1-D10 +1.33% (t +0.9) n=24mo
+macro z, expanding refit                 2022+ OUT-OF-SAMPLE    IC -0.016 (t -0.7) | D1-D10 -0.55% (t -0.6) n=58mo
+own-history z, NO macro                  2018-21 IN-SAMPLE      IC +0.218 (t +9.3) | D1-D10 +6.56% (t +8.1) n=48mo
+own-history z, NO macro                  2022+ OUT-OF-SAMPLE    IC -0.022 (t -1.1) | D1-D10 -0.53% (t -0.7) n=58mo
+raw log P/S cross-section                2018-21 IN-SAMPLE      IC -0.006 (t -0.3) | D1-D10 +0.76% (t +0.9) n=48mo
+raw log P/S cross-section                2022+ OUT-OF-SAMPLE    IC +0.034 (t +1.9) | D1-D10 +1.04% (t +1.8) n=58mo
+
+==== forward 63d excess return; cheap (low z) should win ====
+macro-conditioned z (fixed train fit)    2018-21 IN-SAMPLE      IC +0.343 (t +13.0) | D1-D10 +18.90% (t +13.3) n=48mo
+macro-conditioned z (fixed train fit)    2022+ OUT-OF-SAMPLE    IC -0.013 (t -0.8) | D1-D10 -1.28% (t -1.3) n=56mo
+macro z, expanding refit                 2018-21 IN-SAMPLE      IC +0.078 (t +1.6) | D1-D10 +3.55% (t +1.4) n=24mo
+macro z, expanding refit                 2022+ OUT-OF-SAMPLE    IC -0.015 (t -0.8) | D1-D10 -1.61% (t -1.4) n=56mo
+own-history z, NO macro                  2018-21 IN-SAMPLE      IC +0.359 (t +15.5) | D1-D10 +17.66% (t +13.6) n=48mo
+own-history z, NO macro                  2022+ OUT-OF-SAMPLE    IC -0.025 (t -1.5) | D1-D10 -1.38% (t -1.4) n=56mo
+raw log P/S cross-section                2018-21 IN-SAMPLE      IC -0.008 (t -0.3) | D1-D10 +1.83% (t +1.2) n=48mo
+raw log P/S cross-section                2022+ OUT-OF-SAMPLE    IC +0.046 (t +3.1) | D1-D10 +3.04% (t +3.9) n=56mo
