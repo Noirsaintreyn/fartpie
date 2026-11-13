@@ -1,0 +1,17 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+data 2018-02-01 -> 2026-01-30 fee/eval 88
+
+=== start first Thursday of Jan 2024 (2024-01-04), one eval, rebuy every blown eval / blown funded / EVERY payout, max 10 live accounts, cost 0.5 pt, current best (variant I) ===
+  year         bought   eval_passed    eval_blown funded_opened  funded_blown     graduated       payouts    payout_usd       skipped   fees   net
+  2024             21            13             0            13            10             1            16        25,051             6   1,848  23,203
+  2025             56            46             8            46            36            12            81       130,026            69   4,928 125,098
+
+=== start first Thursday of Jan 2025 (2025-01-02), one eval, rebuy every blown eval / blown funded / EVERY payout, max 10 live accounts, cost 0.5 pt, current best (variant I) ===
+  year         bought   eval_passed    eval_blown funded_opened  funded_blown     graduated       payouts    payout_usd       skipped   fees   net
+  2025             25            16             2            16            15             1             7        10,915             0   2,200   8,715
+
+=== start first Thursday of Jan 2026 (2026-01-08), one eval, rebuy every blown eval / blown funded / EVERY payout, max 10 live accounts, cost 0.5 pt, current best (variant I) ===
+  year         bought   eval_passed    eval_blown funded_opened  funded_blown     graduated       payouts    payout_usd       skipped   fees   net
+  2026              1             0             0             0             0             0             0             0             0      88     -88
