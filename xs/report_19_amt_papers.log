@@ -1,0 +1,39 @@
+trades 7658
+VA-80     A n  212 mean  +3.19 win 50% t  +0.9 | B n  216 mean  -3.98 win 51% t  -0.8 | yrs>0 67% | tot A   +677 B   -859
+IB-B      A n  819 mean  +1.71 win 44% t  +1.1 | B n  922 mean  +1.15 win 33% t  +0.5 | yrs>0 78% | tot A  +1400 B  +1063
+SHAPE     A n  451 mean  -0.24 win 34% t  -0.1 | B n  536 mean  +3.30 win 23% t  +0.8 | yrs>0 44% | tot A   -108 B  +1768
+INV-F     A n  489 mean  -1.49 win 36% t  -0.9 | B n  537 mean  -2.31 win 22% t  -1.1 | yrs>0 33% | tot A   -731 B  -1240
+INV-F2    A n  489 mean  -2.21 win 25% t  -0.9 | B n  537 mean  +2.26 win 15% t  +0.6 | yrs>0 67% | tot A  -1080 B  +1216
+INV-S     A n  177 mean  +0.80 win 37% t  +0.4 | B n  169 mean  -6.90 win 25% t  -2.9 | yrs>0 44% | tot A   +142 B  -1166
+VA-F      A n  267 mean  -7.85 win 28% t  -4.5 | B n  346 mean  -8.61 win 32% t  -3.6 | yrs>0  0% | tot A  -2096 B  -2978 <== PASS
+VA-B      A n  261 mean  +5.63 win 72% t  +3.2 | B n  346 mean  +6.21 win 68% t  +2.6 | yrs>0 100% | tot A  +1470 B  +2149 <== PASS
+INV-C     A n  168 mean  +4.87 win 38% t  +1.4 | B n  186 mean  -0.20 win 17% t  -0.0 | yrs>0 44% | tot A   +818 B    -37
+IB-Bn     A n  148 mean  -1.05 win 41% t  -0.3 | B n  132 mean  +2.61 win 39% t  +0.6 | yrs>0 56% | tot A   -155 B   +344
+POOR-M    A n  147 mean  -2.15 win 37% t  -0.7 | B n  103 mean -13.65 win 15% t  -4.1 | yrs>0 11% | tot A   -316 B  -1406
+SHAPE-P   A n  304 mean  -1.68 win 33% t  -0.5 | B n  314 mean  +3.86 win 24% t  +0.7 | yrs>0 33% | tot A   -510 B  +1214
+SHAPE-b   A n  147 mean  +2.73 win 35% t  +0.5 | B n  222 mean  +2.50 win 23% t  +0.4 | yrs>0 56% | tot A   +402 B   +554
+INV-F2 long A n  179 mean  +4.49 win 30% t  +1.0 | B n  232 mean  -4.79 win 12% t  -1.1 | yrs>0 44% | tot A   +804 B  -1110
+INV-C long A n  118 mean  +5.85 win 40% t  +1.4 | B n  102 mean  +2.29 win 19% t  +0.3 | yrs>0 75% | tot A   +690 B   +234
+VA-F long A n  115 mean  -7.20 win 25% t  -2.5 | B n  161 mean  -3.56 win 33% t  -0.8 | yrs>0 22% | tot A   -828 B   -573
+IB-B long A n  462 mean  +3.50 win 48% t  +1.8 | B n  494 mean  +3.27 win 38% t  +1.2 | yrs>0 78% | tot A  +1617 B  +1613
+INV-F2 short A n  310 mean  -6.08 win 22% t  -2.3 | B n  305 mean  +7.63 win 18% t  +1.5 | yrs>0 56% | tot A  -1883 B  +2326
+INV-C short A n   50 mean  +2.55 win 34% t  +0.3 | B n   84 mean  -3.22 win 14% t  -0.5 | yrs>0 33% | tot A   +128 B   -270
+VA-F short A n  152 mean  -8.34 win 30% t  -3.9 | B n  185 mean -13.00 win 31% t  -5.1 | yrs>0  0% | tot A  -1268 B  -2405 <== PASS
+IB-B short A n  357 mean  -0.61 win 39% t  -0.2 | B n  428 mean  -1.29 win 28% t  -0.4 | yrs>0 44% | tot A   -217 B   -550
+
+POOR extremes revisited next session (share):
+  era A poor high revisited 66% (n 172) | poor low revisited 64% (n 69) | all days high revisited 60% low revisited 47%
+  era B poor high revisited 62% (n 105) | poor low revisited 51% (n 51) | all days high revisited 60% low revisited 44%
+
+-- PAIRING (0.5 ct): main total +9251 /mo +96.4 worst mo -260 maxDD -304
+VA-80    alone    -91 pts | corr +0.07 | main+it: /mo +95.4 worst mo  -256 maxDD  -373 | core-IDLE days: n 302 mean -2.14
+IB-B     alone  +1232 pts | corr +0.19 | main+it: /mo +109.2 worst mo  -417 maxDD  -744 | core-IDLE days: n 1066 mean -0.21
+SHAPE    alone   +830 pts | corr +0.15 | main+it: /mo +105.0 worst mo  -354 maxDD  -499 | core-IDLE days: n 616 mean -4.79
+INV-F    alone   -985 pts | corr +0.01 | main+it: /mo +86.1 worst mo  -275 maxDD  -540 | core-IDLE days: n 599 mean -1.13
+INV-F2   alone    +68 pts | corr +0.07 | main+it: /mo +97.1 worst mo  -322 maxDD  -706 | core-IDLE days: n 599 mean -0.62
+INV-S    alone   -512 pts | corr +0.01 | main+it: /mo +91.0 worst mo  -221 maxDD  -332 | core-IDLE days: n 264 mean -2.18
+VA-F     alone  -2537 pts | corr -0.02 | main+it: /mo +69.9 worst mo  -338 maxDD  -446 | core-IDLE days: n 396 mean -0.03
+VA-B     alone  +1810 pts | corr +0.03 | main+it: /mo +115.2 worst mo  -189 maxDD  -324 | core-IDLE days: n 391 mean -2.32
+INV-C    alone   +390 pts | corr +0.15 | main+it: /mo +100.4 worst mo  -273 maxDD  -362 | core-IDLE days: n 156 mean -2.88
+IB-Bn    alone    +94 pts | corr +0.07 | main+it: /mo +97.3 worst mo  -223 maxDD  -361 | core-IDLE days: n 218 mean -0.48
+POOR-M   alone   -861 pts | corr +0.00 | main+it: /mo +87.4 worst mo  -286 maxDD  -354 | core-IDLE days: n 152 mean -5.52

@@ -1,0 +1,23 @@
+base (edge fill, 1pt slip)                   A n 261 mean  +5.63 win 72% t  +3.2 | B n 346 mean  +6.21 win 68% t  +2.6 | yrs>0 100%
+strict buy-stop +0.25, slip 1                A n 250 mean  +6.29 win 73% t  +3.5 | B n 342 mean  +6.50 win 68% t  +2.7 | yrs>0 100%
+strict buy-stop +0.25, slip 2                A n 250 mean  +5.29 win 73% t  +3.0 | B n 342 mean  +5.50 win 68% t  +2.3 | yrs>0 100%
+strict, target 0.10 ADR, stop POC            A n 250 mean  +3.77 win 79% t  +2.5 | B n 342 mean  +4.61 win 73% t  +2.2 | yrs>0 100%
+strict, target 0.25 ADR, stop POC            A n 250 mean  +6.98 win 62% t  +2.8 | B n 342 mean +12.34 win 61% t  +4.0 | yrs>0 100%
+strict, stop VA-mid, target .15              A n 250 mean  +7.69 win 78% t  +4.1 | B n 342 mean  +8.33 win 74% t  +3.3 | yrs>0 100%
+strict, stop 25 fixed, target .15            A n 250 mean  +4.27 win 67% t  +3.0 | B n 342 mean  +2.71 win 49% t  +1.7 | yrs>0 100%
+strict, no target (hold 15:55), stop POC     A n 250 mean +10.71 win 41% t  +2.5 | B n 342 mean +15.06 win 36% t  +2.4 | yrs>0  89%
+
+-- base VA-B by year (mean pts, n)
+  2018: +6.6 (49) | 2019: +3.6 (57) | 2020: +6.2 (73) | 2021: +6.0 (82) | 2022: +9.2 (89) | 2023: +6.4 (90) | 2024: +3.8 (86) | 2025: +3.6 (75) | 2026: +23.9 (6)
+-- base VA-B long/short
+  long (VAH break)                           A n 146 mean  +6.59 win 71% t  +3.0 | B n 185 mean +10.78 win 69% t  +4.2 | yrs>0 100%
+  short (VAL break)                          A n 115 mean  +4.42 win 72% t  +1.5 | B n 161 mean  +0.96 win 66% t  +0.2 | yrs>0  78%
+-- touch time
+  touch before 10:30                         A n 200 mean  +6.22 win 73% t  +3.0 | B n 277 mean  +8.68 win 70% t  +3.4 | yrs>0 100%
+  touch 10:30-12:00                          A n  41 mean  +2.54 win 66% t  +0.6 | B n  45 mean  -5.49 win 60% t  -0.7 | yrs>0  38%
+  touch after 12:00                          A n  20 mean  +6.08 win 70% t  +1.1 | B n  24 mean  -0.36 win 58% t  -0.0 | yrs>0  75%
+-- risk (POC distance) terciles
+  POC close (<30)                            A n 119 mean  +3.74 win 65% t  +2.2 | B n  72 mean  +7.30 win 56% t  +2.3 | yrs>0  88%
+  mid                                        A n  85 mean  +5.67 win 73% t  +1.9 | B n 130 mean  +4.01 win 63% t  +1.2 | yrs>0  89%
+  POC far (>64)                              A n  57 mean  +9.53 win 84% t  +1.7 | B n 144 mean  +7.65 win 78% t  +1.7 | yrs>0  89%
+-- avg win / avg loss (base): win +28.0  loss -43.9  | share of days with a VA touch among inside-open days: see n
