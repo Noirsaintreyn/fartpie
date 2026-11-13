@@ -1,0 +1,40 @@
+events/trades 1166 days 382
+OB-2R                      A n  73 mean  -2.68 win 27% t  -0.8 | B n  82 mean  -2.78 win 30% t  -0.7 | yrs>0 33% | tot A  -196 B  -228
+OB-DOL                     A n  73 mean  -3.26 win 25% t  -1.0 | B n  82 mean  -2.45 win 29% t  -0.6 | yrs>0 33% | tot A  -238 B  -201
+FVG-2R                     A n 150 mean  +2.40 win 40% t  +0.9 | B n 131 mean  +6.37 win 46% t  +1.9 | yrs>0 75% | tot A  +360 B  +834
+FVG-DOL                    A n 150 mean  +1.31 win 39% t  +0.5 | B n 131 mean  +4.92 win 41% t  +1.4 | yrs>0 75% | tot A  +196 B  +644
+BRK-2R                     A n  80 mean  -1.65 win 39% t  -0.5 | B n  67 mean  +1.70 win 37% t  +0.4 | yrs>0 38% | tot A  -132 B  +114
+BRK-DOL                    A n  80 mean  +1.27 win 44% t  +0.4 | B n  67 mean  +2.13 win 37% t  +0.5 | yrs>0 38% | tot A  +102 B  +143
+
+-- how often DOL target existed (share of trades): 78%
+
+-- TIME tags (all models pooled per model family FVG-2R shown separately)
+FVG-2R
+  macro (:50-:10)          A n  69 mean  +4.43 win 43% t  +1.2 | B n  62 mean  +9.28 win 45% t  +1.8 | yrs>0 75% | tot A  +306 B  +575
+  not macro                A n  81 mean  +0.67 win 37% t  +0.2 | B n  69 mean  +3.75 win 46% t  +0.9 | yrs>0 62% | tot A   +54 B  +259
+  90m quarter Q1           A n  45 mean  +9.84 win 53% t  +1.9 | B n  39 mean  +4.39 win 41% t  +0.7 | yrs>0 100% | tot A  +443 B  +171
+  90m quarter Q2           A n  28 mean  -5.74 win 21% t  -1.1 | B n  26 mean +10.11 win 50% t  +1.3 | yrs>0 62% | tot A  -161 B  +263
+  90m quarter Q3           A n  46 mean  +2.60 win 41% t  +0.5 | B n  34 mean  +4.68 win 41% t  +0.7 | yrs>0 62% | tot A  +120 B  +159
+  90m quarter Q4           A n  31 mean  -1.34 win 35% t  -0.3 | B n  32 mean  +7.53 win 53% t  +1.2 | yrs>0 75% | tot A   -42 B  +241
+OB-2R
+  macro (:50-:10)          A n  33 mean  -2.19 win 24% t  -0.4 | B n  39 mean  -4.76 win 26% t  -0.8 | yrs>0 25% | tot A   -72 B  -186
+  not macro                A n  40 mean  -3.09 win 30% t  -0.7 | B n  43 mean  -0.98 win 35% t  -0.2 | yrs>0 56% | tot A  -124 B   -42
+  90m quarter Q1           A n  14 mean  +8.26 win 50% t  +1.0 | B n  29 mean -10.53 win 21% t  -2.1 | yrs>0 33% | tot A  +116 B  -306
+  90m quarter Q2           A n  21 mean  -2.25 win 24% t  -0.3 | B n  11 mean  -5.44 win 18% t  -0.5 | yrs>0 38% | tot A   -47 B   -60
+  90m quarter Q3           A n  22 mean  -1.88 win 32% t  -0.3 | B n  22 mean  +3.49 win 41% t  +0.4 | yrs>0 62% | tot A   -41 B   +77
+  90m quarter Q4           A n  16 mean -13.94 win  6% t  -4.3 | B n  20 mean  +3.04 win 40% t  +0.4 | yrs>0 29% | tot A  -223 B   +61
+FVG-DOL
+  macro (:50-:10)          A n  69 mean  +4.33 win 42% t  +1.1 | B n  62 mean  +5.31 win 40% t  +1.1 | yrs>0 62% | tot A  +299 B  +330
+  not macro                A n  81 mean  -1.27 win 36% t  -0.4 | B n  69 mean  +4.56 win 42% t  +0.9 | yrs>0 62% | tot A  -103 B  +315
+  90m quarter Q1           A n  45 mean  +4.46 win 47% t  +0.9 | B n  39 mean  +5.71 win 38% t  +0.8 | yrs>0 75% | tot A  +201 B  +223
+  90m quarter Q2           A n  28 mean  -5.46 win 18% t  -0.9 | B n  26 mean +11.08 win 50% t  +1.4 | yrs>0 62% | tot A  -153 B  +288
+  90m quarter Q3           A n  46 mean  +3.70 win 46% t  +0.8 | B n  34 mean  -0.46 win 35% t  -0.1 | yrs>0 75% | tot A  +170 B   -16
+  90m quarter Q4           A n  31 mean  -0.72 win 35% t  -0.2 | B n  32 mean  +4.66 win 44% t  +0.7 | yrs>0 62% | tot A   -22 B  +149
+
+-- PAIRING with main V2 legs (pts at 0.5 contract): main total +9251 /mo +96.4 worst mo -260 maxDD -304
+OB-2R     chain-only   -212 pts | corr w/ main +0.01 | main+it: total  +9039 (/mo +94.2) worst mo  -280 maxDD  -322 | on core-IDLE days: n 117 mean -1.62
+OB-DOL    chain-only   -219 pts | corr w/ main +0.01 | main+it: total  +9031 (/mo +94.1) worst mo  -280 maxDD  -321 | on core-IDLE days: n 117 mean -2.09
+FVG-2R    chain-only   +597 pts | corr w/ main +0.04 | main+it: total  +9848 (/mo +102.6) worst mo  -260 maxDD  -361 | on core-IDLE days: n 209 mean +3.71
+FVG-DOL   chain-only   +420 pts | corr w/ main +0.03 | main+it: total  +9671 (/mo +100.7) worst mo  -260 maxDD  -352 | on core-IDLE days: n 209 mean +2.09
+BRK-2R    chain-only     -9 pts | corr w/ main +0.00 | main+it: total  +9242 (/mo +96.3) worst mo  -260 maxDD  -339 | on core-IDLE days: n 115 mean +0.35
+BRK-DOL   chain-only   +122 pts | corr w/ main +0.01 | main+it: total  +9373 (/mo +97.6) worst mo  -260 maxDD  -339 | on core-IDLE days: n 115 mean +1.73
