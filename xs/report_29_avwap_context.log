@@ -1,0 +1,31 @@
+px 0 111
+px 100 211
+px 200 311
+px 300 411
+px 400 508
+sector map sample [('MMM', 'Industrials'), ('AOS', 'Industrials'), ('ABT', 'Health Care')]
+events 12349 | sector-ETF coverage 0.68
+
+=== forward 21d excess return, daily vector flips; ABOVE vs BELOW anchored VWAP ===
+stock vs WEEKLY VWAP               | 2018-21: above -0.57% (n3084) below -1.43% (n5) up-dn +0.86% t +0.3 | 2022+: above -0.28% (n4358) below +1.72% (n4) up-dn -2.00% t -1.1
+stock vs MONTHLY VWAP              | 2018-21: above -0.33% (n3825) below -0.65% (n270) up-dn +0.31% t +0.6 | 2022+: above -0.22% (n5326) below +0.22% (n298) up-dn -0.45% t -1.0
+stock vs QUARTERLY VWAP            | 2018-21: above -0.39% (n3793) below -0.18% (n714) up-dn -0.21% t -0.6 | 2022+: above -0.13% (n5115) below -0.54% (n853) up-dn +0.41% t +1.4
+stock vs ANNUAL VWAP               | 2018-21: above -0.40% (n3889) below -0.05% (n1103) up-dn -0.35% t -1.0 | 2022+: above -0.15% (n4421) below -0.46% (n2031) up-dn +0.31% t +1.3
+SECTOR ETF vs its monthly VWAP     | 2018-21: above -0.40% (n3064) below -0.27% (n517) up-dn -0.13% t -0.3 | 2022+: above -0.10% (n4039) below +0.13% (n811) up-dn -0.23% t -0.8
+SECTOR ETF vs its quarterly VWAP   | 2018-21: above -0.43% (n3217) below +0.07% (n707) up-dn -0.49% t -1.4 | 2022+: above -0.02% (n3978) below -0.31% (n1166) up-dn +0.29% t +1.2
+
+=== forward 63d excess return, daily vector flips; ABOVE vs BELOW anchored VWAP ===
+stock vs WEEKLY VWAP               | 2018-21: above -0.76% (n3084) below -6.93% (n5) up-dn +6.17% t +1.2 | 2022+: above -0.61% (n4358) below -6.65% (n4) up-dn +6.04% t +1.1
+stock vs MONTHLY VWAP              | 2018-21: above -0.56% (n3825) below -1.10% (n270) up-dn +0.55% t +0.6 | 2022+: above -0.64% (n5326) below +0.11% (n298) up-dn -0.75% t -1.0
+stock vs QUARTERLY VWAP            | 2018-21: above -0.87% (n3793) below -0.22% (n714) up-dn -0.65% t -1.1 | 2022+: above -0.54% (n5115) below +0.14% (n853) up-dn -0.68% t -1.3
+stock vs ANNUAL VWAP               | 2018-21: above -0.85% (n3889) below -0.04% (n1103) up-dn -0.81% t -1.4 | 2022+: above -0.61% (n4421) below -0.36% (n2031) up-dn -0.25% t -0.6
+SECTOR ETF vs its monthly VWAP     | 2018-21: above -0.32% (n3064) below -2.05% (n517) up-dn +1.73% t +2.6 | 2022+: above -0.24% (n4039) below +0.00% (n811) up-dn -0.24% t -0.5
+SECTOR ETF vs its quarterly VWAP   | 2018-21: above -0.60% (n3217) below -0.95% (n707) up-dn +0.35% t +0.6 | 2022+: above -0.16% (n3978) below +0.09% (n1166) up-dn -0.25% t -0.6
+
+=== deep-below / far-above terciles of stock-vs-anchor distance (2022+), fwd 63d ===
+  d_M 2018-21: lowest third (relative low) -1.50% | highest third -0.19% | low-high -1.32% t -2.4
+  d_M 2022+: lowest third (relative low) -0.92% | highest third -0.25% | low-high -0.67% t -1.4
+  d_Q 2018-21: lowest third (relative low) -0.97% | highest third -0.76% | low-high -0.21% t -0.4
+  d_Q 2022+: lowest third (relative low) -0.94% | highest third +0.20% | low-high -1.14% t -2.3
+  d_Y 2018-21: lowest third (relative low) +0.14% | highest third -1.18% | low-high +1.32% t +2.4
+  d_Y 2022+: lowest third (relative low) -0.14% | highest third -0.40% | low-high +0.26% t +0.5
