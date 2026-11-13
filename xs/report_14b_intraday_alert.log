@@ -1,0 +1,17 @@
+alerts 4116 days 60
+VM>=10 gain>=15% : n1000 P(runner>=+50% day) 44% | to-close mean  -3.71% med  -5.38% win 29% ex-top1  -5.89 | w/-10%stop mean  -3.68% | MFE med  +9.2% MAE med -13.4%
+VM>=10 gain>=30% : n637  P(runner>=+50% day) 68% | to-close mean  -6.66% med  -9.20% win 25% ex-top1  -9.12 | w/-10%stop mean  -5.05% | MFE med +10.5% MAE med -19.2%
+VM>=20 gain>=15% : n805  P(runner>=+50% day) 52% | to-close mean  -4.13% med  -6.13% win 30% ex-top1  -6.37 | w/-10%stop mean  -4.09% | MFE med +10.8% MAE med -14.6%
+VM>=20 gain>=30% : n571  P(runner>=+50% day) 71% | to-close mean  -7.35% med  -9.74% win 25% ex-top1  -9.42 | w/-10%stop mean  -6.00% | MFE med +11.4% MAE med -19.6%
+VM>=50 gain>=15% : n628  P(runner>=+50% day) 61% | to-close mean  -5.38% med  -7.28% win 29% ex-top1  -7.60 | w/-10%stop mean  -4.50% | MFE med +10.6% MAE med -16.3%
+VM>=50 gain>=30% : n475  P(runner>=+50% day) 78% | to-close mean  -8.25% med -10.42% win 26% ex-top1 -10.10 | w/-10%stop mean  -6.54% | MFE med +11.5% MAE med -21.1%
+
+-- VM20/G15 by alert time
+   pre n0
+   open n486  P(runner>=+50% day) 63% | to-close mean  -6.03% med  -7.99% win 29% ex-top1  -7.22 | w/-10%stop mean  -5.31% | MFE med +13.4% MAE med -17.0%
+   mid n319  P(runner>=+50% day) 37% | to-close mean  -1.24% med  -3.80% win 31% ex-top1  -5.00 | w/-10%stop mean  -2.24% | MFE med  +8.0% MAE med -11.7%
+-- VM20/G15 by gain already at alert
+    15- 30% n441  P(runner>=+50% day) 28% | to-close mean  -1.19% med  -3.88% win 34% ex-top1  -3.69 | w/-10%stop mean  -2.24% | MFE med  +9.6% MAE med -11.6%
+    30- 60% n243  P(runner>=+50% day) 72% | to-close mean  -7.87% med  -8.65% win 25% ex-top1  -9.00 | w/-10%stop mean  -5.20% | MFE med +10.6% MAE med -18.8%
+    60-100% n65   P(runner>=+50% day) 100% | to-close mean  -7.78% med -12.20% win 26% ex-top1 -10.14 | w/-10%stop mean  -9.74% | MFE med +21.4% MAE med -23.3%
+   100-inf% n56   P(runner>=+50% day) 100% | to-close mean  -6.84% med -15.10% win 23% ex-top1 -11.94 | w/-10%stop mean  -7.28% | MFE med +16.5% MAE med -28.6%

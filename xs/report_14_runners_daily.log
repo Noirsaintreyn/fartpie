@@ -1,0 +1,43 @@
+V>=20 days 8839 tickers 996 | +50% high days 2206
+
+===== TRAIN (days with V>=20: 3674)
+-- A. enter NEXT OPEN after the event close
+  G>=15%                       n1322 gap   -0.6% | o>c net mean  -2.32% med  -3.95% win 36% ex-top1%  -3.39 | o>high mean +13.2% med  +7.7% | worst-dd -12.1%
+  G>=30%                       n795  gap   -1.4% | o>c net mean  -2.80% med  -4.00% win 37% ex-top1%  -3.67 | o>high mean +14.3% med  +8.8% | worst-dd -13.2%
+  G>=60%                       n312  gap   -1.9% | o>c net mean  -3.36% med  -4.19% win 39% ex-top1%  -4.43 | o>high mean +16.1% med +10.2% | worst-dd -15.7%
+  G>=100%                      n138  gap   -5.3% | o>c net mean  -2.74% med  -3.09% win 42% ex-top1%  -4.38 | o>high mean +17.9% med +10.3% | worst-dd -17.9%
+  G 15-30% (modest)            n527  gap   +0.6% | o>c net mean  -1.60% med  -3.84% win 33% ex-top1%  -2.94 | o>high mean +11.5% med  +6.1% | worst-dd -10.4%
+  G>=30% & first day (yG<10%)  n622  gap   -2.5% | o>c net mean  -2.14% med  -3.29% win 38% ex-top1%  -2.98 | o>high mean +13.5% med  +8.7% | worst-dd -12.3%
+  G>=30% & 2nd+ day (yG>=30%)  n64   gap   +3.0% | o>c net mean  -7.41% med  -6.50% win 38% ex-top1%  -8.11 | o>high mean +15.5% med +10.7% | worst-dd -17.2%
+  G>=30% close near high       n237  gap   +2.1% | o>c net mean  -2.26% med  -2.82% win 38% ex-top1%  -3.17 | o>high mean +14.3% med  +8.5% | worst-dd -13.5%
+  G>=30% faded off high        n305  gap   -2.9% | o>c net mean  -1.95% med  -3.24% win 40% ex-top1%  -2.91 | o>high mean +14.4% med  +9.2% | worst-dd -12.3%
+-- B. buy-stop at +15% on V>=20 days (optimistic volume flag), exit close, 1.5% cost
+  n2070 mean +18.78% med +4.51% win 60% | avg worst dip from entry -5.3% | ex-top1 +13.69%
+-- C. POAS case: yesterday big run (yG>=60%, yV>=20) -> today by gap
+  today V>=20 & gap -100% to -10% n/a - see below
+  runner day G>=60%, next-day gap -100%..-10% : n135  gap  -20.9% | o>c net mean  -1.23% med  -1.50% win 44% ex-top1%  -2.86 | o>high mean +15.4% med +11.6% | worst-dd -15.0%
+  runner day G>=60%, next-day gap  -10%..+10% : n115  gap   -2.8% | o>c net mean  -2.83% med  -4.48% win 38% ex-top1%  -3.64 | o>high mean +13.5% med  +7.9% | worst-dd -13.6%
+  runner day G>=60%, next-day gap  +10%..+30% : n37   gap  +18.8% | o>c net mean  -9.15% med  -9.83% win 27% ex-top1% -10.25 | o>high mean +17.9% med +14.8% | worst-dd -19.0%
+  runner day G>=60%, next-day gap  +30%..inf% : n25   gap  +74.7% | o>c net mean  -8.80% med -12.50% win 32% ex-top1% -11.47 | o>high mean +28.4% med +26.0% | worst-dd -23.5%
+
+===== TEST (days with V>=20: 5165)
+-- A. enter NEXT OPEN after the event close
+  G>=15%                       n1630 gap   -2.6% | o>c net mean  -0.41% med  -2.24% win 43% ex-top1%  -1.47 | o>high mean +16.2% med  +9.1% | worst-dd -11.7%
+  G>=30%                       n941  gap   -2.9% | o>c net mean  -0.07% med  -2.29% win 43% ex-top1%  -1.23 | o>high mean +18.9% med +10.0% | worst-dd -13.3%
+  G>=60%                       n405  gap   -4.6% | o>c net mean  -1.04% med  -3.25% win 41% ex-top1%  -2.54 | o>high mean +23.5% med +12.6% | worst-dd -16.6%
+  G>=100%                      n185  gap   -7.6% | o>c net mean  -3.59% med  -5.89% win 35% ex-top1%  -5.05 | o>high mean +26.9% med +13.5% | worst-dd -21.0%
+  G 15-30% (modest)            n689  gap   -2.2% | o>c net mean  -0.86% med  -2.24% win 42% ex-top1%  -1.70 | o>high mean +12.5% med  +7.9% | worst-dd  -9.4%
+  G>=30% & first day (yG<10%)  n764  gap   -3.9% | o>c net mean  +0.25% med  -2.09% win 43% ex-top1%  -0.94 | o>high mean +18.6% med  +9.9% | worst-dd -12.7%
+  G>=30% & 2nd+ day (yG>=30%)  n88   gap   +3.8% | o>c net mean  -0.58% med  -4.18% win 43% ex-top1%  -1.65 | o>high mean +23.9% med +12.9% | worst-dd -17.2%
+  G>=30% close near high       n228  gap   -3.8% | o>c net mean  -0.67% med  -3.01% win 37% ex-top1%  -1.74 | o>high mean +16.3% med  +9.1% | worst-dd -12.8%
+  G>=30% faded off high        n392  gap   -3.6% | o>c net mean  -0.67% med  -2.66% win 43% ex-top1%  -1.56 | o>high mean +19.5% med  +9.9% | worst-dd -13.7%
+-- B. buy-stop at +15% on V>=20 days (optimistic volume flag), exit close, 1.5% cost
+  n2736 mean +17.56% med +2.43% win 56% | avg worst dip from entry -7.5% | ex-top1 +11.62%
+-- C. POAS case: yesterday big run (yG>=60%, yV>=20) -> today by gap
+  today V>=20 & gap -100% to -10% n/a - see below
+  runner day G>=60%, next-day gap -100%..-10% : n193  gap  -23.2% | o>c net mean  -2.01% med  -2.74% win 41% ex-top1%  -2.89 | o>high mean +17.1% med +11.3% | worst-dd -15.4%
+  runner day G>=60%, next-day gap  -10%..+10% : n147  gap   -2.4% | o>c net mean  +3.32% med  -1.50% win 48% ex-top1%  +1.67 | o>high mean +26.3% med +13.1% | worst-dd -14.2%
+  runner day G>=60%, next-day gap  +10%..+30% : n29   gap  +19.1% | o>c net mean  -2.91% med -13.04% win 24% ex-top1%  -8.04 | o>high mean +28.2% med +13.3% | worst-dd -21.8%
+  runner day G>=60%, next-day gap  +30%..inf% : n36   gap  +66.6% | o>c net mean -12.13% med -13.41% win 31% ex-top1% -14.09 | o>high mean +42.8% med +19.4% | worst-dd -28.9%
+
+-- D. earliness: +50%-high days with V>=20: 2206; of them yesterday also G>=30%: 8% | yesterday V>=20: 30%
