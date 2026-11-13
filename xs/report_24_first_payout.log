@@ -1,0 +1,22 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+fee/eval-month 88
+
+2018-21 starts: starts 489, got a payout before data end 100%
+  evals bought before 1st payout (incl the one that pays): <= 1: 85% | <= 2: 99% | <= 3: 100% | <= 4: 100% | <= 5: 100% | <= 6: 100% | <= 8: 100% | median 1 p90 2 p95 2 max 4
+  trading days to 1st payout: <= 30d: 2% | <= 60d: 17% | <= 90d: 47% | <= 120d: 69% | <= 180d: 88% | median 95 p90 189 p95 231 max 259
+  fees spent before 1st payout (eval-months x $88, funded months assumed free): median $352 p90 $704 p95 $792 max $968
+  why extra evals: avg evals failed 0.05, avg funded accts blown before a payout 0.11
+
+2022-25 starts: starts 435, got a payout before data end 100%
+  evals bought before 1st payout (incl the one that pays): <= 1: 51% | <= 2: 86% | <= 3: 96% | <= 4: 100% | <= 5: 100% | <= 6: 100% | <= 8: 100% | median 1 p90 3 p95 3 max 4
+  trading days to 1st payout: <= 30d: 14% | <= 60d: 43% | <= 90d: 67% | <= 120d: 83% | <= 180d: 100% | median 70 p90 138 p95 153 max 174
+  fees spent before 1st payout (eval-months x $88, funded months assumed free): median $264 p90 $528 p95 $616 max $792
+  why extra evals: avg evals failed 0.25, avg funded accts blown before a payout 0.42
+
+2024+ starts: starts 186, got a payout before data end 100%
+  evals bought before 1st payout (incl the one that pays): <= 1: 42% | <= 2: 67% | <= 3: 91% | <= 4: 100% | <= 5: 100% | <= 6: 100% | <= 8: 100% | median 2 p90 3 p95 4 max 4
+  trading days to 1st payout: <= 30d: 12% | <= 60d: 44% | <= 90d: 64% | <= 120d: 81% | <= 180d: 100% | median 70 p90 145 p95 157 max 172
+  fees spent before 1st payout (eval-months x $88, funded months assumed free): median $264 p90 $528 p95 $616 max $792
+  why extra evals: avg evals failed 0.32, avg funded accts blown before a payout 0.67
