@@ -1,0 +1,94 @@
+names ['AAPL', 'AMZN', 'AVGO', 'GOOGL', 'META', 'MSFT', 'NVDA', 'QQQ', 'TSLA']
+AAPL 2018-01-02 04:00:00 2026-09-14 19:45:00 138737 hours [3, 4, 5] .. [17, 18, 19]
+AMZN 2018-01-02 04:00:00 2026-09-14 19:45:00 138653 hours [3, 4, 5] .. [17, 18, 19]
+AVGO 2018-01-02 08:15:00 2026-10-20 19:45:00 120513 hours [4, 5, 6] .. [17, 18, 19]
+GOOGL 2018-01-02 04:00:00 2026-09-14 19:45:00 134273 hours [3, 4, 5] .. [17, 18, 19]
+META 2018-01-02 04:00:00 2026-09-14 19:45:00 134067 hours [3, 4, 5] .. [17, 18, 19]
+MSFT 2018-01-02 04:00:00 2026-09-14 19:45:00 137076 hours [3, 4, 5] .. [17, 18, 19]
+NVDA 2018-01-02 04:00:00 2026-09-14 19:45:00 137782 hours [3, 4, 5] .. [17, 18, 19]
+QQQ 2018-01-02 09:30:00 2026-10-08 19:45:00 61194 hours [4, 5, 6] .. [17, 18, 19]
+TSLA 2018-01-02 04:00:00 2026-09-14 19:45:00 138537 hours [3, 4, 5] .. [17, 18, 19]
+
+>>>>>>>>>> regular 15m  (H1 = 2018-21 train, H2 = 2022+ test)
+
+######## regular 15m: trades 59139 | 2018-01-04 -> 2026-10-20  (bp per trade, gross; net = -20bp)
+A flip|over pivot            exit +4 bars   n=  4847 mean    +2.3 net   -17.7 win 51% t  +2.0 | H1    +4.7 (n2186) H2    +0.3 (n2661)
+A flip|over pivot            exit +8 bars   n=  4847 mean    +4.4 net   -15.6 win 52% t  +3.0 | H1    +8.7 (n2186) H2    +1.0 (n2661)
+A flip|over pivot            exit +16 bars  n=  4847 mean    +8.1 net   -11.9 win 54% t  +4.5 | H1   +12.8 (n2186) H2    +4.2 (n2661)
+A flip|over pivot            exit nat       n=  4847 mean   +10.2 net    -9.8 win 48% t  +5.8 | H1   +14.6 (n2186) H2    +6.7 (n2661) avg hold 12.5 bars
+B cross|over vector          exit +4 bars   n=  4685 mean    +1.4 net   -18.6 win 50% t  +1.5 | H1    -0.1 (n2268) H2    +2.8 (n2417)
+B cross|over vector          exit +8 bars   n=  4685 mean    +0.5 net   -19.5 win 51% t  +0.5 | H1    -1.7 (n2268) H2    +2.7 (n2417)
+B cross|over vector          exit +16 bars  n=  4685 mean    +0.7 net   -19.3 win 51% t  +0.5 | H1    -1.5 (n2268) H2    +2.8 (n2417)
+B cross|over vector          exit nat       n=  4685 mean    +2.0 net   -18.0 win 47% t  +1.4 | H1    -0.2 (n2268) H2    +4.0 (n2417) avg hold 11.1 bars
+ctl P-cross any              exit +4 bars   n= 15955 mean    -0.1 net   -20.1 win 50% t  -0.1 | H1    -0.9 (n7193) H2    +0.6 (n8762)
+ctl P-cross any              exit +8 bars   n= 15955 mean    +0.3 net   -19.7 win 51% t  +0.5 | H1    -0.9 (n7193) H2    +1.4 (n8762)
+ctl P-cross any              exit +16 bars  n= 15955 mean    +2.2 net   -17.8 win 51% t  +2.4 | H1    +1.9 (n7193) H2    +2.4 (n8762)
+ctl P-cross any              exit nat       n= 15955 mean    +1.2 net   -18.8 win 47% t  +2.1 | H1    +0.8 (n7193) H2    +1.6 (n8762) avg hold 4.2 bars
+ctl V-flip BELOW pivot       exit +4 bars   n=   288 mean    -4.0 net   -24.0 win 47% t  -1.0 | H1    -7.1 (n127) H2    -1.6 (n161)
+ctl V-flip BELOW pivot       exit +8 bars   n=   288 mean    -6.2 net   -26.2 win 49% t  -1.2 | H1    -8.0 (n127) H2    -4.9 (n161)
+ctl V-flip BELOW pivot       exit +16 bars  n=   288 mean   -13.2 net   -33.2 win 50% t  -2.1 | H1   -23.8 (n127) H2    -4.9 (n161)
+ctl V-flip BELOW pivot       exit nat       n=   288 mean    -7.6 net   -27.6 win 42% t  -1.2 | H1   -18.3 (n127) H2    +0.8 (n161) avg hold 11.3 bars
+ctl V-flip any               exit +4 bars   n=  5135 mean    +1.9 net   -18.1 win 51% t  +1.7 | H1    +4.1 (n2313) H2    +0.2 (n2822)
+ctl V-flip any               exit +8 bars   n=  5135 mean    +3.8 net   -16.2 win 52% t  +2.7 | H1    +7.8 (n2313) H2    +0.6 (n2822)
+ctl V-flip any               exit +16 bars  n=  5135 mean    +6.9 net   -13.1 win 54% t  +4.0 | H1   +10.8 (n2313) H2    +3.7 (n2822)
+ctl V-flip any               exit nat       n=  5135 mean    +9.2 net   -10.8 win 47% t  +5.5 | H1   +12.8 (n2313) H2    +6.3 (n2822) avg hold 12.4 bars
+ctl bull bars (every 10th)   exit +4 bars   n= 28229 mean    +0.2 net   -19.8 win 51% t  +0.5 | H1    -0.5 (n13452) H2    +0.8 (n14777)
+ctl bull bars (every 10th)   exit +8 bars   n= 28229 mean    +0.3 net   -19.7 win 51% t  +0.8 | H1    -0.8 (n13452) H2    +1.4 (n14777)
+ctl bull bars (every 10th)   exit +16 bars  n= 28229 mean    +0.2 net   -19.8 win 52% t  +0.4 | H1    -2.3 (n13452) H2    +2.5 (n14777)
+ctl bull bars (every 10th)   exit nat       n= 28229 mean    +1.2 net   -18.8 win 49% t  +2.1 | H1    -2.0 (n13452) H2    +4.1 (n14777) avg hold 10.7 bars
+
+>>>>>>>>>> extended 15m  (H1 = 2018-21 train, H2 = 2022+ test)
+
+######## extended 15m: trades 130680 | 2018-01-02 -> 2026-10-20  (bp per trade, gross; net = -20bp)
+A flip|over pivot            exit +4 bars   n= 11258 mean    +0.6 net   -19.4 win 49% t  +0.9 | H1    +0.9 (n5141) H2    +0.4 (n6117)
+A flip|over pivot            exit +8 bars   n= 11258 mean    +0.4 net   -19.6 win 49% t  +0.4 | H1    -0.0 (n5141) H2    +0.7 (n6117)
+A flip|over pivot            exit +16 bars  n= 11258 mean    -0.0 net   -20.0 win 49% t  -0.0 | H1    -1.0 (n5141) H2    +0.8 (n6117)
+A flip|over pivot            exit nat       n= 11258 mean    +6.2 net   -13.8 win 37% t  +4.4 | H1    +4.6 (n5141) H2    +7.5 (n6117) avg hold 19.6 bars
+B cross|over vector          exit +4 bars   n=  9751 mean    -0.8 net   -20.8 win 49% t  -1.3 | H1    +0.3 (n4617) H2    -1.9 (n5134)
+B cross|over vector          exit +8 bars   n=  9751 mean    -1.1 net   -21.1 win 49% t  -1.2 | H1    -0.2 (n4617) H2    -1.9 (n5134)
+B cross|over vector          exit +16 bars  n=  9751 mean    -2.2 net   -22.2 win 49% t  -1.8 | H1    -3.4 (n4617) H2    -1.1 (n5134)
+B cross|over vector          exit nat       n=  9751 mean    -3.4 net   -23.4 win 37% t  -2.6 | H1    -6.0 (n4617) H2    -1.1 (n5134) avg hold 19.0 bars
+ctl P-cross any              exit +4 bars   n= 36874 mean    +0.3 net   -19.7 win 49% t  +0.9 | H1    +1.0 (n16642) H2    -0.2 (n20232)
+ctl P-cross any              exit +8 bars   n= 36874 mean    +0.7 net   -19.3 win 49% t  +1.5 | H1    +0.9 (n16642) H2    +0.6 (n20232)
+ctl P-cross any              exit +16 bars  n= 36874 mean    +0.0 net   -20.0 win 49% t  +0.0 | H1    +0.5 (n16642) H2    -0.3 (n20232)
+ctl P-cross any              exit nat       n= 36874 mean    -0.2 net   -20.2 win 42% t  -0.4 | H1    -0.7 (n16642) H2    +0.3 (n20232) avg hold 6.8 bars
+ctl V-flip BELOW pivot       exit +4 bars   n=   482 mean    +0.1 net   -19.9 win 46% t  +0.0 | H1    -1.4 (n304) H2    +2.7 (n178)
+ctl V-flip BELOW pivot       exit +8 bars   n=   482 mean   +10.3 net    -9.7 win 54% t  +2.5 | H1   +13.5 (n304) H2    +4.8 (n178)
+ctl V-flip BELOW pivot       exit +16 bars  n=   482 mean    +8.3 net   -11.7 win 53% t  +1.3 | H1   +12.6 (n304) H2    +1.1 (n178)
+ctl V-flip BELOW pivot       exit nat       n=   482 mean    +7.5 net   -12.5 win 32% t  +1.0 | H1    +2.4 (n304) H2   +16.1 (n178) avg hold 17.0 bars
+ctl V-flip any               exit +4 bars   n= 11740 mean    +0.6 net   -19.4 win 49% t  +0.9 | H1    +0.8 (n5445) H2    +0.5 (n6295)
+ctl V-flip any               exit +8 bars   n= 11740 mean    +0.8 net   -19.2 win 49% t  +0.8 | H1    +0.7 (n5445) H2    +0.8 (n6295)
+ctl V-flip any               exit +16 bars  n= 11740 mean    +0.3 net   -19.7 win 49% t  +0.3 | H1    -0.2 (n5445) H2    +0.8 (n6295)
+ctl V-flip any               exit nat       n= 11740 mean    +6.2 net   -13.8 win 37% t  +4.5 | H1    +4.5 (n5445) H2    +7.7 (n6295) avg hold 19.5 bars
+ctl bull bars (every 10th)   exit +4 bars   n= 60575 mean    +0.4 net   -19.6 win 50% t  +1.6 | H1    +0.6 (n27711) H2    +0.2 (n32864)
+ctl bull bars (every 10th)   exit +8 bars   n= 60575 mean    +1.1 net   -18.9 win 51% t  +3.4 | H1    +1.1 (n27711) H2    +1.2 (n32864)
+ctl bull bars (every 10th)   exit +16 bars  n= 60575 mean    +2.0 net   -18.0 win 52% t  +4.3 | H1    +1.5 (n27711) H2    +2.5 (n32864)
+ctl bull bars (every 10th)   exit nat       n= 60575 mean    +4.3 net   -15.7 win 45% t  +7.7 | H1    +3.4 (n27711) H2    +5.0 (n32864) avg hold 19.6 bars
+
+>>>>>>>>>> regular 1h  (H1 = 2018-21 train, H2 = 2022+ test)
+
+######## regular 1h: trades 16260 | 2018-01-10 -> 2026-10-19  (bp per trade, gross; net = -20bp)
+A flip|over pivot            exit +4 bars   n=  1264 mean    +9.9 net   -10.1 win 56% t  +2.3 | H1   +17.7 (n590) H2    +3.0 (n674)
+A flip|over pivot            exit +8 bars   n=  1264 mean   +36.3 net   +16.3 win 57% t  +5.4 | H1   +47.6 (n590) H2   +26.5 (n674)
+A flip|over pivot            exit +16 bars  n=  1264 mean   +50.2 net   +30.2 win 57% t  +4.9 | H1   +68.5 (n590) H2   +34.2 (n674)
+A flip|over pivot            exit nat       n=  1264 mean  +116.6 net   +96.6 win 33% t  +5.0 | H1  +150.7 (n590) H2   +86.8 (n674) avg hold 48.6 bars
+B cross|over vector          exit +4 bars   n=  1312 mean    +0.3 net   -19.7 win 51% t  +0.1 | H1    -4.4 (n640) H2    +4.8 (n672)
+B cross|over vector          exit +8 bars   n=  1312 mean    +9.3 net   -10.7 win 53% t  +1.5 | H1    +5.0 (n640) H2   +13.3 (n672)
+B cross|over vector          exit +16 bars  n=  1312 mean   +31.2 net   +11.2 win 55% t  +3.5 | H1   +30.4 (n640) H2   +31.9 (n672)
+B cross|over vector          exit nat       n=  1312 mean  +117.7 net   +97.7 win 33% t  +5.2 | H1  +160.0 (n640) H2   +77.4 (n672) avg hold 51.7 bars
+ctl P-cross any              exit +4 bars   n=  4150 mean    +1.7 net   -18.3 win 52% t  +0.6 | H1    +6.7 (n1819) H2    -2.2 (n2331)
+ctl P-cross any              exit +8 bars   n=  4150 mean    +3.7 net   -16.3 win 52% t  +0.9 | H1   +11.1 (n1819) H2    -2.0 (n2331)
+ctl P-cross any              exit +16 bars  n=  4150 mean   +27.5 net    +7.5 win 55% t  +4.7 | H1   +39.5 (n1819) H2   +18.1 (n2331)
+ctl P-cross any              exit nat       n=  4150 mean   +53.9 net   +33.9 win 44% t  +6.6 | H1   +81.3 (n1819) H2   +32.5 (n2331) avg hold 20.9 bars
+ctl V-flip BELOW pivot       exit +4 bars   n=    94 mean   +33.6 net   +13.6 win 50% t  +1.1 | H1    +5.2 (n52) H2   +68.7 (n42)
+ctl V-flip BELOW pivot       exit +8 bars   n=    94 mean   +72.7 net   +52.7 win 60% t  +2.2 | H1   +47.5 (n52) H2  +103.9 (n42)
+ctl V-flip BELOW pivot       exit +16 bars  n=    94 mean   +94.9 net   +74.9 win 65% t  +2.0 | H1   +75.5 (n52) H2  +118.9 (n42)
+ctl V-flip BELOW pivot       exit nat       n=    94 mean  +170.5 net  +150.5 win 36% t  +2.4 | H1  +169.6 (n52) H2  +171.6 (n42) avg hold 48.9 bars
+ctl V-flip any               exit +4 bars   n=  1358 mean   +11.5 net    -8.5 win 55% t  +2.6 | H1   +16.7 (n642) H2    +6.9 (n716)
+ctl V-flip any               exit +8 bars   n=  1358 mean   +38.9 net   +18.9 win 57% t  +5.8 | H1   +47.6 (n642) H2   +31.0 (n716)
+ctl V-flip any               exit +16 bars  n=  1358 mean   +53.3 net   +33.3 win 58% t  +5.3 | H1   +69.1 (n642) H2   +39.2 (n716)
+ctl V-flip any               exit nat       n=  1358 mean  +120.3 net  +100.3 win 33% t  +5.4 | H1  +152.2 (n642) H2   +91.8 (n716) avg hold 48.6 bars
+ctl bull bars (every 10th)   exit +4 bars   n=  8082 mean    +7.9 net   -12.1 win 53% t  +4.4 | H1    +8.6 (n3963) H2    +7.2 (n4119)
+ctl bull bars (every 10th)   exit +8 bars   n=  8082 mean   +14.3 net    -5.7 win 54% t  +5.5 | H1   +14.6 (n3963) H2   +14.0 (n4119)
+ctl bull bars (every 10th)   exit +16 bars  n=  8082 mean   +27.8 net    +7.8 win 55% t  +7.3 | H1   +32.4 (n3963) H2   +23.3 (n4119)
+ctl bull bars (every 10th)   exit nat       n=  8082 mean  +118.9 net   +98.9 win 37% t +11.9 | H1  +140.9 (n3963) H2   +97.8 (n4119) avg hold 59.9 bars
