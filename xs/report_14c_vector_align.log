@@ -1,0 +1,23 @@
+alerts 805
+ALL alerts                            n805  P(+50% day) 52% | to-close mean  -4.13% med  -6.13% win 30% ex-top1  -6.37 | w/-10%stop  -4.09% | MFE med +10.8% MAE med -14.6%
+5m bull AT alert                      n697  P(+50% day) 52% | to-close mean  -4.25% med  -6.37% win 28% ex-top1  -6.42 | w/-10%stop  -4.44% | MFE med +10.5% MAE med -14.9%
+5m bear AT alert                      n103  P(+50% day) 55% | to-close mean  -3.25% med  -3.86% win 37% ex-top1  -5.81 | w/-10%stop  -1.79% | MFE med +12.5% MAE med -13.8%
+5m none AT alert                      n5
+15m bull AT alert                     n683  P(+50% day) 53% | to-close mean  -4.54% med  -5.83% win 30% ex-top1  -6.07 | w/-10%stop  -4.83% | MFE med +10.9% MAE med -14.6%
+15m bear/none AT alert                n122  P(+50% day) 50% | to-close mean  -1.88% med  -7.52% win 25% ex-top1  -7.89 | w/-10%stop  +0.04% | MFE med +10.3% MAE med -14.8%
+5m+15m both bull AT alert             n609  P(+50% day) 52% | to-close mean  -4.74% med  -6.17% win 29% ex-top1  -6.30 | w/-10%stop  -5.21% | MFE med +10.5% MAE med -14.6%
+5m bull BEFORE the move               n550  P(+50% day) 52% | to-close mean  -5.15% med  -5.95% win 30% ex-top1  -6.18 | w/-10%stop  -4.65% | MFE med +10.2% MAE med -14.2%
+5m NOT bull before the move           n255  P(+50% day) 52% | to-close mean  -1.95% med  -6.17% win 28% ex-top1  -6.39 | w/-10%stop  -2.89% | MFE med +11.8% MAE med -14.9%
+15m bull BEFORE the move              n407  P(+50% day) 51% | to-close mean  -3.04% med  -5.38% win 33% ex-top1  -4.84 | w/-10%stop  -3.87% | MFE med +10.8% MAE med -13.3%
+both bull BEFORE the move             n340  P(+50% day) 51% | to-close mean  -3.67% med  -5.39% win 34% ex-top1  -4.74 | w/-10%stop  -3.57% | MFE med +10.9% MAE med -13.2%
+both bull BEFORE & at alert           n288  P(+50% day) 50% | to-close mean  -3.65% med  -5.55% win 32% ex-top1  -4.71 | w/-10%stop  -3.59% | MFE med +10.1% MAE med -12.8%
+bull before, flipped bear by alert    n74   P(+50% day) 59% | to-close mean  -4.42% med  -3.80% win 36% ex-top1  -5.36 | w/-10%stop  -3.95% | MFE med +14.5% MAE med -14.1%
+
+-- same, only alerts with gain-at-alert 15-60% (early enough to still trade)
+ALL                                   n684  P(+50% day) 44% | to-close mean  -3.57% med  -5.16% win 30% ex-top1  -5.47 | w/-10%stop  -3.29% | MFE med  +9.8% MAE med -13.2%
+5m bull BEFORE                        n472  P(+50% day) 44% | to-close mean  -4.22% med  -5.34% win 31% ex-top1  -5.18 | w/-10%stop  -3.96% | MFE med  +9.7% MAE med -13.2%
+5m not bull BEFORE                    n212  P(+50% day) 42% | to-close mean  -2.10% med  -4.57% win 29% ex-top1  -6.46 | w/-10%stop  -1.82% | MFE med +10.7% MAE med -13.2%
+both bull BEFORE                      n290  P(+50% day) 43% | to-close mean  -2.84% med  -4.26% win 36% ex-top1  -3.71 | w/-10%stop  -2.73% | MFE med  +9.9% MAE med -12.1%
+both bull BEFORE & at alert           n248  P(+50% day) 42% | to-close mean  -3.15% med  -4.61% win 34% ex-top1  -4.17 | w/-10%stop  -2.78% | MFE med  +9.0% MAE med -12.0%
+
+-- runner days (day high >=+50%) : share with 5m bull BEFORE move: 68% | non-runners: 68%
