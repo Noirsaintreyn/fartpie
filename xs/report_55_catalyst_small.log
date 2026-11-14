@@ -1,0 +1,41 @@
+flip tickers 361 with 8-K coverage 19
+
+LONG n 9343 | cols: era | share with catalyst | tail% with vs without | mean retn(ATR-scaled)% | raw mean ret% with / without | t(retn)
+ ANY   1d | h1:  0.6% tail  3.6/10.7 raw -2.58/+0.72 t -2.5 | h2:  0.3% tail 21.4/ 9.2 raw +1.98/-0.22 t +1.1 | all:  0.4% tail  9.5/10.0 raw -1.06/+0.28 t +0.1
+ ANY   3d | h1:  1.0% tail  7.8/10.7 raw -2.19/+0.74 t -1.6 | h2:  0.8% tail 19.4/ 9.2 raw +4.36/-0.25 t +1.5 | all:  0.9% tail 12.6/10.0 raw +0.52/+0.27 t +0.5
+ ANY   5d | h1:  1.3% tail 10.6/10.7 raw -1.67/+0.74 t -1.0 | h2:  1.1% tail 14.3/ 9.2 raw +2.93/-0.25 t +1.4 | all:  1.2% tail 12.2/10.0 raw +0.29/+0.28 t +0.6
+ EARN  1d | h1:  0.4% tail  5.6/10.7 raw -3.18/+0.72 t -2.0 | h2:  0.2% tail 11.1/ 9.3 raw -2.97/-0.21 t -0.5 | all:  0.3% tail  7.4/10.0 raw -3.11/+0.29 t -1.8
+ EARN  3d | h1:  0.6% tail  6.9/10.7 raw -3.19/+0.73 t -2.6 | h2:  0.3% tail 14.3/ 9.3 raw +4.64/-0.23 t +0.9 | all:  0.5% tail  9.3/10.0 raw -0.64/+0.28 t -0.3
+ EARN  5d | h1:  0.7% tail  5.6/10.7 raw -2.87/+0.73 t -3.0 | h2:  0.3% tail 13.3/ 9.3 raw +4.19/-0.23 t +0.9 | all:  0.5% tail  7.8/10.0 raw -0.80/+0.28 t -0.5
+ AGREE 1d | h1:  0.0% tail  nan/10.7 raw +nan/+0.71 t +nan | h2:  0.0% tail 100.0/ 9.3 raw +11.27/-0.21 t +nan | all:  0.0% tail 100.0/10.0 raw +11.27/+0.27 t +nan
+ AGREE 3d | h1:  0.0% tail  0.0/10.7 raw -3.10/+0.71 t +nan | h2:  0.1% tail 25.0/ 9.3 raw -0.76/-0.21 t +nan | all:  0.1% tail 16.7/10.0 raw -1.54/+0.28 t -0.8
+ AGREE 5d | h1:  0.1% tail 14.3/10.6 raw +0.28/+0.71 t +0.2 | h2:  0.2% tail 11.1/ 9.3 raw -1.92/-0.21 t -0.8 | all:  0.2% tail 12.5/10.0 raw -0.96/+0.28 t -0.3
+ DILUTE1d | h1:  0.0% tail  nan/10.7 raw +nan/+0.71 t +nan | h2:  0.0% tail 100.0/ 9.3 raw +11.27/-0.21 t +nan | all:  0.0% tail 100.0/10.0 raw +11.27/+0.27 t +nan
+ DILUTE3d | h1:  0.0% tail  0.0/10.7 raw -4.96/+0.71 t +nan | h2:  0.1% tail 33.3/ 9.3 raw +1.97/-0.21 t +nan | all:  0.1% tail 20.0/10.0 raw -0.80/+0.28 t +nan
+ DILUTE5d | h1:  0.1% tail  0.0/10.7 raw -3.63/+0.71 t +nan | h2:  0.2% tail 12.5/ 9.3 raw -1.04/-0.21 t -0.2 | all:  0.1% tail  9.1/10.0 raw -1.74/+0.28 t -1.1
+ MGMT  1d | h1:  0.1% tail  0.0/10.7 raw -3.42/+0.71 t -3.9 | h2:  0.1% tail  0.0/ 9.3 raw +0.16/-0.21 t +nan | all:  0.1% tail  0.0/10.0 raw -2.23/+0.28 t -1.4
+ MGMT  3d | h1:  0.3% tail  0.0/10.7 raw -2.33/+0.71 t -4.1 | h2:  0.2% tail 30.0/ 9.2 raw +7.29/-0.23 t +1.3 | all:  0.2% tail 13.0/10.0 raw +1.85/+0.27 t +0.1
+ MGMT  5d | h1:  0.4% tail  0.0/10.7 raw -2.13/+0.72 t -4.2 | h2:  0.3% tail 21.4/ 9.2 raw +4.66/-0.23 t +1.2 | all:  0.4% tail  9.1/10.0 raw +0.75/+0.27 t -0.1
+ OTHER 1d | h1:  0.3% tail  7.7/10.7 raw +0.14/+0.71 t -0.2 | h2:  0.1% tail 20.0/ 9.3 raw -0.90/-0.21 t +nan | all:  0.2% tail 11.1/10.0 raw -0.15/+0.28 t +0.3
+ OTHER 3d | h1:  0.4% tail 10.0/10.7 raw +0.41/+0.71 t -0.0 | h2:  0.3% tail 20.0/ 9.2 raw +3.61/-0.22 t +0.9 | all:  0.4% tail 14.3/10.0 raw +1.78/+0.27 t +0.7
+ OTHER 5d | h1:  0.7% tail 14.7/10.6 raw +0.21/+0.71 t +0.5 | h2:  0.4% tail 15.8/ 9.2 raw +2.07/-0.22 t +0.6 | all:  0.6% tail 15.1/10.0 raw +0.88/+0.27 t +0.8
+
+SHORT n 9391 | cols: era | share with catalyst | tail% with vs without | mean retn(ATR-scaled)% | raw mean ret% with / without | t(retn)
+ ANY   1d | h1:  0.7% tail  3.0/10.3 raw -1.65/-0.70 t -0.5 | h2:  0.6% tail 16.7/ 9.6 raw +1.94/-0.80 t +1.7 | all:  0.6% tail  8.8/10.0 raw -0.14/-0.75 t +1.0
+ ANY   3d | h1:  1.1% tail  3.6/10.4 raw -1.65/-0.70 t -0.8 | h2:  0.9% tail 10.3/ 9.7 raw +0.00/-0.80 t +0.4 | all:  1.0% tail  6.3/10.0 raw -0.97/-0.74 t -0.4
+ ANY   5d | h1:  1.4% tail  2.9/10.4 raw -2.28/-0.69 t -1.7 | h2:  1.3% tail 15.8/ 9.6 raw +0.34/-0.80 t +1.3 | all:  1.4% tail  8.7/10.0 raw -1.10/-0.74 t -0.2
+ EARN  1d | h1:  0.4% tail  0.0/10.3 raw -1.37/-0.71 t +0.4 | h2:  0.3% tail 13.3/ 9.7 raw +0.35/-0.79 t +0.7 | all:  0.4% tail  6.1/10.0 raw -0.59/-0.75 t +0.8
+ EARN  3d | h1:  0.5% tail  3.7/10.3 raw -0.77/-0.71 t +0.8 | h2:  0.5% tail 10.0/ 9.7 raw -0.04/-0.79 t +0.5 | all:  0.5% tail  6.4/10.0 raw -0.46/-0.75 t +0.9
+ EARN  5d | h1:  0.7% tail  2.9/10.3 raw -1.43/-0.71 t -0.4 | h2:  0.5% tail  9.1/ 9.7 raw -0.17/-0.79 t +0.4 | all:  0.6% tail  5.4/10.0 raw -0.93/-0.75 t -0.0
+ AGREE 1d | h1:  0.0% tail  0.0/10.3 raw -2.77/-0.71 t +nan | h2:  0.0% tail 50.0/ 9.7 raw +9.08/-0.79 t +nan | all:  0.0% tail 33.3/10.0 raw +5.13/-0.75 t +nan
+ AGREE 3d | h1:  0.0% tail  0.0/10.3 raw -2.11/-0.71 t +nan | h2:  0.1% tail 20.0/ 9.7 raw +2.06/-0.79 t +nan | all:  0.1% tail 14.3/10.0 raw +0.87/-0.75 t +0.3
+ AGREE 5d | h1:  0.1% tail  0.0/10.3 raw -4.17/-0.71 t +nan | h2:  0.2% tail 10.0/ 9.7 raw -2.82/-0.78 t -0.7 | all:  0.1% tail  7.1/10.0 raw -3.20/-0.74 t -1.4
+ DILUTE1d | h1:  0.0% tail  nan/10.3 raw +nan/-0.71 t +nan | h2:  0.0% tail 50.0/ 9.7 raw +9.08/-0.79 t +nan | all:  0.0% tail 50.0/10.0 raw +9.08/-0.75 t +nan
+ DILUTE3d | h1:  0.0% tail  0.0/10.3 raw -1.45/-0.71 t +nan | h2:  0.1% tail 25.0/ 9.7 raw +3.39/-0.79 t +nan | all:  0.1% tail 20.0/10.0 raw +2.43/-0.75 t +nan
+ DILUTE5d | h1:  0.1% tail  0.0/10.3 raw -4.17/-0.71 t +nan | h2:  0.2% tail 14.3/ 9.7 raw -1.79/-0.79 t -0.2 | all:  0.1% tail  9.1/10.0 raw -2.65/-0.74 t -0.9
+ MGMT  1d | h1:  0.2% tail  0.0/10.3 raw -2.19/-0.71 t -2.1 | h2:  0.0% tail  0.0/ 9.7 raw +1.91/-0.79 t +nan | all:  0.1% tail  0.0/10.0 raw -1.56/-0.75 t -0.8
+ MGMT  3d | h1:  0.3% tail  0.0/10.3 raw -1.13/-0.71 t -0.8 | h2:  0.1% tail  0.0/ 9.7 raw -2.31/-0.79 t -0.3 | all:  0.2% tail  0.0/10.0 raw -1.44/-0.74 t -0.8
+ MGMT  5d | h1:  0.4% tail  0.0/10.3 raw -1.12/-0.71 t -1.2 | h2:  0.3% tail 16.7/ 9.7 raw +1.09/-0.79 t +1.1 | all:  0.4% tail  6.1/10.0 raw -0.32/-0.75 t +0.3
+ OTHER 1d | h1:  0.3% tail  7.1/10.3 raw -0.47/-0.71 t +0.2 | h2:  0.1% tail  0.0/ 9.7 raw -0.96/-0.79 t -0.2 | all:  0.2% tail  5.0/10.0 raw -0.61/-0.75 t +0.1
+ OTHER 3d | h1:  0.5% tail  4.3/10.3 raw -2.67/-0.70 t -1.2 | h2:  0.3% tail  0.0/ 9.7 raw -2.10/-0.78 t -1.7 | all:  0.4% tail  2.6/10.0 raw -2.45/-0.74 t -1.7
+ OTHER 5d | h1:  0.6% tail  3.1/10.3 raw -3.78/-0.69 t -1.9 | h2:  0.5% tail 13.6/ 9.7 raw +0.37/-0.80 t +1.0 | all:  0.6% tail  7.4/10.0 raw -2.09/-0.74 t -0.7
