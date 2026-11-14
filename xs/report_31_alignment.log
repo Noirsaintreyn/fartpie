@@ -1,0 +1,98 @@
+days 2379 vr valid 2316
+
+#### 1. VA-B (continuation) vs VA-F (fade): VA-B should be better when persistent, VA-F when reverting
+
+NQ VA-B (pts/trade)   [prediction: persistent > reverting]
+   18-21  by VR(7)            : persistent   +3.35 (n106) | reverting   +7.20 (n155) | diff  -3.85 t -1.0
+   18-21  by inv-continuation : persistent   +5.60 (n143) | reverting   +5.67 (n118) | diff  -0.06 t -0.0
+   22+    by VR(7)            : persistent   +7.77 (n146) | reverting   +5.08 (n200) | diff  +2.69 t +0.6
+   22+    by inv-continuation : persistent   +6.57 (n163) | reverting   +5.90 (n183) | diff  +0.67 t +0.1
+
+NQ VA-F (pts/trade)   [prediction: reverting > persistent]
+   18-21  by VR(7)            : persistent   -6.06 (n111) | reverting   -9.12 (n156) | diff  +3.06 t +0.9
+   18-21  by inv-continuation : persistent   -7.78 (n147) | reverting   -7.94 (n120) | diff  +0.16 t +0.0
+   22+    by VR(7)            : persistent  -10.04 (n146) | reverting   -7.56 (n200) | diff  -2.49 t -0.5
+   22+    by inv-continuation : persistent   -8.81 (n163) | reverting   -8.42 (n183) | diff  -0.39 t -0.1
+
+NQ VA-80 (pts/trade)   [prediction: ?]
+   18-21  by VR(7)            : persistent   +2.76 (n104) | reverting   +3.62 (n108) | diff  -0.86 t -0.1
+   18-21  by inv-continuation : persistent   +7.45 (n107) | reverting   -1.14 (n105) | diff  +8.59 t +1.3
+   22+    by VR(7)            : persistent   +6.07 (n99) | reverting  -12.48 (n117) | diff +18.54 t +1.9
+   22+    by inv-continuation : persistent   -5.15 (n110) | reverting   -2.76 (n106) | diff  -2.40 t -0.2
+
+NQ IB-B (pts/trade)   [prediction: persistent > reverting]
+   18-21  by VR(7)            : persistent   +3.37 (n368) | reverting   +0.36 (n451) | diff  +3.02 t +1.0
+   18-21  by inv-continuation : persistent   +0.73 (n420) | reverting   +2.74 (n399) | diff  -2.01 t -0.6
+   22+    by VR(7)            : persistent   +4.18 (n410) | reverting   -1.27 (n512) | diff  +5.45 t +1.3
+   22+    by inv-continuation : persistent   +3.37 (n451) | reverting   -0.97 (n471) | diff  +4.33 t +1.0
+
+#### 2. ICT chain WITH vs AGAINST the overnight move, by persistence: with-ON should win when persistent / cont60>0, against when reverting
+   18-21  VR(7)            >cut: with   -4.1 (n25) vs against   +3.8 (n49) | <=cut: with   +4.7 (n26) vs against   +3.3 (n61)
+   18-21  inv-continuation >cut: with   -5.3 (n17) vs against   +3.0 (n59) | <=cut: with   +3.2 (n34) vs against   +4.1 (n51)
+   22+    VR(7)            >cut: with   +3.4 (n22) vs against   +5.1 (n57) | <=cut: with   +6.1 (n22) vs against   -0.8 (n53)
+   22+    inv-continuation >cut: with  +11.3 (n20) vs against   +0.8 (n48) | <=cut: with   -0.7 (n24) vs against   +3.3 (n62)
+
+#### 4. strong-inventory days should be MORE persistent: RTH efficiency ratio (|open->close| / sum of 5m moves) strong vs balanced, and day-level inventory continuation
+   18-21  efficiency strong 0.125 (n534) vs balanced 0.119 (n497) | on-continuation strong +0.058 vs balanced -0.026
+   22+    efficiency strong 0.123 (n577) vs balanced 0.130 (n587) | on-continuation strong +0.002 vs balanced +0.002
+   chain pts by VR bucket (all chain trades):
+
+ICT chain (pts/trade)   [prediction: persistent > reverting if chain = persistence]
+   18-21  by VR(7)            : persistent   +1.13 (n74) | reverting   +3.73 (n87) | diff  -2.59 t -0.5
+   18-21  by inv-continuation : persistent   +1.17 (n76) | reverting   +3.76 (n85) | diff  -2.59 t -0.5
+   22+    by VR(7)            : persistent   +4.64 (n79) | reverting   +1.19 (n75) | diff  +3.46 t +0.6
+   22+    by inv-continuation : persistent   +3.91 (n68) | reverting   +2.20 (n86) | diff  +1.71 t +0.3
+
+#### 6. main NQ algo legs (V2 legs x unit, pts/day) by regime
+
+leg RA (u=1.0)   [prediction: ?]
+   18-21  by VR(7)            : persistent   +3.66 (n66) | reverting   +3.46 (n85) | diff  +0.20 t +0.0
+   18-21  by inv-continuation : persistent   -0.85 (n67) | reverting   +7.06 (n84) | diff  -7.91 t -1.6
+   22+    by VR(7)            : persistent   +7.27 (n68) | reverting  +10.69 (n109) | diff  -3.42 t -0.5
+   22+    by inv-continuation : persistent   +7.60 (n88) | reverting  +11.14 (n89) | diff  -3.54 t -0.5
+
+leg M1 (u=0.3)   [prediction: ?]
+   18-21  by VR(7)            : persistent   +0.77 (n227) | reverting   +1.61 (n316) | diff  -0.84 t -1.1
+   18-21  by inv-continuation : persistent   +0.68 (n296) | reverting   +1.96 (n247) | diff  -1.28 t -1.5
+   22+    by VR(7)            : persistent   +0.71 (n263) | reverting   +2.56 (n298) | diff  -1.85 t -1.2
+   22+    by inv-continuation : persistent   +2.64 (n312) | reverting   +0.51 (n249) | diff  +2.13 t +1.4
+
+leg R1 (u=0.5)   [prediction: ?]
+   18-21  by VR(7)            : persistent   +2.86 (n37) | reverting   -1.04 (n26) | diff  +3.90 t +0.9
+   18-21  by inv-continuation : persistent   +2.35 (n28) | reverting   +0.37 (n35) | diff  +1.98 t +0.4
+   22+    by VR(7)            : persistent   +2.81 (n28) | reverting   +4.84 (n50) | diff  -2.03 t -0.3
+   22+    by inv-continuation : persistent  +10.34 (n30) | reverting   +0.22 (n48) | diff +10.12 t +1.8
+
+leg ON+ (u=0.4)   [prediction: ?]
+   18-21  by VR(7)            : persistent   +1.56 (n178) | reverting   +0.91 (n151) | diff  +0.64 t +0.4
+   18-21  by inv-continuation : persistent   +1.58 (n151) | reverting   +1.00 (n178) | diff  +0.58 t +0.4
+   22+    by VR(7)            : persistent   +0.19 (n162) | reverting   +3.27 (n248) | diff  -3.09 t -1.2
+   22+    by inv-continuation : persistent   +1.70 (n154) | reverting   +2.27 (n256) | diff  -0.58 t -0.2
+
+leg ON- (u=0.1)   [prediction: ?]
+   18-21  by VR(7)            : persistent   +0.11 (n305) | reverting   +0.12 (n390) | diff  -0.01 t -0.0
+   18-21  by inv-continuation : persistent   +0.48 (n343) | reverting   -0.24 (n352) | diff  +0.72 t +2.4
+   22+    by VR(7)            : persistent   -0.46 (n299) | reverting   +0.67 (n337) | diff  -1.13 t -2.2
+   22+    by inv-continuation : persistent   +0.11 (n361) | reverting   +0.18 (n275) | diff  -0.06 t -0.1
+
+leg RULES (u=1.0)   [prediction: ?]
+   18-21  by VR(7)            : persistent   +2.04 (n204) | reverting   +0.50 (n236) | diff  +1.54 t +1.8
+   18-21  by inv-continuation : persistent   +0.92 (n220) | reverting   +1.50 (n220) | diff  -0.58 t -0.7
+   22+    by VR(7)            : persistent   +1.77 (n293) | reverting   +1.41 (n360) | diff  +0.36 t +0.4
+   22+    by inv-continuation : persistent   +1.06 (n333) | reverting   +2.10 (n320) | diff  -1.04 t -1.3
+
+leg V15a (u=0.3)   [prediction: ?]
+   18-21  by VR(7)            : persistent   +0.75 (n150) | reverting   +1.25 (n197) | diff  -0.50 t -0.4
+   18-21  by inv-continuation : persistent   +0.03 (n178) | reverting   +2.10 (n169) | diff  -2.07 t -1.6
+   22+    by VR(7)            : persistent   +2.33 (n142) | reverting   +6.70 (n207) | diff  -4.37 t -1.5
+   22+    by inv-continuation : persistent   +7.74 (n180) | reverting   +1.92 (n169) | diff  +5.81 t +1.9
+
+#### 3. persistence spectrum (VR at several horizons): vector 1h should live where VR>1, 15m where VR<1
+   NQ 5m bars (15m..2h)   18-21: q3:0.945 q6:0.900 q12:0.864 q24:0.836 | 22+: q3:0.994 q6:1.000 q12:0.999 q24:0.996
+   NQ 15m (30m..4h)       18-21: q2:0.947 q4:0.908 q8:0.874 q16:0.870 | 22+: q2:1.011 q4:0.999 q8:0.996 q16:0.987
+   NQ 1h (2h..1wk)        18-21: q2:0.945 q4:0.926 q7:0.937 q14:0.868 q35:0.829 | 22+: q2:1.007 q4:0.994 q7:0.992 q14:1.002 q35:0.957
+   NQ daily (2d..4wk)     18-21: q2:0.777 q5:0.739 q10:0.715 q20:0.709 | 22+: q2:0.979 q5:0.906 q10:0.863 q20:0.817
+   9 stocks 15m (30m..4h) 18-21: q2:0.950 q4:0.919 q8:0.895 q16:0.890
+   9 stocks 15m (30m..4h) 22+: q2:1.004 q4:0.994 q8:0.992 q16:0.992
+   9 stocks 1h (2h..1wk)  18-21: q2:0.963 q4:0.948 q7:0.959 q14:0.928 q35:0.899
+   9 stocks 1h (2h..1wk)  22+: q2:1.000 q4:0.993 q7:0.994 q14:1.009 q35:0.984

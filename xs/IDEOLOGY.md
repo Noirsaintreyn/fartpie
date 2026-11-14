@@ -29,3 +29,13 @@
 
 ## Next
 Regime atlas: VR/Hurst/wavelet by horizon, per name and day (PIT), over the 1,250-name 1h universe and NQ; then re-cut every model above by regime. Keep the strict split (2018-21 / 2022+) and hypothesis-first rules. Scripts: xs/report_30_persistence_vector.py (first test).
+
+## Alignment tests run (Nov 14 2026, xs/report_31_alignment.py): thesis as stated NOT supported
+- #1 VA-B vs VA-F by VR / inventory-continuation: signs flip between eras, all |t|<2 -> no alignment.
+- #2 chain with vs against overnight by persistence: opposite of predicted in 2018-21, mixed in 2022+ -> no.
+- #3 spectrum: NQ and 9 stocks are MEAN-REVERTING at every horizon in 2018-21 (VR 0.83-0.95; daily 0.71-0.78) and ~random-walk in 2022+ (VR 0.99-1.01). 15m and 1h look the same; "15m reverts, 1h persists" is not there. The era split itself is a persistence-level shift (2020 is part of it).
+- #4 strong-inventory days are not more efficient (eff 0.125 vs 0.119 / 0.123 vs 0.130); inventory continuation +0.058 vs -0.026 in 2018-21, 0 in 2022+.
+- #5 runners: not testable (only 60d of 5m history).
+- #6 NQ legs by regime: no leg has |t|>=2 with the same sign in both eras. Weak same-sign hints: M1, V15a, RA better when reverting (VR); R1, V15a(22+) better with inventory continuation.
+- #7 regime gating sim: not run (no regime separates the legs consistently).
+Takeaway: VR level is an ERA axis, not a clean per-model switch. Next candidates for the state variable: realized-vol / VIX change, signed-volume imbalance, dispersion, rather than autocorrelation alone.
