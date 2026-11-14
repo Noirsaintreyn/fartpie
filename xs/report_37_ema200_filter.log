@@ -1,0 +1,19 @@
+(a) WIDE daily vector flips, stock above its 200-day EMA vs below; n= 12349 | above share 0.56
+ fwd 21d excess vs universe
+   18-21  above -0.35% (n3316) below -0.37% (n1954) diff +0.02% t +0.1
+   22+    above -0.14% (n3637) below -0.25% (n3442) diff +0.11% t +0.5
+   by regime above/below: R1 -0.41/-1.03  R2 -0.29/+0.15  R3 +0.06/-0.57  R4 -0.18/-0.13  R5 -0.23/+0.02
+ fwd 63d excess vs universe
+   18-21  above -0.64% (n3316) below -0.71% (n1954) diff +0.07% t +0.2
+   22+    above -0.24% (n3637) below -0.89% (n3442) diff +0.65% t +1.7
+   by regime above/below: R1 -0.22/-1.62  R2 -0.99/-0.01  R3 +0.04/-0.90  R4 +0.20/-1.50  R5 -1.05/-0.09
+
+(b) 1h vector flip A, 9 LSE names (bp/trade)
+ above 200-bar 1h EMA
+   exit r8  | 18-21: above   +40.8 (n427) below   +66.6 (n133) t -1.0 | 22+: above   +26.7 (n451) below   +25.0 (n221) t +0.1
+   exit r16 | 18-21: above   +49.8 (n427) below  +125.6 (n133) t -2.2 | 22+: above   +35.1 (n451) below   +31.6 (n221) t +0.1
+   exit nat | 18-21: above  +155.5 (n427) below  +158.2 (n133) t -0.0 | 22+: above  +114.2 (n451) below   +30.5 (n221) t +1.5
+ above 200-day EMA
+   exit r8  | 18-21: above   +40.9 (n411) below   +63.6 (n149) t -0.9 | 22+: above   +20.0 (n439) below   +37.8 (n233) t -0.8
+   exit r16 | 18-21: above   +58.3 (n411) below   +94.0 (n149) t -1.0 | 22+: above   +31.4 (n439) below   +38.7 (n233) t -0.2
+   exit nat | 18-21: above  +179.5 (n411) below   +91.5 (n149) t +1.2 | 22+: above   +91.9 (n439) below   +76.9 (n233) t +0.3
