@@ -1,0 +1,90 @@
+forecast quality (days with forecast: 1912): corr(log ER, log range) HAR 0.788 vs ADR20 0.732 | MAE% HAR 33.8 vs ADR20 38.4
+days 1912 | mean actual/forecast range by bucket: {'HIGH': 1.04, 'LOW': 1.0, 'MID': 1.03}
+
+#### MECHANISM by rho (forecast): actual RTH range / forecast, close inside prior VA
+  18-21  LOW  n= 244 actual/forecast 1.04
+  18-21  MID  n= 225 actual/forecast 1.00
+  18-21  HIGH n= 201 actual/forecast 1.03
+  22+    LOW  n= 385 actual/forecast 0.98
+  22+    MID  n= 381 actual/forecast 1.05
+  22+    HIGH n= 356 actual/forecast 1.05
+
+NQ VA-80 (pts/trade)  [prediction: LOW > HIGH (rotation works when range fits in value)]
+   18-21  LOW  +11.64 (n56) | MID   +3.04 (n56) | HIGH   -7.78 (n45) | LOW-HIGH +19.41 t +1.8
+   22+    LOW   -3.90 (n65) | MID   -3.37 (n83) | HIGH   -4.79 (n68) | LOW-HIGH  +0.88 t +0.1
+   by regime LOW/HIGH: R1 -8.7/-1.8 (n14/17)  R2 +18.4/-11.4 (n42/28)  R3 +35.9/+1.5 (n20/16)  R4 -17.0/-10.8 (n26/36)  R5 -28.0/+2.4 (n19/16)  
+
+NQ VA-F (pts/trade)  [prediction: LOW > HIGH]
+   18-21  LOW   -8.34 (n101) | MID   -8.14 (n58) | HIGH   -7.43 (n37) | LOW-HIGH  -0.91 t -0.2
+   22+    LOW   -9.49 (n150) | MID   -3.41 (n125) | HIGH  -15.88 (n71) | LOW-HIGH  +6.38 t +1.2
+   by regime LOW/HIGH: R1 -10.6/-4.2 (n26/10)  R2 -7.6/-8.6 (n75/27)  R3 -14.4/-22.5 (n47/18)  R4 -7.3/-15.5 (n82/33)  R5 -7.0/-10.5 (n21/20)  
+
+NQ INV-F (pts/trade)  [prediction: LOW > HIGH]
+   18-21  LOW   -0.97 (n136) | MID   -7.64 (n111) | HIGH   +6.47 (n113) | LOW-HIGH  -7.45 t -1.4
+   22+    LOW   -5.09 (n186) | MID   -3.36 (n184) | HIGH   +1.96 (n167) | LOW-HIGH  -7.05 t -1.3
+   by regime LOW/HIGH: R1 -3.9/+4.8 (n37/46)  R2 +0.1/+7.6 (n99/67)  R3 -3.6/+3.2 (n57/45)  R4 -8.1/-2.5 (n92/79)  R5 +0.1/+8.9 (n37/43)  
+
+NQ VA-B (pts/trade)  [prediction: HIGH > LOW]
+   18-21  LOW   +5.95 (n101) | MID   +5.26 (n58) | HIGH   +5.65 (n35) | LOW-HIGH  +0.30 t +0.1
+   22+    LOW   +7.49 (n150) | MID   +0.64 (n125) | HIGH  +13.31 (n71) | LOW-HIGH  -5.81 t -1.1
+   by regime LOW/HIGH: R1 +7.0/+2.4 (n26/8)  R2 +5.6/+6.6 (n75/27)  R3 +12.4/+20.5 (n47/18)  R4 +5.3/+12.3 (n82/33)  R5 +5.0/+8.5 (n21/20)  
+
+NQ IB-B (pts/trade)  [prediction: HIGH > LOW]
+   18-21  LOW   -0.50 (n226) | MID   -0.43 (n198) | HIGH   +5.72 (n174) | LOW-HIGH  -6.22 t -1.3
+   22+    LOW   -1.44 (n313) | MID   +1.05 (n320) | HIGH   +4.08 (n289) | LOW-HIGH  -5.52 t -1.1
+   by regime LOW/HIGH: R1 -1.5/-0.5 (n63/64)  R2 -0.1/+9.4 (n163/110)  R3 +1.7/+7.0 (n105/76)  R4 -4.5/+5.4 (n152/139)  R5 +1.1/-1.4 (n56/74)  
+
+NQ SHAPE (pts/trade)  [prediction: ?]
+   18-21  LOW   -6.87 (n140) | MID  +12.38 (n112) | HIGH   -4.22 (n82) | LOW-HIGH  -2.65 t -0.3
+   22+    LOW   +1.11 (n230) | MID  +13.27 (n189) | HIGH   -8.50 (n117) | LOW-HIGH  +9.61 t +1.0
+   by regime LOW/HIGH: R1 -9.3/+13.3 (n41/34)  R2 -5.9/-16.6 (n99/48)  R3 +6.2/+1.9 (n76/33)  R4 -4.6/-1.5 (n112/47)  R5 +7.0/-26.8 (n42/37)  
+
+ICT chain (pts/trade)  [prediction: ?]
+   18-21  LOW   +3.59 (n39) | MID   +1.44 (n41) | HIGH   +1.84 (n32) | LOW-HIGH  +1.75 t +0.2
+   22+    LOW   +3.27 (n52) | MID   +5.77 (n45) | HIGH   +0.46 (n57) | LOW-HIGH  +2.81 t +0.4
+   by regime LOW/HIGH: R1 +6.6/+2.6 (n14/13)  R2 +1.9/+1.3 (n25/19)  R3 -3.0/+16.3 (n14/7)  R4 +2.8/+1.1 (n28/39)  R5 +13.2/-11.8 (n10/11)  
+
+main-algo leg RA  [prediction: ?]
+   18-21  LOW   -1.46 (n31) | MID  +13.60 (n34) | HIGH   -2.70 (n38) | LOW-HIGH  +1.24 t +0.2
+   22+    LOW  +12.89 (n39) | MID   +5.37 (n81) | HIGH  +12.04 (n56) | LOW-HIGH  +0.85 t +0.1
+   by regime LOW/HIGH: R1 -5.2/-8.6 (n5/17)  R2 -0.7/+2.0 (n26/21)  R3 +11.3/+12.9 (n19/21)  R4 +19.9/+4.9 (n16/24)  R5 -7.3/+25.9 (n4/11)  
+
+main-algo leg M1  [prediction: ?]
+   18-21  LOW   +0.80 (n171) | MID   +1.22 (n92) | HIGH   +1.18 (n74) | LOW-HIGH  -0.38 t -0.3
+   22+    LOW   +0.13 (n216) | MID   +2.98 (n220) | HIGH   +2.12 (n125) | LOW-HIGH  -1.98 t -0.9
+   by regime LOW/HIGH: R1 +0.8/+0.3 (n61/35)  R2 +0.8/+1.9 (n110/39)  R3 +1.5/+4.6 (n84/43)  R4 -1.1/+1.0 (n72/59)  R5 -0.4/+0.4 (n60/23)  
+
+main-algo leg R1  [prediction: ?]
+   18-21  LOW   +3.15 (n14) | MID   +5.63 (n17) | HIGH   -1.67 (n18) | LOW-HIGH  +4.82 t +0.6
+   22+    LOW   +4.02 (n15) | MID   +3.35 (n31) | HIGH   +4.88 (n32) | LOW-HIGH  -0.87 t -0.1
+   by regime LOW/HIGH: R1 -3.2/-1.6 (n3/10)  R2 +4.9/-1.8 (n11/8)  R3 +21.0/-46.2 (n2/1)  R4 -3.0/+4.9 (n8/19)  R5 +8.4/+9.2 (n5/12)  
+
+main-algo leg ON+  [prediction: ?]
+   18-21  LOW   -0.65 (n69) | MID   +3.20 (n87) | HIGH   +1.29 (n82) | LOW-HIGH  -1.94 t -0.7
+   22+    LOW   +2.52 (n109) | MID   -0.35 (n128) | HIGH   +4.80 (n150) | LOW-HIGH  -2.29 t -0.7
+   by regime LOW/HIGH: R1 -1.4/-0.9 (n25/35)  R2 -0.3/+2.9 (n44/47)  R3 -5.0/+0.6 (n16/6)  R4 +2.1/+3.8 (n72/90)  R5 +9.8/+7.0 (n21/54)  
+
+main-algo leg ON-  [prediction: ?]
+   18-21  LOW   -0.07 (n173) | MID   +0.40 (n138) | HIGH   +0.44 (n119) | LOW-HIGH  -0.51 t -0.9
+   22+    LOW   +0.14 (n230) | MID   +0.77 (n227) | HIGH   -0.71 (n165) | LOW-HIGH  +0.85 t +1.3
+   by regime LOW/HIGH: R1 -0.5/+0.4 (n43/44)  R2 +0.1/+0.4 (n130/75)  R3 -0.6/-0.7 (n100/73)  R4 +0.6/-0.1 (n89/67)  R5 +0.9/-2.4 (n41/25)  
+
+main-algo leg RULES  [prediction: ?]
+   18-21  LOW   +0.21 (n139) | MID   +1.37 (n92) | HIGH   +1.38 (n78) | LOW-HIGH  -1.16 t -0.8
+   22+    LOW   +0.29 (n230) | MID   +2.36 (n225) | HIGH   +2.15 (n198) | LOW-HIGH  -1.86 t -1.8
+   by regime LOW/HIGH: R1 +1.6/+4.1 (n30/18)  R2 -0.2/+0.6 (n109/60)  R3 +1.0/+0.9 (n83/56)  R4 +0.3/+2.5 (n97/102)  R5 -0.9/+3.1 (n50/40)  
+
+main-algo leg V15a  [prediction: ?]
+   18-21  LOW   +2.41 (n85) | MID   +2.55 (n73) | HIGH   -1.87 (n69) | LOW-HIGH  +4.28 t +2.0
+   22+    LOW   +1.29 (n98) | MID   +8.96 (n136) | HIGH   +3.23 (n115) | LOW-HIGH  -1.93 t -0.5
+   by regime LOW/HIGH: R1 -0.4/-2.7 (n13/35)  R2 +2.9/-1.0 (n72/34)  R3 -1.4/+5.0 (n35/47)  R4 +2.4/+2.3 (n39/42)  R5 +3.5/+1.5 (n24/26)  
+
+main algo all legs (pts/DAY)  [prediction: ?]
+   18-21  LOW   +1.28 (n243) | MID   +5.85 (n225) | HIGH   +0.45 (n201) | LOW-HIGH  +0.83 t +0.4
+   22+    LOW   +3.22 (n339) | MID   +8.64 (n356) | HIGH   +7.92 (n315) | LOW-HIGH  -4.70 t -1.5
+   by regime LOW/HIGH: R1 -0.1/-2.3 (n68/79)  R2 +1.8/+2.2 (n175/122)  R3 +2.4/+8.3 (n116/79)  R4 +3.4/+6.1 (n161/157)  R5 +4.5/+11.2 (n62/79)  
+
+#### VA-80 GATE: trade only when rho2 = LOW (pts/trade, all LOW trades vs all trades)
+   18-21  ungated  +3.01 (n157, win 50%) | gated LOW +11.64 (n56, win 48%, t +1.2)
+   22+    ungated  -3.98 (n216, win 51%) | gated LOW  -3.90 (n65, win 48%, t -0.3)
+   gated LOW by year: 2019:-7.6(n10) 2020:+14.7(n26) 2021:+17.3(n20) 2022:+35.9(n18) 2023:-1.5(n17) 2024:-22.8(n10) 2025:-41.4(n18) 2026:+48.8(n2)
