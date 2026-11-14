@@ -38,7 +38,9 @@ try: import signal_context as SC
 except Exception as _e: SC = None; print(f'  ! signal_context unavailable ({_e}); posts will have no context, no earnings/short rules')
 try: import signal_chart as SCH
 except Exception as _e: SCH = None; print(f'  ! signal_chart unavailable ({_e}); alerts will have no chart')
-CH = {}; PGR = {}
+try: import short_regime as SQ
+except Exception as _e: SQ = None; print(f'  ! short_regime unavailable ({_e}); no squeeze-regime tag')
+SQ_GATE = os.getenv('MIDSMALL_SQUEEZE_GATE', '0') == '1'; CH = {}; PGR = {}
 BACKTEST_NOTE = 'Backtest (in-sample, sub-$5): setups with >=3 flags averaged about +4-6% per trade vs about +1% with <=2; win rate ~29% either way (median trade -3%), so size small.'
 DEFAULT = ['KGS', 'LCID', 'RIOT', 'Z', 'IREN', 'PLUG', 'UPST', 'CLOV', 'TLRY', 'BB', 'SOFI', 'FUBO', 'OPEN', 'ETSY', 'DKNG', 'ROKU', 'CROX', 'FIVE', 'CHWY', 'MTCH', 'LYFT', 'BBWI',
            'RIVN', 'SNAP', 'PINS', 'HOOD', 'AFRM', 'RKLB', 'SOUN', 'MARA', 'CLSK', 'HIMS', 'CELH', 'JOBY', 'ACHR', 'PATH', 'NIO', 'LI', 'W', 'CHPT', 'RUN', 'ENPH', 'SEDG', 'LUMN']
@@ -231,6 +233,10 @@ def scan_once(dry, data=None, asof=None):
         p = st['pos'].pop(tk); charts.append((tk, 'SELL', None)); fired.append(f"\u26a1 SELL {tk}: 1h vector turned bearish on the {ts:%H:%M} bar (last {px:.2f}). Exit at the next open. Entry was {p['px']:.2f} ({px / p['px'] - 1:+.1%}), held since {p['t'][:16]}.")
         ctxs.append(SC.block(tk, 'SELL') if SC else None); st['seen'].append(key)
     buys = sorted([c for c in cand if c[2] == 'BUY'], key=lambda c: -c[3]); iwm_up = SC.market_line()[1] if (SC and buys) else None
+    sqs = SQ.status() if (SQ and (buys or not dry)) else None                                                       # short-squeeze regime (xs/report_69): tag + extra alert, optional gate
+    if SQ and sqs:
+        _m = SQ.change_msg(st, sqs)
+        if _m: fired.append(_m); ctxs.append(None)
     for tk, ts, kind, vr, px, vwx in buys:
         key = f'{tk}|BUY|{ts}'
         if key in st['seen'] or tk in st['pos']: continue
@@ -243,6 +249,8 @@ def scan_once(dry, data=None, asof=None):
         grade = 'TOP' if (m_ and m_.get('kal') and m_['a200'] and a4_) else ('STRONG' if (m_ and m_.get('kal') and m_['a200']) else 'WEAK')
         if MIN_GRADE == 'TOP' and grade != 'TOP' or MIN_GRADE == 'STRONG' and grade == 'WEAK': print(f'  skipped {tk}: grade {grade} (needs Kalman up + above the 1h EMA200{" + 4h EMA200" if MIN_GRADE == "TOP" else ""}; MIDSMALL_MIN_GRADE={MIN_GRADE})'); st['seen'].append(key); continue
         if KAL_GATE and MA.get(tk) and MA[tk].get('kal') is False: print(f'  skipped {tk}: Kalman trend down (MIDSMALL_KALMAN_GATE=1)'); st['seen'].append(key); continue
+        _sq = SQ.tag(tk, sqs) if (SQ and sqs) else None
+        if SQ_GATE and not (_sq and _sq['hot']): print(f'  skipped {tk}: not a squeeze-regime name (MIDSMALL_SQUEEZE_GATE=1)'); st['seen'].append(key); continue
         svr = SC.short_share(tk) if SC else None; half = svr is not None and svr > SC.SVR_CUT
         size_txt = (f"Size: HALF slot - short sellers are {svr:.0%} of its volume (20-day), the persistent-short-pressure group that underperformed in the backtest." if half else
                     f"Size: full slot (1/{SLOTS} of the book)" + (f" - short share {svr:.0%} of volume." if svr is not None else '.'))
@@ -256,6 +264,9 @@ def scan_once(dry, data=None, asof=None):
         if _pg: st['pos'][tk]['pts'] = _pg['pts']
         fired.append(f"\u26a1 BUY {tk}: [{_gt}] 1h vector bull flip on the {ts:%H:%M} bar with {vr:.1f}x volume{' on a low-volatility day' if LV.get(tk) else ''}, {vwx:+.1f} ATR vs VWAP. Entry next open (~{px:.2f}). Exit = the vector's bear flip (no other stop). Slot {len(st['pos'])}/{SLOTS}." + (' HALF SIZE.' if half else '') + (' Below 1h 200 EMA.' if MA.get(tk) and not MA[tk]['a200'] else '') + (' A+ GRADE: daily vector bull AND Kalman trend up.' if DBULL.get(tk) and MA.get(tk) and MA[tk].get('kal') else ' A-GRADE: daily vector is also bull.' if DBULL.get(tk) else (' Daily vector NOT bull (lone 1h flip).' if DBULL.get(tk) is False else '')))
         ctxs.append(SC.block(tk, 'BUY', extra=[x for x in (size_txt, GRADE_TXT.get(grade, ''), DAILY_TXT.get(DBULL.get(tk), ''), ma_text(MA.get(tk))) if x], flags=flags) if SC else None)
+        if _sq:
+            fired[-1] += ' ' + _sq['line']
+            if _sq['hot']: st['pos'][tk]['sq'] = True; fired.append(_sq['alert']); ctxs.append(None)
     for m in conf_msgs: fired.append(m); ctxs.append(None)
     for m in fired: print(m); (None if dry else post(m))                                                           # alerts first (fast) ...
     for m, c in zip(fired, ctxs):                                                                                   # ... then the context for each
