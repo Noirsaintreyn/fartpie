@@ -1,0 +1,8 @@
+trades 10634
+mean % per FLIP SIGNAL (A hold all | B exit bar4 if fail | C late entry only if pass, skipped=0 | C per taken trade) and share failing
+ UVS 19-21: n 2077 fail 0.32 | A +0.720 | B +0.653 | C +0.460 | C/taken +0.674 | fail-group: full -0.24 r4 -0.45 rem +0.21
+ UVS 22-26: n 8257 fail 0.33 | A +0.415 | B +0.371 | C +0.154 | C/taken +0.229 | fail-group: full -0.36 r4 -0.49 rem +0.13
+ UVS pooled: n 10334 fail 0.33 | A +0.476 | B +0.428 | C +0.215 | C/taken +0.319 | fail-group: full -0.34 r4 -0.49 rem +0.15
+ EFF 19-21: n 2077 fail 0.33 | A +0.720 | B +0.665 | C +0.473 | C/taken +0.701 | fail-group: full -0.43 r4 -0.60 rem +0.17
+ EFF 22-26: n 8257 fail 0.33 | A +0.415 | B +0.343 | C +0.125 | C/taken +0.187 | fail-group: full -0.46 r4 -0.68 rem +0.22
+ EFF pooled: n 10334 fail 0.33 | A +0.476 | B +0.408 | C +0.195 | C/taken +0.291 | fail-group: full -0.45 r4 -0.66 rem +0.21

@@ -1,0 +1,7 @@
+flips 18668 names 374 long 9425 short 9243
+LONG  all   n  9325 fail 0.35 win 0.27 | A +0.59 | B +0.38 | C +0.16 (taken +0.25) | fail grp: full -0.33 r2 -0.95 rem +0.61 | pass grp full +1.08
+LONG  half1 n  4661 fail 0.35 win 0.30 | A +1.46 | B +0.98 | C +0.69 (taken +1.06) | fail grp: full +0.54 r2 -0.85 rem +1.39 | pass grp full +1.96
+LONG  half2 n  4664 fail 0.34 win 0.25 | A -0.27 | B -0.22 | C -0.36 (taken -0.56) | fail grp: full -1.21 r2 -1.05 rem -0.17 | pass grp full +0.22
+SHORT all   n  9143 fail 0.32 win 0.25 | A -0.66 | B -0.56 | C -0.72 (taken -1.05) | fail grp: full -1.28 r2 -0.97 rem -0.31 | pass grp full -0.38
+SHORT half1 n  4571 fail 0.32 win 0.24 | A -0.85 | B -0.68 | C -0.81 (taken -1.19) | fail grp: full -1.44 r2 -0.92 rem -0.52 | pass grp full -0.57
+SHORT half2 n  4572 fail 0.31 win 0.27 | A -0.48 | B -0.45 | C -0.62 (taken -0.91) | fail grp: full -1.12 r2 -1.03 rem -0.09 | pass grp full -0.18
