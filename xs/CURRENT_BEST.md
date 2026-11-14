@@ -23,3 +23,6 @@ Added to I (everything that beat I in BOTH eras on net per eval when combined; s
 net/eval $2,094 -> $2,914 and $2,695 -> $2,767; days start->pass 60 -> 51 and 34 -> 31; start->1st payout 86 -> 72 and 44 -> 45; avg payout unchanged (cap-limited).
 Not adopted: IB-B[HIGH] (cuts pass), VA-B at 0.5 eval-only (pass 70% in 22-25), month-1 cut rule (small, depends on reset price; xs/report_40), QQQ>200d tag (pooled t 1.4), TDA norm (xs/report_41, fails).
 Evidence level: the gain is mostly 2018-21; 22-25 is +3% net. Treat as a low-risk stack, not a new edge. VA-B was negative in the latest regime (R5).
+
+## Nov 14 2026: mid/small screener candidate tilt (NOT yet wired into live code)
+Candidate: prefer/size-up flips with flip-bar volume >= 1.5x AND >= 1 officer/director open-market buy (Form 4 'P') in the prior 30 days. Evidence: reports 60-62 (wide daily universe, strict split, survivorship caveat). PEAD gate and financing-8-K skip were tested and dropped (report_61). Keep the existing earnings guard. The Mac live code (midsmall_screener.py) was not edited this session (device link unavailable).
