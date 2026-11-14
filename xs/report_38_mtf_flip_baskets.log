@@ -1,0 +1,27 @@
+n flips 4583 | share with 1h bull 0.47
+
+PER TRADE (bp), exit: same-day hold-to-bear (hold)
+A 15m flip alone             | 18-21: n2045  +29.2 t+7.1 | 22+: n2538  +10.3 t+2.8
+B 15m flip + 1h bull         | 18-21: n1022  +20.7 t+4.0 | 22+: n1136  +17.4 t+3.3
+C 15m flip, 1h NOT bull      | 18-21: n1023  +37.7 t+5.8 | 22+: n1402   +4.7 t+0.9
+D 15m + 1h bull + >200dEMA   | 18-21: n 909  +19.2 t+3.9 | 22+: n 907  +11.6 t+2.2
+E 15m + >200dEMA             | 18-21: n1587  +25.9 t+6.1 | 22+: n1706   +5.7 t+1.5
+F 15m + 1h bull + <200dEMA   | 18-21: n 113  +32.9 t+1.4 | 22+: n 229  +40.3 t+2.6
+
+PER TRADE (bp), exit: 16 bars (4h) same day
+A 15m flip alone             | 18-21: n1378  +15.0 t+4.5 | 22+: n1699   +7.2 t+2.3
+B 15m flip + 1h bull         | 18-21: n 697   +3.8 t+1.0 | 22+: n 746  +11.9 t+2.7
+C 15m flip, 1h NOT bull      | 18-21: n 681  +26.4 t+5.0 | 22+: n 953   +3.6 t+0.8
+D 15m + 1h bull + >200dEMA   | 18-21: n 616   +3.0 t+0.7 | 22+: n 598  +10.9 t+2.3
+E 15m + >200dEMA             | 18-21: n1065   +9.0 t+2.5 | 22+: n1173   +4.8 t+1.4
+F 15m + 1h bull + <200dEMA   | 18-21: n  81  +10.0 t+0.8 | 22+: n 148  +16.0 t+1.4
+
+B vs C (1h bull minus not), hold: 18-21 -17.0 t-2.1 | 22+ +12.7 t+1.7
+
+BASKETS: equal-weight mean of that day's signals (hold exit), bp per basket-day
+A 15m flip alone             | 18-21:  727d  +13.3 t+2.7 avg names/d 2.8 | 22+:  883d   +4.7 t+1.0 avg names/d 2.9
+B 15m flip + 1h bull         | 18-21:  523d  +14.6 t+2.3 avg names/d 2.0 | 22+:  593d   +8.9 t+1.4 avg names/d 1.9
+C 15m flip, 1h NOT bull      | 18-21:  451d  +22.2 t+3.1 avg names/d 2.3 | 22+:  600d   -1.3 t-0.2 avg names/d 2.3
+D 15m + 1h bull + >200dEMA   | 18-21:  489d  +12.6 t+2.1 avg names/d 1.9 | 22+:  508d  +10.0 t+1.5 avg names/d 1.8
+E 15m + >200dEMA             | 18-21:  651d  +13.4 t+2.7 avg names/d 2.4 | 22+:  714d   +2.6 t+0.5 avg names/d 2.4
+F 15m + 1h bull + <200dEMA   | 18-21:   90d  +34.1 t+1.5 avg names/d 1.3 | 22+:  152d  +29.7 t+1.6 avg names/d 1.5

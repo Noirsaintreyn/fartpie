@@ -53,3 +53,8 @@ The market's participants and plumbing changed (stimulus/retail, tightening, 0DT
 
 ### Expected range vs prior value (Rey's idea, xs/report_34_range_vs_value.py, Nov 14 2026)
 rho = ADR20 / prior-day VA width, PIT expanding terciles. LOW rho (expected range fits inside value) -> open inside prior VA 43% vs 22% (HIGH), close inside VA 27% vs 12%, BUT the day's range is larger vs ADR (1.1-1.25x vs 0.84-0.91x): rho is partly a vol-clustering proxy (wide yesterday = wide today). Models: IB-B (continuation) HIGH > LOW in both eras (+6.2/+2.8 vs -2.2/-2.3); main algo pts/day HIGH > LOW both eras (RULES, M1 same); VA-80 (rotation) LOW > HIGH both eras (+6.9/+3.3 vs -4.9/-7.8) but it fails in R4-R5 and t~1; VA-F (fade) loses in every bucket, SHAPE weakly LOW>HIGH; chain positive in both. So "range exceeds value -> continuation" partially holds; "range fits value -> fade" holds only for the rotation model VA-80, not the plain VA-edge fade.
+
+## Nov 14 2026 addendum (reports 35-38)
+- HAR range forecast / VA-80 gate (r35), high-rho legs in the pairing sim (r36): INV-F[HIGH] funded-only helps 2018-21, hurts 2022-25; IB-B[HIGH] eval-only lowers pass. Nothing beats current best on 2022-25.
+- 200 EMA filter (r37): stock-level not supported (signs inconsistent, small t); QQQ>200d same sign across regimes, pooled t~1.4.
+- 15m flip +/- 1h bull, +/- 200d EMA, 9 LSE names (r38): 1h-bull flips sign by era (-17bp 18-21, +12.7bp 22+); EMA adds nothing; 1h bull & <200d EMA positive both eras but small n (lead only).
