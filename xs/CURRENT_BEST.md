@@ -26,3 +26,9 @@ Evidence level: the gain is mostly 2018-21; 22-25 is +3% net. Treat as a low-ris
 
 ## Nov 14 2026: mid/small screener candidate tilt (NOT yet wired into live code)
 Candidate: prefer/size-up flips with flip-bar volume >= 1.5x AND >= 1 officer/director open-market buy (Form 4 'P') in the prior 30 days. Evidence: reports 60-62 (wide daily universe, strict split, survivorship caveat). PEAD gate and financing-8-K skip were tested and dropped (report_61). Keep the existing earnings guard. The Mac live code (midsmall_screener.py) was not edited this session (device link unavailable).
+
+## Nov 14 2026 update (mid/small screener)
+- WIRED (branch after-close, needs pull on Mac/Render, Yahoo path untested from the sandbox): short_regime.py = squeeze-regime tag on every BUY, extra SQUEEZE-REGIME BUY alert (DTC>=10 while the high-short basket leads), regime on/off notice, rates context line (2y yield 60d change). Gate is OFF by default (MIDSMALL_SQUEEZE_GATE=1 to require). Evidence is from daily flips (xs/report_67b, 69, 73), not 1h.
+- STILL CANDIDATE, NOT WIRED: insider buy + flip-bar volume >=1.5x tilt (reports 60-62, 74: +8.0% per flip n 413 vs +3.2% volume-only; regime-robust).
+- Tested and NOT adopted: open-entry on gap above trigger (report_68, net zero), 13D, S&P adds, Russell window, biotech/8-K proxies, SI change, sector lead as a flat filter, any bottom-cut or hard stop (reports 75-76), trailing persistence gate (report_72).
+- Per-flip returns on the wide daily set (net 30bp): volume rule +3.17%; skip yield-TIGHTENING months +3.57% (2022-26: +3.3% vs +1.0%); insider+volume +8.0%; squeeze-hot only +12.1% (n 729, worst year -8.2%). K=10 book compounded figures are unstable (volume-only swings +9% to -51% across runs): do not quote them.
