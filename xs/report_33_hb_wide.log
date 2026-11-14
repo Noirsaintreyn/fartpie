@@ -1,0 +1,32 @@
+
+=== ALL daily flips | fwd 21d excess vs universe | QQQ above vs below 200d ===
+  R1: above -0.59% (n2013) | below -0.91% (n355) | diff +0.32% t +1.0
+  R2: above -0.06% (n2803) | below -1.99% (n99) | diff +1.93% t +1.5
+  R3: above -0.31% (n315) | below -0.31% (n1781) | diff +0.00% t +0.0
+  R4: above -0.15% (n2778) | below -0.53% (n80) | diff +0.38% t +0.4
+  R5: above -0.11% (n1809) | below -0.16% (n316) | diff +0.04% t +0.1
+  POOLED: above -0.21% (n9718) below -0.45% (n2631) diff +0.23% t +1.2 | regimes where above>below: 5
+
+=== ALL daily flips | fwd 63d excess vs universe | QQQ above vs below 200d ===
+  R1: above -0.59% (n2013) | below -1.54% (n355) | diff +0.95% t +1.5
+  R2: above -0.43% (n2803) | below -6.11% (n99) | diff +5.68% t +2.7
+  R3: above -0.19% (n315) | below -0.57% (n1781) | diff +0.38% t +0.4
+  R4: above -0.51% (n2778) | below -1.83% (n80) | diff +1.33% t +0.8
+  R5: above -0.59% (n1809) | below -0.71% (n316) | diff +0.11% t +0.1
+  POOLED: above -0.51% (n9718) below -0.96% (n2631) diff +0.46% t +1.4 | regimes where above>below: 5
+
+=== A: flips over daily pivot | fwd 21d excess vs universe | QQQ above vs below 200d ===
+  R1: above -0.52% (n1915) | below -0.85% (n326) | diff +0.34% t +1.0
+  R2: above -0.04% (n2652) | below -1.00% (n66) | diff +0.96% t +0.6
+  R3: above -0.02% (n285) | below -0.38% (n1685) | diff +0.36% t +0.7
+  R4: above -0.12% (n2614) | below -0.86% (n65) | diff +0.74% t +0.7
+  R5: above -0.13% (n1742) | below -0.22% (n289) | diff +0.09% t +0.1
+  POOLED: above -0.18% (n9208) below -0.45% (n2431) diff +0.28% t +1.4 | regimes where above>below: 5
+
+=== A: flips over daily pivot | fwd 63d excess vs universe | QQQ above vs below 200d ===
+  R1: above -0.49% (n1915) | below -0.96% (n326) | diff +0.47% t +0.7
+  R2: above -0.38% (n2652) | below -6.11% (n66) | diff +5.74% t +2.1
+  R3: above +0.11% (n285) | below -0.73% (n1685) | diff +0.84% t +0.9
+  R4: above -0.46% (n2614) | below -3.10% (n65) | diff +2.64% t +1.5
+  R5: above -0.74% (n1742) | below -1.02% (n289) | diff +0.28% t +0.2
+  POOLED: above -0.48% (n9208) below -1.01% (n2431) diff +0.53% t +1.6 | regimes where above>below: 5
