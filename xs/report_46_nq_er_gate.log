@@ -1,0 +1,19 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  WIN RATES (pts>0): base daytime legs 2018-21 51% | 2022+ 54%
+    chain strong-inv   n 82/76 | win 45%/50% | avg pts +6.1/+6.4 | win rate above base in both eras: False
+    VA-B               n 261/346 | win 72%/68% | avg pts +5.6/+6.2 | win rate above base in both eras: True
+    INV-F[HIGH]        n 113/167 | win 44%/26% | avg pts +6.5/+2.0 | win rate above base in both eras: False
+    IB-B[HIGH]         n 174/289 | win 48%/37% | avg pts +5.7/+4.1 | win rate above base in both eras: False
+  daily correlation of NZ pts with the S6 system pts: +0.42
+
+NQ ER20 tercile (PIT) -> mean pts/day (1 contract), low | mid | high | high-low t
+ SYSTEM (all legs, 1 contract each) | 18-21:  +4.0  +3.2  +2.6 t -0.8 | 22-26:  +7.1  +8.5  +5.5 t -0.5 | pooled:  +5.7  +5.8  +3.9 t -1.0
+ RA                                 | 18-21:  +0.5  +0.6  +1.1 t +0.6 | 22-26:  +1.2  +2.4  +1.3 t +0.1 | pooled:  +0.9  +1.5  +1.2 t +0.4
+ M1                                 | 18-21:  +3.9  +2.6  +1.2 t -1.4 | 22-26:  +3.5  +5.4  +0.6 t -0.9 | pooled:  +3.7  +4.0  +1.0 t -1.4
+ R1                                 | 18-21:  +0.3  +0.6  -0.4 t -1.0 | 22-26:  +0.4  +1.1  +0.5 t +0.1 | pooled:  +0.4  +0.9  +0.0 t -0.5
+ ON+                                | 18-21:  +1.2  +1.1  +1.3 t +0.0 | 22-26:  +2.3  +0.8  +4.9 t +0.7 | pooled:  +1.8  +1.0  +3.0 t +0.6
+ ON-                                | 18-21:  +1.3  -0.2  +1.9 t +0.2 | 22-26:  +4.9  +1.2  -3.0 t -2.0 | pooled:  +3.4  +0.5  -0.4 t -1.5
+ RULES                              | 18-21:  +1.0  +0.9  +0.1 t -1.8 | 22-26:  +1.4  +0.7  +1.4 t +0.1 | pooled:  +1.2  +0.8  +0.7 t -1.2
+ V15a                               | 18-21:  +1.8  +0.6  +1.6 t -0.1 | 22-26:  +6.1  +9.2  +2.2 t -1.0 | pooled:  +4.2  +4.7  +1.9 t -1.0
