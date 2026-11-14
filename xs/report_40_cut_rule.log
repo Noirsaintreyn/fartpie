@@ -1,0 +1,49 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  WIN RATES (pts>0): base daytime legs 2018-21 51% | 2022+ 54%
+    chain strong-inv   n 82/76 | win 45%/50% | avg pts +6.1/+6.4 | win rate above base in both eras: False
+    VA-B               n 261/346 | win 72%/68% | avg pts +5.6/+6.2 | win rate above base in both eras: True
+    INV-F[HIGH]        n 113/167 | win 44%/26% | avg pts +6.5/+2.0 | win rate above base in both eras: False
+    IB-B[HIGH]         n 174/289 | win 48%/37% | avg pts +5.7/+4.1 | win rate above base in both eras: False
+  daily correlation of NZ pts with the S6 system pts: +0.42
+  eval target $3000, fee $88/month, MLL $2000
+  I. current best
+   cut rule: no cut
+    2018-21 starts: evals bought avg 1.05 | passed 100% | days start->pass median 60 p90 145 | fees to pass median $264 p90 $616 | paid by 30/60/90 days 2%/16%/47% | median days to 1st payout 89
+    2022-25 starts: evals bought avg 1.22 | passed 100% | days start->pass median 41 p90 79 | fees to pass median $264 p90 $352 | paid by 30/60/90 days 14%/40%/58% | median days to 1st payout 52
+   cut rule: drop at month 1 if under $1000
+    2018-21 starts: evals bought avg 2.43 | passed 100% | days start->pass median 60 p90 149 | fees to pass median $264 p90 $704 | paid by 30/60/90 days 2%/18%/48% | median days to 1st payout 87
+    2022-25 starts: evals bought avg 1.68 | passed 100% | days start->pass median 39 p90 75 | fees to pass median $176 p90 $352 | paid by 30/60/90 days 14%/44%/63% | median days to 1st payout 51
+   cut rule: drop at month 1 if under $1500
+    2018-21 starts: evals bought avg 2.93 | passed 100% | days start->pass median 64 p90 151 | fees to pass median $352 p90 $704 | paid by 30/60/90 days 2%/17%/45% | median days to 1st payout 90
+    2022-25 starts: evals bought avg 1.89 | passed 100% | days start->pass median 40 p90 79 | fees to pass median $176 p90 $352 | paid by 30/60/90 days 14%/43%/62% | median days to 1st payout 52
+   cut rule: drop at month 1 if under $2000
+    2018-21 starts: evals bought avg 4.30 | passed 100% | days start->pass median 78 p90 195 | fees to pass median $352 p90 $880 | paid by 30/60/90 days 2%/15%/35% | median days to 1st payout 108
+    2022-25 starts: evals bought avg 2.13 | passed 100% | days start->pass median 41 p90 83 | fees to pass median $176 p90 $440 | paid by 30/60/90 days 14%/40%/59% | median days to 1st payout 52
+  I + VA-B .5 EVAL only
+   cut rule: no cut
+    2018-21 starts: evals bought avg 1.05 | passed 100% | days start->pass median 51 p90 126 | fees to pass median $264 p90 $546 | paid by 30/60/90 days 3%/29%/60% | median days to 1st payout 73
+    2022-25 starts: evals bought avg 1.32 | passed 100% | days start->pass median 34 p90 72 | fees to pass median $176 p90 $352 | paid by 30/60/90 days 17%/47%/64% | median days to 1st payout 45
+   cut rule: drop at month 1 if under $1000
+    2018-21 starts: evals bought avg 2.06 | passed 100% | days start->pass median 50 p90 125 | fees to pass median $264 p90 $546 | paid by 30/60/90 days 3%/29%/59% | median days to 1st payout 73
+    2022-25 starts: evals bought avg 1.69 | passed 100% | days start->pass median 32 p90 68 | fees to pass median $176 p90 $352 | paid by 30/60/90 days 17%/49%/63% | median days to 1st payout 44
+   cut rule: drop at month 1 if under $1500
+    2018-21 starts: evals bought avg 2.74 | passed 100% | days start->pass median 54 p90 141 | fees to pass median $264 p90 $616 | paid by 30/60/90 days 3%/27%/53% | median days to 1st payout 78
+    2022-25 starts: evals bought avg 1.84 | passed 100% | days start->pass median 34 p90 70 | fees to pass median $176 p90 $352 | paid by 30/60/90 days 17%/47%/62% | median days to 1st payout 45
+   cut rule: drop at month 1 if under $2000
+    2018-21 starts: evals bought avg 3.68 | passed 100% | days start->pass median 64 p90 178 | fees to pass median $352 p90 $792 | paid by 30/60/90 days 3%/24%/45% | median days to 1st payout 90
+    2022-25 starts: evals bought avg 1.99 | passed 100% | days start->pass median 34 p90 72 | fees to pass median $176 p90 $352 | paid by 30/60/90 days 17%/46%/62% | median days to 1st payout 45
+  I + STACK with win-rate leverage + align x1.25
+   cut rule: no cut
+    2018-21 starts: evals bought avg 1.05 | passed 100% | days start->pass median 52 p90 125 | fees to pass median $264 p90 $546 | paid by 30/60/90 days 3%/24%/56% | median days to 1st payout 74
+    2022-25 starts: evals bought avg 1.21 | passed 100% | days start->pass median 36 p90 70 | fees to pass median $176 p90 $352 | paid by 30/60/90 days 16%/45%/62% | median days to 1st payout 49
+   cut rule: drop at month 1 if under $1000
+    2018-21 starts: evals bought avg 2.17 | passed 100% | days start->pass median 51 p90 130 | fees to pass median $264 p90 $616 | paid by 30/60/90 days 3%/26%/55% | median days to 1st payout 75
+    2022-25 starts: evals bought avg 1.63 | passed 100% | days start->pass median 34 p90 69 | fees to pass median $176 p90 $352 | paid by 30/60/90 days 16%/47%/63% | median days to 1st payout 46
+   cut rule: drop at month 1 if under $1500
+    2018-21 starts: evals bought avg 2.83 | passed 100% | days start->pass median 57 p90 147 | fees to pass median $264 p90 $634 | paid by 30/60/90 days 3%/24%/48% | median days to 1st payout 82
+    2022-25 starts: evals bought avg 1.82 | passed 100% | days start->pass median 35 p90 72 | fees to pass median $176 p90 $352 | paid by 30/60/90 days 16%/46%/62% | median days to 1st payout 48
+   cut rule: drop at month 1 if under $2000
+    2018-21 starts: evals bought avg 3.85 | passed 100% | days start->pass median 68 p90 181 | fees to pass median $352 p90 $792 | paid by 30/60/90 days 3%/21%/40% | median days to 1st payout 94
+    2022-25 starts: evals bought avg 2.02 | passed 100% | days start->pass median 36 p90 77 | fees to pass median $176 p90 $352 | paid by 30/60/90 days 16%/44%/60% | median days to 1st payout 48
