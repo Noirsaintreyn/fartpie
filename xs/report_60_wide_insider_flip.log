@@ -1,0 +1,66 @@
+tickers 1656 insider symbols 7015 P rows 202446
+long flips 35632 names 1638 with >=1 insider 1934 cluster>=2 593
+
+##### cost 30bp
+
+ 2019-21: n=12323 | variant | n | mean net % | median % | win % | big(>=15%) % | avg hold d | clustered t vs rest
+   A all flips            n  12323 |  +4.62 | -4.39 | 26.6 | 13.8 | 48.2 | t +nan
+   B BV>=1.5              n   3406 |  +6.97 | -5.21 | 30.0 | 16.8 | 54.0 | t +1.6
+   C INS>=1               n    687 |  +9.28 | -4.48 | 28.5 | 15.3 | 53.4 | t +0.8
+   D CLUSTER>=2           n    217 | +11.84 | -5.23 | 23.0 | 12.9 | 47.2 | t +0.6
+   E CLUSTER+BV (rule)    n     52 |  -2.59 | -5.79 | 23.1 | 13.5 | 42.0 | t -2.7
+   F INS>=1 + BV          n    170 | +12.74 | -5.08 | 33.5 | 21.2 | 58.5 | t +1.1
+
+ 2022-26Q1: n=19941 | variant | n | mean net % | median % | win % | big(>=15%) % | avg hold d | clustered t vs rest
+   A all flips            n  19941 |  +0.24 | -4.79 | 22.4 | 10.4 | 41.6 | t +nan
+   B BV>=1.5              n   5794 |  +0.96 | -5.89 | 25.2 | 12.8 | 47.7 | t +1.3
+   C INS>=1               n   1037 |  +0.93 | -5.07 | 21.9 | 10.8 | 42.9 | t +1.2
+   D CLUSTER>=2           n    322 |  -1.26 | -5.23 | 20.2 |  8.7 | 44.3 | t -0.5
+   E CLUSTER+BV (rule)    n     82 |  +0.04 | -5.72 | 23.2 | 12.2 | 56.9 | t -0.0
+   F INS>=1 + BV          n    253 |  +5.33 | -5.11 | 29.6 | 18.6 | 55.5 | t +2.2
+
+ all: n=32264 | variant | n | mean net % | median % | win % | big(>=15%) % | avg hold d | clustered t vs rest
+   A all flips            n  32264 |  +1.91 | -4.65 | 24.0 | 11.7 | 44.1 | t +nan
+   B BV>=1.5              n   9200 |  +3.19 | -5.63 | 27.0 | 14.3 | 50.0 | t +2.0
+   C INS>=1               n   1724 |  +4.26 | -4.86 | 24.5 | 12.6 | 47.1 | t +1.3
+   D CLUSTER>=2           n    539 |  +4.01 | -5.23 | 21.3 | 10.4 | 45.5 | t +0.4
+   E CLUSTER+BV (rule)    n    134 |  -0.98 | -5.79 | 23.1 | 12.7 | 51.1 | t -1.4
+   F INS>=1 + BV          n    423 |  +8.31 | -5.11 | 31.2 | 19.6 | 56.7 | t +2.0
+
+##### cost 60bp stress
+
+ 2019-21: n=12323 | variant | n | mean net % | median % | win % | big(>=15%) % | avg hold d | clustered t vs rest
+   A all flips            n  12323 |  +4.32 | -4.69 | 26.0 | 13.7 | 48.2 | t +nan
+   B BV>=1.5              n   3406 |  +6.67 | -5.51 | 29.4 | 16.7 | 54.0 | t +1.6
+   C INS>=1               n    687 |  +8.98 | -4.78 | 27.9 | 15.3 | 53.4 | t +0.8
+   D CLUSTER>=2           n    217 | +11.54 | -5.53 | 23.0 | 12.9 | 47.2 | t +0.6
+   E CLUSTER+BV (rule)    n     52 |  -2.89 | -6.09 | 23.1 | 13.5 | 42.0 | t -2.7
+   F INS>=1 + BV          n    170 | +12.44 | -5.38 | 33.5 | 21.2 | 58.5 | t +1.1
+
+ 2022-26Q1: n=19941 | variant | n | mean net % | median % | win % | big(>=15%) % | avg hold d | clustered t vs rest
+   A all flips            n  19941 |  -0.06 | -5.09 | 22.0 | 10.3 | 41.6 | t +nan
+   B BV>=1.5              n   5794 |  +0.66 | -6.19 | 24.6 | 12.6 | 47.7 | t +1.3
+   C INS>=1               n   1037 |  +0.63 | -5.37 | 21.5 | 10.6 | 42.9 | t +1.2
+   D CLUSTER>=2           n    322 |  -1.56 | -5.53 | 19.6 |  8.4 | 44.3 | t -0.5
+   E CLUSTER+BV (rule)    n     82 |  -0.26 | -6.02 | 23.2 | 12.2 | 56.9 | t -0.0
+   F INS>=1 + BV          n    253 |  +5.03 | -5.41 | 29.2 | 18.6 | 55.5 | t +2.2
+
+ all: n=32264 | variant | n | mean net % | median % | win % | big(>=15%) % | avg hold d | clustered t vs rest
+   A all flips            n  32264 |  +1.61 | -4.95 | 23.5 | 11.6 | 44.1 | t +nan
+   B BV>=1.5              n   9200 |  +2.89 | -5.93 | 26.4 | 14.1 | 50.0 | t +2.0
+   C INS>=1               n   1724 |  +3.96 | -5.16 | 24.1 | 12.5 | 47.1 | t +1.3
+   D CLUSTER>=2           n    539 |  +3.71 | -5.53 | 21.0 | 10.2 | 45.5 | t +0.4
+   E CLUSTER+BV (rule)    n    134 |  -1.28 | -6.09 | 23.1 | 12.7 | 51.1 | t -1.4
+   F INS>=1 + BV          n    423 |  +8.01 | -5.41 | 31.0 | 19.6 | 56.7 | t +2.0
+
+TAIL CAPTURE: top-decile flips (ret >= 18.6%): rule E contains 17 of 3564 (0.5%) while being 0.41% of flips; share of rule-E flips that are top-decile 11.6% (base 10%)
+signals per year (rule E): {2018: 12, 2019: 25, 2020: 18, 2021: 9, 2022: 13, 2023: 26, 2024: 16, 2025: 25, 2026: 2}
+
+#### INCREMENTAL: among BV>=1.5 flips, insider (>=1 buyer in 30d) vs none, month-clustered t, 30bp
+ 2019-21: BV>=1.5 with insider +12.74% (n 170, win 33.5%) vs without +6.67% (n 3236) clustered t +0.7 over 34 months | median -5.08 vs -5.22
+ 2022-26Q1: BV>=1.5 with insider +5.33% (n 253, win 29.6%) vs without +0.77% (n 5541) clustered t +2.0 over 45 months | median -5.11 vs -5.91
+ all: BV>=1.5 with insider +8.31% (n 423, win 31.2%) vs without +2.94% (n 8777) clustered t +1.6 over 79 months | median -5.11 vs -5.66
+
+rule F (>=1 insider + BV>=1.5): 461 flips (1.29% of flips), contains 79 of 3564 top-decile flips (2.2%), precision 17.1% vs base 10%; per year {2018: 38, 2019: 55, 2020: 74, 2021: 41, 2022: 47, 2023: 65, 2024: 64, 2025: 71, 2026: 6}
+rule F by year mean net %: {2018: 7.6, 2019: -3.3, 2020: 33.7, 2021: -3.5, 2022: -4.2, 2023: 3.9, 2024: 12.8, 2025: 7.4, 2026: -8.8}
+rule F by year, base mean net %: {2018: -0.6, 2019: -0.7, 2020: 15.7, 2021: -2.5, 2022: -3.5, 2023: 1.3, 2024: 0.2, 2025: 3.0, 2026: -0.9}
