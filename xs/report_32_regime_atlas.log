@@ -1,0 +1,53 @@
+
+#### NQ MARKET FEATURES BY REGIME (days, avg RTH range pts, overnight share of variance, VR(7) trailing, overnight->RTH continuation, strong-inventory share)
+  R1 pre-COVID               days  557 | range   98.9 | ON var share 0.34 | VR 1.026 | ON->RTH cont +0.000 | corr(ON,RTH) -0.04 | strong-inv 53% | RTH eff 0.122
+  R2 COVID/stimulus/retail   days  474 | range  205.2 | ON var share 0.40 | VR 0.970 | ON->RTH cont +0.038 | corr(ON,RTH) +0.11 | strong-inv 51% | RTH eff 0.123
+  R3 tightening/bear         days  320 | range  286.8 | ON var share 0.29 | VR 1.017 | ON->RTH cont +0.091 | corr(ON,RTH) -0.03 | strong-inv 46% | RTH eff 0.138
+  R4 AI bull/0DTE            days  514 | range  235.5 | ON var share 0.38 | VR 1.010 | ON->RTH cont -0.029 | corr(ON,RTH) -0.04 | strong-inv 52% | RTH eff 0.123
+  R5 tariff/policy           days  330 | range  349.2 | ON var share 0.40 | VR 0.919 | ON->RTH cont -0.036 | corr(ON,RTH) -0.09 | strong-inv 50% | RTH eff 0.121
+
+#### MAIN NQ ALGO (V2 legs x unit), pts per TRADE by regime
+  leg RA (u=1.0)                     R1 +0.69(n77) | R2 +6.52(n74) | R3 +14.83(n57) | R4 +6.71(n86) | R5 +6.76(n35)
+  leg M1 (u=0.3)                     R1 +1.30(n318) | R2 +1.20(n225) | R3 +2.80(n249) | R4 +1.11(n210) | R5 +0.18(n104)
+  leg R1 (u=0.5)                     R1 -1.18(n34) | R2 +4.09(n29) | R3 +10.29(n6) | R4 +4.29(n45) | R5 +2.43(n27)
+  leg ON+ (u=0.4)                    R1 +0.64(n186) | R2 +2.07(n143) | R3 -4.60(n30) | R4 +1.09(n259) | R5 +5.76(n121)
+  leg ON- (u=0.1)                    R1 +0.02(n366) | R2 +0.22(n330) | R3 -0.32(n292) | R4 +0.30(n253) | R5 +1.29(n93)
+  leg RULES (u=1.0)                  R1 +2.16(n196) | R2 +0.45(n244) | R3 +1.20(n215) | R4 +1.88(n318) | R5 +1.39(n122)
+  leg V15a (u=0.3)                   R1 +0.00(n184) | R2 +2.20(n163) | R3 +6.39(n125) | R4 +4.81(n150) | R5 +2.61(n76)
+  --- all legs combined, pts per DAY, win-day share, worst day:
+  R1 pre-COVID               mean/day  +1.76 (n556) win-days 51% sd  14.6 worst  -56.7
+  R2 COVID/stimulus/retail   mean/day  +3.60 (n475) win-days 52% sd  27.7 worst  -88.0
+  R3 tightening/bear         mean/day  +7.54 (n322) win-days 48% sd  45.6 worst -135.4
+  R4 AI bull/0DTE            mean/day  +5.23 (n513) win-days 54% sd  32.4 worst -118.0
+  R5 tariff/policy           mean/day  +7.04 (n214) win-days 51% sd  45.5 worst  -99.4
+
+#### NQ INTRADAY MODELS, pts per trade by regime
+  VA-B                               R1 +5.64(n116) | R2 +5.63(n145) | R3 +8.25(n102) | R4 +7.89(n179) | R5 -1.61(n65)
+  VA-F                               R1 -7.69(n122) | R2 -7.98(n145) | R3 -10.25(n102) | R4 -10.65(n179) | R5 -0.39(n65)
+  VA-80                              R1 +0.41(n101) | R2 +5.73(n111) | R3 +14.66(n67) | R4 -9.85(n100) | R5 -17.47(n49)
+  IB-B                               R1 +1.51(n403) | R2 +1.90(n416) | R3 +3.95(n283) | R4 -0.14(n451) | R5 +0.04(n188)
+  INV-F                              R1 -2.21(n247) | R2 -0.77(n242) | R3 -6.76(n152) | R4 -1.29(n276) | R5 +1.32(n109)
+  SHAPE                              R1 +0.44(n221) | R2 -0.89(n230) | R3 +8.27(n165) | R4 +2.89(n252) | R5 -2.73(n119)
+  ICT chain (all)                    R1 +3.21(n87) | R2 +1.75(n74) | R3 +2.44(n34) | R4 +2.25(n95) | R5 +6.34(n25)
+  ICT chain, strong overnight        R1 +8.82(n45) | R2 +2.08(n38) | R3 +1.63(n15) | R4 +6.69(n46) | R5 +12.76(n14)
+  ICT chain WITH overnight move      R1 +1.97(n32) | R2 -2.29(n19) | R3 +12.82(n12) | R4 +3.94(n25) | R5 -6.36(n7)
+  ICT chain AGAINST overnight move   R1 +3.92(n55) | R2 +3.14(n55) | R3 -3.22(n22) | R4 +1.65(n70) | R5 +11.28(n18)
+
+#### 9 LSE stocks, 1h vector flip A (bp/trade) by regime
+  flip A exit 8                      R1 +41(n273) | R2 +58(n267) | R3 +15(n184) | R4 +41(n275) | R5 +16(n213)
+  flip A exit 16                     R1 +41(n273) | R2 +103(n267) | R3 -8(n184) | R4 +51(n275) | R5 +49(n213)
+  flip A exit nat                    R1 +116(n273) | R2 +218(n267) | R3 -14(n184) | R4 +141(n275) | R5 +103(n213)
+  control: any bull bar, exit 8      R1 +9(n1815) | R2 +25(n1891) | R3 +17(n870) | R4 +16(n1901) | R5 +7(n1277)
+  control: any bull bar, exit 16     R1 +18(n1815) | R2 +52(n1891) | R3 +8(n870) | R4 +32(n1901) | R5 +18(n1277)
+
+#### H-b (declared after the atlas, mechanism: vector flips are upside-trend continuation, so they need an up-trending index): flip A by QQQ trend state at the flip (QQQ close > its 200-day SMA, PIT) -- by regime
+  flip A exit 8 | QQQ above 200d     R1 +24(n146) | R2 +53(n245) | R3 +42(n31) | R4 +40(n264) | R5 +25(n179)
+  flip A exit 8 | QQQ below 200d     R1 +60(n127) | R2 +113(n22) | R3 +10(n153) | R4 +74(n11) | R5 -33(n34)
+  flip A exit 16 | QQQ above 200d    R1 +14(n146) | R2 +85(n245) | R3 +133(n31) | R4 +52(n264) | R5 +38(n179)
+  flip A exit 16 | QQQ below 200d    R1 +73(n127) | R2 +301(n22) | R3 -37(n153) | R4 +18(n11) | R5 +106(n34)
+  flip A exit nat | QQQ above 200d   R1 +181(n146) | R2 +187(n245) | R3 +52(n31) | R4 +156(n264) | R5 +24(n179)
+  flip A exit nat | QQQ below 200d   R1 +41(n127) | R2 +565(n22) | R3 -27(n153) | R4 -212(n11) | R5 +522(n34)
+  control bull bar exit 8 | above    R1 +10(n1081) | R2 +22(n1838) | R3 -28(n216) | R4 +17(n1875) | R5 +2(n1180)
+  control bull bar exit 8 | below    R1 +6(n734) | R2 +128(n53) | R3 +32(n654) | R4 -28(n26) | R5 +59(n97)
+  control bull bar exit 16 | above   R1 +32(n1081) | R2 +48(n1838) | R3 -18(n216) | R4 +34(n1875) | R5 +9(n1180)
+  control bull bar exit 16 | below   R1 -2(n734) | R2 +191(n53) | R3 +16(n654) | R4 -132(n26) | R5 +130(n97)

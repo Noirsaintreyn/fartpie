@@ -39,3 +39,14 @@ Regime atlas: VR/Hurst/wavelet by horizon, per name and day (PIT), over the 1,25
 - #6 NQ legs by regime: no leg has |t|>=2 with the same sign in both eras. Weak same-sign hints: M1, V15a, RA better when reverting (VR); R1, V15a(22+) better with inventory continuation.
 - #7 regime gating sim: not run (no regime separates the legs consistently).
 Takeaway: VR level is an ERA axis, not a clean per-model switch. Next candidates for the state variable: realized-vol / VIX change, signed-volume imbalance, dispersion, rather than autocorrelation alone.
+
+## Refinement (Rey, Nov 13 2026): regimes, not one narrative
+The market's participants and plumbing changed (stimulus/retail, tightening, 0DTE, AI bull, tariffs/policy shocks), so a model can work in the regimes it was "made for" and fail elsewhere; the same applies to the prop algo (made for some days, not the other half). Persistence not working in 2018-22 doesn't kill it, it may belong to a different regime. Standard for an explanation: quantitative regime features + a mechanism; a model that works in separate regimes must share a measurable feature, mapping fit on early regimes and confirmed on later ones. The calendar used so far (declared, event-based): R1 2018-01..2020-02 | R2 2020-03..2021-12 | R3 2022-01..2023-03 | R4 2023-04..2025-03 | R5 2025-04..now.
+
+### Regime atlas v1 (xs/report_32_regime_atlas.py)
+- NQ avg RTH range (pts): R1 99, R2 205, R3 287, R4 236, R5 349. VR(7): 1.03/0.97/1.02/1.01/**0.92** (R5 is the most mean-reverting). ON->RTH continuation: 0/+.04/**+.09**/-.03/-.04.
+- Main algo mean pts/day: +1.8, +3.6, +7.5, +5.2, +7.0 (scales with range). Legs differ: RA best R3 (+14.8), ON+ best R5 (+5.8) but -4.6 in R3, V15a ~0 in R1 then +2 to +6, M1 weakest in R5 (+0.18).
+- VA-B: +5.6, +5.6, +8.3, +7.9, **-1.6 (R5)**; VA-F: -7.7, -8.0, -10.3, -10.7, **-0.4 (R5)**; INV-F turns positive in R5 (+1.3). Continuation-from-value dies and fades stop losing exactly in the most mean-reverting regime (consistent with the persistence idea at REGIME level). VA-80 and IB-B are positive in R2-R3 and negative/flat in R4-R5.
+- ICT chain, strong overnight: +8.8, +2.1, +1.6, +6.7, +12.8 (positive in all five regimes). With/against overnight matches the sign of regime ON-continuation in only 2 of 5.
+- 1h vector flip A (9 stocks, bp @8 bars): +41, +58, +15, +41, +16 vs bull-bar control +9, +25, +17, +16, +7: edge in R1, R2, R4, R5, none in R3 (tightening/bear).
+- H-b (declared AFTER seeing the atlas; mechanism: flips are upside-trend continuation): flip A with QQQ above its 200d SMA (PIT) beats the control in ALL five regimes (@8 bars +24/+53/+42/+40/+25; @16 +14/+85/+133/+52/+38; R3 n=31). Below the 200d it is inconsistent (R3 +10 vs control +32; R5 -33). Needs out-of-sample confirmation on a wider universe.
