@@ -1,0 +1,53 @@
+months 87 (A=2019-21: 36, B=2022-26Q1: 51); months with O3 51, O4 84
+
+Spearman rho of predictor (month start) vs outcome: rho A / rho B / pooled rho (p)   [* = passes: same sign, |rho|>=0.25 both halves, pooled p<0.005]
+-- outcome O1: all flips mean
+   X1_HYOAS      +nan / +0.63 / pooled +0.63 (p 0.000, n 28) 
+   X2_HYchg60    +nan / +0.34 / pooled +0.34 (p 0.100, n 25) 
+   X3_VIX        +0.61 / -0.25 / pooled +0.15 (p 0.172, n 87) 
+   X4_VIXchg20   +0.06 / +0.01 / pooled +0.05 (p 0.637, n 87) 
+   X5_2ychg60    -0.33 / -0.43 / pooled -0.38 (p 0.000, n 87) *
+   X6_NFCI       +0.62 / -0.01 / pooled +0.17 (p 0.106, n 87) 
+   X7_trend60    +0.03 / -0.03 / pooled +0.03 (p 0.809, n 87) 
+   X8_breadth    -0.01 / -0.00 / pooled +0.01 (p 0.895, n 87) 
+   X9_rvol20     +0.56 / -0.06 / pooled +0.23 (p 0.036, n 87) 
+   X10_SQlead    +0.46 / +0.18 / pooled +0.29 (p 0.007, n 87) 
+-- outcome O2: HUGE per 100
+   X1_HYOAS      +nan / +0.11 / pooled +0.11 (p 0.565, n 28) 
+   X2_HYchg60    +nan / +0.27 / pooled +0.27 (p 0.199, n 25) 
+   X3_VIX        +0.44 / -0.18 / pooled +0.11 (p 0.293, n 87) 
+   X4_VIXchg20   -0.09 / +0.05 / pooled -0.01 (p 0.939, n 87) 
+   X5_2ychg60    -0.20 / -0.38 / pooled -0.23 (p 0.030, n 87) 
+   X6_NFCI       +0.70 / -0.41 / pooled +0.22 (p 0.043, n 87) 
+   X7_trend60    -0.01 / -0.00 / pooled +0.01 (p 0.956, n 87) 
+   X8_breadth    +0.07 / -0.04 / pooled -0.01 (p 0.941, n 87) 
+   X9_rvol20     +0.40 / -0.24 / pooled +0.15 (p 0.166, n 87) 
+   X10_SQlead    +0.44 / +0.12 / pooled +0.23 (p 0.030, n 87) 
+-- outcome O3: high-short & basket-lead mean
+   X1_HYOAS      +nan / +0.10 / pooled +nan (p nan, n 17) 
+   X2_HYchg60    +nan / -0.03 / pooled +nan (p nan, n 14) 
+   X3_VIX        +0.63 / -0.52 / pooled +0.13 (p 0.367, n 51) 
+   X4_VIXchg20   -0.03 / +0.14 / pooled +0.04 (p 0.787, n 51) 
+   X5_2ychg60    -0.13 / -0.40 / pooled -0.28 (p 0.045, n 51) 
+   X6_NFCI       +0.66 / -0.52 / pooled -0.02 (p 0.900, n 51) 
+   X7_trend60    +0.20 / +0.44 / pooled +0.33 (p 0.017, n 51) 
+   X8_breadth    +0.02 / +0.27 / pooled +0.15 (p 0.283, n 51) 
+   X9_rvol20     +0.62 / -0.28 / pooled +0.22 (p 0.121, n 51) 
+   X10_SQlead    +0.34 / +0.00 / pooled +0.14 (p 0.341, n 51) 
+-- outcome O4: strong sector-lead mean
+   X1_HYOAS      +nan / +0.32 / pooled +0.32 (p 0.096, n 28) 
+   X2_HYchg60    +nan / +0.09 / pooled +0.09 (p 0.654, n 25) 
+   X3_VIX        +0.21 / -0.06 / pooled +0.07 (p 0.521, n 84) 
+   X4_VIXchg20   -0.06 / +0.03 / pooled -0.02 (p 0.882, n 84) 
+   X5_2ychg60    -0.21 / -0.32 / pooled -0.30 (p 0.005, n 84) 
+   X6_NFCI       +0.62 / -0.20 / pooled +0.01 (p 0.905, n 84) 
+   X7_trend60    -0.06 / +0.18 / pooled +0.08 (p 0.442, n 84) 
+   X8_breadth    -0.12 / +0.14 / pooled +0.05 (p 0.622, n 84) 
+   X9_rvol20     +0.18 / +0.09 / pooled +0.13 (p 0.239, n 84) 
+   X10_SQlead    +0.44 / +0.20 / pooled +0.29 (p 0.007, n 84) 
+
+PASSED: [('O1', 'X5_2ychg60')]
+
+ex-ante rule for O1 on X5_2ychg60: favourable when X5_2ychg60 below its prior-12m median
+   era A: favourable months 8 mean O1 +0.05 | other months 28 mean +0.03
+   era B: favourable months 27 mean O1 +0.01 | other months 24 mean -0.02

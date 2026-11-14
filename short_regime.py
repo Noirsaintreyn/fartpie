@@ -83,10 +83,22 @@ def _status(tks=None):
         if not len(l): return None
         d = dtc.iloc[-1].dropna(); return dict(on=bool(l.iloc[-1] > MIN_LEAD), lead=float(l.iloc[-1]), n_basket=int(nb.iloc[-1]), asof=l.index[-1].date(), dtc={k: float(v) for k, v in d.items()}, series=l)
     except Exception as e: print(f'  ! short_regime unavailable: {str(e)[:100]}'); return None
+def rates_state():
+    """policy-rate regime (xs/report_73/73b): 60-trading-day change in the 2y Treasury yield (FRED DGS2) ranked against all prior values since 2019. TIGHTENING = upper third (rising yields), EASING = lower third. Context only: in 2022-26 flips entered in TIGHTENING months lost (-1.6% all flips, -4.8% high-short flips with the basket leading) vs +1.8% / +2.3% in EASING months; 2019-21 did not show it (2020-21 yields rose off the lows during a speculative boom)."""
+    try:
+        r = requests.get('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2', timeout=60); d = pd.read_csv(io.StringIO(r.text)); d.columns = ['date', 'y']; d['date'] = pd.to_datetime(d.date); y = d.set_index('date').y.dropna(); y = y[y.index >= '2018-06-01']
+        ch = (y - y.shift(60)).dropna(); cur = float(ch.iloc[-1]); hist = ch.iloc[:-1][ch.index[:-1] >= '2019-01-01']; lo, hi = hist.quantile([1 / 3, 2 / 3])
+        return dict(chg=cur, yld=float(y.iloc[-1]), cls='EASING' if cur <= lo else ('TIGHTENING' if cur >= hi else 'MID'), asof=y.index[-1].date())
+    except Exception as e: print(f'  ! rates_state unavailable: {str(e)[:80]}'); return None
+def rates_line():
+    r = _RS.get('v') if _RS.get('v') is not None and time.time() - _RS['t'] < 6 * 3600 else None
+    if r is None: r = rates_state(); _RS.update(t=time.time(), v=r)
+    return '' if not r else f" Rates: 2y yield {r['yld']:.2f}% ({r['chg']:+.2f} pts over 60d = {r['cls']}; in 2022-26 high-short and sector-lead flips lost in TIGHTENING months)."
+_RS = {}
 def tag(tk, s):
     """per-ticker tag for a BUY: line = one-sentence status appended to the alert, hot = regime ON and the name's own DTC>=cut, alert = extra post text"""
     d = s['dtc'].get(tk); name_sq = d is not None and d >= DTC_CUT; hot = bool(s['on'] and name_sq)
-    line = f"Squeeze regime {'ON' if s['on'] else 'OFF'} (high-short basket {s['lead']:+.1%} vs universe over {LEAD_DAYS}d, {s['n_basket']} names)" + (f"; {tk} days-to-cover {d:.0f}" if d is not None else '; no short-interest data for this name') + '.'
+    line = f"Squeeze regime {'ON' if s['on'] else 'OFF'} (high-short basket {s['lead']:+.1%} vs universe over {LEAD_DAYS}d, {s['n_basket']} names)" + (f"; {tk} days-to-cover {d:.0f}" if d is not None else '; no short-interest data for this name') + '.' + rates_line()
     alert = f"\U0001f525 SQUEEZE-REGIME BUY {tk}: days-to-cover {d:.0f} (>= {DTC_CUT:g}) while the high-short basket is leading the universe ({s['lead']:+.1%} over {LEAD_DAYS}d). {EVIDENCE}" if hot else ''
     return dict(hot=hot, name_sq=name_sq, dtc=d, line=line, alert=alert)
 def change_msg(st, s):
