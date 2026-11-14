@@ -1,0 +1,28 @@
+flips 62347 names 58
+
+STRICT train 2019-21 -> test 2022+  (label = top decile of return / ATR%; AUC | tail% in top-20% score vs base | raw mean ret % top-20% vs all)
+ LONG  VOL only (RISK)                logit AUC 0.527 | tail 10.6% (9.5%) | ret +0.11% (+0.19%)
+ LONG  VOL only (RISK)                boost AUC 0.515 | tail 10.5% (9.5%) | ret +0.33% (+0.19%)
+ LONG  REGIME (RISK LV MKT DISP TOD)  logit AUC 0.517 | tail 10.7% (9.5%) | ret +0.09% (+0.19%)
+ LONG  REGIME (RISK LV MKT DISP TOD)  boost AUC 0.524 | tail 10.0% (9.5%) | ret +0.19% (+0.19%)
+ LONG  PARTICIPANT only               logit AUC 0.520 | tail 10.6% (9.5%) | ret +0.23% (+0.19%)
+ LONG  PARTICIPANT only               boost AUC 0.520 | tail 10.0% (9.5%) | ret +0.28% (+0.19%)
+ LONG  ALL                            logit AUC 0.526 | tail 10.5% (9.5%) | ret +0.09% (+0.19%)
+ LONG  ALL                            boost AUC 0.517 | tail 10.4% (9.5%) | ret +0.22% (+0.19%)
+ LONG  single feature AUCs (test, either sign): BV 0.523 BV3 0.523 VT 0.505 IMP 0.537 CLV 0.523 ABS 0.501 UVS 0.501 ER 0.513 AC1 0.512 VR 0.506 DH 0.508 PL_SIGN 0.503 PL_DUR 0.501 FLIPS 0.504 LV 0.517 RISK 0.527 TOD 0.514 MKT 0.522 DISP 0.500
+ SHORT VOL only (RISK)                logit AUC 0.493 | tail 12.2% (12.1%) | ret -0.75% (-0.19%)
+ SHORT VOL only (RISK)                boost AUC 0.487 | tail 11.3% (12.1%) | ret -0.24% (-0.19%)
+ SHORT REGIME (RISK LV MKT DISP TOD)  logit AUC 0.512 | tail 12.0% (12.1%) | ret -0.08% (-0.19%)
+ SHORT REGIME (RISK LV MKT DISP TOD)  boost AUC 0.510 | tail 12.8% (12.1%) | ret +0.02% (-0.19%)
+ SHORT PARTICIPANT only               logit AUC 0.563 | tail 15.9% (12.1%) | ret -0.57% (-0.19%)
+ SHORT PARTICIPANT only               boost AUC 0.556 | tail 15.5% (12.1%) | ret -0.22% (-0.19%)
+ SHORT ALL                            logit AUC 0.558 | tail 15.3% (12.1%) | ret -0.51% (-0.19%)
+ SHORT ALL                            boost AUC 0.532 | tail 15.0% (12.1%) | ret +0.04% (-0.19%)
+ SHORT single feature AUCs (test, either sign): BV 0.546 BV3 0.547 VT 0.533 IMP 0.559 CLV 0.528 ABS 0.511 UVS 0.512 ER 0.503 AC1 0.501 VR 0.518 DH 0.514 PL_SIGN 0.519 PL_DUR 0.508 FLIPS 0.516 LV 0.524 RISK 0.507 TOD 0.522 MKT 0.502 DISP 0.508
+
+WALK-FORWARD, PARTICIPANT-only boost, AUC by year (train = all earlier)
+ 2022: LONG AUC 0.561 tail 9.5% (7.1%) ret +0.13% (-0.09%) | SHORT AUC 0.560 tail 19.0% (15.4%) ret +0.66% (+0.34%) |
+ 2023: LONG AUC 0.534 tail 13.9% (12.2%) ret +0.45% (+0.52%) | SHORT AUC 0.552 tail 9.8% (8.9%) ret -0.35% (-0.22%) |
+ 2024: LONG AUC 0.508 tail 12.2% (11.2%) ret +0.52% (+0.37%) | SHORT AUC 0.571 tail 11.9% (9.3%) ret -0.10% (-0.17%) |
+ 2025: LONG AUC 0.529 tail 10.5% (9.7%) ret +0.16% (+0.23%) | SHORT AUC 0.572 tail 15.4% (10.2%) ret +0.01% (-0.17%) |
+ 2026: LONG AUC 0.498 tail 8.5% (8.5%) ret -0.39% (-0.14%) | SHORT AUC 0.558 tail 15.7% (11.4%) ret -0.00% (-0.93%) |

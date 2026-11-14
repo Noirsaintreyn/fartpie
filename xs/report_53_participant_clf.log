@@ -1,0 +1,21 @@
+flips 62347 names 58
+train 20745 test 36175
+  [STRICT train 2019-21 -> test 2022+ LONG] boost permutation importance (AUC drop): RISK +0.071 PL_SIGN +0.007 DH +0.005 MKT +0.003 IMP +0.001 PL_DUR +0.001 CLV +0.001 ABS +0.000
+  [STRICT train 2019-21 -> test 2022+ SHORT] boost permutation importance (AUC drop): RISK +0.062 IMP +0.008 PL_SIGN +0.004 BV +0.002 VR +0.002 CLV +0.001 DH +0.001 BV3 +0.001
+
+STRICT train 2019-21 -> test 2022+: direction | model | test AUC | tail% in top-20% score (base) | mean ret % top-20% (all) | n
+ LONG  BV only  AUC 0.542 | tail 12.1% (10.2%) | ret +0.27% (+0.19%) | n 18089
+ LONG  logit    AUC 0.619 | tail 16.3% (10.2%) | ret +0.25% (+0.19%) | n 18089
+ LONG  SVM-rbf  AUC 0.547 | tail 13.9% (10.2%) | ret +0.21% (+0.19%) | n 18089
+ LONG  boost    AUC 0.615 | tail 15.7% (10.2%) | ret +0.25% (+0.19%) | n 18089
+ SHORT BV only  AUC 0.553 | tail 15.8% (13.0%) | ret -0.31% (-0.19%) | n 18086
+ SHORT logit    AUC 0.622 | tail 20.4% (13.0%) | ret -0.70% (-0.19%) | n 18086
+ SHORT SVM-rbf  AUC 0.524 | tail 15.2% (13.0%) | ret -0.73% (-0.19%) | n 18086
+ SHORT boost    AUC 0.580 | tail 18.2% (13.0%) | ret -0.37% (-0.19%) | n 18086
+
+WALK-FORWARD boost AUC by test year (train = all earlier years from 2019)
+ 2022: LONG AUC 0.616 BVauc 0.580 top20 tail 15.1% ret -0.02% (all -0.09%) | SHORT AUC 0.576 BVauc 0.568 top20 tail 23.7% ret +0.80% (all +0.34%) |
+ 2023: LONG AUC 0.638 BVauc 0.536 top20 tail 17.5% ret +0.98% (all +0.52%) | SHORT AUC 0.581 BVauc 0.531 top20 tail 12.4% ret -0.42% (all -0.22%) |
+ 2024: LONG AUC 0.634 BVauc 0.519 top20 tail 16.7% ret +1.00% (all +0.37%) | SHORT AUC 0.656 BVauc 0.546 top20 tail 16.0% ret -0.24% (all -0.17%) |
+ 2025: LONG AUC 0.620 BVauc 0.545 top20 tail 15.6% ret +0.34% (all +0.23%) | SHORT AUC 0.628 BVauc 0.577 top20 tail 16.9% ret -0.41% (all -0.17%) |
+ 2026: LONG AUC 0.561 BVauc 0.525 top20 tail 10.9% ret -1.07% (all -0.14%) | SHORT AUC 0.601 BVauc 0.548 top20 tail 17.9% ret -4.14% (all -0.93%) |
