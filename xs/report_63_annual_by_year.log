@@ -1,0 +1,13 @@
+year | insider+volume (rule) | rule EXCL. top-2 winners (CELH, OPRX) | volume only (BV>=1.5) | equal-weight buy&hold (same names)
+ 2019  |   -13.4% |   -13.4% |   -16.3% |   +25.0%
+ 2020  |   +17.1% |   +17.1% |   -22.6% |   +31.2%
+ 2021  |  +280.4% |   +60.0% |   +26.4% |   +23.5%
+ 2022  |   -24.1% |   -24.1% |   +28.6% |   -19.8%
+ 2023  |    +7.2% |    +7.2% |    -0.3% |   +20.7%
+ 2024  |   +49.4% |   +49.4% |    +9.6% |   +15.2%
+ 2025  |   +37.9% |   +37.9% |   -11.8% |   +11.6%
+ 2026* |   +11.1% |   +11.1% |    +7.6% |    -0.7%
+insider+volume (rule): signals 423, trades taken (K=10) 266, compounded 2019-26Q1 +619%, worst year -24.1%, years positive 6/8
+rule EXCL. top-2 winners (CELH, OPRX): signals 421, trades taken (K=10) 269, compounded 2019-26Q1 +203%, worst year -24.1%, years positive 6/8
+volume only (BV>=1.5): signals 9200, trades taken (K=10) 378, compounded 2019-26Q1 +9%, worst year -22.6%, years positive 4/8
+* 2026 = Jan-Mar only, realized P&L only
