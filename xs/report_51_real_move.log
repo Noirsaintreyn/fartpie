@@ -1,0 +1,15 @@
+flips 18412
+
+LONG: n 9239 base mean +0.22% | REAL = ret >= 8.4% (10% of flips) carries 1133% of total return
+ LV  | h1: real% low  9.2 high 10.8 mean +0.39/+0.60 t +0.5 | h2: real% low  8.5 high 10.1 mean -0.49/-0.14 t +0.8 | all: real% low  8.8 high 10.5 mean -0.07/+0.24 t +1.0
+ BV  | h1: real% low  7.2 high 13.3 mean +0.21/+1.53 t +1.8 | h2: real% low  7.6 high 11.1 mean -0.34/-0.53 t -0.4 | all: real% low  7.4 high 12.2 mean -0.08/+0.49 t +1.3
+ CMP | h1: real% low  8.3 high 13.1 mean +0.16/+1.58 t +2.1 | h2: real% low  9.1 high 10.8 mean +0.09/-0.59 t -1.6 | all: real% low  8.7 high 12.0 mean +0.12/+0.55 t +1.0
+ MOM | h1: real% low 10.2 high 12.2 mean +0.67/+1.35 t +0.9 | h2: real% low  9.8 high 10.0 mean -0.65/-0.42 t +0.5 | all: real% low 10.0 high 11.1 mean -0.04/+0.48 t +1.2
+ DH  | h1: real% low  7.4 high 12.3 mean +0.13/+1.39 t +2.0 | h2: real% low  6.8 high 12.4 mean -0.56/-0.15 t +1.1 | all: real% low  7.1 high 12.4 mean -0.19/+0.55 t +2.1
+
+SHORT: n 9173 base mean -0.73% | REAL threshold 8.1%
+ LV  | h1: real% low  9.5 high  9.8 mean -0.47/-0.87 t -1.2 | h2: real% low 11.0 high 10.3 mean -0.25/-1.35 t -3.4 | all: real% low 10.3 high 10.1 mean -0.36/-1.11 t -3.2
+ BV  | h1: real% low  8.0 high 10.0 mean -0.74/-0.98 t -0.8 | h2: real% low  8.9 high 14.8 mean -0.71/-0.25 t +1.4 | all: real% low  8.4 high 12.4 mean -0.72/-0.62 t +0.5
+ CMP | h1: real% low  8.6 high 10.4 mean -0.64/-0.93 t -0.9 | h2: real% low  9.5 high 12.6 mean -0.31/-1.04 t -2.2 | all: real% low  9.1 high 11.5 mean -0.47/-0.98 t -2.2
+ MOM | h1: real% low  9.3 high  9.8 mean -1.00/-1.01 t -0.0 | h2: real% low 11.0 high 12.0 mean -0.72/-0.90 t -0.5 | all: real% low 10.1 high 11.0 mean -0.86/-0.95 t -0.4
+ DH  | h1: real% low  8.0 high 10.9 mean -0.24/-1.49 t -3.9 | h2: real% low  9.4 high 13.9 mean -0.38/-0.74 t -1.0 | all: real% low  8.7 high 12.4 mean -0.31/-1.12 t -3.4
