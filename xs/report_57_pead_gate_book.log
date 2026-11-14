@@ -1,0 +1,18 @@
+
+LONG: per-flip net mean % | win% | n | (first half / second half mean) | skipped
+ BASE (vol>=1.5x)         +0.41% win 25.7% n  3469 | +1.04 / -0.35 | skipped 0
+ +EARN-GUARD              +0.48% win 25.8% n  3238 | +1.11 / -0.30 | skipped 231
+ +PEAD 6-20d              +0.50% win 25.9% n  3303 | +1.09 / -0.21 | skipped 166
+ +PEAD 1-20d              +0.54% win 26.0% n  3276 | +1.12 / -0.17 | skipped 193
+ +PEAD 1-20d, no guard    +0.54% win 26.0% n  3276 | +1.12 / -0.17 | skipped 193
+ +PEAD 1-20d + guard      +0.62% win 26.1% n  3046 | +1.21 / -0.10 | skipped 423
+   skipped by PEAD 1-20d: n 193 mean -1.84% | skipped by guard: n 231 mean -0.60%
+
+SHORT: per-flip net mean % | win% | n | (first half / second half mean) | skipped
+ BASE (vol>=1.5x)         -0.69% win 27.8% n  3104 | -1.08 / -0.27 | skipped 0
+ +EARN-GUARD              -0.52% win 28.2% n  2861 | -1.00 / +0.01 | skipped 243
+ +PEAD 6-20d              -0.67% win 28.1% n  2974 | -1.04 / -0.26 | skipped 130
+ +PEAD 1-20d              -0.66% win 28.1% n  2943 | -1.02 / -0.25 | skipped 161
+ +PEAD 1-20d, no guard    -0.66% win 28.1% n  2943 | -1.02 / -0.25 | skipped 161
+ +PEAD 1-20d + guard      -0.47% win 28.5% n  2704 | -0.92 / +0.05 | skipped 400
+   skipped by PEAD 1-20d: n 161 mean -1.36% | skipped by guard: n 243 mean -2.77%
