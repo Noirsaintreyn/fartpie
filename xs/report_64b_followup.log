@@ -1,0 +1,22 @@
+FOLLOW-UP 1: volatility (ATR% at flip) quintiles, PIT-free (fixed cutoffs from full sample), net 30bp, by era: mean | median | HUGE% | n
+  2019-21 Q1 (ATR% 2.0) mean -1.2 med -2.9 huge 0.0% n 2540 | Q2 (ATR% 2.6) mean -0.5 med -4.0 huge 0.2% n 2225 | Q3 (ATR% 3.3) mean +1.4 med -4.7 huge 0.6% n 2243 | Q4 (ATR% 4.2) mean +3.8 med -5.8 huge 1.7% n 2284 | Q5 (ATR% 6.1) mean +17.6 med -7.8 huge 7.0% n 2713
+  2022-26Q1 Q1 (ATR% 2.0) mean -0.3 med -3.0 huge 0.2% n 3823 | Q2 (ATR% 2.6) mean -0.3 med -4.2 huge 0.2% n 4138 | Q3 (ATR% 3.3) mean -0.2 med -5.1 huge 0.6% n 4119 | Q4 (ATR% 4.2) mean -0.4 med -6.7 huge 1.0% n 4079 | Q5 (ATR% 6.1) mean +2.5 med -9.6 huge 3.6% n 3650
+
+FOLLOW-UP 2: market breadth (share of universe in bull regime) terciles by era
+  2019-21 LOW breadth mean +7.9 med -3.9 huge 2.7% n 3329 | MID breadth mean +2.4 med -4.3 huge 1.8% n 3919 | HIGH breadth mean +4.2 med -4.6 huge 1.8% n 4757
+  2022-26Q1 LOW breadth mean +1.3 med -4.6 huge 1.3% n 7320 | MID breadth mean +0.3 med -4.6 huge 0.9% n 6625 | HIGH breadth mean -1.3 med -5.2 huge 0.9% n 5864
+
+FOLLOW-UP 3: the crash-recovery profile = beaten down (DD52 <= -40%) AND high vol (ATR% top 2 quintiles) AND low breadth (bottom third). mean/median/huge% and n, by year
+ crash-recovery flips n 1573 mean +9.0% huge% 4.8
+ by year (n, mean, median): {2019: (84, np.float64(3.0), np.float64(-4.9)), 2020: (321, np.float64(40.5), np.float64(-7.7)), 2021: (58, np.float64(-6.6), np.float64(-9.1)), 2022: (598, np.float64(-4.9), np.float64(-10.1)), 2023: (268, np.float64(3.6), np.float64(-6.4)), 2024: (13, np.float64(12.1), np.float64(-11.8)), 2025: (222, np.float64(13.7), np.float64(-8.4)), 2026: (9, np.float64(1.6), np.float64(-9.6))}
+ same profile WITHOUT low-breadth condition by year: {2019: (292, np.float64(-3.9)), 2020: (1052, np.float64(27.8)), 2021: (263, np.float64(-9.4)), 2022: (949, np.float64(-5.4)), 2023: (750, np.float64(1.2)), 2024: (501, np.float64(2.6)), 2025: (700, np.float64(9.0)), 2026: (87, np.float64(-4.9))}
+
+FOLLOW-UP 4: share of ALL +100% winners that entered in the market-wide crash-recovery windows (2020-03..2020-06, 2025-04..2025-06, 2022-06..2022-07, 2022-10..2022-11)
+ 39% of the 456 huge winners entered inside those windows, which hold 16.2% of all flips; huge rate in windows 3.42% vs outside 1.05%
+
+FOLLOW-UP 5: boosted-model top 5% picks (train 2019-21, test 2022+) by test year: n, mean net, median, huge%
+  2022: n 267 mean -2.2% median -12.3% huge 2.2% | all flips that year mean -3.4%
+  2023: n 197 mean +9.3% median -9.7% huge 2.5% | all flips that year mean +1.2%
+  2024: n 188 mean +3.3% median -12.4% huge 4.8% | all flips that year mean +0.1%
+  2025: n 303 mean +17.1% median -9.6% huge 9.2% | all flips that year mean +3.0%
+  2026: n 36 mean -7.3% median -11.2% huge 2.8% | all flips that year mean -0.9%
