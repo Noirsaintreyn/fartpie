@@ -1,0 +1,48 @@
+
+[LONG | ALL FLIPS]  feature on vs off: net mean %, n, t
+ INSIDER buy 30d (<=Mar26)      | h1: +2.12 (n 366) vs +0.43 t +2.2 | h2: -0.96 (n 65) vs +0.12 t -1.0 | all: +1.66 (n 431) vs +0.40 t +1.9
+ INSIDER cluster>=2 (<=Mar26)   | h1: +3.98 (n 105) vs +0.48 t +2.0 | h2: +2.47 (n 19) vs -0.12 t +1.0 | all: +3.75 (n 124) vs +0.43 t +2.2
+ OFFERING/shelf filed <=14d     | h1: +1.29 (n 130) vs +0.54 t +0.5 | h2: +1.79 (n 89) vs -0.41 t +0.8 | all: +1.49 (n 219) vs +0.09 t +1.0
+ late-filing notice <=30d       | h1: -0.27 (n 6) vs +0.56 t -0.2 | h2: +0.51 (n 10) vs -0.36 t +0.3 | all: +0.22 (n 16) vs +0.13 t +0.0
+ days-to-cover top 3rd vs low   | h1: +0.37 (n 1509) vs +0.99 t -0.9 | h2: -0.36 (n 1660) vs -0.09 t -0.6 | all: -0.01 (n 3169) vs +0.50 t -1.2
+ HY_OAS_d20 high 3rd vs low 3rd | h1: +0.59 (n 2808) vs -0.31 t +1.6 | h2: -0.45 (n 1859) vs -0.07 t -0.6 | all: +0.17 (n 4667) vs -0.16 t +0.8
+ HY_OAS high 3rd vs low 3rd     | h1: +1.17 (n 505) vs +0.79 t +0.7 | h2: -0.30 (n 1388) vs -0.50 t +0.5 | all: +0.09 (n 1893) vs +0.21 t -0.3
+ VIX high 3rd vs low 3rd        | h1: +0.32 (n 1333) vs +0.91 t -0.8 | h2: +0.54 (n 1466) vs -1.08 t +3.8 | all: +0.44 (n 2799) vs +0.14 t +0.7
+ T10Y2Y_d20 high 3rd vs low 3rd | h1: +0.77 (n 2594) vs +0.22 t +0.8 | h2: -0.58 (n 1423) vs -0.11 t -1.3 | all: +0.29 (n 4017) vs +0.01 t +0.8
+ USD_d20 high 3rd vs low 3rd    | h1: +1.18 (n 2066) vs -0.06 t +2.2 | h2: +0.05 (n 2369) vs -0.55 t +1.4 | all: +0.58 (n 4435) vs -0.29 t +2.5
+ NFCI high 3rd vs low 3rd       | h1: +2.29 (n 295) vs +0.79 t +2.3 | h2: +0.07 (n 1949) vs -0.99 t +2.7 | all: +0.37 (n 2244) vs +0.34 t +0.1
+
+[LONG | BV>=1.5]  feature on vs off: net mean %, n, t
+ INSIDER buy 30d (<=Mar26)      | h1: +3.86 (n 130) vs +0.83 t +1.6 | h2: -0.62 (n 21) vs -2.33 t +1.0 | all: +3.23 (n 151) vs +0.56 t +1.7
+ INSIDER cluster>=2 (<=Mar26)   | h1: +9.06 (n 32) vs +0.90 t +1.6 | h2: +5.26 (n 6) vs -2.39 t +1.6 | all: +8.46 (n 38) vs +0.61 t +1.8
+ OFFERING/shelf filed <=14d     | h1: +2.40 (n 60) vs +0.99 t +0.5 | h2: +8.17 (n 34) vs -0.53 t +1.3 | all: +4.48 (n 94) vs +0.29 t +1.4
+ late-filing notice <=30d       | h1: -5.72 (n 4) vs +1.05 t +nan | h2: -4.18 (n 5) vs -0.33 t +nan | all: -4.86 (n 9) vs +0.42 t -2.3
+ days-to-cover top 3rd vs low   | h1: +0.28 (n 560) vs +2.06 t -1.1 | h2: -0.28 (n 593) vs -0.09 t -0.2 | all: -0.01 (n 1153) vs +1.09 t -1.1
+ HY_OAS_d20 high 3rd vs low 3rd | h1: +0.99 (n 1073) vs -0.28 t +1.0 | h2: -0.81 (n 650) vs +0.78 t -1.3 | all: +0.31 (n 1723) vs +0.38 t -0.1
+ HY_OAS high 3rd vs low 3rd     | h1: +0.17 (n 180) vs +1.75 t -1.5 | h2: -0.58 (n 489) vs -0.19 t -0.4 | all: -0.38 (n 669) vs +0.90 t -1.6
+ VIX high 3rd vs low 3rd        | h1: +0.61 (n 469) vs +1.06 t -0.2 | h2: +0.48 (n 516) vs -1.17 t +1.8 | all: +0.54 (n 985) vs +0.25 t +0.3
+ T10Y2Y_d20 high 3rd vs low 3rd | h1: +0.84 (n 962) vs +0.95 t -0.1 | h2: -0.67 (n 498) vs -0.48 t -0.3 | all: +0.33 (n 1460) vs +0.10 t +0.3
+ USD_d20 high 3rd vs low 3rd    | h1: +1.71 (n 804) vs +0.65 t +0.8 | h2: -0.11 (n 833) vs -0.13 t +0.0 | all: +0.79 (n 1637) vs +0.28 t +0.6
+ NFCI high 3rd vs low 3rd       | h1: +1.16 (n 92) vs +1.48 t -0.3 | h2: +0.37 (n 700) vs -1.28 t +1.9 | all: +0.46 (n 792) vs +0.82 t -0.4
+
+[SHORT | ALL FLIPS]  feature on vs off: net mean %, n, t
+ OFFERING/shelf filed <=14d     | h1: -1.38 (n 134) vs -0.85 t -0.9 | h2: +0.04 (n 97) vs -0.96 t +0.8 | all: -0.78 (n 231) vs -0.90 t +0.2
+ late-filing notice <=30d       | h1: -2.28 (n 5) vs -0.86 t +nan | h2: +0.75 (n 8) vs -0.94 t +0.8 | all: -0.41 (n 13) vs -0.90 t +0.3
+ days-to-cover top 3rd vs low   | h1: -0.72 (n 1569) vs -0.92 t +0.6 | h2: -1.03 (n 1655) vs -0.81 t -0.7 | all: -0.88 (n 3224) vs -0.87 t -0.0
+ HY_OAS_d20 high 3rd vs low 3rd | h1: -0.93 (n 2855) vs +0.27 t -2.8 | h2: -1.22 (n 2105) vs -1.48 t +0.8 | all: -1.05 (n 4960) vs -0.68 t -1.4
+ HY_OAS high 3rd vs low 3rd     | h1: -1.19 (n 617) vs -0.65 t -1.6 | h2: -2.21 (n 1230) vs -0.28 t -6.4 | all: -1.87 (n 1847) vs -0.47 t -6.1
+ VIX high 3rd vs low 3rd        | h1: -1.23 (n 1299) vs -0.92 t -1.0 | h2: -2.04 (n 1503) vs +0.80 t -9.0 | all: -1.66 (n 2802) vs -0.25 t -6.7
+ T10Y2Y_d20 high 3rd vs low 3rd | h1: -1.50 (n 2307) vs +0.42 t -6.2 | h2: -0.69 (n 1368) vs -1.05 t +1.2 | all: -1.20 (n 3675) vs -0.46 t -3.6
+ USD_d20 high 3rd vs low 3rd    | h1: -0.88 (n 1811) vs -1.36 t +1.7 | h2: -1.08 (n 2205) vs -0.06 t -3.4 | all: -0.99 (n 4016) vs -0.76 t -1.1
+ NFCI high 3rd vs low 3rd       | h1: -2.37 (n 157) vs -0.95 t -3.9 | h2: -1.94 (n 2160) vs +0.64 t -8.3 | all: -1.97 (n 2317) vs -0.53 t -6.7
+
+[SHORT | BV>=1.5]  feature on vs off: net mean %, n, t
+ OFFERING/shelf filed <=14d     | h1: -1.85 (n 54) vs -1.05 t -0.8 | h2: +0.68 (n 42) vs -0.30 t +0.4 | all: -0.74 (n 96) vs -0.69 t -0.0
+ late-filing notice <=30d       | h1: +nan (n 0) vs -1.08 t +nan | h2: -0.14 (n 2) vs -0.27 t +nan | all: -0.14 (n 2) vs -0.69 t +nan
+ days-to-cover top 3rd vs low   | h1: -1.12 (n 499) vs -1.22 t +0.2 | h2: -0.38 (n 512) vs -0.29 t -0.2 | all: -0.75 (n 1011) vs -0.78 t +0.1
+ HY_OAS_d20 high 3rd vs low 3rd | h1: -1.02 (n 951) vs -0.48 t -0.7 | h2: -0.54 (n 702) vs -0.77 t +0.4 | all: -0.82 (n 1653) vs -0.65 t -0.3
+ HY_OAS high 3rd vs low 3rd     | h1: -0.16 (n 188) vs -0.92 t +1.0 | h2: -1.55 (n 415) vs +0.37 t -3.6 | all: -1.11 (n 603) vs -0.27 t -2.0
+ VIX high 3rd vs low 3rd        | h1: -1.14 (n 432) vs -1.29 t +0.2 | h2: -1.65 (n 517) vs +2.35 t -6.3 | all: -1.42 (n 949) vs +0.17 t -3.8
+ T10Y2Y_d20 high 3rd vs low 3rd | h1: -1.83 (n 760) vs +0.71 t -4.7 | h2: -0.03 (n 456) vs -0.36 t +0.6 | all: -1.15 (n 1216) vs +0.06 t -3.2
+ USD_d20 high 3rd vs low 3rd    | h1: -0.69 (n 627) vs -2.18 t +2.7 | h2: -0.52 (n 727) vs +0.72 t -2.2 | all: -0.60 (n 1354) vs -0.76 t +0.4
+ NFCI high 3rd vs low 3rd       | h1: -3.12 (n 43) vs -1.35 t -3.4 | h2: -1.29 (n 739) vs +1.55 t -4.8 | all: -1.39 (n 782) vs -0.56 t -2.1
