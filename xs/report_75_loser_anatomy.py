@@ -1,0 +1,20 @@
+"""Nov 14 2026 ANATOMY OF THE LOSERS, THEN CUT THE BOTTOM (Rey: find a pattern in the worst losses so we can cut them). Declared before results. Base = the screener's flips: flip-bar volume >=1.5x (and all flips shown). Net return = trade return - 30bp. Part A DESCRIBE: loss distribution (share of trades losing, mean loser, bottom decile, losses <= -10% / -20%), how fast the worst losses happen (hold days) and what share of TOTAL loss mass sits in the worst 10%/20% of trades. Part B MECHANISM FEATURES (each with a stated reason): STOPATR wide initial stop in ATR (a wide stop = big give-back before the bear flip), STOP (stop % of price), RNG flip-bar range/ATR (blow-off bar), NFL flips in last 60 bars (chop/whipsaw), DSL days since previous flip (stale), PLR previous leg return, ATRP, ATREXP vol expansion, DD52 / POS52 (falling knife vs near highs), R20 / R120 (prior run), BV flip volume, LDV liquidity, LPX price, BREADTH market state. For each: orient on the TRAIN era (2019-21) toward the worse tail, cut the worst 20% by TRAIN thresholds, apply the SAME thresholds to 2022-26Q1. Report per era: share of loss mass removed, share of HUGE (>=+100%) winners removed, change in mean net per remaining trade, change in total return per original trade. USEFUL = in BOTH eras removes >=25% of the loss mass while losing <=20% of the HUGE winners and mean rises. No tuning of thresholds beyond the 20% cut."""
+import numpy as np, pandas as pd, warnings; warnings.filterwarnings('ignore')
+SC = '/tmp/claude-0/-home-claude/6d3c83e1-1a4a-5a0a-8647-c2590d1d30a4/scratchpad/ext/'; P = pd.read_pickle(SC + 'wide_flips_feat.pkl'); P['rn'] = P.ret - 0.003; P['BREADTH'] = P.BREADTH.astype(float); P['yr'] = P.t.dt.year
+E1 = P.t < '2022'; FE = ['STOPATR', 'STOP', 'RNG', 'NFL', 'DSL', 'PLR', 'ATRP', 'ATREXP', 'DD52', 'POS52', 'R20', 'R120', 'BV', 'LDV', 'LPX', 'BREADTH']
+print('PART A: loss anatomy'); 
+for lab, S in (('all flips', P), ('BV>=1.5 (screener rule)', P[P.BV >= 1.5])):
+    for en, z in (('2019-21', S[S.t < '2022']), ('2022-26Q1', S[S.t >= '2022'])):
+        r = z.rn.values; L = np.sort(r[r < 0]); tot = L.sum(); d10 = np.quantile(r, .10)
+        print(f' {lab:24s} {en}: n {len(z)} | losers {(r<0).mean()*100:.0f}% mean loser {L.mean()*100:+.1f}% | worst decile starts {d10*100:+.1f}% | <=-10%: {(r<=-.10).mean()*100:.1f}% of trades, <=-20%: {(r<=-.20).mean()*100:.1f}% | worst 10% of trades hold {np.sort(r)[:max(len(r)//10,1)].sum()/tot*100:.0f}% of loss mass, worst 20% hold {np.sort(r)[:len(r)//5].sum()/tot*100:.0f}% | median hold of the worst 10%: {z.hold[z.rn <= d10].median():.0f}d vs all {z.hold.median():.0f}d')
+z = P[P.BV >= 1.5]; print(' by hold days (BV>=1.5): ' + ' | '.join(f'{lab} n {len(g)} mean {g.rn.mean()*100:+.1f}% med {g.rn.median()*100:+.1f}' for lab, g in z.groupby(pd.cut(z.hold, [0, 1, 3, 7, 20, 60, 1000], labels=['1d', '2-3d', '4-7d', '8-20d', '21-60d', '61d+']))))
+print('\nPART B: cut the worst 20% on each feature (thresholds from 2019-21 only)'); 
+for lab, S in (('BASE = BV>=1.5 flips', P[P.BV >= 1.5]), ('BASE = all flips', P)):
+    print(f'\n--- {lab}'); print(f'  {"feature":9s} {"dir":4s} {"thr":>8s} | 2019-21: lossmass cut% HUGE cut% mean before->after | 2022-26Q1: lossmass cut% HUGE cut% mean before->after | USEFUL')
+    tr = S[S.t < '2022']
+    for f in FE:
+        x = tr[f].dropna(); lo, hi = x.quantile(.2), x.quantile(.8); up = tr[tr[f] >= hi].rn.mean() < tr[tr[f] <= lo].rn.mean(); thr = hi if up else lo; row = []; ok = True
+        for en, z in (('A', S[S.t < '2022']), ('B', S[S.t >= '2022'])):
+            z = z[z[f].notna()]; cut = (z[f] >= thr) if up else (z[f] <= thr); L = z.rn.clip(upper=0); lm = L[cut].sum() / L.sum() * 100; hg = z.HUGE[cut].sum() / max(z.HUGE.sum(), 1) * 100; m0 = z.rn.mean() * 100; m1 = z.rn[~cut].mean() * 100
+            row.append(f'{lm:5.1f} {hg:5.1f} {m0:+6.2f}->{m1:+6.2f}'); ok &= (lm >= 25 and hg <= 20 and m1 > m0)
+        print(f'  {f:9s} {"hi" if up else "lo":4s} {thr:8.3f} | {row[0]:32s} | {row[1]:32s} | {"YES" if ok else ""}')

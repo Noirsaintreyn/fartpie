@@ -1,0 +1,28 @@
+
+=== BASE = BV>=1.5 flips (screener rule)
+ 2019-21: n 3296 | NO STOP mean +7.03% med -5.16 HUGE kept 87 | worst-decile starts -15.6%
+     hard -10%  mean  +4.15% med  -6.02 | stopped 32.4% (their no-stop mean   -1.8%) | HUGE lost  32 of 87 | worst decile starts -10.3% | delta mean -2.89pp
+     hard -15%  mean  +5.76% med  -5.39 | stopped 14.7% (their no-stop mean   -7.3%) | HUGE lost  15 of 87 | worst decile starts -15.3% | delta mean -1.28pp
+     hard -20%  mean  +6.45% med  -5.26 | stopped  6.8% (their no-stop mean  -12.7%) | HUGE lost   4 of 87 | worst decile starts -16.4% | delta mean -0.58pp
+     3x ATR%    mean  +6.68% med  -5.42 | stopped 22.2% (their no-stop mean  -10.8%) | HUGE lost   2 of 87 | worst decile starts -14.2% | delta mean -0.35pp
+     5x ATR%    mean  +6.72% med  -5.16 | stopped  4.2% (their no-stop mean  -11.2%) | HUGE lost   1 of 87 | worst decile starts -15.7% | delta mean -0.32pp
+ 2022-26Q1: n 5757 | NO STOP mean +0.95% med -5.88 HUGE kept 103 | worst-decile starts -16.2%
+     hard -10%  mean  +0.21% med  -6.54 | stopped 35.3% (their no-stop mean   -8.7%) | HUGE lost  26 of 103 | worst decile starts -10.3% | delta mean -0.74pp
+     hard -15%  mean  +0.69% med  -6.05 | stopped 16.0% (their no-stop mean  -14.5%) | HUGE lost  12 of 103 | worst decile starts -15.3% | delta mean -0.26pp
+     hard -20%  mean  +0.85% med  -5.93 | stopped  7.6% (their no-stop mean  -20.1%) | HUGE lost   4 of 103 | worst decile starts -17.1% | delta mean -0.10pp
+     3x ATR%    mean  +0.88% med  -6.13 | stopped 21.5% (their no-stop mean  -13.1%) | HUGE lost   4 of 103 | worst decile starts -15.3% | delta mean -0.07pp
+     5x ATR%    mean  +0.95% med  -5.91 | stopped  3.8% (their no-stop mean  -21.4%) | HUGE lost   0 of 103 | worst decile starts -16.3% | delta mean -0.01pp
+
+=== BASE = all flips
+ 2019-21: n 12005 | NO STOP mean +4.63% med -4.34 HUGE kept 247 | worst-decile starts -12.3%
+     hard -10%  mean  +3.07% med  -4.69 | stopped 22.0% (their no-stop mean   -3.6%) | HUGE lost  64 of 247 | worst decile starts -10.3% | delta mean -1.56pp
+     hard -15%  mean  +3.96% med  -4.43 | stopped  8.4% (their no-stop mean   -8.1%) | HUGE lost  26 of 247 | worst decile starts -13.5% | delta mean -0.66pp
+     hard -20%  mean  +4.33% med  -4.37 | stopped  3.5% (their no-stop mean  -12.7%) | HUGE lost   8 of 247 | worst decile starts -12.5% | delta mean -0.29pp
+     3x ATR%    mean  +4.51% med  -4.46 | stopped 14.3% (their no-stop mean  -10.2%) | HUGE lost   3 of 247 | worst decile starts -11.8% | delta mean -0.12pp
+     5x ATR%    mean  +4.54% med  -4.34 | stopped  2.9% (their no-stop mean  -12.9%) | HUGE lost   1 of 247 | worst decile starts -12.3% | delta mean -0.09pp
+ 2022-26Q1: n 19809 | NO STOP mean +0.19% med -4.79 HUGE kept 209 | worst-decile starts -13.0%
+     hard -10%  mean  -0.02% med  -4.99 | stopped 22.8% (their no-stop mean  -10.0%) | HUGE lost  32 of 209 | worst decile starts -10.3% | delta mean -0.21pp
+     hard -15%  mean  +0.09% med  -4.84 | stopped  8.9% (their no-stop mean  -15.1%) | HUGE lost  15 of 209 | worst decile starts -14.3% | delta mean -0.10pp
+     hard -20%  mean  +0.14% med  -4.81 | stopped  3.9% (their no-stop mean  -20.1%) | HUGE lost   6 of 209 | worst decile starts -13.1% | delta mean -0.05pp
+     3x ATR%    mean  +0.14% med  -4.93 | stopped 15.6% (their no-stop mean  -11.5%) | HUGE lost   6 of 209 | worst decile starts -12.4% | delta mean -0.05pp
+     5x ATR%    mean  +0.18% med  -4.80 | stopped  3.0% (their no-stop mean  -18.8%) | HUGE lost   0 of 209 | worst decile starts -13.0% | delta mean -0.01pp

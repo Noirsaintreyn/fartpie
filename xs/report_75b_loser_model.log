@@ -1,0 +1,6 @@
+train n 3296, test n 5757; LOSS10 rate train 24.5% test 27.8%
+  LOSS10, all features               test AUC 0.811 | cut 20%: loss mass 33.7% HUGE 43.7% | mean +0.95% -> +0.64% | total per original trade +0.95 -> +0.51 | cut-group mean +2.21% median -12.11%
+  LOSS10, no volatility proxies      test AUC 0.760 | cut 20%: loss mass 33.2% HUGE 36.9% | mean +0.95% -> +1.09% | total per original trade +0.95 -> +0.87 | cut-group mean +0.39% median -11.40%
+  LOW third, all features            test AUC 0.765 | cut 20%: loss mass 32.8% HUGE 37.9% | mean +0.95% -> +0.93% | total per original trade +0.95 -> +0.74 | cut-group mean +1.04% median -11.59%
+  LOW third, no volatility proxies   test AUC 0.716 | cut 20%: loss mass 32.6% HUGE 38.8% | mean +0.95% -> +0.91% | total per original trade +0.95 -> +0.73 | cut-group mean +1.12% median -11.15%
+  permutation importance (LOSS10 all features, test AUC drop): STOP +0.128, ATRP +0.059, DD52 +0.003, BV +0.002, ATREXP +0.002, R20 +0.001
