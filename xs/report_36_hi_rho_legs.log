@@ -1,0 +1,38 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  daily correlation of NZ pts with the S6 system pts: +0.42
+
+=== 50K, ONE ACCOUNT (per eval started every 2nd trading day), Lucid caps, room rule, cost 0.5 pt ===
+  I. current best
+    2018-21 starts: pass 95% | paid once 85% | payouts/eval 1.84 (0.54 evals per payout) | avg payout $1,185 | net $2,094/eval | days: start->pass 60, funded->1st payout 18, start->1st payout 86, between 18
+    2022-25 starts: pass 79% | paid once 51% | payouts/eval 1.78 (0.56 evals per payout) | avg payout $1,564 | net $2,695/eval | days: start->pass 34, funded->1st payout 12, start->1st payout 44, between 14
+    one account at a time 2018-26: 21 evals, 40 payouts, longest run without a payout 2 evals
+  I + IB-B[HIGH] .5 EVAL only
+    2018-21 starts: pass 84% | paid once 74% | payouts/eval 1.54 (0.65 evals per payout) | avg payout $1,061 | net $1,544/eval | days: start->pass 47, funded->1st payout 19, start->1st payout 72, between 18
+    2022-25 starts: pass 70% | paid once 49% | payouts/eval 1.45 (0.69 evals per payout) | avg payout $1,441 | net $2,005/eval | days: start->pass 29, funded->1st payout 12, start->1st payout 42, between 14
+    one account at a time 2018-26: 27 evals, 42 payouts, longest run without a payout 6 evals
+  I + IB-B[HIGH] .5 FUNDED only
+    2018-21 starts: pass 95% | paid once 85% | payouts/eval 1.94 (0.52 evals per payout) | avg payout $1,326 | net $2,485/eval | days: start->pass 60, funded->1st payout 15, start->1st payout 83, between 20
+    2022-25 starts: pass 79% | paid once 43% | payouts/eval 1.66 (0.60 evals per payout) | avg payout $1,624 | net $2,608/eval | days: start->pass 34, funded->1st payout 11, start->1st payout 43, between 14
+    one account at a time 2018-26: 25 evals, 46 payouts, longest run without a payout 3 evals
+  I + IB-B[HIGH] .5 both
+    2018-21 starts: pass 84% | paid once 74% | payouts/eval 1.59 (0.63 evals per payout) | avg payout $1,215 | net $1,848/eval | days: start->pass 47, funded->1st payout 18, start->1st payout 70, between 20
+    2022-25 starts: pass 70% | paid once 43% | payouts/eval 1.48 (0.68 evals per payout) | avg payout $1,548 | net $2,200/eval | days: start->pass 29, funded->1st payout 11, start->1st payout 43, between 15
+    one account at a time 2018-26: 28 evals, 47 payouts, longest run without a payout 5 evals
+  I + INV-F[HIGH] .5 EVAL only
+    2018-21 starts: pass 93% | paid once 80% | payouts/eval 2.27 (0.44 evals per payout) | avg payout $1,157 | net $2,539/eval | days: start->pass 49, funded->1st payout 18, start->1st payout 76, between 17
+    2022-25 starts: pass 75% | paid once 47% | payouts/eval 1.43 (0.70 evals per payout) | avg payout $1,556 | net $2,144/eval | days: start->pass 29, funded->1st payout 12, start->1st payout 44, between 14
+    one account at a time 2018-26: 26 evals, 46 payouts, longest run without a payout 3 evals
+  I + INV-F[HIGH] .5 FUNDED only
+    2018-21 starts: pass 95% | paid once 83% | payouts/eval 2.35 (0.42 evals per payout) | avg payout $1,306 | net $2,986/eval | days: start->pass 60, funded->1st payout 15, start->1st payout 86, between 17
+    2022-25 starts: pass 79% | paid once 46% | payouts/eval 1.46 (0.69 evals per payout) | avg payout $1,544 | net $2,159/eval | days: start->pass 34, funded->1st payout 12, start->1st payout 49, between 15
+    one account at a time 2018-26: 21 evals, 47 payouts, longest run without a payout 2 evals
+  I + INV-F[HIGH] .5 both
+    2018-21 starts: pass 93% | paid once 83% | payouts/eval 2.43 (0.41 evals per payout) | avg payout $1,202 | net $2,836/eval | days: start->pass 49, funded->1st payout 18, start->1st payout 76, between 18
+    2022-25 starts: pass 75% | paid once 42% | payouts/eval 1.19 (0.84 evals per payout) | avg payout $1,501 | net $1,695/eval | days: start->pass 29, funded->1st payout 13, start->1st payout 47, between 14
+    one account at a time 2018-26: 27 evals, 38 payouts, longest run without a payout 3 evals
+  I + IB-B[HIGH] .25 + INV-F[HIGH] .25 both
+    2018-21 starts: pass 94% | paid once 84% | payouts/eval 2.36 (0.42 evals per payout) | avg payout $1,232 | net $2,823/eval | days: start->pass 53, funded->1st payout 14, start->1st payout 76, between 17
+    2022-25 starts: pass 75% | paid once 48% | payouts/eval 1.51 (0.66 evals per payout) | avg payout $1,503 | net $2,186/eval | days: start->pass 32, funded->1st payout 12, start->1st payout 47, between 14
+    one account at a time 2018-26: 21 evals, 54 payouts, longest run without a payout 4 evals
