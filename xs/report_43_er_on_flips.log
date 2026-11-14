@@ -1,0 +1,7 @@
+events 4583 with ERd state 4273
+ daily ER20 (prior close)
+   exit hold | 18-21: low  +32.4 high  +14.8 (n 584/596) t -1.6 | 22+: low   +3.4 high  +22.5 (n 872/854) t +2.2 | pooled: low  +15.0 high  +19.3 (n 1456/1450) t +0.6
+   exit r16  | 18-21: low  +13.9 high  +17.0 (n 399/397) t +0.4 | 22+: low   -2.5 high  +21.8 (n 591/547) t +3.1 | pooled: low   +4.1 high  +19.8 (n 990/944) t +2.7
+ 15m ER over last 26 bars
+   exit hold | 18-21: low   +5.7 high  +42.0 (n 594/621) t +3.4 | 22+: low  +18.1 high   +7.1 (n 788/894) t -1.2 | pooled: low  +12.8 high  +21.4 (n 1382/1515) t +1.2
+   exit r16  | 18-21: low   +4.4 high  +21.7 (n 348/477) t +2.0 | 22+: low  +10.8 high   +3.1 (n 473/656) t -1.0 | pooled: low   +8.1 high  +10.9 (n 821/1133) t +0.5

@@ -1,0 +1,9 @@
+events with a state: 12347
+ VR5   r21 | 18-21: low -0.84% high -0.12% diff +0.72% t +2.4 | 22+: low -0.17% high -0.29% diff -0.12% t -0.4 | pooled: low -0.46% high -0.22% diff +0.24% t +1.1 | regimes high-low: -0.73 +1.92 +0.16 -0.49 +0.12 (3/5 positive)
+ VR5   r63 | 18-21: low -1.21% high -0.43% diff +0.78% t +1.5 | 22+: low -0.03% high -1.00% diff -0.98% t -2.0 | pooled: low -0.53% high -0.74% diff -0.22% t -0.6 | regimes high-low: -1.96 +3.02 -1.12 -1.26 -0.43 (1/5 positive)
+ ER20  r21 | 18-21: low -0.51% high -0.40% diff +0.11% t +0.3 | 22+: low -0.27% high +0.38% diff +0.65% t +1.7 | pooled: low -0.37% high +0.04% diff +0.41% t +1.6 | regimes high-low: -0.14 +0.35 +0.16 +0.77 +1.00 (4/5 positive)
+ ER20  r63 | 18-21: low -0.99% high -0.33% diff +0.67% t +1.1 | 22+: low -0.85% high +0.63% diff +1.48% t +2.6 | pooled: low -0.91% high +0.21% diff +1.12% t +2.7 | regimes high-low: -1.35 +2.44 +0.61 +1.27 +2.59 (4/5 positive)
+ AC1   r21 | 18-21: low -0.81% high +0.35% diff +1.16% t +4.0 | 22+: low -0.16% high -0.58% diff -0.42% t -1.4 | pooled: low -0.44% high -0.17% diff +0.27% t +1.3 | regimes high-low: -0.21 +2.29 -0.22 -0.79 -0.11 (1/5 positive)
+ AC1   r63 | 18-21: low -1.14% high +0.44% diff +1.58% t +3.1 | 22+: low -0.09% high -1.04% diff -0.95% t -2.0 | pooled: low -0.54% high -0.39% diff +0.15% t +0.4 | regimes high-low: -0.91 +3.61 -0.86 -1.54 -0.26 (1/5 positive)
+ COMP  r21 | 18-21: low -0.78% high +0.57% diff +1.35% t +3.5 | 22+: low -0.23% high -0.30% diff -0.07% t -0.2 | pooled: low -0.46% high +0.10% diff +0.56% t +2.2 | regimes high-low: -0.41 +2.87 -0.53 -0.35 +0.79 (2/5 positive)
+ COMP  r63 | 18-21: low -1.08% high +0.70% diff +1.78% t +2.7 | 22+: low -0.22% high -1.09% diff -0.87% t -1.6 | pooled: low -0.58% high -0.28% diff +0.31% t +0.7 | regimes high-low: -2.27 +5.22 -1.95 -1.40 +0.95 (2/5 positive)
