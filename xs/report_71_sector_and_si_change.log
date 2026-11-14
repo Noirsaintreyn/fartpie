@@ -1,0 +1,75 @@
+
+######## LEAD 1: SECTOR LEADERSHIP (flips in groups with >=25 names)
+--- 2019-21: n 9531 base mean +4.85% med -4.54 HUGE/100 2.15
+    GLEAD (group beats universe 40d)   n  4694 mean   +4.30% med  -4.38 HUGE/100  2.07 lift 0.96 ex-top3  +3.71 t -0.9
+    GLEAD (group beats universe 40d) & BV>=1.5 n  1342 mean   +6.76% med  -5.41 HUGE/100  3.06 lift 1.42 ex-top3  +4.89 t +0.3
+    group LAGS                         n  4837 mean   +5.39% med  -4.73 HUGE/100  2.23 lift 1.04 ex-top3  +4.13 t +0.9
+    group LAGS & BV>=1.5               n  1295 mean   +8.80% med  -5.31 HUGE/100  2.47 lift 1.15 ex-top3  +4.39 t +1.3
+    GTOP3 (top-3 group)                n  1886 mean   +4.97% med  -4.81 HUGE/100  2.39 lift 1.11 ex-top3  +3.86 t +0.5
+    GTOP3 (top-3 group) & BV>=1.5      n   572 mean   +6.21% med  -5.78 HUGE/100  3.32 lift 1.54 ex-top3  +3.09 t +0.5
+    GLEAD>+5% (strong lead)            n  1244 mean  +10.07% med  -4.99 HUGE/100  4.10 lift 1.91 ex-top3  +7.87 t +0.4
+    GLEAD>+5% (strong lead) & BV>=1.5  n   394 mean  +13.31% med  -5.79 HUGE/100  5.33 lift 2.48 ex-top3  +6.96 t +0.0
+--- 2022-24: n 11303 base mean -0.66% med -5.00 HUGE/100 0.68
+    GLEAD (group beats universe 40d)   n  5641 mean   -0.13% med  -4.92 HUGE/100  0.73 lift 1.07 ex-top3  -0.64 t +0.7
+    GLEAD (group beats universe 40d) & BV>=1.5 n  1660 mean   +1.38% med  -5.69 HUGE/100  1.14 lift 1.68 ex-top3  -0.35 t +1.3
+    group LAGS                         n  5662 mean   -1.20% med  -5.06 HUGE/100  0.64 lift 0.93 ex-top3  -1.38 t -0.7
+    group LAGS & BV>=1.5               n  1651 mean   -1.31% med  -6.27 HUGE/100  1.27 lift 1.87 ex-top3  -1.85 t +0.3
+    GTOP3 (top-3 group)                n  2566 mean   -0.12% med  -5.14 HUGE/100  0.70 lift 1.03 ex-top3  -1.24 t +0.1
+    GTOP3 (top-3 group) & BV>=1.5      n   767 mean   +1.76% med  -6.26 HUGE/100  1.04 lift 1.53 ex-top3  -1.71 t +0.5
+    GLEAD>+5% (strong lead)            n  1282 mean   -2.01% med  -5.94 HUGE/100  0.47 lift 0.69 ex-top3  -2.49 t -1.6
+    GLEAD>+5% (strong lead) & BV>=1.5  n   410 mean   -2.75% med  -7.15 HUGE/100  0.49 lift 0.72 ex-top3  -3.59 t -0.6
+--- 2025-26Q1: n 4531 base mean +2.65% med -4.86 HUGE/100 2.21
+    GLEAD (group beats universe 40d)   n  1941 mean   +4.21% med  -5.47 HUGE/100  3.09 lift 1.40 ex-top3  +3.59 t +2.0
+    GLEAD (group beats universe 40d) & BV>=1.5 n   616 mean   +5.41% med  -6.48 HUGE/100  4.71 lift 2.13 ex-top3  +3.87 t +0.2
+    group LAGS                         n  2590 mean   +1.49% med  -4.60 HUGE/100  1.54 lift 0.70 ex-top3  +1.05 t -2.0
+    group LAGS & BV>=1.5               n   749 mean   +2.50% med  -5.57 HUGE/100  2.80 lift 1.27 ex-top3  +1.02 t +0.0
+    GTOP3 (top-3 group)                n   960 mean   +4.33% med  -5.61 HUGE/100  3.33 lift 1.51 ex-top3  +3.47 t +1.3
+    GTOP3 (top-3 group) & BV>=1.5      n   325 mean   +3.71% med  -6.49 HUGE/100  4.92 lift 2.23 ex-top3  +2.03 t -0.0
+    GLEAD>+5% (strong lead)            n   813 mean   +4.22% med  -5.84 HUGE/100  3.69 lift 1.67 ex-top3  +3.26 t +1.2
+    GLEAD>+5% (strong lead) & BV>=1.5  n   292 mean   +4.54% med  -6.40 HUGE/100  5.48 lift 2.48 ex-top3  +2.67 t -0.2
+
+######## LEAD 2: SHORT-INTEREST CHANGE (flips with a published report)
+--- 2019-21: n 11164 base mean +4.63% med -4.29 HUGE/100 2.00
+    SI_UP (>=+20%)                     n  1044 mean   +4.59% med  -3.71 HUGE/100  1.82 lift 0.91 ex-top3  +3.55 t -0.2
+    SI_UP (>=+20%) & BV>=1.5           n   251 mean   +5.37% med  -4.90 HUGE/100  2.79 lift 1.40 ex-top3  +2.53 t -1.3
+    SI_DN (<=-20%)                     n   671 mean   +4.60% med  -3.50 HUGE/100  1.49 lift 0.75 ex-top3  +1.86 t -0.8
+    SI_DN (<=-20%) & BV>=1.5           n   160 mean   +3.67% med  -4.44 HUGE/100  2.50 lift 1.25 ex-top3  +1.17 t -1.4
+    DTC>=10 & SI_UP                    n    32 mean   +4.30% med  -5.06 HUGE/100  3.12 lift 1.56 ex-top3  -3.74 t +0.4
+    DTC>=10 & SI_UP & BV>=1.5          n 9
+    DTC>=10 & SI_DN                    n 4
+    DTC>=10 & SI_DN & BV>=1.5          n 0
+    DTC>=10 & SI_UP & basket LEAD      n 15
+    DTC>=10 & SI_UP & basket LEAD & BV>=1.5 n 5
+    DTC>=10 & SI_DN & basket LEAD      n 1
+    DTC>=10 & SI_DN & basket LEAD & BV>=1.5 n 0
+--- 2022-24: n 13634 base mean -0.68% med -4.80 HUGE/100 0.65
+    SI_UP (>=+20%)                     n  1180 mean   -0.65% med  -4.45 HUGE/100  0.76 lift 1.18 ex-top3  -1.15 t +0.1
+    SI_UP (>=+20%) & BV>=1.5           n   283 mean   -0.23% med  -5.47 HUGE/100  1.06 lift 1.64 ex-top3  -2.02 t +0.0
+    SI_DN (<=-20%)                     n   724 mean   -0.41% med  -4.08 HUGE/100  0.69 lift 1.07 ex-top3  -1.47 t +0.9
+    SI_DN (<=-20%) & BV>=1.5           n   155 mean   -2.23% med  -5.10 HUGE/100  0.65 lift 1.00 ex-top3  -4.01 t -0.2
+    DTC>=10 & SI_UP                    n    31 mean  +14.97% med  -4.39 HUGE/100  6.45 lift 10.00 ex-top3  -1.53 t +1.1
+    DTC>=10 & SI_UP & BV>=1.5          n 13
+    DTC>=10 & SI_DN                    n 7
+    DTC>=10 & SI_DN & BV>=1.5          n 5
+    DTC>=10 & SI_UP & basket LEAD      n 13
+    DTC>=10 & SI_UP & basket LEAD & BV>=1.5 n 6
+    DTC>=10 & SI_DN & basket LEAD      n 1
+    DTC>=10 & SI_DN & basket LEAD & BV>=1.5 n 1
+--- 2025-26Q1: n 5589 base mean +2.35% med -4.67 HUGE/100 2.02
+    SI_UP (>=+20%)                     n   476 mean   +2.24% med  -3.56 HUGE/100  1.68 lift 0.83 ex-top3  +1.22 t -0.3
+    SI_UP (>=+20%) & BV>=1.5           n    99 mean   +5.48% med  -3.82 HUGE/100  4.04 lift 2.00 ex-top3  +1.62 t +0.2
+    SI_DN (<=-20%)                     n   247 mean   +0.78% med  -3.46 HUGE/100  0.81 lift 0.40 ex-top3  -0.40 t -0.4
+    SI_DN (<=-20%) & BV>=1.5           n    47 mean   -1.06% med  -4.60 HUGE/100  2.13 lift 1.05 ex-top3  -5.77 t -1.2
+    DTC>=10 & SI_UP                    n 4
+    DTC>=10 & SI_UP & BV>=1.5          n 1
+    DTC>=10 & SI_DN                    n 3
+    DTC>=10 & SI_DN & BV>=1.5          n 0
+    DTC>=10 & SI_UP & basket LEAD      n 2
+    DTC>=10 & SI_UP & basket LEAD & BV>=1.5 n 0
+    DTC>=10 & SI_DN & basket LEAD      n 3
+    DTC>=10 & SI_DN & basket LEAD & BV>=1.5 n 0
+
+######## by industry group per era (flips in group: mean%, n | share of HUGE) to see what GLEAD is picking up
+--- 2019-21: AUTOS/EV +6.3/353 | BIOPHARMA +1.5/838 | ENERGY +4.1/541 | FINANCIAL +3.3/2715 | HARDWARE/ +6.4/742 | INDUSTRIA +4.7/2162 | MEDDEV/HE +3.8/402 | MINING/ME +5.5/179 | RETAIL/CO +16.1/629 | SOFTWARE/ +5.6/699 | TRANSPORT +0.6/271
+--- 2022-24: AUTOS/EV -3.5/420 | BIOPHARMA -1.3/1065 | ENERGY -1.4/711 | FINANCIAL -0.4/2982 | HARDWARE/ -2.2/852 | INDUSTRIA -0.7/2413 | MEDDEV/HE +4.9/446 | MINING/ME -1.4/292 | RETAIL/CO -1.0/798 | SOFTWARE/ -0.6/1047 | TRANSPORT +3.4/277
+--- 2025-26Q1: AUTOS/EV +0.5/181 | BIOPHARMA +5.6/424 | ENERGY +6.6/299 | FINANCIAL -0.1/1219 | HARDWARE/ +14.4/331 | INDUSTRIA +1.9/941 | MEDDEV/HE +0.9/175 | MINING/ME +24.8/95 | RETAIL/CO -0.9/302 | SOFTWARE/ -3.4/437 | TRANSPORT +2.3/127
