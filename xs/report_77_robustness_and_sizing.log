@@ -1,0 +1,26 @@
+PART 1: robustness to the biggest winners (net %, per-flip mean)
+set                            era           n    mean   -top1   -top3   -top5  trim2%  median  HUGE top3 share of sum
+volume>=1.5x (now)             2019-21    3296   +7.03   +5.85   +5.19   +4.65   +0.52   -5.16    87               26%
+volume>=1.5x (now)             2022-26Q1  5757   +0.95   +0.59   +0.44   +0.31   -2.54   -5.88   103               54%
+insider + volume               2019-21     164  +13.32   +8.68   +4.35   +2.28   +3.14   -5.00     6               68%
+insider + volume               2022-26Q1   249   +4.56   +3.25   +1.74   +0.64   +0.64   -5.45     6               62%
+squeeze-hot (DTC>=10 & lead)   2019-21     318  +22.32  +10.05   +6.88   +5.56   +4.56   -4.16    13               69%
+squeeze-hot (DTC>=10 & lead)   2022-26Q1   411   +4.17   +3.16   +1.57   +0.62   -0.98   -6.51    15               63%
+insider+vol skip TIGHTENING    2019-21      86  +16.73   +7.88   -0.53   -3.34   +2.48   -5.38     4              103%
+insider+vol skip TIGHTENING    2022-26Q1   150   +3.97   +2.51   +0.70   -0.52   +0.70   -4.65     3               83%
+volume skip TIGHTENING         2019-21    1651   +4.14   +3.51   +2.42   +1.75   -1.76   -5.40    42               42%
+volume skip TIGHTENING         2022-26Q1  3142   +3.27   +2.61   +2.34   +2.11   -0.96   -5.46    77               29%
+
+PART 2: sizing in TIGHTENING months (weight w there, 1.0 elsewhere)
+set                        era       w=1.0: per-orig-flip / per-$ | w=0.5: per-orig-flip / per-$ | w=0.0: per-orig-flip / per-$  (tightening share of flips)
+volume>=1.5x (now)         2019-21             +7.03% /  +7.03% |           +4.55% /  +6.07% |           +2.07% /  +4.14%  (50%)
+volume>=1.5x (now)         2022-26Q1           +0.95% /  +0.95% |           +1.37% /  +1.77% |           +1.78% /  +3.27%  (45%)
+volume>=1.5x (now)         ALL                 +3.17% /  +3.17% |           +2.53% /  +3.31% |           +1.89% /  +3.57%  (47%)
+insider + volume           2019-21            +13.32% / +13.32% |          +11.05% / +14.49% |           +8.78% / +16.73%  (48%)
+insider + volume           2022-26Q1           +4.56% /  +4.56% |           +3.48% /  +4.34% |           +2.39% /  +3.97%  (40%)
+insider + volume           ALL                 +8.04% /  +8.04% |           +6.48% /  +8.25% |           +4.93% /  +8.62%  (43%)
+squeeze-hot (DTC>=10 & lead) 2019-21            +22.32% / +22.32% |          +12.90% / +16.12% |           +3.48% /  +5.80%  (40%)
+squeeze-hot (DTC>=10 & lead) 2022-26Q1           +4.17% /  +4.17% |           +4.84% /  +5.93% |           +5.50% /  +8.73%  (37%)
+squeeze-hot (DTC>=10 & lead) ALL                +12.09% / +12.09% |           +8.35% / +10.33% |           +4.62% /  +7.49%  (38%)
+
+TIGHTENING months by year (share of flips classed): 2019: 0%, 2020: 53%, 2021: 100%, 2022: 100%, 2023: 52%, 2024: 40%, 2025: 9%, 2026: 0%
