@@ -1,0 +1,14 @@
+days 2135 | level correlation with norm: corr -0.38, rv -0.35
+flips with a state: 4228
+ TDA landscape norm tercile
+   exit hold | 18-21: low  +32.2 mid  +30.9 high  +27.9 (n 619/460/625) high-low t -0.4 | 22+: low  +21.7 mid   +6.8 high   +3.8 (n 829/685/1010) high-low t -2.0 | pooled: low  +26.2 mid  +16.5 high  +13.0 (n 1448/1145/1635) high-low t -1.9
+   exit r16  | 18-21: low   +8.5 mid  +17.2 high  +25.2 (n 407/301/438) high-low t +1.9 | 22+: low  +14.0 mid  +18.4 high   -4.9 (n 537/453/699) high-low t -2.4 | pooled: low  +11.6 mid  +18.0 high   +6.7 (n 944/754/1137) high-low t -0.8
+ TDA norm residual (beyond corr and vol) tercile
+   exit hold | 18-21: low  +11.3 mid  +51.0 high  +28.9 (n 512/514/678) high-low t +1.7 | 22+: low  +17.3 mid  +15.2 high   +1.3 (n 865/671/988) high-low t -1.9 | pooled: low  +15.0 mid  +30.7 high  +12.6 (n 1377/1185/1666) high-low t -0.4
+   exit r16  | 18-21: low   +7.1 mid  +18.9 high  +23.5 (n 347/350/449) high-low t +1.8 | 22+: low   +9.4 mid  +20.0 high   -2.5 (n 562/445/682) high-low t -1.6 | pooled: low   +8.5 mid  +19.5 high   +7.8 (n 909/795/1131) high-low t -0.1
+ avg pairwise correlation tercile (benchmark)
+   exit hold | 18-21: low  +14.5 mid  +34.5 high  +38.4 (n 506/458/740) high-low t +2.5 | 22+: low  +10.7 mid  +12.5 high   +7.8 (n 1341/614/569) high-low t -0.3 | pooled: low  +11.7 mid  +21.9 high  +25.1 (n 1847/1072/1309) high-low t +1.9
+   exit r16  | 18-21: low  +14.7 mid  +25.0 high  +13.5 (n 349/327/470) high-low t -0.1 | 22+: low   +1.5 mid  +12.2 high  +16.8 (n 920/407/362) high-low t +1.7 | pooled: low   +5.2 mid  +17.9 high  +14.9 (n 1269/734/832) high-low t +1.7
+ realized vol tercile (benchmark)
+   exit hold | 18-21: low  +22.9 mid  +32.0 high  +35.2 (n 515/631/558) high-low t +1.0 | 22+: low  +11.3 mid  +12.8 high   +7.5 (n 560/1021/943) high-low t -0.4 | pooled: low  +16.8 mid  +20.1 high  +17.8 (n 1075/1652/1501) high-low t +0.1
+   exit r16  | 18-21: low  +14.8 mid  +17.6 high  +19.0 (n 360/429/357) high-low t +0.4 | 22+: low   +8.7 mid   +3.3 high  +11.2 (n 385/694/610) high-low t +0.3 | pooled: low  +11.6 mid   +8.8 high  +14.1 (n 745/1123/967) high-low t +0.4
