@@ -1,0 +1,114 @@
+
+######## BASE: ALL FLIPS
+
+--- 2019-21: base n 12005 | HUGE 2.06/100 | BIG50 5.26/100 | losers 73% | mean +4.63% med -4.34%
+  flag                                            n HUGE/100  lift recall% BIG50/100 lose%   mean%   med% ex-top3     t
+  RVOL: flip-bar volume >=1.5x                 3296     2.64  1.28    35.2      6.49    70   +7.03  -5.16   +5.19  +1.5
+  RVOL >=2x                                    1827     2.68  1.30    19.8      6.68    69   +7.74  -5.46   +4.41  +1.4
+  RVOL >=3x                                     850     2.35  1.14     8.1      6.12    70   +9.08  -6.76   +1.92  +1.2
+  insider open-mkt buy 30d (benchmark)          673     3.27  1.59     8.9      6.54    72   +9.48  -4.38   +5.56  +0.8
+  new 13D 30d                                    87     1.15  0.56     0.4      6.90    75   -0.20  -6.09   -3.87  +0.1
+  any 13D 30d                                   408     3.68  1.79     6.1      8.09    73   +6.88  -5.40   +3.87  +1.3
+  13G 30d (control)                            1734     1.67  0.81    11.7      3.58    75   +4.26  -4.79   +1.21  +1.2
+  8-K 1.01 agreement 7d (contract proxy)        333     5.11  2.48     6.9      8.41    72  +10.83  -5.21   +5.83  +1.3
+  8-K 7.01/8.01 event PR 7d                    1259     2.46  1.20    12.6      5.56    73   +5.23  -4.95   +3.38  +0.1
+  8-K 5.02 mgmt change 7d                       404     1.73  0.84     2.8      4.46    76   +1.61  -5.25   -0.05  -1.7
+  8-K 3.02 equity sale 7d                        51     7.84  3.81     1.6     19.61    69  +15.77  -6.78   +4.03  +1.3
+  biotech/pharma SIC (FDA proxy pool)           838     2.03  0.99     6.9      4.89    76   +1.49  -6.83   -0.57  -1.1
+  biotech + event 8-K 7d                         87     1.15  0.56     0.4      3.45    76   -2.14  -7.59   -6.43  -1.5
+  S&P 400/600 addition 20d                       22     4.55  2.21     0.4      9.09    77   +6.53  -6.01   -6.44  -0.5
+  Russell recon window May20-Jun               1605     2.80  1.36    18.2      5.17    78   +3.35  -5.05   +2.07  -1.5
+
+--- 2022-26Q1: base n 19809 | HUGE 1.06/100 | BIG50 3.10/100 | losers 78% | mean +0.19% med -4.79%
+  flag                                            n HUGE/100  lift recall% BIG50/100 lose%   mean%   med% ex-top3     t
+  RVOL: flip-bar volume >=1.5x                 5757     1.79  1.70    49.3      4.39    75   +0.95  -5.88   +0.44  +1.4
+  RVOL >=2x                                    3234     2.29  2.17    35.4      4.73    74   +0.62  -6.63   +0.26  +0.3
+  RVOL >=3x                                    1525     2.43  2.30    17.7      4.79    74   -0.12  -7.61   -0.85  -1.2
+  insider open-mkt buy 30d (benchmark)         1022     1.27  1.21     6.2      3.23    78   +0.66  -5.10   -0.21  +1.1
+  new 13D 30d                                   111     0.90  0.85     0.5      1.80    83   -4.36  -6.70   -6.94  -2.3
+  any 13D 30d                                   714     1.26  1.19     4.3      3.08    78   -1.09  -5.98   -2.03  -0.0
+  13G 30d (control)                            3789     1.45  1.38    26.3      3.75    79   +0.03  -5.40   -0.32  -0.5
+  8-K 1.01 agreement 7d (contract proxy)        441     1.36  1.29     2.9      4.54    79   -0.33  -5.43   -1.69  +0.6
+  8-K 7.01/8.01 event PR 7d                    2027     1.04  0.98    10.0      3.65    76   +0.32  -5.07   -0.19  +0.2
+  8-K 5.02 mgmt change 7d                       682     1.17  1.11     3.8      2.79    79   -0.95  -5.82   -1.93  -0.5
+  8-K 3.02 equity sale 7d                        60     1.67  1.58     0.5      6.67    68   +3.64  -6.28   -3.25  +0.2
+  biotech/pharma SIC (FDA proxy pool)          1489     2.48  2.36    17.7      6.04    77   +0.67  -7.18   -0.02  -0.4
+  biotech + event 8-K 7d                        194     2.06  1.95     1.9      7.73    72   +3.20  -8.67   -0.44  +0.5
+  S&P 400/600 addition 20d                       54     1.85  1.76     0.5      3.70    85   -1.06  -4.93   -5.52  -1.1
+  Russell recon window May20-Jun               2012     1.04  0.99    10.0      3.38    73   +0.80  -4.45   +0.45  +0.4
+  short squeeze DTC>=5 (2025+)                 2024     2.47  2.34    23.9      5.19    75   +3.10  -5.00   +2.49  +0.6
+  short squeeze DTC>=10 (2025+)                 378     4.50  4.26     8.1      8.20    73   +7.08  -4.46   +4.78  +1.0
+
+######## BASE: ON TOP OF BV>=1.5
+
+--- 2019-21: base n 3296 | HUGE 2.64/100 | BIG50 6.49/100 | losers 70% | mean +7.03% med -5.16%
+  flag                                            n HUGE/100  lift recall% BIG50/100 lose%   mean%   med% ex-top3     t
+  RVOL >=2x                                    1827     2.68  1.02    56.3      6.68    69   +7.74  -5.46   +4.41  +1.2
+  RVOL >=3x                                     850     2.35  0.89    23.0      6.12    70   +9.08  -6.76   +1.92  +1.0
+  insider open-mkt buy 30d (benchmark)          164     3.66  1.39     6.9      7.32    66  +13.32  -5.00   +4.35  +0.7
+  new 13D 30d                                    27     0.00  0.00     0.0      3.70    78   -5.70  -6.53  -12.02  -1.8
+  any 13D 30d                                   127     6.30  2.39     9.2     10.24    74   +6.11  -6.98   +1.00  +0.7
+  13G 30d (control)                             489     2.25  0.85    12.6      4.50    73  +10.03  -6.06   -0.03  +0.9
+  8-K 1.01 agreement 7d (contract proxy)        124     7.26  2.75    10.3     11.29    71  +20.61  -6.82   +7.21  +0.7
+  8-K 7.01/8.01 event PR 7d                     543     3.13  1.19    19.5      8.10    68   +8.66  -5.34   +4.73  +0.4
+  8-K 5.02 mgmt change 7d                       147     2.72  1.03     4.6      6.12    67   +4.01  -5.04   +1.04  -0.1
+  8-K 3.02 equity sale 7d                        25     4.00  1.52     1.1     20.00    68  +11.44  -6.62   -2.40  +0.7
+  biotech/pharma SIC (FDA proxy pool)           312     1.92  0.73     6.9      7.05    75   +2.32  -7.99   -2.81  -0.7
+  biotech + event 8-K 7d                         50     2.00  0.76     1.1      4.00    72   -0.99  -7.48   -7.99  -1.0
+  S&P 400/600 addition 20d                   n<15
+  Russell recon window May20-Jun                403     2.73  1.03    12.6      4.96    79   +2.62  -6.25   -1.16  -0.6
+
+--- 2022-26Q1: base n 5757 | HUGE 1.79/100 | BIG50 4.39/100 | losers 75% | mean +0.95% med -5.88%
+  flag                                            n HUGE/100  lift recall% BIG50/100 lose%   mean%   med% ex-top3     t
+  RVOL >=2x                                    3234     2.29  1.28    71.8      4.73    74   +0.62  -6.63   +0.26  -0.9
+  RVOL >=3x                                    1525     2.43  1.36    35.9      4.79    74   -0.12  -7.61   -0.85  -2.3
+  insider open-mkt buy 30d (benchmark)          249     2.41  1.35     5.8      6.43    70   +4.56  -5.45   +1.74  +1.8
+  new 13D 30d                                    41     0.00  0.00     0.0      2.44    93   -8.52 -10.06  -11.91  -2.8
+  any 13D 30d                                   245     2.45  1.37     5.8      3.67    80   -1.99  -8.23   -4.44  +0.2
+  13G 30d (control)                            1263     1.58  0.89    19.4      4.28    77   -0.91  -6.79   -1.67  -0.7
+  8-K 1.01 agreement 7d (contract proxy)        200     1.50  0.84     2.9      5.50    76   -1.37  -8.21   -3.45  +0.0
+  8-K 7.01/8.01 event PR 7d                     990     1.62  0.90    15.5      4.75    75   +0.61  -6.03   -0.43  -0.3
+  8-K 5.02 mgmt change 7d                       282     1.77  0.99     4.9      2.84    76   -0.84  -7.52   -3.21  +0.3
+  8-K 3.02 equity sale 7d                        29     0.00  0.00     0.0      3.45    69   -1.60  -7.98   -8.04  -2.1
+  biotech/pharma SIC (FDA proxy pool)           585     3.08  1.72    17.5      7.18    75   -0.46  -9.25   -1.74  -1.6
+  biotech + event 8-K 7d                        111     2.70  1.51     2.9      8.11    70   +3.10  -9.63   -2.61  +0.1
+  S&P 400/600 addition 20d                   n<15
+  Russell recon window May20-Jun                606     1.82  1.01    10.7      4.29    69   +2.01  -4.96   +0.94  -0.6
+  short squeeze DTC>=5 (2025+)                  739     3.92  2.19    28.2      6.77    72   +4.47  -6.47   +3.14  +1.0
+  short squeeze DTC>=10 (2025+)                 164     7.93  4.43    12.6     11.59    70  +11.80  -5.80   +7.34  +2.3
+
+######## VERDICT (PASS = n>=30 both eras, HUGE lift>=1.3 both eras, mean above base both eras)
+-- base ALL FLIPS
+  RVOL: flip-bar volume >=1.5x               fail | lift 1.28/1.70 | mean-vs-base +2.41/+0.76pp | n 3296/5757
+  RVOL >=2x                                  PASS | lift 1.30/2.17 | mean-vs-base +3.11/+0.43pp | n 1827/3234
+  RVOL >=3x                                  fail | lift 1.14/2.30 | mean-vs-base +4.45/-0.31pp | n 850/1525
+  insider open-mkt buy 30d (benchmark)       fail | lift 1.59/1.21 | mean-vs-base +4.86/+0.47pp | n 673/1022
+  new 13D 30d                                fail | lift 0.56/0.85 | mean-vs-base -4.83/-4.55pp | n 87/111
+  any 13D 30d                                fail | lift 1.79/1.19 | mean-vs-base +2.26/-1.28pp | n 408/714
+  13G 30d (control)                          fail | lift 0.81/1.38 | mean-vs-base -0.36/-0.16pp | n 1734/3789
+  8-K 1.01 agreement 7d (contract proxy)     fail | lift 2.48/1.29 | mean-vs-base +6.20/-0.52pp | n 333/441
+  8-K 7.01/8.01 event PR 7d                  fail | lift 1.20/0.98 | mean-vs-base +0.60/+0.13pp | n 1259/2027
+  8-K 5.02 mgmt change 7d                    fail | lift 0.84/1.11 | mean-vs-base -3.02/-1.14pp | n 404/682
+  8-K 3.02 equity sale 7d                    PASS | lift 3.81/1.58 | mean-vs-base +11.14/+3.45pp | n 51/60
+  biotech/pharma SIC (FDA proxy pool)        fail | lift 0.99/2.36 | mean-vs-base -3.14/+0.48pp | n 838/1489
+  biotech + event 8-K 7d                     fail | lift 0.56/1.95 | mean-vs-base -6.76/+3.01pp | n 87/194
+  S&P 400/600 addition 20d                   fail | lift 2.21/1.76 | mean-vs-base +1.91/-1.25pp | n 22/54
+  Russell recon window May20-Jun             fail | lift 1.36/0.99 | mean-vs-base -1.28/+0.61pp | n 1605/2012
+  short squeeze DTC>=5 (2025+)               ONE WINDOW ONLY (2025-26): n 2024 lift 2.34 mean +3.10% vs base +0.19% -> no strict split
+  short squeeze DTC>=10 (2025+)              ONE WINDOW ONLY (2025-26): n 378 lift 4.26 mean +7.08% vs base +0.19% -> no strict split
+-- base ON TOP OF BV>=1.5
+  RVOL >=2x                                  fail | lift 1.02/1.28 | mean-vs-base +0.70/-0.33pp | n 1827/3234
+  RVOL >=3x                                  fail | lift 0.89/1.36 | mean-vs-base +2.04/-1.07pp | n 850/1525
+  insider open-mkt buy 30d (benchmark)       PASS | lift 1.39/1.35 | mean-vs-base +6.28/+3.61pp | n 164/249
+  new 13D 30d                                fail | lift 0.00/0.00 | mean-vs-base -12.73/-9.47pp | n 27/41
+  any 13D 30d                                fail | lift 2.39/1.37 | mean-vs-base -0.92/-2.94pp | n 127/245
+  13G 30d (control)                          fail | lift 0.85/0.89 | mean-vs-base +2.99/-1.86pp | n 489/1263
+  8-K 1.01 agreement 7d (contract proxy)     fail | lift 2.75/0.84 | mean-vs-base +13.58/-2.32pp | n 124/200
+  8-K 7.01/8.01 event PR 7d                  fail | lift 1.19/0.90 | mean-vs-base +1.62/-0.34pp | n 543/990
+  8-K 5.02 mgmt change 7d                    fail | lift 1.03/0.99 | mean-vs-base -3.02/-1.79pp | n 147/282
+  8-K 3.02 equity sale 7d                    fail | lift 1.52/0.00 | mean-vs-base +4.41/-2.55pp | n 25/29
+  biotech/pharma SIC (FDA proxy pool)        fail | lift 0.73/1.72 | mean-vs-base -4.71/-1.41pp | n 312/585
+  biotech + event 8-K 7d                     fail | lift 0.76/1.51 | mean-vs-base -8.03/+2.15pp | n 50/111
+  Russell recon window May20-Jun             fail | lift 1.03/1.01 | mean-vs-base -4.42/+1.06pp | n 403/606
+  short squeeze DTC>=5 (2025+)               ONE WINDOW ONLY (2025-26): n 739 lift 2.19 mean +4.47% vs base +0.95% -> no strict split
+  short squeeze DTC>=10 (2025+)              ONE WINDOW ONLY (2025-26): n 164 lift 4.43 mean +11.80% vs base +0.95% -> no strict split

@@ -1,0 +1,54 @@
+
+=== 2019-21
+  STANDARD: every confirmed flip, enter next open n  12001 | mean net  +4.61% | median  -4.34% | win 26.8% | HUGE 247 (2.06%) 
+  flips whose flip day OPENED above trigger: 3384 of 12001 (28.2%); HUGE among them 72 of 247 HUGE
+    same flips, STANDARD entry                   n   3384 | mean net  +4.98% | median  -3.74% | win 25.9% | HUGE  72 (2.13%) 
+    same flips, OPEN-of-flip-day entry           n   3384 | mean net  +6.83% | median  -3.12% | win 27.0% | HUGE  82 (2.42%) 
+    flips with NO gap, standard                  n   8617 | mean net  +4.46% | median  -4.61% | win 27.1% | HUGE 175 (2.03%) 
+  HYBRID: open entry if gap else standard        n  12001 | mean net  +5.13% | median  -4.09% | win 27.1% | HUGE 257 (2.14%) 
+  GAP-RULE flip days only (hindsight selected)   n   3382 | mean net  +6.65% | median  -3.13% | win 26.9% | HUGE  80 (2.37%) 
+  GAP-RULE false entries (opened above, no flip) n   1803 | mean net  -2.91% | median  -2.12% | win  0.0% | HUGE   0 (0.00%) | avg overshoot 0.24 ATR
+  GAP-RULE tradable: ALL gap days (flip+false)   n   5185 | mean net  +3.33% | median  -2.64% | win 17.6% | HUGE  80 (1.54%) | false share 35%
+  trades per year-ish: standard 12001  gap-rule 5185  (x0.4)
+  COMBINED TRADABLE (open entry on gap days incl. false ones + standard on no-gap flips): trades 13802 | mean net +4.04% | sum of trade returns 55,740pp  vs STANDARD trades 12001 | mean +4.61% | sum 55,319pp
+  where the sum comes from: real flips gain +5,661pp from entering at the open, false entries cost -5,240pp
+    gap-rule only if open >= 0.5 ATR above trigger n   1074 | mean net  +6.20% | median  -4.24% | win 25.1% | HUGE  23 (2.14%) | false 16%
+      same cohort: open-rule sum +6,662pp vs standard entry on its real flips +5,895pp
+    gap-rule only if open >= 1.0 ATR above trigger n    490 | mean net  +3.30% | median  -5.03% | win 27.1% | HUGE   9 (1.84%) | false 12%
+      same cohort: open-rule sum +1,615pp vs standard entry on its real flips +1,141pp
+
+=== 2022+
+  STANDARD: every confirmed flip, enter next open n  19825 | mean net  +0.20% | median  -4.79% | win 22.5% | HUGE 209 (1.05%) 
+  flips whose flip day OPENED above trigger: 5143 of 19825 (25.9%); HUGE among them 61 of 209 HUGE
+    same flips, STANDARD entry                   n   5143 | mean net  +1.05% | median  -4.11% | win 21.8% | HUGE  61 (1.19%) 
+    same flips, OPEN-of-flip-day entry           n   5143 | mean net  +2.69% | median  -3.36% | win 23.5% | HUGE  67 (1.30%) 
+    flips with NO gap, standard                  n  14682 | mean net  -0.10% | median  -5.03% | win 22.7% | HUGE 148 (1.01%) 
+  HYBRID: open entry if gap else standard        n  19825 | mean net  +0.62% | median  -4.53% | win 22.9% | HUGE 215 (1.08%) 
+  GAP-RULE flip days only (hindsight selected)   n   5139 | mean net  +2.68% | median  -3.36% | win 23.5% | HUGE  67 (1.30%) 
+  GAP-RULE false entries (opened above, no flip) n   2832 | mean net  -3.10% | median  -2.12% | win  0.0% | HUGE   0 (0.00%) | avg overshoot 0.25 ATR
+  GAP-RULE tradable: ALL gap days (flip+false)   n   7971 | mean net  +0.62% | median  -2.78% | win 15.2% | HUGE  67 (0.84%) | false share 36%
+  trades per year-ish: standard 19825  gap-rule 7971  (x0.4)
+  COMBINED TRADABLE (open entry on gap days incl. false ones + standard on no-gap flips): trades 22653 | mean net +0.15% | sum of trade returns 3,474pp  vs STANDARD trades 19825 | mean +0.20% | sum 3,922pp
+  where the sum comes from: real flips gain +8,344pp from entering at the open, false entries cost -8,792pp
+    gap-rule only if open >= 0.5 ATR above trigger n   1846 | mean net  +0.18% | median  -4.43% | win 22.2% | HUGE  20 (1.08%) | false 17%
+      same cohort: open-rule sum +328pp vs standard entry on its real flips +574pp
+    gap-rule only if open >= 1.0 ATR above trigger n    922 | mean net  +0.48% | median  -5.43% | win 24.7% | HUGE  12 (1.30%) | false 14%
+      same cohort: open-rule sum +445pp vs standard entry on its real flips +539pp
+
+=== ALL
+  STANDARD: every confirmed flip, enter next open n  31826 | mean net  +1.86% | median  -4.63% | win 24.1% | HUGE 456 (1.43%) 
+  flips whose flip day OPENED above trigger: 8527 of 31826 (26.8%); HUGE among them 133 of 456 HUGE
+    same flips, STANDARD entry                   n   8527 | mean net  +2.61% | median  -3.98% | win 23.4% | HUGE 133 (1.56%) 
+    same flips, OPEN-of-flip-day entry           n   8527 | mean net  +4.33% | median  -3.27% | win 24.9% | HUGE 149 (1.75%) 
+    flips with NO gap, standard                  n  23299 | mean net  +1.59% | median  -4.88% | win 24.3% | HUGE 323 (1.39%) 
+  HYBRID: open entry if gap else standard        n  31826 | mean net  +2.32% | median  -4.38% | win 24.5% | HUGE 472 (1.48%) 
+  GAP-RULE flip days only (hindsight selected)   n   8521 | mean net  +4.26% | median  -3.27% | win 24.9% | HUGE 147 (1.73%) 
+  GAP-RULE false entries (opened above, no flip) n   4635 | mean net  -3.03% | median  -2.12% | win  0.0% | HUGE   0 (0.00%) | avg overshoot 0.25 ATR
+  GAP-RULE tradable: ALL gap days (flip+false)   n  13156 | mean net  +1.69% | median  -2.72% | win 16.1% | HUGE 147 (1.12%) | false share 35%
+  trades per year-ish: standard 31826  gap-rule 13156  (x0.4)
+  COMBINED TRADABLE (open entry on gap days incl. false ones + standard on no-gap flips): trades 36455 | mean net +1.62% | sum of trade returns 59,214pp  vs STANDARD trades 31826 | mean +1.86% | sum 59,242pp
+  where the sum comes from: real flips gain +14,005pp from entering at the open, false entries cost -14,032pp
+    gap-rule only if open >= 0.5 ATR above trigger n   2920 | mean net  +2.39% | median  -4.38% | win 23.3% | HUGE  43 (1.47%) | false 17%
+      same cohort: open-rule sum +6,989pp vs standard entry on its real flips +6,470pp
+    gap-rule only if open >= 1.0 ATR above trigger n   1412 | mean net  +1.46% | median  -5.23% | win 25.6% | HUGE  21 (1.49%) | false 13%
+      same cohort: open-rule sum +2,060pp vs standard entry on its real flips +1,679pp
