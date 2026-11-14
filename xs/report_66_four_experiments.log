@@ -1,0 +1,67 @@
+EXP1 INDUSTRY: group | flips share % (19-21 / 22+) | HUGE share % (19-21 / 22+) | HUGE rate % (19-21 / 22+) | mean net % (19-21 / 22+)  [* = huge share > flip share in both eras]
+ AUTOS/EV           flips  2.9/ 3.0 | huge  3.2/ 1.0 | rate 2.27/0.33 | mean   +6.3/  -2.3  
+ BIOPHARMA          flips  7.0/ 7.5 | huge  6.9/17.7 | rate 2.03/2.48 | mean   +1.5/  +0.7  
+ ENERGY             flips  4.5/ 5.1 | huge  5.7/ 5.3 | rate 2.59/1.09 | mean   +4.1/  +1.0  
+ FINANCIAL/REIT     flips 22.6/21.2 | huge 14.2/10.0 | rate 1.29/0.50 | mean   +3.3/  -0.3  
+ HARDWARE/SEMIS     flips  6.2/ 6.0 | huge  8.1/13.4 | rate 2.70/2.37 | mean   +6.4/  +2.4 *
+ INDUSTRIAL/MFG     flips 18.0/16.9 | huge 17.8/13.4 | rate 2.04/0.83 | mean   +4.7/  +0.0  
+ MEDDEV/HEALTHSVC   flips  3.3/ 3.1 | huge  3.6/ 4.3 | rate 2.24/1.45 | mean   +3.8/  +3.8  
+ MINING/METALS      flips  1.5/ 2.0 | huge  1.2/ 6.7 | rate 1.68/3.62 | mean   +5.5/  +5.0  
+ OTHER/SERVICES     flips 20.6/20.1 | huge 17.0/15.3 | rate 1.70/0.81 | mean   +3.8/  -0.2  
+ RETAIL/CONSUMER    flips  5.2/ 5.6 | huge 14.2/ 4.3 | rate 5.56/0.82 | mean  +16.1/  -1.0  
+ SOFTWARE/IT        flips  5.8/ 7.5 | huge  6.9/ 6.2 | rate 2.43/0.88 | mean   +5.6/  -1.5  
+ TRANSPORT/AIR      flips  2.3/ 2.0 | huge  1.2/ 2.4 | rate 1.11/1.24 | mean   +0.6/  +3.1  
+
+EXP2 MARKET-STATE GATES: gate on vs off | mean net %, median, huge %, n | clustered t on-vs-off   (bases: all flips, BV>=1.5)
+ --- 2019-21
+   all      index vector-bull      on   +4.1% med  -4.4 huge  2.0% n 10292 | off   +7.6% med  -3.7 huge  2.3% n  1713 | t -1.4
+   all      index bull <=40d old   on   +6.6% med  -4.2 huge  2.7% n  6027 | off   +2.6% med  -4.5 huge  1.4% n  5978 | t -1.1
+   all      breadth thrust         on   +7.6% med  -4.7 huge  3.8% n  1884 | off   +4.1% med  -4.3 huge  1.7% n 10121 | t +nan
+   all      index drawdown>=15%    on  +23.0% med  -5.0 huge  7.6% n  1211 | off   +2.6% med  -4.3 huge  1.4% n 10794 | t +nan
+   all      index vector-bear      on   +7.6% med  -3.7 huge  2.3% n  1713 | off   +4.1% med  -4.4 huge  2.0% n 10292 | t +1.4
+   BV>=1.5  index vector-bull      on   +6.6% med  -5.2 huge  2.5% n  2875 | off  +10.0% med  -5.0 huge  3.3% n   421 | t -1.6
+   BV>=1.5  index bull <=40d old   on   +9.4% med  -4.6 huge  3.4% n  1683 | off   +4.6% med  -5.7 huge  1.9% n  1613 | t -1.2
+   BV>=1.5  breadth thrust         on  +13.2% med  -5.2 huge  6.1% n   461 | off   +6.0% med  -5.1 huge  2.1% n  2835 | t +nan
+   BV>=1.5  index drawdown>=15%    on  +34.6% med  -4.1 huge 11.3% n   282 | off   +4.5% med  -5.2 huge  1.8% n  3014 | t +nan
+   BV>=1.5  index vector-bear      on  +10.0% med  -5.0 huge  3.3% n   421 | off   +6.6% med  -5.2 huge  2.5% n  2875 | t +1.6
+ --- 2022-26Q1
+   all      index vector-bull      on   -0.5% med  -4.9 huge  0.9% n 14088 | off   +1.8% med  -4.6 huge  1.5% n  5721 | t -1.8
+   all      index bull <=40d old   on   +0.7% med  -4.8 huge  1.1% n  6665 | off   -0.0% med  -4.8 huge  1.0% n 13144 | t -0.5
+   all      breadth thrust         on   +1.5% med  -4.6 huge  1.4% n  2159 | off   +0.0% med  -4.8 huge  1.0% n 17650 | t -1.2
+   all      index drawdown>=15%    on   +0.3% med  -4.6 huge  0.8% n  7642 | off   +0.1% med  -4.9 huge  1.2% n 12167 | t +0.9
+   all      index vector-bear      on   +1.8% med  -4.6 huge  1.5% n  5721 | off   -0.5% med  -4.9 huge  0.9% n 14088 | t +1.8
+   BV>=1.5  index vector-bull      on   +0.6% med  -5.9 huge  1.6% n  4191 | off   +1.8% med  -5.8 huge  2.4% n  1566 | t -0.4
+   BV>=1.5  index bull <=40d old   on   +3.0% med  -5.7 huge  2.1% n  1985 | off   -0.2% med  -5.9 huge  1.6% n  3772 | t -0.3
+   BV>=1.5  breadth thrust         on   +2.5% med  -5.5 huge  2.2% n   587 | off   +0.8% med  -5.9 huge  1.7% n  5170 | t -0.4
+   BV>=1.5  index drawdown>=15%    on   +0.7% med  -5.4 huge  1.2% n  1959 | off   +1.1% med  -6.2 huge  2.1% n  3798 | t +0.7
+   BV>=1.5  index vector-bear      on   +1.8% med  -5.8 huge  2.4% n  1566 | off   +0.6% med  -5.9 huge  1.6% n  4191 | t +0.4
+
+EXP3 VOLATILITY: top-ATR%-quintile flips by year (all flips | with BV>=1.5): n, mean net, median, huge%  vs all flips that year
+  2019: Q5 n  314 mean   -0.7% med  -9.1 huge  1.3% | Q5&BV n  130 mean   -3.7% | all flips mean  -0.7%
+  2020: Q5 n 1863 mean  +27.2% med  -6.5 huge  9.7% | Q5&BV n  539 mean  +42.7% | all flips mean +15.7%
+  2021: Q5 n  536 mean   -4.8% med -10.3 huge  1.1% | Q5&BV n  212 mean   -5.4% | all flips mean  -2.7%
+  2022: Q5 n 1140 mean   -4.9% med -10.5 huge  1.1% | Q5&BV n  419 mean   -6.5% | all flips mean  -3.4%
+  2023: Q5 n  755 mean   +3.3% med  -9.0 huge  2.9% | Q5&BV n  350 mean   +2.9% | all flips mean  +1.2%
+  2024: Q5 n  686 mean   +1.9% med  -9.6 huge  3.1% | Q5&BV n  351 mean   +2.1% | all flips mean  +0.1%
+  2025: Q5 n  893 mean  +12.5% med  -8.5 huge  7.6% | Q5&BV n  426 mean  +12.9% | all flips mean  +3.0%
+  2026: Q5 n  176 mean   -1.3% med -10.3 huge  3.4% | Q5&BV n   84 mean   -2.5% | all flips mean  -0.9%
+ weighted per-flip mean net % by era (equal | weight ~ ATR% | weight ~ 1/ATR%):
+  2019-21: equal +4.63 | ~ATR% +8.66 | ~1/ATR% +1.87
+  2022-26Q1: equal +0.19 | ~ATR% +0.81 | ~1/ATR% -0.12
+
+EXP4 BOOK BY YEAR (K=10, realized at exit, 2026 = Jan-Mar)
+ year | volume only            | vol + G1 index bull    | vol + insider          | vol + ATR top-quintile | vol + ATRtop + G1      | vol + insider + G1    
+ 2019 |                 -11.6% |                 -16.7% |                 -17.5% |                 -13.4% |                 -40.8% |                 -12.5%
+ 2020 |                 -21.2% |                 -22.7% |                 +17.1% |                  -5.8% |                  -4.9% |                 +24.6%
+ 2021 |                  +1.4% |                 +22.5% |                +284.1% |                +151.5% |                 +68.6% |                +166.8%
+ 2022 |                 -32.8% |                 -25.9% |                 -25.1% |                 -47.1% |                 -15.8% |                 -12.0%
+ 2023 |                  -0.3% |                 -11.6% |                  +8.0% |                 -31.1% |                 -19.4% |                  +3.2%
+ 2024 |                  +9.6% |                 +28.3% |                 +18.8% |                 +39.2% |                  -8.0% |                  +4.1%
+ 2025 |                 -11.8% |                 -18.3% |                 +39.5% |                 -17.4% |                  -6.6% |                 +53.6%
+ 2026 |                  +7.6% |                 +16.4% |                 +11.1% |                 +66.0% |                 +23.4% |                 +37.1%
+ volume only            signals  9053 compounded     -51% | worst yr  -32.8% | pos yrs 3/8
+ vol + G1 index bull    signals  7066 compounded     -37% | worst yr  -25.9% | pos yrs 3/8
+ vol + insider          signals   413 compounded    +453% | worst yr  -25.1% | pos yrs 6/8
+ vol + ATR top-quintile signals  2511 compounded     +43% | worst yr  -47.1% | pos yrs 3/8
+ vol + ATRtop + G1      signals  1885 compounded     -32% | worst yr  -40.8% | pos yrs 2/8
+ vol + insider + G1     signals   324 compounded    +479% | worst yr  -12.5% | pos yrs 6/8
