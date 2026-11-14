@@ -1,0 +1,43 @@
+filings 74673 tickers 1606 {'SC 13G/A': 37695, 'SCHEDULE 13G/A': 11364, 'SC 13G': 10965, 'SCHEDULE 13G': 5739, 'SC 13D/A': 5661, 'SCHEDULE 13D/A': 1883, 'SC 13D': 1130, 'SCHEDULE 13D': 236}
+
+=== 2019-21: 12005 flips
+  -- base all flips: mean +4.63% n 12005 huge 2.06%
+     13D (any, 30d)     n   408 | mean   +6.88% | med -5.40 | huge  3.7% | t vs rest +1.3
+     NEW 13D only       n    87 | mean   -0.20% | med -6.09 | huge  1.1% | t vs rest +0.1
+     13G (control)      n  1734 | mean   +4.26% | med -4.79 | huge  1.7% | t vs rest +1.2
+     13D or insider     n  1038 | mean   +7.96% | med -4.80 | huge  3.2% | t vs rest +1.1
+     13D and insider    n    43 | mean  +21.47% | med -4.24 | huge  9.3% | t vs rest +0.8
+  -- base BV>=1.5: mean +7.03% n 3296 huge 2.64%
+     13D (any, 30d)     n   127 | mean   +6.11% | med -6.98 | huge  6.3% | t vs rest +0.7
+     NEW 13D only       n    27 | mean   -5.70% | med -6.53 | huge  0.0% | t vs rest -1.8
+     13G (control)      n   489 | mean  +10.03% | med -6.06 | huge  2.2% | t vs rest +0.9
+     13D or insider     n   279 | mean   +9.98% | med -5.78 | huge  4.3% | t vs rest +0.8
+     13D and insider    n    12 | mean  +14.68% | med -3.87 | huge 16.7% | t vs rest +1.3
+
+=== 2022-26Q1: 19809 flips
+  -- base all flips: mean +0.19% n 19809 huge 1.06%
+     13D (any, 30d)     n   714 | mean   -1.09% | med -5.98 | huge  1.3% | t vs rest -0.0
+     NEW 13D only       n   111 | mean   -4.36% | med -6.70 | huge  0.9% | t vs rest -2.3
+     13G (control)      n  3789 | mean   +0.03% | med -5.40 | huge  1.5% | t vs rest -0.5
+     13D or insider     n  1668 | mean   -0.01% | med -5.33 | huge  1.3% | t vs rest +0.8
+     13D and insider    n    68 | mean   -1.34% | med -7.82 | huge  0.0% | t vs rest -0.8
+  -- base BV>=1.5: mean +0.95% n 5757 huge 1.79%
+     13D (any, 30d)     n   245 | mean   -1.99% | med -8.23 | huge  2.4% | t vs rest +0.2
+     NEW 13D only       n    41 | mean   -8.52% | med -10.06 | huge  0.0% | t vs rest -2.8
+     13G (control)      n  1263 | mean   -0.91% | med -6.79 | huge  1.6% | t vs rest -0.7
+     13D or insider     n   474 | mean   +1.20% | med -6.68 | huge  2.5% | t vs rest +0.7
+     13D and insider    n    20 | mean   +4.12% | med -6.46 | huge  0.0% | t vs rest +0.1
+
+=== ALL: 31814 flips
+  -- base all flips: mean +1.86% n 31814 huge 1.43%
+     13D (any, 30d)     n  1122 | mean   +1.81% | med -5.84 | huge  2.1% | t vs rest +0.9
+     NEW 13D only       n   198 | mean   -2.54% | med -6.55 | huge  1.0% | t vs rest -1.1
+     13G (control)      n  5523 | mean   +1.36% | med -5.19 | huge  1.5% | t vs rest +1.1
+     13D or insider     n  2706 | mean   +3.05% | med -5.14 | huge  2.0% | t vs rest +1.4
+     13D and insider    n   111 | mean   +7.49% | med -6.31 | huge  3.6% | t vs rest +0.3
+  -- base BV>=1.5: mean +3.17% n 9053 huge 2.10%
+     13D (any, 30d)     n   372 | mean   +0.78% | med -7.71 | huge  3.8% | t vs rest +0.7
+     NEW 13D only       n    68 | mean   -7.40% | med -8.26 | huge  0.0% | t vs rest -3.1
+     13G (control)      n  1752 | mean   +2.15% | med -6.58 | huge  1.8% | t vs rest +0.9
+     13D or insider     n   753 | mean   +4.45% | med -6.33 | huge  3.2% | t vs rest +1.1
+     13D and insider    n    32 | mean   +8.08% | med -5.20 | huge  6.2% | t vs rest +1.1
