@@ -1,0 +1,18 @@
+names 995
+
+PART 1: vector long flips by timeframe (fixed horizon), 60 days, ONE regime
+ 5m   n  53160 gross mean  -0.07% med -0.09% | control  -0.06% | excess gross  -0.01pp | net@50bp  -0.51 @100bp  -1.01 @200bp  -2.01 (excess vs control, costs on flip trades) | day-clustered t (gross excess) -0.5 | winners>=+10% 0.5%
+ 15m  n  16425 gross mean  -0.12% med -0.13% | control  -0.11% | excess gross  -0.01pp | net@50bp  -0.51 @100bp  -1.01 @200bp  -2.01 (excess vs control, costs on flip trades) | day-clustered t (gross excess) -0.8 | winners>=+10% 0.8%
+ 30m  n   8264 gross mean  +0.04% med -0.13% | control  -0.20% | excess gross  +0.24pp | net@50bp  -0.26 @100bp  -0.76 @200bp  -1.76 (excess vs control, costs on flip trades) | day-clustered t (gross excess) +1.2 | winners>=+10% 1.5%
+ 1h   n   4031 gross mean  -0.36% med -0.63% | control  -0.32% | excess gross  -0.04pp | net@50bp  -0.54 @100bp  -1.04 @200bp  -2.04 (excess vs control, costs on flip trades) | day-clustered t (gross excess) +0.7 | winners>=+10% 3.7%
+
+PART 2: day-of-flip intraday entry vs confirmed-close entry (daily vector, 5m path for the intraday fill)
+ trigger check: daily bull flips with close > T(prev level + 0.35*prev ATR): 435/437 = 100%
+ flips with both paths n 437 (still-open marked at last close: 165)
+  ALL                A confirmed-close entry: mean gross   -5.3% med  -7.4% net100   -6.3% | B intraday trigger entry: mean gross   -2.0% med  -5.8% net100   -3.0% | mean entry advantage of B over A -4.1% (paired B-A +3.3pp, median +1.3)
+  closed trades only A confirmed-close entry: mean gross  -13.0% med -10.4% net100  -14.0% | B intraday trigger entry: mean gross  -10.6% med  -9.1% net100  -11.6% | mean entry advantage of B over A -3.5% (paired B-A +2.3pp, median +1.1)
+ FALSE triggers (cross T intraday, close back below, no flip): n 547  enter at cross, exit same-day close: mean -15.72% med -2.33% net100 -16.72%  -> ratio false:true triggers = 547:437
+
+TRADE EVERY INTRADAY TRIGGER (true flips held to system exit; false triggers exit same-day close), returns winsorized to [-50%,+100%]: n 984 mean gross -6.50% med -3.18% net100 -7.50%
+ vs SYSTEM (confirmed-close entry, one trade per flip) winsorized: n 437 mean gross -5.57% net100 -6.57% | false-trigger leg alone winsorized: mean -9.91% med -2.33%; share of false triggers worse than -20%: 15.9%
+ share of true-flip B entries that were still green at the close of the flip day: 90%
