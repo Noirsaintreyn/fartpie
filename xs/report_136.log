@@ -1,0 +1,22 @@
+17447 trades with features
+
+trade-level (all signals, ratio>=1.5): mean ret% and rank-corr(feature,ret) by half
+  ATRP  train: spearman -0.114  top-tercile mean +0.811%  bottom +0.467%
+  ATRP  test: spearman -0.123  top-tercile mean +0.223%  bottom +0.206%
+  EXT   train: spearman -0.040  top-tercile mean +0.660%  bottom +0.682%
+  EXT   test: spearman -0.005  top-tercile mean +0.317%  bottom +0.154%
+  R20   train: spearman -0.004  top-tercile mean +0.484%  bottom +0.755%
+  R20   test: spearman +0.048  top-tercile mean +0.362%  bottom +0.135%
+  ratio train: spearman +0.003  top-tercile mean +0.614%  bottom +0.682%
+  ratio test: spearman -0.021  top-tercile mean +0.263%  bottom +0.186%
+
+book (CAGR/maxDD)           2019-21                         2022-26
+live (ratio)                +54.4%/ -11% n1272 avg+0.63%   +28.9%/ -17% n2444 avg+0.31%
+ATRP high first             +57.5%/ -12% n1282 avg+0.66%    +9.4%/ -25% n2512 avg+0.12%
+ATRP low first              +50.6%/ -11% n1236 avg+0.61%   +14.3%/ -22% n2414 avg+0.17%
+ratio+ATRP rank             +48.5%/ -11% n1303 avg+0.56%   +15.2%/ -24% n2546 avg+0.18%
+EXT high first              +47.3%/ -11% n1284 avg+0.56%   +15.9%/ -18% n2424 avg+0.19%
+ratio, skip ATRP<tercile1   +52.4%/ -10% n1229 avg+0.64%   +28.4%/ -19% n2434 avg+0.31%
+ratio, skip ATRP>tercile2   +39.5%/  -8% n1073 avg+0.56%   +11.6%/ -16% n2088 avg+0.16%
+ratio, skip EXT<tercile1    +52.2%/  -9% n1144 avg+0.68%    +9.9%/ -40% n2276 avg+0.13%
+ratio, skip EXT>tercile2    +30.3%/ -10% n1077 avg+0.45%   +18.6%/ -21% n2437 avg+0.21%

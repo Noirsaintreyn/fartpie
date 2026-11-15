@@ -1,0 +1,28 @@
+MP signal factors per month: median 11.0 range 0 14
+pooling tau2 0.0236  within var 0.0654  cells 174
+
+AUC for BIG / HUGE  (train | test)
+  big  OS        0.713 | 0.644
+  big  IDIO      0.370 | 0.557
+  big  POOL      0.616 | 0.565
+  big  POOL_raw  0.617 | 0.562
+  huge OS        0.824 | 0.771
+  huge IDIO      0.399 | 0.657
+  huge POOL      0.706 | 0.645
+  huge POOL_raw  0.705 | 0.642
+
+logistic add-on to OS  (BIG test AUC; fit on train)
+  big  OS               test AUC 0.644  coefs [0.82]
+  big  OS+IDIO          test AUC 0.616  coefs [ 0.78 -0.41]
+  big  OS+POOL          test AUC 0.645  coefs [0.76 0.23]
+  big  OS+IDIO+POOL     test AUC 0.611  coefs [ 0.7  -0.48  0.31]
+  huge OS               test AUC 0.771  coefs [1.47]
+  huge OS+IDIO          test AUC 0.758  coefs [ 1.43 -0.21]
+  huge OS+POOL          test AUC 0.773  coefs [1.37 0.26]
+  huge OS+IDIO+POOL     test AUC 0.752  coefs [ 1.31 -0.31  0.3 ]
+
+test top-20% hit rates (BIG share, mean r%)
+  OS    BIG 0.109  HUGE 0.033  mean r +3.1%  n 3151
+  IDIO  BIG 0.077  HUGE 0.022  mean r +1.9%  n 3142
+  POOL  BIG 0.088  HUGE 0.025  mean r +2.3%  n 3419
+  all   BIG 0.058  HUGE 0.011  mean r +0.3%
