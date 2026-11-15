@@ -146,3 +146,8 @@ SIZING (px<5, top-20% M1P, N=20, test): equal +225% (ex-top3 +89%, maxDD 38, mon
 ## Report 139 (Nov 15 2026): CTA / bank-literature features (xs/report_139_cta_literature.py, feats139.py). Papers themselves not in the workspace; tested the standard literature ideas.
 Declared: TSMOM agreement (TS12, MAC, TTR), Daniel-Moskowitz crash state (PANIC = market 126d<0 x vol ratio), Haar multi-scale energy (ENR), skew/kurt.
 - NQ prop legs: 0 PASS in all five (chance 0). Large-cap screener: 0 PASS (PANIC test t +3.7 / train +1.1 same sign: flips after market stress did better in 2022+; KURT -3.1/-0.5). Small caps: PANIC and MVR rank HUGE stably (AUC .65/.59, .71/.58) but add <=0.003 to OS; TS12 hurts; OS+ALL collapses (.644 -> .589 test). Verdict: nothing adopted; PANIC is a regime variable worth re-using as a gate candidate, not a signal.
+
+## Report 140 (Nov 15 2026): TWAP footprint (xs/report_140_twap_footprint.py) - declared before results
+Mechanism: institutional TWAP/VWAP slicing = regular bar volume (low de-seasonalised CV, VCV), price riding above running TWAP (TWAPAB), positive bar-return autocorr (ACS); prior 5 sessions; low VCV predicted better follow-through.
+Testable only where intraday history exists: large-cap screener (15m) and NQ legs (5m); small caps have 60d of intraday data (not testable).
+- Large caps: 0 PASS (VCV_5 t -3.0 train / -0.4 test, same sign). NQ legs: 0 PASS. Direction matches the hypothesis most places: V15a low-VCV third +16.0 vs +0.7 pts (early), +29.7 vs -8.8 (late), t -2.4/-1.9 (just under the bar, n~200/third); M1 and large caps also lean the same way. Lead, not a result: needs a pooled test across engines or more history.
