@@ -1,0 +1,61 @@
+flips 30080 MCAP coverage 0.848 BIG rate train/test 0.0872 0.059 HUGE 0.0211 0.0108
+
+######## A all: train n 11348 test n 18732 (BIG train 990 test 1105; HUGE 239 / 203) ########
+  F1      TR: AUCbig 0.490 AUChuge 0.489 BIG top10%  7.7% bot10%  8.3% | TE: AUCbig 0.516 AUChuge 0.479 BIG top10%  6.5% bot10%  4.4%
+  F2      TR: AUCbig 0.545 AUChuge 0.548 BIG top10% 11.0% bot10%  6.5% | TE: AUCbig 0.568 AUChuge 0.606 BIG top10%  9.6% bot10%  4.6%   <== CONSISTENT (+)
+  F3      TR: AUCbig 0.596 AUChuge 0.613 BIG top10% 16.9% bot10% 10.7% | TE: AUCbig 0.539 AUChuge 0.595 BIG top10%  9.1% bot10%  6.4%
+  F4      TR: AUCbig 0.323 AUChuge 0.239 BIG top10%  3.4% bot10% 18.8% | TE: AUCbig 0.440 AUChuge 0.343 BIG top10%  5.0% bot10%  8.6%   <== CONSISTENT (-)
+  F5      TR: AUCbig 0.487 AUChuge 0.446 BIG top10%  8.1% bot10%  8.7% | TE: AUCbig 0.520 AUChuge 0.493 BIG top10%  7.6% bot10%  7.6%
+  F6      TR: AUCbig 0.456 AUChuge 0.396 BIG top10%  7.5% bot10% 10.4% | TE: AUCbig 0.529 AUChuge 0.491 BIG top10%  6.5% bot10%  5.2%
+  F7      TR: AUCbig 0.569 AUChuge 0.640 BIG top10% 16.9% bot10%  8.7% | TE: AUCbig 0.568 AUChuge 0.647 BIG top10% 10.0% bot10%  6.2%   <== CONSISTENT (+)
+  F8      TR: AUCbig 0.502 AUChuge 0.506 BIG top10%  8.3% bot10%  8.6% | TE: AUCbig 0.502 AUChuge 0.468 BIG top10%  5.8% bot10%  5.8%
+  F9      TR: AUCbig 0.487 AUChuge 0.508 BIG top10%  7.5% bot10%  8.7% | TE: AUCbig 0.478 AUChuge 0.537 BIG top10%  5.4% bot10%  6.3%
+  F10     TR: AUCbig 0.447 AUChuge 0.430 BIG top10%  8.9% bot10% 18.1% | TE: AUCbig 0.450 AUChuge 0.442 BIG top10%  3.7% bot10%  7.8%   <== CONSISTENT (-)
+  VOLX    TR: AUCbig 0.537 AUChuge 0.532 BIG top10% 10.0% bot10%  7.6% | TE: AUCbig 0.560 AUChuge 0.628 BIG top10%  8.1% bot10%  5.1%
+  PEERS   TR: AUCbig 0.500 AUChuge 0.471 BIG top10% 10.7% bot10%  9.3% | TE: AUCbig 0.480 AUChuge 0.508 BIG top10%  5.3% bot10%  6.5%
+  VR      TR: AUCbig 0.513 AUChuge 0.410 BIG top10% 13.0% bot10% 10.4% | TE: AUCbig 0.555 AUChuge 0.565 BIG top10%  8.3% bot10%  5.7%
+  EXT     TR: AUCbig 0.685 AUChuge 0.794 BIG top10% 18.7% bot10%  2.1% | TE: AUCbig 0.610 AUChuge 0.728 BIG top10% 13.7% bot10%  3.2%   <== CONSISTENT (+)
+  R60     TR: AUCbig 0.473 AUChuge 0.440 BIG top10% 12.6% bot10% 17.5% | TE: AUCbig 0.515 AUChuge 0.519 BIG top10%  8.4% bot10%  7.8%
+  BLOW    TR: AUCbig 0.502 AUChuge 0.454 BIG top10% 12.2% bot10%  9.8% | TE: AUCbig 0.545 AUChuge 0.540 BIG top10%  7.7% bot10%  5.4%
+  LDV     TR: AUCbig 0.454 AUChuge 0.418 BIG top10%  8.2% bot10% 12.3% | TE: AUCbig 0.450 AUChuge 0.388 BIG top10%  5.6% bot10%  9.6%   <== CONSISTENT (-)
+  LPX     TR: AUCbig 0.398 AUChuge 0.278 BIG top10%  5.9% bot10% 15.7% | TE: AUCbig 0.418 AUChuge 0.307 BIG top10%  4.7% bot10% 10.0%   <== CONSISTENT (-)
+  lr      TR: AUCbig 0.598 AUChuge 0.644 BIG top10% 13.5% bot10%  5.1% | TE: AUCbig 0.627 AUChuge 0.731 BIG top10% 11.7% bot10%  3.2%   <== CONSISTENT (+)
+  LMC     TR: AUCbig 0.371 AUChuge 0.263 BIG top10%  3.8% bot10% 17.3% | TE: AUCbig 0.397 AUChuge 0.307 BIG top10%  4.0% bot10% 10.5%   <== CONSISTENT (-)
+  LTURN   TR: AUCbig 0.611 AUChuge 0.682 BIG top10% 14.1% bot10%  4.1% | TE: AUCbig 0.601 AUChuge 0.690 BIG top10% 10.4% bot10%  4.2%   <== CONSISTENT (+)
+  ATRP    TR: AUCbig 0.739 AUChuge 0.847 BIG top10% 23.0% bot10%  0.8% | TE: AUCbig 0.652 AUChuge 0.779 BIG top10% 13.2% bot10%  1.9%   <== CONSISTENT (+)
+
+######## B px<5: train n 510 test n 1353 (BIG train 92 test 165; HUGE 44 / 58) ########
+  F1      TR: AUCbig 0.470 AUChuge 0.449 BIG top10% 15.7% bot10%  9.8% | TE: AUCbig 0.569 AUChuge 0.536 BIG top10% 16.7% bot10%  8.5%
+  F2      TR: AUCbig 0.562 AUChuge 0.586 BIG top10% 19.6% bot10% 13.7% | TE: AUCbig 0.596 AUChuge 0.676 BIG top10% 18.3% bot10%  7.4%   <== CONSISTENT (+)
+  F3      TR: AUCbig 0.565 AUChuge 0.598 BIG top10% 25.5% bot10% 17.6% | TE: AUCbig 0.483 AUChuge 0.523 BIG top10% 14.5% bot10% 16.0%
+  F4      TR: AUCbig 0.377 AUChuge 0.357 BIG top10%  3.9% bot10% 33.3% | TE: AUCbig 0.448 AUChuge 0.440 BIG top10%  8.5% bot10% 14.2%   <== CONSISTENT (-)
+  F5      TR: AUCbig 0.502 AUChuge 0.477 BIG top10% 23.5% bot10% 11.8% | TE: AUCbig 0.543 AUChuge 0.555 BIG top10% 17.6% bot10% 12.5%
+  F6      TR: AUCbig 0.498 AUChuge 0.476 BIG top10% 17.9% bot10% 18.2% | TE: AUCbig 0.525 AUChuge 0.523 BIG top10% 13.5% bot10% 11.3%
+  F7      TR: AUCbig 0.542 AUChuge 0.546 BIG top10% 23.5% bot10% 21.6% | TE: AUCbig 0.557 AUChuge 0.637 BIG top10% 16.2% bot10%  9.3%   <== CONSISTENT (+)
+  F8      TR: AUCbig 0.485 AUChuge 0.446 BIG top10% 16.1% bot10% 18.8% | TE: AUCbig 0.509 AUChuge 0.469 BIG top10% 13.4% bot10% 12.1%
+  F9      TR: AUCbig 0.495 AUChuge 0.513 BIG top10% 17.6% bot10% 16.2% | TE: AUCbig 0.523 AUChuge 0.585 BIG top10% 12.6% bot10% 10.8%
+  F10     TR: AUCbig 0.408 AUChuge 0.385 BIG top10% 17.6% bot10% 26.8% | TE: AUCbig 0.477 AUChuge 0.510 BIG top10% 13.3% bot10% 17.5%
+  VOLX    TR: AUCbig 0.525 AUChuge 0.535 BIG top10% 17.6% bot10% 15.7% | TE: AUCbig 0.581 AUChuge 0.639 BIG top10% 19.4% bot10%  9.7%
+  PEERS   TR: AUCbig 0.528 AUChuge 0.463 BIG top10% 27.7% bot10% 17.3% | TE: AUCbig 0.519 AUChuge 0.526 BIG top10% 13.2% bot10% 10.2%
+  VR      TR: AUCbig 0.455 AUChuge 0.330 BIG top10% 19.6% bot10% 13.7% | TE: AUCbig 0.579 AUChuge 0.585 BIG top10% 16.3% bot10%  6.8%
+  EXT     TR: AUCbig 0.676 AUChuge 0.704 BIG top10% 27.5% bot10%  3.9% | TE: AUCbig 0.609 AUChuge 0.698 BIG top10% 30.8% bot10%  2.7%   <== CONSISTENT (+)
+  R60     TR: AUCbig 0.406 AUChuge 0.387 BIG top10% 23.5% bot10% 43.1% | TE: AUCbig 0.534 AUChuge 0.554 BIG top10% 18.1% bot10% 12.2%
+  BLOW    TR: AUCbig 0.505 AUChuge 0.434 BIG top10% 21.6% bot10% 21.6% | TE: AUCbig 0.571 AUChuge 0.560 BIG top10% 14.4% bot10%  9.3%
+  LDV     TR: AUCbig 0.424 AUChuge 0.422 BIG top10%  7.8% bot10% 15.7% | TE: AUCbig 0.466 AUChuge 0.397 BIG top10% 12.0% bot10% 16.2%
+  LPX     TR: AUCbig 0.453 AUChuge 0.455 BIG top10% 17.6% bot10% 27.5% | TE: AUCbig 0.452 AUChuge 0.419 BIG top10%  9.2% bot10% 16.9%   <== CONSISTENT (-)
+  lr      TR: AUCbig 0.529 AUChuge 0.482 BIG top10% 13.7% bot10%  9.8% | TE: AUCbig 0.615 AUChuge 0.684 BIG top10% 20.3% bot10%  2.0%
+  LMC     TR: AUCbig 0.361 AUChuge 0.308 BIG top10%  2.3% bot10% 27.9% | TE: AUCbig 0.426 AUChuge 0.364 BIG top10%  7.1% bot10% 13.3%   <== CONSISTENT (-)
+  LTURN   TR: AUCbig 0.569 AUChuge 0.616 BIG top10% 23.3% bot10%  7.0% | TE: AUCbig 0.610 AUChuge 0.670 BIG top10% 18.6% bot10%  9.1%   <== CONSISTENT (+)
+  ATRP    TR: AUCbig 0.708 AUChuge 0.766 BIG top10% 37.3% bot10%  5.9% | TE: AUCbig 0.625 AUChuge 0.694 BIG top10% 23.5% bot10%  3.6%   <== CONSISTENT (+)
+
+CONSISTENT outlier catchers: {'A all': {'F2': np.float64(1.0), 'F4': np.float64(-1.0), 'F7': np.float64(1.0), 'F10': np.float64(-1.0), 'EXT': np.float64(1.0), 'LDV': np.float64(-1.0), 'LPX': np.float64(-1.0), 'lr': np.float64(1.0), 'LMC': np.float64(-1.0), 'LTURN': np.float64(1.0), 'ATRP': np.float64(1.0)}, 'B px<5': {'F2': np.float64(1.0), 'F4': np.float64(-1.0), 'F7': np.float64(1.0), 'EXT': np.float64(1.0), 'LPX': np.float64(-1.0), 'LMC': np.float64(-1.0), 'LTURN': np.float64(1.0), 'ATRP': np.float64(1.0)}}
+
+PART 2 B px<5 (features {'F2': np.float64(1.0), 'F4': np.float64(-1.0), 'F7': np.float64(1.0), 'EXT': np.float64(1.0), 'LPX': np.float64(-1.0), 'LMC': np.float64(-1.0), 'LTURN': np.float64(1.0), 'ATRP': np.float64(1.0)}) TEST: n 1353, BIG base 12.2%, HUGE base 4.29%, mean net +7.03%
+  top 10%: n  136 BIG precision  14.0% (captures 11.5% of BIG, 24.1% of HUGE) | mean +25.64% med -14.02% ex-top3  +5.75%
+  top 20%: n  271 BIG precision  18.5% (captures 30.3% of BIG, 43.1% of HUGE) | mean +18.50% med -13.05% ex-top3  +8.55%
+  top 30%: n  406 BIG precision  17.2% (captures 42.4% of BIG, 55.2% of HUGE) | mean +14.20% med -11.39% ex-top3  +7.55%
+
+PART 2 A all (features {'F2': np.float64(1.0), 'F4': np.float64(-1.0), 'F7': np.float64(1.0), 'F10': np.float64(-1.0), 'EXT': np.float64(1.0), 'LDV': np.float64(-1.0), 'LPX': np.float64(-1.0), 'lr': np.float64(1.0), 'LMC': np.float64(-1.0), 'LTURN': np.float64(1.0), 'ATRP': np.float64(1.0)}) TEST: n 18732, BIG base 5.9%, HUGE base 1.08%, mean net -0.07%
+  top 10%: n 1874 BIG precision  12.5% (captures 21.3% of BIG, 37.9% of HUGE) | mean  +3.94% med -10.44% ex-top3  +2.36%
+  top 20%: n 3747 BIG precision  10.9% (captures 36.9% of BIG, 56.2% of HUGE) | mean  +2.41% med  -9.20% ex-top3  +1.60%
+  top 30%: n 5620 BIG precision   9.8% (captures 49.6% of BIG, 70.9% of HUGE) | mean  +1.53% med  -8.32% ex-top3  +0.99%
