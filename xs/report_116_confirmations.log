@@ -1,0 +1,42 @@
+flips with features 30080
+
+######## A all: train n 11348 test n 18732 ########
+  F1  [+] TR: IC -0.076 IC10 +0.010 top  +3.38% bot  +5.65% spread  -2.27pp t -0.74 | TE: IC -0.073 IC10 +0.028 top  -0.37% bot  +0.19% spread  -0.56pp t -0.32
+  F2  [+] TR: IC -0.140 IC10 +0.063 top  +6.07% bot  +3.19% spread  +2.87pp t +1.03 | TE: IC -0.170 IC10 +0.055 top  +0.28% bot  -0.04% spread  +0.33pp t +0.14
+  F3  [-] TR: IC -0.015 IC10 +0.082 top  +9.18% bot  +2.79% spread  +6.39pp t -0.97 | TE: IC -0.007 IC10 +0.025 top  +1.15% bot  -0.70% spread  +1.85pp t +1.15
+  F4  [+] TR: IC +0.147 IC10 -0.125 top  -0.19% bot +11.47% spread -11.67pp t -1.41 | TE: IC +0.232 IC10 -0.011 top  +0.31% bot  -0.41% spread  +0.72pp t +1.02
+  F5  [-] TR: IC -0.003 IC10 -0.001 top  +2.90% bot  +5.11% spread  -2.22pp t -0.00 | TE: IC +0.018 IC10 +0.017 top  +0.57% bot  -0.38% spread  +0.95pp t +1.09
+  F6  [+] TR: IC +0.094 IC10 -0.010 top  +3.19% bot  +6.27% spread  -3.09pp t +1.30 | TE: IC +0.082 IC10 +0.041 top  +0.51% bot  -0.83% spread  +1.34pp t +2.24
+  F7  [+] TR: IC -0.078 IC10 +0.043 top  +7.94% bot  +2.80% spread  +5.14pp t +2.31 | TE: IC -0.123 IC10 +0.047 top  +0.71% bot  -0.26% spread  +0.97pp t +0.97
+  F8  [-] TR: IC +0.056 IC10 +0.008 top  +4.55% bot  +4.35% spread  +0.20pp t -0.60 | TE: IC +0.037 IC10 +0.000 top  -0.04% bot  -0.09% spread  +0.05pp t +0.26
+  F9  [+] TR: IC -0.072 IC10 -0.030 top  +3.30% bot  +4.15% spread  -0.85pp t -3.53 | TE: IC -0.063 IC10 -0.026 top  -0.27% bot  +0.33% spread  -0.60pp t -1.40
+  F10 [+] TR: IC -0.041 IC10 -0.055 top  +4.13% bot  +7.45% spread  -3.33pp t +nan | TE: IC -0.055 IC10 -0.062 top  -1.43% bot  +1.06% spread  -2.50pp t +nan
+  F11 [-] TR: IC -0.205 IC10 +0.190 top +11.13% bot  +0.26% spread +10.87pp t +2.01 | TE: IC -0.316 IC10 +0.106 top  +0.49% bot  -0.69% spread  +1.18pp t +1.06
+
+######## B px<5: train n 510 test n 1353 ########
+  F1  [+] TR: IC -0.108 IC10 -0.034 top +29.45% bot +59.50% spread -30.05pp t -0.92 | TE: IC -0.033 IC10 +0.068 top  +5.90% bot  +8.05% spread  -2.15pp t +0.25
+  F2  [+] TR: IC -0.168 IC10 +0.076 top +62.83% bot +18.79% spread +44.04pp t +1.33 | TE: IC -0.168 IC10 +0.074 top +13.02% bot  +1.62% spread +11.39pp t +2.17
+  F3  [-] TR: IC +0.076 IC10 +0.107 top +42.39% bot +32.86% spread  +9.52pp t -1.06 | TE: IC -0.044 IC10 -0.023 top +12.13% bot  +5.34% spread  +6.79pp t +0.61
+  F4  [+] TR: IC +0.115 IC10 -0.136 top +15.51% bot +39.82% spread -24.31pp t +1.94 | TE: IC +0.230 IC10 -0.014 top  +4.99% bot  +9.81% spread  -4.82pp t -0.92
+  F5  [-] TR: IC -0.016 IC10 +0.029 top +22.59% bot +25.85% spread  -3.26pp t +0.65 | TE: IC +0.015 IC10 +0.041 top +12.22% bot  +6.55% spread  +5.66pp t +0.42
+  F6  [+] TR: IC +0.018 IC10 -0.043 top +30.53% bot +40.31% spread  -9.78pp t +0.53 | TE: IC +0.059 IC10 +0.049 top  +6.42% bot  +7.44% spread  -1.02pp t -0.02
+  F7  [+] TR: IC -0.147 IC10 +0.027 top +35.54% bot +46.50% spread -10.95pp t -0.83 | TE: IC -0.135 IC10 +0.062 top +13.05% bot  +2.21% spread +10.84pp t +1.53
+  F8  [-] TR: IC +0.068 IC10 -0.014 top +27.53% bot +43.85% spread -16.32pp t -0.97 | TE: IC +0.051 IC10 +0.015 top  +5.42% bot  +8.48% spread  -3.06pp t -0.26
+  F9  [+] TR: IC -0.105 IC10 -0.030 top +25.95% bot +26.10% spread  -0.15pp t -1.92 | TE: IC -0.045 IC10 +0.018 top +10.50% bot  +2.36% spread  +8.14pp t +1.33
+  F10 [+] TR: IC -0.082 IC10 -0.103 top +32.71% bot +54.85% spread -22.13pp t +nan | TE: IC -0.059 IC10 -0.058 top +12.28% bot  +6.91% spread  +5.37pp t +nan
+  F11 [-] TR: IC -0.176 IC10 +0.171 top +54.16% bot  +6.63% spread +47.53pp t +1.40 | TE: IC -0.246 IC10 +0.153 top +13.69% bot  +0.71% spread +12.98pp t +2.94
+
+######## C px<5 & top20: train n 254 test n 701 ########
+  F1  [+] TR: IC -0.140 IC10 -0.068 top +23.26% bot +59.61% spread -36.34pp t +0.34 | TE: IC -0.014 IC10 +0.080 top  +9.99% bot +14.75% spread  -4.76pp t +0.07
+  F2  [+] TR: IC -0.125 IC10 +0.033 top +58.18% bot +22.48% spread +35.70pp t +1.45 | TE: IC -0.105 IC10 +0.059 top +16.15% bot  +4.20% spread +11.94pp t +1.37
+  F3  [-] TR: IC +0.105 IC10 +0.084 top +52.23% bot +11.06% spread +41.17pp t +0.19 | TE: IC -0.057 IC10 -0.059 top  +4.97% bot +10.29% spread  -5.32pp t -0.84
+  F4  [+] TR: IC +0.125 IC10 -0.066 top +28.27% bot +38.61% spread -10.34pp t +1.12 | TE: IC +0.154 IC10 +0.025 top  +7.57% bot +13.88% spread  -6.31pp t +0.16
+  F5  [-] TR: IC +0.012 IC10 +0.003 top +35.46% bot +25.51% spread  +9.95pp t +0.92 | TE: IC +0.017 IC10 +0.072 top +19.65% bot  +7.44% spread +12.21pp t +1.03
+  F6  [+] TR: IC +0.098 IC10 -0.025 top +43.00% bot +27.70% spread +15.30pp t +1.27 | TE: IC +0.073 IC10 +0.091 top +10.03% bot +11.07% spread  -1.04pp t +0.91
+  F7  [+] TR: IC -0.207 IC10 -0.059 top +46.26% bot +43.36% spread  +2.90pp t +0.25 | TE: IC -0.103 IC10 +0.036 top +17.44% bot  +1.79% spread +15.65pp t +1.38
+  F8  [-] TR: IC +0.052 IC10 +0.009 top +31.10% bot +35.79% spread  -4.69pp t -0.42 | TE: IC +0.003 IC10 -0.009 top  +5.80% bot +14.17% spread  -8.37pp t -0.77
+  F9  [+] TR: IC -0.106 IC10 -0.055 top +18.63% bot +42.87% spread -24.24pp t -0.64 | TE: IC -0.036 IC10 -0.003 top +16.40% bot  +2.02% spread +14.37pp t +1.07
+  F10 [+] TR: IC -0.088 IC10 -0.071 top +17.51% bot +64.25% spread -46.74pp t +nan | TE: IC -0.024 IC10 -0.028 top +21.02% bot  +7.26% spread +13.76pp t +nan
+  F11 [-] TR: IC -0.210 IC10 +0.108 top +59.87% bot +13.17% spread +46.70pp t +1.02 | TE: IC -0.179 IC10 +0.162 top +20.88% bot  +0.30% spread +20.58pp t +2.14
+
+PASSED (A or B): []
