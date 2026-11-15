@@ -1,0 +1,60 @@
+
+== SIZING FULL (1/N each) == TEST 2022-01..2026-02
+ unfiltered flips
+   N= 3: total   -26.0% (-113..+141) maxDD  -90.9pts sharpe -0.20 calmar -0.07 trades   97 avgpos  3.1 worst month -25.9%
+   N= 5: total    -9.2% (-79..+108) maxDD  -76.7pts sharpe -0.09 calmar -0.03 trades  149 avgpos  5.1 worst month -21.7%
+   N= 8: total    -9.0% (-63..+77) maxDD  -65.2pts sharpe -0.09 calmar -0.03 trades  227 avgpos  8.2 worst month -17.9%
+   N=10: total   -10.2% (-66..+85) maxDD  -65.3pts sharpe -0.10 calmar -0.04 trades  278 avgpos 10.2 worst month -17.0%
+   N=15: total    +1.1% (-34..+42) maxDD  -57.5pts sharpe +0.01 calmar +0.00 trades  404 avgpos 15.3 worst month -15.9%
+   N=20: total    +3.7% (-27..+44) maxDD  -51.7pts sharpe +0.03 calmar +0.02 trades  533 avgpos 20.4 worst month -14.7%
+ flip-bar vol>=1.5x
+   N= 3: total    +4.1% (-128..+97) maxDD  -83.6pts sharpe +0.02 calmar +0.01 trades   76 avgpos  3.1 worst month -26.5%
+   N= 5: total   +18.4% (-52..+123) maxDD  -66.4pts sharpe +0.10 calmar +0.07 trades  122 avgpos  5.1 worst month -22.2%
+   N= 8: total   +12.8% (-44..+79) maxDD  -57.8pts sharpe +0.08 calmar +0.05 trades  190 avgpos  8.1 worst month -18.8%
+   N=10: total   +13.3% (-43..+92) maxDD  -54.2pts sharpe +0.09 calmar +0.06 trades  235 avgpos 10.1 worst month -18.4%
+   N=15: total   +23.4% (-16..+71) maxDD  -47.8pts sharpe +0.18 calmar +0.12 trades  344 avgpos 15.2 worst month -18.5%
+   N=20: total   +25.7% (-20..+74) maxDD  -46.3pts sharpe +0.21 calmar +0.13 trades  450 avgpos 20.2 worst month -18.0%
+ SCORE top 20%
+   N= 3: total  +100.4% maxDD  -73.7pts sharpe +0.42 calmar +0.33 trades   59 avgpos  3.0 worst month -24.0%
+   N= 5: total   +16.5% maxDD  -71.1pts sharpe +0.07 calmar +0.06 trades  101 avgpos  5.1 worst month -21.4%
+   N= 8: total   +36.3% maxDD  -64.4pts sharpe +0.20 calmar +0.14 trades  161 avgpos  8.1 worst month -15.5%
+   N=10: total   +63.6% maxDD  -56.4pts sharpe +0.37 calmar +0.27 trades  189 avgpos 10.1 worst month -17.1%
+   N=15: total   +75.4% maxDD  -54.8pts sharpe +0.43 calmar +0.33 trades  295 avgpos 15.1 worst month -19.3%
+   N=20: total   +90.0% maxDD  -52.1pts sharpe +0.54 calmar +0.42 trades  394 avgpos 20.1 worst month -18.7%
+ $1-10 only
+   N= 3: total   +13.7% (-88..+99) maxDD  -96.8pts sharpe +0.05 calmar +0.03 trades   79 avgpos  3.0 worst month -30.5%
+   N= 5: total   +39.2% (-75..+419) maxDD  -89.2pts sharpe +0.12 calmar +0.11 trades  128 avgpos  5.0 worst month -30.3%
+   N= 8: total   +51.1% (-36..+315) maxDD  -81.5pts sharpe +0.18 calmar +0.15 trades  199 avgpos  8.1 worst month -26.9%
+   N=10: total   +56.4% (-34..+271) maxDD  -75.6pts sharpe +0.24 calmar +0.18 trades  248 avgpos 10.1 worst month -25.1%
+   N=15: total   +74.7% (-3..+226) maxDD  -68.2pts sharpe +0.36 calmar +0.26 trades  364 avgpos 15.0 worst month -24.2%
+   N=20: total   +79.0% (+15..+178) maxDD  -62.4pts sharpe +0.44 calmar +0.31 trades  478 avgpos 19.9 worst month -23.2%
+
+== SIZING FIXED5 (5% each) == TEST 2022-01..2026-02
+ unfiltered flips
+   N= 3: total    -3.9% (-17..+21) maxDD  -13.6pts sharpe -0.20 calmar -0.07 trades   97 avgpos  3.1 worst month -3.9%
+   N= 5: total    -2.3% (-20..+27) maxDD  -19.2pts sharpe -0.09 calmar -0.03 trades  149 avgpos  5.1 worst month -5.4%
+   N= 8: total    -3.6% (-25..+31) maxDD  -26.1pts sharpe -0.09 calmar -0.03 trades  227 avgpos  8.2 worst month -7.2%
+   N=10: total    -5.1% (-33..+42) maxDD  -32.6pts sharpe -0.10 calmar -0.04 trades  278 avgpos 10.2 worst month -8.5%
+   N=15: total    +0.8% (-26..+32) maxDD  -43.1pts sharpe +0.01 calmar +0.00 trades  404 avgpos 15.3 worst month -11.9%
+   N=20: total    +3.7% (-27..+44) maxDD  -51.7pts sharpe +0.03 calmar +0.02 trades  533 avgpos 20.4 worst month -14.7%
+ flip-bar vol>=1.5x
+   N= 3: total    +0.6% (-19..+14) maxDD  -12.5pts sharpe +0.02 calmar +0.01 trades   76 avgpos  3.1 worst month -4.0%
+   N= 5: total    +4.6% (-13..+31) maxDD  -16.6pts sharpe +0.10 calmar +0.07 trades  122 avgpos  5.1 worst month -5.5%
+   N= 8: total    +5.1% (-18..+31) maxDD  -23.1pts sharpe +0.08 calmar +0.05 trades  190 avgpos  8.1 worst month -7.5%
+   N=10: total    +6.7% (-22..+46) maxDD  -27.1pts sharpe +0.09 calmar +0.06 trades  235 avgpos 10.1 worst month -9.2%
+   N=15: total   +17.5% (-12..+53) maxDD  -35.8pts sharpe +0.18 calmar +0.12 trades  344 avgpos 15.2 worst month -13.8%
+   N=20: total   +25.7% (-20..+74) maxDD  -46.3pts sharpe +0.21 calmar +0.13 trades  450 avgpos 20.2 worst month -18.0%
+ SCORE top 20%
+   N= 3: total   +15.1% maxDD  -11.1pts sharpe +0.42 calmar +0.33 trades   59 avgpos  3.0 worst month -3.6%
+   N= 5: total    +4.1% maxDD  -17.8pts sharpe +0.07 calmar +0.06 trades  101 avgpos  5.1 worst month -5.4%
+   N= 8: total   +14.5% maxDD  -25.8pts sharpe +0.20 calmar +0.14 trades  161 avgpos  8.1 worst month -6.2%
+   N=10: total   +31.8% maxDD  -28.2pts sharpe +0.37 calmar +0.27 trades  189 avgpos 10.1 worst month -8.6%
+   N=15: total   +56.6% maxDD  -41.1pts sharpe +0.43 calmar +0.33 trades  295 avgpos 15.1 worst month -14.5%
+   N=20: total   +90.0% maxDD  -52.1pts sharpe +0.54 calmar +0.42 trades  394 avgpos 20.1 worst month -18.7%
+ $1-10 only
+   N= 3: total    +2.1% (-13..+15) maxDD  -14.5pts sharpe +0.05 calmar +0.03 trades   79 avgpos  3.0 worst month -4.6%
+   N= 5: total    +9.8% (-19..+105) maxDD  -22.3pts sharpe +0.12 calmar +0.11 trades  128 avgpos  5.0 worst month -7.6%
+   N= 8: total   +20.4% (-14..+126) maxDD  -32.6pts sharpe +0.18 calmar +0.15 trades  199 avgpos  8.1 worst month -10.7%
+   N=10: total   +28.2% (-17..+135) maxDD  -37.8pts sharpe +0.24 calmar +0.18 trades  248 avgpos 10.1 worst month -12.6%
+   N=15: total   +56.0% (-2..+169) maxDD  -51.2pts sharpe +0.36 calmar +0.26 trades  364 avgpos 15.0 worst month -18.2%
+   N=20: total   +79.0% (+15..+178) maxDD  -62.4pts sharpe +0.44 calmar +0.31 trades  478 avgpos 19.9 worst month -23.2%
