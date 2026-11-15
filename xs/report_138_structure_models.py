@@ -79,7 +79,7 @@ def part(which):
         return out
     def passed(r): return np.sign(r[0][0])==np.sign(r[1][0]) and all(np.isfinite(x[1]) and abs(x[1])>=2 and x[2]>=30 for x in r)
     for n,t in TR.items():
-        t=t.join(MD,on='day'); t=t[t.AC1.notna()]; fl=flags(t,t.pts); ps={k:v for k,v in fl.items() if passed(v)}; e=E(t.day).values; null=[]
+        t=t.join(MD,on='day'); t=t[t[FE[0]].notna()]; fl=flags(t,t.pts); ps={k:v for k,v in fl.items() if passed(v)}; e=E(t.day).values; null=[]
         for _ in range(100):
             sh=t.pts.copy()
             for mm in (e,~e): sh[mm]=rng.permutation(sh[mm].values)

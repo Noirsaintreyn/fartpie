@@ -142,3 +142,7 @@ SIZING (px<5, top-20% M1P, N=20, test): equal +225% (ex-top3 +89%, maxDD 38, mon
 - **Large-cap screener:** no feature passes (same sign + |t|>=2 both halves): OUZ flips sign (t -1.4 train, +2.4 test), Amihud/absorption/CSD/contagion all |t|<2.
 - **NQ prop legs:** 0 PASS in RA, M1, R1, RULES; V15a 1 PASS (variance-ratio high third: -10.6 pts/trade train, -46.5 test; chance 0 at 95th pct) - candidate gate, needs its own test. Leg-loss contagion: nothing.
 - Verdict: structure models give small-cap +0.01-0.015 AUC (not a breakthrough), nothing on the large-cap screener, one V15a gate candidate.
+
+## Report 139 (Nov 15 2026): CTA / bank-literature features (xs/report_139_cta_literature.py, feats139.py). Papers themselves not in the workspace; tested the standard literature ideas.
+Declared: TSMOM agreement (TS12, MAC, TTR), Daniel-Moskowitz crash state (PANIC = market 126d<0 x vol ratio), Haar multi-scale energy (ENR), skew/kurt.
+- NQ prop legs: 0 PASS in all five (chance 0). Large-cap screener: 0 PASS (PANIC test t +3.7 / train +1.1 same sign: flips after market stress did better in 2022+; KURT -3.1/-0.5). Small caps: PANIC and MVR rank HUGE stably (AUC .65/.59, .71/.58) but add <=0.003 to OS; TS12 hurts; OS+ALL collapses (.644 -> .589 test). Verdict: nothing adopted; PANIC is a regime variable worth re-using as a gate candidate, not a signal.
