@@ -1,0 +1,36 @@
+flips 3436 names 975
+train 1789 test 1647
+
+PART 1 single filters (declared sign), IC to net return and good-half vs bad-half (split at TRAIN median), mean net
+ dbull    declared +  IC train +0.007 test -0.031 sign-ok False | TRAIN good n 736 -2.91% vs bad n 1053 -3.20% | TEST good n 305 -3.12% vs bad n 1342 -2.50% | test good minus all -1.06pp t -1.04
+ chop     declared -  IC train -0.085 test +0.020 sign-ok False | TRAIN good n 1055 -3.09% vs bad n 734 -3.06% | TEST good n 869 -2.13% vs bad n 778 -3.16% | test good minus all +0.64pp t +1.81
+ pre      declared -  IC train -0.198 test -0.219 sign-ok True | TRAIN good n 895 -2.72% vs bad n 894 -3.44% | TEST good n 597 -1.80% vs bad n 1050 -3.08% | test good minus all +0.48pp t +0.85
+ risk     declared -  IC train -0.514 test -0.357 sign-ok True | TRAIN good n 895 -2.24% vs bad n 894 -3.92% | TEST good n 645 -1.41% vs bad n 1002 -3.39% | test good minus all +1.34pp t +2.53
+ clv      declared +  IC train -0.063 test -0.047 sign-ok False | TRAIN good n 894 -2.80% vs bad n 895 -3.36% | TEST good n 961 -2.29% vs bad n 686 -3.07% | test good minus all +0.60pp t +1.64
+ breadth  declared +  IC train +0.094 test +0.040 sign-ok True | TRAIN good n 870 -3.38% vs bad n 919 -2.80% | TEST good n 0  +nan% vs bad n 1647 -2.62% | test good minus all +nanpp t +nan
+ first    declared 0  IC train -0.143 test -0.046 sign-ok None | TRAIN good n 634 -3.46% vs bad n 1155 -2.87% | TEST good n 682 -2.27% vs bad n 965 -2.86% | test good minus all -0.11pp t -0.16
+
+PART 1b combo declared: dbull & chop<=train median & pre<=train median
+ train n 231 mean -2.12% med -3.10% win 9.1% >=10% 3.0% | rest mean -3.22%
+ test n 65 mean -1.53% med -3.58% win 18.5% >=10% 9.2% | rest mean -2.66%
+ test combo minus all -0.82pp t -0.47
+
+PART 2 ridge logistic (target net>0) fit on train, scored on test
+ coefs {'dbull': np.float64(0.18), 'chop': np.float64(-0.03), 'pre': np.float64(0.17), 'risk': np.float64(0.95), 'clv': np.float64(0.39), 'breadth': np.float64(-0.41), 'first': np.float64(0.02)}
+ test IC -0.322 (p 0.000)
+  test quintile 1: n 330 mean -1.63% med -2.30% win 14.2% >=10%  1.8%
+  test quintile 2: n 329 mean -1.15% med -3.39% win 16.1% >=10%  5.5%
+  test quintile 3: n 329 mean -2.86% med -4.53% win 14.6% >=10%  6.4%
+  test quintile 4: n 329 mean -3.61% med -5.73% win 21.0% >=10%  8.8%
+  test quintile 5: n 330 mean -3.83% med -6.50% win 24.5% >=10% 12.1%
+ top quintile minus all (test, day-clustered) -0.74pp t -0.34
+
+PART 3 exits (net of 100bp, entry at 1H close of flip bar)
+ base  ALL mean  -2.86% med  -3.71% win 14.4% >=10%  5.2% | train  -3.08% test  -2.62% | worst 1%  -22.3%
+ t7    ALL mean  -1.54% med  -1.76% win 25.8% >=10%  2.4% | train  -1.52% test  -1.56% | worst 1%  -14.8%
+ t14   ALL mean  -1.54% med  -2.29% win 27.4% >=10%  4.0% | train  -1.38% test  -1.72% | worst 1%  -17.8%
+ t35   ALL mean  -2.27% med  -3.26% win 21.8% >=10%  5.1% | train  -2.20% test  -2.35% | worst 1%  -21.6%
+ tr5   ALL mean  -1.78% med  -3.11% win 19.7% >=10%  5.0% | train  -1.87% test  -1.69% | worst 1%  -14.4%
+ tr10  ALL mean  -2.26% med  -3.51% win 16.2% >=10%  5.7% | train  -2.50% test  -2.00% | worst 1%  -16.3%
+ h4    ALL mean  -1.98% med  -4.07% win 12.5% >=10%  4.5% | train  -2.49% test  -1.42% | worst 1%   -5.0%
+ h6    ALL mean  -2.27% med  -3.81% win 13.6% >=10%  4.9% | train  -2.73% test  -1.77% | worst 1%   -7.0%
