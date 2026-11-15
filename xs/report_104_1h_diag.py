@@ -1,0 +1,10 @@
+"""Nov 15 2026 DIAGNOSTIC for report_103 (declared after seeing it: explains why the daily frozen score did not transfer to 1H flips; same 3,436 flips, no new fitting). Per-feature Spearman IC vs net return and vs win10; flips by flip-bar hour; peak excursion by score quintile; 1H flips with a daily bull flip in the prior 10 days (late) vs not."""
+import pandas as pd, numpy as np; from scipy.stats import spearmanr
+SC = '/tmp/claude-0/-home-claude/6d3c83e1-1a4a-5a0a-8647-c2590d1d30a4/scratchpad/'; A = pd.read_pickle(SC + 'ext/flips_1h_score.pkl'); A['h'] = A.t.dt.hour + A.t.dt.minute / 60; A['gain'] = A.r
+for f in ('VOLX', 'PEERS', 'VR', 'EXT', 'R60', 'BLOW', 'LDV', 'LPX'): print(f' {f:5s} IC net {spearmanr(A[f], A.r, nan_policy="omit")[0]:+.3f}  IC win10 {spearmanr(A[f], A.r >= .1, nan_policy="omit")[0]:+.3f}  IC peak {spearmanr(A[f], A.peak, nan_policy="omit")[0]:+.3f}')
+print('\nby flip bar start time'); 
+for h, z in A.groupby(A.h.round(1)): print(f' {h:5.1f} n {len(z):4d} mean {z.r.mean()*100:+6.2f}% med {z.r.median()*100:+5.2f}% >=10% {(z.r>=.1).mean()*100:4.1f}% peak med {z.peak.median()*100:5.1f}%')
+print('\npeak excursion median by score quintile:'); print(A.groupby('q').agg(peak_med=('peak', 'median'), peak_mean=('peak', 'mean'), n=('r', 'size')).round(3).to_string())
+print('\nEXT terciles:'); A['et'] = pd.qcut(A.EXT, 3, labels=['low', 'mid', 'high']); print(A.groupby('et').agg(n=('r', 'size'), mean=('r', 'mean'), med=('r', 'median'), w10=('r', lambda s: (s >= .1).mean()), peak=('peak', 'median')).round(3).to_string())
+print('\nVOLX terciles:'); A['vt'] = pd.qcut(A.VOLX, 3, labels=['low', 'mid', 'high']); print(A.groupby('vt').agg(n=('r', 'size'), mean=('r', 'mean'), med=('r', 'median'), w10=('r', lambda s: (s >= .1).mean()), peak=('peak', 'median')).round(3).to_string())
+print('\nLDV terciles (low = thinner):'); A['lt'] = pd.qcut(A.LDV, 3, labels=['thin', 'mid', 'liquid']); print(A.groupby('lt').agg(n=('r', 'size'), mean=('r', 'mean'), med=('r', 'median'), w10=('r', lambda s: (s >= .1).mean()), peak=('peak', 'median')).round(3).to_string())

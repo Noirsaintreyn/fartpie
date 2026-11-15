@@ -1,0 +1,47 @@
+ VOLX  IC net -0.081  IC win10 +0.082  IC peak +0.143
+ PEERS IC net +0.001  IC win10 +0.090  IC peak +0.074
+ VR    IC net +0.058  IC win10 +0.004  IC peak +0.007
+ EXT   IC net -0.223  IC win10 +0.019  IC peak +0.134
+ R60   IC net +0.096  IC win10 -0.026  IC peak -0.075
+ BLOW  IC net +0.008  IC win10 -0.002  IC peak +0.030
+ LDV   IC net +0.004  IC win10 +0.015  IC peak +0.013
+ LPX   IC net +0.180  IC win10 -0.024  IC peak -0.102
+
+by flip bar start time
+   9.5 n 1316 mean  -2.78% med -4.21% >=10%  6.4% peak med   3.4%
+  10.5 n  475 mean  -2.70% med -3.95% >=10%  6.5% peak med   2.8%
+  11.5 n  314 mean  -3.40% med -3.56% >=10%  3.2% peak med   2.3%
+  12.5 n  245 mean  -2.74% med -3.30% >=10%  6.1% peak med   2.5%
+  13.5 n  230 mean  -2.86% med -3.64% >=10%  3.9% peak med   2.5%
+  14.5 n  528 mean  -2.60% med -2.95% >=10%  2.7% peak med   1.5%
+  15.5 n  328 mean  -2.74% med -3.06% >=10%  4.6% peak med   1.9%
+
+peak excursion median by score quintile:
+   peak_med  peak_mean    n
+q                          
+0     0.018      0.053  688
+1     0.024      0.063  687
+2     0.024      0.073  687
+3     0.030      0.071  687
+4     0.039      0.098  687
+
+EXT terciles:
+         n   mean    med    w10   peak
+et                                    
+low   1146 -0.018 -0.027  0.045  0.018
+mid   1145 -0.031 -0.038  0.054  0.029
+high  1145 -0.035 -0.044  0.057  0.034
+
+VOLX terciles:
+         n   mean    med    w10   peak
+vt                                    
+low   1146 -0.029 -0.033  0.039  0.021
+mid   1145 -0.027 -0.038  0.041  0.024
+high  1145 -0.029 -0.040  0.075  0.035
+
+LDV terciles (low = thinner):
+           n   mean    med    w10   peak
+lt                                      
+thin    1146 -0.031 -0.038  0.042  0.029
+mid     1145 -0.025 -0.033  0.058  0.021
+liquid  1145 -0.028 -0.039  0.056  0.028
