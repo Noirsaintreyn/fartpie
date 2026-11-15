@@ -1,0 +1,21 @@
+15m 212 candidates on 206 days
+
+== 15m 2R target
+  base                   A n 102  +1.90 win 40% t +0.9 | B n 104  +2.93 win 38% t +0.9
+  MID                    A n   3  -3.79 win 33% t +nan | B n   1 -19.88 win  0% t +nan
+  FIB                    A n   9  -5.75 win 33% t -0.9 | B n  14  +8.78 win 43% t +0.8
+  LOWRES                 A n   0   +nan winnan% t +nan | B n   0   +nan winnan% t +nan
+  MID+FIB                A n   2  -2.06 win 50% t +nan | B n   1 -19.88 win  0% t +nan
+  MID+LOWRES             A n   0   +nan winnan% t +nan | B n   0   +nan winnan% t +nan
+  FIB+LOWRES             A n   0   +nan winnan% t +nan | B n   0   +nan winnan% t +nan
+  MID+FIB+LOWRES         A n   0   +nan winnan% t +nan | B n   0   +nan winnan% t +nan
+
+== 15m pivot target
+  base                   A n  27  +4.30 win 33% t +0.8 | B n  17  -6.12 win 18% t -0.6
+  MID                    A n   2  +2.19 win 50% t +nan | B n   0   +nan winnan% t +nan
+  FIB                    A n   3 +15.42 win 67% t +nan | B n   3 +11.88 win 33% t +nan
+  LOWRES                 A n   0   +nan winnan% t +nan | B n   0   +nan winnan% t +nan
+  MID+FIB                A n   2  +2.19 win 50% t +nan | B n   0   +nan winnan% t +nan
+  MID+LOWRES             A n   0   +nan winnan% t +nan | B n   0   +nan winnan% t +nan
+  FIB+LOWRES             A n   0   +nan winnan% t +nan | B n   0   +nan winnan% t +nan
+  MID+FIB+LOWRES         A n   0   +nan winnan% t +nan | B n   0   +nan winnan% t +nan

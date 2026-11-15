@@ -1,0 +1,19 @@
+TOL 0.2 ADR; all plain-FVG signals (non-overlapping), 1430 trades on 968 days
+  ALL FVG                    A n 703  +0.41 win 36% t +0.4 | B n 727  -1.13 win 33% t -0.8
+  LVN aligned                A n  13  -6.64 win 23% t -0.8 | B n  20  +1.21 win 35% t +0.1
+  LVN NOT                    A n 690  +0.55 win 36% t +0.5 | B n 707  -1.20 win 33% t -0.9
+  SP aligned                 A n  35  -2.67 win 29% t -0.5 | B n  34  -2.99 win 29% t -0.5
+  SP NOT                     A n 668  +0.57 win 36% t +0.5 | B n 693  -1.04 win 33% t -0.8
+  FAST aligned               A n  37  -4.19 win 27% t -0.8 | B n  43  -0.35 win 33% t -0.1
+  FAST NOT                   A n 666  +0.67 win 36% t +0.6 | B n 684  -1.18 win 33% t -0.9
+  SHELF aligned              A n 407  +1.65 win 38% t +1.1 | B n 396  -3.19 win 30% t -1.8
+  SHELF NOT                  A n 296  -1.29 win 33% t -0.8 | B n 331  +1.32 win 36% t +0.6
+  WALL aligned               A n 138  +1.82 win 37% t +0.7 | B n 234  +1.14 win 36% t +0.5
+  WALL NOT                   A n 565  +0.07 win 36% t +0.1 | B n 493  -2.21 win 31% t -1.4
+-- first aligned FAST signal per day (fills idle days?)
+  FAST first/day             A n  29  -9.42 win 24% t -1.7 | B n  37  +1.66 win 35% t +0.3
+  LVN first/day              A n  10 -14.71 win 20% t -1.9 | B n  16  +4.09 win 38% t +0.4
+  SP first/day               A n  27  -7.85 win 26% t -1.3 | B n  30  -0.71 win 33% t -0.1
+-- longs / shorts for FAST aligned
+  FAST long                  A n  20  -8.62 win 25% t -1.4 | B n  19 +15.30 win 53% t +1.7
+  FAST short                 A n  17  +1.03 win 29% t +0.1 | B n  24 -12.74 win 17% t -1.9
