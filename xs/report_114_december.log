@@ -1,0 +1,42 @@
+
+######## ALL ########
+
+ TRAIN 2019-21
+  all flips       n 11514 mean  +4.40% med  -4.81% win10  16.2% huge 2.14%
+  DEC     flips   n   831 mean  -1.87% med  -5.02% win10   8.5% huge 0.48% | rest n 10683 mean  +4.89% med  -4.79% win10  16.8% huge 2.27% | year-paired 2019:-2.7 2020:-7.0 2021:-1.9 mean -3.86pp t -2.46
+  JAN     flips   n   801 mean  +3.25% med  -4.27% win10  18.0% huge 0.87% | rest n 10713 mean  +4.49% med  -4.84% win10  16.1% huge 2.23% | year-paired 2019:+8.0 2020:-18.8 2021:+7.4 mean -1.12pp t -0.13
+  DEC-JAN flips   n  1632 mean  +0.64% med  -4.71% win10  13.2% huge 0.67% | rest n  9882 mean  +5.02% med  -4.82% win10  16.8% huge 2.38% | year-paired 2019:+4.0 2020:-14.9 2021:+0.8 mean -3.35pp t -0.57
+  DEC 1-15        n   428 mean  -0.47% med  -5.02% win10  11.2% huge 0.93%
+  DEC 16-31       n   403 mean  -3.36% med  -5.02% win10   5.7% huge 0.00%
+
+ TEST 2022-25
+  all flips       n 18060 mean  -0.02% med  -5.23% win10  13.0% huge 1.10%
+  DEC     flips   n  1225 mean  +0.73% med  -5.14% win10  13.5% huge 0.41% | rest n 16835 mean  -0.07% med  -5.23% win10  13.0% huge 1.15% | year-paired 2022:+3.5 2023:+3.8 2024:-4.9 2025:-5.6 mean -0.80pp t -0.31
+  JAN     flips   n  1498 mean  -2.57% med  -5.91% win10   9.3% huge 0.73% | rest n 16562 mean  +0.21% med  -5.16% win10  13.3% huge 1.14% | year-paired 2022:-0.5 2023:-3.1 2024:+1.3 2025:-8.1 mean -2.60pp t -1.27
+  DEC-JAN flips   n  2723 mean  -1.09% med  -5.60% win10  11.2% huge 0.59% | rest n 15337 mean  +0.17% med  -5.16% win10  13.3% huge 1.19% | year-paired 2022:+1.3 2023:+0.4 2024:-1.2 2025:-7.7 mean -1.81pp t -0.90
+  DEC 1-15        n   894 mean  -1.33% med  -5.24% win10  13.2% huge 0.11%
+  DEC 16-31       n   331 mean  +6.30% med  -4.93% win10  14.2% huge 1.21%
+
+  PLACEBO single-month year-paired difference, TEST 2022-25 (sorted worst first): m2:-4.5(t-1.7) m1:-2.6(t-1.3) m7:-2.4(t-1.8) m3:-2.4(t-2.0) m12:-0.8(t-0.3) m8:-0.8(t-0.3) m9:-0.2(t-0.1) m4:+0.5(t+0.1) m6:+0.9(t+0.5) m10:+1.9(t+0.9) m5:+2.0(t+0.8) m11:+3.2(t+1.0)
+  PLACEBO single-month year-paired difference, TRAIN 2019-21 (sorted worst first): m6:-7.2(t-1.2) m2:-7.0(t-0.7) m12:-3.9(t-2.5) m3:-2.5(t-0.6) m1:-1.1(t-0.1) m7:-0.9(t-0.6) m9:-0.5(t-1.0) m10:+1.0(t+0.5) m8:+2.5(t+0.7) m4:+2.8(t+1.1) m11:+3.0(t+0.5) m5:+4.4(t+1.0)
+
+######## LARGE-CAP ########
+
+ TRAIN 2019-21
+  all flips       n   572 mean  +3.99% med  -5.05% win10  15.9% huge 2.62%
+  DEC     flips   n    44 mean  -4.38% med  -4.78% win10   6.8% huge 0.00% | rest n   528 mean  +4.68% med  -5.07% win10  16.7% huge 2.84% | year-paired 2019:-7.8 2020:-26.0 2021:+0.6 mean -11.06pp t -1.41
+  JAN     flips   n    51 mean  +1.96% med  -2.76% win10  21.6% huge 0.00% | rest n   521 mean  +4.18% med  -5.31% win10  15.4% huge 2.88% | year-paired 2019:+4.9 2020:-33.7 2021:+8.2 mean -6.86pp t -0.51
+  DEC-JAN flips   n    95 mean  -0.97% med  -3.66% win10  14.7% huge 0.00% | rest n   477 mean  +4.97% med  -5.34% win10  16.1% huge 3.14% | year-paired 2019:+0.9 2020:-30.9 2021:+4.3 mean -8.55pp t -0.76
+  DEC 1-15        n    21 mean  -2.88% med  -2.97% win10  14.3% huge 0.00%
+  DEC 16-31       n    23 mean  -5.74% med  -5.84% win10   0.0% huge 0.00%
+
+ TEST 2022-25
+  all flips       n  1423 mean  -0.61% med  -5.38% win10  12.9% huge 0.98%
+  DEC     flips   n   108 mean  -4.31% med  -6.26% win10  11.1% huge 0.00% | rest n  1315 mean  -0.31% med  -5.33% win10  13.0% huge 1.06% | year-paired 2022:+0.6 2023:+0.5 2024:-6.1 2025:-10.1 mean -3.75pp t -1.43
+  JAN     flips   n    93 mean  -4.75% med  -6.17% win10   6.5% huge 0.00% | rest n  1330 mean  -0.32% med  -5.32% win10  13.3% huge 1.05% | year-paired 2022:+1.2 2023:-7.5 2024:-0.4 2025:-7.2 mean -3.48pp t -1.53
+  DEC-JAN flips   n   201 mean  -4.52% med  -6.17% win10   9.0% huge 0.00% | rest n  1222 mean  +0.03% med  -5.28% win10  13.5% huge 1.15% | year-paired 2022:+1.1 2023:-3.3 2024:-4.3 2025:-9.5 mean -3.98pp t -1.83
+  DEC 1-15        n    79 mean  -4.25% med  -7.31% win10  11.4% huge 0.00%
+  DEC 16-31       n    29 mean  -4.50% med  -4.88% win10  10.3% huge 0.00%
+
+  PLACEBO single-month year-paired difference, TEST 2022-25 (sorted worst first): m7:-5.5(t-3.7) m2:-4.7(t-1.5) m3:-4.0(t-2.0) m12:-3.7(t-1.4) m1:-3.5(t-1.5) m8:-0.9(t-0.3) m6:+0.1(t+0.0) m4:+1.2(t+0.5) m5:+2.5(t+0.7) m11:+3.0(t+1.0) m10:+6.0(t+1.3) m9:+6.8(t+1.3)
+  PLACEBO single-month year-paired difference, TRAIN 2019-21 (sorted worst first): m9:-12.7(t-1.6) m12:-11.1(t-1.4) m11:-10.7(t-2.6) m7:-10.3(t-0.9) m2:-7.2(t-0.7) m1:-6.9(t-0.5) m8:-6.8(t-2.2) m6:-1.6(t-0.4) m10:+3.1(t+0.4) m3:+5.9(t+0.7) m4:+9.4(t+0.8) m5:+21.7(t+1.3)
