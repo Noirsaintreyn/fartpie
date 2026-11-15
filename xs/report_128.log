@@ -1,0 +1,11 @@
+23990 crosses; true 10882
+TRAIN 2019-21 px 1-5: crosses  1225 true  555 ( 45%) | baseline true flips (next open) mean +36.55% | trigger entry TRUE +43.13% FALSE   -3.26% -> per cross +17.76% (if only true flips counted at trigger: gain +6.58pp)
+TRAIN 2019-21 px 5-20: crosses  6594 true 3191 ( 48%) | baseline true flips (next open) mean  +6.48% | trigger entry TRUE  +8.86% FALSE   -2.17% -> per cross  +3.17% (if only true flips counted at trigger: gain +2.38pp)
+TEST 2022+ px 1-5: crosses  3654 true 1508 ( 41%) | baseline true flips (next open) mean  +6.23% | trigger entry TRUE  +9.88% FALSE   -3.18% -> per cross  +2.21% (if only true flips counted at trigger: gain +3.65pp)
+TEST 2022+ px 5-20: crosses 12517 true 5628 ( 45%) | baseline true flips (next open) mean  -0.54% | trigger entry TRUE  +1.35% FALSE   -2.22% -> per cross  -0.62% (if only true flips counted at trigger: gain +1.90pp)
+
+FILTERED to OS2 top 20% (ATRP+EXT ranks, train cut, known at the prior close), px<5
+TRAIN: crosses  423 true  188 ( 44%) | baseline true-flip next-open +69.78% (total  +13119pp) | trigger: true +84.40% false  -4.45% total  +14822pp, per cross +35.04%
+TEST : crosses  979 true  393 ( 40%) | baseline true-flip next-open +12.81% (total   +5033pp) | trigger: true +18.54% false  -4.25% total   +4795pp, per cross  +4.90%
+
+FILTER by score known before the cross: false-cross cost cannot be filtered (OS only exists for true flips here); filter by prior-close features not tested beyond this
