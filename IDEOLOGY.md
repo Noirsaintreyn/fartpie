@@ -136,3 +136,9 @@ SIZING (px<5, top-20% M1P, N=20, test): equal +225% (ex-top3 +89%, maxDD 38, mon
   (1) Marchenko-Pastur idiosyncratic share (trailing 250d, ~11 signal factors/month): AUC BIG 0.37 train -> 0.56 test (sign flip), adds nothing/hurts OS (0.644 -> 0.616). Rejected.
   (2) Empirical-Bayes sector x cap pooling of residual log-peak (tau2 .024 vs within .065, 174 cells): OS+POOL BIG 0.645 vs OS 0.644. Real but tiny; not adopted.
 - Still not run: contagion on correlation graph, critical slowing down, price-impact/absorption; prop-algo ATRP (already covered by the vol-state RA tests, report_126).
+
+## Report 138 (Nov 15 2026): contagion, critical slowing down, price impact, OU/QHO on all three engines (xs/report_138_structure_models.py, feats138.py)
+- **Small-cap flips (train <2022 / test 2022+):** Amihud illiquidity (LAMIH) and absorption (LABS) rank BIG/HUGE alone (HUGE AUC .71/.66, .30/.34 inverted) but mostly restate price/turnover; add-on to OS: BIG .644 -> .651 each, HUGE .771 -> .781. OU displacement OUZ (stretched = worse) BIG .655. OS+ALL (9 features) BIG .660, HUGE .786 test (train .742/.851 = overfit gap). CSD (AC1, variance-ratio rise) and graph contagion: no signal (AUC ~.5 both halves).
+- **Large-cap screener:** no feature passes (same sign + |t|>=2 both halves): OUZ flips sign (t -1.4 train, +2.4 test), Amihud/absorption/CSD/contagion all |t|<2.
+- **NQ prop legs:** 0 PASS in RA, M1, R1, RULES; V15a 1 PASS (variance-ratio high third: -10.6 pts/trade train, -46.5 test; chance 0 at 95th pct) - candidate gate, needs its own test. Leg-loss contagion: nothing.
+- Verdict: structure models give small-cap +0.01-0.015 AUC (not a breakthrough), nothing on the large-cap screener, one V15a gate candidate.

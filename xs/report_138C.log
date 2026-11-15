@@ -1,0 +1,43 @@
+SMALL CAP flips 25519
+AUC BIG / HUGE (train | test); sign must match
+  big  AC1    0.525 | 0.477
+  big  dAC    0.515 | 0.490
+  big  LVR    0.528 | 0.524
+  big  dLVR   0.522 | 0.523
+  big  LAMIH  0.635 | 0.586  <== same side, |dev|>.03 both
+  big  LABS   0.364 | 0.413  <== same side, |dev|>.03 both
+  big  LHL    0.524 | 0.517
+  big  OUZ    0.454 | 0.454  <== same side, |dev|>.03 both
+  big  CONT   0.506 | 0.488
+  huge AC1    0.528 | 0.488
+  huge dAC    0.536 | 0.475
+  huge LVR    0.447 | 0.530
+  huge dLVR   0.482 | 0.550
+  huge LAMIH  0.713 | 0.659  <== same side, |dev|>.03 both
+  huge LABS   0.295 | 0.341  <== same side, |dev|>.03 both
+  huge LHL    0.527 | 0.562
+  huge OUZ    0.480 | 0.452
+  huge CONT   0.506 | 0.483
+add-on to OS (fit train, test AUC)
+  big OS 0.644
+     OS+AC1    test 0.643 (train 0.714)
+     OS+dAC    test 0.643 (train 0.714)
+     OS+LVR    test 0.645 (train 0.720)
+     OS+dLVR   test 0.645 (train 0.716)
+     OS+LAMIH  test 0.651 (train 0.728)
+     OS+LABS   test 0.651 (train 0.731)
+     OS+LHL    test 0.644 (train 0.713)
+     OS+OUZ    test 0.655 (train 0.722)
+     OS+CONT   test 0.644 (train 0.713)
+     OS+ALL     test 0.660 (train 0.742)
+  huge OS 0.771
+     OS+AC1    test 0.771 (train 0.824)
+     OS+dAC    test 0.770 (train 0.824)
+     OS+LVR    test 0.772 (train 0.824)
+     OS+dLVR   test 0.772 (train 0.824)
+     OS+LAMIH  test 0.781 (train 0.848)
+     OS+LABS   test 0.782 (train 0.848)
+     OS+LHL    test 0.770 (train 0.825)
+     OS+OUZ    test 0.775 (train 0.825)
+     OS+CONT   test 0.771 (train 0.824)
+     OS+ALL     test 0.786 (train 0.851)
