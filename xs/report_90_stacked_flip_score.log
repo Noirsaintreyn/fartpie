@@ -1,0 +1,36 @@
+TRAIN (2019-21) month-clustered Spearman IC of feature vs trade return:
+  VOLX   IC -0.117 t -6.7  -> IN
+  PEERS  IC -0.017 t -1.2
+  VR     IC -0.027 t -1.9  -> IN
+  EXT    IC -0.227 t -8.2  -> IN
+  R60    IC -0.004 t -0.2
+  BLOW   IC -0.034 t -2.2  -> IN
+  LDV    IC +0.040 t +2.4  -> IN
+  LPX    IC +0.082 t +4.5  -> IN
+features used: {'VOLX': np.float64(-1.0), 'VR': np.float64(-1.0), 'EXT': np.float64(-1.0), 'BLOW': np.float64(-1.0), 'LDV': np.float64(1.0), 'LPX': np.float64(1.0)}
+ridge-logistic coefs (rank features): {'VOLX': np.float64(0.22), 'PEERS': np.float64(-0.22), 'VR': np.float64(0.21), 'EXT': np.float64(0.5), 'R60': np.float64(0.03), 'BLOW': np.float64(0.08), 'LDV': np.float64(-0.13), 'LPX': np.float64(-0.14)}
+
+TEST 2022-26Q1 flips 18809
+ ALL prices
+  rank-sum (frozen)      ALL n 18809 mean   +0.2% med  -5.0% huge  1.1% win10 13.2% || TOP-Q n  3774 mean   -0.4% med  -4.0% huge  0.4% win10 11.4% || BOT-Q n  3783 mean   +2.6% med  -7.5% huge  2.7% win10 17.6% || top-bot -3.0pp t -2.7 AUC(win10) 0.448
+  ridge logistic (frozen) ALL n 18809 mean   +0.2% med  -5.0% huge  1.1% win10 13.2% || TOP-Q n  3774 mean   +2.1% med  -8.1% huge  2.8% win10 17.5% || BOT-Q n  3783 mean   -0.7% med  -3.7% huge  0.3% win10 10.3% || top-bot +2.8pp t +2.1 AUC(win10) 0.563
+ $1-10
+  rank-sum (frozen)      ALL n  3481 mean   +3.0% med  -6.5% huge  2.7% win10 16.3% || TOP-Q n   705 mean   +0.8% med  -4.9% huge  1.0% win10 11.9% || BOT-Q n   717 mean   +8.1% med -10.1% huge  5.7% win10 22.0% || top-bot -7.3pp t -2.0 AUC(win10) 0.424
+  ridge logistic (frozen) ALL n  3481 mean   +3.0% med  -6.5% huge  2.7% win10 16.3% || TOP-Q n   705 mean   +8.8% med -10.5% huge  5.8% win10 22.7% || BOT-Q n   717 mean   -0.3% med  -4.6% huge  0.6% win10 10.6% || top-bot +9.2pp t +2.8 AUC(win10) 0.582
+ $10+
+  rank-sum (frozen)      ALL n 15328 mean   -0.4% med  -4.7% huge  0.7% win10 12.5% || TOP-Q n  3079 mean   -0.6% med  -3.9% huge  0.4% win10 11.0% || BOT-Q n  3085 mean   +0.1% med  -6.5% huge  1.5% win10 15.4% || top-bot -0.7pp t -1.1 AUC(win10) 0.467
+  ridge logistic (frozen) ALL n 15328 mean   -0.4% med  -4.7% huge  0.7% win10 12.5% || TOP-Q n  3079 mean   -0.2% med  -7.0% huge  1.6% win10 15.4% || BOT-Q n  3085 mean   -0.7% med  -3.7% huge  0.3% win10 10.1% || top-bot +0.5pp t +0.5 AUC(win10) 0.548
+
+IN-SAMPLE (train) for reference, same rules:
+  rank-sum train         ALL n 11514 mean   +4.7% med  -4.5% huge  2.2% win10 16.5% || TOP-Q n  2313 mean   +2.3% med  -3.6% huge  1.2% win10 13.6% || BOT-Q n  2315 mean   +8.8% med  -6.2% huge  3.5% win10 21.1% || top-bot -6.5pp t -2.1 AUC(win10) 0.443
+  ridge train            ALL n 11514 mean   +4.7% med  -4.5% huge  2.2% win10 16.5% || TOP-Q n  2313 mean   +9.2% med  -6.8% huge  3.8% win10 21.6% || BOT-Q n  2315 mean   +1.7% med  -3.4% huge  1.0% win10 12.9% || top-bot +7.4pp t +2.3 AUC(win10) 0.567
+
+TEST single-feature top-minus-bottom quintile (for comparison to the stack):
+  VOLX (train sign)      ALL n 18809 mean   +0.2% med  -5.0% huge  1.1% win10 13.2% || TOP-Q n  3774 mean   +0.0% med  -4.4% huge  0.7% win10 11.8% || BOT-Q n  3783 mean   +0.3% med  -6.5% huge  2.0% win10 15.5% || top-bot -0.3pp t -0.5 AUC(win10) 0.464
+  PEERS (+ sign)         ALL n 18809 mean   +0.2% med  -5.0% huge  1.1% win10 13.2% || TOP-Q n  3774 mean   -1.2% med  -5.1% huge  1.1% win10 11.2% || BOT-Q n  3783 mean   +1.0% med  -4.8% huge  1.2% win10 14.5% || top-bot -2.2pp t -3.6 AUC(win10) 0.465
+  VR (train sign)        ALL n 18809 mean   +0.2% med  -5.0% huge  1.1% win10 13.2% || TOP-Q n  3774 mean   -0.3% med  -4.8% huge  0.7% win10 12.3% || BOT-Q n  3783 mean   +1.5% med  -5.5% huge  1.6% win10 15.3% || top-bot -1.7pp t -2.2 AUC(win10) 0.475
+  EXT (train sign)       ALL n 18809 mean   +0.2% med  -5.0% huge  1.1% win10 13.2% || TOP-Q n  3774 mean   -0.2% med  -3.6% huge  0.3% win10 10.9% || BOT-Q n  3783 mean   +1.8% med  -8.3% huge  2.8% win10 16.9% || top-bot -2.0pp t -1.2 AUC(win10) 0.453
+  R60 (+ sign)           ALL n 18809 mean   +0.2% med  -5.0% huge  1.1% win10 13.2% || TOP-Q n  3774 mean   +0.6% med  -6.2% huge  1.8% win10 15.0% || BOT-Q n  3783 mean   +0.9% med  -5.6% huge  1.4% win10 14.2% || top-bot -0.4pp t -0.2 AUC(win10) 0.509
+  BLOW (train sign)      ALL n 18809 mean   +0.2% med  -5.0% huge  1.1% win10 13.2% || TOP-Q n  3774 mean   -0.3% med  -5.0% huge  1.0% win10 11.6% || BOT-Q n  3783 mean   +0.9% med  -5.5% huge  1.4% win10 14.7% || top-bot -1.2pp t -1.7 AUC(win10) 0.470
+  LDV (train sign)       ALL n 18809 mean   +0.2% med  -5.0% huge  1.1% win10 13.2% || TOP-Q n  3774 mean   -0.8% med  -5.0% huge  0.8% win10 12.2% || BOT-Q n  3783 mean   +1.9% med  -5.9% huge  2.1% win10 14.7% || top-bot -2.7pp t -3.6 AUC(win10) 0.480
+  LPX (train sign)       ALL n 18809 mean   +0.2% med  -5.0% huge  1.1% win10 13.2% || TOP-Q n  3774 mean   -0.2% med  -4.4% huge  0.6% win10 13.0% || BOT-Q n  3783 mean   +2.4% med  -6.5% huge  2.5% win10 15.6% || top-bot -2.6pp t -2.8 AUC(win10) 0.477
