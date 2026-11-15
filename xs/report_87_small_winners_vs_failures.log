@@ -1,0 +1,31 @@
+small flips 5085 {'2019-21': 1516, '2022-26Q1': 3569} base rates huge {'2019-21': 0.058, '2022-26Q1': 0.026} win10 {'2019-21': 0.214, '2022-26Q1': 0.159}
+
+ VOLX (H: high better)
+  2019-21   T0 n   521 mean  +14.4% med  -4.6% huge  5.4% win10 19.8% || T2 n   503 mean  +30.9% med  -5.9% huge  7.8% win10 24.9% || top-bottom +16.5pp t +1.4 AUC(win10) 0.547
+  2022-26Q1 T0 n  1206 mean   +0.2% med  -5.4% huge  1.2% win10 12.4% || T2 n  1188 mean   +3.6% med  -8.2% huge  4.0% win10 18.9% || top-bottom +3.4pp t +1.8 AUC(win10) 0.561
+  POOLED    T0 n  1727 mean   +4.5% med  -5.2% huge  2.4% win10 14.6% || T2 n  1691 mean  +11.7% med  -7.6% huge  5.1% win10 20.6% || top-bottom +7.2pp t +1.9
+  -> no pass
+
+ DEPTH (H: low better)
+  2019-21   T0 n   521 mean  +15.9% med  -8.3% huge  7.3% win10 22.5% || T2 n   503 mean  +23.7% med  -3.2% huge  5.4% win10 19.1% || top-bottom +7.8pp t +1.0 AUC(win10) 0.372
+  2022-26Q1 T0 n  1206 mean   +6.2% med  -9.2% huge  4.4% win10 17.9% || T2 n  1188 mean   +1.5% med  -4.0% huge  1.3% win10 14.8% || top-bottom -4.7pp t -1.8 AUC(win10) 0.468
+  POOLED    T0 n  1727 mean   +9.1% med  -8.9% huge  5.3% win10 19.3% || T2 n  1691 mean   +8.1% med  -3.8% huge  2.5% win10 16.1% || top-bottom -1.1pp t +0.4
+  -> no pass
+
+ DV (H: high better)
+  2019-21   T0 n   521 mean  +20.2% med  -5.4% huge  7.9% win10 22.8% || T2 n   503 mean  +13.1% med  -5.3% huge  5.6% win10 19.7% || top-bottom -7.2pp t -1.4 AUC(win10) 0.467
+  2022-26Q1 T0 n  1206 mean   +5.7% med  -7.1% huge  3.7% win10 17.6% || T2 n  1188 mean   +1.8% med  -5.9% huge  1.9% win10 14.7% || top-bottom -3.9pp t -1.8 AUC(win10) 0.479
+  POOLED    T0 n  1727 mean  +10.1% med  -6.7% huge  5.0% win10 19.2% || T2 n  1691 mean   +5.2% med  -5.8% huge  3.0% win10 16.2% || top-bottom -4.9pp t -2.2
+  -> no pass
+
+ BASE (H: high better)
+  2019-21   T0 n   521 mean  +25.1% med  -6.8% huge  6.7% win10 20.5% || T2 n   503 mean  +14.1% med  -3.4% huge  4.4% win10 18.1% || top-bottom -11.0pp t -1.3 AUC(win10) 0.419
+  2022-26Q1 T0 n  1206 mean   +2.4% med  -7.6% huge  3.7% win10 15.7% || T2 n  1188 mean   +3.6% med  -4.1% huge  1.4% win10 14.7% || top-bottom +1.2pp t +0.6 AUC(win10) 0.462
+  POOLED    T0 n  1727 mean   +9.3% med  -7.4% huge  4.6% win10 17.1% || T2 n  1691 mean   +6.7% med  -3.9% huge  2.3% win10 15.7% || top-bottom -2.5pp t -1.0
+  -> no pass
+
+ R20 (H: low better)
+  2019-21   T0 n   521 mean  +15.4% med  -4.4% huge  5.4% win10 20.5% || T2 n   503 mean  +17.9% med  -7.3% huge  6.8% win10 21.7% || top-bottom +2.5pp t +0.3 AUC(win10) 0.549
+  2022-26Q1 T0 n  1206 mean   +1.5% med  -4.8% huge  1.6% win10 14.0% || T2 n  1188 mean   +6.2% med  -8.6% huge  4.3% win10 19.0% || top-bottom +4.7pp t +1.8 AUC(win10) 0.548
+  POOLED    T0 n  1727 mean   +5.7% med  -4.7% huge  2.7% win10 16.0% || T2 n  1691 mean   +9.7% med  -8.2% huge  5.0% win10 19.8% || top-bottom +4.0pp t +1.2
+  -> no pass
