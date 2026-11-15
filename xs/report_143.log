@@ -1,0 +1,23 @@
+1849 RB trades, one per day, days 1849
+
+== 2R target
+  RB50 all                               A n 814  +0.38 win 38% t +1.2 | B n1035  +0.01 win 35% t +0.0
+    long                                 A n 416  -0.16 win 35% t -0.4 | B n 533  -0.05 win 35% t -0.1
+    short                                A n 398  +0.96 win 41% t +2.1 | B n 502  +0.08 win 35% t +0.1
+  ALIGNED (long discount/short premium)  A n 609  +0.14 win 37% t +0.4 | B n 736  -0.08 win 35% t -0.2
+  NOT aligned                            A n 205  +1.11 win 40% t +1.7 | B n 299  +0.24 win 36% t +0.3
+  ALIGNED long                           A n 285  -0.62 win 33% t -1.1 | B n 359  -0.20 win 35% t -0.3
+  ALIGNED & low-resistance path          A n 390  +0.30 win 38% t +0.6 | B n 428  +0.83 win 37% t +1.4
+  ALIGNED & NOT low-res                  A n 219  -0.15 win 36% t -0.3 | B n 308  -1.33 win 31% t -1.7
+  low-res path only                      A n 510  +0.84 win 40% t +2.0 | B n 626  +0.68 win 37% t +1.4
+
+== DOL target
+  RB50 all                               A n 566  +0.24 win 29% t +0.5 | B n 632  -1.13 win 23% t -1.7
+    long                                 A n 313  +0.10 win 27% t +0.2 | B n 339  -1.27 win 23% t -1.3
+    short                                A n 253  +0.40 win 31% t +0.6 | B n 293  -0.96 win 24% t -1.1
+  ALIGNED (long discount/short premium)  A n 409  -0.01 win 29% t -0.0 | B n 451  -1.36 win 23% t -1.8
+  NOT aligned                            A n 157  +0.88 win 30% t +0.9 | B n 181  -0.56 win 23% t -0.5
+  ALIGNED long                           A n 203  -0.73 win 25% t -0.9 | B n 224  -1.53 win 23% t -1.3
+  ALIGNED & low-resistance path          A n 204  +0.42 win 32% t +0.6 | B n 182  -1.07 win 27% t -1.2
+  ALIGNED & NOT low-res                  A n 205  -0.43 win 25% t -0.5 | B n 269  -1.55 win 21% t -1.4
+  low-res path only                      A n 284  +0.93 win 33% t +1.4 | B n 268  -1.51 win 24% t -2.1
