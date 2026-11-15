@@ -1,0 +1,20 @@
+flips 30323 with shares 25671 | median PEAK 0.068 median DUR 20.0
+
+Month-clustered Spearman IC (t) of each measure with PEAK / DUR / R, by era (+ pooled)
+ P1     | PEAK +0.260(+14.3) +0.260(+21.1) +0.260(+25.0) | DUR  +0.103(+5.1) +0.108(+8.5) +0.106(+9.5) | r    -0.269(-8.4) -0.322(-15.3) -0.300(-16.4)
+ VOLX2  | PEAK +0.084(+5.7) +0.119(+10.5) +0.104(+11.3) | DUR  +0.079(+5.3) +0.114(+9.7) +0.100(+10.6) | r    -0.117(-6.7) -0.115(-8.2) -0.116(-10.6)
+ ATRP   | PEAK +0.280(+14.6) +0.263(+19.8) +0.270(+24.3) | DUR  +0.077(+3.5) +0.062(+4.6) +0.068(+5.7) | r    -0.272(-7.7) -0.342(-16.3) -0.313(-16.1)
+ TURN   | PEAK +0.167(+12.1) +0.166(+13.7) +0.166(+18.4) | DUR  +0.091(+5.8) +0.090(+7.4) +0.091(+9.4) | r    -0.165(-7.9) -0.183(-12.6) -0.175(-14.4)
+ MCAP   | PEAK -0.139(-7.9) -0.124(-13.2) -0.130(-14.3) | DUR  -0.051(-3.5) -0.036(-3.5) -0.042(-5.0) | r    +0.116(+5.8) +0.138(+10.1) +0.129(+11.1)
+ BURST  | PEAK +0.028(+2.1) +0.056(+5.0) +0.044(+5.1) | DUR  +0.016(+1.3) +0.048(+4.6) +0.035(+4.3) | r    -0.019(-1.5) -0.018(-1.8) -0.018(-2.3)
+ VACF   | PEAK +0.013(+1.1) +0.005(+0.5) +0.009(+1.1) | DUR  -0.001(-0.1) +0.001(+0.1) +0.000(+0.0) | r    -0.016(-1.4) -0.016(-1.6) -0.016(-2.1)
+
+H2 huge-rate (>=+100%) by MCAP tercile and TURN tercile (within month), both eras:
+  MCAP  2019-21   T0: n  3300 huge  3.8% PEAKmed   8.4% mean r +10.0% | T1: n  3275 huge  1.7% PEAKmed   6.7% mean r  +3.0% | T2: n  3282 huge  0.8% PEAKmed   5.6% mean r  +1.1%
+  MCAP  2022-26Q1 T0: n  5285 huge  1.9% PEAKmed   8.1% mean r  +1.4% | T1: n  5257 huge  0.8% PEAKmed   6.2% mean r  +0.0% | T2: n  5272 huge  0.5% PEAKmed   5.4% mean r  -0.7%
+  TURN  2019-21   T0: n  3300 huge  1.1% PEAKmed   5.1% mean r  +1.8% | T1: n  3275 huge  1.9% PEAKmed   6.7% mean r  +4.0% | T2: n  3282 huge  3.4% PEAKmed   9.7% mean r  +8.3%
+  TURN  2022-26Q1 T0: n  5285 huge  0.5% PEAKmed   4.9% mean r  -0.4% | T1: n  5257 huge  0.8% PEAKmed   5.9% mean r  -0.1% | T2: n  5272 huge  1.9% PEAKmed   9.3% mean r  +1.2%
+
+INCREMENTAL (train 2019-21 n 9857, test n 15814): ridge logistic TEST AUC base vs base+physics
+  win10 base 0.567 base+physics 0.576 | physics coefs {'P1': np.float64(1.0), 'TURN': np.float64(-0.01), 'MCAP': np.float64(-0.51), 'BURST': np.float64(-0.07), 'VACF': np.float64(0.12)}
+  a20   base 0.588 base+physics 0.584 | physics coefs {'P1': np.float64(0.43), 'TURN': np.float64(0.21), 'MCAP': np.float64(-0.16), 'BURST': np.float64(-0.12), 'VACF': np.float64(-0.02)}
