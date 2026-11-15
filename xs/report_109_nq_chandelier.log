@@ -1,0 +1,42 @@
+
+== NQ 15min bars 212756 (2017-04-17 to 2026-07-10) NQ points per contract, cost 1.0 pt
+   vector reverse (A)     TRAIN n  2272 mean   +0.27 med  -17.00 win 26.9% total      +618 maxDD     3908 t +0.15 | long   +5.13 short   -4.58 | bars   46.7
+   vector reverse (A)     TEST  n  2269 mean   +1.98 med  -39.75 win 26.7% total     +4495 maxDD     5322 t +0.53 | long   +7.99 short   -4.03 | bars   47.0
+   chandelier 3x (B)      TRAIN n  2272 mean   +0.14 med  -10.75 win 32.0% total      +312 maxDD     1831 t +0.10 | long   +1.93 short   -1.65 | bars   21.2
+   chandelier 3x (B)      TEST  n  2269 mean   +3.33 med  -25.75 win 33.6% total     +7557 maxDD     3115 t +1.21 | long   +6.64 short   +0.02 | bars   21.2
+   chandelier 4x (B)      TRAIN n  2272 mean   +0.74 med  -13.00 win 30.3% total     +1690 maxDD     2889 t +0.48 | long   +3.52 short   -2.03 | bars   30.4
+   chandelier 4x (B)      TEST  n  2269 mean   +4.11 med  -32.00 win 30.5% total     +9330 maxDD     4154 t +1.25 | long   +8.02 short   +0.20 | bars   30.0
+   chandelier 5x (B)      TRAIN n  2272 mean   +0.54 med  -15.00 win 28.4% total     +1230 maxDD     4758 t +0.33 | long   +3.82 short   -2.74 | bars   37.0
+   chandelier 5x (B)      TEST  n  2269 mean   +2.61 med  -36.00 win 28.3% total     +5911 maxDD     5031 t +0.75 | long   +7.48 short   -2.28 | bars   36.6
+   ST-agree + reverse (C) TRAIN n  1674 mean   +0.39 med  -18.00 win 28.3% total      +646 maxDD     3287 t +0.18 | long   +2.27 short   -1.36 | bars   47.8
+   ST-agree + reverse (C) TEST  n  1667 mean   +1.47 med  -41.50 win 27.5% total     +2452 maxDD     7207 t +0.33 | long   +5.82 short   -2.67 | bars   48.7
+   ST-agree + chand3      TRAIN n  1674 mean   -0.04 med  -11.00 win 32.6% total       -75 maxDD     2366 t -0.03 | long   +0.21 short   -0.28 | bars   20.8
+   ST-agree + chand3      TEST  n  1667 mean   +1.53 med  -27.00 win 33.3% total     +2558 maxDD     4378 t +0.48 | long   +2.19 short   +0.91 | bars   20.9
+
+== NQ 60min bars 54169 (2017-04-17 to 2026-07-10) NQ points per contract, cost 1.0 pt
+   vector reverse (A)     TRAIN n   512 mean   +1.69 med  -36.50 win 28.9% total      +866 maxDD     3400 t +0.22 | long  +23.27 short  -19.89 | bars   53.7
+   vector reverse (A)     TEST  n   499 mean   +7.73 med  -95.75 win 30.9% total     +3856 maxDD     8705 t +0.52 | long  +34.95 short  -19.61 | bars   53.4
+   chandelier 3x (B)      TRAIN n   512 mean   +4.18 med  -21.25 win 36.1% total     +2140 maxDD     2338 t +0.80 | long  +11.69 short   -3.33 | bars   22.0
+   chandelier 3x (B)      TEST  n   499 mean  +20.34 med  -49.75 win 39.1% total    +10152 maxDD     2431 t +1.74 | long  +32.95 short   +7.69 | bars   23.1
+   chandelier 4x (B)      TRAIN n   512 mean   +6.09 med  -27.50 win 34.8% total     +3120 maxDD     2118 t +0.98 | long  +19.46 short   -7.28 | bars   33.0
+   chandelier 4x (B)      TEST  n   499 mean  +24.02 med  -69.50 win 36.3% total    +11986 maxDD     2787 t +1.79 | long  +51.32 short   -3.39 | bars   34.8
+   chandelier 5x (B)      TRAIN n   512 mean   +0.65 med  -31.12 win 31.2% total      +334 maxDD     3390 t +0.10 | long  +19.52 short  -18.22 | bars   41.4
+   chandelier 5x (B)      TEST  n   499 mean  +10.27 med  -87.00 win 32.3% total     +5127 maxDD     6524 t +0.75 | long  +36.51 short  -16.07 | bars   41.7
+   ST-agree + reverse (C) TRAIN n   397 mean   +3.71 med  -36.50 win 29.5% total     +1471 maxDD     2638 t +0.39 | long  +26.93 short  -16.16 | bars   56.5
+   ST-agree + reverse (C) TEST  n   408 mean   +4.69 med -100.50 win 31.6% total     +1914 maxDD     7770 t +0.30 | long  +26.88 short  -17.50 | bars   54.6
+   ST-agree + chand3      TRAIN n   397 mean   +0.99 med  -21.25 win 36.0% total      +392 maxDD     2816 t +0.17 | long   +5.70 short   -3.04 | bars   21.5
+   ST-agree + chand3      TEST  n   408 mean  +15.66 med  -49.75 win 39.5% total     +6388 maxDD     2159 t +1.28 | long  +28.82 short   +2.50 | bars   23.5
+
+== NQ 240min bars 14752 (2017-04-17 to 2026-07-10) NQ points per contract, cost 1.0 pt
+   vector reverse (A)     TRAIN n   137 mean  +18.29 med  -69.50 win 32.1% total     +2506 maxDD     2104 t +0.68 | long  +90.97 short  -55.46 | bars   54.7
+   vector reverse (A)     TEST  n   151 mean  -45.81 med -225.25 win 27.8% total     -6918 maxDD    10244 t -0.85 | long  +50.07 short -140.43 | bars   47.7
+   chandelier 3x (B)      TRAIN n   137 mean   -0.84 med  -41.00 win 32.1% total      -115 maxDD     1903 t -0.05 | long  +58.72 short  -61.28 | bars   22.1
+   chandelier 3x (B)      TEST  n   151 mean  -13.26 med -107.50 win 37.1% total     -2003 maxDD     7036 t -0.38 | long  +42.48 short  -68.28 | bars   21.2
+   chandelier 4x (B)      TRAIN n   137 mean   -7.51 med  -50.00 win 34.3% total     -1028 maxDD     2141 t -0.41 | long  +49.35 short  -65.20 | bars   31.4
+   chandelier 4x (B)      TEST  n   151 mean  -21.76 med -158.25 win 30.5% total     -3286 maxDD     7354 t -0.50 | long  +38.03 short  -80.77 | bars   28.6
+   chandelier 5x (B)      TRAIN n   137 mean  +27.53 med  -53.50 win 36.5% total     +3771 maxDD     1585 t +1.04 | long +102.67 short  -48.72 | bars   44.1
+   chandelier 5x (B)      TEST  n   151 mean  -14.85 med -178.75 win 29.8% total     -2242 maxDD     7374 t -0.29 | long  +47.37 short  -76.26 | bars   38.2
+   ST-agree + reverse (C) TRAIN n   103 mean  +27.43 med  -69.50 win 34.0% total     +2826 maxDD     1854 t +0.84 | long +104.78 short  -34.99 | bars   56.1
+   ST-agree + reverse (C) TEST  n   122 mean  -32.25 med -218.25 win 28.7% total     -3935 maxDD     8830 t -0.52 | long  +51.92 short -113.71 | bars   48.9
+   ST-agree + chand3      TRAIN n   103 mean   -4.50 med  -43.75 win 30.1% total      -463 maxDD     1561 t -0.21 | long  +54.80 short  -52.35 | bars   22.0
+   ST-agree + chand3      TEST  n   122 mean   +4.29 med  -87.62 win 38.5% total      +523 maxDD     4712 t +0.11 | long  +55.03 short  -44.82 | bars   21.7

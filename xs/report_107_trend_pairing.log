@@ -1,0 +1,67 @@
+flips 30323 train 11514 test 18809
+
+PART 1 AGREEMENT FILTERS (vector flip + indicator bull at the flip bar), net of 30bp, hold to vector bear flip
+
+ TRAIN 2019-21
+  all flips                 n 11514 mean  +4.71% med  -4.49% win10  16.5% huge 2.15% ex-top3  +4.17%
+  ST  bull  n  7621 mean  +5.08% med  -4.59% win10  16.8% huge 2.28% ex-top3  +4.28%
+  ST  NOT   n  3893 mean  +3.98% med  -4.31% win10  15.8% huge 1.90% ex-top3  +3.30% | bull minus not -1.84pp month-t -1.27
+  AT  bull  n  4973 mean  +4.64% med  -4.51% win10  16.1% huge 2.33% ex-top3  +4.07%
+  AT  NOT   n  6541 mean  +4.76% med  -4.49% win10  16.8% huge 2.02% ex-top3  +3.82% | bull minus not -2.49pp month-t -1.83
+  UM1 bull  n  9717 mean  +4.86% med  -4.57% win10  16.7% huge 2.22% ex-top3  +4.22%
+  UM1 NOT   n  1797 mean  +3.85% med  -4.14% win10  15.4% huge 1.78% ex-top3  +2.49% | bull minus not -0.81pp month-t -0.53
+  UM2 bull  n 10619 mean  +5.06% med  -4.51% win10  16.8% huge 2.25% ex-top3  +4.48%
+  UM2 NOT   n   895 mean  +0.47% med  -4.27% win10  12.6% huge 1.01% ex-top3  -0.17% | bull minus not +0.75pp month-t +0.41
+  ST&AT&UM1 all 3        n  4681 mean  +4.63% med  -4.60% win10  16.3% huge 2.39% ex-top3  +4.03% | vs rest -2.09pp month-t -1.78
+  any 2+ of ST/AT/UM1    n  7322 mean  +4.99% med  -4.61% win10  16.6% huge 2.27% ex-top3  +4.16% | vs rest -2.27pp month-t -1.31
+  none of ST/AT/UM1      n  1206 mean  +2.83% med  -4.25% win10  14.3% huge 1.66% ex-top3  +1.31% | vs rest +4.57pp month-t +1.00
+
+ TEST 2022+
+  all flips                 n 18809 mean  +0.21% med  -4.96% win10  13.2% huge 1.09% ex-top3  +0.05%
+  ST  bull  n 13005 mean  +0.07% med  -5.10% win10  13.1% huge 1.20% ex-top3  -0.16%
+  ST  NOT   n  5804 mean  +0.53% med  -4.59% win10  13.5% huge 0.84% ex-top3  +0.30% | bull minus not -0.76pp month-t -1.65
+  AT  bull  n  7840 mean  +0.23% med  -4.92% win10  12.6% huge 1.14% ex-top3  -0.15%
+  AT  NOT   n 10969 mean  +0.19% med  -4.99% win10  13.6% huge 1.06% ex-top3  +0.08% | bull minus not -0.36pp month-t -0.74
+  UM1 bull  n 16087 mean  +0.12% med  -5.03% win10  13.1% huge 1.12% ex-top3  -0.07%
+  UM1 NOT   n  2722 mean  +0.71% med  -4.49% win10  14.1% huge 0.92% ex-top3  +0.37% | bull minus not -0.70pp month-t -1.43
+  UM2 bull  n 17443 mean  +0.20% med  -5.00% win10  13.2% huge 1.12% ex-top3  +0.02%
+  UM2 NOT   n  1366 mean  +0.34% med  -4.38% win10  13.1% huge 0.66% ex-top3  -0.28% | bull minus not -0.05pp month-t -0.07
+  ST&AT&UM1 all 3        n  7458 mean  +0.15% med  -4.98% win10  12.6% huge 1.13% ex-top3  -0.25% | vs rest -0.40pp month-t -0.78
+  any 2+ of ST/AT/UM1    n 12457 mean  +0.06% med  -5.09% win10  13.0% huge 1.22% ex-top3  -0.18% | vs rest -0.80pp month-t -1.78
+  none of ST/AT/UM1      n  1792 mean  +0.63% med  -4.46% win10  14.3% huge 0.89% ex-top3  +0.23% | vs rest +0.65pp month-t +1.12
+
+PART 1b indicator-bear EXIT (earlier of indicator turning bear or vector bear flip), net of 30bp
+ TRAIN vector-only exit    n 11514 mean  +4.71% med  -4.49% win10  16.5% huge 2.15% ex-top3  +4.17%
+ TRAIN exit on ST  bear    n 11514 mean  +1.54% med  -1.87% win10  11.4% huge 0.65% ex-top3  +1.34%
+ TRAIN exit on AT  bear    n 11514 mean  -0.59% med  -0.73% win10   3.4% huge 0.02% ex-top3  -0.63%
+ TRAIN exit on UM1 bear    n 11514 mean  -0.43% med  -1.02% win10   5.0% huge 0.03% ex-top3  -0.48%
+ TRAIN exit on UM2 bear    n 11514 mean  +0.16% med  -2.06% win10   9.6% huge 0.25% ex-top3  +0.06%
+ TEST vector-only exit    n 18809 mean  +0.21% med  -4.96% win10  13.2% huge 1.09% ex-top3  +0.05%
+ TEST exit on ST  bear    n 18809 mean  -0.17% med  -2.42% win10   9.8% huge 0.35% ex-top3  -0.35%
+ TEST exit on AT  bear    n 18809 mean  -0.26% med  -0.67% win10   3.8% huge 0.03% ex-top3  -0.28%
+ TEST exit on UM1 bear    n 18809 mean  -0.32% med  -1.07% win10   5.0% huge 0.03% ex-top3  -0.35%
+ TEST exit on UM2 bear    n 18809 mean  -0.35% med  -2.31% win10   9.4% huge 0.14% ex-top3  -0.40%
+
+PART 1c same filter inside the frozen score top 20% (cut from report_90 train distribution)
+ TRAIN score top20 all    n  2303 mean  +9.45% med  -6.69% win10  21.8% huge 3.82% ex-top3  +8.07%
+ TRAIN score top20 & ST  bull  n  1909 mean  +9.13% med  -6.62% win10  22.1% huge 3.61% ex-top3  +7.46% | not n   394 mean +11.00% med  -6.81% win10  20.3% huge 4.82% ex-
+ TRAIN score top20 & AT  bull  n  1224 mean +10.38% med  -6.14% win10  22.4% huge 4.25% ex-top3  +8.07% | not n  1079 mean  +8.40% med  -7.22% win10  21.1% huge 3.34% ex-
+ TRAIN score top20 & UM1 bull  n  2041 mean  +9.69% med  -6.61% win10  22.4% huge 3.97% ex-top3  +8.29% | not n   262 mean  +7.62% med  -7.05% win10  16.8% huge 2.67% ex-
+ TEST score top20 all    n  3803 mean  +1.94% med  -8.07% win10  17.3% huge 2.68% ex-top3  +1.16%
+ TEST score top20 & ST  bull  n  3336 mean  +1.86% med  -8.18% win10  17.0% huge 2.73% ex-top3  +0.98% | not n   467 mean  +2.45% med  -7.10% win10  19.3% huge 2.36% ex-
+ TEST score top20 & AT  bull  n  2011 mean  +1.94% med  -7.81% win10  16.0% huge 2.49% ex-top3  +0.47% | not n  1792 mean  +1.93% med  -8.48% win10  18.7% huge 2.90% ex-
+ TEST score top20 & UM1 bull  n  3410 mean  +1.85% med  -8.16% win10  17.2% huge 2.73% ex-top3  +0.98% | not n   393 mean  +2.73% med  -7.38% win10  18.1% huge 2.29% ex-
+
+PART 2: 1H flips (close-to-close, 100bp, 60 days, ONE regime)
+ train: all n  1789 mean  -3.08% med  -3.69% win  11.1% >=10%  3.6%
+   ST  bull n  1245 mean  -2.98% med  -3.72% win  12.3% >=10%  4.2% | not n   544 mean  -3.30% med  -3.67% win   8.3% >=10%  2.2%
+   AT  bull n   508 mean  -3.17% med  -3.71% win  13.2% >=10%  3.5% | not n  1281 mean  -3.04% med  -3.68% win  10.2% >=10%  3.6%
+   UM1 bull n  1444 mean  -3.15% med  -3.86% win  11.3% >=10%  3.9% | not n   345 mean  -2.79% med  -3.10% win  10.1% >=10%  2.3%
+   UM2 bull n  1569 mean  -3.06% med  -3.82% win  11.6% >=10%  4.0% | not n   220 mean  -3.23% med  -3.12% win   7.3% >=10%  0.9%
+   all 3 n   480 mean  -3.22% med  -3.79% win  13.3% >=10%  3.8% | none n   155 mean  -3.45% med  -3.44% win   8.4% >=10%  2.6%
+ test: all n  1647 mean  -2.62% med  -3.72% win  18.1% >=10%  6.9%
+   ST  bull n  1341 mean  -2.52% med  -3.78% win  18.1% >=10%  7.4% | not n   306 mean  -3.03% med  -3.52% win  18.0% >=10%  4.9%
+   AT  bull n   751 mean  -2.75% med  -3.76% win  15.0% >=10%  6.3% | not n   896 mean  -2.51% med  -3.72% win  20.6% >=10%  7.5%
+   UM1 bull n  1468 mean  -2.48% med  -3.76% win  18.1% >=10%  7.4% | not n   179 mean  -3.78% med  -3.53% win  17.9% >=10%  2.8%
+   UM2 bull n  1562 mean  -2.56% med  -3.73% win  18.1% >=10%  7.0% | not n    85 mean  -3.74% med  -3.65% win  17.6% >=10%  5.9%
+   all 3 n   725 mean  -2.78% med  -3.78% win  14.9% >=10%  6.3% | none n   112 mean  -3.93% med  -3.69% win  17.0% >=10%  3.6%
