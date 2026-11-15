@@ -1,0 +1,28 @@
+bear flips 21392 base short mean -4.62
+
+ EXT: H predicts HIGH tercile is the better short
+  2019-21   T0 n  2731 mean   -4.2% med  -6.0% win  17% | T1 n  2710 mean   -4.5% med  -5.9% win  15% | T2 n  2715 mean   -4.0% med  -6.9% win  19% || best-minus-worst +0.2pp t +0.0
+  2022-26Q1 T0 n  4426 mean   -5.1% med  -6.0% win  16% | T1 n  4395 mean   -4.5% med  -5.7% win  16% | T2 n  4415 mean   -5.0% med  -6.9% win  21% || best-minus-worst +0.2pp t -0.3
+  POOLED    T0 n  7157 mean   -4.8% med  -6.0% win  16% | T1 n  7105 mean   -4.5% med  -5.8% win  16% | T2 n  7130 mean   -4.6% med  -6.9% win  20% || best-minus-worst +0.2pp t -0.2
+  -> no pass
+
+ LEG: H predicts HIGH tercile is the better short
+  2019-21   T0 n  2731 mean   -4.5% med  -7.1% win  20% | T1 n  2710 mean   -4.0% med  -5.7% win  15% | T2 n  2715 mean   -4.1% med  -6.2% win  17% || best-minus-worst +0.3pp t +1.1
+  2022-26Q1 T0 n  4426 mean   -5.0% med  -6.7% win  20% | T1 n  4395 mean   -4.8% med  -5.7% win  15% | T2 n  4415 mean   -4.8% med  -6.1% win  17% || best-minus-worst +0.2pp t +0.9
+  POOLED    T0 n  7157 mean   -4.8% med  -6.9% win  20% | T1 n  7105 mean   -4.5% med  -5.7% win  15% | T2 n  7130 mean   -4.5% med  -6.2% win  17% || best-minus-worst +0.3pp t +1.5
+  -> no pass
+
+ R60: H predicts LOW tercile is the better short
+  2019-21   T0 n  2731 mean   -4.6% med  -7.0% win  19% | T1 n  2710 mean   -4.2% med  -5.7% win  16% | T2 n  2715 mean   -3.8% med  -6.1% win  17% || best-minus-worst -0.9pp t -2.3
+  2022-26Q1 T0 n  4426 mean   -5.5% med  -7.0% win  18% | T1 n  4395 mean   -4.6% med  -5.8% win  16% | T2 n  4415 mean   -4.6% med  -5.8% win  18% || best-minus-worst -0.9pp t -2.8
+  POOLED    T0 n  7157 mean   -5.1% med  -7.0% win  19% | T1 n  7105 mean   -4.4% med  -5.7% win  16% | T2 n  7130 mean   -4.3% med  -5.9% win  18% || best-minus-worst -0.9pp t -3.6
+  -> no pass
+
+ ATRP: H predicts LOW tercile is the better short
+  2019-21   T0 n  2731 mean   -3.3% med  -4.7% win  14% | T1 n  2710 mean   -4.5% med  -6.6% win  16% | T2 n  2715 mean   -4.9% med  -8.9% win  22% || best-minus-worst +1.6pp t +2.7
+  2022-26Q1 T0 n  4426 mean   -3.8% med  -4.6% win  13% | T1 n  4395 mean   -4.7% med  -6.5% win  17% | T2 n  4415 mean   -6.2% med  -9.2% win  22% || best-minus-worst +2.4pp t +5.4
+  POOLED    T0 n  7157 mean   -3.6% med  -4.7% win  13% | T1 n  7105 mean   -4.6% med  -6.5% win  17% | T2 n  7130 mean   -5.7% med  -9.1% win  22% || best-minus-worst +2.1pp t +5.4
+  -> no pass
+
+COMBO high-EXT & not-low-ATRP: {'2019-21': 'n  2209 mean   -4.2% med  -7.6% win  20%', '2022-26Q1': 'n  3636 mean   -5.3% med  -7.6% win  22%'}
+COMBO low-R60 & not-low-ATRP : {'2019-21': 'n  2171 mean   -4.9% med  -7.9% win  20%', '2022-26Q1': 'n  3533 mean   -5.9% med  -7.8% win  19%'}

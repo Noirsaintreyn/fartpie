@@ -1,0 +1,25 @@
+bear flips 31167 with insider data 4942
+
+ VOL (>=1.5x flip-bar volume)
+  2019-21   FLAGGED n  3584 mean   -4.0% med  -6.3% win  21% || NOT n  8021 mean   -4.4% med  -6.2% win  16% || diff +0.4pp t -2.8
+  2022-26Q1 FLAGGED n  5741 mean   -5.4% med  -7.0% win  20% || NOT n 13821 mean   -4.6% med  -5.9% win  17% || diff -0.8pp t -2.4
+  POOLED    FLAGGED n  9325 mean   -4.9% med  -6.7% win  20% || NOT n 21842 mean   -4.5% med  -6.0% win  16% || diff -0.3pp t -3.6
+  -> no pass (flagged mean not > 0 in both eras)
+
+ EMA (ratchet + 21<55 + close<55)
+  2019-21   FLAGGED n  4130 mean   -5.3% med  -6.9% win  16% || NOT n  7475 mean   -3.6% med  -5.9% win  18% || diff -1.7pp t -3.8
+  2022-26Q1 FLAGGED n  7809 mean   -5.0% med  -6.3% win  17% || NOT n 11753 mean   -4.8% med  -5.9% win  18% || diff -0.2pp t +0.5
+  POOLED    FLAGGED n 11939 mean   -5.1% med  -6.5% win  17% || NOT n 19228 mean   -4.3% med  -5.9% win  18% || diff -0.8pp t -2.2
+  -> no pass (flagged mean not > 0 in both eras)
+
+ VOL & EMA
+  2019-21   FLAGGED n  1110 mean   -5.4% med  -7.2% win  18% || NOT n 10495 mean   -4.1% med  -6.1% win  17% || diff -1.3pp t -4.3
+  2022-26Q1 FLAGGED n  2075 mean   -5.6% med  -7.1% win  20% || NOT n 17487 mean   -4.8% med  -6.0% win  17% || diff -0.8pp t -1.1
+  POOLED    FLAGGED n  3185 mean   -5.5% med  -7.1% win  19% || NOT n 27982 mean   -4.5% med  -6.1% win  17% || diff -1.0pp t -3.4
+  -> no pass (flagged mean not > 0 in both eras)
+
+ INSIDER SALES (2025-02..2026-03 only, one regime): 
+  INS              FLAGGED n  1088 mean   -5.4% med  -6.6% win  18% || NOT n  3854 mean   -6.3% med  -6.5% win  15%
+  INS & VOL        FLAGGED n   264 mean   -6.4% med  -8.0% win  19% || NOT n  4678 mean   -6.1% med  -6.5% win  16%
+  INS & EMA        FLAGGED n   391 mean   -5.2% med  -6.9% win  20% || NOT n  4551 mean   -6.1% med  -6.5% win  16%
+  INS & VOL & EMA  FLAGGED n    84 mean   -5.4% med  -7.2% win  23% || NOT n  4858 mean   -6.1% med  -6.5% win  16%
