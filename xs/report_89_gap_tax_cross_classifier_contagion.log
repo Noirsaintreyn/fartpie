@@ -1,0 +1,28 @@
+(A) GAP TAX, all flips: next-open entry (system) vs flip-bar-close entry
+  ALL    2019-21   n 12027 gap (next open vs flip close) mean +0.20% med +0.08% | system mean +4.60% med -4.35% | close-entry mean +4.92% med -4.34% | paired +0.32pp t +2.1 | huge% sys 2.06 close 2.13
+  ALL    2022-26Q1 n 19640 gap (next open vs flip close) mean +0.02% med +0.00% | system mean +0.17% med -4.79% | close-entry mean +0.19% med -4.90% | paired +0.02pp t -0.1 | huge% sys 1.04 close 1.05
+  $1-10  2019-21   n  1556 gap (next open vs flip close) mean +0.41% med +0.11% | system mean +18.47% med -5.30% | close-entry mean +19.53% med -5.33% | paired +1.06pp t +1.4 | huge% sys 5.85 close 5.98
+  $1-10  2022-26Q1 n  3594 gap (next open vs flip close) mean +0.11% med +0.00% | system mean +2.90% med -6.22% | close-entry mean +3.03% med -6.37% | paired +0.14pp t +1.1 | huge% sys 2.59 close 2.62
+  $10+   2019-21   n 10471 gap (next open vs flip close) mean +0.17% med +0.08% | system mean +2.54% med -4.29% | close-entry mean +2.75% med -4.25% | paired +0.20pp t +1.6 | huge% sys 1.50 close 1.56
+  $10+   2022-26Q1 n 16046 gap (next open vs flip close) mean -0.00% med +0.00% | system mean -0.44% med -4.60% | close-entry mean -0.44% med -4.70% | paired +-0.01pp t -0.8 | huge% sys 0.70 close 0.70
+
+(A2) FEASIBILITY, price at 15:55 > T as a flip detector (bear/neutral days, 60d 5m):
+  flip days 437: caught 401, missed 36; false alarms 106  -> precision 79% recall 92%
+  on caught flips: 15:55 price vs next open +0.90% (gap you still eat), vs flip-day close +0.13%
+  false alarms: 15:55 price -> final close -66.05%, -> next open -66.38% (cost of acting on them)
+
+(B) TRUE vs FALSE cross classifier: n crosses 887 true share 0.445
+  VOLPACE  AUC(true flip) H1 0.570 H2 0.506  predicted high -> no pass
+  TMIN     AUC(true flip) H1 0.509 H2 0.463  predicted low -> no pass
+  GAP      AUC(true flip) H1 0.468 H2 0.545  predicted low -> no pass
+  EXT      AUC(true flip) H1 0.468 H2 0.551  predicted low -> no pass
+  PRIOR5   AUC(true flip) H1 0.610 H2 0.548  predicted none -> no pass
+  every-cross return by VOLPACE tercile (true -> next open [proxy for hold], false -> same-day close; winsorized):
+    T0 n 296 true share 42% mean -7.35% med -1.00%
+    T1 n 295 true share 43% mean -2.91% med -0.82%
+    T2 n 296 true share 48% mean -0.56% med -0.43%
+
+(C) FLIP CONTAGION: peers = other flips in same 2-digit SIC in prior 5 calendar days
+  2019-21   T0 n 3848 mean  +6.9% huge 2.6% || T2 n 3839 mean  +2.9% huge 1.9% || top-bottom -4.0pp t -1.3
+  2022-26Q1 T0 n 6288 mean  +0.8% huge 1.1% || T2 n 6265 mean  -0.8% huge 1.1% || top-bottom -1.6pp t -2.7
+  POOLED    T0 n 10136 mean  +3.1% huge 1.6% || T2 n 10104 mean  +0.6% huge 1.4% || top-bottom -2.5pp t -2.2
