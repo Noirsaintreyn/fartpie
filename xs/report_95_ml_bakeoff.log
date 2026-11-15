@@ -1,0 +1,5 @@
+test flips 18809 win10 base 0.132
+ logistic      cv-auc 0.559 train-auc 0.567 TEST AUC 0.563 | top-Q mean  +2.1% (med  -8.1) bottom-Q  -0.6% | spread  +2.8pp t +2.1 | best {'C': 0.1}
+ rbf-svm       cv-auc 0.523 train-auc 0.497 TEST AUC 0.484 | top-Q mean  -0.4% (med  -4.4) bottom-Q  +1.2% | spread  -1.6pp t -1.7 | best {'C': 0.5, 'gamma': 0.05}
+ grad-boost    cv-auc 0.551 train-auc 0.724 TEST AUC 0.517 | top-Q mean  +0.7% (med  -6.4) bottom-Q  -0.5% | spread  +1.2pp t +1.8 | best {'min_samples_leaf': 50}
+ random-forest cv-auc 0.554 train-auc 0.728 TEST AUC 0.553 | top-Q mean  +1.6% (med  -7.2) bottom-Q  -0.6% | spread  +2.2pp t +2.1 | best {'min_samples_leaf': 100}
