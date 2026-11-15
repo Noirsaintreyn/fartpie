@@ -1,0 +1,16 @@
+flips 142 select 65 judge 77 tickers 86 turnover coverage 0.06
+cost 1% SELECT: n 65 mean  +53.9% med  +9.0% ex-top3  +35.8% win 50.8% big30 36.9% huge 23.1% hold med 53d
+cost 1% JUDGE : n 77 mean   -8.7% med -15.1% ex-top3  -14.7% win 16.9% big30  7.8% huge  1.3% hold med 16d
+cost 3% SELECT: n 65 mean  +51.9% med  +7.0% ex-top3  +33.8% win 50.8% big30 36.9% huge 23.1% hold med 53d
+cost 3% JUDGE : n 77 mean  -10.7% med -17.1% ex-top3  -16.7% win 16.9% big30  7.8% huge  1.3% hold med 16d
+
+scores (cut from SELECT half)
+  OS         | SEL AUC big 0.579 huge 0.539 top20 n 13: mean  +19.6% med  -9.9% (rest  +62.5% / +11.8%) catch big 16.7% huge  6.7% | JDG AUC big 0.846 huge 0.349 top20 n 20: mean   -4.9% med -16.7% (rest  -10.1% / -15.0%) catch big 83.3% huge  0.0%
+  OSa        | SEL AUC big 0.578 huge 0.550 top20 n 13: mean  +37.9% med  -9.9% (rest  +57.9% / +11.8%) catch big 16.7% huge 13.3% | JDG AUC big 0.846 huge 0.349 top20 n 20: mean   -4.9% med -16.7% (rest  -10.1% / -15.0%) catch big 83.3% huge  0.0%
+  ATRP       | SEL AUC big 0.615 huge 0.601 top20 n 13: mean  +87.4% med +14.5% (rest  +45.5% /  -5.7%) catch big 25.0% huge 26.7% | JDG AUC big 0.775 huge 0.974 top20 n 34: mean   -3.0% med -16.7% (rest  -13.3% / -15.0%) catch big 83.3% huge 100.0%
+  EXT        | SEL AUC big 0.558 huge 0.548 top20 n 13: mean  +17.5% med -12.7% (rest  +63.0% / +14.8%) catch big 12.5% huge 13.3% | JDG AUC big 0.812 huge 0.224 top20 n 15: mean   +3.0% med -11.5% (rest  -11.6% / -16.1%) catch big 83.3% huge  0.0%
+  LTURN      | SEL AUC big 0.688 huge 0.467 top20 n  2: mean +323.9% med +323.9% (rest  +88.5% / +10.0%) catch big 50.0% huge 33.3% | JDG n0 top20 n0 mean   +nan% vs rest   +nan% (one-class, AUC n/a)
+  VOLX       | SEL AUC big 0.570 huge 0.437 top20 n 13: mean  +59.5% med +49.7% (rest  +52.5% /  -5.4%) catch big 29.2% huge 20.0% | JDG AUC big 0.380 huge 1.000 top20 n 27: mean   -2.7% med -15.1% (rest  -12.0% / -15.5%) catch big 33.3% huge 100.0%
+  F2         | SEL AUC big 0.569 huge 0.461 top20 n 13: mean  +41.3% med +26.9% (rest  +57.1% /  -5.7%) catch big 25.0% huge 20.0% | JDG AUC big 0.507 huge 0.947 top20 n 28: mean   -4.7% med -20.0% (rest  -11.0% / -14.8%) catch big 50.0% huge 100.0%
+  F11        | SEL AUC big 0.543 huge 0.456 top20 n 13: mean  +32.1% med +14.5% (rest  +59.4% /  -5.4%) catch big 25.0% huge  6.7% | JDG AUC big 0.606 huge 1.000 top20 n 20: mean   -2.7% med -25.7% (rest  -10.9% / -14.8%) catch big 50.0% huge 100.0%
+  RES        | SEL AUC big 0.557 huge 0.476 top20 n 13: mean  +54.7% med +48.7% (rest  +53.7% /  -5.4%) catch big 29.2% huge 20.0% | JDG AUC big 0.585 huge 1.000 top20 n 26: mean   -4.9% med -19.2% (rest  -10.7% / -15.0%) catch big 33.3% huge 100.0%

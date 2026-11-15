@@ -1,0 +1,23 @@
+sub-$1 flips 36 train 11 test 25 tickers 21 | shares coverage 0.81
+cost 1bp TRAIN: n 11 mean +469.3% med -13.0% win 45.5% big30 45.5% huge100 36.4% hold med 91d
+cost 1bp TEST: n 25 mean +112.0% med +25.3% win 56.0% big30 44.0% huge100 28.0% hold med 56d
+cost 3bp TRAIN: n 11 mean +467.3% med -15.0% win 45.5% big30 45.5% huge100 36.4% hold med 91d
+cost 3bp TEST: n 25 mean +110.0% med +23.3% win 56.0% big30 44.0% huge100 28.0% hold med 56d
+
+(1) $1-5 frozen OS on sub-$1
+  OS ($1-5 ECDFs)            | TR AUC big 0.700 huge 0.643 top20 ( 27%): mean +1195.6% med +308.8% catch big 40.0% huge 50.0% | TE AUC big 0.740 huge 0.683 top20 ( 12%): mean +348.5% med +94.9% catch big 18.2% huge 14.3%
+  single ATRP                | TR AUC big 0.600 huge 0.643 top20 ( 27%): mean +1191.4% med +308.8% catch big 40.0% huge 50.0% | TE AUC big 0.721 huge 0.690 top20 ( 12%): mean +144.4% med +129.0% catch big 18.2% huge 28.6%
+  single EXT                 | TR AUC big 0.733 huge 0.643 top20 ( 27%): mean +124.6% med +90.2% catch big 40.0% huge 25.0% | TE AUC big 0.708 huge 0.595 top20 (  8%): mean  +20.4% med +20.4% catch big  9.1% huge  0.0%
+  single LTURN               | TR AUC big 0.600 huge 0.500 top20 ( 22%): mean +1632.7% med +1632.7% catch big 25.0% huge 33.3% | TE AUC big 0.576 huge 0.560 top20 ( 15%): mean +112.4% med +56.5% catch big 22.2% huge 20.0%
+  single VOLX                | TR AUC big 0.467 huge 0.357 top20 ( 27%): mean +1118.5% med +90.2% catch big 40.0% huge 25.0% | TE AUC big 0.565 huge 0.484 top20 ( 28%): mean  +58.5% med +13.0% catch big 27.3% huge 28.6%
+  single F2                  | TR AUC big 0.333 huge 0.286 top20 ( 27%): mean  -28.2% med -25.3% catch big  0.0% huge  0.0% | TE AUC big 0.448 huge 0.484 top20 ( 12%): mean   -9.8% med -31.9% catch big  9.1% huge  0.0%
+  single F11                 | TR AUC big 0.433 huge 0.500 top20 ( 27%): mean +297.8% med -21.4% catch big 20.0% huge 25.0% | TE AUC big 0.610 huge 0.603 top20 ( 12%): mean  +12.5% med +13.0% catch big  9.1% huge  0.0%
+  single RES                 | TR AUC big 0.300 huge 0.286 top20 ( 27%): mean  -28.2% med -25.3% catch big  0.0% huge  0.0% | TE AUC big 0.578 huge 0.516 top20 ( 20%): mean  +82.4% med +56.5% catch big 27.3% huge 28.6%
+  single RET                 | TR AUC big 0.467 huge 0.429 top20 ( 27%): mean  -20.4% med -21.2% catch big  0.0% huge  0.0% | TE AUC big 0.474 huge 0.246 top20 ( 28%): mean  +44.6% med +48.4% catch big 36.4% huge 14.3%
+  single LDV                 | TR AUC big 0.400 huge 0.357 top20 ( 27%): mean  +81.4% med -27.0% catch big 20.0% huge 25.0% | TE AUC big 0.487 huge 0.667 top20 ( 16%): mean +184.3% med +78.6% catch big 18.2% huge 28.6%
+  single LPX                 | TR AUC big 0.283 huge 0.196 top20 ( 27%): mean  -20.4% med -21.2% catch big  0.0% huge  0.0% | TE AUC big 0.636 huge 0.437 top20 ( 12%): mean  +66.6% med +56.5% catch big 27.3% huge  0.0%
+  single AD5                 | TR AUC big 0.300 huge 0.214 top20 ( 27%): mean  -28.2% med -25.3% catch big  0.0% huge  0.0% | TE AUC big 0.461 huge 0.413 top20 ( 16%): mean +155.7% med +22.7% catch big 18.2% huge 14.3%
+BIG coefs {'ATRP': np.float64(0.08), 'EXT': np.float64(0.18), 'LTURN': np.float64(0.07), 'LDV': np.float64(-0.07), 'LPX': np.float64(-0.18), 'VOLX': np.float64(-0.02), 'F2': np.float64(-0.12), 'F11': np.float64(-0.05), 'RES': np.float64(-0.15), 'RET': np.float64(-0.03), 'AD5': np.float64(-0.15)}
+  own ridge BIG              | TR AUC big 1.000 huge 1.000 top20 ( 27%): mean +638.2% med +653.1% catch big 60.0% huge 75.0% | TE AUC big 0.604 huge 0.611 top20 ( 20%): mean +267.2% med +66.6% catch big 27.3% huge 28.6%
+HUGE coefs {'ATRP': np.float64(0.11), 'EXT': np.float64(0.1), 'LTURN': np.float64(0.01), 'LDV': np.float64(-0.1), 'LPX': np.float64(-0.23), 'VOLX': np.float64(-0.09), 'F2': np.float64(-0.15), 'F11': np.float64(0.01), 'RES': np.float64(-0.14), 'RET': np.float64(-0.06), 'AD5': np.float64(-0.2)}
+  own ridge HUGE             | TR AUC big 0.867 huge 1.000 top20 ( 27%): mean +638.2% med +653.1% catch big 60.0% huge 75.0% | TE AUC big 0.552 huge 0.587 top20 ( 20%): mean +267.2% med +66.6% catch big 27.3% huge 28.6%
