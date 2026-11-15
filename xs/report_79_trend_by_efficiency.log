@@ -1,0 +1,11 @@
+PART A: median variance ratio by liquidity tercile (VR>1 trending, <1 mean-reverting); n tickers in brackets
+  2019-21: LOW liq: VR5 0.92 VR20 0.86 VR60 0.79 [477, med $vol 3.9M] | MID: VR5 0.92 VR20 0.87 VR60 0.76 [476, med $vol 14.9M] | HIGH liq: VR5 0.97 VR20 0.96 VR60 0.85 [476, med $vol 49.1M]
+  2022-26: LOW liq: VR5 0.97 VR20 0.90 VR60 0.77 [552, med $vol 5.2M] | MID: VR5 0.96 VR20 0.88 VR60 0.76 [552, med $vol 20.6M] | HIGH liq: VR5 0.96 VR20 0.87 VR60 0.75 [552, med $vol 63.4M]
+
+PART B: flips by liquidity tercile (LDV at flip; terciles within era)
+  2019-21: LOW liq: n 4002 mean +6.62% med -4.46 HUGE/100 2.72 medhold 23d >60d 30% | MID: n 4001 mean +4.06% med -4.36 HUGE/100 1.75 medhold 20d >60d 28% | HIGH liq: n 4002 mean +3.19% med -4.21 HUGE/100 1.70 medhold 20d >60d 26%
+  2022-26Q1: LOW liq: n 6603 mean +0.84% med -5.07 HUGE/100 1.54 medhold 21d >60d 25% | MID: n 6603 mean +0.07% med -4.72 HUGE/100 0.94 medhold 20d >60d 24% | HIGH liq: n 6603 mean -0.34% med -4.62 HUGE/100 0.68 medhold 19d >60d 23%
+
+PART C: start or continuation? flips after a falling vs rising 20 days
+  2019-21: spearman(R20 before, net return after) -0.109 | lowest-third R20 mean +3.01% HUGE/100 1.27 | highest-third +8.18% HUGE/100 3.65
+  2022-26Q1: spearman(R20 before, net return after) -0.150 | lowest-third R20 mean +0.30% HUGE/100 0.73 | highest-third +0.33% HUGE/100 1.70
