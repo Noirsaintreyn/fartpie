@@ -1,0 +1,62 @@
+
+#### ALL flips
+  2020-21 LB_tk       n  7064 AUC big 0.377 huge 0.330 IC -0.019 | hiT   +3.2% med  -5.2 loT  +13.9% med  -5.3 t -0.52
+  2020-21 LB_sec      n  7471 AUC big 0.340 huge 0.306 IC -0.017 | hiT   -0.6% med  -5.0 loT  +14.3% med  -5.4 t -0.11
+  2020-21 LB_cell     n  7483 AUC big 0.359 huge 0.287 IC -0.006 | hiT   +1.2% med  -5.2 loT  +18.1% med  -5.6 t -0.96
+  2020-21 LB_secpx    n   308 AUC big 0.346 huge 0.313 IC -0.100 | hiT   +4.3% med  -6.0 loT  +49.5% med  -2.0 t +0.08
+  2020-21 LB_brd      n  7483 AUC big 0.320 huge 0.261 IC -0.117 | hiT   -1.5% med  -5.3 loT  +18.4% med  -3.9 t +0.49
+  2020-21 LBb_tk      n  7064 AUC big 0.448 huge 0.436 IC -0.063 | hiT   +6.7% med  -5.0 loT   +8.8% med  -4.7 t +0.88
+  2020-21 LBb_sec     n  7471 AUC big 0.389 huge 0.376 IC -0.013 | hiT   +1.9% med  -5.0 loT  +11.1% med  -5.4 t -0.74
+  2020-21 LBb_cell    n  7483 AUC big 0.429 huge 0.415 IC -0.030 | hiT   +5.5% med  -5.1 loT   +9.3% med  -5.0 t +0.42
+  2020-21 KN_ret      n  7483 AUC big 0.320 huge 0.259 IC -0.073 | hiT   -0.8% med  -5.7 loT  +19.0% med  -5.5 t -2.67
+  2020-21 KN_big      n  7483 AUC big 0.543 huge 0.581 IC -0.162 | hiT   +8.6% med  -6.7 loT   +3.3% med  -4.2 t +1.63
+  2020-21 m_BIG_0.5   n  7483 AUC big 0.745 huge 0.833 IC -0.140 | hiT  +20.7% med  -7.5 loT   -1.8% med  -4.2 t +2.58
+  2020-21 lr          n  7483 AUC big 0.603 huge 0.645 IC -0.142 | hiT  +12.1% med  -6.7 loT   +2.9% med  -4.2 t +2.65
+  2020-21 OS          n  7483 AUC big 0.696 huge 0.791 IC -0.165 | hiT  +18.5% med  -7.4 loT   -0.3% med  -4.1 t +2.29
+  TEST 2022+ LB_tk       n 18280 AUC big 0.484 huge 0.405 IC +0.041 | hiT   -0.2% med  -5.5 loT   +0.4% med  -5.6 t -0.70
+  TEST 2022+ LB_sec      n 18727 AUC big 0.507 huge 0.479 IC +0.028 | hiT   +0.5% med  -5.3 loT   -0.6% med  -5.7 t +1.55
+  TEST 2022+ LB_cell     n 18732 AUC big 0.483 huge 0.463 IC -0.005 | hiT   -0.5% med  -5.3 loT   +0.4% med  -5.4 t +0.53
+  TEST 2022+ LB_secpx    n  1268 AUC big 0.434 huge 0.435 IC -0.053 | hiT   +2.6% med  -7.9 loT   +8.1% med  -6.7 t -1.86
+  TEST 2022+ LB_brd      n 18732 AUC big 0.468 huge 0.428 IC -0.008 | hiT   -1.0% med  -5.3 loT   +0.8% med  -5.2 t +0.58
+  TEST 2022+ LBb_tk      n 18280 AUC big 0.544 huge 0.535 IC -0.081 | hiT   -0.0% med  -6.1 loT   -0.2% med  -4.9 t +0.02
+  TEST 2022+ LBb_sec     n 18727 AUC big 0.532 huge 0.564 IC -0.051 | hiT   +0.5% med  -5.5 loT   -0.6% med  -5.0 t +2.00
+  TEST 2022+ LBb_cell    n 18732 AUC big 0.515 huge 0.549 IC -0.069 | hiT   -0.2% med  -5.6 loT   +0.0% med  -5.0 t +2.15
+  TEST 2022+ KN_ret      n 18732 AUC big 0.583 huge 0.651 IC -0.164 | hiT   +0.4% med  -7.2 loT   -0.5% med  -4.7 t +1.74
+  TEST 2022+ KN_big      n 18732 AUC big 0.637 huge 0.736 IC -0.298 | hiT   +0.8% med  -8.2 loT   -0.5% med  -4.0 t +1.42
+  TEST 2022+ m_BIG_0.5   n 18732 AUC big 0.656 huge 0.777 IC -0.324 | hiT   +1.0% med  -8.7 loT   -0.6% med  -3.9 t +1.07
+  TEST 2022+ lr          n 18732 AUC big 0.627 huge 0.731 IC -0.214 | hiT   +1.0% med  -7.4 loT   -1.0% med  -4.2 t +2.02
+  TEST 2022+ OS          n 18732 AUC big 0.641 huge 0.764 IC -0.291 | hiT   +1.1% med  -8.2 loT   -0.5% med  -4.0 t +0.83
+
+#### px<5
+  2020-21 LB_tk       n   331 AUC big 0.349 huge 0.341 IC -0.040 | hiT  +33.3% med  -5.3 loT  +82.4% med  -4.3 t -1.20
+  2020-21 LB_sec      n   362 AUC big 0.409 huge 0.374 IC -0.050 | hiT   +5.4% med  -6.0 loT  +63.3% med  -4.3 t -0.64
+  2020-21 LB_cell     n   362 AUC big 0.414 huge 0.347 IC -0.026 | hiT  +22.6% med  -5.3 loT +115.5% med  -6.4 t +nan
+  2020-21 LB_secpx    n   308 AUC big 0.346 huge 0.313 IC -0.100 | hiT   +4.3% med  -6.0 loT  +49.5% med  -2.0 t +0.08
+  2020-21 LB_brd      n   362 AUC big 0.292 huge 0.238 IC -0.272 | hiT   +1.5% med  -6.7 loT  +93.6% med  +1.0 t +0.23
+  2020-21 LBb_tk      n   331 AUC big 0.424 huge 0.448 IC -0.118 | hiT  +44.1% med  -4.7 loT  +46.3% med  -4.2 t +0.31
+  2020-21 LBb_sec     n   362 AUC big 0.452 huge 0.416 IC -0.070 | hiT  +47.9% med  -5.6 loT  +58.1% med  -4.0 t +0.90
+  2020-21 LBb_cell    n   362 AUC big 0.488 huge 0.431 IC -0.013 | hiT  +23.8% med  -5.0 loT  +91.6% med  -4.3 t +nan
+  2020-21 KN_ret      n   362 AUC big 0.362 huge 0.348 IC -0.007 | hiT  +13.4% med  -5.3 loT  +98.7% med  -8.4 t -1.18
+  2020-21 KN_big      n   362 AUC big 0.565 huge 0.575 IC -0.015 | hiT  +53.7% med  -4.7 loT  +14.8% med  -4.5 t +1.60
+  2020-21 m_BIG_0.5   n   362 AUC big 0.709 huge 0.699 IC -0.005 | hiT  +86.2% med  -1.4 loT   +4.3% med  -4.4 t +2.34
+  2020-21 lr          n   362 AUC big 0.549 huge 0.510 IC -0.176 | hiT  +48.5% med  -9.0 loT  +68.7% med  -4.2 t -0.26
+  2020-21 OS          n   362 AUC big 0.665 huge 0.684 IC -0.081 | hiT  +79.7% med  -8.1 loT   +6.1% med  -4.4 t +2.31
+  TEST 2022+ LB_tk       n  1291 AUC big 0.421 huge 0.432 IC +0.093 | hiT   +4.9% med  -6.4 loT  +14.3% med  -9.1 t -1.60
+  TEST 2022+ LB_sec      n  1351 AUC big 0.426 huge 0.467 IC -0.020 | hiT   +9.5% med  -7.7 loT   +9.0% med  -7.2 t +0.43
+  TEST 2022+ LB_cell     n  1353 AUC big 0.518 huge 0.462 IC +0.011 | hiT   +6.6% med  -6.4 loT   +9.2% med  -7.5 t -1.26
+  TEST 2022+ LB_secpx    n  1268 AUC big 0.434 huge 0.435 IC -0.053 | hiT   +2.6% med  -7.9 loT   +8.1% med  -6.7 t -1.86
+  TEST 2022+ LB_brd      n  1353 AUC big 0.462 huge 0.497 IC -0.011 | hiT   +5.6% med  -7.3 loT   +6.8% med  -7.0 t -1.93
+  TEST 2022+ LBb_tk      n  1291 AUC big 0.501 huge 0.502 IC -0.029 | hiT   +5.9% med  -7.7 loT   +9.9% med  -6.5 t -0.87
+  TEST 2022+ LBb_sec     n  1351 AUC big 0.495 huge 0.564 IC -0.065 | hiT   +9.8% med  -8.0 loT   +4.1% med  -6.6 t +1.52
+  TEST 2022+ LBb_cell    n  1353 AUC big 0.538 huge 0.502 IC -0.033 | hiT   +6.4% med  -7.0 loT   +7.8% med  -7.3 t -0.69
+  TEST 2022+ KN_ret      n  1353 AUC big 0.533 huge 0.573 IC -0.183 | hiT   +8.1% med  -9.7 loT   +2.3% med  -5.2 t +1.34
+  TEST 2022+ KN_big      n  1353 AUC big 0.606 huge 0.663 IC -0.245 | hiT  +12.3% med -10.5 loT   +0.9% med  -5.3 t +2.55
+  TEST 2022+ m_BIG_0.5   n  1353 AUC big 0.617 huge 0.690 IC -0.265 | hiT  +15.3% med -11.1 loT   +1.6% med  -4.8 t +2.07
+  TEST 2022+ lr          n  1353 AUC big 0.615 huge 0.684 IC -0.183 | hiT  +15.1% med -10.6 loT   +2.9% med  -5.5 t +1.84
+  TEST 2022+ OS          n  1353 AUC big 0.623 huge 0.717 IC -0.238 | hiT  +14.4% med -10.8 loT   +1.5% med  -5.1 t +2.09
+BLEND ALL   frozen m_BIG   AUC big 0.656 huge 0.777 | top20 mean   +1.8% med -10.0% catch big 37.5% huge 60.6%
+BLEND ALL   KNN P(BIG)     AUC big 0.637 huge 0.736 | top20 mean   +1.5% med  -9.5% catch big 39.0% huge 56.2%
+BLEND ALL   blend 50/50    AUC big 0.652 huge 0.766 | top20 mean   +1.6% med -10.1% catch big 38.0% huge 57.1%
+BLEND px<5  frozen m_BIG   AUC big 0.617 huge 0.690 | top20 mean  +16.0% med -12.0% catch big 28.5% huge 34.5%
+BLEND px<5  KNN P(BIG)     AUC big 0.606 huge 0.663 | top20 mean  +12.8% med -11.4% catch big 26.7% huge 32.8%
+BLEND px<5  blend 50/50    AUC big 0.618 huge 0.691 | top20 mean  +16.5% med -11.4% catch big 29.1% huge 37.9%
