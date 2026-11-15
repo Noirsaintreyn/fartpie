@@ -1,0 +1,18 @@
+ALL flips 25519
+  big  VCVd  AUC 0.516 | 0.522
+  big  VSK   AUC 0.470 | 0.475
+  big  RNG   AUC 0.524 | 0.531
+  huge VCVd  AUC 0.507 | 0.526
+  huge VSK   AUC 0.478 | 0.477
+  huge RNG   AUC 0.483 | 0.540
+px<5 1504
+  big  VCVd  AUC 0.514 | 0.490
+  big  VSK   AUC 0.510 | 0.535
+  big  RNG   AUC 0.535 | 0.604  <== same side
+  huge VCVd  AUC 0.467 | 0.496
+  huge VSK   AUC 0.492 | 0.566
+  huge RNG   AUC 0.489 | 0.533
+add-on ALL big: OS 0.644  +VCVd 0.645  +VSK 0.647  +RNG 0.646  +all3 0.650
+add-on ALL huge: OS 0.771  +VCVd 0.772  +VSK 0.773  +RNG 0.771  +all3 0.773
+add-on px<5 big: OS 0.633  +VCVd 0.629  +VSK 0.631  +RNG 0.642  +all3 0.638
+add-on px<5 huge: OS 0.718  +VCVd 0.716  +VSK 0.710  +RNG 0.715  +all3 0.711
