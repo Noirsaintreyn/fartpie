@@ -1,0 +1,23 @@
+flips with SVR data: 30383 of 31814 | first flip date with data 2019-01-02
+
+######## ALL FLIPS
+  20-session SVR rank            2019-21   base +4.63% HUGE/100 2.00 | LOW  n 3544 mean  +4.42% med -4.17 HUGE/100 1.58 lift 0.79 ex3  +3.50 | MID n 3675 mean  +5.70% med -4.28 HUGE/100 2.39 lift 1.20 ex3  +4.16 | HIGH n 3944 mean  +3.82% med -4.40 HUGE/100 2.00 lift 1.00 ex3  +3.28
+  20-session SVR rank            2022-26Q1 base +0.20% HUGE/100 1.05 | LOW  n 5901 mean  +0.40% med -4.92 HUGE/100 1.34 lift 1.28 ex3  +0.16 | MID n 6485 mean  +0.43% med -4.82 HUGE/100 1.17 lift 1.12 ex3  -0.03 | HIGH n 6834 mean  -0.17% med -4.58 HUGE/100 0.67 lift 0.64 ex3  -0.31
+  flip-bar SVR rank              2019-21   base +4.63% HUGE/100 2.00 | LOW  n 3028 mean  +5.99% med -4.09 HUGE/100 1.98 lift 0.99 ex3  +4.15 | MID n 3849 mean  +5.54% med -4.33 HUGE/100 2.39 lift 1.20 ex3  +4.68 | HIGH n 4286 mean  +2.84% med -4.40 HUGE/100 1.66 lift 0.83 ex3  +2.38
+  flip-bar SVR rank              2022-26Q1 base +0.20% HUGE/100 1.05 | LOW  n 5507 mean  +0.31% med -4.99 HUGE/100 1.33 lift 1.27 ex3  +0.09 | MID n 6437 mean  +0.27% med -4.83 HUGE/100 1.07 lift 1.02 ex3  -0.20 | HIGH n 7274 mean  +0.07% med -4.54 HUGE/100 0.81 lift 0.78 ex3  -0.10
+  SVR change rank (5d minus 20d) 2019-21   base +4.63% HUGE/100 2.00 | LOW  n 3531 mean  +6.15% med -4.15 HUGE/100 2.24 lift 1.12 ex3  +4.49 | MID n 3743 mean  +5.68% med -4.43 HUGE/100 2.35 lift 1.18 ex3  +4.83 | HIGH n 3889 mean  +2.23% med -4.33 HUGE/100 1.44 lift 0.72 ex3  +1.86
+  SVR change rank (5d minus 20d) 2022-26Q1 base +0.20% HUGE/100 1.05 | LOW  n 5815 mean  +0.23% med -4.74 HUGE/100 1.00 lift 0.95 ex3  +0.01 | MID n 6621 mean  +0.31% med -4.94 HUGE/100 1.24 lift 1.18 ex3  -0.13 | HIGH n 6781 mean  +0.08% med -4.63 HUGE/100 0.90 lift 0.86 ex3  -0.11
+  VERDICT: none passes
+
+######## SCREENER RULE (BV>=1.5)
+  20-session SVR rank            2019-21   base +7.46% HUGE/100 2.73 | LOW  n 996 mean  +7.10% med -4.66 HUGE/100 2.31 lift 0.85 ex3  +4.56 | MID n 995 mean  +9.51% med -5.01 HUGE/100 3.02 lift 1.11 ex3  +4.02 | HIGH n 1053 mean  +5.85% med -5.80 HUGE/100 2.85 lift 1.04 ex3  +3.82
+  20-session SVR rank            2022-26Q1 base +1.02% HUGE/100 1.79 | LOW  n 1842 mean  +1.21% med -5.96 HUGE/100 2.50 lift 1.40 ex3  +0.65 | MID n 1920 mean  +1.87% med -5.95 HUGE/100 1.72 lift 0.96 ex3  +0.33 | HIGH n 1825 mean  -0.07% med -5.70 HUGE/100 1.15 lift 0.64 ex3  -0.48
+  flip-bar SVR rank              2019-21   base +7.46% HUGE/100 2.73 | LOW  n 955 mean +11.54% med -4.38 HUGE/100 2.93 lift 1.08 ex3  +5.90 | MID n 990 mean  +7.12% med -5.47 HUGE/100 3.23 lift 1.19 ex3  +4.25 | HIGH n 1099 mean  +4.21% med -5.43 HUGE/100 2.09 lift 0.77 ex3  +2.48
+  flip-bar SVR rank              2022-26Q1 base +1.02% HUGE/100 1.79 | LOW  n 2004 mean  +0.87% med -6.07 HUGE/100 2.05 lift 1.14 ex3  +0.33 | MID n 1806 mean  +1.38% med -6.50 HUGE/100 1.83 lift 1.02 ex3  -0.26 | HIGH n 1777 mean  +0.82% med -5.27 HUGE/100 1.46 lift 0.82 ex3  +0.26
+  SVR change rank (5d minus 20d) 2019-21   base +7.46% HUGE/100 2.73 | LOW  n 932 mean +10.08% med -4.72 HUGE/100 2.90 lift 1.06 ex3  +4.34 | MID n 1116 mean +11.05% med -5.26 HUGE/100 4.21 lift 1.54 ex3  +8.19 | HIGH n 996 mean  +0.98% med -5.18 HUGE/100 0.90 lift 0.33 ex3  +0.24
+  SVR change rank (5d minus 20d) 2022-26Q1 base +1.02% HUGE/100 1.79 | LOW  n 1838 mean  +0.78% med -5.85 HUGE/100 1.74 lift 0.97 ex3  +0.08 | MID n 2102 mean  +1.09% med -6.24 HUGE/100 1.90 lift 1.06 ex3  -0.23 | HIGH n 1647 mean  +1.19% med -5.48 HUGE/100 1.70 lift 0.95 ex3  +0.64
+  VERDICT: none passes
+
+LIVE RULE CHECK: 20-session SVR level <= 53% (screener flag) vs above, screener-rule flips
+  2019-21: <=53% n 2248 mean +7.94% HUGE/100 2.58 | >53% n 796 mean +6.09% HUGE/100 3.14
+  2022-26Q1: <=53% n 3345 mean +1.50% HUGE/100 2.24 | >53% n 2242 mean +0.31% HUGE/100 1.12

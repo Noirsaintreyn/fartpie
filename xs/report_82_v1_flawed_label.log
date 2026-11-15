@@ -1,0 +1,37 @@
+legs 31814 | MA 80th pct (train) 17.1 ATR units (median MA 8.2) | BIGM rate train 20.0% test 15.3% | mean net of BIGM legs +37.0% vs others -5.4% (the label is hindsight: BIGM legs are not necessarily captured)
+
+PART 1: univariate AUC for BIGM (0.5 = nothing; sign must agree train/test)
+  feature    train   test  agree
+  ATRP       0.622  0.565  yes
+  STOPATR    0.575  0.598  yes
+  LDV        0.457  0.461  yes
+  LPX        0.437  0.447  yes
+  BV         0.569  0.578  yes
+  L          0.720  0.674  yes
+  LA         0.709  0.681  yes
+  dte        0.646  0.611  yes
+  R20        0.653  0.627  yes
+  R120       0.473  0.504  
+  DD52       0.395  0.464  yes
+  POS52      0.448  0.516  
+  PLR        0.466  0.496  
+  NFL        0.390  0.415  yes
+  DSL        0.643  0.615  yes
+  ATREXP     0.494  0.453  
+  BREADTH    0.497  0.504  
+  NI         0.503  0.501  
+
+PART 2/3: trained on 2019-21, selection of the top 20% of 2022-26Q1 flips by each score
+  test n 19809 | base: net mean +0.19% med -4.79 | HUGE 209 | BIGM rate 15.3%
+  logistic (16 features)     AUC 0.699 | top20%: net mean  +1.95% med -7.36 | HUGE recall 50.2% | BIGM hit 33.4% | losers 75%
+  boosting                   AUC 0.684 | top20%: net mean  +1.72% med -7.60 | HUGE recall 48.8% | BIGM hit 32.3% | losers 75%
+  single: ATRP               AUC 0.565 | top20%: net mean  +2.37% med -9.42 | HUGE recall 64.6% | BIGM hit 21.5% | losers 77%
+  single: BV                 AUC 0.578 | top20%: net mean  +0.63% med -6.36 | HUGE recall 39.7% | BIGM hit 22.0% | losers 75%
+  single: L                  AUC 0.674 | top20%: net mean  +1.19% med -7.88 | HUGE recall 50.2% | BIGM hit 31.1% | losers 77%
+  single: LA                 AUC 0.681 | top20%: net mean  +0.94% med -5.55 | HUGE recall 34.9% | BIGM hit 32.4% | losers 77%
+  single: LDV (low=good)     AUC 0.539 | top20%: net mean  +1.54% med -5.38 | HUGE recall 38.3% | BIGM hit 18.2% | losers 78%
+  single: R20                AUC 0.627 | top20%: net mean  +0.87% med -7.25 | HUGE recall 41.6% | BIGM hit 26.1% | losers 77%
+  single: NFL                AUC 0.415 | top20%: net mean  +0.65% med -4.35 | HUGE recall 24.4% | BIGM hit 12.0% | losers 76%
+  random                     AUC nan | top20%: net mean  +0.06% med -4.74 | HUGE recall 23.4% | BIGM hit 15.4% | losers 77%
+
+  logistic standardized coefficients (train): DD52 -0.49, ATREXP -0.18, BREADTH -0.18, DSL -0.17, LDV -0.11, dte -0.09, ATRP +0.13, STOPATR +0.21, POS52 +0.24, R120 +0.25, LA +1.18
