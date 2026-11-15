@@ -1,0 +1,16 @@
+
+######## ALL FLIPS
+  L: already off the trough  2019-21  : lowes   0.07 n 4002 mean  +0.58% med -3.35 HUGE/100 0.50 | middl   0.15 n 4001 mean  +4.44% med -4.72 HUGE/100 1.70 | highe   0.35 n 4002 mean  +8.85% med -6.05 HUGE/100 3.97
+  L: already off the trough  2022-26Q1: lowes   0.07 n 6603 mean  +0.08% med -3.62 HUGE/100 0.30 | middl   0.15 n 6603 mean  -0.21% med -4.93 HUGE/100 0.88 | highe   0.31 n 6603 mean  +0.69% med -6.87 HUGE/100 1.98
+  L in ATR% units            2019-21  : lowes   2.36 n 4002 mean  +4.36% med -3.86 HUGE/100 1.65 | middl   4.48 n 4001 mean  +4.31% med -4.30 HUGE/100 1.90 | highe   8.69 n 4002 mean  +5.21% med -4.92 HUGE/100 2.62
+  L in ATR% units            2022-26Q1: lowes   2.40 n 6603 mean  +0.50% med -4.29 HUGE/100 0.85 | middl   4.57 n 6603 mean  -0.10% med -4.76 HUGE/100 0.95 | highe   7.79 n 6603 mean  +0.17% med -5.40 HUGE/100 1.36
+  days since trough          2019-21  : lowes   4.00 n 4002 mean  +4.58% med -4.09 HUGE/100 2.00 | middl  11.00 n 4001 mean  +5.64% med -4.09 HUGE/100 1.97 | highe  33.00 n 4002 mean  +3.67% med -4.78 HUGE/100 2.20
+  days since trough          2022-26Q1: lowes   4.00 n 6603 mean  +0.70% med -4.57 HUGE/100 1.01 | middl  11.00 n 6603 mean  -0.13% med -4.80 HUGE/100 1.01 | highe  31.00 n 6603 mean  -0.00% med -4.96 HUGE/100 1.14
+
+######## SCREENER RULE BV>=1.5
+  L: already off the trough  2019-21  : lowes   0.09 n 1099 mean  +0.38% med -4.20 HUGE/100 0.55 | middl   0.20 n 1098 mean  +8.00% med -5.65 HUGE/100 1.73 | highe   0.43 n 1099 mean +12.72% med -7.15 HUGE/100 5.64
+  L: already off the trough  2022-26Q1: lowes   0.10 n 1919 mean  +0.43% med -4.23 HUGE/100 0.68 | middl   0.20 n 1919 mean  +0.56% med -6.40 HUGE/100 1.56 | highe   0.41 n 1919 mean  +1.86% med -9.09 HUGE/100 3.13
+  L in ATR% units            2019-21  : lowes   3.04 n 1099 mean  +7.66% med -4.61 HUGE/100 2.00 | middl   5.49 n 1098 mean  +4.42% med -5.00 HUGE/100 2.28 | highe   9.52 n 1099 mean  +9.02% med -6.05 HUGE/100 3.64
+  L in ATR% units            2022-26Q1: lowes   3.08 n 1919 mean  +1.38% med -4.99 HUGE/100 1.67 | middl   5.44 n 1919 mean  -0.06% med -6.07 HUGE/100 1.35 | highe   8.78 n 1919 mean  +1.53% med -6.87 HUGE/100 2.34
+  days since trough          2019-21  : lowes   4.00 n 1099 mean  +6.26% med -4.83 HUGE/100 2.55 | middl  13.00 n 1098 mean  +9.36% med -5.13 HUGE/100 2.64 | highe  38.00 n 1099 mean  +5.49% med -5.52 HUGE/100 2.73
+  days since trough          2022-26Q1: lowes   3.00 n 1919 mean  +1.38% med -5.58 HUGE/100 1.88 | middl  12.00 n 1919 mean  +0.41% med -5.95 HUGE/100 1.62 | highe  34.00 n 1919 mean  +1.06% med -6.01 HUGE/100 1.88

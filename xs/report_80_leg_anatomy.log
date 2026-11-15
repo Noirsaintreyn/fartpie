@@ -1,0 +1,29 @@
+ALL LONG LEGS BY ERA
+  2019-21                n 12005 | median M  27.9% L  14.8% C   -4.0% F  13.0% | share of the move: late entry   54% captured    +3% late exit   43% | days trough->entry 11 peak->exit 10 | C<0 in 73%
+  2022-26Q1              n 19809 | median M  26.6% L  14.9% C   -4.5% F  13.4% | share of the move: late entry   55% captured    -4% late exit   50% | days trough->entry 11 peak->exit 10 | C<0 in 77%
+
+BY SIZE OF THE AVAILABLE MOVE (what a perfect classifier could have had)
+ 2019-21
+  M<20%                  n  4337 | median M  12.3% L   8.2% C   -4.3% F   7.6% | share of the move: late entry   73% captured   -45% late exit   72% | days trough->entry 6 peak->exit 5 | C<0 in 95%
+  20-50%                 n  4205 | median M  30.6% L  18.8% C   -5.1% F  14.3% | share of the move: late entry   63% captured   -17% late exit   53% | days trough->entry 14 peak->exit 11 | C<0 in 77%
+  50-100%                n  2061 | median M  67.2% L  29.6% C   +0.6% F  20.3% | share of the move: late entry   54% captured    +6% late exit   40% | days trough->entry 18 peak->exit 16 | C<0 in 49%
+  >=100%                 n  1398 | median M 158.0% L  45.1% C  +41.8% F  28.3% | share of the move: late entry   41% captured   +32% late exit   27% | days trough->entry 20 peak->exit 24 | C<0 in 25%
+ 2022-26Q1
+  M<20%                  n  7290 | median M  12.6% L   8.6% C   -4.4% F   7.6% | share of the move: late entry   75% captured   -46% late exit   72% | days trough->entry 7 peak->exit 5 | C<0 in 96%
+  20-50%                 n  7870 | median M  30.8% L  19.1% C   -5.7% F  15.0% | share of the move: late entry   64% captured   -20% late exit   55% | days trough->entry 15 peak->exit 12 | C<0 in 80%
+  50-100%                n  3158 | median M  65.7% L  28.2% C   +0.0% F  23.6% | share of the move: late entry   51% captured    +4% late exit   45% | days trough->entry 16 peak->exit 19 | C<0 in 50%
+  >=100%                 n  1491 | median M 149.6% L  36.6% C  +37.1% F  38.7% | share of the move: late entry   35% captured   +30% late exit   35% | days trough->entry 17 peak->exit 25 | C<0 in 23%
+
+SCREENER RULE (BV>=1.5) vs HUGE legs (>=+100% captured)
+ 2019-21
+  BV>=1.5                n  3296 | median M  36.5% L  19.9% C   -4.9% F  15.6% | share of the move: late entry   54% captured    +3% late exit   43% | days trough->entry 13 peak->exit 12 | C<0 in 69%
+  HUGE legs              n   247 | median M 365.5% L  32.6% C +147.1% F  30.3% | share of the move: late entry   22% captured   +60% late exit   19% | days trough->entry 11 peak->exit 28 | C<0 in 0%
+  BV<1.5                 n  8709 | median M  25.1% L  13.2% C   -3.8% F  12.0% | share of the move: late entry   54% captured    +4% late exit   43% | days trough->entry 10 peak->exit 9 | C<0 in 74%
+ 2022-26Q1
+  BV>=1.5                n  5757 | median M  35.7% L  20.3% C   -5.6% F  16.9% | share of the move: late entry   56% captured    -4% late exit   48% | days trough->entry 12 peak->exit 13 | C<0 in 74%
+  HUGE legs              n   209 | median M 353.2% L  28.1% C +144.3% F  38.8% | share of the move: late entry   19% captured   +59% late exit   22% | days trough->entry 12 peak->exit 24 | C<0 in 0%
+  BV<1.5                 n 14052 | median M  23.6% L  13.0% C   -4.2% F  12.1% | share of the move: late entry   54% captured    -5% late exit   50% | days trough->entry 11 peak->exit 9 | C<0 in 78%
+
+WHAT SEPARATES EARLY FROM LATE ENTRY? (L = share of the move already gone at entry; early = L<median L within era)
+ 2019-21: early-half legs: median BV 1.10, mean C +17.00%, HUGE 4.12/100 | late-half: median BV 1.09, mean C -7.15%, HUGE 0.00/100 | corr(L/M, C) +nan
+ 2022-26Q1: early-half legs: median BV 1.13, mean C +8.22%, HUGE 2.11/100 | late-half: median BV 1.12, mean C -7.24%, HUGE 0.00/100 | corr(L/M, C) -0.44

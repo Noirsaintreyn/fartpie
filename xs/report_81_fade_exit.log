@@ -1,0 +1,40 @@
+
+=== SCREENER RULE (BV>=1.5)
+ 2019-21: n 3296 | VECTOR EXIT mean +7.03% med -5.16 | HUGE(net>=+100%) 87, their mean +274%
+     trail30 from entry   mean  +3.74% (-3.29pp) med  -5.05 | HUGE kept  68 of 87 | those winners now average  +128% (vs +274%) | trail fired on 11% of flips
+     trail40 from entry   mean  +5.81% (-1.23pp) med  -5.06 | HUGE kept  87 of 87 | those winners now average  +214% (vs +274%) | trail fired on 4% of flips
+     act+50% trail20      mean  +3.19% (-3.85pp) med  -5.04 | HUGE kept  46 of 87 | those winners now average   +89% (vs +274%) | trail fired on 9% of flips
+     act+50% trail30      mean  +4.47% (-2.56pp) med  -5.04 | HUGE kept  78 of 87 | those winners now average  +151% (vs +274%) | trail fired on 5% of flips
+     act+50% trail40      mean  +5.94% (-1.09pp) med  -5.05 | HUGE kept  89 of 87 | those winners now average  +214% (vs +274%) | trail fired on 2% of flips
+     act+100% trail20     mean  +4.14% (-2.89pp) med  -5.14 | HUGE kept  75 of 87 | those winners now average  +126% (vs +274%) | trail fired on 5% of flips
+     act+100% trail30     mean  +5.18% (-1.85pp) med  -5.14 | HUGE kept  91 of 87 | those winners now average  +179% (vs +274%) | trail fired on 3% of flips
+     act+100% trail40     mean  +6.44% (-0.60pp) med  -5.14 | HUGE kept  94 of 87 | those winners now average  +235% (vs +274%) | trail fired on 1% of flips
+ 2022-26Q1: n 5757 | VECTOR EXIT mean +0.95% med -5.88 | HUGE(net>=+100%) 102, their mean +181%
+     trail30 from entry   mean  +0.74% (-0.22pp) med  -5.68 | HUGE kept  88 of 102 | those winners now average  +124% (vs +181%) | trail fired on 13% of flips
+     trail40 from entry   mean  +1.35% (+0.40pp) med  -5.82 | HUGE kept 104 of 102 | those winners now average  +180% (vs +181%) | trail fired on 4% of flips
+     act+50% trail20      mean  +0.48% (-0.47pp) med  -5.73 | HUGE kept  65 of 102 | those winners now average   +86% (vs +181%) | trail fired on 9% of flips
+     act+50% trail30      mean  +0.97% (+0.02pp) med  -5.74 | HUGE kept  97 of 102 | those winners now average  +140% (vs +181%) | trail fired on 5% of flips
+     act+50% trail40      mean  +1.38% (+0.43pp) med  -5.79 | HUGE kept 106 of 102 | those winners now average  +182% (vs +181%) | trail fired on 2% of flips
+     act+100% trail20     mean  +0.90% (-0.05pp) med  -5.86 | HUGE kept 108 of 102 | those winners now average  +124% (vs +181%) | trail fired on 4% of flips
+     act+100% trail30     mean  +1.07% (+0.12pp) med  -5.86 | HUGE kept 107 of 102 | those winners now average  +156% (vs +181%) | trail fired on 2% of flips
+     act+100% trail40     mean  +1.30% (+0.35pp) med  -5.86 | HUGE kept 106 of 102 | those winners now average  +182% (vs +181%) | trail fired on 1% of flips
+
+=== ALL FLIPS
+ 2019-21: n 12005 | VECTOR EXIT mean +4.63% med -4.34 | HUGE(net>=+100%) 247, their mean +223%
+     trail30 from entry   mean  +3.19% (-1.44pp) med  -4.30 | HUGE kept 207 of 247 | those winners now average  +139% (vs +223%) | trail fired on 7% of flips
+     trail40 from entry   mean  +4.10% (-0.53pp) med  -4.31 | HUGE kept 235 of 247 | those winners now average  +189% (vs +223%) | trail fired on 2% of flips
+     act+50% trail20      mean  +2.70% (-1.92pp) med  -4.29 | HUGE kept 147 of 247 | those winners now average  +102% (vs +223%) | trail fired on 7% of flips
+     act+50% trail30      mean  +3.50% (-1.13pp) med  -4.29 | HUGE kept 223 of 247 | those winners now average  +151% (vs +223%) | trail fired on 3% of flips
+     act+50% trail40      mean  +4.15% (-0.48pp) med  -4.30 | HUGE kept 238 of 247 | those winners now average  +189% (vs +223%) | trail fired on 1% of flips
+     act+100% trail20     mean  +3.20% (-1.42pp) med  -4.33 | HUGE kept 208 of 247 | those winners now average  +130% (vs +223%) | trail fired on 3% of flips
+     act+100% trail30     mean  +3.82% (-0.81pp) med  -4.33 | HUGE kept 244 of 247 | those winners now average  +170% (vs +223%) | trail fired on 1% of flips
+     act+100% trail40     mean  +4.37% (-0.26pp) med  -4.33 | HUGE kept 246 of 247 | those winners now average  +202% (vs +223%) | trail fired on 0% of flips
+ 2022-26Q1: n 19809 | VECTOR EXIT mean +0.19% med -4.79 | HUGE(net>=+100%) 207, their mean +178%
+     trail30 from entry   mean  +0.07% (-0.12pp) med  -4.71 | HUGE kept 186 of 207 | those winners now average  +131% (vs +178%) | trail fired on 7% of flips
+     trail40 from entry   mean  +0.32% (+0.14pp) med  -4.76 | HUGE kept 207 of 207 | those winners now average  +174% (vs +178%) | trail fired on 2% of flips
+     act+50% trail20      mean  -0.04% (-0.23pp) med  -4.74 | HUGE kept 146 of 207 | those winners now average   +96% (vs +178%) | trail fired on 6% of flips
+     act+50% trail30      mean  +0.16% (-0.02pp) med  -4.74 | HUGE kept 198 of 207 | those winners now average  +143% (vs +178%) | trail fired on 3% of flips
+     act+50% trail40      mean  +0.34% (+0.15pp) med  -4.76 | HUGE kept 209 of 207 | those winners now average  +175% (vs +178%) | trail fired on 1% of flips
+     act+100% trail20     mean  +0.19% (-0.00pp) med  -4.78 | HUGE kept 226 of 207 | those winners now average  +130% (vs +178%) | trail fired on 2% of flips
+     act+100% trail30     mean  +0.22% (+0.03pp) med  -4.78 | HUGE kept 217 of 207 | those winners now average  +155% (vs +178%) | trail fired on 1% of flips
+     act+100% trail40     mean  +0.32% (+0.14pp) med  -4.78 | HUGE kept 211 of 207 | those winners now average  +177% (vs +178%) | trail fired on 0% of flips
