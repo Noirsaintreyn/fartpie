@@ -1,0 +1,22 @@
+universe $1-5 stock-day mean 20d net: train +5.66% test +2.97%
+
+PART A: Wyckoff ALONE (20d hold, excess vs same-month $1-5 average); all rows already require 40d range + SOS
+  SOS alone (range breakout on volume)       TR: n  742 mean  -1.67% med  -5.35% big30 14.6% t -1.59 | TE: n 1882 mean  -0.32% med  -4.46% big30 11.7% t -1.40
+  SOS & SPRING                               TR: n  206 mean  -1.59% med  -3.25% big30 12.6% t -0.75 | TE: n  642 mean  +0.83% med  -5.12% big30 12.9% t -1.20
+  SOS & DRY                                  TR: n  102 mean  -2.27% med  -4.73% big30 14.7% t -1.42 | TE: n  295 mean  -1.44% med  -2.85% big30  8.1% t -0.63
+  FULL WYCKOFF (SOS&SPRING&DRY)              TR: n   14 mean  +0.95% med  +1.68% big30 14.3% t +0.32 | TE: n   73 mean  +1.17% med  -2.85% big30 11.0% t -0.28
+    FULL, vector FRESH flip (<=5 bars)       TR: n    8 mean  -1.72% med  +0.79% big30 12.5% t +nan | TE: n   31 mean  +0.19% med  -2.19% big30 12.9% t -0.67
+    FULL, vector BULL older                  TR: n    5 mean  +5.11% med  +1.90% big30 20.0% t +nan | TE: n   34 mean  +3.84% med  -2.01% big30 11.8% t +0.31
+    FULL, vector BEAR/none                   TR: n    1 mean  +1.46% med  +1.46% big30  0.0% t +nan | TE: n    8 mean  -6.40% med  -4.23% big30  0.0% t -1.26
+    SOS only no spring/dry, FRESH            TR: n  199 mean  -4.37% med  -6.31% big30 16.6% t -2.15 | TE: n  591 mean  +0.65% med  -3.68% big30 11.7% t -1.02
+    SOS only no spring/dry, BEAR/none        TR: n   33 mean  -2.12% med  -4.28% big30 12.1% t -0.89 | TE: n  116 mean  -0.27% med  -3.94% big30 11.2% t +0.60
+
+PART B: vector flips $1-5, hold to bear flip, net 30bp (ex = net return)
+  all flips $1-5                             TR: n  510 mean +36.55% med  -5.63% big30 18.0% huge  8.6% t +1.87 | TE: n 1356 mean  +6.97% med  -7.21% big30 12.2% huge  4.3% t +2.61
+  flip bar = SOS (range break, vol)          TR: n   81 mean +23.51% med  -9.14% big30 16.0% huge  6.2% t +0.27 | TE: n  234 mean +11.08% med  -9.89% big30 16.2% huge  7.3% t +1.88
+  flip bar = FULL WYCKOFF                    TR: n    4 mean -16.84% med -16.56% big30  0.0% huge  0.0% t +nan | TE: n   14 mean  -0.16% med -11.01% big30  7.1% huge  7.1% t -0.79
+  flip, not SOS                              TR: n  429 mean +39.01% med  -5.10% big30 18.4% huge  9.1% t +1.96 | TE: n 1122 mean  +6.12% med  -6.79% big30 11.3% huge  3.7% t +1.98
+  flip, not FULL WYCKOFF                     TR: n  506 mean +36.97% med  -5.57% big30 18.2% huge  8.7% t +1.88 | TE: n 1342 mean  +7.05% med  -7.17% big30 12.2% huge  4.2% t +2.70
+  top-20% score $1-5                         TR: n  254 mean +33.90% med  -7.33% big30 19.7% huge  8.3% t +1.71 | TE: n  704 mean +10.51% med  -9.75% big30 15.3% huge  6.0% t +2.34
+    + FULL WYCKOFF                           TR: n    4 mean -16.84% med -16.56% big30  0.0% huge  0.0% t +nan | TE: n   13 mean  +0.30% med -12.13% big30  7.7% huge  7.7% t -0.74
+    + SOS                                    TR: n   71 mean +24.82% med -10.40% big30 16.9% huge  5.6% t +0.44 | TE: n  214 mean +11.92% med -10.36% big30 16.8% huge  7.9% t +1.79

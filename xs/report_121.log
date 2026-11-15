@@ -1,0 +1,69 @@
+state counts own SM (train/test):
+col_0       False  True 
+row_0                   
+EXP-BAL       176    183
+EXP-TRND      323    278
+MID-BAL       111     92
+MID-TRND      165     97
+QUIET-BAL     225    273
+QUIET-TRND    164    172
+
+== OWN SM vol x trend (6): legs scored 13 | test spread>0 in 8 | sum t +4.6 | null: legs>0 95th 10, sum t 95th +7.5; p(sum t) 0.150
+   RA          train best-worst +15.77 (QUIET-BAL vs EXP-TRND) -> TEST +11.43 t +1.2
+   M1          train best-worst  +4.79 (MID-BAL vs MID-TRND) -> TEST  +6.94 t +2.0
+   ON+         train best-worst  +3.07 (EXP-TRND vs QUIET-BAL) -> TEST  -2.04 t -0.5
+   ON-         train best-worst  +1.48 (MID-TRND vs QUIET-BAL) -> TEST  -1.04 t -0.9
+   RULES       train best-worst  +1.57 (QUIET-BAL vs MID-BAL) -> TEST  +1.19 t +0.7
+   V15a        train best-worst  +7.69 (MID-BAL vs MID-TRND) -> TEST  +3.32 t +0.4
+   VA-B        train best-worst  +4.68 (EXP-BAL vs QUIET-BAL) -> TEST  +4.04 t +0.4
+   VA-F        train best-worst  +4.70 (QUIET-BAL vs EXP-BAL) -> TEST  +3.47 t +0.4
+   VA-80       train best-worst +22.53 (EXP-BAL vs QUIET-TRND) -> TEST  -9.30 t -0.6
+   IB-B        train best-worst +10.57 (MID-TRND vs QUIET-TRND) -> TEST  -0.69 t -0.1
+   INV-F       train best-worst +18.07 (QUIET-TRND vs MID-BAL) -> TEST  -2.91 t -0.3
+   SHAPE       train best-worst +18.43 (MID-TRND vs EXP-TRND) -> TEST +11.89 t +0.8
+   ICT         train best-worst  +9.50 (EXP-TRND vs QUIET-BAL) -> TEST +10.24 t +1.1
+
+== OWN SM vol only (3): legs scored 14 | test spread>0 in 10 | sum t +6.0 | null: legs>0 95th 11, sum t 95th +7.1; p(sum t) 0.092
+   RA          train best-worst +12.96 (QUIET vs EXP) -> TEST +15.51 t +2.2
+   M1          train best-worst  +0.74 (MID vs EXP) -> TEST  -1.52 t -0.9
+   ON+         train best-worst  +3.41 (EXP vs QUIET) -> TEST  +0.56 t +0.2
+   ON-         train best-worst  +0.78 (MID vs QUIET) -> TEST  +0.29 t +0.4
+   RULES       train best-worst  +1.02 (QUIET vs MID) -> TEST  +0.99 t +0.8
+   V15a        train best-worst  +1.37 (MID vs EXP) -> TEST  +6.32 t +1.5
+   VA-B        train best-worst  +2.99 (EXP vs MID) -> TEST  +2.09 t +0.3
+   VA-F        train best-worst  +4.19 (MID vs EXP) -> TEST  +2.79 t +0.4
+   VA-80       train best-worst  +8.58 (EXP vs QUIET) -> TEST  -5.86 t -0.6
+   IB-B        train best-worst  +6.26 (MID vs EXP) -> TEST  -0.78 t -0.1
+   INV-F       train best-worst  +8.34 (QUIET vs MID) -> TEST  -5.08 t -0.8
+   SHAPE       train best-worst +15.94 (MID vs EXP) -> TEST  +3.02 t +0.3
+   ICT         train best-worst  +5.43 (EXP vs QUIET) -> TEST  +7.39 t +1.0
+   ICT-strong  train best-worst +14.30 (EXP vs QUIET) -> TEST +14.83 t +1.3
+
+== GMM K=4: legs scored 12 | test spread>0 in 6 | sum t +0.1 | null: legs>0 95th 9, sum t 95th +6.0; p(sum t) 0.486
+   RA          train best-worst +19.80 (0 vs 3) -> TEST +13.80 t +1.6
+   M1          train best-worst  +3.29 (1 vs 0) -> TEST  +1.86 t +0.4
+   R1          train best-worst  +0.30 (3 vs 0) -> TEST  -1.64 t -0.3
+   ON+         train best-worst  +0.78 (2 vs 0) -> TEST  -6.05 t -1.7
+   ON-         train best-worst  +1.16 (2 vs 0) -> TEST  -0.23 t -0.3
+   V15a        train best-worst  +2.91 (2 vs 0) -> TEST  +1.58 t +0.3
+   VA-B        train best-worst  +2.34 (3 vs 0) -> TEST  +3.39 t +0.6
+   VA-F        train best-worst  +2.66 (0 vs 3) -> TEST  +3.42 t +0.6
+   VA-80       train best-worst  +6.52 (3 vs 2) -> TEST  -1.04 t -0.1
+   IB-B        train best-worst +10.47 (2 vs 1) -> TEST -29.13 t -1.3
+   SHAPE       train best-worst  +9.89 (0 vs 3) -> TEST  -0.74 t -0.1
+   ICT         train best-worst  +4.29 (0 vs 2) -> TEST  +2.82 t +0.3
+
+== HMM 3-state: legs scored 13 | test spread>0 in 5 | sum t +2.5 | null: legs>0 95th 10, sum t 95th +6.5; p(sum t) 0.272
+   RA          train best-worst +14.84 (1 vs 0) -> TEST +16.06 t +2.0
+   M1          train best-worst  +1.07 (0 vs 1) -> TEST  -3.18 t -0.7
+   ON+         train best-worst  +3.54 (2 vs 1) -> TEST  -1.44 t -0.5
+   ON-         train best-worst  +0.75 (2 vs 1) -> TEST  +0.42 t +0.5
+   RULES       train best-worst  +1.52 (1 vs 2) -> TEST  +1.69 t +1.5
+   V15a        train best-worst  +1.10 (2 vs 1) -> TEST  -2.49 t -0.6
+   VA-B        train best-worst  +4.02 (2 vs 0) -> TEST  -5.47 t -0.8
+   VA-F        train best-worst  +3.79 (1 vs 2) -> TEST  +8.99 t +1.7
+   VA-80       train best-worst +12.60 (0 vs 1) -> TEST  -1.06 t -0.1
+   IB-B        train best-worst  +1.29 (1 vs 0) -> TEST  -5.22 t -0.8
+   INV-F       train best-worst  +6.80 (1 vs 0) -> TEST  +2.91 t +0.5
+   SHAPE       train best-worst  +5.36 (0 vs 1) -> TEST  -1.92 t -0.2
+   ICT         train best-worst +12.77 (0 vs 1) -> TEST  -1.33 t -0.1
