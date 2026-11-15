@@ -1,0 +1,52 @@
+
+######## ALL NAMES (price x score tier x volume): cells 30, eligible (train n>=80) 19, SELECTED 15 ########
+  ('<2', 'mid40', 'vol>=1.5')        train n    11 mean +411.38% ex3 +27.63% | test n    17 mean   -0.33% ex3  -9.08%
+  ('<2', 'mid40', 'vol<1.5')         train n    15 mean  +71.88% ex3  +4.23% | test n    49 mean   +9.75% ex3  -0.53%
+  ('2-5', 'top20', 'vol>=1.5')       train n   128 mean  +42.78% ex3 +21.53% | test n   355 mean  +12.46% ex3  +4.41%  <== SELECTED
+  ('2-5', 'bot40', 'vol<1.5')        train n    68 mean  +35.49% ex3  +6.12% | test n   133 mean   -2.24% ex3  -3.74%
+  ('<2', 'top20', 'vol>=1.5')        train n    32 mean  +33.90% ex3  -5.31% | test n    88 mean  +17.30% ex3  +6.83%
+  ('5-10', 'bot40', 'vol>=1.5')      train n    14 mean  +25.40% ex3  -2.74% | test n    37 mean   +1.36% ex3  -2.71%
+  ('2-5', 'top20', 'vol<1.5')        train n    79 mean  +22.68% ex3  +4.77% | test n   223 mean   +2.82% ex3  +0.01%
+  ('2-5', 'bot40', 'vol>=1.5')       train n    10 mean  +16.51% ex3  -6.61% | test n    16 mean   -3.16% ex3  -7.62%
+  ('<2', 'top20', 'vol<1.5')         train n    16 mean  +16.02% ex3 -12.98% | test n    40 mean  +20.89% ex3  +1.71%
+  ('5-10', 'top20', 'vol>=1.5')      train n   203 mean  +15.67% ex3  +6.95% | test n   519 mean   +0.69% ex3  -0.69%  <== SELECTED
+  ('2-5', 'mid40', 'vol<1.5')        train n   114 mean  +13.71% ex3  +4.60% | test n   334 mean   +5.51% ex3  +2.87%  <== SELECTED
+  ('5-10', 'mid40', 'vol>=1.5')      train n    87 mean   +9.99% ex3  +0.90% | test n   208 mean   -1.60% ex3  -2.99%  <== SELECTED
+  ('10-30', 'top20', 'vol<1.5')      train n   401 mean   +9.90% ex3  +6.68% | test n   524 mean   -0.60% ex3  -1.60%  <== SELECTED
+  ('5-10', 'bot40', 'vol<1.5')       train n   174 mean   +8.88% ex3  +3.13% | test n   350 mean   -0.59% ex3  -1.81%  <== SELECTED
+  ('2-5', 'mid40', 'vol>=1.5')       train n    31 mean   +8.83% ex3  -3.49% | test n    85 mean   +2.61% ex3  -3.75%
+  ('5-10', 'mid40', 'vol<1.5')       train n   314 mean   +7.96% ex3  +4.21% | test n   693 mean   +0.07% ex3  -1.69%  <== SELECTED
+  ('10-30', 'top20', 'vol>=1.5')     train n   585 mean   +7.15% ex3  +5.60% | test n   865 mean   -0.52% ex3  -1.74%  <== SELECTED
+  ('10-30', 'mid40', 'vol<1.5')      train n  1297 mean   +5.49% ex3  +4.41% | test n  1839 mean   -0.31% ex3  -0.87%  <== SELECTED
+  ('5-10', 'top20', 'vol<1.5')       train n   183 mean   +5.29% ex3  +2.48% | test n   318 mean   +0.15% ex3  -1.35%  <== SELECTED
+  ('<2', 'bot40', 'vol<1.5')         train n     6 mean   +2.49% ex3   +nan% | test n    18 mean   -3.49% ex3  -6.84%
+  ('10-30', 'mid40', 'vol>=1.5')     train n   456 mean   +2.41% ex3  +1.05% | test n   703 mean   -0.41% ex3  -1.27%  <== SELECTED
+  ('10-30', 'bot40', 'vol>=1.5')     train n   126 mean   +2.26% ex3  +0.20% | test n   167 mean   +0.07% ex3  -1.88%  <== SELECTED
+  ('30+', 'top20', 'vol<1.5')        train n   212 mean   +2.09% ex3  -1.61% | test n   207 mean   -0.97% ex3  -2.97%
+  ('10-30', 'bot40', 'vol<1.5')      train n  1028 mean   +1.24% ex3  +0.77% | test n  1768 mean   -1.24% ex3  -1.70%  <== SELECTED
+  ('30+', 'mid40', 'vol<1.5')        train n  1519 mean   +0.97% ex3  +0.59% | test n  2213 mean   -0.60% ex3  -0.90%  <== SELECTED
+  ('30+', 'bot40', 'vol<1.5')        train n  2858 mean   +0.89% ex3  +0.59% | test n  4508 mean   -0.95% ex3  -1.11%  <== SELECTED
+  ('30+', 'mid40', 'vol>=1.5')       train n   761 mean   +0.55% ex3  -0.11% | test n  1223 mean   -0.85% ex3  -1.19%
+  ('30+', 'bot40', 'vol>=1.5')       train n   321 mean   +0.27% ex3  -0.59% | test n   644 mean   +0.07% ex3  -0.50%
+  ('30+', 'top20', 'vol>=1.5')       train n   464 mean   -0.53% ex3  -1.62% | test n   664 mean   -0.95% ex3  -2.27%
+  ('<2', 'bot40', 'vol>=1.5')        train n     1 mean   -3.70% ex3   +nan% | test n     1 mean  +19.40% ex3   +nan%
+
+ TEST all flips   n 18809 mean  -0.09% med  -5.26% win10  13.0% huge 1.08% ex3  -0.25%
+ TEST selected    n 15364 mean  -0.21% med  -5.16% win10  12.6% huge 0.98% ex3  -0.41% | flips/yr 3699
+  by year  all: 2022:-3.7 2023:+0.9 2024:-0.2 2025:+2.8 2026:-1.8
+  by year  sel: 2022:-3.5(n3716) 2023:+0.9(n3918) 2024:-0.6(n3417) 2025:+2.6(n3698) 2026:-2.3(n615)
+ PERMUTATION: share of 5000 random 15-cell draws with test mean >= selected union: 0.348
+
+######## LARGE-CAP (score tier x volume): cells 6, eligible (train n>=40) 4, SELECTED 1 ########
+  ('top20', 'vol<1.5')               train n    32 mean  +13.91% ex3  -4.65% | test n    56 mean   -3.13% ex3  -6.90%
+  ('top20', 'vol>=1.5')              train n    44 mean   +5.66% ex3  -7.42% | test n   130 mean   -6.13% ex3  -8.22%
+  ('bot40', 'vol<1.5')               train n   245 mean   +4.54% ex3  +1.33% | test n   630 mean   -0.53% ex3  -1.32%  <== SELECTED
+  ('mid40', 'vol>=1.5')              train n    81 mean   +2.20% ex3  -3.92% | test n   212 mean   -2.42% ex3  -3.71%
+  ('mid40', 'vol<1.5')               train n   134 mean   +1.92% ex3  -2.48% | test n   361 mean   +1.22% ex3  -1.54%
+  ('bot40', 'vol>=1.5')              train n    36 mean   +1.09% ex3  -2.35% | test n   126 mean   +1.66% ex3  -0.93%
+
+ TEST all flips   n  1515 mean  -0.77% med  -5.46% win10  12.7% huge 0.99% ex3  -1.44%
+ TEST selected    n   630 mean  -0.53% med  -4.55% win10  11.0% huge 0.79% ex3  -1.32% | flips/yr 152
+  by year  all: 2022:-5.8 2023:+0.3 2024:-1.0 2025:+2.1 2026:-3.3
+  by year  sel: 2022:-4.8(n107) 2023:+0.8(n130) 2024:-2.6(n134) 2025:+2.2(n225) 2026:-2.1(n34)
+ PERMUTATION: share of 5000 random 1-cell draws with test mean >= selected union: 0.491
