@@ -1,0 +1,68 @@
+
+######## ALL ########
+
+ TRAIN 2019-21
+  all flips             n 11514 mean  +4.40% med  -4.81% win10  16.2% huge 2.14%
+  Mar-Jul only (W1)     n  4701 mean  +5.60% med  -5.20% win10  15.8% huge 3.02%
+  outside Mar-Jul       n  6813 mean  +3.58% med  -4.54% win10  16.6% huge 1.53%
+  February              n   909 mean  -2.54% med  -4.79% win10  10.1% huge 0.00%
+  all but February (W2) n 10605 mean  +5.00% med  -4.82% win10  16.8% huge 2.32%
+  year-paired W1 Mar-Jul minus rest: 2019:-1.7 2020:-0.2 2021:+1.9 | years positive 1/3 mean -0.02pp t -0.02
+  year-paired W2 non-Feb minus Feb: 2019:+0.1 2020:+25.8 2021:-4.8 | years positive 2/3 mean +7.01pp t +0.74
+
+ TEST 2022-26
+  all flips             n 18809 mean  -0.09% med  -5.26% win10  13.0% huge 1.08%
+  Mar-Jul only (W1)     n  7846 mean  -0.14% med  -5.31% win10  12.8% huge 1.16%
+  outside Mar-Jul       n 10963 mean  -0.06% med  -5.21% win10  13.1% huge 1.02%
+  February              n  1615 mean  -4.14% med  -6.20% win10   7.6% huge 0.56%
+  all but February (W2) n 17194 mean  +0.29% med  -5.18% win10  13.5% huge 1.13%
+  year-paired W1 Mar-Jul minus rest: 2022:-2.9 2023:-2.9 2024:+0.5 2025:+4.5 | years positive 2/4 mean -0.22pp t -0.12
+  year-paired W2 non-Feb minus Feb: 2022:+1.0 2023:+8.2 2024:-1.2 2025:+10.1 2026:+5.1 | years positive 4/5 mean +4.64pp t +2.18
+
+ PLACEBO: all 12 five-month rotations, TEST year-paired difference (in window minus rest), Mar-Jul marked
+  start  8 months [8, 9, 10, 11, 12]: TEST  +2.30pp t +1.47 | TRAIN  +1.63pp t +0.37
+  start  9 months [9, 10, 11, 12, 1]: TEST  +1.99pp t +0.94 | TRAIN  +1.03pp t +0.61
+  start  7 months [7, 8, 9, 10, 11]: TEST  +1.34pp t +1.24 | TRAIN  +2.17pp t +0.53
+  start  4 months [4, 5, 6, 7, 8]: TEST  +0.36pp t +0.13 | TRAIN  +0.85pp t +0.52
+  start  5 months [5, 6, 7, 8, 9]: TEST  +0.20pp t +0.09 | TRAIN  -0.49pp t -0.68
+  start 10 months [10, 11, 12, 1, 2]: TEST  -0.01pp t -0.00 | TRAIN  -0.40pp t -0.27
+  start  6 months [6, 7, 8, 9, 10]: TEST  -0.06pp t -0.05 | TRAIN  -2.25pp t -2.36
+  start  3 months [3, 4, 5, 6, 7]: TEST  -0.22pp t -0.12 | TRAIN  -0.02pp t -0.02   <-- Mar-Jul
+  start 11 months [11, 12, 1, 2, 3]: TEST  -1.30pp t -0.54 | TRAIN  -1.25pp t -0.51
+  start  2 months [2, 3, 4, 5, 6]: TEST  -1.39pp t -0.80 | TRAIN  -1.23pp t -0.58
+  start  1 months [1, 2, 3, 4, 5]: TEST  -1.62pp t -1.35 | TRAIN  +1.77pp t +0.90
+  start 12 months [12, 1, 2, 3, 4]: TEST  -2.58pp t -2.06 | TRAIN  -1.79pp t -0.44
+
+######## LARGE-CAP ########
+
+ TRAIN 2019-21
+  all flips             n   572 mean  +3.99% med  -5.05% win10  15.9% huge 2.62%
+  Mar-Jul only (W1)     n   253 mean +11.18% med  -4.43% win10  20.2% huge 5.14%
+  outside Mar-Jul       n   319 mean  -1.72% med  -5.70% win10  12.5% huge 0.63%
+  February              n    37 mean  -0.32% med  -4.39% win10  13.5% huge 0.00%
+  all but February (W2) n   535 mean  +4.28% med  -5.15% win10  16.1% huge 2.80%
+  year-paired W1 Mar-Jul minus rest: 2019:-1.3 2020:+37.5 2021:+2.5 | years positive 2/3 mean +12.89pp t +1.04
+  year-paired W2 non-Feb minus Feb: 2019:-1.1 2020:+27.8 2021:-5.0 | years positive 1/3 mean +7.23pp t +0.70
+
+ TEST 2022-26
+  all flips             n  1515 mean  -0.77% med  -5.46% win10  12.7% huge 0.99%
+  Mar-Jul only (W1)     n   651 mean  -1.17% med  -5.74% win10  11.7% huge 1.23%
+  outside Mar-Jul       n   864 mean  -0.47% med  -5.29% win10  13.4% huge 0.81%
+  February              n   135 mean  -5.24% med  -5.69% win10   8.1% huge 0.00%
+  all but February (W2) n  1380 mean  -0.34% med  -5.42% win10  13.1% huge 1.09%
+  year-paired W1 Mar-Jul minus rest: 2022:-1.5 2023:-2.9 2024:-6.0 2025:+3.4 | years positive 1/4 mean -1.77pp t -0.91
+  year-paired W2 non-Feb minus Feb: 2022:+3.1 2023:+5.4 2024:-2.2 2025:+12.7 2026:+5.0 | years positive 4/5 mean +4.78pp t +2.00
+
+ PLACEBO: all 12 five-month rotations, TEST year-paired difference (in window minus rest), Mar-Jul marked
+  start  8 months [8, 9, 10, 11, 12]: TEST  +3.64pp t +2.72 | TRAIN -12.07pp t -1.50
+  start  9 months [9, 10, 11, 12, 1]: TEST  +3.19pp t +2.15 | TRAIN -10.57pp t -1.02
+  start  7 months [7, 8, 9, 10, 11]: TEST  +2.50pp t +3.25 | TRAIN -10.23pp t -1.36
+  start  6 months [6, 7, 8, 9, 10]: TEST  +0.95pp t +0.51 | TRAIN  -6.44pp t -0.93
+  start  5 months [5, 6, 7, 8, 9]: TEST  +0.72pp t +0.40 | TRAIN  +0.58pp t +1.03
+  start 10 months [10, 11, 12, 1, 2]: TEST  -0.47pp t -0.22 | TRAIN  -8.76pp t -0.85
+  start  4 months [4, 5, 6, 7, 8]: TEST  -0.83pp t -0.31 | TRAIN  +9.61pp t +1.03
+  start  1 months [1, 2, 3, 4, 5]: TEST  -1.35pp t -2.13 | TRAIN +13.70pp t +1.30
+  start  2 months [2, 3, 4, 5, 6]: TEST  -1.38pp t -0.92 | TRAIN +12.54pp t +1.10
+  start  3 months [3, 4, 5, 6, 7]: TEST  -1.77pp t -0.91 | TRAIN +12.89pp t +1.04   <-- Mar-Jul
+  start 11 months [11, 12, 1, 2, 3]: TEST  -2.79pp t -1.59 | TRAIN  -7.44pp t -1.04
+  start 12 months [12, 1, 2, 3, 4]: TEST  -3.56pp t -2.65 | TRAIN  +3.80pp t +1.12
