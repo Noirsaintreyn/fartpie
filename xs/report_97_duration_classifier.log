@@ -1,0 +1,7 @@
+flips 30323 median duration (bars) train 21.0 test 20.0 | alive20 train/test 0.501 0.492 | alive60 0.279 0.238
+ target a20   train AUC 0.565 TEST AUC 0.584 coefs {'VOLX': np.float64(0.44), 'PEERS': np.float64(-0.11), 'VR': np.float64(0.31), 'EXT': np.float64(0.07), 'R60': np.float64(0.11), 'BLOW': np.float64(0.3), 'LDV': np.float64(-0.14), 'LPX': np.float64(0.1)}
+ target a60   train AUC 0.553 TEST AUC 0.568 coefs {'VOLX': np.float64(0.34), 'PEERS': np.float64(-0.13), 'VR': np.float64(0.29), 'EXT': np.float64(0.03), 'R60': np.float64(0.0), 'BLOW': np.float64(0.2), 'LDV': np.float64(-0.21), 'LPX': np.float64(0.12)}
+ target win10 train AUC 0.567 TEST AUC 0.563 coefs {'VOLX': np.float64(0.22), 'PEERS': np.float64(-0.22), 'VR': np.float64(0.21), 'EXT': np.float64(0.5), 'R60': np.float64(0.03), 'BLOW': np.float64(0.08), 'LDV': np.float64(-0.13), 'LPX': np.float64(-0.14)}
+single-feature TEST AUC for ALIVE20 (sign as is): {'VOLX': 0.559, 'PEERS': 0.469, 'VR': 0.566, 'EXT': 0.521, 'R60': 0.524, 'BLOW': 0.56, 'LDV': 0.486, 'LPX': 0.5}
+ a20 score quintiles: top Q alive20 62% / bottom 42% | trade mean top +1.7% (med -6.2) bottom -0.5% (med -4.4) | spread +2.2pp t +2.4 | huge top 2.1% bottom 0.7%
+ a60 score quintiles: top Q alive20 62% / bottom 41% | trade mean top +1.9% (med -6.0) bottom -0.3% (med -4.5) | spread +2.2pp t +2.4 | huge top 2.0% bottom 0.7%
