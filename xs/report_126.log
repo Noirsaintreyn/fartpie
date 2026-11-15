@@ -1,0 +1,9 @@
+trades 346
+ALL    TR n 151 | base: pts  +8.56 R +0.171 win 53.0% | scaled: pts +13.34 R +0.202 win 55.6% | mean S 1.27
+ALL    TE n 195 | base: pts +11.19 R +0.224 win 52.8% | scaled: pts +13.17 R +0.143 win 53.8% | mean S 1.87
+QUIET  TR n  58 | base: pts +17.03 R +0.341 win 63.8% | scaled: pts +17.41 R +0.311 win 65.5% | mean S 1.08
+QUIET  TE n  71 | base: pts +11.32 R +0.226 win 52.1% | scaled: pts +21.07 R +0.248 win 56.3% | mean S 1.79
+MID    TR n  15 | base: pts  +9.00 R +0.180 win 60.0% | scaled: pts +19.38 R +0.297 win 60.0% | mean S 1.16
+MID    TE n  44 | base: pts +17.48 R +0.350 win 61.4% | scaled: pts +17.81 R +0.161 win 56.8% | mean S 1.87
+EXP    TR n  78 | base: pts  +2.17 R +0.043 win 43.6% | scaled: pts  +9.16 R +0.103 win 47.4% | mean S 1.44
+EXP    TE n  80 | base: pts  +7.61 R +0.152 win 48.8% | scaled: pts  +3.62 R +0.040 win 50.0% | mean S 1.94

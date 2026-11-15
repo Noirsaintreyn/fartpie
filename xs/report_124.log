@@ -1,0 +1,24 @@
+
+#### A all: train n 11514 test n 18809
+  BEARLEN[-] cuts +8.000/+40.000 TR: hiT   +3.4% loT   +4.1% med  -5.3/ -4.4 big30  8.4/ 8.8% t -3.84 | TE: hiT   -0.3% loT   +0.3% med  -5.7/ -4.9 big30  5.6/ 6.6% t -1.50
+  DEPTH  [+] cuts -0.281/-0.149 TR: hiT   +0.5% loT   +8.9% med  -3.8/ -6.5 big30  4.8/12.7% t -1.43 | TE: hiT   -0.3% loT   -0.0% med  -4.2/ -7.0 big30  4.3/ 7.2% t -0.12
+  WHIP   [-] cuts +2.000/+3.000 TR: hiT   +5.6% loT   +3.7% med  -4.2/ -5.1 big30 10.0/ 7.9% t -0.15 | TE: hiT   -0.2% loT   -0.0% med  -4.9/ -5.5 big30  5.7/ 6.1% t -0.44
+  BRD    [+] cuts +0.464/+0.609 TR: hiT   +3.8% loT   +7.6% med  -5.0/ -4.5 big30  8.2/10.3% t +nan | TE: hiT   -1.5% loT   +1.0% med  -5.7/ -5.0 big30  4.9/ 6.8% t +nan
+  BRDCH  [+] cuts -0.022/+0.065 TR: hiT   +3.7% loT   +4.7% med  -5.0/ -4.4 big30  8.5/ 9.9% t -4.11 | TE: hiT   -0.1% loT   +0.6% med  -5.4/ -5.1 big30  5.5/ 6.7% t -0.69
+  HEALTH [+] cuts -0.015/+0.038 TR: hiT   +5.4% loT  +11.2% med  -5.3/ -4.4 big30  8.8/16.7% t +nan | TE: hiT   -0.1% loT   +1.1% med  -5.1/ -5.0 big30  5.9/ 6.9% t +nan
+
+#### B px<5: train n 510 test n 1356
+  BEARLEN[-] cuts +10.000/+54.333 TR: hiT  +25.9% loT  +26.1% med  -7.3/ -5.3 big30 16.5/16.8% t -1.92 | TE: hiT  +10.4% loT   +2.3% med  -8.0/ -6.7 big30 12.7/10.9% t +1.34
+  DEPTH  [+] cuts -0.482/-0.237 TR: hiT  +23.0% loT  +46.2% med  -4.6/ -7.7 big30 13.5/25.3% t +0.79 | TE: hiT   +3.9% loT  +13.0% med  -5.2/-10.1 big30  9.7/15.6% t -1.67
+  WHIP   [-] cuts +2.000/+3.000 TR: hiT  +26.2% loT  +43.2% med  -4.4/ -6.5 big30 19.6/17.0% t -1.12 | TE: hiT   +5.5% loT   +7.8% med  -6.5/ -7.7 big30 11.3/12.6% t -0.38
+  BRD    [+] cuts +0.471/+0.623 TR: hiT  +32.7% loT  +54.8% med  -5.9/ -4.5 big30 13.8/23.4% t +nan | TE: hiT  +12.3% loT   +6.8% med  -7.9/ -6.9 big30 13.6/13.9% t +nan
+  BRDCH  [+] cuts -0.013/+0.074 TR: hiT  +23.3% loT  +24.4% med  -6.9/ -5.7 big30 19.9/15.0% t -1.36 | TE: hiT  +13.4% loT   +3.5% med  -6.8/ -7.5 big30 14.2/12.0% t +0.49
+  HEALTH [+] cuts -0.015/+0.033 TR: hiT  +51.9% loT  +46.4% med  -5.8/ -3.2 big30 21.8/30.7% t +nan | TE: hiT   +7.6% loT   +8.1% med  -6.8/ -6.5 big30 11.6/14.9% t +nan
+
+#### C px<5 & top20: train n 254 test n 704
+  BEARLEN[-] cuts +17.333/+66.000 TR: hiT  +18.6% loT  +42.9% med -10.1/ -5.7 big30 14.0/23.5% t -0.64 | TE: hiT  +16.3% loT   +1.9% med  -9.9/ -9.4 big30 15.5/13.2% t +1.08
+  DEPTH  [+] cuts -0.586/-0.321 TR: hiT  +28.3% loT  +48.2% med  -6.0/ -9.8 big30 18.8/23.5% t +1.61 | TE: hiT   +8.7% loT  +23.0% med  -7.8/-10.4 big30 16.7/17.6% t -1.30
+  WHIP   [-] cuts +2.000/+2.000 TR: hiT  +31.3% loT  +33.7% med  -7.1/ -8.5 big30 20.4/17.7% t +0.08 | TE: hiT   +7.9% loT  +12.1% med  -9.3/ -9.5 big30 15.7/16.4% t -0.44
+  BRD    [+] cuts +0.484/+0.623 TR: hiT  +17.5% loT  +64.2% med  -8.4/ -5.9 big30 19.6/27.1% t +nan | TE: hiT  +21.0% loT   +7.1% med  -9.9/ -9.7 big30 17.7/15.7% t +nan
+  BRDCH  [+] cuts -0.008/+0.082 TR: hiT  +28.2% loT  +48.6% med  -9.0/ -6.6 big30 21.2/25.6% t -1.45 | TE: hiT  +23.4% loT   +6.0% med  -9.2/ -9.1 big30 17.0/15.9% t +0.71
+  HEALTH [+] cuts -0.015/+0.029 TR: hiT  +62.8% loT  +46.9% med  -9.1/ -5.9 big30 21.9/35.6% t +nan | TE: hiT  +14.5% loT   +5.4% med  -9.6/ -9.8 big30 15.8/16.7% t +nan
