@@ -1,0 +1,37 @@
+(a) DAILY, SHORT bear flips (cover at open after bull flip), net of costs; borrow 0 / 15 / 50% annualized
+ ALL    2019-21   avg hold 38d | b0: n 11605 mean   -2.0% med  -5.1% win  22% loss<=-50%  0.2% worst    -378% ex-worst3   -1.9%
+                  b15: n 11605 mean   -4.2% med  -6.2% win  17% loss<=-50%  0.2% worst    -382% ex-worst3   -4.2%
+                  b50: n 11605 mean   -9.5% med  -9.3% win   9% loss<=-50%  0.3% worst    -393% ex-worst3   -9.4%
+ ALL    2022-26Q1 avg hold 41d | b0: n 19562 mean   -2.4% med  -4.9% win  23% loss<=-50%  0.2% worst    -253% ex-worst3   -2.4%
+                  b15: n 19562 mean   -4.9% med  -6.1% win  18% loss<=-50%  0.2% worst    -260% ex-worst3   -4.8%
+                  b50: n 19562 mean  -10.6% med  -9.7% win   7% loss<=-50%  0.4% worst    -276% ex-worst3  -10.6%
+ $1-10  2019-21   avg hold 34d | b0: n  1554 mean   -4.1% med  -6.8% win  22% loss<=-50%  0.4% worst     -98% ex-worst3   -3.9%
+                  b15: n  1554 mean   -6.1% med  -7.8% win  18% loss<=-50%  0.5% worst    -100% ex-worst3   -6.0%
+                  b50: n  1554 mean  -10.9% med -10.8% win  10% loss<=-50%  0.7% worst    -104% ex-worst3  -10.7%
+ $1-10  2022-26Q1 avg hold 41d | b0: n  3661 mean   -4.1% med  -6.4% win  24% loss<=-50%  0.7% worst    -253% ex-worst3   -4.0%
+                  b15: n  3661 mean   -6.6% med  -7.6% win  20% loss<=-50%  0.7% worst    -260% ex-worst3   -6.4%
+                  b50: n  3661 mean  -12.3% med -11.1% win   9% loss<=-50%  1.0% worst    -276% ex-worst3  -12.1%
+ $10+   2019-21   avg hold 38d | b0: n 10051 mean   -1.7% med  -4.9% win  22% loss<=-50%  0.2% worst    -378% ex-worst3   -1.6%
+                  b15: n 10051 mean   -4.0% med  -6.0% win  17% loss<=-50%  0.2% worst    -382% ex-worst3   -3.9%
+                  b50: n 10051 mean   -9.3% med  -9.1% win   9% loss<=-50%  0.2% worst    -393% ex-worst3   -9.2%
+ $10+   2022-26Q1 avg hold 41d | b0: n 15901 mean   -2.0% med  -4.7% win  23% loss<=-50%  0.1% worst    -237% ex-worst3   -2.0%
+                  b15: n 15901 mean   -4.5% med  -5.9% win  17% loss<=-50%  0.1% worst    -237% ex-worst3   -4.5%
+                  b50: n 15901 mean  -10.2% med  -9.4% win   6% loss<=-50%  0.3% worst    -238% ex-worst3  -10.2%
+
+COMPARE LONG (same universe, hold to bear flip):
+ ALL 2019-21   avg hold 48d | n 12027 mean   +4.6% med  -4.3% win  27% loss<=-50%  0.0% worst     -73% ex-worst3   +4.6%
+ ALL 2022-26Q1 avg hold 41d | n 19640 mean   +0.2% med  -4.8% win  22% loss<=-50%  0.1% worst     -79% ex-worst3   +0.2%
+
+COMBINED stop-and-reverse, mean per trade (15% borrow on shorts):
+ ALL 2019-21   long+short per trade +0.26%  (long +4.60%, short -4.24%)
+ $1-10 2019-21   long+short per trade +6.19%  (long +18.47%, short -6.11%)
+ ALL 2022-26Q1 long+short per trade -2.34%  (long +0.17%, short -4.87%)
+ $1-10 2022-26Q1 long+short per trade -1.87%  (long +2.90%, short -6.56%)
+
+(b) 1H PENNIES 60d, closed trades, 100bp round trip
+ SHORT borrow  0% avg hold 7.5 sessions | n  3699 mean   -0.3% med  -2.9% win  27% loss<=-50%  0.4% worst    -166% ex-worst3   -0.2%
+ SHORT borrow 15% avg hold 7.5 sessions | n  3699 mean   -0.8% med  -3.1% win  26% loss<=-50%  0.4% worst    -166% ex-worst3   -0.7%
+ SHORT borrow 50% avg hold 7.5 sessions | n  3699 mean   -1.8% med  -3.5% win  22% loss<=-50%  0.5% worst    -166% ex-worst3   -1.7%
+ LONG  borrow  0% avg hold 3.9 sessions | n  3728 mean   -4.0% med  -4.0% win  10% loss<=-50%  0.3% worst     -94% ex-worst3   -3.9%
+ LONG  borrow 15% avg hold 3.9 sessions | n  3728 mean   -4.0% med  -4.0% win  10% loss<=-50%  0.3% worst     -94% ex-worst3   -3.9%
+ LONG  borrow 50% avg hold 3.9 sessions | n  3728 mean   -4.0% med  -4.0% win  10% loss<=-50%  0.3% worst     -94% ex-worst3   -3.9%
