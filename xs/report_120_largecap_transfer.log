@@ -1,0 +1,24 @@
+
+######## LARGE-CAP (>= $100M, px >= $10) ########
+ TRAIN n 558 mean +3.88% win10 16.1% | ATRP: AUC10 0.616 IC -0.241 EXT: AUC10 0.598 IC -0.122 LTURN: AUC10 0.544 IC -0.263 OS: AUC10 0.581 IC -0.282
+       OS quintile 1..5 mean net:  -0.12%(n75)  -0.78%(n75)  -1.63%(n75)  +5.48%(n75)  +7.11%(n75) | win10: 10.7% 12.0% 13.3% 20.0% 17.3%
+ TEST  n 1511 mean -0.75% win10 12.7% | ATRP: AUC10 0.556 IC -0.332 EXT: AUC10 0.541 IC -0.258 LTURN: AUC10 0.531 IC -0.265 OS: AUC10 0.540 IC -0.325
+       OS quintile 1..5 mean net:  -0.92%(n217)  -1.64%(n217)  +0.88%(n217)  -3.03%(n217)  -0.60%(n217) | win10:  8.8% 12.9% 14.3% 10.6% 14.7%
+
+######## MID (>= $20M < $100M, px >= $10) ########
+ TRAIN n 3858 mean +1.92% win10 14.7% | ATRP: AUC10 0.671 IC -0.179 EXT: AUC10 0.614 IC -0.129 LTURN: AUC10 0.587 IC -0.170 OS: AUC10 0.648 IC -0.192
+       OS quintile 1..5 mean net:  -1.07%(n676)  -0.91%(n676)  -0.52%(n676)  +0.36%(n676) +10.89%(n676) | win10:  7.5%  9.8% 13.3% 14.3% 27.2%
+ TEST  n 6840 mean -0.81% win10 12.2% | ATRP: AUC10 0.556 IC -0.298 EXT: AUC10 0.532 IC -0.214 LTURN: AUC10 0.553 IC -0.186 OS: AUC10 0.557 IC -0.279
+       OS quintile 1..5 mean net:  -0.59%(n1204)  -1.34%(n1204)  -0.22%(n1203)  -1.84%(n1204)  -0.30%(n1204) | win10: 10.1%  9.5% 12.0% 12.6% 15.6%
+
+######## PART 2: 1H large-cap flips with daily ATRP/EXT: n 7190 ########
+
+ TRAIN n 2579 mean net +0.69% excess +0.10%
+  ATRP  top tercile n 860 net  +1.20% ex  +0.42% win10 11.3% | bottom n 860 net  +0.24% ex  -0.15% win10  4.8% | top-bottom (day-clustered) +0.78pp t +1.25
+  EXT   top tercile n 860 net  +0.90% ex  +0.15% win10  9.5% | bottom n 860 net  +0.30% ex  -0.14% win10  6.2% | top-bottom (day-clustered) +0.25pp t +0.48
+  s     top tercile n 862 net  +1.21% ex  +0.43% win10 10.6% | bottom n 860 net  +0.24% ex  -0.11% win10  4.9% | top-bottom (day-clustered) +0.82pp t +1.50
+
+ TEST n 4611 mean net +0.61% excess +0.00%
+  ATRP  top tercile n 1537 net  +1.23% ex  +0.42% win10 14.9% | bottom n 1537 net  +0.18% ex  -0.23% win10  5.3% | top-bottom (day-clustered) +1.74pp t +2.49
+  EXT   top tercile n 1537 net  +1.00% ex  +0.14% win10 12.4% | bottom n 1537 net  -0.11% ex  -0.50% win10  7.7% | top-bottom (day-clustered) +0.36pp t +0.78
+  s     top tercile n 1537 net  +1.35% ex  +0.48% win10 14.4% | bottom n 1537 net  -0.07% ex  -0.43% win10  5.6% | top-bottom (day-clustered) +0.80pp t +1.51
