@@ -111,3 +111,4 @@ for nm,s in sc.items():
     for N in (10,20):
         tot,dd,n,ex3,yr=book(sel,s,N); out.append(f'N={N}: {tot*100:+6.0f}% (ex top-3 trades {ex3*100:+5.0f}%) maxDD {dd*100:4.0f}pts n{n}')
     print(f'  {nm:26s} sel n{int(sel.sum()):4d} | '+' | '.join(out))
+pd.DataFrame({'tk':O.tk.values,'d':O.d.values,'M1P':sc['M1 mix2(x) P(+100%)'],'M0P':sc['M0 exp(x) P(+100%)'],'M2P':sc['M2 GPD(x) P(+100%)']}).to_pickle(X+'physics_scores.pkl')

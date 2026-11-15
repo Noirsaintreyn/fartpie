@@ -40,3 +40,15 @@ calibration M2 GPD(x): test P(peak>=+100%) by predicted decile
 pred     0.0076     0.0127     0.0166     0.0209     0.0262     0.0328     0.0421     0.0562     0.0817     0.1738
 act      0.0059     0.0053     0.0053     0.0117     0.0139     0.0203     0.0288     0.0427     0.0598     0.1233
 n     1874.0000  1873.0000  1873.0000  1873.0000  1873.0000  1873.0000  1873.0000  1873.0000  1873.0000  1874.0000
+
+PART 2: ranking by predicted CAPPED expected excursion E[min(L,cap)] and slot books (px<5, test 2022+, 5% of start capital per slot, FCFS with score tie-break within a day, net of 30bp)
+  selection = top-20% by score (cut = train 80th pct within px<5); total = % of start capital over 2022-01..2026-02
+  lr (frozen score)          sel n 347 | N=10:    +40% (ex top-3 trades    -1%) maxDD   39pts n181 | N=20:   +100% (ex top-3 trades   +52%) maxDD   41pts n278
+  logistic m_BIG             sel n 221 | N=10:    +95% (ex top-3 trades   +53%) maxDD   21pts n164 | N=20:   +206% (ex top-3 trades   +72%) maxDD   21pts n220
+  OS                         sel n 216 | N=10:   +165% (ex top-3 trades   +32%) maxDD   18pts n137 | N=20:   +190% (ex top-3 trades   +56%) maxDD   20pts n202
+  M0 exp(x) P(+100%)         sel n 251 | N=10:   +172% (ex top-3 trades   +37%) maxDD   18pts n141 | N=20:   +224% (ex top-3 trades   +88%) maxDD   22pts n223
+  M0 exp(x) E[min(L,3x)]     sel n 251 | N=10:   +172% (ex top-3 trades   +37%) maxDD   18pts n141 | N=20:   +224% (ex top-3 trades   +88%) maxDD   22pts n223
+  M1 mix2(x) P(+100%)        sel n 241 | N=10:    +68% (ex top-3 trades   +20%) maxDD   28pts n151 | N=20:   +225% (ex top-3 trades   +89%) maxDD   38pts n220
+  M1 mix2(x) E[min(L,3x)]    sel n 287 | N=10:    +63% (ex top-3 trades   +21%) maxDD   24pts n154 | N=20:   +232% (ex top-3 trades   +96%) maxDD   37pts n243
+  M2 GPD(x) P(+100%)         sel n 289 | N=10:    +67% (ex top-3 trades   +19%) maxDD   24pts n155 | N=20:   +219% (ex top-3 trades   +83%) maxDD   23pts n237
+  M2 GPD(x) E[min(L,3x)]     sel n 289 | N=10:    +67% (ex top-3 trades   +19%) maxDD   24pts n155 | N=20:   +219% (ex top-3 trades   +83%) maxDD   23pts n237

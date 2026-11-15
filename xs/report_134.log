@@ -1,0 +1,52 @@
+
+######## ranking score M1P
+ ALL: train n 11348 test n 18732
+   uniform v (vector exit)        TR: mean  +4.75% med  -4.47% ex3  +4.20% win 26.7% | TE: mean  +0.23% med  -4.95% ex3  +0.07% win 22.4%
+   uniform c2                     TR: mean  -0.08% med  -2.33% ex3  -0.13% win 35.3% | TE: mean  -0.22% med  -2.57% ex3  -0.26% win 33.9%
+   uniform c3                     TR: mean  +1.01% med  -3.08% ex3  +0.93% win 33.1% | TE: mean  -0.28% med  -3.53% ex3  -0.33% win 30.6%
+   uniform c4                     TR: mean  +2.32% med  -3.71% ex3  +2.14% win 30.6% | TE: mean  -0.23% med  -4.15% ex3  -0.29% win 27.2%
+   uniform c5                     TR: mean  +3.59% med  -4.08% ex3  +3.22% win 28.9% | TE: mean  +0.11% med  -4.54% ex3  -0.06% win 25.0%
+   DECLARED: top->v, rest->c3     TR: mean  +4.15% med  -3.28% ex3  +3.60% win 32.0% | TE: mean  +0.03% med  -3.76% ex3  -0.13% win 29.1%
+   top->v, rest->c2               TR: mean  +3.76% med  -2.53% ex3  +3.21% win 34.4% | TE: mean  +0.14% med  -2.90% ex3  -0.02% win 32.0%
+   top->c5, rest->c3              TR: mean  +2.88% med  -3.21% ex3  +2.51% win 32.3% | TE: mean  +0.06% med  -3.70% ex3  -0.10% win 29.6%
+   REVERSE: top->c3, rest->v      TR: mean  +1.61% med  -4.25% ex3  +1.50% win 27.9% | TE: mean  -0.09% med  -4.71% ex3  -0.15% win 23.9%
+   -- TOP20: v: TR  +20.0/TE   +2.3 (med TE -10.2) | c2: TR   +0.8/TE   +0.2 (med TE  -4.9) | c3: TR   +4.3/TE   +0.5 (med TE  -7.0) | c4: TR   +8.3/TE   +1.0 (med TE  -8.5) | c5: TR  +13.6/TE   +2.4 (med TE  -9.4)
+   -- REST: v: TR   +0.9/TE   -0.2 (med TE  -4.5) | c2: TR   -0.3/TE   -0.3 (med TE  -2.4) | c3: TR   +0.2/TE   -0.5 (med TE  -3.3) | c4: TR   +0.8/TE   -0.5 (med TE  -3.9) | c5: TR   +1.1/TE   -0.4 (med TE  -4.2)
+ px<5: train n 510 test n 1353
+   uniform v (vector exit)        TR: mean +36.85% med  -5.27% ex3 +24.97% win 31.6% | TE: mean  +7.33% med  -6.87% ex3  +5.22% win 26.2%
+   uniform c2                     TR: mean  +3.03% med  -2.28% ex3  +2.31% win 40.0% | TE: mean  +0.71% med  -3.37% ex3  +0.46% win 36.9%
+   uniform c3                     TR: mean  +7.06% med  -3.01% ex3  +5.53% win 39.6% | TE: mean  +1.72% med  -4.87% ex3  +1.19% win 33.9%
+   uniform c4                     TR: mean +13.99% med  -3.45% ex3 +10.15% win 37.1% | TE: mean  +2.83% med  -5.75% ex3  +2.07% win 30.6%
+   uniform c5                     TR: mean +23.85% med  -4.15% ex3 +15.74% win 36.1% | TE: mean  +6.14% med  -6.30% ex3  +4.03% win 29.0%
+   DECLARED: top->v, rest->c3     TR: mean +21.56% med  -3.54% ex3 +15.78% win 37.5% | TE: mean  +4.45% med  -5.15% ex3  +2.44% win 32.6%
+   top->v, rest->c2               TR: mean +18.83% med  -2.81% ex3 +13.03% win 39.4% | TE: mean  +4.30% med  -3.58% ex3  +2.29% win 35.8%
+   top->c5, rest->c3              TR: mean +14.97% med  -3.09% ex3 +10.16% win 39.4% | TE: mean  +4.25% med  -5.04% ex3  +2.18% win 33.4%
+   REVERSE: top->c3, rest->v      TR: mean +22.36% med  -4.71% ex3 +11.54% win 33.7% | TE: mean  +4.60% med  -6.45% ex3  +3.73% win 27.6%
+   -- TOP20: v: TR  +86.7/TE  +20.6 (med TE -13.7) | c2: TR   +7.7/TE   +0.4 (med TE  -7.6) | c3: TR  +14.2/TE   +5.2 (med TE  -8.0) | c4: TR  +37.6/TE   +5.7 (med TE -10.0) | c5: TR  +53.7/TE  +19.5 (med TE -12.2)
+   -- REST: v: TR  +24.4/TE   +4.5 (med TE  -6.4) | c2: TR   +1.9/TE   +0.8 (med TE  -3.1) | c3: TR   +5.3/TE   +1.0 (med TE  -4.6) | c4: TR   +8.1/TE   +2.2 (med TE  -5.4) | c5: TR  +16.4/TE   +3.3 (med TE  -6.0)
+
+######## ranking score M0P
+ ALL: train n 11348 test n 18732
+   uniform v (vector exit)        TR: mean  +4.75% med  -4.47% ex3  +4.20% win 26.7% | TE: mean  +0.23% med  -4.95% ex3  +0.07% win 22.4%
+   uniform c2                     TR: mean  -0.08% med  -2.33% ex3  -0.13% win 35.3% | TE: mean  -0.22% med  -2.57% ex3  -0.26% win 33.9%
+   uniform c3                     TR: mean  +1.01% med  -3.08% ex3  +0.93% win 33.1% | TE: mean  -0.28% med  -3.53% ex3  -0.33% win 30.6%
+   uniform c4                     TR: mean  +2.32% med  -3.71% ex3  +2.14% win 30.6% | TE: mean  -0.23% med  -4.15% ex3  -0.29% win 27.2%
+   uniform c5                     TR: mean  +3.59% med  -4.08% ex3  +3.22% win 28.9% | TE: mean  +0.11% med  -4.54% ex3  -0.06% win 25.0%
+   DECLARED: top->v, rest->c3     TR: mean  +4.08% med  -3.26% ex3  +3.53% win 32.1% | TE: mean  +0.02% med  -3.76% ex3  -0.15% win 29.2%
+   top->v, rest->c2               TR: mean  +3.66% med  -2.53% ex3  +3.11% win 34.5% | TE: mean  +0.12% med  -2.89% ex3  -0.05% win 32.1%
+   top->c5, rest->c3              TR: mean  +2.82% med  -3.20% ex3  +2.45% win 32.4% | TE: mean  +0.04% med  -3.69% ex3  -0.12% win 29.7%
+   REVERSE: top->c3, rest->v      TR: mean  +1.68% med  -4.26% ex3  +1.57% win 27.7% | TE: mean  -0.07% med  -4.71% ex3  -0.14% win 23.8%
+   -- TOP20: v: TR  +19.4/TE   +2.0 (med TE -10.4) | c2: TR   +0.7/TE   +0.1 (med TE  -5.0) | c3: TR   +4.1/TE   +0.3 (med TE  -7.0) | c4: TR   +7.9/TE   +0.7 (med TE  -8.6) | c5: TR  +13.1/TE   +2.1 (med TE  -9.5)
+   -- REST: v: TR   +1.1/TE   -0.2 (med TE  -4.5) | c2: TR   -0.3/TE   -0.3 (med TE  -2.4) | c3: TR   +0.3/TE   -0.4 (med TE  -3.3) | c4: TR   +0.9/TE   -0.4 (med TE  -3.9) | c5: TR   +1.2/TE   -0.3 (med TE  -4.2)
+ px<5: train n 510 test n 1353
+   uniform v (vector exit)        TR: mean +36.85% med  -5.27% ex3 +24.97% win 31.6% | TE: mean  +7.33% med  -6.87% ex3  +5.22% win 26.2%
+   uniform c2                     TR: mean  +3.03% med  -2.28% ex3  +2.31% win 40.0% | TE: mean  +0.71% med  -3.37% ex3  +0.46% win 36.9%
+   uniform c3                     TR: mean  +7.06% med  -3.01% ex3  +5.53% win 39.6% | TE: mean  +1.72% med  -4.87% ex3  +1.19% win 33.9%
+   uniform c4                     TR: mean +13.99% med  -3.45% ex3 +10.15% win 37.1% | TE: mean  +2.83% med  -5.75% ex3  +2.07% win 30.6%
+   uniform c5                     TR: mean +23.85% med  -4.15% ex3 +15.74% win 36.1% | TE: mean  +6.14% med  -6.30% ex3  +4.03% win 29.0%
+   DECLARED: top->v, rest->c3     TR: mean +20.45% med  -3.54% ex3 +14.79% win 37.6% | TE: mean  +4.44% med  -5.23% ex3  +2.43% win 32.3%
+   top->v, rest->c2               TR: mean +17.71% med  -2.81% ex3 +12.03% win 39.8% | TE: mean  +4.32% med  -3.61% ex3  +2.31% win 35.6%
+   top->c5, rest->c3              TR: mean +14.80% med  -3.07% ex3  +9.99% win 39.4% | TE: mean  +4.20% med  -5.08% ex3  +2.13% win 33.2%
+   REVERSE: top->c3, rest->v      TR: mean +23.47% med  -4.71% ex3 +12.33% win 33.5% | TE: mean  +4.61% med  -6.38% ex3  +3.74% win 27.9%
+   -- TOP20: v: TR  +82.2/TE  +20.5 (med TE -13.0) | c2: TR   +8.8/TE   +1.1 (med TE  -6.9) | c3: TR  +15.3/TE   +5.8 (med TE  -6.7) | c4: TR  +35.2/TE   +6.3 (med TE  -8.9) | c5: TR  +54.0/TE  +19.2 (med TE -11.1)
+   -- REST: v: TR  +25.5/TE   +4.3 (med TE  -6.4) | c2: TR   +1.6/TE   +0.6 (med TE  -3.1) | c3: TR   +5.0/TE   +0.8 (med TE  -4.7) | c4: TR   +8.7/TE   +2.0 (med TE  -5.5) | c5: TR  +16.3/TE   +3.2 (med TE  -6.0)
