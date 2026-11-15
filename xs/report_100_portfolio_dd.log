@@ -1,0 +1,26 @@
+train 80th pct score cutoff 0.1925
+paths 30323
+
+== TEST 2022-01 to 2026-02 (frozen window) == max 20 positions, 5% of starting capital each; random-order books are averaged over 20 random tie-break draws (min..max shown); costs 30bp, small-caps 100bp in the 2nd line
+ CURRENT-LIKE (all flips)       total    +3.7% (-27..+44) annual   +0.9% maxDD  -51.7pts (-66..-38) sharpe +0.03 calmar +0.02 trades  533 avgpos 20.4 worst month -14.7%
+                                @100bp small caps: total    -0.3% maxDD  -53.5pts sharpe -0.01 | by year (draw 0) {2022: -31.3, 2023: -2.3, 2024: 14.2, 2025: 7.7, 2026: 6.8}
+ CURRENT-LIKE + vol>=1.5x       total   +25.7% (-20..+74) annual   +6.2% maxDD  -46.3pts (-60..-36) sharpe +0.21 calmar +0.13 trades  450 avgpos 20.2 worst month -18.0%
+                                @100bp small caps: total   +21.9% maxDD  -47.1pts sharpe +0.18 | by year (draw 0) {2022: -33.3, 2023: 20.3, 2024: 28.2, 2025: 10.0, 2026: 4.5}
+ SCORE top 20% (frozen cutoff)  total   +90.0% () annual  +21.8% maxDD  -52.1pts () sharpe +0.54 calmar +0.42 trades  394 avgpos 20.1 worst month -18.7%
+                                @100bp small caps: total   +83.7% maxDD  -53.5pts sharpe +0.50 | by year (draw 0) {2022: -8.9, 2023: 41.2, 2024: 11.7, 2025: 20.0, 2026: 26.0}
+ $1-10 only                     total   +79.0% (+15..+178) annual  +19.1% maxDD  -62.4pts (-100..-44) sharpe +0.44 calmar +0.31 trades  478 avgpos 19.9 worst month -23.2%
+                                @100bp small caps: total   +62.2% maxDD  -66.2pts sharpe +0.34 | by year (draw 0) {2022: -0.5, 2023: 7.7, 2024: 0.8, 2025: 27.6, 2026: -3.3}
+ $1-10 & SCORE                  total   +74.4% () annual  +18.0% maxDD  -68.4pts () sharpe +0.36 calmar +0.26 trades  421 avgpos 19.0 worst month -24.9%
+                                @100bp small caps: total   +59.7% maxDD  -72.8pts sharpe +0.28 | by year (draw 0) {2022: 1.1, 2023: 20.0, 2024: 6.5, 2025: 42.5, 2026: 4.2}
+
+== REFERENCE 2019-21 (in-sample for the score) == max 20 positions, 5% of starting capital each; random-order books are averaged over 20 random tie-break draws (min..max shown); costs 30bp, small-caps 100bp in the 2nd line
+ CURRENT-LIKE (all flips)       total   +91.5% (+52..+281) annual  +30.5% maxDD  -69.3pts (-324..-38) sharpe +0.72 calmar +0.44 trades  314 avgpos 20.2 worst month -33.5%
+                                @100bp small caps: total   +90.0% maxDD  -69.6pts sharpe +0.71 | by year (draw 0) {2019: 19.0, 2020: 61.7, 2021: 20.5}
+ CURRENT-LIKE + vol>=1.5x       total   +76.9% (+49..+114) annual  +25.6% maxDD  -57.2pts (-141..-45) sharpe +0.74 calmar +0.45 trades  277 avgpos 19.9 worst month -24.8%
+                                @100bp small caps: total   +75.2% maxDD  -57.5pts sharpe +0.73 | by year (draw 0) {2019: 27.0, 2020: 28.0, 2021: 8.0}
+ SCORE top 20% (frozen cutoff)  total   +47.5% () annual  +15.8% maxDD  -59.8pts () sharpe +0.46 calmar +0.26 trades  274 avgpos 19.8 worst month -26.8%
+                                @100bp small caps: total   +44.7% maxDD  -60.4pts sharpe +0.43 | by year (draw 0) {2019: 33.6, 2020: -0.3, 2021: 14.1}
+ $1-10 only                     total  +248.9% (+208..+310) annual  +82.9% maxDD -175.3pts (-216..-157) sharpe +0.73 calmar +0.47 trades  312 avgpos 19.1 worst month -38.9%
+                                @100bp small caps: total  +238.0% maxDD -178.2pts sharpe +0.69 | by year (draw 0) {2019: 41.5, 2020: 138.7, 2021: 53.1}
+ $1-10 & SCORE                  total  +299.7% () annual  +99.8% maxDD -199.7pts () sharpe +0.81 calmar +0.50 trades  277 avgpos 17.6 worst month -46.1%
+                                @100bp small caps: total  +290.0% maxDD -202.3pts sharpe +0.78 | by year (draw 0) {2019: 24.9, 2020: 218.5, 2021: 56.3}
