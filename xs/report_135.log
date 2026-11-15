@@ -1,0 +1,25 @@
+PART 1 SIZING (px<5, top-20% M1P, N=20, test 2022+; total as % of START capital)
+  equal                  total   +225% ex-top3   +89% maxDD   38pts monthly Sharpe 0.97 | optimal-growth leverage x6.0 (max log-growth/month 10.36%) n220
+  vol-target 1/ATRP      total   +220% ex-top3  +102% maxDD   45pts monthly Sharpe 1.09 | optimal-growth leverage x6.0 (max log-growth/month 10.13%) n220
+  conviction P(+100%)    total   +255% ex-top3   +82% maxDD   33pts monthly Sharpe 0.84 | optimal-growth leverage x6.0 (max log-growth/month 10.62%) n220
+  vol x conviction       total   +244% ex-top3   +97% maxDD   39pts monthly Sharpe 0.99 | optimal-growth leverage x6.0 (max log-growth/month 10.78%) n220
+  (same on TRAIN selection for reference)
+  equal                  total   +345% ex-top3  +198% maxDD   21pts monthly Sharpe 1.00 | opt lev x6.0 G 18.18%/mo n70
+  vol-target 1/ATRP      total   +320% ex-top3  +176% maxDD   20pts monthly Sharpe 0.96 | opt lev x6.0 G 16.81%/mo n70
+  conviction P(+100%)    total   +343% ex-top3  +188% maxDD   22pts monthly Sharpe 0.99 | opt lev x6.0 G 17.86%/mo n70
+  vol x conviction       total   +325% ex-top3  +181% maxDD   21pts monthly Sharpe 0.96 | opt lev x6.0 G 17.02%/mo n70
+
+PART 2 REGIME (month-level; mean net and BIG rate of selected px<5 flips that month; Spearman with regime var at month start)
+  Hill tail index (rolling 12m)    [-] TR: n_mo 1 rho(mean) +nan rho(big) +nan | TE: n_mo 18 rho(mean) -0.06 rho(big) -0.06
+  Hawkes branching ratio           [-] TR: n_mo 8 rho(mean) -0.14 rho(big) +0.02 | TE: n_mo 36 rho(mean) -0.12 rho(big) +0.01
+  Hawkes excitation lambda/mu      [-] TR: n_mo 8 rho(mean) +0.33 rho(big) +0.54 | TE: n_mo 36 rho(mean) +0.07 rho(big) +0.08
+        count   mean    std    min    25%    50%    75%     max
+alpha    32.0  1.451  0.283  0.909  1.228  1.413  1.676   2.043
+branch   76.0  0.473  0.064  0.297  0.426  0.477  0.524   0.592
+heat     76.0  2.098  2.155  1.013  1.393  1.633  1.993  19.068
+  GATE alpha   (skip when >= train 67th pct 1.18) sizing w0  : gated total   +97% ex3  -28% maxDD  35 Sharpe 0.53 | ungated  +225% ex3  +89% maxDD  38 Sharpe 0.97
+  GATE alpha   (skip when >= train 67th pct 1.18) sizing wVP : gated total  +103% ex3  -30% maxDD  35 Sharpe 0.54 | ungated  +244% ex3  +97% maxDD  39 Sharpe 0.99
+  GATE branch  (skip when >= train 67th pct 0.55) sizing w0  : gated total  +225% ex3  +89% maxDD  38 Sharpe 0.97 | ungated  +225% ex3  +89% maxDD  38 Sharpe 0.97
+  GATE branch  (skip when >= train 67th pct 0.55) sizing wVP : gated total  +244% ex3  +97% maxDD  39 Sharpe 0.99 | ungated  +244% ex3  +97% maxDD  39 Sharpe 0.99
+  GATE heat    (skip when >= train 67th pct 1.88) sizing w0  : gated total   +99% ex3  +52% maxDD  33 Sharpe 0.74 | ungated  +225% ex3  +89% maxDD  38 Sharpe 0.97
+  GATE heat    (skip when >= train 67th pct 1.88) sizing wVP : gated total  +106% ex3  +51% maxDD  36 Sharpe 0.74 | ungated  +244% ex3  +97% maxDD  39 Sharpe 0.99
