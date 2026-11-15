@@ -1,0 +1,42 @@
+const exp      train NLL -0.7876 | TEST NLL -0.9192  (lower better; test-const gap shown below)
+M0 exp(x)      train NLL -0.9461 | TEST NLL -1.0091  (lower better; test-const gap shown below)
+const mix2     train NLL -0.9390 | TEST NLL -1.0315  (lower better; test-const gap shown below)
+M1 mix2(x)     train NLL -1.0409 | TEST NLL -1.0932  (lower better; test-const gap shown below)
+const GPD      train NLL -0.9261 | TEST NLL -1.0248  (lower better; test-const gap shown below)
+M2 GPD(x)      train NLL -1.0021 | TEST NLL -1.0769  (lower better; test-const gap shown below)
+M3 GPD xi(x)   train NLL -1.0072 | TEST NLL -1.0797  (lower better; test-const gap shown below)
+test NLL improvement vs const GPD (nats/flip): {'const exp': -0.1056, 'M0 exp(x)': -0.0158, 'const mix2': 0.0066, 'M1 mix2(x)': 0.0683, 'const GPD': 0.0, 'M2 GPD(x)': 0.052, 'M3 GPD xi(x)': 0.0548}
+
+M0 coefficients (standardized): {'lA': np.float64(0.45), 'EXT': np.float64(-0.425), 'LTURN': np.float64(-0.023), 'LMC': np.float64(-0.062), 'LPX': np.float64(-0.03), 'F11': np.float64(0.128), 'VOLX': np.float64(-0.041), 'F2': np.float64(0.24), 'F7': np.float64(0.181), 'F4': np.float64(-0.027)} | ts(log ATRP) per 1 sd of logATRP = 0.45 ; sd of log ATRP = 0.46 => elasticity ts = 0.977 (diffusive theory ~1)
+M2 xi (train fit) = 0.435  -> tail index alpha=1/xi = 2.3
+  const-GPD refit on 2019-21: xi 0.645 (alpha 1.55), scale 0.0765
+  const-GPD refit on 2022+: xi 0.526 (alpha 1.90), scale 0.0778
+Hill tail index by turnover: TR-low alpha 1.39 (n732) | TR-high alpha 1.07 (n1243) | TE-low alpha 1.50 (n866) | TE-high alpha 1.20 (n2082)
+Hill tail index by market cap: TR-low alpha 1.02 (n1164) | TR-high alpha 1.51 (n764) | TE-low alpha 1.15 (n1651) | TE-high alpha 1.58 (n1308)
+Hill tail index by price: TR-low alpha 1.03 (n1338) | TR-high alpha 1.40 (n1010) | TE-low alpha 1.17 (n2315) | TE-high alpha 1.54 (n1512)
+
+RANKING (test): AUC for PEAK>=+30% / +100% and for NET >=+30% / >=+100% (net = after 30bp), by predicted tail prob; baseline = logistic ridge m_BIG_0.5
+  ALL
+    logistic m_BIG  AUC peak30 0.669 peak100 0.780 | net30 0.656 net100 0.777 | top20 n3458 mean   +2.0% med -10.1% catch net100 58.1%
+    M0 exp(x)       AUC peak30 0.673 peak100 0.784 | net30 0.658 net100 0.774 | top20 n3377 mean   +1.7% med -10.7% catch net100 54.2%
+    M1 mix2(x)      AUC peak30 0.671 peak100 0.786 | net30 0.657 net100 0.778 | top20 n3332 mean   +2.0% med -10.5% catch net100 57.1%
+    M2 GPD(x)       AUC peak30 0.674 peak100 0.779 | net30 0.659 net100 0.763 | top20 n3589 mean   +1.6% med -10.8% catch net100 55.2%
+    M3 GPD xi(x)    AUC peak30 0.664 peak100 0.780 | net30 0.650 net100 0.775 | top20 n3267 mean   +2.0% med -10.4% catch net100 56.2%
+  px<5
+    logistic m_BIG  AUC peak30 0.636 peak100 0.705 | net30 0.617 net100 0.690 | top20 n 221 mean  +18.6% med -12.1% catch net100 29.3%
+    M0 exp(x)       AUC peak30 0.662 peak100 0.742 | net30 0.638 net100 0.707 | top20 n 251 mean  +20.2% med -13.3% catch net100 43.1%
+    M1 mix2(x)      AUC peak30 0.665 peak100 0.746 | net30 0.642 net100 0.714 | top20 n 241 mean  +20.3% med -14.0% catch net100 41.4%
+    M2 GPD(x)       AUC peak30 0.669 peak100 0.742 | net30 0.644 net100 0.709 | top20 n 289 mean  +19.5% med -14.0% catch net100 48.3%
+    M3 GPD xi(x)    AUC peak30 0.653 peak100 0.739 | net30 0.632 net100 0.701 | top20 n 229 mean  +19.0% med -13.1% catch net100 36.2%
+
+calibration M1 mix2(x): test P(peak>=+100%) by predicted decile
+ dc            0          1          2          3          4          5          6          7          8          9
+pred     0.0007     0.0026     0.0053     0.0089     0.0141     0.0218     0.0339     0.0531     0.0889     0.1935
+act      0.0032     0.0069     0.0075     0.0101     0.0133     0.0219     0.0230     0.0400     0.0619     0.1291
+n     1874.0000  1873.0000  1873.0000  1873.0000  1873.0000  1873.0000  1873.0000  1873.0000  1873.0000  1874.0000
+
+calibration M2 GPD(x): test P(peak>=+100%) by predicted decile
+ dc            0          1          2          3          4          5          6          7          8          9
+pred     0.0076     0.0127     0.0166     0.0209     0.0262     0.0328     0.0421     0.0562     0.0817     0.1738
+act      0.0059     0.0053     0.0053     0.0117     0.0139     0.0203     0.0288     0.0427     0.0598     0.1233
+n     1874.0000  1873.0000  1873.0000  1873.0000  1873.0000  1873.0000  1873.0000  1873.0000  1873.0000  1874.0000
