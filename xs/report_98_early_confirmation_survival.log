@@ -1,0 +1,3 @@
+survivors-at-day-3 flips 25930 train 9857 test 16073 | alive20 among survivors train/test 0.585 0.576
+ H1 TEST AUC ALIVE20 base-only 0.576 base+EARLY 0.733 (gain +0.158) | early coefs {'D3': np.float64(2.82), 'RET3': np.float64(0.07), 'VP3': np.float64(0.04), 'UP3': np.float64(-0.01)}  single early AUCs {'D3': 0.73, 'RET3': 0.66, 'VP3': 0.576, 'UP3': 0.603}
+ H2 (same survivor flips) base-score top Q entering day 1: mean +2.8% med -5.9% huge 2.3% | base-score top Q entering day 4: mean +1.8% | base+EARLY top Q entering day 4: mean +0.4% med -7.1% huge 1.3% alive20 85% | all survivors day1 +1.3% day4 +0.3%; median move day1->day4 open on survivors +0.5% (mean +1.0%)
