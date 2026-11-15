@@ -1,0 +1,63 @@
+flips 31667
+
+PART A: terciles within month (0 = lowest feature, 2 = highest)
+
+ VR
+  2019-21   T0 n  4020 mean   +3.9% med  -4.2% huge  2.3% ex-top3  +3.3% || T2 n  4011 mean   +5.1% med  -4.4% huge  1.9% ex-top3  +4.4% || top-bottom +1.2pp t +0.7
+  2022-26Q1 T0 n  6563 mean   -0.3% med  -4.6% huge  0.8% ex-top3  -0.5% || T2 n  6545 mean   +0.9% med  -5.1% huge  1.4% ex-top3  +0.5% || top-bottom +1.3pp t +2.3
+  POOLED    T0 n 10583 mean   +1.3% med  -4.5% huge  1.3% ex-top3  +1.0% || T2 n 10556 mean   +2.5% med  -4.9% huge  1.6% ex-top3  +2.1% || top-bottom +1.2pp t +2.1
+
+ EXT
+  2019-21   T0 n  4020 mean   +4.0% med  -3.2% huge  1.1% ex-top3  +2.5% || T2 n  4011 mean   +6.4% med  -6.2% huge  3.3% ex-top3  +5.7% || top-bottom +2.4pp t +1.0
+  2022-26Q1 T0 n  6563 mean   -0.4% med  -3.6% huge  0.3% ex-top3  -0.5% || T2 n  6545 mean   +0.7% med  -7.3% huge  2.1% ex-top3  +0.2% || top-bottom +1.1pp t +0.9
+  POOLED    T0 n 10583 mean   +1.2% med  -3.5% huge  0.6% ex-top3  +0.7% || T2 n 10556 mean   +2.9% med  -6.9% huge  2.6% ex-top3  +2.5% || top-bottom +1.6pp t +1.4
+
+ R60
+  2019-21   T0 n  4020 mean   +5.1% med  -4.6% huge  2.4% ex-top3  +3.7% || T2 n  4011 mean   +6.0% med  -4.8% huge  2.5% ex-top3  +5.2% || top-bottom +0.8pp t +0.5
+  2022-26Q1 T0 n  6563 mean   +0.4% med  -5.0% huge  1.1% ex-top3  -0.1% || T2 n  6545 mean   +0.7% med  -5.4% huge  1.4% ex-top3  +0.5% || top-bottom +0.3pp t +0.6
+  POOLED    T0 n 10583 mean   +2.2% med  -4.8% huge  1.6% ex-top3  +1.5% || T2 n 10556 mean   +2.7% med  -5.1% huge  1.8% ex-top3  +2.4% || top-bottom +0.5pp t +0.8
+
+ BLOW
+  2019-21   T0 n  4020 mean   +3.8% med  -4.3% huge  2.1% ex-top3  +3.3% || T2 n  4011 mean   +4.7% med  -4.6% huge  2.0% ex-top3  +3.9% || top-bottom +0.9pp t +0.7
+  2022-26Q1 T0 n  6563 mean   -0.4% med  -4.7% huge  0.9% ex-top3  -0.6% || T2 n  6545 mean   +0.8% med  -5.1% huge  1.3% ex-top3  +0.4% || top-bottom +1.2pp t +2.2
+  POOLED    T0 n 10583 mean   +1.2% med  -4.6% huge  1.3% ex-top3  +1.0% || T2 n 10556 mean   +2.3% med  -4.9% huge  1.6% ex-top3  +1.9% || top-bottom +1.1pp t +1.9
+  VR: H predicts LOW (compressed) BETTER no pass
+  EXT: H predicts top tercile WORSE no pass
+  R60: H predicts top tercile WORSE no pass
+  BLOW: H predicts top tercile WORSE no pass
+
+H3 supply proxies
+ pxt 2019-21
+    <2     n    81 mean  +86.2% med  -6.3% huge 16.0% ex-top3 +23.9%
+    2-5    n   432 mean  +27.6% med  -5.2% huge  7.2% ex-top3 +20.2%
+    5-20   n  3328 mean   +6.8% med  -4.8% huge  3.4% ex-top3  +6.0%
+    20+    n  8186 mean   +1.7% med  -4.2% huge  1.1% ex-top3  +1.5%
+ pxt 2022-26Q1
+    <2     n   213 mean  +13.4% med  -7.0% huge  8.0% ex-top3  +9.1%
+    2-5    n  1159 mean   +6.1% med  -6.8% huge  3.5% ex-top3  +3.7%
+    5-20   n  5920 mean   -0.4% med  -5.4% huge  1.2% ex-top3  -0.6%
+    20+    n 12348 mean   -0.4% med  -4.5% huge  0.6% ex-top3  -0.5%
+ dvt 2019-21
+    <1M    n   239 mean  +14.5% med  -5.1% huge  6.7% ex-top3  +9.9%
+    1-5M   n  2325 mean   +7.0% med  -4.6% huge  2.8% ex-top3  +5.9%
+    5-25M  n  5302 mean   +4.3% med  -4.4% huge  1.8% ex-top3  +3.1%
+    25M+   n  4161 mean   +3.1% med  -4.2% huge  1.7% ex-top3  +2.6%
+ dvt 2022-26Q1
+    <1M    n   391 mean   +8.2% med  -6.9% huge  3.6% ex-top3  +1.3%
+    1-5M   n  3275 mean   +0.7% med  -5.4% huge  1.8% ex-top3  +0.4%
+    5-25M  n  7837 mean   -0.0% med  -4.7% huge  0.9% ex-top3  -0.2%
+    25M+   n  8137 mean   -0.3% med  -4.6% huge  0.8% ex-top3  -0.4%
+
+PART B: payoff structure; K random flips per year, equal weight, bootstrap 4000 years
+ 2019-21: flips 12027 mean +4.6% median -4.3% huge 2.1%
+   K= 25: P(year>0)   68% | P(no huge flip)   59% | year return median   +2.4% p10   -3.4% | median WITHOUT top-1 trade   -1.4%
+   K= 50: P(year>0)   77% | P(no huge flip)   35% | year return median   +3.0% p10   -1.8% | median WITHOUT top-1 trade   +0.1%
+   K=100: P(year>0)   88% | P(no huge flip)   12% | year return median   +3.5% p10   -0.3% | median WITHOUT top-1 trade   +1.4%
+   K=250: P(year>0)   98% | P(no huge flip)    0% | year return median   +4.0% p10   +1.3% | median WITHOUT top-1 trade   +2.5%
+   K=500: P(year>0)  100% | P(no huge flip)    0% | year return median   +4.2% p10   +2.1% | median WITHOUT top-1 trade   +3.1%
+ 2022-26Q1: flips 19640 mean +0.2% median -4.8% huge 1.0%
+   K= 25: P(year>0)   41% | P(no huge flip)   77% | year return median   -0.9% p10   -5.0% | median WITHOUT top-1 trade   -3.4%
+   K= 50: P(year>0)   44% | P(no huge flip)   59% | year return median   -0.5% p10   -3.9% | median WITHOUT top-1 trade   -2.4%
+   K=100: P(year>0)   47% | P(no huge flip)   33% | year return median   -0.2% p10   -2.7% | median WITHOUT top-1 trade   -1.6%
+   K=250: P(year>0)   50% | P(no huge flip)    7% | year return median   +0.0% p10   -1.8% | median WITHOUT top-1 trade   -0.8%
+   K=500: P(year>0)   51% | P(no huge flip)    1% | year return median   +0.0% p10   -1.3% | median WITHOUT top-1 trade   -0.5%
