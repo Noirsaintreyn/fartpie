@@ -1,0 +1,30 @@
+
+1H (2023-12..2026-11): names 132, flips 7190
+
+ 1H TRAIN n 2579
+  vector-only   mean  +0.69% med  -1.46% win 26.3% >=10%  8.0% excess  +0.10% worst1%  -10.2% hold  47.7 bars
+  chandelier 3x  mean  +0.27% med  -0.99% win 33.7% >=10%  4.0% excess  +0.04% worst1%   -7.1% hold  19.2 bars | vs vector day-clustered -0.34pp t -2.05
+  chandelier 4x  mean  +0.36% med  -1.17% win 31.5% >=10%  5.1% excess  +0.04% worst1%   -8.2% hold  27.0 bars | vs vector day-clustered -0.24pp t -1.69
+  chandelier 5x  mean  +0.51% med  -1.28% win 29.8% >=10%  6.0% excess  +0.10% worst1%   -8.3% hold  33.9 bars | vs vector day-clustered -0.14pp t -1.28
+
+ 1H TEST n 4611
+  vector-only   mean  +0.61% med  -1.84% win 25.9% >=10% 10.0% excess  +0.00% worst1%  -12.8% hold  49.2 bars
+  chandelier 3x  mean  +0.14% med  -1.18% win 34.2% >=10%  5.4% excess  -0.11% worst1%  -10.0% hold  20.1 bars | vs vector day-clustered -0.40pp t -2.34
+  chandelier 4x  mean  +0.36% med  -1.42% win 31.0% >=10%  7.8% excess  +0.01% worst1%  -11.1% hold  28.6 bars | vs vector day-clustered -0.19pp t -1.38
+  chandelier 5x  mean  +0.41% med  -1.58% win 28.8% >=10%  8.8% excess  -0.03% worst1%  -12.0% hold  35.8 bars | vs vector day-clustered -0.19pp t -1.49
+
+ 1H TEST slot-limited portfolio (max 10 positions, 10% each, additive, first-come):
+  vector-only    total  +46.0% of capital  maxDD  13.5 pts  Sharpe  1.22
+  chandelier 3x  total   +7.2% of capital  maxDD  27.1 pts  Sharpe  0.17
+  chandelier 4x  total  +25.5% of capital  maxDD  19.6 pts  Sharpe  0.68
+  chandelier 5x  total  +51.6% of capital  maxDD  13.8 pts  Sharpe  1.34
+
+ 1H cost sensitivity 25bp (TEST, vector vs chandelier 4x):
+  vector +0.46%  chand4x +0.21%
+
+15m (Aug 21-Nov 13 2026, ONE regime): names 134, flips 2175
+ 15m ALL (lead only)
+  vector-only   mean  -0.27% med  -0.95% win 24.1% >=10%  2.8% excess  -0.10% worst1%   -8.4% hold  45.3 bars
+  chandelier 3x  mean  -0.07% med  -0.62% win 32.7% >=10%  1.2% excess  +0.01% worst1%   -6.3% hold  20.1 bars | vs vector day-clustered +0.17pp t +1.86
+  chandelier 4x  mean  -0.13% med  -0.74% win 29.9% >=10%  1.7% excess  -0.02% worst1%   -7.1% hold  27.4 bars | vs vector day-clustered +0.12pp t +1.55
+  chandelier 5x  mean  -0.18% med  -0.83% win 28.0% >=10%  2.0% excess  -0.05% worst1%   -7.3% hold  33.7 bars | vs vector day-clustered +0.06pp t +0.82

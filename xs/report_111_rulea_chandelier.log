@@ -1,0 +1,23 @@
+trades replayed 346 of 357 | BASE replay vs logged: mean 10.04 10.15 corr 0.991
+
+ 2018-21
+  rec      n  151 mean  +8.22 med   +3.1 win 53.0% total   +1241 maxDD   267 worst  -51.0
+  BASE     n  151 mean  +8.56 med   +2.8 win 53.0% total   +1292 maxDD   268 worst  -51.0
+  NOTGT    n  151 mean +12.33 med   +2.8 win 53.0% total   +1862 maxDD   283 worst  -51.0
+  CH3      n  151 mean +13.54 med   -1.5 win 49.7% total   +2044 maxDD   272 worst  -51.0
+  CH4      n  151 mean +10.86 med   -2.2 win 46.4% total   +1640 maxDD   331 worst  -51.0
+  CH5      n  151 mean +11.81 med   +1.0 win 50.3% total   +1784 maxDD   283 worst  -51.0
+  CHONLY3  n  151 mean +12.24 med   -1.5 win 49.7% total   +1848 maxDD   272 worst -130.2
+  CHONLY4  n  151 mean +11.35 med   -2.0 win 47.0% total   +1714 maxDD   315 worst -130.2
+  CHONLY5  n  151 mean +14.95 med   +3.5 win 53.0% total   +2257 maxDD   250 worst  -91.5
+
+ 2022+
+  rec      n  195 mean +11.64 med  +15.0 win 52.8% total   +2270 maxDD   475 worst  -51.0
+  BASE     n  195 mean +11.19 med  +13.2 win 52.8% total   +2182 maxDD   600 worst  -51.0
+  NOTGT    n  195 mean +13.02 med  -20.5 win 44.6% total   +2539 maxDD   710 worst  -51.0
+  CH3      n  195 mean +11.53 med  -14.0 win 43.6% total   +2249 maxDD   823 worst  -51.0
+  CH4      n  195 mean +13.70 med  -14.0 win 45.1% total   +2672 maxDD   710 worst  -51.0
+  CH5      n  195 mean +13.68 med  -16.8 win 45.1% total   +2668 maxDD   710 worst  -51.0
+  CHONLY3  n  195 mean +12.27 med   -2.0 win 49.2% total   +2392 maxDD   998 worst -169.2
+  CHONLY4  n  195 mean +18.88 med  +13.2 win 55.9% total   +3682 maxDD   848 worst -244.5
+  CHONLY5  n  195 mean +16.21 med  +17.2 win 57.4% total   +3162 maxDD   879 worst -244.5
