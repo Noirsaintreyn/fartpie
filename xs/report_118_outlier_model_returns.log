@@ -1,0 +1,83 @@
+train 80th pct score cutoff 0.1925
+paths 30323
+coverage 25519 of 30080 | train 80th pct OS cut 2.193
+
+PER-TRADE (daily flips, hold to bear flip)
+ TRAIN ALL flips                  n  9764 (3258/yr) mean30   +4.43% mean100   +3.73% med  -4.71% win10  16.2% huge 2.07% ex3  +3.79%
+ TEST  ALL flips                  n 15755 (3793/yr) mean30   -0.04% mean100   -0.74% med  -5.16% win10  13.0% huge 1.06% ex3  -0.24% | 2022:-3.4 2023:+0.9 2024:-0.5 2025:+3.0 2026:-1.3
+ TRAIN px<5                       n   428 ( 144/yr) mean30  +39.57% mean100  +38.87% med  -5.57% win10  24.8% huge 8.88% ex3 +25.41%
+ TEST  px<5                       n  1076 ( 259/yr) mean30   +7.12% mean100   +6.42% med  -7.34% win10  18.5% huge 4.46% ex3  +4.47% | 2022:+2.0 2023:+8.3 2024:+6.4 2025:+10.2 2026:+3.4
+ TRAIN OS top20                   n  1953 ( 654/yr) mean30  +17.88% mean100  +17.18% med  -7.72% win10  26.5% huge 6.61% ex3 +14.72%
+ TEST  OS top20                   n  2766 ( 666/yr) mean30   +2.85% mean100   +2.15% med  -9.38% win10  18.1% huge 3.51% ex3  +1.75% | 2022:-4.3 2023:+4.2 2024:-0.5 2025:+11.0 2026:-3.8
+ TRAIN OS top20 & px<5            n   209 (  71/yr) mean30  +67.70% mean100  +67.00% med  -8.15% win10  33.5% huge 13.40% ex3 +38.89%
+ TEST  OS top20 & px<5            n   504 ( 122/yr) mean30  +12.96% mean100  +12.26% med -10.18% win10  22.6% huge 7.54% ex3  +7.42% | 2022:+2.5 2023:+16.5 2024:+10.4 2025:+17.6 2026:+9.9
+ TRAIN frozen score top20 & px<5  n   212 (  71/yr) mean30  +33.71% mean100  +33.01% med  -8.10% win10  26.4% huge 8.02% ex3 +22.16%
+ TEST  frozen score top20 & px<5  n   552 ( 134/yr) mean30  +11.40% mean100  +10.70% med  -9.95% win10  21.2% huge 6.16% ex3  +6.23% | 2022:-0.2 2023:+13.2 2024:+12.8 2025:+13.5 2026:+12.9
+ TRAIN frozen score top20         n  1848 ( 618/yr) mean30   +9.74% mean100   +9.04% med  -6.76% win10  22.3% huge 3.84% ex3  +8.16%
+ TEST  frozen score top20         n  2993 ( 721/yr) mean30   +2.09% mean100   +1.39% med  -8.35% win10  17.6% huge 2.71% ex3  +1.11% | 2022:-3.3 2023:+3.7 2024:-0.2 2025:+8.1 2026:-2.0
+
+paths with OS 25519 of 30323
+
+== BOOK TEST 2022-01..2026-02, FIXED5 (5% each), cost 30bp ==
+ ALL flips (random)                   N=10: total     -5.1% ann    -1.2% maxDD   -32.6pts sharpe -0.10 trades  278 avgpos 10.2 worstmo   -8.5% | years {2022: -10.1, 2023: -4.1, 2024: 8.8, 2025: -3.2, 2026: -5.4}
+ ALL flips (random)                   N=20: total     +3.7% ann    +0.9% maxDD   -51.7pts sharpe +0.03 trades  533 avgpos 20.4 worstmo  -14.7%
+ px<5 (random)                        N=10: total    +34.5% ann    +8.3% maxDD   -33.3pts sharpe +0.36 trades  225 avgpos  9.8 worstmo  -13.6% | years {2022: 20.0, 2023: -2.9, 2024: -5.6, 2025: 3.8, 2026: 5.8}
+ px<5 (random)                        N=20: total   +123.3% ann   +29.8% maxDD   -62.6pts sharpe +0.64 trades  432 avgpos 18.9 worstmo  -23.1%
+ frozen score top20 (score)           N=10: total    +31.8% ann    +7.7% maxDD   -28.2pts sharpe +0.37 trades  189 avgpos 10.1 worstmo   -8.6% | years {2022: -5.8, 2023: 22.3, 2024: -0.7, 2025: 6.9, 2026: 9.1}
+ frozen score top20 (score)           N=20: total    +90.0% ann   +21.8% maxDD   -52.1pts sharpe +0.54 trades  394 avgpos 20.1 worstmo  -18.7%
+ frozen score top20 & px<5 (score)    N=10: total    +71.5% ann   +17.3% maxDD   -40.3pts sharpe +0.58 trades  176 avgpos  9.3 worstmo  -13.9% | years {2022: 11.3, 2023: 5.1, 2024: 29.0, 2025: 21.2, 2026: 4.8}
+ frozen score top20 & px<5 (score)    N=20: total   +134.0% ann   +32.4% maxDD   -83.0pts sharpe +0.59 trades  345 avgpos 17.3 worstmo  -21.4%
+ OS top20 (OS)                        N=10: total    +59.6% ann   +14.4% maxDD   -42.2pts sharpe +0.51 trades  231 avgpos 10.0 worstmo  -14.3% | years {2022: -7.3, 2023: 26.0, 2024: -3.1, 2025: 39.6, 2026: 4.5}
+ OS top20 (OS)                        N=20: total    +68.5% ann   +16.6% maxDD   -80.0pts sharpe +0.35 trades  457 avgpos 19.6 worstmo  -24.7%
+ OS top20 & px<5 (OS)                 N=10: total    +72.2% ann   +17.5% maxDD   -49.6pts sharpe +0.49 trades  180 avgpos  8.9 worstmo  -18.0% | years {2022: 26.5, 2023: 3.2, 2024: -2.0, 2025: 28.6, 2026: 15.9}
+ OS top20 & px<5 (OS)                 N=20: total   +125.8% ann   +30.4% maxDD   -64.5pts sharpe +0.55 trades  332 avgpos 15.4 worstmo  -21.5%
+ OS top10 & px<5 (OS)                 N=10: total    +59.9% ann   +14.5% maxDD   -48.3pts sharpe +0.39 trades  166 avgpos  8.1 worstmo  -18.7% | years {2022: 9.0, 2023: 12.2, 2024: -4.1, 2025: 30.5, 2026: 12.2}
+ OS top10 & px<5 (OS)                 N=20: total   +202.9% ann   +49.1% maxDD  -112.5pts sharpe +0.73 trades  260 avgpos 12.2 worstmo  -29.7%
+
+== BOOK TEST 2022-01..2026-02, FULL (1/N each), cost 30bp ==
+ ALL flips (random)                   N=10: total    -10.2% ann    -2.5% maxDD   -65.3pts sharpe -0.10 trades  278 avgpos 10.2 worstmo  -17.0%
+ ALL flips (random)                   N=20: total     +3.7% ann    +0.9% maxDD   -51.7pts sharpe +0.03 trades  533 avgpos 20.4 worstmo  -14.7%
+ px<5 (random)                        N=10: total    +69.1% ann   +16.7% maxDD   -66.7pts sharpe +0.36 trades  225 avgpos  9.8 worstmo  -27.2%
+ px<5 (random)                        N=20: total   +123.3% ann   +29.8% maxDD   -62.6pts sharpe +0.64 trades  432 avgpos 18.9 worstmo  -23.1%
+ frozen score top20 (score)           N=10: total    +63.6% ann   +15.4% maxDD   -56.4pts sharpe +0.37 trades  189 avgpos 10.1 worstmo  -17.1%
+ frozen score top20 (score)           N=20: total    +90.0% ann   +21.8% maxDD   -52.1pts sharpe +0.54 trades  394 avgpos 20.1 worstmo  -18.7%
+ frozen score top20 & px<5 (score)    N=10: total   +142.9% ann   +34.6% maxDD   -80.6pts sharpe +0.58 trades  176 avgpos  9.3 worstmo  -27.8%
+ frozen score top20 & px<5 (score)    N=20: total   +134.0% ann   +32.4% maxDD   -83.0pts sharpe +0.59 trades  345 avgpos 17.3 worstmo  -21.4%
+ OS top20 (OS)                        N=10: total   +119.2% ann   +28.8% maxDD   -84.5pts sharpe +0.51 trades  231 avgpos 10.0 worstmo  -28.6%
+ OS top20 (OS)                        N=20: total    +68.5% ann   +16.6% maxDD   -80.0pts sharpe +0.35 trades  457 avgpos 19.6 worstmo  -24.7%
+ OS top20 & px<5 (OS)                 N=10: total   +144.4% ann   +34.9% maxDD   -99.1pts sharpe +0.49 trades  180 avgpos  8.9 worstmo  -36.0%
+ OS top20 & px<5 (OS)                 N=20: total   +125.8% ann   +30.4% maxDD   -64.5pts sharpe +0.55 trades  332 avgpos 15.4 worstmo  -21.5%
+ OS top10 & px<5 (OS)                 N=10: total   +119.8% ann   +29.0% maxDD   -96.7pts sharpe +0.39 trades  166 avgpos  8.1 worstmo  -37.4%
+ OS top10 & px<5 (OS)                 N=20: total   +202.9% ann   +49.1% maxDD  -112.5pts sharpe +0.73 trades  260 avgpos 12.2 worstmo  -29.7%
+
+== BOOK TEST 2022-01..2026-02, FIXED5 (5% each), cost 100bp ==
+ ALL flips (random)                   N=10: total    -14.9% ann    -3.6% maxDD   -38.0pts sharpe -0.26 trades  278 avgpos 10.2 worstmo   -8.9%
+ ALL flips (random)                   N=20: total    -15.0% ann    -3.6% maxDD   -61.5pts sharpe -0.14 trades  533 avgpos 20.4 worstmo  -15.4%
+ px<5 (random)                        N=10: total    +26.7% ann    +6.4% maxDD   -34.8pts sharpe +0.28 trades  225 avgpos  9.8 worstmo  -13.9%
+ px<5 (random)                        N=20: total   +108.1% ann   +26.2% maxDD   -64.0pts sharpe +0.56 trades  432 avgpos 18.9 worstmo  -23.6%
+ frozen score top20 (score)           N=10: total    +25.2% ann    +6.1% maxDD   -30.2pts sharpe +0.29 trades  189 avgpos 10.1 worstmo   -8.8%
+ frozen score top20 (score)           N=20: total    +76.2% ann   +18.4% maxDD   -55.0pts sharpe +0.46 trades  394 avgpos 20.1 worstmo  -19.1%
+ frozen score top20 & px<5 (score)    N=10: total    +65.3% ann   +15.8% maxDD   -41.2pts sharpe +0.53 trades  176 avgpos  9.3 worstmo  -14.0%
+ frozen score top20 & px<5 (score)    N=20: total   +121.9% ann   +29.5% maxDD   -83.9pts sharpe +0.53 trades  345 avgpos 17.3 worstmo  -21.7%
+ OS top20 (OS)                        N=10: total    +51.5% ann   +12.5% maxDD   -46.2pts sharpe +0.44 trades  231 avgpos 10.0 worstmo  -14.6%
+ OS top20 (OS)                        N=20: total    +52.5% ann   +12.7% maxDD   -87.3pts sharpe +0.27 trades  457 avgpos 19.6 worstmo  -25.4%
+ OS top20 & px<5 (OS)                 N=10: total    +65.9% ann   +15.9% maxDD   -51.0pts sharpe +0.45 trades  180 avgpos  8.9 worstmo  -18.3%
+ OS top20 & px<5 (OS)                 N=20: total   +114.2% ann   +27.6% maxDD   -65.2pts sharpe +0.50 trades  332 avgpos 15.4 worstmo  -21.8%
+ OS top10 & px<5 (OS)                 N=10: total    +54.1% ann   +13.1% maxDD   -49.8pts sharpe +0.35 trades  166 avgpos  8.1 worstmo  -18.9%
+ OS top10 & px<5 (OS)                 N=20: total   +193.8% ann   +46.9% maxDD  -113.4pts sharpe +0.70 trades  260 avgpos 12.2 worstmo  -30.0%
+
+== BOOK TEST 2022-01..2026-02, FULL (1/N each), cost 100bp ==
+ ALL flips (random)                   N=10: total    -29.7% ann    -7.2% maxDD   -76.0pts sharpe -0.26 trades  278 avgpos 10.2 worstmo  -17.7%
+ ALL flips (random)                   N=20: total    -15.0% ann    -3.6% maxDD   -61.5pts sharpe -0.14 trades  533 avgpos 20.4 worstmo  -15.4%
+ px<5 (random)                        N=10: total    +53.3% ann   +12.9% maxDD   -69.6pts sharpe +0.28 trades  225 avgpos  9.8 worstmo  -27.7%
+ px<5 (random)                        N=20: total   +108.1% ann   +26.2% maxDD   -64.0pts sharpe +0.56 trades  432 avgpos 18.9 worstmo  -23.6%
+ frozen score top20 (score)           N=10: total    +50.3% ann   +12.2% maxDD   -60.3pts sharpe +0.29 trades  189 avgpos 10.1 worstmo  -17.7%
+ frozen score top20 (score)           N=20: total    +76.2% ann   +18.4% maxDD   -55.0pts sharpe +0.46 trades  394 avgpos 20.1 worstmo  -19.1%
+ frozen score top20 & px<5 (score)    N=10: total   +130.6% ann   +31.6% maxDD   -82.4pts sharpe +0.53 trades  176 avgpos  9.3 worstmo  -28.0%
+ frozen score top20 & px<5 (score)    N=20: total   +121.9% ann   +29.5% maxDD   -83.9pts sharpe +0.53 trades  345 avgpos 17.3 worstmo  -21.7%
+ OS top20 (OS)                        N=10: total   +103.1% ann   +24.9% maxDD   -92.4pts sharpe +0.44 trades  231 avgpos 10.0 worstmo  -29.3%
+ OS top20 (OS)                        N=20: total    +52.5% ann   +12.7% maxDD   -87.3pts sharpe +0.27 trades  457 avgpos 19.6 worstmo  -25.4%
+ OS top20 & px<5 (OS)                 N=10: total   +131.8% ann   +31.9% maxDD  -102.0pts sharpe +0.45 trades  180 avgpos  8.9 worstmo  -36.5%
+ OS top20 & px<5 (OS)                 N=20: total   +114.2% ann   +27.6% maxDD   -65.2pts sharpe +0.50 trades  332 avgpos 15.4 worstmo  -21.8%
+ OS top10 & px<5 (OS)                 N=10: total   +108.2% ann   +26.2% maxDD   -99.6pts sharpe +0.35 trades  166 avgpos  8.1 worstmo  -37.8%
+ OS top10 & px<5 (OS)                 N=20: total   +193.8% ann   +46.9% maxDD  -113.4pts sharpe +0.70 trades  260 avgpos 12.2 worstmo  -30.0%
