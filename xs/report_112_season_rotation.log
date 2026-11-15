@@ -1,0 +1,61 @@
+universe matrix (2230, 1656)
+
+######## ALL ########
+
+TEST A SEASON: mean net by flip month (train | test) and winter(Nov-Apr) vs summer(May-Oct)
+  month  1  train n  801  +3.25% | test n 1960  -1.93%
+  month  2  train n  909  -2.54% | test n 1615  -4.14%
+  month  3  train n  566  +1.13% | test n 1290  -2.64%
+  month  4  train n 1112  +9.97% | test n 1060  +1.21%
+  month  5  train n  947 +15.38% | test n 1810  +2.49%
+  month  6  train n 1092  -2.34% | test n 1476  +0.89%
+  month  7  train n  984  +2.64% | test n 2210  -2.17%
+  month  8  train n  902  +5.41% | test n 1583  -0.07%
+  month  9  train n  940  +1.37% | test n  955  +0.29%
+  month 10  train n 1196  +5.39% | test n 1487  +1.33%
+  month 11  train n 1234 +10.54% | test n 2138  +3.19%
+  month 12  train n  831  -1.87% | test n 1225  +0.73%
+  month-mean rank corr train vs test +0.66
+  TRAIN: winter n  5453 mean  +4.31% med  -4.65% win10  17.5% huge 1.83% ex-top3  +3.75% | summer n  6061 mean  +4.49% med  -4.92% win10  15.1% huge 2.41% ex-top3  +3.50% | winter-summer month-t +nan
+  TEST: winter n  9288 mean  -0.53% med  -5.34% win10  12.5% huge 0.90% ex-top3  -0.85% | summer n  9521 mean  +0.33% med  -5.15% win10  13.5% huge 1.25% ex-top3  +0.19% | winter-summer month-t +nan
+
+TEST B ROTATION: bear share (other names in vector BEAR at the prior close), market and sector
+ -- bear: train 20/80 cut [0.327 0.581]
+   TRAIN IC +0.040 | HIGH bear share n 2404 +11.81% vs LOW n 2303 +2.16% | top-minus-bottom +16.12pp month-t +nan
+   TEST IC +0.054 | HIGH bear share n 6266 +0.88% vs LOW n 1528 -0.93% | top-minus-bottom +12.51pp month-t +nan
+ -- secbear: train 20/80 cut [0.303 0.667]
+   TRAIN IC -0.010 | HIGH bear share n 2319 +9.43% vs LOW n 2232 +3.70% | top-minus-bottom +1.12pp month-t +0.46
+   TEST IC +0.019 | HIGH bear share n 5037 +0.60% vs LOW n 2126 -0.83% | top-minus-bottom -0.32pp month-t -0.33
+ -- control: equal-weight universe fwd 20d open-to-open by bear-share bucket (all dates a flip occurred):
+   TRAIN ew20 mean by bear quintile 1..5:  +5.5%  -0.3%  +2.4%  +2.3%  +8.9% | flip net by quintile:  +5.0%  +1.2%  +1.5%  +2.7% +15.0%
+   TEST ew20 mean by bear quintile 1..5:  -1.2%  +0.9%  +1.4%  +2.7%  +2.9% | flip net by quintile:  -1.2%  -1.9%  +0.3%  +0.4%  +1.3%
+
+######## LARGE-CAP (dv>=$100M, px>=$10) ########
+
+TEST A SEASON: mean net by flip month (train | test) and winter(Nov-Apr) vs summer(May-Oct)
+  month  1  train n   51  +1.96% | test n  145  -3.44%
+  month  2  train n   37  -0.32% | test n  135  -5.24%
+  month  3  train n   39  +9.09% | test n  116  -5.30%
+  month  4  train n   64 +19.53% | test n  104  +3.31%
+  month  5  train n   41 +27.55% | test n  170  +2.41%
+  month  6  train n   79  +1.53% | test n  105  -0.10%
+  month  7  train n   30  -0.90% | test n  156  -5.72%
+  month  8  train n   43  -3.08% | test n  123  +0.06%
+  month  9  train n   37  -6.07% | test n   87  +7.90%
+  month 10  train n   50  +1.61% | test n   88  +2.90%
+  month 11  train n   57  -2.93% | test n  178  +1.77%
+  month 12  train n   44  -4.38% | test n  108  -4.31%
+  month-mean rank corr train vs test +0.03
+  TRAIN: winter n   292 mean  +4.57% med  -4.66% win10  15.4% huge 2.40% ex-top3  +1.60% | summer n   280 mean  +3.38% med  -5.45% win10  16.4% huge 2.86% ex-top3  +0.67% | winter-summer month-t +nan
+  TEST: winter n   786 mean  -2.07% med  -5.52% win10  11.8% huge 0.51% ex-top3  -2.89% | summer n   729 mean  +0.63% med  -5.37% win10  13.6% huge 1.51% ex-top3  -0.53% | winter-summer month-t +nan
+
+TEST B ROTATION: bear share (other names in vector BEAR at the prior close), market and sector
+ -- bear: train 20/80 cut [0.267 0.585]
+   TRAIN IC +0.148 | HIGH bear share n 115 +25.50% vs LOW n 116 -1.32% | top-minus-bottom +nanpp month-t +nan
+   TEST IC +0.011 | HIGH bear share n 457 +0.81% vs LOW n 29 -4.93% | top-minus-bottom +nanpp month-t +nan
+ -- secbear: train 20/80 cut [0.273 0.625]
+   TRAIN IC +0.143 | HIGH bear share n 114 +21.04% vs LOW n 112 +2.10% | top-minus-bottom +4.21pp month-t +1.87
+   TEST IC -0.006 | HIGH bear share n 502 -0.52% vs LOW n 114 -1.09% | top-minus-bottom -2.73pp month-t -0.89
+ -- control: equal-weight universe fwd 20d open-to-open by bear-share bucket (all dates a flip occurred):
+   TRAIN ew20 mean by bear quintile 1..5:  +3.3%  +1.0%  +1.2%  +2.1%  +8.6% | flip net by quintile:  -0.3%  -2.2%  -3.7%  +1.0% +38.0%
+   TEST ew20 mean by bear quintile 1..5:  -0.9%  +0.6%  +1.6%  +2.6%  +2.6% | flip net by quintile:  -2.6%  -3.7%  +0.1%  +1.4%  +0.3%
