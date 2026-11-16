@@ -1,0 +1,31 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  S1 trades: regime-ON 193 | regime-ON & low vanna 85 | low vanna any regime 181
+  daily correlation of NZ pts with the S6 system pts: +0.42
+
+=== 50K, ONE ACCOUNT (per eval started every 2nd trading day), Lucid caps, room rule, cost 0.5 pt ===
+  DEPLOY: S1 regime-ON 0.2
+    2018-21 starts: pass 94% | paid once 80% | payouts/eval 1.97 (0.51 evals per payout) | avg payout $1,144 | net $2,165/eval | days: start->pass 49, funded->1st payout 15, start->1st payout 72, between 13
+    2022-25 starts: pass 84% | paid once 63% | payouts/eval 2.06 (0.49 evals per payout) | avg payout $1,589 | net $3,180/eval | days: start->pass 28, funded->1st payout 10, start->1st payout 39, between 12
+    one account at a time 2018-26: 27 evals, 51 payouts, longest run without a payout 3 evals
+  S1 regime-ON AND low vanna 0.2
+    2018-21 starts: pass 95% | paid once 84% | payouts/eval 2.02 (0.49 evals per payout) | avg payout $1,104 | net $2,145/eval | days: start->pass 52, funded->1st payout 14, start->1st payout 74, between 16
+    2022-25 starts: pass 86% | paid once 66% | payouts/eval 1.92 (0.52 evals per payout) | avg payout $1,525 | net $2,847/eval | days: start->pass 30, funded->1st payout 10, start->1st payout 45, between 12
+    one account at a time 2018-26: 23 evals, 54 payouts, longest run without a payout 1 evals
+  S1 low vanna only (no regime) 0.2
+    2018-21 starts: pass 95% | paid once 81% | payouts/eval 2.21 (0.45 evals per payout) | avg payout $1,095 | net $2,328/eval | days: start->pass 47, funded->1st payout 15, start->1st payout 69, between 16
+    2022-25 starts: pass 85% | paid once 63% | payouts/eval 1.83 (0.55 evals per payout) | avg payout $1,530 | net $2,715/eval | days: start->pass 28, funded->1st payout 10, start->1st payout 42, between 12
+    one account at a time 2018-26: 23 evals, 59 payouts, longest run without a payout 2 evals
+  S1 regime-ON: 0.3 low-vanna / 0.1 else
+    2018-21 starts: pass 94% | paid once 81% | payouts/eval 1.92 (0.52 evals per payout) | avg payout $1,089 | net $2,002/eval | days: start->pass 49, funded->1st payout 16, start->1st payout 72, between 13
+    2022-25 starts: pass 85% | paid once 66% | payouts/eval 2.17 (0.46 evals per payout) | avg payout $1,566 | net $3,308/eval | days: start->pass 26, funded->1st payout 10, start->1st payout 38, between 11
+    one account at a time 2018-26: 25 evals, 51 payouts, longest run without a payout 1 evals
+  S1 regime-ON, drop non-low-vanna 0.2 (=AND)
+    2018-21 starts: pass 95% | paid once 84% | payouts/eval 1.99 (0.50 evals per payout) | avg payout $1,113 | net $2,131/eval | days: start->pass 53, funded->1st payout 14, start->1st payout 75, between 16
+    2022-25 starts: pass 86% | paid once 66% | payouts/eval 1.92 (0.52 evals per payout) | avg payout $1,525 | net $2,847/eval | days: start->pass 30, funded->1st payout 10, start->1st payout 45, between 12
+    one account at a time 2018-26: 23 evals, 56 payouts, longest run without a payout 2 evals
+  DEPLOY + UNICORN 0.25 ct
+    2018-21 starts: pass 94% | paid once 78% | payouts/eval 2.16 (0.46 evals per payout) | avg payout $1,190 | net $2,476/eval | days: start->pass 48, funded->1st payout 15, start->1st payout 72, between 13
+    2022-25 starts: pass 82% | paid once 62% | payouts/eval 2.07 (0.48 evals per payout) | avg payout $1,566 | net $3,155/eval | days: start->pass 26, funded->1st payout 10, start->1st payout 37, between 13
+    one account at a time 2018-26: 24 evals, 63 payouts, longest run without a payout 1 evals
