@@ -345,3 +345,6 @@ Helps 2019-21 (boom), hurts 2022-26 and 2026 YTD in every variant. Earlier: ATRP
 
 ## Report 197: volume bars + tick-rate z-score (MNQ 1m with n_trades, Dec 2024-Nov 2025 only, no train era, buckets ~1 min at 1k-5k contracts). Rank corr z vs next-bucket continuation ~0 in both halves; best cells 0.1-0.3 pt vs 1 pt cost. No edge; needs tick data and 50k-100k buckets.
 2022 max DD (from Jan 3): SPY -24.5% (ret -18.2%), QQQ -34.8% (-32.6%), large-cap screener -15.3% (+0.2%).
+
+## Report 198: flip-bar relative volume (volume-clock analogue of the tick-rate z) vs large-cap flip outcome
+11,763 live-universe flips (wide_T, sp & ratio>=1.5; train 2,636 | test 9,127). logRVOL of the signal 15m bar vs same slot's 20-session median. IC -0.033 | -0.059; BIG(>=5%) AUC 0.525 | 0.500; high-minus-low tercile +0.10pp (t0.5) | -0.29pp (t-2.6). 15m and 1H tracks agree: no edge, test sign inverted. Tick counts do not exist for the stocks, so true tick-rate untested. FAIL.
