@@ -1,0 +1,8 @@
+trades 656 unfilled on 1m (dropped) 21
+  original 5m (report 144)     A  +2.93 (t+2.8, n221) | B  +2.83 (t+2.9, n414)  PASS
+  1m fill-resolved             A  +1.36 (t+1.3, n221) | B  +0.99 (t+1.1, n414)  FAIL
+  1m + 0.5pt stop slippage     A  +1.06 (t+1.0, n221) | B  +0.69 (t+0.7, n414)  FAIL
+trades whose result changed: 105 of 635 ; of those original win -> now loss 67 | original loss -> win 38
+  1m long : A  +0.82 (t+0.5,n103) | B  -1.00 (t-0.7,n182)
+  1m short: A  +1.83 (t+1.3,n118) | B  +2.55 (t+2.0,n232)
+win rate 1m: A 41% | B 40%
