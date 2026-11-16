@@ -258,3 +258,8 @@ xs/report_178_combo_payout_gaps.py, log xs/report_178.log. One account at a time
 COMBO 2018-21 | 2022-25: gap median 15|12 trading days, p90 62|47, max 213 (10.1 mo)|113 (5.4 mo); fees between payouts median $71|$57, p90 $475|$475, max $1,242|$1,060; max accounts bought between payouts 3|4.
 Passed by 30/60/90d: 9/37/63% | 34/61/78%; ever 98|90%; failed by 90d 2|10%; still running at 90d 34|13%; median days to pass 53|27.
 DEPLOY: gap max 250|130, fees max $1,566|$993; passed by 30/60/90d 10/40/65% | 33/58/71%.
+
+## Report 179 (Nov 15): fractal / Hurst / roughness / vol-of-vol features as leg gates
+xs/report_179_fractal.py, log xs/report_179.log. Features H20 (variance-scaling Hurst, 5m, 20d), RUF5 (path length/range roughness), VOV20, dH; tercile cuts on 2018-21, 8 legs (7 variant-I + IFVG + S1 regime-ON), strict PASS.
+Result: 0 PASS. Intraday H ~0.46 (anti-persistent) train, 0.48 test; H does not split next-day continuation (corr -0.03/-0.13 high/low H train, -0.07/-0.09 test). Vol clustering is real (next-day range corr with today's +0.64 | +0.52) but ATR sizing already uses it; VOV20 adds +0.13|+0.04 partial corr.
+Same-sign leads (|t|<2 in one era): IFVG worse when roughness low (-4.3 t-1.9 | -3.4 t-1.8); S1 worse when VOV20 low (-37 t-2.3 n35 | -64 t-1.6 n51).

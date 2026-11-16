@@ -1,0 +1,14 @@
+H20 distribution (train 2018-21 | test 2022+): mean 0.462 | 0.478 ; sd 0.023 | 0.026
+  [2018-21] continuation corr(r_t, r_t+1): H high -0.033 (n324) | H low -0.130 (n325) ; next-day range corr with today range +0.638; with VOV20 (partial via resid) +0.125
+  [2022+] continuation corr(r_t, r_t+1): H high -0.066 (n374) | H low -0.094 (n374) ; next-day range corr with today range +0.515; with VOV20 (partial via resid) +0.044
+
+leg tercile tests (spread = leg pts in tercile minus rest) 2018-21 // 2022+
+  -- RA: 222 trades tested
+  -- M1: 829 trades tested
+  -- R1: 138 trades tested
+  -- RULES: 942 trades tested
+  -- V15a: 396 trades tested
+  IFVG   RUF5   low    -4.3 (t-1.9,n77) //   -3.4 (t-1.8,n147)
+  -- IFVG: 656 trades tested
+  S1on   VOV20  low   -37.2 (t-2.3,n35) //  -63.7 (t-1.6,n51)
+  -- S1on: 193 trades tested
