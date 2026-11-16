@@ -275,3 +275,7 @@ xs/report_181_session_tilts_lucid.py, log xs/report_181.log. IFVG x1.5 when over
 On DEPLOY alone: S1 London x1.5 $2,578 | $3,157 (2018-21 better, 2022-25 flat); IFVG acc $2,141 | $3,138 (no gain).
 Conclusion: no tilt beats COMBO in 2022-25; not added. One account at a time: payouts 64 vs 61 with the IFVG tilt and longest dry run 1 eval, but lower net per eval.
 Note: S1 (AMT value-area fade) remains the strongest engine; the report-180 acceptance feature is a different thing (overnight closes outside yesterday's range), not a test of TPO/AMT.
+
+## Report 182 (Nov 15): volume profile / TPO / ledge / volume-gap / fib level reactions (first touch, 30 and 60 min continuation)
+xs/report_182_profile_tpo_fib.py, log xs/report_182.log (+ post-hoc role split xs/report_182b.log). Notion (Standard Deviation Orderflow) is JS-rendered and YouTube fetch fails, so textbook definitions were declared up front (not Rey's exact rules). 14,866 first-touch events, 17 level types (POC/VAH/VAL 1d and 5d composite, HVN, LVN, volume GAP edges, SHELF/ledge, TPO single prints, fib 0.382-0.79, fib+volume confluence).
+Result: 0 PASS. Closest same-sign: VAL5 (5d composite value-area low) goes through: +5.7 (t2.0, n223) | +8.2 (t1.8, n266) at 30 min; breakout from inside value +6.4 (t1.9) | +7.4 (t1.3). HVN5 rejects slightly (-2.6 | -2.4, below cost). Fib levels alone: nothing (0.705/0.79 positive in 2022+ only). Ledge/shelf and volume-gap edges: no signal (n 100 shelf events).
