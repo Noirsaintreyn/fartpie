@@ -1,0 +1,26 @@
+
+H1
+  daily only                 n  559 mean  17.88% x3   8.78% med  -7.90% win  28% >=+30% 14.5% >=+50% 10.7% >=+100%  5.9% | sum    9994% | hold 33d
+  1H only                    n 3653 mean   1.35% x3   0.77% med  -3.72% win  25% >=+30%  4.6% >=+50%  2.1% >=+100%  0.8% | sum    4942% | hold 5d
+  HYBRID                     n 2485 mean   6.44% x3   3.62% med  -3.96% win  23% >=+30%  6.0% >=+50%  3.7% >=+100%  2.3% | sum   15995% | hold 6d
+    failed probes            n 1899 mean  -3.66% x3  -3.79% med  -4.30% win  12% >=+30%  0.8% >=+50%  0.2% >=+100%  0.1% | sum   -6943% | hold 3d
+    confirmed                n  586 mean  39.14% x3  27.30% med   2.29% win  57% >=+30% 22.7% >=+50% 15.2% >=+100%  9.6% | sum   22937% | hold 46d
+  V2: daily not yet bull     n 2441 mean   6.55% x3   3.68% med  -3.94% win  23% >=+30%  5.9% >=+50%  3.7% >=+100%  2.3% | sum   15989% | hold 6d
+      daily already bull     n   44 mean   0.13% x3  -5.34% med  -5.17% win  20% >=+30% 13.6% >=+50%  6.8% >=+100%  0.0% | sum       6% | hold 16d
+
+H2
+  daily only                 n  537 mean   5.20% x3   2.98% med  -8.13% win  25% >=+30% 13.0% >=+50%  8.9% >=+100%  5.2% | sum    2791% | hold 28d
+  1H only                    n 3636 mean   0.12% x3  -0.06% med  -3.66% win  24% >=+30%  3.7% >=+50%  1.9% >=+100%  0.6% | sum     440% | hold 5d
+  HYBRID                     n 2376 mean   0.67% x3   0.24% med  -3.91% win  20% >=+30%  4.5% >=+50%  3.1% >=+100%  1.4% | sum    1582% | hold 6d
+    failed probes            n 1817 mean  -4.34% x3  -4.44% med  -4.28% win  10% >=+30%  0.2% >=+50%  0.1% >=+100%  0.0% | sum   -7890% | hold 3d
+    confirmed                n  559 mean  16.94% x3  15.22% med   0.99% win  54% >=+30% 18.4% >=+50% 12.7% >=+100%  5.9% | sum    9472% | hold 39d
+  V2: daily not yet bull     n 2341 mean   0.72% x3   0.29% med  -3.91% win  20% >=+30%  4.3% >=+50%  3.1% >=+100%  1.4% | sum    1697% | hold 6d
+      daily already bull     n   35 mean  -3.26% x3  -8.34% med -11.27% win  29% >=+30% 17.1% >=+50%  2.9% >=+100%  0.0% | sum    -114% | hold 39d
+
+Doubling episodes: share of ALL episodes where a trade entered in the window realized >= +50% / >= +100% net (first trade in window, not the best)
+  H1 D : episodes 190 | first trade >=+50%: 21.1%  >=+100%: 12.1% | sum of ALL trades in the episode window, mean per episode   65.8%, median   31.1%
+  H1 1H: episodes 190 | first trade >=+50%:  4.7%  >=+100%:  1.6% | sum of ALL trades in the episode window, mean per episode   60.4%, median   46.8%
+  H1 HY: episodes 190 | first trade >=+50%: 13.2%  >=+100%:  6.3% | sum of ALL trades in the episode window, mean per episode  102.2%, median   54.3%
+  H2 D : episodes 125 | first trade >=+50%: 15.2%  >=+100%:  9.6% | sum of ALL trades in the episode window, mean per episode   20.1%, median   29.5%
+  H2 1H: episodes 125 | first trade >=+50%:  5.6%  >=+100%:  3.2% | sum of ALL trades in the episode window, mean per episode   42.2%, median   42.4%
+  H2 HY: episodes 125 | first trade >=+50%: 10.4%  >=+100%:  4.8% | sum of ALL trades in the episode window, mean per episode   35.8%, median   44.2%
