@@ -16,3 +16,8 @@ Stats: all S1 2018-21 +0.4 (t 0.1, n 229) | 2022+ +41.2 (t 3.7, n 194). Switch O
 
 ## Not added (tested, failed the strict split)
 Turtle soup fade/continuation, SMT, Goldbach, 15:00 macro, 09:30-10:00 drift, small-gap fill, gap-direction context, RSI/EMA standalone, trend lines (bounce/break/retest), MES dual EMA, Zone Hunter Asia V2.
+
+## UPDATE (Nov 15, 21:5x) after the fill-bar audit (reports 189-190)
+Leg 1 (FIG-V / IFVG) is REMOVED from the deploy config: re-simulated on 1m fill-resolved bars it is +1.4 | +1.0 pts/trade (t 1.3 | 1.1), fails the strict split, and lowers 2022-25 Lucid results. Core legs (vector/V15a, M1, RA, ON) enter at the NEXT 5m bar OPEN (market), so they have no fill-bar issue (code read for vector, M1, RA; ON/R1/RULES generators not yet read line by line).
+Current honest config = variant I + S1 premium fade 0.2 ct (regime-ON, x1.5/x0.5 by overnight VWAP) + RA 40d IPDA misaligned x0.5 + V15a skip high-LVR. Lucid 50K, 2022-25 starts | 2018-21: pass 82% | 94%, paid once 61% | 78%, 2.06 | 1.80 payouts/eval, net $3,119 | $2,082 per eval.
+Stop fills are assumed at the stop price (no stop slippage); cost 1.0 pt per core trade, 0.5 pt per S1 trade.
