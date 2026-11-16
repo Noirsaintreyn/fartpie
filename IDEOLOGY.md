@@ -297,3 +297,10 @@ Deploy spec: do NOT deploy FIG-V until re-derived on 1m; revisit gates.
 
 ## Report 191 (Nov 15): retest of the core algos after the fill-bar fix
 Code read: vector legs (V15a), M1 and RA enter at the NEXT 5m bar OPEN after the signal bar closes (market), stop checked from the entry bar (valid), exits at next open; cost 1.0 pt. So the fill-bar bug is specific to limit-order models (IFVG); core legs unchanged. Lucid numbers with FIG-V removed (report 190): COMBO without FIG-V 82% pass / 61% paid / 2.06 / $3,119 (2022-25) | 94% / 78% / 1.80 / $2,082 (2018-21); no-gate deploy without FIG-V 79% / 52% / 1.90 / $2,969 | 95% / 67% / 1.57 / $1,956. Variant I alone (report 162): 79% / 51% / 1.78 / $2,695 | 95% / 85% / 1.84 / $2,094. Gates still add about +3 pass, +9 paid points over the no-gate deploy. Not audited: R1/RULES/ON generators line by line; stop slippage on core legs.
+
+## Report 192 (Nov 15): stress test of the three groups (core, FIG-V on 1m fills, S1 regime-on) + chart stress_three.png
+xs/report_192_stress_three.py, log xs/report_192.log. 10-day block bootstrap (3,000), extra slippage 0-3 pts/trade, sign-flip placebo (5,000), 20% random missed trades, leave-one-year-out. Sizes as deploy (core u*sz, FIG-V 0.5 NQ, S1 0.2 NQ), no account rules.
+Core: 2,522 trades, +8.2 pts avg, $161k, max DD $6.3k; P(profit) 100%, 5th pct $124k; +2 pts slippage still $113k; placebo p<0.0001; worst leave-one-year-out $119k.
+FIG-V (1m): 635 trades, +1.12 avg, $7.1k, max DD $4.3k; P(profit) 93%, 5th pct -$0.6k; breaks even at 1.2 pts extra slippage; placebo p=0.054; 2020 contributes $4.3k and 2024 $4.1k of $7.1k.
+S1 regime-on: 193 trades, +29.8 avg, $23.0k, max DD $2.6k; P(profit) 99.9%, 5th pct $9.8k; slippage-insensitive (wide stops); placebo p=0.0018; 2025 alone $15.1k of $23.0k, ex-2025 $8.0k.
+Caveat: the bootstrap reshuffles days and ignores regime shifts, so P(profit) is flattering for the core and S1 curves, which are back-loaded in 2022+ and 2025.

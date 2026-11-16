@@ -1,0 +1,18 @@
+Core models: trades 2522, avg +8.17 pts, total $161,026, max DD $-6,305
+   bootstrap: P(total>0) 100.0%, 5th pct total $123,647, median $163,093, 95th pct max DD $-9,498
+   breakeven extra slippage nan pts/trade (total at +1 pt: $136,838, +2 pts: $112,650)
+   sign-flip placebo p = 0.0000 (null mean $-234, sd $21,455); 20% missed trades: P(total>0) 100.0%, 5th pct $115,077
+   leave-one-year-out totals: min $118,656, worst year contributes $42,370 of $161,026
+   by year: {2018: 12026, 2019: 3225, 2020: 8497, 2021: 22652, 2022: 42370, 2023: 38212, 2024: 16355, 2025: 21560, 2026: -3870}
+FIG-V (1m fill-resolved): trades 635, avg +1.12 pts, total $7,108, max DD $-4,344
+   bootstrap: P(total>0) 92.8%, 5th pct total $-642, median $6,647, 95th pct max DD $-6,223
+   breakeven extra slippage 1.2 pts/trade (total at +1 pt: $758, +2 pts: $-5,592)
+   sign-flip placebo p = 0.0538 (null mean $-125, sd $4,537); 20% missed trades: P(total>0) 99.8%, 5th pct $2,696
+   leave-one-year-out totals: min $2,820, worst year contributes $4,288 of $7,108
+   by year: {2018: 24, 2019: 622, 2020: 4288, 2021: -1932, 2022: -1045, 2023: -148, 2024: 4084, 2025: 722, 2026: 492}
+Premium fade (regime on): trades 193, avg +29.84 pts, total $23,034, max DD $-2,590
+   bootstrap: P(total>0) 99.9%, 5th pct total $9,833, median $22,660, 95th pct max DD $-5,495
+   breakeven extra slippage nan pts/trade (total at +1 pt: $22,262, +2 pts: $21,490)
+   sign-flip placebo p = 0.0018 (null mean $-163, sd $8,011); 20% missed trades: P(total>0) 100.0%, 5th pct $13,068
+   leave-one-year-out totals: min $7,960, worst year contributes $15,074 of $23,034
+   by year: {2018: 153, 2019: -721, 2020: -38, 2021: 2046, 2022: 3916, 2023: 797, 2024: -201, 2025: 15074, 2026: 2008}
