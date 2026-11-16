@@ -5,6 +5,7 @@ Sim result (Lucid 50K, one account, 2022-25 starts, report 162): pass 84%, paid 
 NQ 5m, first signal per day, entries 09:35-14:00 ET (limit order valid 12 bars after the signal bar).
 Long: an earlier BEAR FVG (gap >= 3 pts, formed 3..30 bars before) is inverted by a displacement bar (green, body >= 0.6 * ATR14(5m)) closing above the gap top, with no earlier bar closing above it. Limit buy at the gap midpoint (fills only if price trades 0.25 through). Stop = gap bottom - 2. Risk must be 6..40 pts. Target 2R. Flat 15:55. Short = mirror (bull FVG closed through downward).
 Stats (1 ct, cost 0.5): 2018-21 +3.44 pts/trade (t 3.3, n 231) | 2022+ +2.84 (t 3.0, n 425), ~7 trades/month.
+Take profit (report 168): 2R is the default; 1R has the highest win rate (64/59%) and t (3.6/4.5); VWAP target is worse (+2.6/+1.9); nearest liquidity uncapped is worse (+1.6/-0.1).
 Optional (report 164): trades whose direction agrees with price vs the 5m EMA200 (or 15m EMA21/50/200) do better (+4 to +6 pts both eras) but keeping only those did not improve Lucid pass rates in the earlier context-filter sim; do not gate without a rerun.
 
 ## Leg 2: S1 premium fade, 0.2 ct (2 MNQ), ONLY when the regime switch is ON (report 156/161)

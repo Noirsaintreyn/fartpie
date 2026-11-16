@@ -1,0 +1,31 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  IFVG trades with score: 656
+  daily correlation of NZ pts with the S6 system pts: +0.42
+
+=== 50K, ONE ACCOUNT (per eval started every 2nd trading day), Lucid caps, room rule, cost 0.5 pt ===
+  I + IFVG 0.5 flat + S1 regime 0.2 (deploy)
+    2018-21 starts: pass 94% | paid once 80% | payouts/eval 1.97 (0.51 evals per payout) | avg payout $1,144 | net $2,165/eval | days: start->pass 49, funded->1st payout 15, start->1st payout 72, between 13
+    2022-25 starts: pass 84% | paid once 63% | payouts/eval 2.06 (0.49 evals per payout) | avg payout $1,589 | net $3,180/eval | days: start->pass 28, funded->1st payout 10, start->1st payout 39, between 12
+    one account at a time 2018-26: 27 evals, 51 payouts, longest run without a payout 3 evals
+  TIER3 (>=4 .75 | 2-3 .5 | <=1 .25)
+    2018-21 starts: pass 94% | paid once 80% | payouts/eval 2.13 (0.47 evals per payout) | avg payout $1,129 | net $2,323/eval | days: start->pass 49, funded->1st payout 16, start->1st payout 72, between 13
+    2022-25 starts: pass 82% | paid once 59% | payouts/eval 1.96 (0.51 evals per payout) | avg payout $1,560 | net $2,971/eval | days: start->pass 26, funded->1st payout 10, start->1st payout 38, between 12
+    one account at a time 2018-26: 24 evals, 51 payouts, longest run without a payout 2 evals
+  TIER2 (>=3 .75 | else .25)
+    2018-21 starts: pass 95% | paid once 80% | payouts/eval 1.65 (0.61 evals per payout) | avg payout $1,062 | net $1,668/eval | days: start->pass 49, funded->1st payout 16, start->1st payout 72, between 16
+    2022-25 starts: pass 82% | paid once 60% | payouts/eval 2.01 (0.50 evals per payout) | avg payout $1,563 | net $3,048/eval | days: start->pass 26, funded->1st payout 10, start->1st payout 38, between 12
+    one account at a time 2018-26: 25 evals, 54 payouts, longest run without a payout 2 evals
+  TIER2b (>=3 1.0 | else .25)
+    2018-21 starts: pass 95% | paid once 78% | payouts/eval 1.66 (0.60 evals per payout) | avg payout $1,063 | net $1,681/eval | days: start->pass 47, funded->1st payout 16, start->1st payout 70, between 16
+    2022-25 starts: pass 82% | paid once 59% | payouts/eval 2.09 (0.48 evals per payout) | avg payout $1,569 | net $3,190/eval | days: start->pass 25, funded->1st payout 10, start->1st payout 38, between 10
+    one account at a time 2018-26: 26 evals, 50 payouts, longest run without a payout 2 evals
+  TIER2c (>=3 .75 | else .5)
+    2018-21 starts: pass 94% | paid once 78% | payouts/eval 1.78 (0.56 evals per payout) | avg payout $1,138 | net $1,938/eval | days: start->pass 46, funded->1st payout 14, start->1st payout 70, between 14
+    2022-25 starts: pass 83% | paid once 65% | payouts/eval 2.21 (0.45 evals per payout) | avg payout $1,589 | net $3,422/eval | days: start->pass 26, funded->1st payout 10, start->1st payout 38, between 12
+    one account at a time 2018-26: 23 evals, 61 payouts, longest run without a payout 1 evals
+
+real	1m22.696s
+user	1m25.679s
+sys	0m0.610s

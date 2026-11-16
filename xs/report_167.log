@@ -1,0 +1,38 @@
+flips 25519 train 9764 test 15755 | big rate train/test 0.086 0.058 | huge 0.0207 0.0106
+features ['OS', 'ATRP', 'LTURN', 'LMC', 'VR', 'EXT', 'R60', 'BLOW', 'VOLX', 'PEERS', 'LDV', 'LPX', 'IDIO', 'POOL_raw', 'TS12', 'TS1', 'MAC', 'TTR', 'ENR', 'SKEW', 'KURT', 'PANIC', 'MKT126', 'MVR', 'CONT']
+
+=== target big
+  logit OS only  AUC train 0.713 | test 0.644   top-decile (train cut) n 1344 big-rate 0.132  vs test base 0.058  lift 2.30x
+  logit ALL      AUC train 0.804 | test 0.602   top-decile (train cut) n  388 big-rate 0.131  vs test base 0.058  lift 2.29x
+  tree3          AUC train 0.803 | test 0.564   top-decile (train cut) n 1412 big-rate 0.091  vs test base 0.058  lift 1.58x
+  HGB            AUC train 0.890 | test 0.626   top-decile (train cut) n  276 big-rate 0.141  vs test base 0.058  lift 2.46x
+
+=== target huge
+  logit OS only  AUC train 0.824 | test 0.771   top-decile (train cut) n 1344 huge-rate 0.050  vs test base 0.011  lift 4.70x
+  logit ALL      AUC train 0.903 | test 0.743   top-decile (train cut) n  512 huge-rate 0.062  vs test base 0.011  lift 5.90x
+  tree3          AUC train 0.861 | test 0.763   top-decile (train cut) n 1770 huge-rate 0.046  vs test base 0.011  lift 4.37x
+|--- OS <= 2.55
+|   |--- ATRP <= 0.04
+|   |   |--- LPX <= 2.00
+|   |   |   |--- class: 0
+|   |   |--- LPX >  2.00
+|   |   |   |--- class: 0
+|   |--- ATRP >  0.04
+|   |   |--- LMC <= 3.00
+|   |   |   |--- class: 0
+|   |   |--- LMC >  3.00
+|   |   |   |--- class: 0
+|--- OS >  2.55
+|   |--- POOL_raw <= -0.01
+|   |   |--- class: 0
+|   |--- POOL_raw >  -0.01
+|   |   |--- MKT126 <= -0.19
+|   |   |   |--- class: 0
+|   |   |--- MKT126 >  -0.19
+|   |   |   |--- class: 0
+
+  HGB            AUC train 0.974 | test 0.765   top-decile (train cut) n  661 huge-rate 0.053  vs test base 0.011  lift 5.00x
+
+real	0m1.949s
+user	0m2.342s
+sys	0m0.116s

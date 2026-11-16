@@ -1,0 +1,9 @@
+R1        A n 231  +2.43 t +3.6 w 64% | B n 425  +2.80 t +4.5 w 59% PASS
+R2        A n 231  +3.44 t +3.3 w 48% | B n 425  +2.84 t +3.0 w 44% PASS
+R3        A n 231  +3.26 t +2.4 w 35% | B n 425  +1.08 t +0.9 w 29% 
+VWAP      A n 231  +2.62 t +2.4 w 42% | B n 425  +1.91 t +1.8 w 38% 
+VWAPonly  A n  88  +1.64 t +1.0 w 34% | B n 142  +0.26 t +0.1 w 27% 
+LIQ       A n 231  +1.55 t +1.0 w 26% | B n 425  -0.08 t -0.1 w 20% 
+LIQ_FAR   A n 231  +3.95 t +3.2 w 45% | B n 425  +2.90 t +2.7 w 41% PASS
+LIQ2      A n 231  +1.23 t +0.8 w 24% | B n 425  -0.16 t -0.1 w 18% 
+VWAP >=1R away on 0.35 of trades; LIQ level >=1R available on 1.0
