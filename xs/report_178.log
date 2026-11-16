@@ -1,0 +1,23 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  S1 up-lever days (low vanna or room>0.5ATR) in regime-ON trades: 61 of 193 | IFVG near-wall trades: 248 of 656
+  S1 regime-ON trades: below/at ON VWAP 48 above 145 no data 0
+  V15a LVR train 2/3 cut 0.254 high-LVR trades 343 of 1058
+  daily correlation of NZ pts with the S6 system pts: +0.42
+
+=== DEPLOY (S1 .2 regime-ON, IFVG .5)
+  eval fee in sim = $88; Rey: $90 per account + $100/month while holding one
+    2018-21 starts: payout gaps (trading days, incl. start->1st payout): median 20, p90 56, max 250 (~11.9 months) | accounts bought between payouts: median 0, max 4 | fees paid between payouts: median $100, p90 $504, max $1,566
+    2022-25 starts: payout gaps (trading days, incl. start->1st payout): median 15, p90 51, max 130 (~6.2 months) | accounts bought between payouts: median 0, max 4 | fees paid between payouts: median $71, p90 $509, max $993
+    time to pass (share of evals started that have passed by ~30/60/90 calendar days = 21/42/63 trading days; failed; still open at 90d):
+      2018-21 starts: passed by 30d 10% | 60d 40% | 90d 65% | ever 94% | failed by 90d 6% | still running at 90d 29% | median days to pass 49 (p90 135)
+      2022-25 starts: passed by 30d 33% | 60d 58% | 90d 71% | ever 84% | failed by 90d 16% | still running at 90d 12% | median days to pass 28 (p90 72)
+
+=== COMBO S1 x1.5/x.5 + RA x.5 + V15a skip
+  eval fee in sim = $88; Rey: $90 per account + $100/month while holding one
+    2018-21 starts: payout gaps (trading days, incl. start->1st payout): median 15, p90 62, max 213 (~10.1 months) | accounts bought between payouts: median 0, max 3 | fees paid between payouts: median $71, p90 $475, max $1,242
+    2022-25 starts: payout gaps (trading days, incl. start->1st payout): median 12, p90 47, max 113 (~5.4 months) | accounts bought between payouts: median 0, max 4 | fees paid between payouts: median $57, p90 $475, max $1,060
+    time to pass (share of evals started that have passed by ~30/60/90 calendar days = 21/42/63 trading days; failed; still open at 90d):
+      2018-21 starts: passed by 30d 9% | 60d 37% | 90d 63% | ever 98% | failed by 90d 2% | still running at 90d 34% | median days to pass 53 (p90 138)
+      2022-25 starts: passed by 30d 34% | 60d 61% | 90d 78% | ever 90% | failed by 90d 10% | still running at 90d 13% | median days to pass 27 (p90 68)

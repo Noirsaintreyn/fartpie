@@ -252,3 +252,9 @@ Results (2022-25 starts | 2018-21 starts): pass / paid-once / payouts per eval /
 - V15a skip high LVR: 85% 65% 2.23 $3,419 | 97% 83% 2.05 $2,216 ; x.5: no change
 - COMBO (S1 tilt 1.5/.5 + RA x.5 + V15a skip high LVR): 90% 72% 2.55 $3,854 | 97% 87% 2.38 $2,496; one account at a time 2018-26 61 payouts, longest run without payout 2 evals
 Caveat: 9 variants tried, combo stacks three gates; RA and S1 gates are post-hoc (not strict PASS). V15a LVR is the cleanest. Improvement shows in both eras, but treat the combo as a lead, not a proof.
+
+## Report 178 (Nov 15): payout gaps, fees between payouts, time to pass for report-177 COMBO vs DEPLOY
+xs/report_178_combo_payout_gaps.py, log xs/report_178.log. One account at a time, Rey fees $90/account + $100/month held.
+COMBO 2018-21 | 2022-25: gap median 15|12 trading days, p90 62|47, max 213 (10.1 mo)|113 (5.4 mo); fees between payouts median $71|$57, p90 $475|$475, max $1,242|$1,060; max accounts bought between payouts 3|4.
+Passed by 30/60/90d: 9/37/63% | 34/61/78%; ever 98|90%; failed by 90d 2|10%; still running at 90d 34|13%; median days to pass 53|27.
+DEPLOY: gap max 250|130, fees max $1,566|$993; passed by 30/60/90d 10/40/65% | 33/58/71%.
