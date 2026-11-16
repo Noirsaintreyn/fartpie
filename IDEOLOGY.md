@@ -304,3 +304,9 @@ Core: 2,522 trades, +8.2 pts avg, $161k, max DD $6.3k; P(profit) 100%, 5th pct $
 FIG-V (1m): 635 trades, +1.12 avg, $7.1k, max DD $4.3k; P(profit) 93%, 5th pct -$0.6k; breaks even at 1.2 pts extra slippage; placebo p=0.054; 2020 contributes $4.3k and 2024 $4.1k of $7.1k.
 S1 regime-on: 193 trades, +29.8 avg, $23.0k, max DD $2.6k; P(profit) 99.9%, 5th pct $9.8k; slippage-insensitive (wide stops); placebo p=0.0018; 2025 alone $15.1k of $23.0k, ex-2025 $8.0k.
 Caveat: the bootstrap reshuffles days and ignores regime shifts, so P(profit) is flattering for the core and S1 curves, which are back-loaded in 2022+ and 2025.
+
+## Report 193 (Nov 15): one chart for the three systems (three_systems.png)
+xs/report_193_three_systems.py, log xs/report_193.log. Monthly-return block bootstrap (3-month blocks, 5,000 paths).
+Prop algo (core + S1, FIG-V excluded; % of a $50K account, not compounded, before account rules) 2018-02..2026-01: avg 46%/yr, Sharpe 2.6, max DD -8% (Nasdaq same vol -20%), +months 75%, worst month -5%, bootstrap 5th pct 35%/yr, worst-5% max DD -7%.
+Large-cap options-ratio screener (S&P PIT, ratio>=1.5, 6 slots) 2019-01..2026-09: CAGR 37%, Sharpe 1.6, max DD -15% (SPY -24%), +months 69%, worst month -9%, bootstrap 5th pct 22%/yr, worst-5% max DD -28%.
+Mid/small-cap book (website series 2020-03..2026-09, hand-picked universe, survivorship): CAGR 22%, Sharpe 1.1, max DD -15% (equal-weight -22%), +months 53%, worst month -12%, bootstrap 5th pct 10%/yr, worst-5% max DD -27%.

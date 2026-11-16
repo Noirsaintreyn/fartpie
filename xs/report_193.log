@@ -1,0 +1,6 @@
+NQ prop algo: 2018-02..2026-01 (96 months) avg yearly % of 50K 46.0%, Sharpe 2.56, max DD -8.2% (benchmark -20.3%), +months 75%, worst month -5.0%
+   bootstrap: P(end below start) 0.0%, 5th pct yearly 34.7%, median 46.4%, 95th pct max DD -7.2%; benchmark yearly 13.9%
+Large-cap options-ratio screener: 2019-01..2026-09 (93 months) CAGR 37.3%, Sharpe 1.57, max DD -15.2% (benchmark -23.9%), +months 69%, worst month -9.2%
+   bootstrap: P(end below start) 0.0%, 5th pct yearly 22.2%, median 36.3%, 95th pct max DD -28.0%; benchmark yearly 17.4%
+Mid/small-cap book: 2020-03..2026-09 (79 months) CAGR 21.9%, Sharpe 1.15, max DD -14.6% (benchmark -21.9%), +months 53%, worst month -12.0%
+   bootstrap: P(end below start) 0.1%, 5th pct yearly 10.0%, median 22.2%, 95th pct max DD -26.8%; benchmark yearly 17.8%
