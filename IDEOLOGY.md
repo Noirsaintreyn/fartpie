@@ -320,3 +320,14 @@ contracts = max(1, floor(R$ / (stop pts x $2))). 2018-21 | 2022-25 starts, pass 
 - $300: 88|83 / 58|57 / 1.36|1.74 / $1,698|$2,560
 - $400: 81|75 / 41|50 / 1.08|1.27 / $1,378|$1,816
 Read: dollar sizing does not beat fixed sizes on 2022-25 net; it lowers variance and raises pass in 2018-21. Larger R$ hurts (MLL $2,000 trailing).
+
+## Report 195: checklist gaps on all 3 systems (entry-delay test vetoed by Rey: late entries sit at the peak)
+- Loser slippage sweep (+0.25/.5/1/2 pts on every losing trade): all legs keep sign; test-era t at +1pt: RA 2.5, M1 2.2, RULES 3.0, V15a 3.3, R1 1.3. Combo test-era $ 136k -> 131k at +1, 126k at +2.
+- Remove best 1/5/10% trades (per contract): M1 and V15a go negative at best-5/10%; RA, RULES stay positive; R1 negative at best-10%. Random-10% removal changes nothing. Edge is tail-concentrated (trend/breakout profile).
+- Long/short: RA train long 9.5 (t1.3) short 8.8 (t1.5); test long 3.9 (t.6) short 23.3 (t3.2). V15a train long 9.9 (t3.2) short 0.3 (t.1); test long 22.1 (t2.3) short 35.4 (t2.4). Short side only works in test era for V15a.
+- Per-year: RA/V15a/M1 2024 weak (RA -1.3, M1 1.8 pts), 2026 YTD negative on all small n; V15a bp-of-price edge not decaying (2022 40bp, 2025 6bp is down). M1 edge in bp falling from 18.5 (2018) to 3.4 (2025).
+- R1 train era mean 0.14 pts t0.1: only works 2022+. ON+/ON- are not in prep() so not covered here.
+- Combo: worst day -$2.2k, worst month -$2.5k at base unscaled sizes (before Lucid scaling).
+- Large-cap: t 4.5, excess vs SPY 6.4bp/day t2.5; dropping best 5% of days takes mean to -2.6bp but SPY goes to -6.5bp (same tail dependence); 2022 +0.2% vs SPY -18%, 2025 14.8% vs 17.7%.
+- Mid/small: t 3.0 absolute but excess vs equal-weight only t1.1 (0.3%/mo); best 20% months removed -> negative.
+- Multiple testing: 373 report scripts in repo; Bonferroni |t| bar 3.8 at N=300. Only RULES 3.3, V15a 3.3 near it; RA 2.6, M1 2.4 do not clear a deflated bar.

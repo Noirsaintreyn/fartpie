@@ -1,0 +1,65 @@
+=== A) extra slippage on every LOSING trade (pts per contract), train 2018-21 | test 2022+
+RA     +0:  9.08 t 2.0 | 13.44 t 2.6 ; +0.25:  8.96 t 2.0 | 13.32 t 2.6 ; +0.5:  8.85 t 1.9 | 13.21 t 2.6 ; +1:  8.63 t 1.9 | 12.99 t 2.5 ; +2:  8.18 t 1.8 | 12.54 t 2.4
+M1     +0:  8.50 t 3.3 |  9.12 t 2.4 ; +0.25:  8.34 t 3.2 |  8.96 t 2.3 ; +0.5:  8.18 t 3.2 |  8.80 t 2.3 ; +1:  7.86 t 3.0 |  8.47 t 2.2 ; +2:  7.21 t 2.8 |  7.82 t 2.0
+R1     +0:  0.14 t 0.1 |  8.06 t 1.4 ; +0.25:  0.01 t 0.0 |  7.95 t 1.4 ; +0.5: -0.12 t-0.1 |  7.85 t 1.4 ; +1: -0.39 t-0.3 |  7.64 t 1.3 ; +2: -0.93 t-0.6 |  7.22 t 1.2
+RULES  +0:  1.82 t 3.4 |  3.16 t 3.3 ; +0.25:  1.77 t 3.3 |  3.10 t 3.2 ; +0.5:  1.72 t 3.2 |  3.03 t 3.1 ; +1:  1.61 t 3.0 |  2.90 t 3.0 ; +2:  1.40 t 2.5 |  2.64 t 2.7
+V15a   +0:  5.25 t 2.3 | 28.11 t 3.3 ; +0.25:  5.07 t 2.2 | 27.94 t 3.3 ; +0.5:  4.90 t 2.1 | 27.77 t 3.3 ; +1:  4.55 t 2.0 | 27.44 t 3.3 ; +2:  3.84 t 1.7 | 26.78 t 3.2
+=== B) remove best 1/5/10% trades (mean pts) vs remove random 10%, train | test
+RA     all  9.08 -best1%  8.45 -best5%  5.83 -best10%  2.24 rand10%  9.14 || all 13.44 -best1% 12.93 -best5% 10.25 -best10%  6.71 rand10% 13.25
+M1     all  8.50 -best1%  5.95 -best5% -0.15 -best10% -5.40 rand10%  8.54 || all  9.12 -best1%  6.02 -best5% -3.32 -best10% -12.02 rand10%  9.14
+R1     all  0.14 -best1% -0.76 -best5% -3.20 -best10% -4.84 rand10%  0.10 || all  8.06 -best1%  6.70 -best5%  3.22 -best10% -0.88 rand10%  8.12
+RULES  all  1.82 -best1%  1.57 -best5%  0.89 -best10%  0.20 rand10%  1.82 || all  3.16 -best1%  2.77 -best5%  1.75 -best10%  0.51 rand10%  3.19
+V15a   all  5.25 -best1%  2.39 -best5% -3.32 -best10% -7.21 rand10%  5.27 || all 28.11 -best1% 23.21 -best5% 10.46 -best10% -2.65 rand10% 28.15
+=== C) long/short (dir>0 long), train | test
+RA   long   train n  43 mean   9.45 t  1.3 | test n  61 mean   3.92 t  0.6
+RA   short  train n  62 mean   8.81 t  1.5 | test n  59 mean  23.27 t  3.2
+V15a long   train n 224 mean   9.85 t  3.2 | test n 108 mean  22.13 t  2.3
+V15a short  train n 209 mean   0.32 t  0.1 | test n  89 mean  35.36 t  2.4
+=== D) per-year mean pts and as % of NQ price (bp of price per trade)
+RA     2018:  0.9pt/ 1.2bp(n24) 2019:  2.8pt/ 3.6bp(n30) 2020:  7.5pt/ 7.3bp(n24) 2021: 24.8pt/17.1bp(n27) 2022: 14.7pt/11.5bp(n26) 2023: 25.5pt/17.9bp(n33) 2024: -1.3pt/-0.7bp(n29) 2025: 23.4pt/10.3bp(n26) 2026:-30.2pt/-11.2bp(n6)
+M1     2018: 13.0pt/18.5bp(n135) 2019:  4.2pt/ 5.5bp(n96) 2020:  6.0pt/ 5.9bp(n81) 2021:  8.5pt/ 5.9bp(n96) 2022: 13.7pt/10.7bp(n200) 2023:  9.4pt/ 6.6bp(n62) 2024:  1.8pt/ 0.9bp(n81) 2025:  7.7pt/ 3.4bp(n74) 2026:-20.2pt/-7.5bp(n8)
+R1     2014:  1.3pt/ nanbp(n47) 2015: -2.3pt/ nanbp(n39) 2016:  0.5pt/ nanbp(n39) 2017: -3.9pt/-6.5bp(n50) 2018: 12.6pt/17.9bp(n2) 2019: -5.8pt/-7.6bp(n23) 2020: 13.6pt/13.3bp(n20) 2021:  4.1pt/ 2.9bp(n17) 2022: 13.7pt/10.7bp(n1) 2023:  5.9pt/ 4.1bp(n20) 2024: 13.6pt/ 7.1bp(n27) 2025:  1.4pt/ 0.6bp(n28) 2026: 81.7pt/30.4bp(n1)
+RULES  2014:  1.5pt/ nanbp(n24) 2015:  1.5pt/ nanbp(n59) 2016:  2.2pt/ nanbp(n48) 2017:  2.2pt/ 3.7bp(n51) 2018:  3.3pt/ 4.7bp(n95) 2019:  2.3pt/ 3.0bp(n74) 2020:  0.7pt/ 0.7bp(n99) 2021:  1.1pt/ 0.8bp(n108) 2022:  3.7pt/ 2.9bp(n148) 2023:  3.5pt/ 2.4bp(n137) 2024:  1.0pt/ 0.5bp(n146) 2025:  4.6pt/ 2.0bp(n121) 2026:  4.0pt/ 1.5bp(n17)
+V15a   2014:  1.6pt/ nanbp(n47) 2015:  3.8pt/ nanbp(n66) 2016: -2.8pt/ nanbp(n47) 2017:  3.3pt/ 5.6bp(n69) 2018:  4.5pt/ 6.3bp(n66) 2019: -2.9pt/-3.9bp(n41) 2020: 21.2pt/20.6bp(n48) 2021: 13.5pt/ 9.3bp(n49) 2022: 50.6pt/39.6bp(n53) 2023: 15.0pt/10.5bp(n43) 2024: 40.0pt/20.8bp(n48) 2025: 13.0pt/ 5.8bp(n43) 2026:-27.4pt/-10.2bp(n10)
+=== E) combo daily $ (core x U x sz + S1 0.2): worst day/month, maxDD, outlier days, loser slippage
+loser slip +0: total $184,060, worst day $-2,246, worst month $-2,491, maxDD $-6,431 (limit-half = $1,000), +months 75%, yr test(2022+) $136,221
+loser slip +0.5: total $179,215, worst day $-2,270, worst month $-2,563, maxDD $-6,941 (limit-half = $1,000), +months 74%, yr test(2022+) $133,724
+loser slip +1: total $174,370, worst day $-2,294, worst month $-2,636, maxDD $-7,450 (limit-half = $1,000), +months 72%, yr test(2022+) $131,227
+loser slip +2: total $164,681, worst day $-2,342, worst month $-2,781, maxDD $-8,470 (limit-half = $1,000), +months 70%, yr test(2022+) $126,233
+  drop best 1% of active days: total $129,668 of $184,060
+  drop best 5% of active days: total $22,995 of $184,060
+  drop best 10% of active days: total $-46,092 of $184,060
+  per year $: 2018:12,179 2019:2,504 2020:8,459 2021:24,698 2022:46,286 2023:39,010 2024:16,154 2025:36,633 2026:-1,862
+=== F) large-cap + mid/small
+large-cap daily: n1944 mean 13.5bp t4.5; excess vs SPY mean 6.4bp t2.5; worst day -5.4%, best 14.3%
+  drop best 1% days: mean 8.7bp (all 13.5) ; random10% 13.5bp
+  drop best 5% days: mean -2.6bp (all 13.5) ; random10% 13.6bp
+  drop best 10% days: mean -13.7bp (all 13.5) ; random10% 13.5bp
+  2019: ret  46.5% spy  31.2% sharpe  2.6
+  2020: ret  85.3% spy  18.3% sharpe  2.4
+  2021: ret  28.3% spy  28.7% sharpe  1.5
+  2022: ret   0.2% spy -18.2% sharpe  0.1
+  2023: ret  61.1% spy  26.2% sharpe  2.4
+  2024: ret  31.3% spy  24.9% sharpe  1.6
+  2025: ret  14.8% spy  17.7% sharpe  0.9
+  2026: ret  37.5% spy  14.0% sharpe  1.9
+  worst month -9.2%, +months 69%
+mid/small monthly: n78 mean 1.9% t3.0; excess vs equal-weight mean 0.3% t1.1; worst month -12.0%, +months 54%
+  drop best 5% months: mean 1.16% (all 1.86%)
+  drop best 10% months: mean 0.70% (all 1.86%)
+  drop best 20% months: mean -0.13% (all 1.86%)
+  2020: n9 ret  69.9%  ew  76.4%
+  2021: n12 ret  36.9%  ew  29.1%
+  2022: n12 ret   2.4%  ew -13.3%
+  2023: n12 ret  25.5%  ew  14.7%
+  2024: n12 ret   4.3%  ew   9.9%
+  2025: n12 ret   4.0%  ew   5.3%
+  2026: n9 ret  16.7%  ew  15.7%
+=== G) multiple testing
+report scripts in repo: 373; Bonferroni two-sided 5% |t| bar for N tests:
+  N=20: |z|>=3.02
+  N=100: |z|>=3.48
+  N=300: |z|>=3.76
+  N=1000: |z|>=4.06
+leg test-era t-stats vs those bars:
+   RA:2.6 M1:2.4 R1:1.4 RULES:3.3 V15a:3.3
