@@ -1,0 +1,36 @@
+
+IFVG: 656 trades, train 231 test 425; avg pts +3.44 | +2.84
+  ASIA_R   low  spread   -2.1 (t-1.0,n77,avg +2.1) //   -0.1 (t-0.1,n244,avg +2.8)
+  ASIA_R   high spread   +3.2 (t+1.3,n77,avg +5.6) //   +1.3 (t+0.4,n52,avg +4.0)
+  LON_R    low  spread   -5.2 (t-2.6,n77,avg -0.1) //   -1.1 (t-0.6,n182,avg +2.2)
+  LON_R    high spread   +3.8 (t+1.6,n77,avg +6.0) //   -0.5 (t-0.2,n90,avg +2.4)
+  OR30     low  spread   +0.2 (t+0.1,n76,avg +3.7) //   +0.1 (t+0.1,n170,avg +3.3)
+  OR30     high spread   -0.2 (t-0.1,n75,avg +3.4) //   -1.4 (t-0.6,n100,avg +2.1)
+  ACC      low  spread   -5.7 (t-2.7,n77,avg -0.4) //   +1.6 (t+0.8,n156,avg +3.8)
+  ACC      high spread   +0.5 (t+0.2,n77,avg +3.8) //   +2.1 (t+1.0,n113,avg +4.4)
+  ACCD     low  spread   -2.6 (t-1.2,n105,avg +2.0) //   -0.4 (t-0.2,n196,avg +2.6)
+  ACCD     high spread   +2.5 (t+1.1,n77,avg +5.1) //   +4.1 (t+1.9,n109,avg +5.9)
+
+S1on: 193 trades, train 103 test 90; avg pts +3.49 | +59.98
+  ASIA_R   low  spread  +14.3 (t+0.7,n35,avg +12.9) // -109.9 (t-3.1,n44,avg +3.8)
+  ASIA_R   high spread  -32.1 (t-1.6,n34,avg -18.0) //  +86.4 (t+1.3,n16,avg +131.0)
+  LON_R    low  spread  -20.6 (t-1.0,n35,avg -10.1) //  -96.5 (t-3.0,n30,avg -4.3)
+  LON_R    high spread   +9.4 (t+0.5,n34,avg +9.8) // +137.8 (t+2.8,n27,avg +156.4)
+  ACC      low  spread   +9.2 (t+0.6,n35,avg +9.6) //  -11.9 (t-0.3,n40,avg +53.4)
+  ACC      high spread   -5.2 (t-0.3,n34,avg -0.0) //  +38.9 (t+1.0,n24,avg +88.5)
+  ACCD     low  spread  +22.1 (t+1.2,n35,avg +18.1) //  -45.1 (t-1.2,n41,avg +35.4)
+  ACCD     high spread   -5.2 (t-0.3,n34,avg -0.0) //  +38.9 (t+1.0,n24,avg +88.5)
+  OPENPOS  low  spread  +25.6 (t+1.4,n35,avg +20.4) //  -22.0 (t-0.5,n31,avg +45.6)
+  OPENPOS  high spread  -17.8 (t-1.0,n34,avg -8.4) //  +34.1 (t+0.9,n39,avg +79.3)
+
+S1all: 423 trades, train 229 test 194; avg pts +0.36 | +41.22
+  ASIA_R   low  spread  +12.7 (t+1.1,n77,avg +8.8) //  -58.5 (t-2.7,n96,avg +11.6)
+  ASIA_R   high spread   -3.2 (t-0.3,n76,avg -1.8) //  +65.5 (t+2.2,n46,avg +91.2)
+  LON_R    low  spread   -8.6 (t-0.7,n77,avg -5.4) //  -48.6 (t-2.4,n58,avg +7.1)
+  LON_R    high spread   +7.6 (t+0.6,n76,avg +5.4) //  +68.3 (t+2.3,n58,avg +89.1)
+  ACC      low  spread   +1.0 (t+0.1,n79,avg +1.0) //   -8.8 (t-0.4,n92,avg +36.6)
+  ACC      high spread   -6.5 (t-0.5,n76,avg -4.0) //  +46.5 (t+1.8,n46,avg +76.7)
+  ACCD     low  spread  +22.7 (t+2.0,n77,avg +15.5) //  -19.7 (t-0.9,n89,avg +30.6)
+  ACCD     high spread   -9.5 (t-0.8,n76,avg -6.0) //  +52.6 (t+2.0,n45,avg +81.6)
+  OPENPOS  low  spread  +15.2 (t+1.3,n77,avg +10.4) //   -8.7 (t-0.4,n77,avg +36.0)
+  OPENPOS  high spread  -16.2 (t-1.5,n76,avg -10.5) //  +23.4 (t+1.0,n66,avg +56.7)

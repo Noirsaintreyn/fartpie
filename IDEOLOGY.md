@@ -263,3 +263,8 @@ DEPLOY: gap max 250|130, fees max $1,566|$993; passed by 30/60/90d 10/40/65% | 3
 xs/report_179_fractal.py, log xs/report_179.log. Features H20 (variance-scaling Hurst, 5m, 20d), RUF5 (path length/range roughness), VOV20, dH; tercile cuts on 2018-21, 8 legs (7 variant-I + IFVG + S1 regime-ON), strict PASS.
 Result: 0 PASS. Intraday H ~0.46 (anti-persistent) train, 0.48 test; H does not split next-day continuation (corr -0.03/-0.13 high/low H train, -0.07/-0.09 test). Vol clustering is real (next-day range corr with today's +0.64 | +0.52) but ATR sizing already uses it; VOV20 adds +0.13|+0.04 partial corr.
 Same-sign leads (|t|<2 in one era): IFVG worse when roughness low (-4.3 t-1.9 | -3.4 t-1.8); S1 worse when VOV20 low (-37 t-2.3 n35 | -64 t-1.6 n51).
+
+## Report 180 (Nov 15): Asia / London range, opening range, overnight acceptance as gates for IFVG and S1
+xs/report_180_session_gates.py, log xs/report_180.log. 0 PASS of 40 tests (strict split, cuts on 2018-21).
+IFVG: ACCD high (overnight acceptance on the side of the open) +2.5 (t1.1) | +4.1 (t1.9); LON_R low weak -5.2 (t-2.6) | -1.1 (t-0.6); OR30 nothing.
+S1 regime-ON: LON_R high +9.4 (t.5, n34) | +137.8 (t2.8, n27) same sign; ASIA_R low +14.3 | -109.9 flips (not usable). S1 train era ~0 in every cell so train cannot confirm; lead only.
