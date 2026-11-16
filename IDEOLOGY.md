@@ -310,3 +310,13 @@ xs/report_193_three_systems.py, log xs/report_193.log. Monthly-return block boot
 Prop algo (core + S1, FIG-V excluded; % of a $50K account, not compounded, before account rules) 2018-02..2026-01: avg 46%/yr, Sharpe 2.6, max DD -8% (Nasdaq same vol -20%), +months 75%, worst month -5%, bootstrap 5th pct 35%/yr, worst-5% max DD -7%.
 Large-cap options-ratio screener (S&P PIT, ratio>=1.5, 6 slots) 2019-01..2026-09: CAGR 37%, Sharpe 1.6, max DD -15% (SPY -24%), +months 69%, worst month -9%, bootstrap 5th pct 22%/yr, worst-5% max DD -28%.
 Mid/small-cap book (website series 2020-03..2026-09, hand-picked universe, survivorship): CAGR 22%, Sharpe 1.1, max DD -15% (equal-weight -22%), +months 53%, worst month -12%, bootstrap 5th pct 10%/yr, worst-5% max DD -27%.
+
+## Report 194: dollar-risk sizing on V15a/M1/RA (Lucid 50K, FIG-V excluded) 
+contracts = max(1, floor(R$ / (stop pts x $2))). 2018-21 | 2022-25 starts, pass / paid / payouts per eval / net per eval:
+- baseline fixed sizes: 94|82 / 78|61 / 1.80|2.06 / $2,082|$3,119
+- $100: 100|82 / 87|60 / 2.18|1.72 / $2,282|$2,109
+- $150: 97|82 / 79|61 / 2.05|1.80 / $2,340|$2,287
+- $200: 94|87 / 71|63 / 1.76|1.92 / $2,057|$2,620
+- $300: 88|83 / 58|57 / 1.36|1.74 / $1,698|$2,560
+- $400: 81|75 / 41|50 / 1.08|1.27 / $1,378|$1,816
+Read: dollar sizing does not beat fixed sizes on 2022-25 net; it lowers variance and raises pass in 2018-21. Larger R$ hurts (MLL $2,000 trailing).
