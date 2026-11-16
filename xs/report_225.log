@@ -1,0 +1,90 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  S1 up-lever days (low vanna or room>0.5ATR) in regime-ON trades: 61 of 193 | IFVG near-wall trades: 248 of 656
+  S1 regime-ON trades: below/at ON VWAP 48 above 145 no data 0
+  V15a LVR train 2/3 cut 0.254 high-LVR trades 343 of 1058
+  ACCD cut 0.38 IFVG high-acceptance trades 186 of 656 | LON_R cut 0.362 S1 regime-ON high-London trades 61 of 193
+  tp168 rows 656 IFVG rows 656 date match True R2 vs pts max diff 0.0
+  corrected FIG-V trades 635 original 656
+  V15a stop (0.15 ADR) median 21.3 pts; contracts at $100: (array([ 1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12., 13.]), array([474, 102,  78,  58,  82,  55,  94,  32,  23,  25,  16,  14,   5]))
+
+=== report 225 variants ===
+  BASELINE (E2 eval, F0 funded)
+    2018-21 starts: pass 94% | paid once 78% | payouts/eval 1.80 (0.56 evals per payout) | avg payout $1,207 | net $2,082/eval | days: start->pass 58, funded->1st payout 14, start->1st payout 85, between 17
+    2022-25 starts: pass 82% | paid once 61% | payouts/eval 2.06 (0.48 evals per payout) | avg payout $1,553 | net $3,119/eval | days: start->pass 27, funded->1st payout 12, start->1st payout 41, between 13
+  A size x0.5 both phases
+    2018-21 starts: pass 100% | paid once 96% | payouts/eval 2.65 (0.38 evals per payout) | avg payout $885 | net $2,255/eval | days: start->pass 96, funded->1st payout 27, start->1st payout 127, between 21
+    2022-25 starts: pass 97% | paid once 92% | payouts/eval 3.13 (0.32 evals per payout) | avg payout $1,146 | net $3,502/eval | days: start->pass 46, funded->1st payout 15, start->1st payout 66, between 15
+  A size x0.75 both phases
+    2018-21 starts: pass 100% | paid once 95% | payouts/eval 1.95 (0.51 evals per payout) | avg payout $971 | net $1,809/eval | days: start->pass 74, funded->1st payout 20, start->1st payout 106, between 19
+    2022-25 starts: pass 90% | paid once 70% | payouts/eval 2.29 (0.44 evals per payout) | avg payout $1,451 | net $3,227/eval | days: start->pass 35, funded->1st payout 14, start->1st payout 50, between 14
+  A size x1.25 both phases
+    2018-21 starts: pass 86% | paid once 69% | payouts/eval 1.68 (0.60 evals per payout) | avg payout $1,256 | net $2,019/eval | days: start->pass 52, funded->1st payout 14, start->1st payout 78, between 17
+    2022-25 starts: pass 69% | paid once 43% | payouts/eval 1.36 (0.73 evals per payout) | avg payout $1,600 | net $2,094/eval | days: start->pass 27, funded->1st payout 13, start->1st payout 40, between 12
+  A size x1.5 both phases
+    2018-21 starts: pass 75% | paid once 47% | payouts/eval 1.04 (0.96 evals per payout) | avg payout $1,201 | net $1,167/eval | days: start->pass 47, funded->1st payout 12, start->1st payout 68, between 16
+    2022-25 starts: pass 69% | paid once 43% | payouts/eval 1.30 (0.77 evals per payout) | avg payout $1,616 | net $2,015/eval | days: start->pass 26, funded->1st payout 11, start->1st payout 38, between 12
+  A size x2.0 both phases
+    2018-21 starts: pass 69% | paid once 45% | payouts/eval 1.18 (0.84 evals per payout) | avg payout $1,332 | net $1,490/eval | days: start->pass 39, funded->1st payout 11, start->1st payout 54, between 16
+    2022-25 starts: pass 54% | paid once 23% | payouts/eval 0.60 (1.66 evals per payout) | avg payout $1,659 | net $911/eval | days: start->pass 18, funded->1st payout 9, start->1st payout 26, between 11
+  A eval only x0.5
+    2018-21 starts: pass 100% | paid once 92% | payouts/eval 2.22 (0.45 evals per payout) | avg payout $1,228 | net $2,634/eval | days: start->pass 96, funded->1st payout 16, start->1st payout 122, between 17
+    2022-25 starts: pass 97% | paid once 74% | payouts/eval 2.66 (0.38 evals per payout) | avg payout $1,559 | net $4,060/eval | days: start->pass 46, funded->1st payout 12, start->1st payout 58, between 13
+  A eval only x1.5
+    2018-21 starts: pass 75% | paid once 58% | payouts/eval 1.16 (0.86 evals per payout) | avg payout $1,068 | net $1,148/eval | days: start->pass 47, funded->1st payout 17, start->1st payout 70, between 18
+    2022-25 starts: pass 69% | paid once 49% | payouts/eval 1.35 (0.74 evals per payout) | avg payout $1,494 | net $1,929/eval | days: start->pass 26, funded->1st payout 13, start->1st payout 40, between 13
+  A eval only x2.0
+    2018-21 starts: pass 69% | paid once 52% | payouts/eval 1.10 (0.91 evals per payout) | avg payout $1,147 | net $1,174/eval | days: start->pass 39, funded->1st payout 15, start->1st payout 61, between 21
+    2022-25 starts: pass 54% | paid once 37% | payouts/eval 0.98 (1.02 evals per payout) | avg payout $1,465 | net $1,353/eval | days: start->pass 18, funded->1st payout 12, start->1st payout 33, between 13
+  A funded only x0.5
+    2018-21 starts: pass 94% | paid once 88% | payouts/eval 2.16 (0.46 evals per payout) | avg payout $875 | net $1,803/eval | days: start->pass 58, funded->1st payout 30, start->1st payout 98, between 23
+    2022-25 starts: pass 82% | paid once 77% | payouts/eval 2.46 (0.41 evals per payout) | avg payout $1,096 | net $2,611/eval | days: start->pass 27, funded->1st payout 17, start->1st payout 48, between 15
+  A funded only x1.5
+    2018-21 starts: pass 94% | paid once 64% | payouts/eval 1.84 (0.54 evals per payout) | avg payout $1,462 | net $2,602/eval | days: start->pass 58, funded->1st payout 12, start->1st payout 83, between 15
+    2022-25 starts: pass 82% | paid once 51% | payouts/eval 1.64 (0.61 evals per payout) | avg payout $1,617 | net $2,570/eval | days: start->pass 27, funded->1st payout 10, start->1st payout 38, between 10
+  A funded only x2.0
+    2018-21 starts: pass 94% | paid once 58% | payouts/eval 1.62 (0.62 evals per payout) | avg payout $1,472 | net $2,297/eval | days: start->pass 58, funded->1st payout 11, start->1st payout 80, between 15
+    2022-25 starts: pass 82% | paid once 37% | payouts/eval 1.20 (0.83 evals per payout) | avg payout $1,666 | net $1,915/eval | days: start->pass 27, funded->1st payout 8, start->1st payout 34, between 10
+  B eval E0 flat
+    2018-21 starts: pass 75% | paid once 59% | payouts/eval 1.68 (0.59 evals per payout) | avg payout $1,212 | net $1,952/eval | days: start->pass 45, funded->1st payout 18, start->1st payout 70, between 17
+    2022-25 starts: pass 69% | paid once 48% | payouts/eval 1.56 (0.64 evals per payout) | avg payout $1,520 | net $2,288/eval | days: start->pass 21, funded->1st payout 12, start->1st payout 34, between 13
+  B eval PRESS x1.5 when cushion < .5
+    2018-21 starts: pass 79% | paid once 63% | payouts/eval 1.86 (0.54 evals per payout) | avg payout $1,267 | net $2,271/eval | days: start->pass 48, funded->1st payout 17, start->1st payout 70, between 17
+    2022-25 starts: pass 66% | paid once 46% | payouts/eval 1.50 (0.67 evals per payout) | avg payout $1,506 | net $2,166/eval | days: start->pass 20, funded->1st payout 12, start->1st payout 33, between 13
+  B eval BARBELL (E2, x1.5 below .3 cushion)
+    2018-21 starts: pass 89% | paid once 74% | payouts/eval 1.67 (0.60 evals per payout) | avg payout $1,209 | net $1,937/eval | days: start->pass 57, funded->1st payout 14, start->1st payout 84, between 17
+    2022-25 starts: pass 76% | paid once 58% | payouts/eval 1.96 (0.51 evals per payout) | avg payout $1,552 | net $2,959/eval | days: start->pass 25, funded->1st payout 12, start->1st payout 40, between 13
+  B eval INVERSE clip(1.6-c,.8,1.5)
+    2018-21 starts: pass 80% | paid once 65% | payouts/eval 1.86 (0.54 evals per payout) | avg payout $1,278 | net $2,292/eval | days: start->pass 51, funded->1st payout 17, start->1st payout 75, between 16
+    2022-25 starts: pass 67% | paid once 45% | payouts/eval 1.44 (0.70 evals per payout) | avg payout $1,528 | net $2,108/eval | days: start->pass 22, funded->1st payout 12, start->1st payout 36, between 13
+  C funded F1 clip(c,.4,1)
+    2018-21 starts: pass 94% | paid once 84% | payouts/eval 2.41 (0.42 evals per payout) | avg payout $957 | net $2,215/eval | days: start->pass 58, funded->1st payout 15, start->1st payout 86, between 20
+    2022-25 starts: pass 82% | paid once 78% | payouts/eval 2.51 (0.40 evals per payout) | avg payout $1,352 | net $3,311/eval | days: start->pass 27, funded->1st payout 13, start->1st payout 46, between 14
+  C funded PROTECT x.5 at balance >= $4,000
+    2018-21 starts: pass 94% | paid once 78% | payouts/eval 1.85 (0.54 evals per payout) | avg payout $1,225 | net $2,179/eval | days: start->pass 58, funded->1st payout 14, start->1st payout 85, between 17
+    2022-25 starts: pass 82% | paid once 61% | payouts/eval 2.05 (0.49 evals per payout) | avg payout $1,564 | net $3,115/eval | days: start->pass 27, funded->1st payout 12, start->1st payout 41, between 14
+  C funded POSTPAY clip(c,.3,1) after 1st payout
+    2018-21 starts: pass 94% | paid once 78% | payouts/eval 2.32 (0.43 evals per payout) | avg payout $1,050 | net $2,350/eval | days: start->pass 58, funded->1st payout 14, start->1st payout 85, between 21
+    2022-25 starts: pass 82% | paid once 61% | payouts/eval 2.26 (0.44 evals per payout) | avg payout $1,433 | net $3,154/eval | days: start->pass 27, funded->1st payout 12, start->1st payout 41, between 14
+  D payout only when >= $1,000
+    2018-21 starts: pass 94% | paid once 74% | payouts/eval 2.45 (0.41 evals per payout) | avg payout $1,343 | net $3,196/eval | days: start->pass 58, funded->1st payout 23, start->1st payout 95, between 16
+    2022-25 starts: pass 82% | paid once 59% | payouts/eval 2.04 (0.49 evals per payout) | avg payout $1,617 | net $3,214/eval | days: start->pass 27, funded->1st payout 12, start->1st payout 42, between 13
+  D payout only when >= $2,000
+    2018-21 starts: pass 94% | paid once 72% | payouts/eval 3.33 (0.30 evals per payout) | avg payout $1,800 | net $5,912/eval | days: start->pass 58, funded->1st payout 48, start->1st payout 116, between 22
+    2022-25 starts: pass 82% | paid once 52% | payouts/eval 2.19 (0.46 evals per payout) | avg payout $1,800 | net $3,847/eval | days: start->pass 27, funded->1st payout 14, start->1st payout 50, between 14
+  E funded day lock +$150
+    2018-21 starts: pass 94% | paid once 77% | payouts/eval 1.24 (0.81 evals per payout) | avg payout $677 | net $751/eval | days: start->pass 58, funded->1st payout 16, start->1st payout 88, between 17
+    2022-25 starts: pass 82% | paid once 62% | payouts/eval 1.58 (0.63 evals per payout) | avg payout $1,276 | net $1,928/eval | days: start->pass 27, funded->1st payout 12, start->1st payout 41, between 11
+  E funded day lock +$300
+    2018-21 starts: pass 94% | paid once 75% | payouts/eval 1.45 (0.69 evals per payout) | avg payout $863 | net $1,165/eval | days: start->pass 58, funded->1st payout 14, start->1st payout 88, between 16
+    2022-25 starts: pass 82% | paid once 62% | payouts/eval 1.63 (0.61 evals per payout) | avg payout $1,306 | net $2,041/eval | days: start->pass 27, funded->1st payout 12, start->1st payout 42, between 12
+  E eval day cap +$1,500
+    2018-21 starts: pass 94% | paid once 82% | payouts/eval 1.76 (0.57 evals per payout) | avg payout $1,161 | net $1,961/eval | days: start->pass 58, funded->1st payout 14, start->1st payout 83, between 17
+    2022-25 starts: pass 83% | paid once 63% | payouts/eval 2.17 (0.46 evals per payout) | avg payout $1,571 | net $3,321/eval | days: start->pass 27, funded->1st payout 11, start->1st payout 41, between 13
+  E daily loss stop $500
+    2018-21 starts: pass 94% | paid once 80% | payouts/eval 1.99 (0.50 evals per payout) | avg payout $1,252 | net $2,399/eval | days: start->pass 57, funded->1st payout 15, start->1st payout 84, between 16
+    2022-25 starts: pass 81% | paid once 56% | payouts/eval 1.65 (0.61 evals per payout) | avg payout $1,478 | net $2,345/eval | days: start->pass 32, funded->1st payout 14, start->1st payout 44, between 13
+  E daily loss stop $1,500
+    2018-21 starts: pass 94% | paid once 78% | payouts/eval 1.80 (0.56 evals per payout) | avg payout $1,207 | net $2,082/eval | days: start->pass 58, funded->1st payout 14, start->1st payout 85, between 17
+    2022-25 starts: pass 86% | paid once 64% | payouts/eval 2.27 (0.44 evals per payout) | avg payout $1,564 | net $3,458/eval | days: start->pass 28, funded->1st payout 11, start->1st payout 43, between 13
