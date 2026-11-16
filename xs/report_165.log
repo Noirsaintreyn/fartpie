@@ -1,0 +1,38 @@
+M1 meta-label IFVG: train n 231 test n 425 | base mean pts A 3.44 B 2.84
+  tree3  AUC train 0.68 | test 0.49  test top-half mean +2.63 (n228) vs bottom +3.10 (n197)
+|--- pd <= 0.41
+|   |--- gap <= 0.08
+|   |   |--- class: 1
+|   |--- gap >  0.08
+|   |   |--- class: 1
+|--- pd >  0.41
+|   |--- ed_21 <= 10.72
+|   |   |--- e1h_50 <= -0.85
+|   |   |   |--- class: 0
+|   |   |--- e1h_50 >  -0.85
+|   |   |   |--- class: 1
+|   |--- ed_21 >  10.72
+|   |   |--- class: 0
+
+  hgb    AUC train 0.89 | test 0.51  test top-half mean +2.09 (n234) vs bottom +3.76 (n191)
+  logit  AUC train 0.61 | test 0.47  test top-half mean +1.80 (n180) vs bottom +3.61 (n245)
+
+M2 daily direction: train n 929 test n 1012  base up-rate A 0.547 B 0.531
+  tree3  AUC train 0.57 | test 0.46  calls n311 mean -9.2 pts (t -0.8)
+|--- e20 <= 3.27
+|   |--- poc <= 1.17
+|   |   |--- poc <= 0.34
+|   |   |   |--- class: 1
+|   |   |--- poc >  0.34
+|   |   |   |--- class: 1
+|   |--- poc >  1.17
+|   |   |--- class: 0
+|--- e20 >  3.27
+|   |--- class: 0
+
+  hgb    AUC train 0.75 | test 0.47  calls n586 mean -6.7 pts (t -0.8)
+  logit  AUC train 0.55 | test 0.50  calls n517 mean +3.8 pts (t +0.4)
+
+real	0m10.456s
+user	0m10.218s
+sys	0m0.267s
