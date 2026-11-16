@@ -1,0 +1,10 @@
+tightness cuts (2018-21): p25 0.42 med 0.49 p75 0.57
+A=2018-21 | B=2022+  (NQ pts, 1 ct)
+S1_premium             A n 229  +0.36 t +0.1 w 52% PF1.01 tot    +82 | B n 194 +41.22 t +3.7 w 61% PF2.03 tot  +7997
+S1_premium_rescue      A n 229  +0.36 t +0.1 w 52% PF1.01 tot    +82 | B n 194 +41.22 t +3.7 w 61% PF2.03 tot  +7997
+S2_discount            A n  67  +2.39 t +0.3 w 57% PF1.08 tot   +160 | B n  98  +4.82 t +0.4 w 56% PF1.09 tot   +472
+S2_discount_rescue     A n  67  +2.39 t +0.3 w 57% PF1.08 tot   +160 | B n  98  +4.82 t +0.4 w 56% PF1.09 tot   +472
+S4_loose_prem          A n  67 +24.99 t +2.4 w 63% PF2.34 tot  +1675 | B n  90  -3.31 t -0.2 w 47% PF0.94 tot   -298
+S4_loose_prem_rescue   A n  67 +24.99 t +2.4 w 63% PF2.34 tot  +1675 | B n  90  -3.31 t -0.2 w 47% PF0.94 tot   -298
+COMBINED         A n 363  +5.28 t +1.2 w 55% PF1.19 tot  +1917 | B n 382 +21.39 t +2.9 w 56% PF1.45 tot  +8171
+COMBINED_rescue  A n 363  +5.28 t +1.2 w 55% PF1.19 tot  +1917 | B n 382 +21.39 t +2.9 w 56% PF1.45 tot  +8171
