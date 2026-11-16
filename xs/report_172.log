@@ -1,0 +1,27 @@
+
+S1: with greeks n=413 (A 228 / B 185)  base A n 228   +0.72 t +0.1 w 52% | B n 185  +40.50 t +3.6 w 60%
+  vanna>0        A n  33  -20.64 t -1.0 w 36% | B n  48  +80.31 t +2.4 w 60% 
+  vanna<=0       A n 195   +4.34 t +0.8 w 54% | B n 137  +26.55 t +2.7 w 60% 
+  charm>0        A n  26   -7.77 t -0.3 w 38% | B n  35  +91.93 t +2.2 w 63% 
+  charm<=0       A n 202   +1.82 t +0.4 w 53% | B n 150  +28.50 t +2.8 w 59% 
+  vanna low3rd   A n  76  +24.27 t +2.6 w 64% | B n 114  +34.99 t +3.4 w 63% PASS
+  vanna mid3rd   A n  76   -2.58 t -0.4 w 51% | B n  11  -32.58 t -0.8 w 36% 
+  vanna high3rd  A n  76  -19.52 t -1.9 w 39% | B n  60  +64.35 t +2.3 w 58% 
+
+IFVG: with greeks n=640 (A 230 / B 410)  base A n 230   +3.39 t +3.2 w 48% | B n 410   +2.93 t +3.1 w 44%
+  vanna>0        A n  56   +6.24 t +2.6 w 54% | B n 148   +3.69 t +2.1 w 44% PASS
+  vanna<=0       A n 174   +2.48 t +2.1 w 46% | B n 262   +2.51 t +2.3 w 44% PASS
+  charm>0        A n  51   +5.32 t +2.1 w 51% | B n 127   +4.09 t +2.2 w 46% PASS
+  charm<=0       A n 179   +2.85 t +2.5 w 47% | B n 283   +2.42 t +2.2 w 43% PASS
+  vanna low3rd   A n  77   +0.86 t +0.5 w 42% | B n 208   +2.00 t +1.7 w 44% 
+  vanna mid3rd   A n  76   +3.40 t +1.9 w 47% | B n  32   +1.86 t +0.5 w 38% 
+  vanna high3rd  A n  77   +5.92 t +3.1 w 55% | B n 170   +4.28 t +2.6 w 46% PASS
+
+STATIONARITY CHECK (S1 days): mean net_vanna by year / trailing-250d percentile rank used as stationary version
+{2011: -0.61, 2012: -2.8, 2013: -2.9, 2014: -5.84, 2015: -1.56, 2016: -5.25, 2017: -26.74, 2018: -27.97, 2019: -15.71, 2020: -26.93, 2021: -63.88, 2022: 44.69, 2023: -66.35, 2024: -96.39, 2025: -71.31}
+  rank<=1/3  A n 110  +10.94 t +1.9 w 59% | B n  65  +23.35 t +1.7 w 58% 
+  rank mid   A n  67   +2.64 t +0.3 w 49% | B n  55  +46.56 t +2.7 w 65% 
+  rank>2/3   A n  51  -23.83 t -1.6 w 39% | B n  65  +52.52 t +2.0 w 57% 
+  z<-0.5     A n 114  +11.14 t +2.0 w 60% | B n  67  +24.56 t +1.9 w 60% 
+  z>+0.5     A n  47  -20.58 t -1.3 w 40% | B n  59  +59.52 t +2.2 w 61% 
+  |z|<=0.5   A n  67   -2.06 t -0.2 w 46% | B n  59  +39.56 t +2.3 w 59% 
