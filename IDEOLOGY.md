@@ -240,3 +240,15 @@ Rey's point: 2018-21 is the wrong yardstick for options-flow features; 0DTE hedg
 ## Reports 175-176 (Nov 15): up-levering on vanna/gamma-wall conditions in the Lucid sim; VWAP and CVD pairing
 Report 175 (2022-25 starts; options data begin 2022-05 so 2018-21 is unchanged; deploy = IFVG .5 + S1 regime-ON .2): deploy pass 84% / paid 63% / 2.06 payouts / $3,180 / 28d. S1 x1.5 when low-vanna or room>0.5ATR (61 of 193 trades): 83% / 63% / 1.90 / $2,892. IFVG x1.5 within 0.5 ATR of a wall (248 of 656): 83% / 64% / 2.06 / $3,157. BOTH x1.5: 82% / 62% / 1.78 / $2,674. BOTH x2.0: 78% / 58% / 1.80 / $2,702. Up-levering hurts (lower pass, no payout gain). Not added.
 Report 176 VWAP: IFVG all +3.4/+2.8; discount-to-VWAP side (long<VWAP/short>VWAP) +3.6/+2.1, trend side +3.3/+3.5: no discrimination. S1: open <= overnight VWAP (n 55/39) +10.7 (t .9) | +46.8 (t 2.2) vs open > ON VWAP -2.9 | +39.8: weak lead. CVD (MNQ 1m, only 2024-12-17..2025-11-17): IFVG n 88 all +3.9, ALIGN30 +3.9 (n22) vs DIV +3.9 (n66); S1 n 49 all +74.7 (t 2.9), overnight CVD up +63.7 (n12) vs down +78.3 (n37). Nothing separates; samples tiny.
+
+## Report 177 (Nov 15): S1 overnight-VWAP gate, RA 40d IPDA gate, V15a high-LVR gate in Lucid 50K one-account sim
+Script xs/report_177_vwap_gate_ipda_lvr_lucid.py, log xs/report_177.log. Baseline = DEPLOY (variant I + IFVG 0.5 + S1 0.2 regime-ON).
+Provenance: V15a high-LVR (10d/60d variance ratio, train top tercile) is the one report-138 PASS (-10.6 t-2.4 | -46.5 t-2.8). RA IPDA 40d misaligned (post-hoc, but same sign both eras: DISC +14.1|+20.4 vs +1.1|+4.6). S1 open<=ON VWAP is post-hoc, small n (55|39), 48 of 193 regime-ON trades.
+Results (2022-25 starts | 2018-21 starts): pass / paid-once / payouts per eval / net per eval
+- DEPLOY: 84% 63% 2.06 $3,180 | 94% 80% 1.97 $2,165
+- S1 only if <=ON VWAP: 83% 60% 1.87 $2,824 | 93% 79% 1.96 $1,951 (worse: gate throws away trades)
+- S1 x1.5 if <=ON VWAP, x.5 else: 83% 65% 2.17 $3,316 | 94% 81% 2.10 $2,315
+- RA 40d misaligned x.5: 90% 67% 2.23 $3,427 | 94% 82% 1.99 $2,180 ; x0: worse (89% 64% 1.92 $2,803)
+- V15a skip high LVR: 85% 65% 2.23 $3,419 | 97% 83% 2.05 $2,216 ; x.5: no change
+- COMBO (S1 tilt 1.5/.5 + RA x.5 + V15a skip high LVR): 90% 72% 2.55 $3,854 | 97% 87% 2.38 $2,496; one account at a time 2018-26 61 payouts, longest run without payout 2 evals
+Caveat: 9 variants tried, combo stacks three gates; RA and S1 gates are post-hoc (not strict PASS). V15a LVR is the cleanest. Improvement shows in both eras, but treat the combo as a lead, not a proof.

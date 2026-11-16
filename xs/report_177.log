@@ -1,0 +1,45 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  S1 up-lever days (low vanna or room>0.5ATR) in regime-ON trades: 61 of 193 | IFVG near-wall trades: 248 of 656
+  S1 regime-ON trades: below/at ON VWAP 48 above 145 no data 0
+  V15a LVR train 2/3 cut 0.254 high-LVR trades 343 of 1058
+  daily correlation of NZ pts with the S6 system pts: +0.42
+
+=== 50K, ONE ACCOUNT (per eval started every 2nd trading day), Lucid caps, room rule, cost 0.5 pt ===
+  DEPLOY (S1 .2 regime-ON, IFVG .5)
+    2018-21 starts: pass 94% | paid once 80% | payouts/eval 1.97 (0.51 evals per payout) | avg payout $1,144 | net $2,165/eval | days: start->pass 49, funded->1st payout 15, start->1st payout 72, between 13
+    2022-25 starts: pass 84% | paid once 63% | payouts/eval 2.06 (0.49 evals per payout) | avg payout $1,589 | net $3,180/eval | days: start->pass 28, funded->1st payout 10, start->1st payout 39, between 12
+    one account at a time 2018-26: 27 evals, 51 payouts, longest run without a payout 3 evals
+  S1 only if open <= ON VWAP
+    2018-21 starts: pass 93% | paid once 79% | payouts/eval 1.96 (0.51 evals per payout) | avg payout $1,041 | net $1,951/eval | days: start->pass 52, funded->1st payout 14, start->1st payout 74, between 17
+    2022-25 starts: pass 83% | paid once 60% | payouts/eval 1.87 (0.53 evals per payout) | avg payout $1,554 | net $2,824/eval | days: start->pass 29, funded->1st payout 10, start->1st payout 42, between 11
+    one account at a time 2018-26: 22 evals, 54 payouts, longest run without a payout 2 evals
+  S1 x1.5 if <= ON VWAP, x1 else
+    2018-21 starts: pass 94% | paid once 78% | payouts/eval 2.14 (0.47 evals per payout) | avg payout $1,189 | net $2,460/eval | days: start->pass 49, funded->1st payout 15, start->1st payout 73, between 13
+    2022-25 starts: pass 83% | paid once 62% | payouts/eval 2.13 (0.47 evals per payout) | avg payout $1,595 | net $3,310/eval | days: start->pass 27, funded->1st payout 10, start->1st payout 38, between 12
+    one account at a time 2018-26: 25 evals, 52 payouts, longest run without a payout 3 evals
+  S1 x1.5 if <= ON VWAP, x.5 else
+    2018-21 starts: pass 94% | paid once 81% | payouts/eval 2.10 (0.48 evals per payout) | avg payout $1,143 | net $2,315/eval | days: start->pass 51, funded->1st payout 14, start->1st payout 74, between 13
+    2022-25 starts: pass 83% | paid once 65% | payouts/eval 2.17 (0.46 evals per payout) | avg payout $1,565 | net $3,316/eval | days: start->pass 27, funded->1st payout 10, start->1st payout 38, between 12
+    one account at a time 2018-26: 26 evals, 58 payouts, longest run without a payout 2 evals
+  RA 40d IPDA misaligned x.5
+    2018-21 starts: pass 94% | paid once 82% | payouts/eval 1.99 (0.50 evals per payout) | avg payout $1,140 | net $2,180/eval | days: start->pass 47, funded->1st payout 14, start->1st payout 70, between 13
+    2022-25 starts: pass 90% | paid once 67% | payouts/eval 2.23 (0.45 evals per payout) | avg payout $1,574 | net $3,427/eval | days: start->pass 28, funded->1st payout 10, start->1st payout 41, between 10
+    one account at a time 2018-26: 26 evals, 58 payouts, longest run without a payout 1 evals
+  RA 40d IPDA misaligned x0
+    2018-21 starts: pass 94% | paid once 83% | payouts/eval 2.07 (0.48 evals per payout) | avg payout $1,148 | net $2,284/eval | days: start->pass 48, funded->1st payout 14, start->1st payout 72, between 13
+    2022-25 starts: pass 89% | paid once 64% | payouts/eval 1.92 (0.52 evals per payout) | avg payout $1,506 | net $2,803/eval | days: start->pass 28, funded->1st payout 10, start->1st payout 39, between 10
+    one account at a time 2018-26: 25 evals, 52 payouts, longest run without a payout 2 evals
+  V15a skip high LVR
+    2018-21 starts: pass 97% | paid once 83% | payouts/eval 2.05 (0.49 evals per payout) | avg payout $1,125 | net $2,216/eval | days: start->pass 52, funded->1st payout 14, start->1st payout 72, between 16
+    2022-25 starts: pass 85% | paid once 65% | payouts/eval 2.23 (0.45 evals per payout) | avg payout $1,576 | net $3,419/eval | days: start->pass 27, funded->1st payout 10, start->1st payout 38, between 12
+    one account at a time 2018-26: 22 evals, 55 payouts, longest run without a payout 1 evals
+  V15a high LVR x.5
+    2018-21 starts: pass 94% | paid once 80% | payouts/eval 2.05 (0.49 evals per payout) | avg payout $1,142 | net $2,251/eval | days: start->pass 48, funded->1st payout 14, start->1st payout 71, between 13
+    2022-25 starts: pass 84% | paid once 64% | payouts/eval 2.07 (0.48 evals per payout) | avg payout $1,582 | net $3,184/eval | days: start->pass 27, funded->1st payout 10, start->1st payout 38, between 12
+    one account at a time 2018-26: 24 evals, 60 payouts, longest run without a payout 2 evals
+  COMBO S1 x1.5/x.5 + RA x.5 + V15a skip
+    2018-21 starts: pass 97% | paid once 87% | payouts/eval 2.38 (0.42 evals per payout) | avg payout $1,084 | net $2,496/eval | days: start->pass 52, funded->1st payout 14, start->1st payout 73, between 15
+    2022-25 starts: pass 90% | paid once 72% | payouts/eval 2.55 (0.39 evals per payout) | avg payout $1,548 | net $3,854/eval | days: start->pass 27, funded->1st payout 11, start->1st payout 40, between 10
+    one account at a time 2018-26: 24 evals, 61 payouts, longest run without a payout 2 evals
