@@ -331,3 +331,9 @@ Read: dollar sizing does not beat fixed sizes on 2022-25 net; it lowers variance
 - Large-cap: t 4.5, excess vs SPY 6.4bp/day t2.5; dropping best 5% of days takes mean to -2.6bp but SPY goes to -6.5bp (same tail dependence); 2022 +0.2% vs SPY -18%, 2025 14.8% vs 17.7%.
 - Mid/small: t 3.0 absolute but excess vs equal-weight only t1.1 (0.3%/mo); best 20% months removed -> negative.
 - Multiple testing: 373 report scripts in repo; Bonferroni |t| bar 3.8 at N=300. Only RULES 3.3, V15a 3.3 near it; RA 2.6, M1 2.4 do not clear a deflated bar.
+
+## Report 196: one slot per name (large-cap book), Nov 15 2026 (Rey: APP held as 'APP' and 'APP 1h' = two signals; APP/CVNA missed)
+Live allocate() lets one name hold a slot on each track (15m + 1h). xs/_tmp_one.py (hm_fill clone, 6 slots, 8% breaker, 2bp) CAGR/maxDD 2019-21 | 2022-26 | 2019-26 | 2026 YTD:
+live (2 slots per name allowed): +55.1%/-11 | +28.5%/-16 | +38.5%/-16 | +35.6%/-10; one slot per name (15m first): +52.9%/-10 | +28.4%/-15 | +37.2%/-16 | +25.6%/-14.
+The sim takes neither APP nor CVNA since Oct 13 in either variant (live window differs from wide_T replay), so the misses are full slots, not duplicates.
+Applied: mentions history (/hh) now counts one mention per name (15m first). Book allocate() left unchanged pending Rey's call.

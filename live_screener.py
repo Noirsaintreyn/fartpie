@@ -539,12 +539,12 @@ def scan(args):
     def held_at(tk, ts): return any(a['tk'] == tk and pd.Timestamp(a['t0']) <= ts and (a['status'] != 'CLOSED' or pd.Timestamp(a['t1']) > ts) for a in AL)
     def n_open(ts): return sum(1 for a in AL if pd.Timestamp(a['t0']) <= ts and (a['status'] != 'CLOSED' or pd.Timestamp(a['t1']) > ts))
     hm_all = []
-    for t in TR_all:
+    for t in sorted(TR_all, key=lambda z: (pd.Timestamp(z['t0']), z['track'] != '15m')):   # Nov 15 2026: 15m first, so a name's 15m flip is the one that counts
         ts = pd.Timestamp(t['t0'])
         if t['tk'] == 'QQQ' or not t.get('px') or t.get('blocked') or ts < START or (t['tk'], t['track'], ts) in akeys: continue
         if t['status'] not in ('HOLD', 'SELL', 'CLOSED') or n_open(ts) < slots_at(t['t0']): continue
         if held_at(t['tk'], ts): continue                                     # Oct 27 2026: the book already owns this name - not a missed trade
-        if any(x['tk'] == t['tk'] and pd.Timestamp(x['t0']) == ts for x in hm_all): continue    # same name + same entry on both tracks: count once
+        if any(x['tk'] == t['tk'] and pd.Timestamp(x['t0']) <= ts and (x['status'] != 'CLOSED' or pd.Timestamp(x['t1']) > ts) for x in hm_all): continue    # Nov 15 2026 (Rey): one mention per name - a 1h flip on a name already mentioned and still open does not count again
         h = dict(t)
         if h['status'] == 'CLOSED' and 'xpx' not in h: h['xpx'] = float(HS[h['tk']].open.values[min(h['x'], len(HS[h['tk']]) - 1)])
         hm_all.append(h)
