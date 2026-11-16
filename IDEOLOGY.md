@@ -337,3 +337,8 @@ Live allocate() lets one name hold a slot on each track (15m + 1h). xs/_tmp_one.
 live (2 slots per name allowed): +55.1%/-11 | +28.5%/-16 | +38.5%/-16 | +35.6%/-10; one slot per name (15m first): +52.9%/-10 | +28.4%/-15 | +37.2%/-16 | +25.6%/-14.
 The sim takes neither APP nor CVNA since Oct 13 in either variant (live window differs from wide_T replay), so the misses are full slots, not duplicates.
 Applied: mentions history (/hh) now counts one mention per name (15m first). Book allocate() left unchanged pending Rey's call.
+
+## hm_fill rerun (Nov 15 2026, Rey: "if we knew how to pick good trades we'd have APP in the basket")
+xs/hm_fill.py (large-cap book, 6 slots, 8% breaker, 2bp), CAGR/maxDD 2019-21 | 2022-26 | 2019-26 | 2026 YTD. Live (wait for new flip): +55.1/-11 | +28.5/-16 | +38.5/-16 | +35.6/-10.
+Fill a freed slot from a still-open honorable mention: highest ratio +68.0 | +12.1 | +30.9/-26 | -13.5; best performer since signal +69.0 | +15.4 | +33.4/-24 | -26.7; cheapest vs signal +64.4 | +14.4 | +31.4/-27 | -13.4; up since signal +77.6 | +11.8 | +33.3/-28 | -18.7; same-day only before 12:00 +55.4 | +12.0 | +26.7/-31 | +3.4.
+Helps 2019-21 (boom), hurts 2022-26 and 2026 YTD in every variant. Earlier: ATRP/EXT tie-breaks hurt (report 136); outcome look-backs AUC 0.42-0.54 (report 109); no new buys after 13:00 = +23.1 in 2022-26 vs +28.5 live.

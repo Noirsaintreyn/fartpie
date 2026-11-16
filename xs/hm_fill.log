@@ -1,0 +1,25 @@
+rule                                                                   2019-21         2022-26         2019-26        2026 YTD   fills
+  wait for a new flip (live)                                     +55.1% / -11%   +28.5% / -16%   +38.5% / -16%   +35.6% / -10%   0
+  fill from HM: highest options ratio                            +68.0% / -11%   +12.1% / -17%   +30.9% / -26%   -13.5% / -14%   1677
+  fill from HM: best performer since its signal                  +69.0% /  -9%   +15.4% / -23%   +33.4% / -24%   -26.7% / -23%   1381
+  fill from HM: cheapest vs its signal price                     +64.4% / -10%   +14.4% / -23%   +31.4% / -27%   -13.4% / -20%   1822
+  fill from HM: highest ratio, signal <= 1 day old               +56.4% / -11%   +12.8% / -28%   +27.5% / -28%    -8.5% / -19%   1294
+  fill from HM: highest ratio, signal <= 3 days old              +53.2% / -11%   +15.8% / -21%   +28.7% / -21%   -14.1% / -20%   1498
+  fill from HM: highest ratio, not up more than 2% since signal   +61.0% / -10%   +16.8% / -29%   +31.1% / -30%   -22.0% / -26%   1616
+  fill from HM: highest ratio, between -1% and +2% since signal   +56.1% / -10%    +9.8% / -34%   +25.2% / -34%   -15.2% / -25%   1474
+  fill from HM: highest ratio, up since its signal (working)     +77.6% / -10%   +11.8% / -20%   +33.3% / -28%   -18.7% / -20%   1365
+  fill from HM: highest ratio, same-day signal only, fills before 12:00   +55.4% / -10%   +12.0% / -31%   +26.7% / -31%    +3.4% / -14%   630
+
+AVERAGE TRADE BY ENTRY HOUR (all live-universe flips, 2019-26):
+      avg trade  trades  P(>=3%)
+hr                              
+9.0       0.332    8163    0.143
+10.0      0.222    4532    0.150
+11.0      0.384    2082    0.148
+12.0      0.242    1454    0.120
+13.0      0.471    1216    0.133
+
+  no new buys after 13:00                                        +55.9% / -10%   +23.1% / -20%   +34.4% / -25%   +26.6% / -12%   0
+  no new buys after 12:00                                        +41.7% / -12%   +20.7% / -19%   +27.8% / -27%    +4.5% / -12%   0
+  no new buys after 11:00                                        +36.2% / -11%   +10.7% / -25%   +19.7% / -32%   +14.4% / -10%   0
+  no new buys after 10:30                                        +44.3% / -14%   +15.4% / -24%   +25.8% / -24%   +17.1% / -13%   0
