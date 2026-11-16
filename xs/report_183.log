@@ -1,0 +1,22 @@
+A) fib first touch, trade in the PRIOR-DAY direction when the touch is a retracement (raw pts at 30 | 60 min)
+  FIB0.382 30m                       A  +4.34 (t+1.9,n290) | B  -1.37 (t-0.4,n315)
+  FIB0.382 60m                       A  +4.90 (t+1.8,n290) | B  -0.63 (t-0.1,n315)
+  FIB0.5 30m                         A  +2.46 (t+1.1,n298) | B  +6.04 (t+1.1,n324)
+  FIB0.5 60m                         A  +2.89 (t+1.0,n298) | B  +5.34 (t+0.8,n324)
+  FIB0.618 30m                       A  -1.05 (t-0.4,n281) | B  -1.92 (t-0.4,n313)
+  FIB0.618 60m                       A  -0.89 (t-0.3,n281) | B  -2.87 (t-0.4,n313)
+  FIB0.705 30m                       A  -1.54 (t-0.6,n260) | B  -3.94 (t-0.7,n296)
+  FIB0.705 60m                       A  -3.03 (t-1.0,n260) | B  -8.84 (t-1.4,n296)
+  FIB0.79 30m                        A  -2.82 (t-1.1,n247) | B  -6.08 (t-1.1,n275)
+  FIB0.79 60m                        A  -5.60 (t-1.7,n247) | B  -4.03 (t-0.6,n275)
+  OTE any (first/day) 30m            A  +0.35 (t+0.2,n350) | B  +0.83 (t+0.2,n374)
+  OTE any (first/day) 60m            A  -1.47 (t-0.5,n350) | B  +0.95 (t+0.2,n374)
+
+B) IFVG trades (pts per trade)
+  all IFVG                           A  +3.44 (t+3.3,n231) | B  +2.84 (t+3.0,n425)  <== PASS
+  ENT in OTE .62-.79                 A  +8.77 (t+1.9,n16) | B  +5.25 (t+1.5,n27)
+  OTE & dir = prior-day dir          A  +7.64 (t+1.2,n10) | B  +5.94 (t+1.4,n18)
+  retrace .38-.79 & dir = prior dir  A  -0.82 (t-0.3,n26) | B  +6.76 (t+2.3,n61)
+  not OTE                            A  +3.04 (t+2.8,n215) | B  +2.63 (t+2.7,n397)  <== PASS
+  dir = prior dir (any)              A  +2.94 (t+1.9,n125) | B  +4.29 (t+3.1,n213)
+  dir against prior dir              A  +4.03 (t+2.8,n106) | B  +1.30 (t+1.0,n211)
