@@ -348,3 +348,6 @@ Helps 2019-21 (boom), hurts 2022-26 and 2026 YTD in every variant. Earlier: ATRP
 
 ## Report 198: flip-bar relative volume (volume-clock analogue of the tick-rate z) vs large-cap flip outcome
 11,763 live-universe flips (wide_T, sp & ratio>=1.5; train 2,636 | test 9,127). logRVOL of the signal 15m bar vs same slot's 20-session median. IC -0.033 | -0.059; BIG(>=5%) AUC 0.525 | 0.500; high-minus-low tercile +0.10pp (t0.5) | -0.29pp (t-2.6). 15m and 1H tracks agree: no edge, test sign inverted. Tick counts do not exist for the stocks, so true tick-rate untested. FAIL.
+
+## Report 199: biggest 2026 sub-$5 vector-flip returns (xs/report_199_penny_2026_top.py; 1,656-name wide daily universe, entry next open after bull flip, exit open after bear flip or last close, no cost)
+334 flips with entry px<$5 in 2026; 4 flagged as discontinuities (EGRX x3 with a +728% peak but +89% return, SITC). Top clean: ABSI +189% (still open), ABCL +185%, RRGB +163%, RXT +161% (peak +495%), AMC +144%, APPS +117%, BB +106%, CLOV +106%, MRVI +97%, KOS +95%. Clean median -7.4%, win 23%, 8 of 330 reached +100%. NINE is not in this universe.
