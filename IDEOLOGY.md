@@ -342,3 +342,6 @@ Applied: mentions history (/hh) now counts one mention per name (15m first). Boo
 xs/hm_fill.py (large-cap book, 6 slots, 8% breaker, 2bp), CAGR/maxDD 2019-21 | 2022-26 | 2019-26 | 2026 YTD. Live (wait for new flip): +55.1/-11 | +28.5/-16 | +38.5/-16 | +35.6/-10.
 Fill a freed slot from a still-open honorable mention: highest ratio +68.0 | +12.1 | +30.9/-26 | -13.5; best performer since signal +69.0 | +15.4 | +33.4/-24 | -26.7; cheapest vs signal +64.4 | +14.4 | +31.4/-27 | -13.4; up since signal +77.6 | +11.8 | +33.3/-28 | -18.7; same-day only before 12:00 +55.4 | +12.0 | +26.7/-31 | +3.4.
 Helps 2019-21 (boom), hurts 2022-26 and 2026 YTD in every variant. Earlier: ATRP/EXT tie-breaks hurt (report 136); outcome look-backs AUC 0.42-0.54 (report 109); no new buys after 13:00 = +23.1 in 2022-26 vs +28.5 live.
+
+## Report 197: volume bars + tick-rate z-score (MNQ 1m with n_trades, Dec 2024-Nov 2025 only, no train era, buckets ~1 min at 1k-5k contracts). Rank corr z vs next-bucket continuation ~0 in both halves; best cells 0.1-0.3 pt vs 1 pt cost. No edge; needs tick data and 50k-100k buckets.
+2022 max DD (from Jan 3): SPY -24.5% (ret -18.2%), QQQ -34.8% (-32.6%), large-cap screener -15.3% (+0.2%).
