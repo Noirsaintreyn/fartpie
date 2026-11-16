@@ -268,3 +268,10 @@ Same-sign leads (|t|<2 in one era): IFVG worse when roughness low (-4.3 t-1.9 | 
 xs/report_180_session_gates.py, log xs/report_180.log. 0 PASS of 40 tests (strict split, cuts on 2018-21).
 IFVG: ACCD high (overnight acceptance on the side of the open) +2.5 (t1.1) | +4.1 (t1.9); LON_R low weak -5.2 (t-2.6) | -1.1 (t-0.6); OR30 nothing.
 S1 regime-ON: LON_R high +9.4 (t.5, n34) | +137.8 (t2.8, n27) same sign; ASIA_R low +14.3 | -109.9 flips (not usable). S1 train era ~0 in every cell so train cannot confirm; lead only.
+
+## Report 181 (Nov 15): report-180 session gates as size tilts in the Lucid 50K sim on top of the 177 COMBO
+xs/report_181_session_tilts_lucid.py, log xs/report_181.log. IFVG x1.5 when overnight acceptance (ACCD) in train top tercile (186 of 656 trades); S1 x1.5 when London range/ATR in train top tercile (61 of 193 regime-ON).
+2022-25 starts net/eval: COMBO $3,854 (pass 90% paid 72% 2.55) | +IFVG acc $3,758 | +S1 London $3,667 | both $3,669. 2018-21: COMBO $2,496 | +IFVG acc $2,386 | +S1 London $2,643 (pass 96%, payouts 2.37) | both $2,467.
+On DEPLOY alone: S1 London x1.5 $2,578 | $3,157 (2018-21 better, 2022-25 flat); IFVG acc $2,141 | $3,138 (no gain).
+Conclusion: no tilt beats COMBO in 2022-25; not added. One account at a time: payouts 64 vs 61 with the IFVG tilt and longest dry run 1 eval, but lower net per eval.
+Note: S1 (AMT value-area fade) remains the strongest engine; the report-180 acceptance feature is a different thing (overnight closes outside yesterday's range), not a test of TPO/AMT.

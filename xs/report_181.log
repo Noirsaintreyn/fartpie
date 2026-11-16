@@ -1,0 +1,46 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  S1 up-lever days (low vanna or room>0.5ATR) in regime-ON trades: 61 of 193 | IFVG near-wall trades: 248 of 656
+  S1 regime-ON trades: below/at ON VWAP 48 above 145 no data 0
+  V15a LVR train 2/3 cut 0.254 high-LVR trades 343 of 1058
+  ACCD cut 0.38 IFVG high-acceptance trades 186 of 656 | LON_R cut 0.362 S1 regime-ON high-London trades 61 of 193
+  daily correlation of NZ pts with the S6 system pts: +0.42
+
+=== 50K, ONE ACCOUNT (per eval started every 2nd trading day), Lucid caps, room rule, cost 0.5 pt ===
+  DEPLOY
+    2018-21 starts: pass 94% | paid once 80% | payouts/eval 1.97 (0.51 evals per payout) | avg payout $1,144 | net $2,165/eval | days: start->pass 49, funded->1st payout 15, start->1st payout 72, between 13
+    2022-25 starts: pass 84% | paid once 63% | payouts/eval 2.06 (0.49 evals per payout) | avg payout $1,589 | net $3,180/eval | days: start->pass 28, funded->1st payout 10, start->1st payout 39, between 12
+    one account at a time 2018-26: 27 evals, 51 payouts, longest run without a payout 3 evals
+  COMBO (report 177)
+    2018-21 starts: pass 97% | paid once 87% | payouts/eval 2.38 (0.42 evals per payout) | avg payout $1,084 | net $2,496/eval | days: start->pass 52, funded->1st payout 14, start->1st payout 73, between 15
+    2022-25 starts: pass 90% | paid once 72% | payouts/eval 2.55 (0.39 evals per payout) | avg payout $1,548 | net $3,854/eval | days: start->pass 27, funded->1st payout 11, start->1st payout 40, between 10
+    one account at a time 2018-26: 24 evals, 61 payouts, longest run without a payout 2 evals
+  COMBO + IFVG x1.5 if high acceptance
+    2018-21 starts: pass 97% | paid once 85% | payouts/eval 2.32 (0.43 evals per payout) | avg payout $1,068 | net $2,386/eval | days: start->pass 50, funded->1st payout 14, start->1st payout 71, between 14
+    2022-25 starts: pass 89% | paid once 72% | payouts/eval 2.50 (0.40 evals per payout) | avg payout $1,538 | net $3,758/eval | days: start->pass 27, funded->1st payout 11, start->1st payout 38, between 10
+    one account at a time 2018-26: 24 evals, 64 payouts, longest run without a payout 1 evals
+  COMBO + IFVG x1.5 high acc / x.75 else
+    2018-21 starts: pass 94% | paid once 84% | payouts/eval 2.24 (0.45 evals per payout) | avg payout $1,075 | net $2,314/eval | days: start->pass 48, funded->1st payout 14, start->1st payout 71, between 15
+    2022-25 starts: pass 89% | paid once 70% | payouts/eval 2.38 (0.42 evals per payout) | avg payout $1,533 | net $3,560/eval | days: start->pass 26, funded->1st payout 10, start->1st payout 38, between 10
+    one account at a time 2018-26: 26 evals, 64 payouts, longest run without a payout 2 evals
+  COMBO + S1 x1.5 if high London
+    2018-21 starts: pass 96% | paid once 85% | payouts/eval 2.37 (0.42 evals per payout) | avg payout $1,151 | net $2,643/eval | days: start->pass 53, funded->1st payout 14, start->1st payout 74, between 15
+    2022-25 starts: pass 89% | paid once 71% | payouts/eval 2.40 (0.42 evals per payout) | avg payout $1,561 | net $3,667/eval | days: start->pass 27, funded->1st payout 11, start->1st payout 40, between 10
+    one account at a time 2018-26: 24 evals, 64 payouts, longest run without a payout 2 evals
+  COMBO + S1 x1.5 high London / x.67 else
+    2018-21 starts: pass 96% | paid once 83% | payouts/eval 2.34 (0.43 evals per payout) | avg payout $1,116 | net $2,519/eval | days: start->pass 52, funded->1st payout 14, start->1st payout 74, between 15
+    2022-25 starts: pass 89% | paid once 71% | payouts/eval 2.39 (0.42 evals per payout) | avg payout $1,557 | net $3,626/eval | days: start->pass 27, funded->1st payout 11, start->1st payout 40, between 10
+    one account at a time 2018-26: 25 evals, 61 payouts, longest run without a payout 2 evals
+  COMBO + both (x1.5/x1)
+    2018-21 starts: pass 97% | paid once 84% | payouts/eval 2.24 (0.45 evals per payout) | avg payout $1,139 | net $2,467/eval | days: start->pass 50, funded->1st payout 14, start->1st payout 71, between 15
+    2022-25 starts: pass 89% | paid once 71% | payouts/eval 2.43 (0.41 evals per payout) | avg payout $1,545 | net $3,669/eval | days: start->pass 26, funded->1st payout 11, start->1st payout 38, between 10
+    one account at a time 2018-26: 24 evals, 64 payouts, longest run without a payout 1 evals
+  DEPLOY + S1 x1.5 high London only
+    2018-21 starts: pass 94% | paid once 78% | payouts/eval 2.16 (0.46 evals per payout) | avg payout $1,236 | net $2,578/eval | days: start->pass 48, funded->1st payout 15, start->1st payout 73, between 13
+    2022-25 starts: pass 84% | paid once 63% | payouts/eval 2.06 (0.49 evals per payout) | avg payout $1,577 | net $3,157/eval | days: start->pass 28, funded->1st payout 10, start->1st payout 39, between 12
+    one account at a time 2018-26: 24 evals, 60 payouts, longest run without a payout 2 evals
+  DEPLOY + IFVG x1.5 high acc only
+    2018-21 starts: pass 94% | paid once 80% | payouts/eval 1.93 (0.52 evals per payout) | avg payout $1,157 | net $2,141/eval | days: start->pass 48, funded->1st payout 15, start->1st payout 69, between 12
+    2022-25 starts: pass 83% | paid once 63% | payouts/eval 2.05 (0.49 evals per payout) | avg payout $1,577 | net $3,138/eval | days: start->pass 26, funded->1st payout 10, start->1st payout 37, between 12
+    one account at a time 2018-26: 27 evals, 57 payouts, longest run without a payout 2 evals
