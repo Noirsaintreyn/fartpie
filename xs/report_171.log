@@ -5,3 +5,12 @@
   daily correlation of NZ pts with the S6 system pts: +0.42
 
 === SKIP (analysis only) 50K, ONE ACCOUNT (per eval started every 2nd trading day), Lucid caps, room rule, cost 0.5 pt ===
+  DEPLOY funded policy F0 x1         payouts  51 ( 6.4/yr) paid \$ 8,837/yr | funded 25: lost 19, graduated 6, open 0 | funded life median 34d, payouts/account 2.0 | eval fails 2 | time in eval 52%
+  DEPLOY funded policy F1 x clip(c, .4, 1) payouts  60 ( 7.6/yr) paid \$ 9,637/yr | funded 19: lost 10, graduated 9, open 0 | funded life median 56d, payouts/account 3.2 | eval fails 2 | time in eval 37%
+  DEPLOY funded policy F2 x clip(c, .5, 1.5 payouts  53 ( 6.7/yr) paid \$ 8,431/yr | funded 19: lost 10, graduated 9, open 0 | funded life median 47d, payouts/account 2.8 | eval fails 1 | time in eval 45%
+  DEPLOY funded policy F3 half after a payo payouts  57 ( 7.2/yr) paid \$ 9,278/yr | funded 19: lost 11, graduated 8, open 0 | funded life median 59d, payouts/account 3.0 | eval fails 2 | time in eval 47%
+  DEPLOY funded policy F4 x clip(c, .3, 1.2 payouts  56 ( 7.1/yr) paid \$ 8,826/yr | funded 20: lost 12, graduated 8, open 0 | funded life median 46d, payouts/account 2.8 | eval fails 3 | time in eval 47%
+
+real	2m18.554s
+user	2m23.980s
+sys	0m0.976s
