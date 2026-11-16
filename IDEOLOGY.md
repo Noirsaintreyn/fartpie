@@ -181,3 +181,8 @@ Pre-declared in xs/report_153_turtle_soup_smt.py; log xs/report_153.log. NQ 5m +
 RESULT: FAILS, wrong sign in both eras. CYC STRICT ALL -3.6/-4.7 (t -2.2/-2.4, win 27/25%); ON STRICT -1.4/-6.0; PDHL STRICT -4.9/-3.5. SMT filter does not rescue it (PDHL+SMT A -10.2, t -3.5); PD (00:00 + 08:30 opens, premium/discount) does not rescue it. Fading the open-window sweep loses; sweeps at 09:30 mostly continue. Continuation (trade WITH the sweep) is only a post-hoc idea, needs its own pre-declared test.
 Not tested yet: Goldbach levels (po3 81/27/243), time-fib spacing, ES-led SMT between cycles P2-P3 (needs 3-cycle SMT on ES/NQ/DXY), 15:00-16:00 MOC macro.
 CORRECTION to report 151: M1/R1/RULES had no direction column; the 'discount works across legs' claim was wrong. IPDA discount holds for RA only, mixed on V15a.
+
+## Report 154 (Nov 15): RTH opening-gap fill as context for IFVG / FVG (xs/report_154_gap_fill_ifvg.py, log xs/report_154.log)
+Base rate gap fill by close (A | B): |gap|<=5 95|100%, 5-15 79|93%, 15-30 68|88%, 30-60 55|75%, >60 37|43%. The '81%' holds for small/medium gaps only, and fill rates are higher in 2022+.
+IFVG TOWARD vs AWAY from gap fill: no difference (gap>=5: TOWARD +3.6/+2.3, AWAY +3.1/+3.6). Plain FVG toward gap +1.0/-0.2 (null). IFVG toward gap with target = gap fill: +6.3/+4.4 pts but win 24/19%, t 2.0/1.4 (fails B), lottery payoff (mean RR 15), not better than 2R IFVG (+3.4/+2.7, t 3.1/2.8).
+Verdict: gap direction is not a useful IFVG context; gap-fill as a standalone small-gap (<=30 pt) trade untested.
