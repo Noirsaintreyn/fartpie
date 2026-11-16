@@ -1,0 +1,16 @@
+G9_ATRP_HI     IN  A n 115    -3.9 t -0.4 w 45% | B n 100   +42.6 t +2.3 w 57%
+               OUT A n 114    +4.6 t +0.9 w 58% | B n  94   +39.7 t +3.3 w 65%
+G10_RET120_UP  IN  A n 210    +1.5 t +0.3 w 52% | B n 137   +33.7 t +3.1 w 61%
+               OUT A n  19   -12.2 t -0.5 w 42% | B n  57   +59.2 t +2.2 w 61%
+G11_VOL_EXP    IN  A n  97    +3.3 t +0.3 w 49% | B n  74   +50.7 t +2.2 w 55%
+               OUT A n 132    -1.8 t -0.3 w 53% | B n 120   +35.4 t +3.3 w 64%
+G12_POS250_HI  IN  A n 212    +0.2 t +0.0 w 52% | B n 145   +36.9 t +3.5 w 62%
+               OUT A n  17    +2.7 t +0.1 w 41% | B n  49   +54.1 t +1.8 w 57%
+yearly mean atrp x100: {2017: 0.82, 2018: 1.53, 2019: 1.17, 2020: 2.06, 2021: 1.32, 2022: 2.37, 2023: 1.43, 2024: 1.24, 2025: 1.48, 2026: 1.44}
+yearly S1 mean: {2018: -1.7, 2019: -5.4, 2020: -3.2, 2021: 9.7, 2022: 39.9, 2023: 19.6, 2024: 10.1, 2025: 82.3, 2026: 83.7}
+
+SELF-GATE (adaptive): trade S1 only when mean of the previous K S1 trades > 0 (K frozen a priori 15, also 25); trades skipped are still tracked
+K15 A: n  84 mean   -9.8 t -1.0 w 43% | skipped n145 mean   +6.2
+K15 B: n 164 mean  +41.2 t +3.3 w 61% | skipped n30 mean  +41.1
+K25 A: n  63 mean   -3.3 t -0.3 w 49% | skipped n166 mean   +1.7
+K25 B: n 187 mean  +36.3 t +3.3 w 59% | skipped n7 mean +172.8
