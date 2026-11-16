@@ -1,0 +1,35 @@
+A) IFVG context (pts/trade)
+IFVG all               A n 231  +3.44 t +3.3 w 48% | B n 425  +2.84 t +3.0 w 44% PASS
+MOM                    A n 146  +3.19 t +2.3 w 47% | B n 303  +3.83 t +3.4 w 46% PASS
+notMOM                 A n  85  +3.86 t +2.4 w 51% | B n 122  +0.40 t +0.2 w 39% 
+EXT                    A n   0 | B n   0 
+EMAAL                  A n  68  +5.64 t +2.7 w 51% | B n 134  +4.06 t +2.5 w 47% PASS
+notEMAAL               A n 163  +2.52 t +2.1 w 47% | B n 291  +2.29 t +2.0 w 42% 
+DEMA                   A n 114  +2.50 t +1.7 w 45% | B n 173  +1.79 t +1.2 w 43% 
+notDEMA                A n 117  +4.35 t +2.9 w 51% | B n 252  +3.57 t +2.9 w 44% PASS
+DRSI                   A n 111  +1.59 t +1.0 w 42% | B n 198  +4.07 t +2.8 w 49% 
+notDRSI                A n 120  +5.15 t +3.6 w 53% | B n 227  +1.78 t +1.4 w 39% 
+
+B) daily standalone (next day open->close)
+RSI2<10 long           A n  74 +20.52 t +1.5 w 58% | B n 128 +12.12 t +0.5 w 49% 
+RSI2>90 short          A n 214  +6.04 t +1.0 w 48% | B n 208  -9.81 t -0.9 w 50% 
+RSI14>70 long(mom)     A n 116 -11.30 t -1.2 w 50% | B n 118  -8.61 t -0.5 w 50% 
+RSI14>70 short(contra) A n 116 +10.30 t +1.1 w 48% | B n 118  +7.61 t +0.4 w 50% 
+RSI14<30 long(contra)  A n  11 +130.00 t +2.8 w 82% | B n  18 +130.38 t +0.9 w 56% 
+RSI14<30 short(mom)    A n  11 -131.00 t -2.8 w 18% | B n  18 -131.38 t -0.9 w 44% 
+EMA20/50 with trend    A n1009  -0.52 t -0.2 w 52% | B n1164  -8.77 t -1.4 w 52% 
+
+C) trend lines on 15m pivots (pts/trade, 2R)
+BOUNCE_RES             A n 279  -1.95 t -1.3 w 29% | B n 286  +2.08 t +1.1 w 34% 
+BOUNCE_SUP             A n 300  -0.20 t -0.1 w 34% | B n 314  +0.71 t +0.4 w 37% 
+BREAK_RES              A n 249  -2.87 t -1.6 w 33% | B n 173  -4.74 t -1.8 w 28% 
+BREAK_SUP              A n 255  -0.17 t -0.1 w 34% | B n 191  -4.27 t -1.7 w 30% 
+BRKRT_RES              A n 155  +0.89 t +0.6 w 37% | B n 166  -3.35 t -1.8 w 31% 
+BRKRT_SUP              A n 160  +0.51 t +0.3 w 34% | B n 161  -2.24 t -1.2 w 31% 
+BOUNCE_ALL             A n 485  -0.26 t -0.2 w 33% | B n 513  +2.39 t +1.6 w 37% 
+BREAK_ALL              A n 429  -1.86 t -1.2 w 33% | B n 323  -5.70 t -3.0 w 28% 
+BRKRT_ALL              A n 287  +0.54 t +0.4 w 36% | B n 305  -2.41 t -1.7 w 32% 
+
+real	1m17.316s
+user	1m16.746s
+sys	0m0.246s
