@@ -1,0 +1,45 @@
+NQ days 2090 2018-01-02 2026-07-10
+  stop 25 / target 25    mean per trade -2.18 pts (cost included), win 48%, sd 25 pts
+  stop 50 / target 50    mean per trade -1.07 pts (cost included), win 50%, sd 48 pts
+  stop 50 / target 100   mean per trade +0.45 pts (cost included), win 38%, sd 65 pts
+  stop 50 / target 150   mean per trade +0.90 pts (cost included), win 34%, sd 76 pts
+  stop 100 / target 50   mean per trade -2.49 pts (cost included), win 62%, sd 65 pts
+  stop 150 / target 50   mean per trade -2.90 pts (cost included), win 66%, sd 76 pts
+  stop 100 / target 25   mean per trade -2.48 pts (cost included), win 75%, sd 48 pts
+  hold to close          mean per trade -1.00 pts (cost included), win 50%, sd 166 pts
+
+EVAL: pass rate by geometry x size (MNQ) [mean days to resolve]
+                                 1         2         3         5         8        10        15        20        30        40
+stop 25 / target 25        0%[333]   1%[183]   4%[108]  10%[ 48]  15%[ 22]  16%[ 15]  18%[  8]  19%[  5]  18%[  3]  23%[  2]
+stop 50 / target 50        5%[260]  17%[ 93]  18%[ 44]  21%[ 18]  24%[  8]  22%[  6]  22%[  4]  23%[  2]  19%[  2]  16%[  1]
+stop 50 / target 100      23%[206]  26%[ 63]  26%[ 31]  25%[ 12]  26%[  6]  22%[  4]  18%[  3]  15%[  2]  12%[  2]   9%[  2]
+stop 50 / target 150      31%[180]  29%[ 52]  28%[ 26]  28%[ 11]  21%[  7]  18%[  5]  14%[  4]  12%[  3]  10%[  2]   7%[  2]
+stop 100 / target 50       7%[174]  14%[ 54]  17%[ 27]  18%[ 11]  23%[  5]  20%[  3]  21%[  2]  22%[  2]  18%[  2]  16%[  1]
+stop 150 / target 50       7%[136]  12%[ 42]  15%[ 20]  18%[  9]  21%[  4]  21%[  3]  21%[  2]  25%[  2]  21%[  2]  14%[  1]
+stop 100 / target 25       1%[234]   9%[ 87]  12%[ 43]  18%[ 17]  19%[  8]  18%[  5]  21%[  3]  19%[  2]  19%[  2]  21%[  1]
+hold to close             21%[ 71]  21%[ 26]  22%[ 14]  20%[  7]  16%[  4]  13%[  4]  11%[  3]   8%[  2]   7%[  2]   5%[  2]
+
+FUNDED: expected total payout $ per funded account (share paid at least once) by geometry x size
+                                   1           2           3           5           8          10          15          20          30          40
+stop 25 / target 25      $    0( 0%) $    0( 0%) $    0( 0%) $  325(41%) $  408(45%) $  400(39%) $  463(32%) $  478(24%) $  426(17%) $  356(16%)
+stop 50 / target 50      $    0( 0%) $  442(52%) $  466(53%) $  560(49%) $  606(36%) $  669(29%) $  555(17%) $  441(13%) $  385(10%) $  301( 7%)
+stop 50 / target 100     $  500(58%) $  535(58%) $  591(54%) $  694(38%) $  727(25%) $  621(20%) $  603(15%) $  495(12%) $  395( 9%) $  304( 7%)
+stop 50 / target 150     $  527(63%) $  606(58%) $  661(48%) $  705(33%) $  689(24%) $  588(19%) $  545(13%) $  481(11%) $  395( 8%) $  291( 7%)
+stop 100 / target 50     $    0( 0%) $  393(49%) $  422(49%) $  519(43%) $  530(27%) $  490(21%) $  503(15%) $  438(12%) $  292( 8%) $  265( 7%)
+stop 150 / target 50     $    0( 0%) $  370(47%) $  420(48%) $  485(38%) $  551(25%) $  513(20%) $  451(14%) $  425(12%) $  244( 7%) $  238( 6%)
+stop 100 / target 25     $    0( 0%) $    0( 0%) $    0( 0%) $  427(51%) $  491(42%) $  545(34%) $  464(20%) $  510(17%) $  445(14%) $  309(11%)
+hold to close            $  512(52%) $  578(44%) $  634(35%) $  623(26%) $  553(19%) $  546(16%) $  455(12%) $  383( 9%) $  285( 7%) $  208( 5%)
+
+NET per eval = pass x expected payout - $88, best funded size for each eval cell; top 12 cells
+  net $   137 | eval: stop 50 / target 150 x 1 MNQ (pass 31%, 180 days) | funded: stop 50 / target 100 x 8 MNQ (E[payout] $727, paid once 25%, first payout day 9)
+  net $   130 | eval: stop 50 / target 150 x 1 MNQ (pass 31%, 180 days) | funded: stop 50 / target 150 x 5 MNQ (E[payout] $705, paid once 33%, first payout day 12)
+  net $   127 | eval: stop 50 / target 150 x 1 MNQ (pass 31%, 180 days) | funded: stop 50 / target 100 x 5 MNQ (E[payout] $694, paid once 38%, first payout day 11)
+  net $   125 | eval: stop 50 / target 150 x 1 MNQ (pass 31%, 180 days) | funded: stop 50 / target 150 x 8 MNQ (E[payout] $689, paid once 24%, first payout day 10)
+  net $   124 | eval: stop 50 / target 150 x 2 MNQ (pass 29%, 52 days) | funded: stop 50 / target 100 x 8 MNQ (E[payout] $727, paid once 25%, first payout day 9)
+  net $   119 | eval: stop 50 / target 150 x 1 MNQ (pass 31%, 180 days) | funded: stop 50 / target 50 x 10 MNQ (E[payout] $669, paid once 29%, first payout day 7)
+  net $   117 | eval: stop 50 / target 150 x 2 MNQ (pass 29%, 52 days) | funded: stop 50 / target 150 x 5 MNQ (E[payout] $705, paid once 33%, first payout day 12)
+  net $   117 | eval: stop 50 / target 150 x 1 MNQ (pass 31%, 180 days) | funded: stop 50 / target 150 x 3 MNQ (E[payout] $661, paid once 48%, first payout day 18)
+  net $   115 | eval: stop 50 / target 150 x 5 MNQ (pass 28%, 11 days) | funded: stop 50 / target 100 x 8 MNQ (E[payout] $727, paid once 25%, first payout day 9)
+  net $   114 | eval: stop 50 / target 150 x 3 MNQ (pass 28%, 26 days) | funded: stop 50 / target 100 x 8 MNQ (E[payout] $727, paid once 25%, first payout day 9)
+  net $   114 | eval: stop 50 / target 150 x 2 MNQ (pass 29%, 52 days) | funded: stop 50 / target 100 x 5 MNQ (E[payout] $694, paid once 38%, first payout day 11)
+  net $   112 | eval: stop 50 / target 150 x 2 MNQ (pass 29%, 52 days) | funded: stop 50 / target 150 x 8 MNQ (E[payout] $689, paid once 24%, first payout day 10)
