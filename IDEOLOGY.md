@@ -351,3 +351,6 @@ Helps 2019-21 (boom), hurts 2022-26 and 2026 YTD in every variant. Earlier: ATRP
 
 ## Report 199: biggest 2026 sub-$5 vector-flip returns (xs/report_199_penny_2026_top.py; 1,656-name wide daily universe, entry next open after bull flip, exit open after bear flip or last close, no cost)
 334 flips with entry px<$5 in 2026; 4 flagged as discontinuities (EGRX x3 with a +728% peak but +89% return, SITC). Top clean: ABSI +189% (still open), ABCL +185%, RRGB +163%, RXT +161% (peak +495%), AMC +144%, APPS +117%, BB +106%, CLOV +106%, MRVI +97%, KOS +95%. Clean median -7.4%, win 23%, 8 of 330 reached +100%. NINE is not in this universe.
+
+## Report 200: would an outlier screener have selected the 2026 big sub-$5 flips? (xs/report_200_penny_selection_capture.py)
+330 clean 2026 flips; model = ATRP + EXT train-ECDF rank-sum (report 118 minus turnover), train 80th pct cut = 1.54 (it selects 159 = 48% of 2026 flips, so it is not a top-20% filter this year). Selected: 159 flips, mean +0.9%, median -10.6%, win 26%, 13 of 20 >=+50%, 7 of 8 >=+100%; not selected: mean -0.7%, 7 >=+50%, 1 >=+100%. Top-10 winners: 9 selected. Peak concurrent selected positions 46. Additive at 5% per slot: ~+7% of capital (no cost). The screen keeps the tail but also keeps half the losers.
