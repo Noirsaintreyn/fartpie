@@ -567,3 +567,9 @@ Read: vector direction on any time frame and the other options-flow techniques d
 
 ## Report 250: shareable stats (anonymised Model 1-8)
 Feb 2018-Jan 2026, Lucid 50K default payout rule. 4,650 trades (582/yr), trade win 51%, day win 52%, 16.7 pts/day (all models, 1 ct each), 24 evals / 20 passed, 51 payouts, $73.8k paid, fees $11.8k ($90/eval + $100/mo), net $62.1k (5.3x). Best year 2025 ($26.1k), weakest 2021 ($0.9k net). Chart: xs/algo_stats_shareable.png (make_shareable_chart.py).
+
+## Report 251: main legs only and full-$2,000 payout rule (Lucid 50K chain, one account, Feb 2018-Jan 2026)
+all 8, paymin $500: 24 evals/20 passed, 51 pays, $73.8k, 1st pay median 84d, max gap 305d, worst rolling-12m $713.
+all 8, paymin $2,000: 17/14, 56 pays (avg $1,800), $100.8k, 1st pay 112d, max gap 197d, p90 136d, worst-12m $1,800, median-12m $12.6k.
+main 7 (no S1), $500: 23/19, 51 pays, $70.4k, max gap 275d, worst-12m $457. main 7, $2,000: 16/15, 47 pays, $84.6k, max gap 198d, worst-12m $1,800.
+Reading: the $2,000 rule shortens the worst gaps and lifts worst-12m in this sim; S1 adds ~$16k under it. First payout is slower (112d). Chain graduates after 5 payouts.
