@@ -1,0 +1,27 @@
+days train 747 test 1321
+(A) var explained [0.858 0.068 0.026 0.012]
+   PC1 loads early/mid/late (idx 0,11,23): [0.04 0.21 0.26]  PC2: [ 0.11  0.13 -0.26]  PC3: [ 0.21 -0.23  0.25]
+  cont ~ PC1-3  train R2 +0.007 corr +0.083 | test R2 -0.018 corr -0.052
+  cont ~ PC1    train R2 +0.005 corr +0.071 | test R2 -0.011 corr -0.022
+  cont ~ PC2    train R2 +0.002 corr +0.040 | test R2 -0.011 corr -0.078
+  cont ~ PC3    train R2 +0.000 corr +0.016 | test R2 -0.002 corr +0.023
+  erA  ~ PC1-3  train R2 +0.001 corr +0.031 | test R2 -0.002 corr -0.009
+  erA  ~ PC1    train R2 +0.000 corr +0.003 | test R2 -0.000 corr +0.059
+  erA  ~ PC2    train R2 +0.001 corr +0.028 | test R2 -0.003 corr -0.021
+  erA  ~ PC3    train R2 +0.000 corr +0.014 | test R2 -0.001 corr +0.007
+
+mean cont (rest-of-day move in direction of first 2h, units of R20) by train-cut tercile
+  PC1 low  n 249 -0.028 (t-0.8) | n 488 +0.055 (t+2.4)
+  PC1 mid  n 249 +0.039 (t+1.3) | n 400 +0.009 (t+0.4)
+  PC1 high n 249 +0.022 (t+0.8) | n 433 +0.048 (t+2.0)
+  PC2 low  n 249 -0.001 (t-0.0) | n 461 +0.019 (t+0.9)
+  PC2 mid  n 249 +0.028 (t+1.0) | n 414 +0.030 (t+1.2)
+  PC2 high n 249 +0.006 (t+0.2) | n 446 +0.067 (t+2.5)
+  PC3 low  n 249 -0.009 (t-0.3) | n 468 +0.011 (t+0.4)
+  PC3 mid  n 249 +0.003 (t+0.1) | n 419 +0.046 (t+2.0)
+  PC3 high n 249 +0.039 (t+1.1) | n 434 +0.062 (t+2.5)
+
+(B) context PCA var [0.452 0.239 0.123 0.088]
+  day ER ~ raw 8  R2 +0.020 | R2 -0.002
+  day ER ~ PCA 3  R2 +0.005 | R2 -0.002
+  day ER ~ PCA 4  R2 +0.015 | R2 -0.003
