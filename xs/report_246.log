@@ -1,0 +1,16 @@
+days with levels 2195 | mean levels/day 63.1 | by group {'SWG': 37601, 'VPd': 17222, 'VP3': 16869, 'VPw': 15087, 'EQ': 13546, 'EXT': 12774, 'FIB': 12254, 'VPm': 8893, 'OPT': 3185, 'POOR': 1120}
+candidates 10250 | absorbed 1103
+
+(a) TRAIN 2019-21 -> TEST 2018+2022-26: candidates train 2649 test 7599 | base win rate train 0.325 test 0.322
+L1 coefficients kept: VPd -0.00, VPm -0.00, FIB +0.03, dpush +0.05, vect +0.04, hr +0.02, ab +0.02
+AUC train 0.543 | test 0.504
+ALL candidates (seq., 2R)          train: n2090 ( 697/yr) win 32% net   -1.9 t -2.8 || test: n5735 ( 876/yr) win 32% net   -2.3 t -4.6
+rule: stage 3 absorption (seq.)    train: n 279 (  93/yr) win 38% net   +0.7 t +0.4 || test: n 802 ( 122/yr) win 36% net   -0.4 t -0.3
+MODEL top 19% (train in-sample | test OOS) train: n 519 ( 173/yr) win 38% net   +1.1 t +0.9 || test: n1543 ( 236/yr) win 34% net   -1.6 t -1.5
+MODEL top 9% (train in-sample | test OOS) train: n 264 (  88/yr) win 39% net   +1.2 t +0.7 || test: n 734 ( 112/yr) win 35% net   -1.2 t -0.8
+   MODEL top 20% by year: 2018:-1(125) 2019:-1(67) 2020:+1(225) 2021:+2(227) 2022:-4(297) 2023:-3(310) 2024:-0(326) 2025:-2(345) 2026:+3(140)
+
+(b) EXPANDING WALK-FORWARD (2018 by the 2019-21 model; 2022..2026 each by models trained on 2019..y-1): selected 1615 of 7599
+   walk-forward top 20%: n1488 (227/yr) win33% net -1.7 t-1.4
+   walk-forward top 20% by year: 2018:-1(125) 2022:-4(297) 2023:-3(305) 2024:+1(269) 2025:-1(327) 2026:-1(165)
+   same years, ALL candidates (seq.): n5735 net -2.3 t-4.6
