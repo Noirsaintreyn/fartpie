@@ -1,0 +1,29 @@
+main algo: drought days (trailing 40-day P&L <= 0) 17% of days; train 30%, test 10%
+ER cuts (train): chop < 0.22, trend > 0.43
+=== (1) surface: neg gamma, all ER ===
+FV3d K0.5 neg gam all-ER   train: n  403 win  49% net  +3.60 pts t +0.7 R~131 | per day +1.85, drought days -0.10, other +2.70 | corr with main -0.11 || test: n  815 win  45% net  -7.29 pts t -1.6 R~178 | per day -4.44, drought days -1.67, other -4.74 | corr with main -0.09
+FV3d K0.75 neg gam all-ER  train: n  321 win  53% net +10.83 pts t +1.7 R~163 | per day +4.43, drought days +0.51, other +6.14 | corr with main -0.11 || test: n  660 win  42% net -10.34 pts t -1.9 R~233 | per day -4.85, drought days -0.34, other -5.33 | corr with main -0.16
+FV3d K1.0 neg gam all-ER   train: n  232 win  53% net +14.64 pts t +1.9 R~203 | per day +4.33, drought days +1.54, other +5.55 | corr with main -0.08 || test: n  512 win  42% net  -9.10 pts t -1.5 R~287 | per day -3.31, drought days +4.25, other -4.11 | corr with main -0.15
+FV5d K0.5 neg gam all-ER   train: n  422 win  50% net  +3.88 pts t +0.8 R~152 | per day +2.09, drought days +0.59, other +2.74 | corr with main -0.07 || test: n  836 win  46% net  -2.02 pts t -0.4 R~195 | per day -1.47, drought days +5.98, other -2.26 | corr with main -0.07
+FV5d K0.75 neg gam all-ER  train: n  341 win  50% net  +9.73 pts t +1.6 R~181 | per day +4.23, drought days +3.77, other +4.43 | corr with main -0.08 || test: n  701 win  45% net  -4.20 pts t -0.7 R~241 | per day -2.60, drought days -1.82, other -2.68 | corr with main -0.12
+FV5d K1.0 neg gam all-ER   train: n  261 win  52% net +16.00 pts t +2.3 R~221 | per day +5.33, drought days +2.53, other +6.55 | corr with main -0.07 || test: n  562 win  43% net  -6.84 pts t -1.1 R~301 | per day -3.46, drought days -0.81, other -3.75 | corr with main -0.20
+FV10d K0.5 neg gam all-ER  train: n  423 win  50% net  +6.03 pts t +1.1 R~182 | per day +3.26, drought days +2.77, other +3.47 | corr with main -0.08 || test: n  856 win  48% net  -0.98 pts t -0.2 R~231 | per day -0.71, drought days +1.28, other -0.93 | corr with main -0.12
+FV10d K0.75 neg gam all-ER train: n  367 win  49% net  +6.24 pts t +1.1 R~217 | per day +2.92, drought days +0.84, other +3.83 | corr with main -0.07 || test: n  739 win  47% net  -1.61 pts t -0.3 R~285 | per day -2.03, drought days -2.45, other -1.99 | corr with main -0.15
+FV10d K1.0 neg gam all-ER  train: n  304 win  48% net  +7.11 pts t +1.1 R~253 | per day +2.76, drought days -0.40, other +4.14 | corr with main -0.05 || test: n  618 win  44% net  -9.07 pts t -1.3 R~328 | per day -5.09, drought days -7.08, other -4.88 | corr with main -0.14
+
+=== (2) ER state split, FV5 K.75 and K.5, neg gamma ===
+FV5 K0.5 neg chop          train: n  179 win  49% net  -0.77 pts t -0.1 R~141 | per day -0.18, drought days +1.82, other -1.05 | corr with main -0.02 || test: n  363 win  50% net +16.46 pts t +2.4 R~199 | per day +3.49, drought days +6.50, other +3.17 | corr with main -0.04
+FV5 K0.5 neg mid           train: n  144 win  44% net  -0.42 pts t -0.0 R~163 | per day -0.08, drought days -1.75, other +0.65 | corr with main -0.05 || test: n  269 win  39% net -38.74 pts t -4.6 R~186 | per day -6.86, drought days -1.59, other -7.42 | corr with main -0.09
+FV5 K0.5 neg trend         train: n   99 win  58% net +18.51 pts t +1.6 R~137 | per day +2.34, drought days +0.51, other +3.13 | corr with main -0.05 || test: n  204 win  50% net +13.53 pts t +1.2 R~205 | per day +1.90, drought days +1.07, other +1.99 | corr with main +0.00
+FV5 K0.75 neg chop         train: n  139 win  52% net  +8.78 pts t +1.1 R~177 | per day +1.56, drought days +4.32, other +0.35 | corr with main -0.06 || test: n  293 win  48% net +13.58 pts t +1.7 R~245 | per day +2.51, drought days +4.01, other +2.35 | corr with main -0.08
+FV5 K0.75 neg mid          train: n  119 win  44% net  +1.14 pts t +0.1 R~185 | per day +0.17, drought days -1.22, other +0.78 | corr with main -0.06 || test: n  230 win  37% net -37.71 pts t -4.0 R~234 | per day -6.21, drought days -5.56, other -6.28 | corr with main -0.12
+FV5 K0.75 neg trend        train: n   83 win  54% net +23.62 pts t +1.8 R~181 | per day +2.50, drought days +0.67, other +3.30 | corr with main -0.03 || test: n  178 win  49% net  +9.85 pts t +0.8 R~239 | per day +1.10, drought days -0.26, other +1.25 | corr with main -0.02
+
+=== (3) gamma as bottom-third rank (low3) instead of sign, FV5 ===
+FV5 K0.5 gamma low3        train: n  219 win  47% net  +3.57 pts t +0.4 R~167 | per day +1.00, drought days -3.04, other +2.76 | corr with main -0.05 || test: n  397 win  46% net  -5.68 pts t -0.7 R~236 | per day -1.53, drought days +2.34, other -1.95 | corr with main -0.05
+FV5 K0.75 gamma low3       train: n  178 win  46% net  +7.83 pts t +0.8 R~202 | per day +1.78, drought days -0.49, other +2.77 | corr with main -0.07 || test: n  340 win  45% net  -6.84 pts t -0.7 R~292 | per day -1.92, drought days -1.65, other -1.95 | corr with main -0.08
+FV5 K1.0 gamma low3        train: n  141 win  50% net +15.11 pts t +1.4 R~248 | per day +2.72, drought days +0.94, other +3.49 | corr with main -0.05 || test: n  276 win  44% net -10.31 pts t -1.0 R~356 | per day -2.20, drought days +0.58, other -2.49 | corr with main -0.18
+
+=== (4) year by year, FV5 K.75 neg gamma, and pos for contrast ===
+neg 2018:-5(175) 2019:+4(90) 2020:+8(120) 2021:+16(131) 2022:-12(183) 2023:+1(115) 2024:-23(85) 2025:+19(91) 2026:+9(52)
+pos 2018:+3(23) 2019:-1(107) 2020:-13(85) 2021:-2(68) 2022:+7(11) 2023:-6(89) 2024:-7(122) 2025:-4(97) 2026:-38(49)
