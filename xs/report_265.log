@@ -1,0 +1,28 @@
+obs 1559 | HELD rate train 0.091 test 0.12 | by checkpoint {690: 0.08, 750: 0.11, 810: 0.11, 870: 0.16}
+intraday range model: corr(log R^t, log final range) vs corr(log R^0, ...) on obs: 0.897 0.654
+feature AUC for HELD (train | test); declared exhaustion side marked
+  X        train 0.585 test 0.567  declared + <- counts
+  eff      train 0.508 test 0.535  declared + 
+  div      train 0.410 test 0.390  declared + 
+  agrfade  train 0.543 test 0.580  declared + <- counts
+  clo      train 0.418 test 0.385  declared - <- counts
+  vtr      train 0.411 test 0.479  declared - <- counts
+  vz       train 0.504 test 0.520  declared two-sided 
+  vflow    train 0.520 test 0.498  declared two-sided 
+  gexpos   train 0.487 test 0.505  declared + 
+counting features: ['X', 'agrfade', 'clo', 'vtr']
+--- exhaustion score (# counting features on the exhaustion side): HELD rate and fade pnl (target .5 x range so far), train | test
+  score 0: n 245 held 10% pnl  -3.6 (t-1.1) | n 167 held 8% pnl  -1.4 (t-0.2)
+  score 1: n  15 held 0% pnl -15.9 (t-7.3) | n 326 held 10% pnl  -7.0 (t-2.3)
+  score 2: n  18 held 11% pnl  -3.1 (t-0.3) | n 316 held 10% pnl  -5.2 (t-1.5)
+  score 3: n  22 held 5% pnl -15.9 (t-2.6) | n 308 held 15% pnl  -2.8 (t-0.7)
+  score 4: n   8 held 12% pnl  +5.0 (t+0.2) | n 134 held 19% pnl  -8.1 (t-1.7)
+--- fade pnl by target (all obs, then score>=2), train | test: half-range | VWAP | EMA20 | mid-range
+  all       pnl     n 171  -5.0 (t-1.7) win 15% | n 757  -5.0 (t-2.7) win 16%
+  all       p_vwap  n 171  -4.3 (t-1.7) win 19% | n 757  -4.3 (t-2.3) win 18%
+  all       p_ema   n 160  -3.9 (t-2.1) win 31% | n 747  -4.7 (t-3.7) win 32%
+  all       p_mid   n 171  -5.2 (t-2.0) win 16% | n 757  -5.3 (t-3.0) win 17%
+  score>=2  pnl     n  37  -7.8 (t-1.3) win 11% | n 565  -4.8 (t-2.1) win 17%
+  score>=2  p_vwap  n  37  -6.6 (t-1.1) win 14% | n 565  -4.1 (t-1.8) win 19%
+  score>=2  p_ema   n  36  -6.4 (t-1.7) win 25% | n 557  -4.6 (t-3.0) win 34%
+  score>=2  p_mid   n  37  -9.8 (t-2.0) win 11% | n 565  -5.1 (t-2.4) win 18%

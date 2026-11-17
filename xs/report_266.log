@@ -1,0 +1,28 @@
+--- calibration of the running zones (final extreme minus zone, in units of R^t): share within +/-0.15 | median error
+  10:00 test n1122 hi 16% (-0.39)  lo 15% (+0.43) | train n318 hi 17% (-0.37)  lo 14% (+0.42)
+  10:30 test n1122 hi 19% (-0.32)  lo 17% (+0.35) | train n318 hi 20% (-0.32)  lo 17% (+0.35)
+  11:00 test n1122 hi 21% (-0.26)  lo 18% (+0.31) | train n318 hi 24% (-0.26)  lo 18% (+0.30)
+  11:30 test n1122 hi 25% (-0.24)  lo 20% (+0.27) | train n318 hi 29% (-0.22)  lo 19% (+0.26)
+  12:00 test n1122 hi 29% (-0.21)  lo 21% (+0.24) | train n318 hi 31% (-0.19)  lo 21% (+0.23)
+  12:30 test n1122 hi 34% (-0.19)  lo 24% (+0.21) | train n318 hi 34% (-0.17)  lo 23% (+0.20)
+  13:00 test n1122 hi 38% (-0.17)  lo 29% (+0.19) | train n317 hi 41% (-0.15)  lo 28% (+0.17)
+  13:30 test n1122 hi 44% (-0.15)  lo 35% (+0.17) | train n318 hi 48% (-0.14)  lo 39% (+0.15)
+  14:00 test n1122 hi 57% (-0.12)  lo 48% (+0.14) | train n318 hi 59% (-0.12)  lo 52% (+0.14)
+  14:30 test n1122 hi 85% (-0.10)  lo 82% (+0.10) | train n318 hi 84% (-0.10)  lo 81% (+0.11)
+\n--- running-zone fade (stop beyond the zone) vs placebo (new extreme, outside the zone); median stop 122 pts
+  zone                   p_vwap  n 144   -2.0 (t-0.5) win 42% | n 450   -3.0 (t-0.7) win 44%
+  zone                   p_ema   n 142   +0.1 (t+0.0) win 50% | n 448   -5.9 (t-1.5) win 49%
+  zone                   p_mid   n 143   -1.7 (t-0.4) win 43% | n 449   -2.0 (t-0.4) win 45%
+  placebo                p_vwap  n 355   -5.9 (t-1.8) win 64% | n1299   -7.1 (t-3.1) win 65%
+  placebo                p_ema   n 351   -7.1 (t-2.2) win 65% | n1293   -8.0 (t-3.7) win 68%
+  placebo                p_mid   n 357   -7.8 (t-2.2) win 61% | n1303   -8.4 (t-3.6) win 61%
+--- zone fades by share of range spent X
+  zone X<.8              p_vwap  n   3   -3.8 (t-0.1) win 33% | n   5  -20.4 (t-0.4) win 60%
+  zone X<.8              p_ema   n   3   -8.3 (t-0.3) win 33% | n   5   -3.8 (t-0.1) win 80%
+  zone X<.8              p_mid   n   3   -5.0 (t-0.1) win 33% | n   5  -18.5 (t-0.4) win 60%
+  zone .8<=X<1           p_vwap  n 100   -1.0 (t-0.2) win 44% | n 308   -0.3 (t-0.1) win 48%
+  zone .8<=X<1           p_ema   n  99   +2.2 (t+0.5) win 55% | n 306   -2.6 (t-0.6) win 54%
+  zone .8<=X<1           p_mid   n 100   +2.2 (t+0.4) win 46% | n 308   +1.4 (t+0.3) win 48%
+  zone X>=1              p_vwap  n  41   -4.2 (t-0.5) win 39% | n 137   -8.5 (t-1.0) win 36%
+  zone X>=1              p_ema   n  40   -4.3 (t-0.5) win 40% | n 137  -13.5 (t-1.8) win 36%
+  zone X>=1              p_mid   n  40  -11.2 (t-1.6) win 38% | n 136   -9.0 (t-1.1) win 38%
