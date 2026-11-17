@@ -1,0 +1,20 @@
+main algo: drought days (trailing 40-day P&L <= 0) 17% of days; train 30%, test 10%
+sweep signals 1276  median R 59.5
+
+=== exit target 1.0R, stop = sweep extreme ===
+1.0R all                   train: n  389 win  50% net  -1.26 pts t -0.4 R~ 45 | per day -0.63, drought days +2.37, other -1.93 | corr with main +0.04 || test: n  788 win  48% net  -4.76 pts t -1.4 R~ 72 | per day -2.09, drought days +0.93, other -2.42 | corr with main +0.09
+1.0R TRAP                  train: n  275 win  51% net  +0.84 pts t +0.2 R~ 44 | per day +0.30, drought days +3.41, other -1.06 | corr with main -0.01 || test: n  586 win  47% net  -6.61 pts t -1.7 R~ 72 | per day -2.05, drought days +1.89, other -2.47 | corr with main +0.06
+1.0R pos gamma             train: n  153 win  46% net  -1.05 pts t -0.3 R~ 34 | per day -0.20, drought days -0.31, other -0.16 | corr with main +0.11 || test: n  282 win  48% net  +0.63 pts t +0.1 R~ 68 | per day +0.52, drought days +4.11, other +0.14 | corr with main +0.02
+1.0R neg gamma             train: n  236 win  52% net  -1.40 pts t -0.3 R~ 54 | per day -0.42, drought days +2.68, other -1.77 | corr with main -0.01 || test: n  506 win  48% net  -7.76 pts t -1.7 R~ 76 | per day -2.61, drought days -3.18, other -2.55 | corr with main +0.09
+1.0R TRAP & pos            train: n  106 win  48% net  +1.25 pts t +0.3 R~ 34 | per day +0.17, drought days +0.24, other +0.14 | corr with main +0.05 || test: n  202 win  48% net  -1.57 pts t -0.3 R~ 69 | per day +0.19, drought days +4.12, other -0.23 | corr with main +0.01
+1.0R TRAP & neg            train: n  169 win  53% net  +0.59 pts t +0.1 R~ 51 | per day +0.13, drought days +3.17, other -1.20 | corr with main -0.04 || test: n  384 win  47% net  -9.27 pts t -1.8 R~ 75 | per day -2.24, drought days -2.22, other -2.24 | corr with main +0.06
+1.0R IVHI                  train: n  167 win  51% net  -0.40 pts t -0.1 R~ 57 | per day -0.08, drought days +2.89, other -1.38 | corr with main +0.02 || test: n  369 win  47% net  -7.82 pts t -1.5 R~ 76 | per day -2.23, drought days -2.21, other -2.23 | corr with main +0.10
+
+=== exit target 2.0R, stop = sweep extreme ===
+2.0R all                   train: n  378 win  43% net  +0.75 pts t +0.2 R~ 45 | per day +0.36, drought days +3.48, other -1.00 | corr with main +0.08 || test: n  769 win  40% net  -7.72 pts t -2.1 R~ 72 | per day -2.64, drought days +4.40, other -3.39 | corr with main +0.13
+2.0R TRAP                  train: n  269 win  42% net  -0.20 pts t -0.0 R~ 44 | per day -0.07, drought days +3.66, other -1.69 | corr with main -0.01 || test: n  575 win  39% net  -9.90 pts t -2.4 R~ 72 | per day -2.47, drought days +5.72, other -3.34 | corr with main +0.10
+2.0R pos gamma             train: n  149 win  40% net  +1.81 pts t +0.4 R~ 34 | per day +0.34, drought days +0.57, other +0.25 | corr with main +0.14 || test: n  276 win  41% net  -1.45 pts t -0.3 R~ 68 | per day +0.21, drought days +4.96, other -0.30 | corr with main +0.04
+2.0R neg gamma             train: n  229 win  45% net  +0.06 pts t +0.0 R~ 54 | per day +0.02, drought days +2.92, other -1.25 | corr with main +0.00 || test: n  493 win  40% net -11.23 pts t -2.3 R~ 76 | per day -2.85, drought days -0.56, other -3.10 | corr with main +0.12
+2.0R TRAP & pos            train: n  104 win  40% net  +2.48 pts t +0.5 R~ 34 | per day +0.33, drought days +0.66, other +0.18 | corr with main +0.05 || test: n  200 win  38% net  -7.02 pts t -1.2 R~ 69 | per day -0.42, drought days +5.10, other -1.01 | corr with main +0.03
+2.0R TRAP & neg            train: n  165 win  42% net  -1.88 pts t -0.3 R~ 51 | per day -0.40, drought days +3.00, other -1.88 | corr with main -0.04 || test: n  375 win  39% net -11.44 pts t -2.0 R~ 75 | per day -2.04, drought days +0.63, other -2.33 | corr with main +0.10
+2.0R IVHI                  train: n  163 win  46% net  +3.28 pts t +0.5 R~ 57 | per day +0.68, drought days +2.78, other -0.23 | corr with main +0.05 || test: n  359 win  39% net  -9.98 pts t -1.8 R~ 77 | per day -2.76, drought days -0.26, other -3.03 | corr with main +0.12
