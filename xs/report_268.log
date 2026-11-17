@@ -1,0 +1,770 @@
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+/home/claude/fartpie/xs/report_268_quantile_zones.py:20: IterationLimitWarning: Maximum number of iterations (200) reached.
+  fits=[sm.QuantReg(y[i-500:i],X[i-500:i]).fit(q=q,max_iter=200).params for q in QS]
+quantile range forecasts: avg pinball x100 | coverage of [q10,q90]  (train | test)
+  HAR          train 10.49 | 78%   test 9.66 | 79%
+  HAR+IV       train 10.02 | 78%   test 9.28 | 77%
+  HAR+YZ5      train 10.52 | 78%   test 9.70 | 78%
+  HAR+YZ20     train 10.53 | 79%   test 9.72 | 79%
+  HAR+IV+YZ20  train 10.09 | 77%   test 9.34 | 77%
+  IV+YZ20      train 10.24 | 80%   test 9.37 | 79%
+
+--- zone fade X in [.8,1.0): n 408
+by ex-post day type (hindsight view):
+  type MR                  p_vwap  n  16  +26.8 (t+2.1) | n  79  +32.7 (t+2.9)
+  type MR                  p_ema   n  16  +17.9 (t+2.0) | n  78  +19.3 (t+2.2)
+  type MR                  p_mid   n  16  +35.5 (t+2.6) | n  79  +33.5 (t+3.0)
+  type MID                 p_vwap  n  47   +4.7 (t+0.6) | n 119  +14.4 (t+1.7)
+  type MID                 p_ema   n  46   +4.9 (t+0.7) | n 119  +12.5 (t+1.7)
+  type MID                 p_mid   n  47   +9.0 (t+1.2) | n 119  +18.0 (t+2.0)
+  type TREND               p_vwap  n  37  -20.2 (t-2.7) | n 110  -39.8 (t-5.5)
+  type TREND               p_ema   n  37   -8.0 (t-1.0) | n 109  -34.7 (t-4.8)
+  type TREND               p_mid   n  37  -21.0 (t-2.9) | n 110  -39.7 (t-5.6)
+by prior-close QQQ gamma (causal):
+  positive gamma           p_vwap  n  32   +4.8 (t+0.7) | n  98   +5.1 (t+0.6)
+  positive gamma           p_ema   n  32  +12.2 (t+1.7) | n  98   +1.5 (t+0.2)
+  positive gamma           p_mid   n  32   +7.6 (t+1.0) | n  98   +8.1 (t+1.0)
+  negative gamma           p_vwap  n  68   -3.7 (t-0.5) | n 210   -2.8 (t-0.4)
+  negative gamma           p_ema   n  67   -2.7 (t-0.4) | n 208   -4.5 (t-0.8)
+  negative gamma           p_mid   n  68   -0.4 (t-0.1) | n 210   -1.7 (t-0.3)
+all zone fades (X any) by gamma:
+  positive gamma           p_vwap  n  48   +4.3 (t+0.7) | n 159   +4.3 (t+0.7)
+  positive gamma           p_ema   n  47  +10.7 (t+1.7) | n 159   +2.4 (t+0.4)
+  positive gamma           p_mid   n  47   +4.5 (t+0.7) | n 158   +6.7 (t+1.1)
+  negative gamma           p_vwap  n  96   -5.1 (t-0.9) | n 291   -7.0 (t-1.1)
+  negative gamma           p_ema   n  95   -5.1 (t-1.0) | n 289  -10.5 (t-2.0)
+  negative gamma           p_mid   n  96   -4.8 (t-0.8) | n 291   -6.7 (t-1.1)
+placebo (new extreme outside zone) by gamma:
+  positive gamma           p_vwap  n  91   -7.0 (t-1.3) | n 540   -8.6 (t-2.9)
+  positive gamma           p_ema   n  90   -9.8 (t-1.8) | n 539   -8.5 (t-2.9)
+  positive gamma           p_mid   n  91   -9.2 (t-1.6) | n 541   -9.3 (t-3.0)
+  negative gamma           p_vwap  n 264   -5.6 (t-1.4) | n 759   -6.1 (t-1.9)
+  negative gamma           p_ema   n 261   -6.2 (t-1.6) | n 754   -7.6 (t-2.5)
+  negative gamma           p_mid   n 266   -7.3 (t-1.7) | n 762   -7.8 (t-2.3)
