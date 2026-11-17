@@ -1,0 +1,66 @@
+touch candidates 12586 {'CW': 562, 'F382': 741, 'F50': 783, 'F618': 816, 'HVN': 1905, 'LVN': 1946, 'ONH': 938, 'ONL': 859, 'PDH': 700, 'PDL': 554, 'POC': 796, 'PW': 466, 'VAH': 790, 'VAL': 730} | confluence counts {0: 3060, 1: 5719, 2: 3305, 3: 502}
+
+=== target 1.0R, stop = 1H vector level ===
+conf 0                         train: n 604 win 50% net   -6.1 t -1.8 || test: n1099 win 53% net   +4.6 t +1.3
+conf 1                         train: n 556 win 49% net   -0.2 t -0.1 || test: n1053 win 50% net   +2.0 t +0.6
+conf 2+                        train: n 303 win 55% net   +2.2 t +0.5 || test: n 687 win 51% net   -1.1 t -0.3
+conf 2+ & ABS                  train: n 196 win 52% net   -0.4 t -0.1 || test: n 455 win 51% net   +1.8 t +0.4
+conf 1+ & ABS                  train: n 444 win 50% net   +0.1 t +0.0 || test: n 891 win 50% net   +1.3 t +0.4
+conf 0 & ABS                   train: n 330 win 46% net  -11.0 t -2.4 || test: n 628 win 55% net   +4.7 t +1.1
+family VP                      train: n 597 win 51% net   -1.8 t -0.6 || test: n1184 win 51% net   +2.7 t +0.8
+family FIB                     train: n 401 win 48% net   -3.3 t -0.8 || test: n 744 win 53% net   +6.3 t +1.4
+family EXT                     train: n 679 win 52% net   -2.3 t -0.8 || test: n1351 win 52% net   +4.7 t +1.5
+family OPT                     train: n 225 win 50% net   -7.5 t -1.2 || test: n 574 win 50% net   +2.2 t +0.5
+type HVN                       train: n 305 win 49% net   -5.0 t -1.0 || test: n 722 win 52% net   +6.7 t +1.6
+type LVN                       train: n 322 win 50% net   +0.0 t +0.0 || test: n 711 win 51% net   +2.5 t +0.6
+type PDH                       train: n 241 win 59% net   +2.2 t +0.5 || test: n 459 win 54% net   +5.9 t +1.4
+type PDL                       train: n 182 win 47% net  -11.3 t -1.8 || test: n 372 win 51% net   +9.5 t +1.5
+type ONH                       train: n 313 win 49% net   -2.3 t -0.6 || test: n 625 win 54% net   +3.3 t +0.7
+type ONL                       train: n 275 win 50% net   -5.9 t -1.2 || test: n 584 win 51% net   +2.8 t +0.6
+type CW                        train: n 162 win 56% net   +0.5 t +0.1 || test: n 400 win 51% net   +3.8 t +0.8
+type PW                        train: n 110 win 46% net   -9.5 t -0.9 || test: n 356 win 49% net   +2.5 t +0.4
+type POC                       train: n 265 win 55% net   +1.4 t +0.3 || test: n 531 win 54% net   +7.9 t +1.7
+type VAH                       train: n 276 win 55% net   +1.6 t +0.4 || test: n 514 win 53% net   +3.5 t +0.8
+type VAL                       train: n 252 win 48% net   -8.7 t -1.6 || test: n 478 win 50% net   +7.0 t +1.2
+TOP-1 per day/side by score    train: n 736 win 53% net   +4.2 t +1.5 || test: n1397 win 55% net  +13.1 t +4.5
+TOP-1 with score >= 2          train: n 459 win 52% net   +2.1 t +0.6 || test: n 913 win 52% net   +5.4 t +1.5
+pooled first touch/day/side    train: n 736 win 50% net   -3.7 t -1.2 || test: n1396 win 53% net   +4.5 t +1.5
+
+=== target 2.0R, stop = 1H vector level ===
+conf 0                         train: n 587 win 47% net   -5.8 t -1.6 || test: n1069 win 51% net   +6.7 t +1.7
+conf 1                         train: n 524 win 45% net   -0.9 t -0.3 || test: n1001 win 46% net   +4.2 t +1.1
+conf 2+                        train: n 298 win 51% net   +3.1 t +0.7 || test: n 662 win 47% net   +2.6 t +0.5
+conf 2+ & ABS                  train: n 196 win 48% net   -1.3 t -0.2 || test: n 447 win 47% net   +5.0 t +0.9
+conf 1+ & ABS                  train: n 436 win 45% net   -1.5 t -0.4 || test: n 869 win 45% net   +3.8 t +1.0
+conf 0 & ABS                   train: n 324 win 43% net  -10.6 t -2.2 || test: n 614 win 51% net   +6.9 t +1.4
+family VP                      train: n 560 win 46% net   -1.8 t -0.5 || test: n1104 win 47% net   +5.5 t +1.5
+family FIB                     train: n 395 win 45% net   -2.6 t -0.6 || test: n 724 win 51% net  +11.0 t +2.2
+family EXT                     train: n 663 win 48% net   -2.6 t -0.8 || test: n1310 win 48% net   +6.2 t +1.8
+family OPT                     train: n 224 win 46% net   -6.9 t -1.1 || test: n 573 win 48% net   +4.5 t +1.0
+type HVN                       train: n 294 win 46% net   -5.5 t -1.0 || test: n 709 win 49% net  +11.4 t +2.4
+type LVN                       train: n 318 win 46% net   +1.0 t +0.2 || test: n 692 win 48% net   +8.3 t +1.7
+type PDH                       train: n 241 win 55% net   +1.7 t +0.4 || test: n 459 win 49% net   +6.1 t +1.3
+type PDL                       train: n 182 win 43% net  -11.4 t -1.8 || test: n 372 win 48% net  +10.5 t +1.5
+type ONH                       train: n 313 win 48% net   -0.8 t -0.2 || test: n 625 win 51% net   +4.8 t +1.0
+type ONL                       train: n 275 win 47% net   -6.0 t -1.1 || test: n 584 win 48% net   +7.3 t +1.3
+type CW                        train: n 162 win 52% net   +0.3 t +0.1 || test: n 400 win 48% net   +5.5 t +1.0
+type PW                        train: n 110 win 43% net   -6.6 t -0.6 || test: n 356 win 46% net   +4.4 t +0.7
+type POC                       train: n 265 win 52% net   +1.3 t +0.2 || test: n 531 win 52% net  +11.9 t +2.3
+type VAH                       train: n 276 win 52% net   +2.3 t +0.5 || test: n 514 win 51% net   +9.3 t +1.9
+type VAL                       train: n 252 win 44% net   -9.4 t -1.7 || test: n 478 win 46% net   +5.6 t +0.9
+TOP-1 per day/side by score    train: n 736 win 49% net   +4.0 t +1.4 || test: n1397 win 52% net  +15.4 t +4.9
+TOP-1 with score >= 2          train: n 459 win 48% net   +1.2 t +0.3 || test: n 913 win 48% net   +7.6 t +1.9
+pooled first touch/day/side    train: n 736 win 46% net   -3.8 t -1.2 || test: n1396 win 49% net   +6.9 t +2.1
+
+=== CAUSAL CHECK: TOP-1 uses the best score of the WHOLE day (hindsight: a better touch may come later). Causal version = first touch of the day/side whose score reaches the threshold ===
+1.0R first touch score >= 1    train: n 629 win 49% net   -3.8 t -1.2 || test: n1216 win 52% net   +1.7 t +0.5
+1.0R first touch score >= 2    train: n 459 win 51% net   -0.5 t -0.1 || test: n 912 win 50% net   +0.5 t +0.1
+1.0R first touch score >= 3    train: n 203 win 52% net   +0.9 t +0.2 || test: n 464 win 52% net   +0.9 t +0.2
+1.0R first touch conf >= 2     train: n 283 win 54% net   +1.1 t +0.2 || test: n 635 win 51% net   +0.4 t +0.1
+1.0R first touch conf >= 3     train: n  33 win 55% net  +21.0 t +1.4 || test: n 124 win 49% net   -5.2 t -0.6
+2.0R first touch score >= 1    train: n 629 win 46% net   -3.8 t -1.1 || test: n1216 win 47% net   +4.6 t +1.3
+2.0R first touch score >= 2    train: n 459 win 47% net   -1.1 t -0.3 || test: n 912 win 46% net   +3.1 t +0.8
+2.0R first touch score >= 3    train: n 203 win 48% net   +0.4 t +0.1 || test: n 464 win 47% net   +3.0 t +0.6
+2.0R first touch conf >= 2     train: n 283 win 51% net   +2.1 t +0.4 || test: n 635 win 47% net   +3.5 t +0.7
+2.0R first touch conf >= 3     train: n  33 win 52% net  +27.5 t +1.5 || test: n 124 win 48% net   -0.1 t -0.0
+TOP-1 trades that are not the first touch of the day/side: 0.37
