@@ -1,0 +1,22 @@
+
+--- all days ---
+FIX 1R               train: n 166 win 49% net   +5.2 t +1.0 W   +54 L   -43 MFE   47 roundtrip   0% giveback   41 || test: n 305 win 58% net  +20.5 t +3.5 W   +83 L   -65 MFE   78 roundtrip   0% giveback   57
+FIX 2R               train: n 166 win 47% net   +2.7 t +0.5 W   +54 L   -42 MFE   52 roundtrip  10% giveback   49 || test: n 305 win 56% net  +22.6 t +3.7 W   +91 L   -65 MFE   89 roundtrip   5% giveback   66
+BE@.5R tgt 1R        train: n 166 win 39% net   +5.8 t +1.3 W   +58 L   -28 MFE   45 roundtrip   0% giveback   38 || test: n 305 win 49% net  +20.0 t +3.6 W   +90 L   -48 MFE   77 roundtrip   0% giveback   56
+BE@1R no tgt         train: n 166 win 43% net   +2.4 t +0.5 W   +55 L   -38 MFE   54 roundtrip  24% giveback   51 || test: n 305 win 54% net  +23.5 t +3.8 W   +95 L   -60 MFE   93 roundtrip  15% giveback   68
+VECTOR trail         train: n 166 win 46% net   +1.4 t +0.3 W   +53 L   -42 MFE   54 roundtrip  15% giveback   52 || test: n 305 win 55% net  +22.6 t +3.6 W   +93 L   -65 MFE   93 roundtrip   9% giveback   69
+ATR trail 2          train: n 166 win 44% net   +2.1 t +0.6 W   +45 L   -31 MFE   49 roundtrip   8% giveback   46 || test: n 305 win 52% net  +19.8 t +3.4 W   +88 L   -53 MFE   85 roundtrip   5% giveback   64
+ATR trail 3          train: n 166 win 46% net   -1.3 t -0.3 W   +44 L   -39 MFE   51 roundtrip   8% giveback   52 || test: n 305 win 54% net  +21.2 t +3.5 W   +91 L   -63 MFE   91 roundtrip  10% giveback   69
+EMA20 5m exit        train: n 166 win 51% net   +2.4 t +0.6 W   +40 L   -36 MFE   49 roundtrip   3% giveback   46 || test: n 305 win 59% net  +20.7 t +3.7 W   +78 L   -62 MFE   86 roundtrip   6% giveback   64
+anchored VWAP exit   train: n 166 win 55% net   +3.3 t +0.8 W   +37 L   -38 MFE   47 roundtrip   0% giveback   42 || test: n 305 win 63% net  +21.0 t +3.7 W   +72 L   -67 MFE   85 roundtrip   3% giveback   63
+
+--- neg days ---
+FIX 1R               train: n 109 win 53% net   +6.8 t +1.0 W   +57 L   -50 MFE   50 roundtrip   0% giveback   43 || test: n 209 win 60% net  +25.7 t +3.6 W   +86 L   -64 MFE   78 roundtrip   0% giveback   51
+FIX 2R               train: n 109 win 50% net   +5.9 t +0.9 W   +60 L   -49 MFE   57 roundtrip  10% giveback   50 || test: n 209 win 59% net  +32.4 t +4.3 W   +99 L   -63 MFE   92 roundtrip   3% giveback   58
+BE@.5R tgt 1R        train: n 109 win 43% net   +8.8 t +1.5 W   +61 L   -30 MFE   49 roundtrip   0% giveback   39 || test: n 209 win 52% net  +25.4 t +3.7 W   +92 L   -46 MFE   77 roundtrip   0% giveback   51
+BE@1R no tgt         train: n 109 win 47% net   +5.4 t +0.8 W   +62 L   -44 MFE   59 roundtrip  24% giveback   53 || test: n 209 win 57% net  +33.9 t +4.3 W  +105 L   -60 MFE   97 roundtrip  10% giveback   62
+VECTOR trail         train: n 109 win 49% net   +3.9 t +0.6 W   +60 L   -49 MFE   60 roundtrip  17% giveback   55 || test: n 209 win 58% net  +33.7 t +4.3 W  +102 L   -63 MFE   97 roundtrip   5% giveback   62
+ATR trail 2          train: n 109 win 47% net   +5.8 t +1.1 W   +51 L   -34 MFE   54 roundtrip   7% giveback   48 || test: n 209 win 54% net  +29.0 t +3.9 W   +98 L   -50 MFE   90 roundtrip   5% giveback   60
+ATR trail 3          train: n 109 win 50% net   +1.7 t +0.3 W   +49 L   -45 MFE   56 roundtrip   7% giveback   53 || test: n 209 win 56% net  +29.8 t +3.8 W  +102 L   -62 MFE   95 roundtrip   7% giveback   64
+EMA20 5m exit        train: n 109 win 54% net   +6.1 t +1.0 W   +45 L   -40 MFE   54 roundtrip   0% giveback   47 || test: n 209 win 62% net  +29.1 t +4.2 W   +84 L   -61 MFE   89 roundtrip   4% giveback   59
+anchored VWAP exit   train: n 109 win 59% net   +7.3 t +1.2 W   +42 L   -42 MFE   51 roundtrip   0% giveback   43 || test: n 209 win 65% net  +27.4 t +3.9 W   +77 L   -65 MFE   87 roundtrip   2% giveback   59
