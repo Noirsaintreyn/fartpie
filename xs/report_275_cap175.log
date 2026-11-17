@@ -1,0 +1,39 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  S1 up-lever days (low vanna or room>0.5ATR) in regime-ON trades: 61 of 193 | IFVG near-wall trades: 248 of 656
+  S1 regime-ON trades: below/at ON VWAP 48 above 145 no data 0
+  V15a LVR train 2/3 cut 0.254 high-LVR trades 343 of 1058
+  ACCD cut 0.38 IFVG high-acceptance trades 186 of 656 | LON_R cut 0.362 S1 regime-ON high-London trades 61 of 193
+  tp168 rows 656 IFVG rows 656 date match True R2 vs pts max diff 0.0
+  corrected FIG-V trades 635 original 656
+  V15a stop (0.15 ADR) median 21.3 pts; contracts at $100: (array([ 1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12., 13.]), array([474, 102,  78,  58,  82,  55,  94,  32,  23,  25,  16,  14,   5]))
+CAPU (per-leg NQ-unit cap) = 1.75
+
+=== payout min $500 ===
+8 models x1.0                      evals 24 pass 20 nopay  8 | pays 51 (0.53/mo) $73,833 net $62,073 | 1st 84d | gap med 22 p90 161 max 305 | mo paid 41% | worst12 $713 med12 $7,694
+      by year {2018: 1666, 2019: 5040, 2020: 7694, 2021: 2461, 2022: 8598, 2023: 6838, 2024: 15416, 2025: 26120, 2026: 0}
+8 models x1.25                     evals 24 pass 21 nopay  9 | pays 53 (0.55/mo) $80,246 net $68,486 | 1st 75d | gap med 26 p90 158 max 299 | mo paid 45% | worst12 $2,847 med12 $9,777
+      by year {2018: 2708, 2019: 4374, 2020: 9317, 2021: 4764, 2022: 15651, 2023: 12530, 2024: 14241, 2025: 16662, 2026: 0}
+8 models x1.5                      evals 24 pass 19 nopay  9 | pays 56 (0.58/mo) $88,554 net $76,794 | 1st 68d | gap med 21 p90 120 max 439 | mo paid 42% | worst12 $0 med12 $10,385
+      by year {2018: 4516, 2019: 3553, 2020: 10498, 2021: 14286, 2022: 15990, 2023: 9621, 2024: 6845, 2025: 23245, 2026: 0}
+8 models x2.0                      evals 46 pass 29 nopay 33 | pays 39 (0.41/mo) $61,216 net $47,476 | 1st 47d | gap med 24 p90 215 max 591 | mo paid 28% | worst12 $0 med12 $7,622
+      by year {2018: 7659, 2019: 5400, 2020: 1553, 2021: 6585, 2022: 17769, 2023: 3830, 2024: 5873, 2025: 12549, 2026: 0}
+8 models x2.5                      evals 61 pass 33 nopay 49 | pays 40 (0.42/mo) $65,323 net $50,233 | 1st 38d | gap med 22 p90 181 max 457 | mo paid 30% | worst12 $0 med12 $9,000
+      by year {2018: 8169, 2019: 3600, 2020: 1865, 2021: 3232, 2022: 16200, 2023: 8857, 2024: 14400, 2025: 9000, 2026: 0}
+8 models x3.0                      evals 62 pass 32 nopay 50 | pays 43 (0.45/mo) $71,399 net $56,219 | 1st 37d | gap med 22 p90 240 max 371 | mo paid 33% | worst12 $860 med12 $9,000
+      by year {2018: 10637, 2019: 3600, 2020: 860, 2021: 3600, 2022: 16200, 2023: 2301, 2024: 16200, 2025: 18000, 2026: 0}
+
+=== payout min $2000 ===
+8 models x1.0                      evals 17 pass 14 nopay  5 | pays 56 (0.58/mo) $100,800 net $89,670 | 1st 112d | gap med 27 p90 136 max 197 | mo paid 44% | worst12 $1,800 med12 $12,600
+      by year {2018: 0, 2019: 9000, 2020: 9000, 2021: 10800, 2022: 14400, 2023: 16200, 2024: 14400, 2025: 27000, 2026: 0}
+8 models x1.25                     evals 23 pass 19 nopay 12 | pays 47 (0.49/mo) $84,600 net $72,930 | 1st 62d | gap med 24 p90 141 max 385 | mo paid 39% | worst12 $0 med12 $10,800
+      by year {2018: 3600, 2019: 5400, 2020: 9000, 2021: 14400, 2022: 12600, 2023: 16200, 2024: 5400, 2025: 18000, 2026: 0}
+8 models x1.5                      evals 23 pass 19 nopay 12 | pays 43 (0.45/mo) $77,400 net $65,730 | 1st 82d | gap med 24 p90 178 max 467 | mo paid 34% | worst12 $0 med12 $9,000
+      by year {2018: 3600, 2019: 7200, 2020: 9000, 2021: 16200, 2022: 10800, 2023: 9000, 2024: 7200, 2025: 14400, 2026: 0}
+8 models x2.0                      evals 44 pass 29 nopay 35 | pays 38 (0.40/mo) $68,400 net $54,840 | 1st 45d | gap med 19 p90 258 max 526 | mo paid 27% | worst12 $0 med12 $9,000
+      by year {2018: 7200, 2019: 5400, 2020: 9000, 2021: 9000, 2022: 9000, 2023: 1800, 2024: 7200, 2025: 19800, 2026: 0}
+8 models x2.5                      evals 60 pass 32 nopay 51 | pays 41 (0.43/mo) $73,800 net $58,800 | 1st 42d | gap med 16 p90 186 max 581 | mo paid 29% | worst12 $0 med12 $9,000
+      by year {2018: 9000, 2019: 5400, 2020: 9000, 2021: 1800, 2022: 16200, 2023: 9000, 2024: 14400, 2025: 9000, 2026: 0}
+8 models x3.0                      evals 60 pass 31 nopay 50 | pays 46 (0.48/mo) $82,800 net $67,800 | 1st 48d | gap med 20 p90 212 max 525 | mo paid 33% | worst12 $0 med12 $9,000
+      by year {2018: 12600, 2019: 5400, 2020: 9000, 2021: 3600, 2022: 16200, 2023: 1800, 2024: 16200, 2025: 18000, 2026: 0}
