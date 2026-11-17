@@ -1,0 +1,50 @@
+days with levels 2195 | mean levels/day 81.8 | by group {'CLU': 55757, 'SWG': 37601, 'VPd': 17222, 'VP3': 16869, 'VPw': 15087, 'EXT': 12774, 'FIB': 12254, 'VPm': 8893, 'OPT': 3185}
+rejection rows 27359 | unique trades 11805 | absorbed unique 1239
+
+=== target 1.0R, stage 2+3 ===
+group VPd                        train: n  99 (  33/yr) win 42% net   -4.0 t -1.5 || test: n 302 (  46/yr) win 54% net   -0.1 t -0.0
+group VP3                        train: n  90 (  30/yr) win 47% net   -1.7 t -0.7 || test: n 278 (  42/yr) win 55% net   +0.8 t +0.4
+group VPw                        train: n  81 (  27/yr) win 40% net   -5.1 t -1.7 || test: n 225 (  34/yr) win 56% net   +2.4 t +1.0
+group VPm                        train: n  48 (  16/yr) win 33% net   -5.6 t -1.6 || test: n 125 (  19/yr) win 54% net   +1.3 t +0.4
+group EXT                        train: n  68 (  23/yr) win 54% net   +2.3 t +0.8 || test: n 198 (  30/yr) win 53% net   -1.3 t -0.5
+group SWG                        train: n 169 (  56/yr) win 53% net   +0.5 t +0.3 || test: n 468 (  71/yr) win 52% net   -0.5 t -0.3
+group FIB                        train: n  90 (  30/yr) win 52% net   +0.7 t +0.3 || test: n 237 (  36/yr) win 55% net   +1.0 t +0.4
+group OPT                        train: n  23 (   8/yr) win 52% net   +0.8 t +0.2 || test: n  59 (   9/yr) win 66% net   +6.1 t +1.5
+group CLU                        train: n 192 (  64/yr) win 48% net   -0.7 t -0.4 || test: n 576 (  88/yr) win 52% net   +0.8 t +0.5
+ALL groups pooled                train: n 313 ( 104/yr) win 48% net   -1.4 t -1.1 || test: n 913 ( 139/yr) win 50% net   -1.0 t -0.8
+without any VP                   train: n 289 (  96/yr) win 48% net   -0.9 t -0.7 || test: n 840 ( 128/yr) win 51% net   -0.3 t -0.3
+without VP and CLU               train: n 223 (  74/yr) win 52% net   +0.6 t +0.4 || test: n 638 (  97/yr) win 52% net   -0.7 t -0.5
+VP groups only                   train: n 183 (  61/yr) win 43% net   -3.3 t -1.8 || test: n 529 (  81/yr) win 52% net   -0.8 t -0.5
+CLU only                         train: n 192 (  64/yr) win 48% net   -0.7 t -0.4 || test: n 576 (  88/yr) win 52% net   +0.8 t +0.5
+EXT+SWG+FIB+OPT only             train: n 223 (  74/yr) win 52% net   +0.6 t +0.4 || test: n 638 (  97/yr) win 52% net   -0.7 t -0.5
+confluence 1 group               train: n  82 (  27/yr) win 43% net   -4.0 t -1.7 || test: n 278 (  42/yr) win 45% net   -2.9 t -1.3
+confluence 2 groups              train: n  86 (  29/yr) win 55% net   +1.8 t +0.7 || test: n 212 (  32/yr) win 45% net   -3.4 t -1.6
+confluence 3+ groups             train: n 147 (  49/yr) win 46% net   -1.8 t -0.9 || test: n 427 (  65/yr) win 56% net   +1.3 t +0.8
+ALL pooled & chop gate           train: n 122 (  41/yr) win 48% net   -2.4 t -1.2 || test: n 350 (  53/yr) win 54% net   +2.1 t +1.1
+(ref) stage 2 only, all groups   train: n2680 ( 893/yr) win 48% net   -1.6 t -3.7 || test: n7675 (1172/yr) win 48% net   -1.7 t -5.4
+   ALL pooled stage 3 by year: 2018:-2(82) 2019:-2(55) 2020:+0(130) 2021:-3(128) 2022:+0(152) 2023:-1(202) 2024:-0(189) 2025:-1(215) 2026:-3(73)
+   confluence 2+ by year: 2018:+2(54) 2019:-1(48) 2020:+2(96) 2021:-3(89) 2022:+2(104) 2023:+0(134) 2024:-1(136) 2025:-0(154) 2026:-5(55)
+
+=== target 2.0R, stage 2+3 ===
+group VPd                        train: n  99 (  33/yr) win 34% net   -2.0 t -0.6 || test: n 301 (  46/yr) win 41% net   +3.1 t +1.1
+group VP3                        train: n  90 (  30/yr) win 39% net   +2.3 t +0.7 || test: n 276 (  42/yr) win 40% net   +1.2 t +0.4
+group VPw                        train: n  79 (  26/yr) win 35% net   -0.1 t -0.0 || test: n 224 (  34/yr) win 40% net   +5.1 t +1.4
+group VPm                        train: n  48 (  16/yr) win 23% net   -5.8 t -1.3 || test: n 125 (  19/yr) win 43% net   +5.9 t +1.2
+group EXT                        train: n  68 (  23/yr) win 41% net   +4.1 t +1.0 || test: n 197 (  30/yr) win 38% net   -0.4 t -0.1
+group SWG                        train: n 168 (  56/yr) win 41% net   +1.7 t +0.7 || test: n 465 (  71/yr) win 39% net   +1.3 t +0.5
+group FIB                        train: n  90 (  30/yr) win 43% net   +3.1 t +0.9 || test: n 236 (  36/yr) win 42% net   +4.8 t +1.4
+group OPT                        train: n  23 (   8/yr) win 43% net   +6.9 t +0.9 || test: n  59 (   9/yr) win 53% net  +13.7 t +2.2
+group CLU                        train: n 190 (  63/yr) win 35% net   -1.1 t -0.5 || test: n 573 (  87/yr) win 37% net   +2.4 t +1.0
+ALL groups pooled                train: n 310 ( 103/yr) win 35% net   -1.1 t -0.6 || test: n 902 ( 138/yr) win 36% net   +0.2 t +0.1
+without any VP                   train: n 286 (  95/yr) win 36% net   -0.5 t -0.3 || test: n 829 ( 127/yr) win 37% net   +1.4 t +0.7
+without VP and CLU               train: n 222 (  74/yr) win 40% net   +1.9 t +0.8 || test: n 630 (  96/yr) win 38% net   +0.9 t +0.4
+VP groups only                   train: n 181 (  60/yr) win 32% net   -2.9 t -1.3 || test: n 525 (  80/yr) win 38% net   +0.5 t +0.2
+CLU only                         train: n 190 (  63/yr) win 35% net   -1.1 t -0.5 || test: n 573 (  87/yr) win 37% net   +2.4 t +1.0
+EXT+SWG+FIB+OPT only             train: n 222 (  74/yr) win 40% net   +1.9 t +0.8 || test: n 630 (  96/yr) win 38% net   +0.9 t +0.4
+confluence 1 group               train: n  82 (  27/yr) win 22% net   -7.9 t -2.9 || test: n 278 (  42/yr) win 29% net   -2.9 t -0.8
+confluence 2 groups              train: n  86 (  29/yr) win 44% net   +3.9 t +1.1 || test: n 211 (  32/yr) win 31% net   -4.5 t -1.6
+confluence 3+ groups             train: n 147 (  49/yr) win 36% net   -0.1 t -0.0 || test: n 423 (  65/yr) win 42% net   +4.4 t +1.7
+ALL pooled & chop gate           train: n 121 (  40/yr) win 34% net   -2.5 t -1.0 || test: n 346 (  53/yr) win 37% net   +2.3 t +0.8
+(ref) stage 2 only, all groups   train: n2317 ( 772/yr) win 32% net   -1.7 t -2.8 || test: n6403 ( 978/yr) win 32% net   -1.9 t -3.7
+   ALL pooled stage 3 by year: 2018:-1(82) 2019:-2(54) 2020:-2(128) 2021:-0(128) 2022:-2(151) 2023:-1(198) 2024:+0(186) 2025:+2(212) 2026:+3(73)
+   confluence 2+ by year: 2018:+5(54) 2019:-1(47) 2020:+2(95) 2021:+2(89) 2022:+1(103) 2023:+2(131) 2024:+0(134) 2025:+2(153) 2026:+2(55)
