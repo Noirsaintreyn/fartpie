@@ -1,0 +1,6 @@
+days 2075 median n 0.0 median events 43.0
+AUC of -n for MR_after vs TREND_after: test 0.478 (n 896) | train 0.486 (n 488)
+AUC of -cnt for MR_after vs TREND_after: test 0.499 (n 896) | train 0.523 (n 488)
+corr(n, count) -0.21 | mean erA by n tercile (low/mid/high): {'lo': 0.483, 'mid': 0.475, 'hi': 0.469}
+  test {'lo': 0.486, 'mid': 0.462, 'hi': 0.469}
+  train {'lo': 0.487, 'mid': 0.489, 'hi': 0.47}
