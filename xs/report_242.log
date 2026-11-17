@@ -1,0 +1,42 @@
+touch candidates 4656 {'F382': 741, 'F50': 783, 'F618': 816, 'POC': 796, 'VAH': 790, 'VAL': 730}
+
+=== PART 1, target 1.0R, stop = 1H vector level ===
+pooled (first touch/day/side) train: n 485 win 49% net   -3.9 t -1.1 || test: n 934 win 54% net   +5.7 t +1.5
+level POC                    train: n 265 win 55% net   +1.4 t +0.3 || test: n 531 win 54% net   +7.9 t +1.7
+level VAH                    train: n 276 win 55% net   +1.6 t +0.4 || test: n 514 win 53% net   +3.5 t +0.8
+level VAL                    train: n 252 win 48% net   -8.7 t -1.6 || test: n 478 win 50% net   +7.0 t +1.2
+level F382                   train: n 253 win 48% net   -3.8 t -0.8 || test: n 488 win 50% net   +5.9 t +1.0
+level F50                    train: n 279 win 49% net   -1.2 t -0.2 || test: n 504 win 52% net   +8.2 t +1.5
+level F618                   train: n 285 win 51% net   +1.1 t +0.2 || test: n 531 win 55% net  +11.1 t +2.2
+pooled & ABS                 train: n 266 win 53% net   +2.1 t +0.4 || test: n 544 win 55% net   +5.2 t +1.0
+pooled & NEG                 train: n 310 win 46% net   -7.2 t -1.3 || test: n 610 win 53% net   +7.1 t +1.4
+pooled & IVHI                train: n 206 win 49% net   -2.8 t -0.4 || test: n 464 win 53% net   +8.3 t +1.4
+pooled & ABS & NEG           train: n 166 win 50% net   -0.3 t -0.0 || test: n 356 win 55% net   +7.2 t +1.0
+
+=== PART 1, target 2.0R, stop = 1H vector level ===
+pooled (first touch/day/side) train: n 485 win 45% net   -4.3 t -1.1 || test: n 934 win 49% net   +8.3 t +2.0
+level POC                    train: n 265 win 52% net   +1.3 t +0.2 || test: n 531 win 52% net  +11.9 t +2.3
+level VAH                    train: n 276 win 52% net   +2.3 t +0.5 || test: n 514 win 51% net   +9.3 t +1.9
+level VAL                    train: n 252 win 44% net   -9.4 t -1.7 || test: n 478 win 46% net   +5.6 t +0.9
+level F382                   train: n 253 win 45% net   -4.1 t -0.8 || test: n 488 win 48% net   +8.7 t +1.4
+level F50                    train: n 279 win 48% net   -1.2 t -0.2 || test: n 504 win 51% net  +13.0 t +2.2
+level F618                   train: n 285 win 49% net   +2.4 t +0.5 || test: n 531 win 53% net  +16.0 t +2.9
+pooled & ABS                 train: n 266 win 49% net   +1.5 t +0.3 || test: n 544 win 50% net   +6.9 t +1.2
+pooled & NEG                 train: n 310 win 42% net   -7.7 t -1.4 || test: n 610 win 49% net  +11.8 t +2.0
+pooled & IVHI                train: n 206 win 45% net   -5.9 t -0.8 || test: n 464 win 48% net  +11.8 t +1.8
+pooled & ABS & NEG           train: n 166 win 45% net   -1.5 t -0.2 || test: n 356 win 51% net   +9.2 t +1.2
+
+=== PART 2: walk-forward logistic regression (train 2019-21, test 2018+2022-26), target 1R ===
+standardised coefficients: neg -0.05, iv +0.01, absb +0.12, er +0.05, dist -0.01, hrs -0.00, F382 -0.05, F50 -0.04, F618 -0.03, POC -0.04, VAH +0.17, VAL -0.06
+AUC train 0.586 | test 0.527
+  train top half     n 276 win 56% net   +5.2 t +1.2
+  train bottom half  n 275 win 44% net  -10.4 t -2.0
+  train top quarter  n 138 win 62% net   +6.2 t +1.0
+  test top half     n 521 win 55% net   +5.2 t +1.1
+  test bottom half  n 548 win 50% net   +2.4 t +0.5
+  test top quarter  n 248 win 56% net   +4.7 t +0.8
+
+=== by year, pooled first touch, net pts per trade (n) ===
+1.0R 2018:-0(153) 2019:-4(146) 2020:+3(168) 2021:-11(171) 2022:+15(175) 2023:-10(167) 2024:-4(182) 2025:+19(171) 2026:+21(86)
+2.0R 2018:+3(153) 2019:-2(146) 2020:-2(168) 2021:-9(171) 2022:+13(175) 2023:-7(167) 2024:-0(182) 2025:+25(171) 2026:+23(86)
+F618 2R 2018:+12(79) 2019:+0(86) 2020:+10(100) 2021:-4(99) 2022:+27(103) 2023:+12(100) 2024:-2(105) 2025:+24(100) 2026:+31(44)
