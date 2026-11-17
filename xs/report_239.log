@@ -1,0 +1,17 @@
+main algo: drought days (trailing 40-day P&L <= 0) 17% of days; train 30%, test 10%
+REJ signals 1279, CONT signals 1339
+=== REJ: trapped breakout fade ===
+REJ all                    train: n  434 win  46% net  -2.03 pts t -1.7 R~ 14 | per day -1.12, drought days -0.97, other -1.19 | corr with main -0.04 || test: n  798 win  48% net  -1.63 pts t -1.2 R~ 22 | per day -0.81, drought days +1.52, other -1.06 | corr with main -0.09
+REJ pos gamma              train: n  161 win  54% net  +0.64 pts t +0.5 R~ 10 | per day +0.13, drought days +0.07, other +0.16 | corr with main -0.06 || test: n  246 win  43% net  -5.09 pts t -2.4 R~ 20 | per day -0.83, drought days -1.95, other -0.72 | corr with main -0.01
+REJ neg gamma              train: n  273 win  41% net  -3.60 pts t -2.1 R~ 15 | per day -1.25, drought days -1.04, other -1.35 | corr with main -0.01 || test: n  552 win  49% net  -0.09 pts t -0.0 R~ 23 | per day +0.03, drought days +3.48, other -0.34 | corr with main -0.10
+REJ TRAP                   train: n  336 win  44% net  -2.82 pts t -2.1 R~ 14 | per day -1.21, drought days -1.10, other -1.26 | corr with main -0.04 || test: n  627 win  48% net  -1.07 pts t -0.6 R~ 22 | per day -0.44, drought days +2.30, other -0.73 | corr with main -0.09
+REJ pos & TRAP             train: n  121 win  52% net  +0.02 pts t +0.0 R~ 11 | per day +0.00, drought days +0.07, other -0.03 | corr with main -0.07 || test: n  195 win  45% net  -4.77 pts t -1.9 R~ 19 | per day -0.61, drought days -0.87, other -0.58 | corr with main +0.00
+REJ IVHI                   train: n  196 win  46% net  -2.36 pts t -1.1 R~ 15 | per day -0.59, drought days -0.48, other -0.64 | corr with main -0.00 || test: n  396 win  50% net  -0.53 pts t -0.2 R~ 24 | per day -0.17, drought days +1.98, other -0.40 | corr with main -0.09
+REJ pos&TRAP&IVHI          train: n   30 win  50% net  -2.01 pts t -0.5 R~ 15 | per day -0.08, drought days +0.03, other -0.12 | corr with main -0.03 || test: n   30 win  50% net  -3.46 pts t -0.5 R~ 21 | per day -0.08, drought days -0.28, other -0.06 | corr with main +0.03
+
+=== CONT: break of the noise band ===
+CONT all                   train: n  446 win  43% net  +0.02 pts t +0.0 R~ 11 | per day +0.01, drought days -0.03, other +0.03 | corr with main +0.20 || test: n  844 win  44% net  -1.04 pts t -0.7 R~ 16 | per day -0.72, drought days +1.04, other -0.91 | corr with main +0.18
+CONT neg gamma             train: n  295 win  42% net  +0.79 pts t +0.4 R~ 13 | per day +0.30, drought days +0.47, other +0.22 | corr with main +0.16 || test: n  590 win  43% net  -1.12 pts t -0.6 R~ 17 | per day -0.49, drought days +0.24, other -0.57 | corr with main +0.19
+CONT ABS                   train: n   60 win  32% net  -5.92 pts t -2.4 R~ 11 | per day -0.45, drought days -0.79, other -0.31 | corr with main +0.06 || test: n  103 win  43% net  -5.41 pts t -1.7 R~ 14 | per day -0.22, drought days +0.06, other -0.24 | corr with main -0.06
+CONT neg & ABS             train: n   41 win  24% net  -8.36 pts t -2.6 R~ 14 | per day -0.44, drought days -0.74, other -0.31 | corr with main +0.07 || test: n   72 win  42% net  -5.96 pts t -1.5 R~ 15 | per day -0.20, drought days -0.51, other -0.17 | corr with main -0.05
+CONT neg&ABS&IVHI          train: n   26 win  19% net  -9.55 pts t -2.1 R~ 14 | per day -0.32, drought days -0.46, other -0.25 | corr with main +0.09 || test: n   45 win  47% net  -3.06 pts t -0.7 R~ 14 | per day -0.10, drought days -0.17, other -0.09 | corr with main -0.09
