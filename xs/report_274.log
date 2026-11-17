@@ -1,0 +1,30 @@
+(1) validation on the actual path (full sim earlier: $500 rule ~.5/mo, longest gap ~300d ~10mo; $2,000 rule max gap 197d ~6.5mo, $100.8k)
+  history paymin 500: 0.77/mo, longest gap 9.0 mo, mo>=1 62%, net $96,188
+  history paymin 2000: 0.64/mo, longest gap 9.9 mo, mo>=1 50%, net $97,950
+
+(2) block bootstrap, all days vs 2022+ pool
+all days                           $ 500 | payouts/mo mean 0.75 p10 0.66 p90 0.84 | longest gap med 7.0 p90 9.9 mo | mo>=1 58% mo>=2 17% | net med $85,854
+2022+ days                         $ 500 | payouts/mo mean 0.96 p10 0.86 p90 1.05 | longest gap med 5.5 p90 7.7 mo | mo>=1 67% mo>=2 26% | net med $125,589
+all days                           $2000 | payouts/mo mean 0.61 p10 0.52 p90 0.70 | longest gap med 9.1 p90 13.4 mo | mo>=1 48% mo>=2 12% | net med $92,820
+2022+ days                         $2000 | payouts/mo mean 0.83 p10 0.73 p90 0.94 | longest gap med 6.8 p90 9.5 mo | mo>=1 61% mo>=2 21% | net med $131,205
+
+(3) variants (all-days pool; history in last column)
+base                               $ 500 | payouts/mo mean 0.75 p10 0.66 p90 0.84 | longest gap med 7.0 p90 9.9 mo | mo>=1 58% mo>=2 17% | net med $85,854 | history 0.77/mo gap 9.0mo net $96,188
+size x0.75                         $ 500 | payouts/mo mean 0.64 p10 0.55 p90 0.72 | longest gap med 8.0 p90 11.4 mo | mo>=1 52% mo>=2 11% | net med $63,845 | history 0.66/mo gap 10.2mo net $67,911
+size x1.25                         $ 500 | payouts/mo mean 0.85 p10 0.75 p90 0.95 | longest gap med 6.3 p90 9.0 mo | mo>=1 62% mo>=2 22% | net med $107,102 | history 0.83/mo gap 9.3mo net $107,625
+size x1.5                          $ 500 | payouts/mo mean 0.95 p10 0.84 p90 1.05 | longest gap med 5.8 p90 8.1 mo | mo>=1 66% mo>=2 26% | net med $126,120 | history 0.96/mo gap 6.4mo net $128,087
+range-target                       $ 500 | payouts/mo mean 0.68 p10 0.59 p90 0.76 | longest gap med 7.3 p90 10.4 mo | mo>=1 55% mo>=2 13% | net med $67,798 | history 0.72/mo gap 5.7mo net $69,955
+event x1.5 (nfp/react, 2022+)      $ 500 | payouts/mo mean 0.79 p10 0.70 p90 0.89 | longest gap med 6.6 p90 9.4 mo | mo>=1 61% mo>=2 18% | net med $95,985 | history 0.81/mo gap 9.0mo net $104,806
+base                               $2000 | payouts/mo mean 0.61 p10 0.52 p90 0.70 | longest gap med 9.1 p90 13.4 mo | mo>=1 48% mo>=2 12% | net med $92,820 | history 0.64/mo gap 9.9mo net $97,950
+size x0.75                         $2000 | payouts/mo mean 0.48 p10 0.41 p90 0.55 | longest gap med 10.6 p90 15.5 mo | mo>=1 41% mo>=2 7% | net med $71,670 | history 0.45/mo gap 10.7mo net $66,270
+size x1.25                         $2000 | payouts/mo mean 0.72 p10 0.62 p90 0.81 | longest gap med 8.1 p90 11.6 mo | mo>=1 54% mo>=2 17% | net med $112,260 | history 0.75/mo gap 10.4mo net $117,210
+size x1.5                          $2000 | payouts/mo mean 0.83 p10 0.72 p90 0.93 | longest gap med 7.3 p90 10.5 mo | mo>=1 59% mo>=2 22% | net med $130,530 | history 0.84/mo gap 6.4mo net $133,050
+range-target                       $2000 | payouts/mo mean 0.51 p10 0.43 p90 0.58 | longest gap med 9.9 p90 14.5 mo | mo>=1 43% mo>=2 8% | net med $76,890 | history 0.50/mo gap 9.5mo net $75,090
+event x1.5 (nfp/react, 2022+)      $2000 | payouts/mo mean 0.66 p10 0.56 p90 0.75 | longest gap med 8.4 p90 12.2 mo | mo>=1 51% mo>=2 14% | net med $101,775 | history 0.72/mo gap 9.9mo net $112,530
+
+(4) global size ladder, $500 rule, all-days bootstrap | evals started a path (fail rate proxy)
+size x1: payouts/mo mean 0.75 p10 0.66 p90 0.84 | longest gap med 6.9 p90 9.9 mo | mo>=2 17% | net med $85,875
+size x1.5: payouts/mo mean 0.95 p10 0.84 p90 1.05 | longest gap med 5.8 p90 8.1 mo | mo>=2 26% | net med $126,298
+size x2: payouts/mo mean 1.12 p10 1.01 p90 1.22 | longest gap med 4.9 p90 7.1 mo | mo>=2 34% | net med $157,203
+size x2.5: payouts/mo mean 1.25 p10 1.15 p90 1.35 | longest gap med 4.2 p90 5.9 mo | mo>=2 41% | net med $184,419
+size x3: payouts/mo mean 1.37 p10 1.27 p90 1.47 | longest gap med 3.8 p90 5.2 mo | mo>=2 47% | net med $206,888
