@@ -1,0 +1,8 @@
+276 corrected: observation-weighted mean, day-clustered t (equal-weighting days conditioned on later checkpoints = survivorship)
+ all                    obs 3750 days 750  -0.52 (cluster t-0.8) | obs 7198 days1441  -0.63 (cluster t-0.9)
+ big                    obs 1250 days 498  -1.14 (cluster t-1.1) | obs 2548 days1041  -1.88 (cluster t-1.4)
+ big&gamma+             obs  407 days 175  +0.11 (cluster t+0.1) | obs  671 days 305  -1.18 (cluster t-0.5)
+ big&gamma-             obs  843 days 323  -1.75 (cluster t-1.2) | obs 1877 days 736  -2.13 (cluster t-1.4)
+ big&cross>=3           obs  352 days 202  -2.20 (cluster t-1.0) | obs  756 days 412  -1.35 (cluster t-0.5)
+ big&cross<=1           obs  736 days 288  -0.80 (cluster t-0.6) | obs 1401 days 560  -2.27 (cluster t-1.4)
+ big&cross>=3&gamma+    obs  115 days  73  -0.05 (cluster t-0.0) | obs  195 days 118  +1.90 (cluster t+0.4)
