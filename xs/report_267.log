@@ -1,0 +1,21 @@
+median R^t-based stop 60 pts
+--- first bar with X >= 0.8 (placebo): n 807 (101/yr)
+    1R        n 189   +0.8 (t+0.2) win 54% | n 618   +1.7 (t+0.6) win 51%
+    2R        n 189   -0.1 (t-0.0) win 42% | n 618   +4.1 (t+1.1) win 43%
+    to close  n 189   -0.7 (t-0.1) win 40% | n 618   +5.0 (t+1.1) win 41%
+    rest-of-day efficiency after the event (mean erA) test 0.45 | train 0.44 | continuation (pts from the event bar close to close, in push direction) mean test +11.9 | train +3.5
+--- first bar with X >= 1.0 (event): n 223 (28/yr)
+    1R        n  50   -3.9 (t-0.6) win 50% | n 173  -13.6 (t-2.2) win 42%
+    2R        n  50   -6.7 (t-0.8) win 30% | n 173  -13.3 (t-1.7) win 34%
+    to close  n  50   -8.3 (t-1.0) win 26% | n 173   -4.9 (t-0.5) win 30%
+    rest-of-day efficiency after the event (mean erA) test 0.49 | train 0.40 | continuation (pts from the event bar close to close, in push direction) mean test +9.4 | train -10.3
+--- first bar with X >= 1.25 (event): n 38 (5/yr)
+    1R        n  12  -26.2 (t-3.5) win 17% | n  26  +25.0 (t+1.2) win 62%
+    2R        n  12  -34.4 (t-10.2) win 0% | n  26  -12.2 (t-0.5) win 42%
+    to close  n  12  -34.4 (t-10.2) win 0% | n  26  +23.1 (t+0.5) win 38%
+    rest-of-day efficiency after the event (mean erA) test 0.48 | train 0.50 | continuation (pts from the event bar close to close, in push direction) mean test +62.8 | train -40.7
+by entry time (X>=1.0, to close): {'>=11:30': (151, np.float64(-9.7)), '<11:30': (72, np.float64(2.6))}
+X>=1.0 by year (to close): {2020: {'count': 5.0, 'mean': 7.2}, 2021: {'count': 45.0, 'mean': -10.1}, 2022: {'count': 23.0, 'mean': 40.8}, 2023: {'count': 28.0, 'mean': -5.9}, 2024: {'count': 57.0, 'mean': -11.7}, 2025: {'count': 41.0, 'mean': -4.0}, 2026: {'count': 24.0, 'mean': -33.4}}
+--- main algo NQ pts/day (deploy size) on days range exceeded the running forecast by 14:00 vs not
+  train: exceeded n50 +7.0 | not n268 +4.0
+  test: exceeded n176 +15.9 | not n946 +6.2
