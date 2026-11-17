@@ -1,0 +1,26 @@
+
+=== 60min flips FIX 1R: train n166 net +5.2 | test n305 net +20.5  (options features need data: ROOM walls end 2025-12) ===
+DLT     train: T n 151   +5.8 | F n  15   -1.5 | t +0.4 || test: T n 281  +20.9 | F n  24  +15.7 | t +0.3
+DLTS    train: T n  67  +16.4 | F n  99   -2.4 | t +1.8 || test: T n 141  +18.6 | F n 164  +22.1 | t -0.3
+RVOL    train: T n 162   +3.0 | F n   4  +91.2 | t +nan || test: T n 290  +21.1 | F n  15   +8.1 | t +1.2
+ABSORB  train: T n  61  +11.3 | F n 105   +1.6 | t +1.0 || test: T n 117  +36.9 | F n 188  +10.2 | t +2.1
+DEX     train: T n  70  +11.8 | F n  96   +0.3 | t +1.1 || test: T n 114   +6.7 | F n 191  +28.7 | t -2.0
+VANNA   train: T n  93   +9.5 | F n  73   -0.4 | t +1.0 || test: T n 137  +10.0 | F n 168  +29.0 | t -1.7
+CHARM   train: T n  96   +3.9 | F n  70   +7.0 | t -0.3 || test: T n 160  +24.7 | F n 145  +15.8 | t +0.8
+ROOM    train: T n  70   +6.7 | F n  96   +4.1 | t +0.2 || test: T n  71  +23.6 | F n 234  +19.5 | t +0.3
+IVHI    train: T n  63  +14.3 | F n 103   -0.4 | t +1.3 || test: T n 147  +29.6 | F n 158  +11.9 | t +1.5
+SKEWHI  train: T n  80   +7.2 | F n  86   +3.3 | t +0.4 || test: T n 143  +23.5 | F n 162  +17.8 | t +0.5
+PCVHI   train: T n  79   +1.7 | F n  87   +8.3 | t -0.7 || test: T n 119  +19.2 | F n 186  +21.2 | t -0.2
+
+=== 15min flips FIX 1R: train n533 net -0.9 | test n1055 net -1.4  (options features need data: ROOM walls end 2025-12) ===
+DLT     train: T n 505   -1.0 | F n  28   +1.9 | t -0.6 || test: T n 973   -1.3 | F n  82   -2.5 | t +0.2
+DLTS    train: T n 198   +1.3 | F n 335   -2.2 | t +0.7 || test: T n 432   -0.7 | F n 623   -1.9 | t +0.2
+RVOL    train: T n 359   -0.1 | F n 174   -2.4 | t +0.6 || test: T n 667   +0.6 | F n 388   -4.9 | t +1.2
+ABSORB  train: T n 190   -5.2 | F n 343   +1.5 | t -1.4 || test: T n 376   -3.2 | F n 679   -0.4 | t -0.5
+DEX     train: T n 248   -1.5 | F n 285   -0.3 | t -0.3 || test: T n 467   -1.0 | F n 588   -1.8 | t +0.2
+VANNA   train: T n 285   -0.2 | F n 248   -1.7 | t +0.3 || test: T n 492   +0.0 | F n 563   -2.7 | t +0.6
+CHARM   train: T n 283   +0.2 | F n 250   -2.2 | t +0.5 || test: T n 498   -3.2 | F n 557   +0.1 | t -0.7
+ROOM    train: T n 283   +0.5 | F n 250   -2.4 | t +0.7 || test: T n 341   +1.9 | F n 714   -3.0 | t +1.0
+IVHI    train: T n 220   +0.6 | F n 313   -2.0 | t +0.5 || test: T n 532   -1.3 | F n 523   -1.5 | t +0.0
+SKEWHI  train: T n 243   -0.6 | F n 290   -1.1 | t +0.1 || test: T n 501   -3.3 | F n 554   +0.3 | t -0.7
+PCVHI   train: T n 226   +0.3 | F n 307   -1.8 | t +0.5 || test: T n 392   -4.7 | F n 663   +0.5 | t -1.0
