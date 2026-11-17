@@ -1,0 +1,14 @@
+events 41937  tickers 19  split {'test': 26052, 'train': 15885}
+ all events n15885 hold  13% netR -0.086 (t-4.2) | n26052 hold  14% netR -0.065 (t-3.8)
+ G          n13294 hold  13% netR -0.080 (t-3.9) | n18874 hold  14% netR -0.051 (t-2.9)
+ ~G         n 2591 hold  12% netR -0.113 (t-2.5) | n 7178 hold  13% netR -0.102 (t-3.4)
+ V1         n  549 hold  28% netR -0.133 (t-2.1) | n  833 hold  27% netR -0.101 (t-1.8)
+ V2         n  468 hold  27% netR -0.133 (t-1.8) | n  711 hold  26% netR -0.166 (t-2.8)
+ V1&V2      n  360 hold  29% netR -0.109 (t-1.3) | n  546 hold  28% netR -0.100 (t-1.4)
+ V1&V2&G    n  294 hold  30% netR -0.105 (t-1.1) | n  372 hold  29% netR -0.103 (t-1.3)
+ V1&V2&~G   n   66 hold  27% netR -0.125 (t-0.7) | n  174 hold  28% netR -0.094 (t-0.7)
+ V1&G       n  448 hold  29% netR -0.125 (t-1.8) | n  583 hold  28% netR -0.095 (t-1.5)
+ V2&G       n  379 hold  28% netR -0.130 (t-1.5) | n  498 hold  26% netR -0.159 (t-2.4)
+
+V1&V2&G by year (n, mean R): {2018: (109, np.float64(-0.29)), 2019: (105, np.float64(-0.07)), 2020: (101, np.float64(-0.2)), 2021: (88, np.float64(-0.03)), 2022: (42, np.float64(-0.17)), 2023: (58, np.float64(0.05)), 2024: (82, np.float64(0.06)), 2025: (76, np.float64(-0.11))}
+V1&V2&G by ticker n>=8: {'AAPL': (25, np.float64(-0.21)), 'ADBE': (33, np.float64(-0.11)), 'AMD': (34, np.float64(-0.62)), 'CAT': (29, np.float64(-0.04)), 'COST': (31, np.float64(-0.33)), 'CRM': (33, np.float64(-0.13)), 'DIS': (43, np.float64(-0.1)), 'HD': (29, np.float64(-0.35)), 'IBM': (35, np.float64(0.5)), 'MCD': (37, np.float64(0.19)), 'NVDA': (24, np.float64(-0.12)), 'ORCL': (41, np.float64(-0.03)), 'QQQ': (36, np.float64(-0.3)), 'SBUX': (32, np.float64(-0.14)), 'TGT': (47, np.float64(-0.01)), 'TSLA': (41, np.float64(0.18)), 'UNH': (37, np.float64(0.02)), 'UPS': (45, np.float64(-0.35)), 'WMT': (34, np.float64(-0.16))}
