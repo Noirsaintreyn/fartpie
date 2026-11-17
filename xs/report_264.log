@@ -1,0 +1,36 @@
+range forecast quality (out-of-sample R2 on log range | MAE of range in points), train | test
+  A HAR      train 0.507 | 61   test 0.330 | 89
+  B HAR+IV   train 0.557 | 60   test 0.392 | 86
+  C HAR+YZ5  train 0.509 | 61   test 0.326 | 89
+model chosen on train: B HAR+IV
+signals 2862 | with reward>=risk at f=.618: 2838 f=1.0: 2860
+--- all rejection candidates (train | test)
+  all                        T=0.618R^ | n 825   -3.1 (t-1.8) win 19% | n2013   -3.2 (t-2.4) win 18%
+  all                        T=1.000R^ | n 834   -2.4 (t-1.2) win 17% | n2026   -2.7 (t-1.7) win 16%
+--- by share of projected range used U
+  U<.25                      T=0.618R^ | n 216   -5.8 (t-1.9) win 17% | n 512   -1.8 (t-0.7) win 19%
+  U<.25                      T=1.000R^ | n 216   -5.8 (t-1.7) win 16% | n 513   -0.9 (t-0.3) win 18%
+  .25<=U<.5                  T=0.618R^ | n 323   -2.0 (t-0.7) win 18% | n 787   -4.8 (t-2.2) win 16%
+  .25<=U<.5                  T=1.000R^ | n 325   -1.7 (t-0.5) win 15% | n 794   -3.7 (t-1.4) win 14%
+  U>=.5                      T=0.618R^ | n 286   -2.2 (t-0.9) win 21% | n 714   -2.6 (t-1.1) win 19%
+  U>=.5                      T=1.000R^ | n 293   -0.7 (t-0.2) win 19% | n 719   -3.0 (t-1.1) win 16%
+--- orderflow flags
+  V1 volume building         T=0.618R^ | n  42   -2.6 (t-0.3) win 29% | n  83   +7.8 (t+0.9) win 33%
+  V1 volume building         T=1.000R^ | n  46   +3.6 (t+0.4) win 28% | n  89   +7.3 (t+0.7) win 29%
+  V2 absorption              T=0.618R^ | n  84   -5.0 (t-1.1) win 20% | n 202   +2.3 (t+0.5) win 24%
+  V2 absorption              T=1.000R^ | n  89   -2.2 (t-0.4) win 20% | n 205   +2.7 (t+0.5) win 22%
+  V1 & V2                    T=0.618R^ | n  29   +0.8 (t+0.1) win 24% | n  48  +23.2 (t+1.8) win 38%
+  V1 & V2                    T=1.000R^ | n  33   +7.1 (t+0.5) win 24% | n  51  +19.2 (t+1.2) win 31%
+  V1 & U<.5                  T=0.618R^ | n  18   +0.7 (t+0.0) win 28% | n  43   +3.0 (t+0.3) win 33%
+  V1 & U<.5                  T=1.000R^ | n  18   +2.2 (t+0.1) win 28% | n  46   +2.4 (t+0.2) win 30%
+--- is the rejected extreme the day extreme? P(held) and median remaining range / R^ (train | test)
+  all                n 835 held 18% rest/R^ med 0.67 mean 0.76 | n2027 held 16% rest/R^ med 0.68 mean 0.75
+  U<.25              n 217 held 18% rest/R^ med 0.53 mean 0.59 | n 513 held 19% rest/R^ med 0.55 mean 0.62
+  .25<=U<.5          n 325 held 16% rest/R^ med 0.60 mean 0.65 | n 794 held 14% rest/R^ med 0.61 mean 0.67
+  U>=.5              n 293 held 20% rest/R^ med 0.92 mean 1.00 | n 720 held 16% rest/R^ med 0.86 mean 0.93
+  V1                 n  47 held 34% rest/R^ med 0.95 mean 0.98 | n  89 held 31% rest/R^ med 0.77 mean 0.88
+  V2                 n  89 held 22% rest/R^ med 0.83 mean 0.91 | n 205 held 21% rest/R^ med 0.78 mean 0.84
+  V1&V2              n  33 held 30% rest/R^ med 0.96 mean 1.05 | n  51 held 31% rest/R^ med 0.92 mean 0.98
+  time<12:00         n 690 held 17% rest/R^ med 0.65 mean 0.74 | n1662 held 16% rest/R^ med 0.66 mean 0.73
+  time>=12:00        n 145 held 22% rest/R^ med 0.74 mean 0.83 | n 365 held 18% rest/R^ med 0.79 mean 0.82
+  calibration: realized RTH range / R^ (median) train 0.9 test 0.95
