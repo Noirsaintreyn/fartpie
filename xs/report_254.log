@@ -1,0 +1,23 @@
+--- checkpoint 10:30  AUC of hypothesized-MR direction (0.5 none); n 1460
+  F1   train 0.516 test 0.516 
+  F2   train 0.480 test 0.485 
+  F3   train 0.460 test 0.463 
+  F4   train 0.538 test 0.524 <- counts
+  F5   train 0.456 test 0.512 
+  F6   train 0.541 test 0.521 <- counts
+  F7   train 0.514 test 0.568 
+  F7b  train 0.563 test 0.551 <- counts
+  F8   train 0.506 test 0.502 
+  F8b  train 0.506 test 0.487 
+--- checkpoint 11:00  AUC of hypothesized-MR direction (0.5 none); n 1460
+  F1   train 0.509 test 0.537 
+  F2   train 0.545 test 0.487 
+  F3   train 0.483 test 0.464 
+  F4   train 0.487 test 0.523 
+  F5   train 0.485 test 0.534 
+  F6   train 0.531 test 0.529 <- counts
+  F7   train 0.554 test 0.540 <- counts
+  F7b  train 0.549 test 0.555 <- counts
+  F8   train 0.503 test 0.481 
+  F8b  train 0.484 test 0.476 
+counting features: {(660, 'F7'), (660, 'F7b'), (660, 'F6'), (630, 'F7b'), (630, 'F6'), (630, 'F4')}
