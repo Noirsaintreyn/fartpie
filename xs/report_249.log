@@ -1,0 +1,86 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  S1 up-lever days (low vanna or room>0.5ATR) in regime-ON trades: 61 of 193 | IFVG near-wall trades: 248 of 656
+  S1 regime-ON trades: below/at ON VWAP 48 above 145 no data 0
+  V15a LVR train 2/3 cut 0.254 high-LVR trades 343 of 1058
+  ACCD cut 0.38 IFVG high-acceptance trades 186 of 656 | LON_R cut 0.362 S1 regime-ON high-London trades 61 of 193
+  tp168 rows 656 IFVG rows 656 date match True R2 vs pts max diff 0.0
+  corrected FIG-V trades 635 original 656
+  V15a stop (0.15 ADR) median 21.3 pts; contracts at $100: (array([ 1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12., 13.]), array([474, 102,  78,  58,  82,  55,  94,  32,  23,  25,  16,  14,   5]))
+  leg fib/wall absorbed: 381 trades, 44/yr, net +5.5 pts, median R 24, train +3.7 test +6.1, days traded 337
+  leg fib/wall + positive pairs, absorbed: 708 trades, 82/yr, net +1.9 pts, median R 24, train +1.6 test +2.1, days traded 597
+
+=== payout >= $500 (default) ===
+  main only
+    2018-21 starts: pass 94% | paid once 78% | payouts/eval 1.80 (0.56 evals per payout) | avg payout $1,207 | net $2,082/eval | days: start->pass 58, funded->1st payout 14, start->1st payout 85, between 17
+    2022-25 starts: pass 82% | paid once 61% | payouts/eval 2.06 (0.48 evals per payout) | avg payout $1,553 | net $3,119/eval | days: start->pass 27, funded->1st payout 12, start->1st payout 41, between 13
+    one account at a time 2018-26: 24 evals, 51 payouts, $73,833 paid, fees $2,112, net $8,971 a year, 0.53 payouts a month, longest run without a payout 2 evals
+    longest gaps (days, from, to): 305 d 2019-03-11 -> 2020-01-10; 197 d 2024-03-04 -> 2024-09-17; 196 d 2021-03-22 -> 2021-10-04; 183 d 2022-07-26 -> 2023-01-25
+    payouts by year: 2018:2 2019:3 2020:6 2021:3 2022:7 2023:6 2024:9 2025:15
+    fleet of 1: 0.53 payouts a month | longest gap 305 days (95th pct 190, median 22) | start to first payout 111 days | most fees inside one gap $264 | months with no payout 58%
+  + fib/wall absorbed leg, $150 risk/trade
+    2018-21 starts: pass 93% | paid once 76% | payouts/eval 2.00 (0.50 evals per payout) | avg payout $1,260 | net $2,426/eval | days: start->pass 54, funded->1st payout 14, start->1st payout 76, between 17
+    2022-25 starts: pass 87% | paid once 65% | payouts/eval 2.20 (0.46 evals per payout) | avg payout $1,537 | net $3,291/eval | days: start->pass 28, funded->1st payout 11, start->1st payout 40, between 12
+    one account at a time 2018-26: 23 evals, 51 payouts, $73,369 paid, fees $2,024, net $8,924 a year, 0.53 payouts a month, longest run without a payout 2 evals
+    longest gaps (days, from, to): 298 d 2019-03-04 -> 2019-12-27; 202 d 2024-03-01 -> 2024-09-19; 172 d 2020-09-18 -> 2021-03-09; 170 d 2022-08-03 -> 2023-01-20
+    payouts by year: 2018:4 2019:4 2020:6 2021:6 2022:7 2023:8 2024:8 2025:8
+    fleet of 1: 0.53 payouts a month | longest gap 298 days (95th pct 171, median 22) | start to first payout 111 days | most fees inside one gap $264 | months with no payout 56%
+  + fib/wall + positive-pair absorbed leg, $150 risk/trade
+    2018-21 starts: pass 93% | paid once 72% | payouts/eval 2.11 (0.47 evals per payout) | avg payout $1,241 | net $2,529/eval | days: start->pass 52, funded->1st payout 15, start->1st payout 72, between 16
+    2022-25 starts: pass 89% | paid once 63% | payouts/eval 2.12 (0.47 evals per payout) | avg payout $1,530 | net $3,163/eval | days: start->pass 32, funded->1st payout 10, start->1st payout 38, between 11
+    one account at a time 2018-26: 23 evals, 49 payouts, $69,044 paid, fees $2,024, net $8,383 a year, 0.51 payouts a month, longest run without a payout 1 evals
+    longest gaps (days, from, to): 417 d 2019-03-21 -> 2020-05-11; 211 d 2024-11-25 -> 2025-06-24; 202 d 2024-02-27 -> 2024-09-16; 168 d 2018-06-04 -> 2018-11-19
+    payouts by year: 2018:3 2019:3 2020:5 2021:7 2022:8 2023:8 2024:9 2025:6
+    fleet of 1: 0.51 payouts a month | longest gap 417 days (95th pct 190, median 27) | start to first payout 123 days | most fees inside one gap $176 | months with no payout 57%
+  + fib/wall absorbed leg, $300 risk/trade
+    2018-21 starts: pass 93% | paid once 69% | payouts/eval 1.89 (0.53 evals per payout) | avg payout $1,211 | net $2,205/eval | days: start->pass 51, funded->1st payout 13, start->1st payout 68, between 16
+    2022-25 starts: pass 87% | paid once 67% | payouts/eval 2.34 (0.43 evals per payout) | avg payout $1,533 | net $3,499/eval | days: start->pass 28, funded->1st payout 12, start->1st payout 42, between 11
+    one account at a time 2018-26: 22 evals, 59 payouts, $90,580 paid, fees $1,936, net $11,088 a year, 0.62 payouts a month, longest run without a payout 2 evals
+    longest gaps (days, from, to): 321 d 2019-02-20 -> 2020-01-07; 182 d 2022-07-22 -> 2023-01-20; 163 d 2023-03-13 -> 2023-08-23; 162 d 2020-01-16 -> 2020-06-26
+    payouts by year: 2018:4 2019:2 2020:6 2021:10 2022:5 2023:8 2024:9 2025:15
+    fleet of 1: 0.62 payouts a month | longest gap 321 days (95th pct 162, median 22) | start to first payout 120 days | most fees inside one gap $264 | months with no payout 54%
+  + fib/wall + positive-pair absorbed leg, $300 risk/trade
+    2018-21 starts: pass 97% | paid once 69% | payouts/eval 1.71 (0.58 evals per payout) | avg payout $1,198 | net $1,961/eval | days: start->pass 50, funded->1st payout 13, start->1st payout 68, between 16
+    2022-25 starts: pass 85% | paid once 63% | payouts/eval 2.11 (0.47 evals per payout) | avg payout $1,554 | net $3,198/eval | days: start->pass 32, funded->1st payout 10, start->1st payout 39, between 11
+    one account at a time 2018-26: 26 evals, 50 payouts, $75,196 paid, fees $2,288, net $9,120 a year, 0.52 payouts a month, longest run without a payout 2 evals
+    longest gaps (days, from, to): 289 d 2019-04-03 -> 2020-01-17; 212 d 2021-03-22 -> 2021-10-20; 211 d 2024-11-25 -> 2025-06-24; 208 d 2024-02-22 -> 2024-09-17
+    payouts by year: 2018:2 2019:2 2020:6 2021:3 2022:12 2023:8 2024:9 2025:6 2026:2
+    fleet of 1: 0.52 payouts a month | longest gap 289 days (95th pct 210, median 24) | start to first payout 257 days | most fees inside one gap $264 | months with no payout 57%
+
+=== FULL payout only (>= $2,000) ===
+  main only
+    2018-21 starts: pass 94% | paid once 72% | payouts/eval 3.33 (0.30 evals per payout) | avg payout $1,800 | net $5,912/eval | days: start->pass 58, funded->1st payout 48, start->1st payout 116, between 22
+    2022-25 starts: pass 82% | paid once 52% | payouts/eval 2.19 (0.46 evals per payout) | avg payout $1,800 | net $3,847/eval | days: start->pass 27, funded->1st payout 14, start->1st payout 50, between 14
+    one account at a time 2018-26: 17 evals, 56 payouts, $100,800 paid, fees $1,496, net $12,422 a year, 0.58 payouts a month, longest run without a payout 1 evals
+    longest gaps (days, from, to): 197 d 2019-03-11 -> 2019-09-24; 184 d 2020-09-28 -> 2021-03-31; 179 d 2024-03-14 -> 2024-09-09; 167 d 2021-06-24 -> 2021-12-08
+    payouts by year: 2019:5 2020:5 2021:6 2022:8 2023:9 2024:8 2025:15
+    fleet of 1: 0.58 payouts a month | longest gap 197 days (95th pct 171, median 27) | start to first payout 337 days | most fees inside one gap $176 | months with no payout 53%
+  + fib/wall absorbed leg, $150 risk/trade
+    2018-21 starts: pass 93% | paid once 70% | payouts/eval 3.28 (0.31 evals per payout) | avg payout $1,800 | net $5,813/eval | days: start->pass 54, funded->1st payout 51, start->1st payout 106, between 21
+    2022-25 starts: pass 87% | paid once 54% | payouts/eval 2.18 (0.46 evals per payout) | avg payout $1,800 | net $3,839/eval | days: start->pass 28, funded->1st payout 14, start->1st payout 49, between 13
+    one account at a time 2018-26: 21 evals, 47 payouts, $84,600 paid, fees $1,848, net $10,351 a year, 0.49 payouts a month, longest run without a payout 3 evals
+    longest gaps (days, from, to): 260 d 2024-01-10 -> 2024-09-26; 214 d 2019-02-22 -> 2019-09-24; 196 d 2020-08-25 -> 2021-03-09; 196 d 2019-09-24 -> 2020-04-07
+    payouts by year: 2018:1 2019:4 2020:5 2021:7 2022:8 2023:8 2024:4 2025:9 2026:1
+    fleet of 1: 0.49 payouts a month | longest gap 260 days (95th pct 196, median 24) | start to first payout 291 days | most fees inside one gap $352 | months with no payout 60%
+  + fib/wall + positive-pair absorbed leg, $150 risk/trade
+    2018-21 starts: pass 93% | paid once 53% | payouts/eval 2.22 (0.45 evals per payout) | avg payout $1,800 | net $3,906/eval | days: start->pass 52, funded->1st payout 29, start->1st payout 88, between 19
+    2022-25 starts: pass 89% | paid once 53% | payouts/eval 2.16 (0.46 evals per payout) | avg payout $1,800 | net $3,793/eval | days: start->pass 32, funded->1st payout 14, start->1st payout 49, between 12
+    one account at a time 2018-26: 18 evals, 45 payouts, $81,000 paid, fees $1,584, net $9,934 a year, 0.47 payouts a month, longest run without a payout 1 evals
+    longest gaps (days, from, to): 399 d 2019-03-04 -> 2020-04-06; 260 d 2021-03-22 -> 2021-12-07; 222 d 2020-08-12 -> 2021-03-22; 199 d 2024-03-04 -> 2024-09-19
+    payouts by year: 2018:1 2019:3 2020:5 2021:3 2022:8 2023:10 2024:8 2025:6 2026:1
+    fleet of 1: 0.47 payouts a month | longest gap 399 days (95th pct 219, median 22) | start to first payout 291 days | most fees inside one gap $176 | months with no payout 62%
+  + fib/wall absorbed leg, $300 risk/trade
+    2018-21 starts: pass 93% | paid once 50% | payouts/eval 1.99 (0.50 evals per payout) | avg payout $1,800 | net $3,494/eval | days: start->pass 51, funded->1st payout 26, start->1st payout 84, between 19
+    2022-25 starts: pass 87% | paid once 58% | payouts/eval 2.38 (0.42 evals per payout) | avg payout $1,800 | net $4,195/eval | days: start->pass 28, funded->1st payout 15, start->1st payout 49, between 13
+    one account at a time 2018-26: 23 evals, 48 payouts, $86,400 paid, fees $2,024, net $10,554 a year, 0.50 payouts a month, longest run without a payout 2 evals
+    longest gaps (days, from, to): 463 d 2019-03-21 -> 2020-06-26; 207 d 2024-03-04 -> 2024-09-27; 185 d 2023-03-13 -> 2023-09-14; 168 d 2022-08-05 -> 2023-01-20
+    payouts by year: 2018:2 2019:3 2020:5 2021:9 2022:6 2023:6 2024:7 2025:10
+    fleet of 1: 0.50 payouts a month | longest gap 463 days (95th pct 180, median 25) | start to first payout 288 days | most fees inside one gap $264 | months with no payout 60%
+  + fib/wall + positive-pair absorbed leg, $300 risk/trade
+    2018-21 starts: pass 97% | paid once 45% | payouts/eval 1.69 (0.59 evals per payout) | avg payout $1,800 | net $2,956/eval | days: start->pass 50, funded->1st payout 23, start->1st payout 78, between 18
+    2022-25 starts: pass 85% | paid once 54% | payouts/eval 2.00 (0.50 evals per payout) | avg payout $1,800 | net $3,512/eval | days: start->pass 32, funded->1st payout 15, start->1st payout 46, between 13
+    one account at a time 2018-26: 22 evals, 46 payouts, $82,800 paid, fees $1,936, net $10,115 a year, 0.48 payouts a month, longest run without a payout 3 evals
+    longest gaps (days, from, to): 474 d 2019-03-01 -> 2020-06-17; 422 d 2020-09-28 -> 2021-11-24; 224 d 2024-11-15 -> 2025-06-27; 217 d 2024-02-22 -> 2024-09-26
+    payouts by year: 2018:2 2019:3 2020:5 2021:2 2022:9 2023:10 2024:8 2025:6 2026:1
+    fleet of 1: 0.48 payouts a month | longest gap 474 days (95th pct 223, median 21) | start to first payout 284 days | most fees inside one gap $352 | months with no payout 61%
