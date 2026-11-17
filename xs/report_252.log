@@ -1,0 +1,36 @@
+k=0.75 stop=0.5ATR
+   MR    train n   19 net   -0.4 pts t -0.0 win 53%
+   MR    test  n   25 net  +99.6 pts t +4.9 win 80%
+   MID   train n   29 net  +24.9 pts t +1.5 win 59%
+   MID   test  n   47 net  +11.7 pts t +0.6 win 57%
+   TREND train n   34 net  -31.2 pts t -3.1 win 24%
+   TREND test  n   77 net  -56.2 pts t -5.2 win 22%
+   ALL   n 231 net -7.1 t -1.0
+k=0.75 stop=1.0ATR
+   MR    train n   19 net  +28.9 pts t +1.6 win 79%
+   MR    test  n   25 net +109.0 pts t +6.1 win 88%
+   MID   train n   29 net  +41.7 pts t +2.6 win 72%
+   MID   test  n   47 net  +22.1 pts t +0.9 win 66%
+   TREND train n   34 net  -41.2 pts t -2.6 win 29%
+   TREND test  n   77 net  -80.6 pts t -5.1 win 22%
+   ALL   n 231 net -9.0 t -1.0
+k=1.0 stop=0.5ATR
+   MR    train n   11 net  +38.0 pts t +1.7 win 73%
+   MR    test  n    2 net +173.5 pts t +nan win 100%
+   MID   train n   10 net  +46.3 pts t +1.6 win 70%
+   MID   test  n   12 net  -27.4 pts t -0.6 win 50%
+   TREND train n   10 net  -49.4 pts t -3.3 win 30%
+   TREND test  n   27 net  -77.7 pts t -4.3 win 11%
+   ALL   n 72 net -23.5 t -1.8
+k=1.0 stop=1.0ATR
+   MR    train n   11 net  +32.5 pts t +1.1 win 82%
+   MR    test  n    2 net +173.5 pts t +nan win 100%
+   MID   train n   10 net  +43.9 pts t +1.4 win 70%
+   MID   test  n   12 net  +55.3 pts t +0.8 win 67%
+   TREND train n   10 net  -33.8 pts t -1.3 win 40%
+   TREND test  n   27 net -120.6 pts t -3.7 win 15%
+   ALL   n 72 net -24.8 t -1.2
+main algo NQ pts/day by ER tercile (deploy size)
+train {'MR': {'mean': -1.76, 'count': 255}, 'MID': {'mean': 2.04, 'count': 256}, 'TREND': {'mean': 10.65, 'count': 239}}
+test {'MR': {'mean': -0.57, 'count': 394}, 'MID': {'mean': 2.88, 'count': 391}, 'TREND': {'mean': 17.96, 'count': 413}}
+ER cutoffs [0.349, 0.638]

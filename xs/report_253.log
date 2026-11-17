@@ -1,0 +1,28 @@
+--- day-level AUC (feature ON predicts MR vs TREND; 0.5=none)
+  vixfall  test 0.486 (n 894) train 0.516 (n 494)
+  vixhi    test 0.489 (n 894) train 0.506 (n 494)
+  gaplow   test 0.507 (n 894) train 0.528 (n 494)
+  gexpos   test 0.546 (n 894) train 0.530 (n 494)
+  ivlow    test 0.509 (n 894) train 0.490 (n 494)
+  perlow   test 0.470 (n 894) train 0.487 (n 494)
+--- fade pts/trade, feature ON vs OFF (train | test), k=.75 and .5
+ k=0.5  all: test n 496 -11.2 | train n 271 -1.9
+   vixfall  ON: te n202 -11.2 / tr n94 -4.4   OFF: te n294 -11.2 / tr n177 -0.6
+   vixhi    ON: te n232 -14.3 / tr n135 +3.1   OFF: te n264 -8.4 / tr n136 -6.8
+   gaplow   ON: te n215 -12.8 / tr n100 -1.1   OFF: te n281 -9.9 / tr n171 -2.4
+   gexpos   ON: te n127 +1.3 / tr n88 -6.3   OFF: te n337 -16.2 / tr n183 +0.2
+   ivlow    ON: te n191 -6.6 / tr n141 -5.7   OFF: te n273 -14.8 / tr n130 +2.2
+   perlow   ON: te n243 -23.9 / tr n129 -6.9   OFF: te n253 +1.0 / tr n142 +2.6
+   gexpos&gaplow: te n64 -6.6 / tr n39 -2.9
+   vixfall&gexpos: te n78 +14.5 / tr n46 +5.1
+ k=0.75  all: test n 149 -16.4 | train n 82 +4.4
+   vixfall  ON: te n48 -26.1 / tr n20 -0.8   OFF: te n101 -11.7 / tr n62 +6.0
+   vixhi    ON: te n70 -12.5 / tr n45 +5.5   OFF: te n79 -19.8 / tr n37 +2.9
+   gaplow   ON: te n62 -15.5 / tr n27 +20.6   OFF: te n87 -17.0 / tr n55 -3.6
+   gexpos   ON: te n33 -18.9 / tr n31 +8.4   OFF: te n101 -18.0 / tr n51 +1.9
+   ivlow    ON: te n43 -29.0 / tr n38 -1.3   OFF: te n91 -13.1 / tr n44 +9.3
+   perlow   ON: te n73 -43.5 / tr n40 -13.5   OFF: te n76 +9.7 / tr n42 +21.4
+   gexpos&gaplow: te n19 -34.3 / tr n13 +35.7
+   vixfall&gexpos: te n14 -11.8 / tr n12 +30.7
+--- main algo daily pts: corr with VIX change same day 0.03 | with prior VIX level 0.011 | with ER 0.234
+    pts/day by prior VIX tercile {'low': 3.61, 'mid': 6.39, 'high': 5.75}
