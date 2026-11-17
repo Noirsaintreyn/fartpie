@@ -1,0 +1,19 @@
+trades 1093 {'RA': 328, 'V15a': 765}  aligned share {'RA': 0.57, 'V15a': 0.56}
+
+RA+V15a: pts per trade (net, per 1 contract of the leg)
+ aligned at extreme     flag n 211   +8.4 vs rest n 145   +8.1 diff   +0.3 (t+0.0) | flag n 371  +12.3 vs rest n 297  +15.9 diff   -3.6 (t-0.5)
+ aligned & V1           flag n  13   -6.8 vs rest n 343   +8.8 diff  -15.7 (t-1.1) | flag n  36  +19.5 vs rest n 632  +13.6 diff   +5.9 (t+0.4)
+ aligned & V2           flag n  34   -6.2 vs rest n 322   +9.8 diff  -15.9 (t-2.1) | flag n  75  +26.6 vs rest n 593  +12.3 diff  +14.3 (t+0.9)
+ F (rej&V1&V2)          flag n   2 - | flag n   4 -
+
+RA: pts per trade (net, per 1 contract of the leg)
+ aligned at extreme     flag n  69  +13.0 vs rest n  48   +7.0 diff   +6.0 (t+0.6) | flag n 118  +10.3 vs rest n  93  +10.3 diff   +0.0 (t+0.0)
+ aligned & V1           flag n   3 - | flag n   5 -
+ aligned & V2           flag n   7 - | flag n  12  +24.8 vs rest n 199   +9.4 diff  +15.4 (t+1.2)
+ F (rej&V1&V2)          flag n   1 - | flag n   1 -
+
+V15a: pts per trade (net, per 1 contract of the leg)
+ aligned at extreme     flag n 142   +6.2 vs rest n  97   +8.7 diff   -2.5 (t-0.3) | flag n 253  +13.2 vs rest n 204  +18.5 diff   -5.2 (t-0.5)
+ aligned & V1           flag n  10  -14.8 vs rest n 229   +8.1 diff  -22.9 (t-1.5) | flag n  31  +17.5 vs rest n 426  +15.4 diff   +2.1 (t+0.1)
+ aligned & V2           flag n  27  -10.0 vs rest n 212   +9.4 diff  -19.4 (t-2.3) | flag n  63  +26.9 vs rest n 394  +13.8 diff  +13.1 (t+0.7)
+ F (rej&V1&V2)          flag n   1 - | flag n   3 -
