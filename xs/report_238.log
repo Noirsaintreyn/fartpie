@@ -1,0 +1,30 @@
+=== 1H flips ===
+ALL                      train: n 166 (55.3/yr) win 49% net   +5.2 t +1.0 || test: n 305 (46.9/yr) win 58% net  +20.5 t +3.5
+ABSORB                   train: n  61 (20.3/yr) win 54% net  +11.3 t +1.5 || test: n 117 (18.0/yr) win 59% net  +36.9 t +3.4
+IVHI                     train: n  63 (21.0/yr) win 52% net  +14.3 t +1.4 || test: n 147 (22.6/yr) win 63% net  +29.6 t +3.7
+NEG                      train: n 109 (36.3/yr) win 53% net   +6.8 t +1.0 || test: n 209 (32.2/yr) win 60% net  +25.7 t +3.6
+ABSORB & NEG             train: n  38 (12.7/yr) win 61% net  +19.1 t +1.8 || test: n  74 (11.4/yr) win 59% net  +44.7 t +3.0
+ABSORB & IVHI            train: n  19 ( 6.3/yr) win 63% net  +20.3 t +1.4 || test: n  52 ( 8.0/yr) win 58% net  +49.9 t +2.9
+NEG & IVHI               train: n  51 (17.0/yr) win 55% net  +11.9 t +1.1 || test: n 127 (19.5/yr) win 63% net  +26.1 t +3.3
+ABSORB & NEG & IVHI      train: n  16 ( 5.3/yr) win 75% net  +29.1 t +1.8 || test: n  45 ( 6.9/yr) win 56% net  +44.2 t +2.5
+
+=== 30min flips ===
+ALL                      train: n 340 (113.3/yr) win 52% net   +0.9 t +0.3 || test: n 668 (102.8/yr) win 49% net   +1.5 t +0.4
+ABSORB                   train: n 131 (43.7/yr) win 49% net   +1.2 t +0.2 || test: n 273 (42.0/yr) win 48% net   -0.7 t -0.1
+NEG                      train: n 211 (70.3/yr) win 52% net   +2.4 t +0.5 || test: n 455 (70.0/yr) win 48% net   -1.0 t -0.2
+ABSORB & NEG             train: n  78 (26.0/yr) win 49% net   +4.8 t +0.6 || test: n 181 (27.8/yr) win 46% net   -6.2 t -0.8
+NOT ABSORB & NEG         train: n 133 (44.3/yr) win 53% net   +1.1 t +0.2 || test: n 274 (42.2/yr) win 50% net   +2.4 t +0.4
+
+=== 15min flips ===
+ALL                      train: n 533 (177.7/yr) win 52% net   -0.9 t -0.4 || test: n1055 (162.3/yr) win 49% net   -1.4 t -0.6
+ABSORB                   train: n 190 (63.3/yr) win 49% net   -5.2 t -1.3 || test: n 376 (57.8/yr) win 47% net   -3.2 t -0.7
+NEG                      train: n 327 (109.0/yr) win 50% net   -1.3 t -0.4 || test: n 703 (108.2/yr) win 51% net   -1.1 t -0.3
+ABSORB & NEG             train: n 113 (37.7/yr) win 47% net   -9.5 t -1.6 || test: n 250 (38.5/yr) win 49% net   -3.4 t -0.6
+NOT ABSORB & NEG         train: n 214 (71.3/yr) win 52% net   +3.0 t +0.8 || test: n 453 (69.7/yr) win 51% net   +0.2 t +0.1
+
+=== 5min flips ===
+ALL                      train: n1214 (404.7/yr) win 49% net   -1.9 t -1.7 || test: n2198 (338.2/yr) win 47% net   -3.2 t -2.9
+ABSORB                   train: n 376 (125.3/yr) win 48% net   -3.0 t -1.5 || test: n 723 (111.2/yr) win 49% net   -3.9 t -1.8
+NEG                      train: n 749 (249.7/yr) win 50% net   -2.4 t -1.4 || test: n1479 (227.5/yr) win 49% net   -2.7 t -1.8
+ABSORB & NEG             train: n 224 (74.7/yr) win 49% net   -4.1 t -1.4 || test: n 505 (77.7/yr) win 51% net   -3.3 t -1.2
+NOT ABSORB & NEG         train: n 525 (175.0/yr) win 50% net   -1.7 t -0.9 || test: n 974 (149.8/yr) win 48% net   -2.4 t -1.4
