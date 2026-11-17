@@ -1,0 +1,14 @@
+earnings rows 400 range 2014-08-07 2027-02-04 hours {16: 385, 17: 7, 12: 2, 7: 2}
+flag days: rel 366 nfp 95 opex 95 mend 103 react 195 night 195
+flag | MR share ON (train|test) vs OFF | algo pts/day ON vs OFF | fade V0 1R ON vs OFF | V1 1R ON
+ rel   MR 36%/34% | 32%/33%   algo +4.3/+3.4 | +9.4/+6.3   n 103|263   fade -2.0/-0.9 V1on -3.2(n10) | -4.6/-0.5 V1on -8.9(n28)
+ nfp   MR 36%/34% | 27%/33%   algo +4.5/+3.4 | +20.4/+6.3   n 33|62   fade -7.5/-0.8 V1on +28.0(n2) | -6.9/-1.1 V1on -4.1(n7)
+ opex  MR 34%/34% | 32%/33%   algo +1.0/+3.6 | +8.0/+6.9   n 35|60   fade +4.1/-1.3 V1on -3.8(n3) | +2.7/-1.7 V1on +0.2(n9)
+ mend  MR 42%/34% | 34%/33%   algo +2.3/+3.5 | +6.9/+6.9   n 36|67   fade +2.2/-1.2 V1on +49.2(n4) | +3.3/-1.7 V1on -8.5(n4)
+ react MR 34%/34% | 30%/33%   algo +3.1/+3.5 | +19.4/+5.6   n 67|128   fade -4.6/-0.6 V1on +9.4(n7) | -4.4/-1.1 V1on +15.6(n9)
+ night MR 25%/35% | 30%/33%   algo +0.8/+3.7 | +9.8/+6.6   n 67|128   fade -2.2/-0.9 V1on -6.4(n7) | -0.9/-1.5 V1on +0.7(n11)
+react by count: MR share / algo pts/day
+  nreact=0: n 1884 MR 33% TREND 33% algo +4.8
+  nreact=1: n 141 MR 31% TREND 41% algo +12.8
+  nreact=2: n 39 MR 28% TREND 33% algo +21.7
+  nreact=3+: n 15 MR 47% TREND 27% algo -1.8
