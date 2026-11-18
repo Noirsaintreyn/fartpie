@@ -33,7 +33,10 @@ A['lev'] = -A.liab / A.assets; A['sgrow'] = A.rev / lag('rev') - 1
 roa, roa0 = A.ni / A.assets, lag('ni') / lag('assets')
 pio = pd.concat([(roa > 0), (A.cfo > 0), (roa > roa0), (A.cfo > A.ni), (A.ltd / A.assets < lag('ltd') / lag('assets')), (A.ca / A.cl > lag('ca') / lag('cl')),
                  (sh <= sh.groupby(A.ticker).shift(1).where(ok) * 1.005), (A.gm > lag('gm')), (A.rev / A.assets > lag('rev') / lag('assets'))], axis=1)
-A['pio'] = pio.sum(axis=1).where(pio.notna().sum(axis=1) >= 6); A['sh'] = sh; A['avail'] = A.filed + pd.Timedelta(days=3)
+A['pio'] = pio.sum(axis=1).where(pio.notna().sum(axis=1) >= 6)
+_sp = pd.read_parquet(SP + 'splits.parquet'); _sp['date'] = pd.to_datetime(_sp.date); _sg = {k: v for k, v in _sp.groupby('tk')}
+A['sh'] = [(x * (float(_sg[t][_sg[t].date > d].ratio.prod()) if t in _sg and (_sg[t].date > d).any() else 1.0)) for t, d, x in zip(A.ticker, A.filed, sh)]   # shares on today's split-adjusted basis (fix of Nov 18: prices are split-adjusted, SEC shares are as reported)
+A['avail'] = A.filed + pd.Timedelta(days=3)
 FAC = ['accr', 'cfoa', 'cashconv', 'pio', 'gpa', 'roce', 'gmstab', 'agrow', 'issue', 'lev', 'ey', 'fcfy', 'sy', 'bm', 'sgrow', 'mom', 'qual', 'gpa_x_growth']
 # ---- monthly panel
 me = C.resample('ME').last(); ME = me.index; dv = (C * V).rolling(20, min_periods=15).median().resample('ME').last()
