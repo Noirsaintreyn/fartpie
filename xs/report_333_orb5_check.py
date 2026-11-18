@@ -28,3 +28,10 @@ def rep(c):
 r0 = rep(.75); rep(2.0)
 print('\nby year, R/trade at 0.75 pts cost:', r0.groupby(T.index.year).mean().round(2).to_dict()); print('median candle range pts:', round(T.rg.median(), 1), '| cost as % of median R: ', round(.75 / T.rg.median() * 100, 1), '%')
 print('top 5% of trades share of total R:', round(r0.sort_values(ascending=False).head(int(len(r0) * .05)).sum() / r0.sum(), 2))
+SPp = '/tmp/claude-0/-home-claude/6d3c83e1-1a4a-5a0a-8647-c2590d1d30a4/scratchpad/'; T[['pts', 'rg', 'dir']].to_parquet(SPp + 'orb5_daily.parquet')
+# --- fit with the 8-model stack (d305: daily pts per model, 1 contract each)
+D = pd.read_parquet(SPp + 'd305.parquet'); M = ['RA', 'M1', 'R1', 'ON+', 'ON-', 'RULES', 'V15a', 'S1']; o = (T.pts - .75).reindex(D.index).fillna(0); D['ORB'] = o; D['STACK'] = D[M].sum(axis=1)
+print('\nORB (1 contract, 0.75pt cost) vs the 8 models, daily pts: correlation'); print(D[M + ['STACK', 'ORB']].corr().ORB.round(2).to_dict())
+for lab, a, b in (('2019', '2019-01-01', '2020-01-01'), ('2024 H1', '2024-01-01', '2024-07-01'), ('2026 YTD', '2026-01-01', '2026-12-31'), ('all', '2018-01-01', '2027-01-01')):
+    z = D[(D.index >= a) & (D.index < b)]; print(f'  {lab:9s} stack {z.STACK.sum():+8.0f} pts | ORB {z.ORB.sum():+7.0f} pts | days {len(z)}')
+mo = D.resample('ME')[['STACK', 'ORB']].sum(); print('months where the stack lost: ORB positive in', int(((mo.STACK < 0) & (mo.ORB > 0)).sum()), 'of', int((mo.STACK < 0).sum()), '| stack-up months ORB positive', int(((mo.STACK > 0) & (mo.ORB > 0)).sum()), 'of', int((mo.STACK > 0).sum()))
