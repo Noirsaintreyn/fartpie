@@ -1,0 +1,20 @@
+trades 12320
+
+per-trade mean return by SCORE (n): train | test
+  score 0: train +0.80% (n368) | test +0.20% (n836)
+  score 1: train +0.23% (n900) | test +0.12% (n1910)
+  score 2: train +0.16% (n1352) | test +0.18% (n2433)
+  score 3: train +0.35% (n989) | test +0.47% (n1884)
+  score 4: train +0.26% (n459) | test +0.50% (n831)
+  score 5: train +0.03% (n145) | test +0.41% (n213)
+  S_ratio  off/on: train +0.26%/+0.31% | test +0.23%/+0.32%
+  S_ldv    off/on: train +0.32%/+0.25% | test +0.12%/+0.47%
+  S_mom    off/on: train +0.31%/+0.23% | test +0.21%/+0.39%
+  S_h1     off/on: train +0.28%/+0.28% | test +0.28%/+0.25%
+  S_room   off/on: train +0.43%/+0.13% | test +0.26%/+0.29%
+
+6-slot sim (CAGR/DD 2019-22 | 2023-26):
+  ratio (live)                  22.9% / DD -13.0% |  33.4% / DD -16.2% | trades taken 4253, avg slots used 94%
+  SCORE high, ratio ties        22.5% / DD -13.1% |  34.6% / DD -16.7% | trades taken 4196, avg slots used 93%
+  SCORE>=3 only, ratio order    12.2% / DD -19.3% |  39.4% / DD -12.7% | trades taken 3262, avg slots used 79%
+  SCORE>=2 only, SCORE order    10.9% / DD -20.0% |  28.6% / DD -15.4% | trades taken 4016, avg slots used 89%

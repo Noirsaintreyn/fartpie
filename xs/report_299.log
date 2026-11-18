@@ -1,0 +1,9 @@
+trades 12320 | median base rank 22.0
+
+spots per signal | CAGR/DD 2019-22 | 2023-26 | all-period top-6-effective vs rest per-trade return (only crowded bars)
+  K= 0   22.9% / DD -13.0% |  33.4% / DD -16.2% | crowded bars (>=7): top-3 +0.55% vs rest +0.16%
+  K= 1   23.2% / DD -13.0% |  34.7% / DD -16.2% | crowded bars (>=7): top-3 +0.59% vs rest +0.14%
+  K= 2   23.7% / DD -13.2% |  36.8% / DD -16.2% | crowded bars (>=7): top-3 +0.57% vs rest +0.15%
+  K= 3   24.4% / DD -13.2% |  38.2% / DD -10.3% | crowded bars (>=7): top-3 +0.62% vs rest +0.12%
+  K= 5   22.9% / DD -13.2% |  39.5% / DD  -9.3% | crowded bars (>=7): top-3 +0.56% vs rest +0.15%
+  K=10   23.0% / DD -13.1% |  33.8% / DD -15.8% | crowded bars (>=7): top-3 +0.70% vs rest +0.09%
