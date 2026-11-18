@@ -1,0 +1,19 @@
+trades 12281
+per-trade mean return by third (train cuts): train | test
+  m5    train: lo +0.25% mid +0.29% hi +0.27% | test: lo +0.32% mid +0.26% hi +0.25%
+  m20   train: lo +0.14% mid +0.43% hi +0.24% | test: lo +0.22% mid +0.20% hi +0.40%
+  m60   train: lo +0.24% mid +0.15% hi +0.42% | test: lo +0.36% mid +0.25% hi +0.23%
+  rs5   train: lo +0.29% mid +0.33% hi +0.19% | test: lo +0.33% mid +0.17% hi +0.31%
+  rs20  train: lo +0.13% mid +0.40% hi +0.28% | test: lo +0.27% mid +0.30% hi +0.25%
+
+6-slot pick order (CAGR/DD 2019-22 | 2023-26):
+  ratio (live)              21.0% / DD -13.0% |  33.4% / DD -16.2%
+  5d mom high first         20.6% / DD -13.9% |  15.7% / DD -16.5%
+  20d mom high first        22.0% / DD -13.8% |  30.2% / DD -15.7%
+  60d mom high first        21.1% / DD -15.1% |  28.1% / DD -15.1%
+  5d rel SPY high           20.6% / DD -13.9% |  15.7% / DD -16.5%
+  20d rel SPY high          22.0% / DD -13.8% |  30.2% / DD -15.7%
+  5d LOW first (reversal)   19.1% / DD -14.3% |  22.5% / DD -17.2%
+  ratio + 20d ranks         19.9% / DD -13.9% |  33.3% / DD -13.8%
+  ratio + 5d ranks          21.4% / DD -13.1% |  31.2% / DD -15.7%
+  20d first, ratio ties     19.6% / DD -15.1% |  30.8% / DD -15.3%
