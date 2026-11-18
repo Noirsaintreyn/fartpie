@@ -1,0 +1,33 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  S1 up-lever days (low vanna or room>0.5ATR) in regime-ON trades: 61 of 193 | IFVG near-wall trades: 248 of 656
+  S1 regime-ON trades: below/at ON VWAP 48 above 145 no data 0
+  V15a LVR train 2/3 cut 0.254 high-LVR trades 343 of 1058
+  ACCD cut 0.38 IFVG high-acceptance trades 186 of 656 | LON_R cut 0.362 S1 regime-ON high-London trades 61 of 193
+  tp168 rows 656 IFVG rows 656 date match True R2 vs pts max diff 0.0
+  corrected FIG-V trades 635 original 656
+  V15a stop (0.15 ADR) median 21.3 pts; contracts at $100: (array([ 1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12., 13.]), array([474, 102,  78,  58,  82,  55,  94,  32,  23,  25,  16,  14,   5]))
+== x1.0 $2k rule
+x1.0 $2k rule                N=1 gap  40d | 0.58 payouts/mo | months>=1 47% >=2 14% | longest gap 197d | evals 17 | paid $100,800 fees $11,130 net $89,670 | worst12m paid $3,600
+x1.0 $2k rule                N=2 gap  40d | 1.17 payouts/mo | months>=1 47% >=2 47% | longest gap 197d | evals 34 | paid $201,600 fees $22,260 net $179,340 | worst12m paid $7,200
+x1.0 $2k rule                N=3 gap  40d | 1.75 payouts/mo | months>=1 51% >=2 47% | longest gap 184d | evals 51 | paid $302,400 fees $33,390 net $269,010 | worst12m paid $9,000
+x1.0 $2k rule                N=4 gap  40d | 2.34 payouts/mo | months>=1 52% >=2 48% | longest gap 184d | evals 67 | paid $403,200 fees $44,430 net $358,770 | worst12m paid $10,800
+x1.0 $2k rule                N=5 gap  40d | 2.92 payouts/mo | months>=1 52% >=2 48% | longest gap 184d | evals 83 | paid $504,000 fees $55,470 net $448,530 | worst12m paid $14,400
+== x1.5 $500 rule
+x1.5 $500 rule               N=1 gap  40d | 0.58 payouts/mo | months>=1 42% >=2 17% | longest gap 439d | evals 24 | paid $88,554 fees $11,760 net $76,794 | worst12m paid $0
+x1.5 $500 rule               N=2 gap  40d | 1.15 payouts/mo | months>=1 42% >=2 42% | longest gap 439d | evals 48 | paid $174,608 fees $23,520 net $151,088 | worst12m paid $0
+x1.5 $500 rule               N=3 gap  40d | 1.66 payouts/mo | months>=1 43% >=2 42% | longest gap 439d | evals 73 | paid $253,902 fees $35,370 net $218,532 | worst12m paid $0
+x1.5 $500 rule               N=4 gap  40d | 2.17 payouts/mo | months>=1 43% >=2 43% | longest gap 439d | evals 97 | paid $333,195 fees $47,130 net $286,065 | worst12m paid $0
+x1.5 $500 rule               N=5 gap  40d | 2.68 payouts/mo | months>=1 44% >=2 43% | longest gap 439d | evals 120 | paid $412,631 fees $58,800 net $353,831 | worst12m paid $0
+== x1.0 $500 rule
+x1.0 $500 rule               N=1 gap  40d | 0.53 payouts/mo | months>=1 42% >=2 12% | longest gap 305d | evals 24 | paid $73,833 fees $11,760 net $62,073 | worst12m paid $713
+x1.0 $500 rule               N=2 gap  40d | 1.05 payouts/mo | months>=1 42% >=2 42% | longest gap 305d | evals 48 | paid $147,140 fees $23,520 net $123,620 | worst12m paid $1,425
+x1.0 $500 rule               N=3 gap  40d | 1.61 payouts/mo | months>=1 46% >=2 43% | longest gap 266d | evals 72 | paid $222,919 fees $35,280 net $187,639 | worst12m paid $3,636
+x1.0 $500 rule               N=4 gap  40d | 2.12 payouts/mo | months>=1 49% >=2 44% | longest gap 243d | evals 94 | paid $294,652 fees $46,860 net $247,792 | worst12m paid $4,104
+x1.0 $500 rule               N=5 gap  40d | 2.64 payouts/mo | months>=1 49% >=2 44% | longest gap 243d | evals 117 | paid $367,960 fees $58,530 net $309,430 | worst12m paid $4,816
+== stagger sensitivity x1.0 $2k, N=3,4
+x1.0 $2k rule                N=3 gap  15d | 1.75 payouts/mo | months>=1 47% >=2 47% | longest gap 197d | evals 51 | paid $302,400 fees $33,390 net $269,010 | worst12m paid $10,800
+x1.0 $2k rule                N=4 gap  15d | 2.34 payouts/mo | months>=1 51% >=2 47% | longest gap 184d | evals 68 | paid $403,200 fees $44,520 net $358,680 | worst12m paid $12,600
+x1.0 $2k rule                N=3 gap  80d | 1.75 payouts/mo | months>=1 51% >=2 47% | longest gap 184d | evals 50 | paid $302,400 fees $33,300 net $269,100 | worst12m paid $9,000
+x1.0 $2k rule                N=4 gap  80d | 2.27 payouts/mo | months>=1 59% >=2 48% | longest gap 167d | evals 65 | paid $392,400 fees $44,250 net $348,150 | worst12m paid $9,000
