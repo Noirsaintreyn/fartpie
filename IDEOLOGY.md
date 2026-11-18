@@ -685,3 +685,6 @@ NQ median open by year: 2018 6,982; 2019 7,686; 2020 10,268; 2021 14,528; 2022 1
 NQ 5m spliced to Nov 2026 (nq5_real_ext.parquet, outside repo). Rebuilt via xs/run_legs_ext.py (dump_legs280 on ext data): RA, M1, R1, ON+, ON-, V15a extend to Sep-Nov 2026; RULES, S1, FIG-V(CH), NZ still end 2026-01-30 (their pickles need regen).
 M1 +6.4/trade 2026 (in line 2021-25); R1 -27/trade (neg-gamma days -51). Stack minus RULES/S1: 1.9 pts/day 2026 vs 4.2-7.4 in 2022-25 (Feb-Nov +692 pts; Jul -247). Qualifying days 86/205. QQQ gamma file ends 2026-10-08 (gate stale after).
 Leverage note (Rey): gate by size in bad environments, not skip. Pending: retest ATRP/vol/trend/ON inventory/neg-gamma leads as size gates on the full 2018-2026 sample.
+
+## Report 288 (Nov 18 2026): environment character per model; legs rebuilt to Oct 2026 (RULES, S1 extended; FIG-V and NZ dropped)
+xs/build_rules_ext.py, xs/run_s1_ext.py, xs/run_legs_ext.py. RULES dealer features NaN after greeks end. Unified environment: high overnight range (known at open) lifts RA/M1/R1/V15a (already harvested by the overnight-range sizing); ON legs' own ONrange/ONinv features are contemporaneous = invalid.
