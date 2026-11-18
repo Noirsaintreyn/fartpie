@@ -688,3 +688,5 @@ Leverage note (Rey): gate by size in bad environments, not skip. Pending: retest
 
 ## Report 288 (Nov 18 2026): environment character per model; legs rebuilt to Oct 2026 (RULES, S1 extended; FIG-V and NZ dropped)
 xs/build_rules_ext.py, xs/run_s1_ext.py, xs/run_legs_ext.py. RULES dealer features NaN after greeks end. Unified environment: high overnight range (known at open) lifts RA/M1/R1/V15a (already harvested by the overnight-range sizing); ON legs' own ONrange/ONinv features are contemporaneous = invalid.
+
+## Report 289 (Nov 18 2026): no-tree declared size tilts (x1.5/x0.5 by one mechanism feature per model). Held train+test: M1 absz, V15a absz, ON+ gap (2025-heavy). RA ATRP fails 2025-26. R1 none. Lucid sim pending.
