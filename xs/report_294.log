@@ -1,0 +1,21 @@
+A) trade return (%, per 1 sd of each feature), cluster-t in brackets
+  train 2019-22  ratio alone       n= 5947 lr:-0.04[-0.8]
+  train 2019-22  ratio + controls  n= 5937 lr:-0.01[-0.2] beta:+0.03[+0.3] yz:-0.00[-0.0] ldv:-0.05[-0.5] mom20:+0.02[+0.2] hi52:+0.04[+0.3]
+  train 2019-22  controls only     n= 5937 beta:+0.03[+0.3] yz:-0.00[-0.0] ldv:-0.06[-0.7] mom20:+0.02[+0.2] hi52:+0.04[+0.3]
+  test 2023-26   ratio alone       n=11444 lr:+0.06[+1.3]
+  test 2023-26   ratio + controls  n=11444 lr:-0.06[-1.0] beta:-0.01[-0.2] yz:-0.02[-0.2] ldv:+0.21[+2.7] mom20:+0.10[+1.2] hi52:-0.15[-1.4]
+  test 2023-26   controls only     n=11444 beta:-0.02[-0.2] yz:-0.01[-0.1] ldv:+0.18[+2.7] mom20:+0.10[+1.2] hi52:-0.14[-1.4]
+  corr(log ratio, controls) all: {'beta': np.float64(0.25), 'yz': np.float64(0.1), 'ldv': np.float64(0.62), 'mom20': np.float64(0.0), 'hi52': np.float64(0.03)}
+
+B) giveback, 9312 trades entered Dec 2023+ with hourly bars
+  baseline: mean +0.25% win 32% | mean MFE +3.60% | mean giveback (MFE - ret) 3.35% | winners giveback 4.05%
+  trail2  : mean +0.22% win 32% | changed 13% of trades | winners-only mean +3.88% vs +4.07%
+  trail3  : mean +0.23% win 32% | changed 4% of trades | winners-only mean +4.02% vs +4.07%
+  trail4  : mean +0.24% win 32% | changed 2% of trades | winners-only mean +4.03% vs +4.07%
+  lock50  : mean +0.26% win 33% | changed 11% of trades | winners-only mean +3.99% vs +4.07%
+         ret  trail3  lock50
+yr                          
+2023 -0.0003 -0.0003 -0.0000
+2024  0.0030  0.0027  0.0028
+2025  0.0028  0.0028  0.0030
+2026  0.0012  0.0009  0.0017
