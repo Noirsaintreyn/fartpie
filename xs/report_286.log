@@ -1,0 +1,30 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  S1 up-lever days (low vanna or room>0.5ATR) in regime-ON trades: 61 of 193 | IFVG near-wall trades: 248 of 656
+  S1 regime-ON trades: below/at ON VWAP 48 above 145 no data 0
+  V15a LVR train 2/3 cut 0.254 high-LVR trades 343 of 1058
+  ACCD cut 0.38 IFVG high-acceptance trades 186 of 656 | LON_R cut 0.362 S1 regime-ON high-London trades 61 of 193
+  tp168 rows 656 IFVG rows 656 date match True R2 vs pts max diff 0.0
+  corrected FIG-V trades 635 original 656
+  V15a stop (0.15 ADR) median 21.3 pts; contracts at $100: (array([ 1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12., 13.]), array([474, 102,  78,  58,  82,  55,  94,  32,  23,  25,  16,  14,   5]))
+
+=== payout min $2000 ===
+base (fixed contracts)             evals 17 pass 14 nopay  5 | pays 56 (0.58/mo) $100,800 net $89,670 | 1st 112d | gap med 27 p90 136 max 197 | mo paid 44% | worst12 $1,800 med12 $12,600
+      by year {2018: 0, 2019: 9000, 2020: 9000, 2021: 10800, 2022: 14400, 2023: 16200, 2024: 14400, 2025: 27000, 2026: 0}
+constant notional to 2022 price 12.4k evals 14 pass 12 nopay  3 | pays 49 (0.51/mo) $88,200 net $77,340 | 1st 125d | gap med 28 p90 158 max 385 | mo paid 42% | worst12 $1,800 med12 $10,800
+      by year {2018: 5400, 2019: 7200, 2020: 9000, 2021: 10800, 2022: 12600, 2023: 14400, 2024: 10800, 2025: 18000, 2026: 0}
+constant notional to 2025 price 22.9k evals 32 pass 23 nopay 21 | pays 43 (0.45/mo) $77,400 net $64,920 | 1st 65d | gap med 20 p90 195 max 504 | mo paid 32% | worst12 $0 med12 $9,000
+      by year {2018: 12600, 2019: 5400, 2020: 9000, 2021: 7200, 2022: 10800, 2023: 3600, 2024: 14400, 2025: 12600, 2026: 1800}
+constant notional 22.9k, cap x2 / x0.5 evals 30 pass 23 nopay 19 | pays 40 (0.42/mo) $72,000 net $59,700 | 1st 65d | gap med 20 p90 198 max 490 | mo paid 30% | worst12 $0 med12 $9,000
+      by year {2018: 7200, 2019: 5400, 2020: 9000, 2021: 7200, 2022: 10800, 2023: 3600, 2024: 14400, 2025: 12600, 2026: 1800}
+
+=== payout min $500 ===
+base (fixed contracts)             evals 24 pass 20 nopay  8 | pays 51 (0.53/mo) $73,833 net $62,073 | 1st 84d | gap med 22 p90 161 max 305 | mo paid 41% | worst12 $713 med12 $7,694
+      by year {2018: 1666, 2019: 5040, 2020: 7694, 2021: 2461, 2022: 8598, 2023: 6838, 2024: 15416, 2025: 26120, 2026: 0}
+constant notional to 2022 price 12.4k evals 21 pass 19 nopay  3 | pays 58 (0.60/mo) $76,318 net $64,828 | 1st 77d | gap med 26 p90 131 max 312 | mo paid 48% | worst12 $1,622 med12 $8,999
+      by year {2018: 6735, 2019: 5400, 2020: 6523, 2021: 9188, 2022: 15661, 2023: 6209, 2024: 14418, 2025: 12184, 2026: 0}
+constant notional to 2025 price 22.9k evals 32 pass 25 nopay 16 | pays 43 (0.45/mo) $60,546 net $48,066 | 1st 60d | gap med 24 p90 182 max 500 | mo paid 35% | worst12 $0 med12 $7,738
+      by year {2018: 9826, 2019: 3600, 2020: 1762, 2021: 5470, 2022: 8573, 2023: 3357, 2024: 14400, 2025: 13558, 2026: 0}
+constant notional 22.9k, cap x2 / x0.5 evals 29 pass 23 nopay 14 | pays 42 (0.44/mo) $59,970 net $47,760 | 1st 64d | gap med 27 p90 185 max 500 | mo paid 32% | worst12 $0 med12 $8,573
+      by year {2018: 7659, 2019: 5400, 2020: 1553, 2021: 5470, 2022: 8573, 2023: 3357, 2024: 14400, 2025: 13558, 2026: 0}
