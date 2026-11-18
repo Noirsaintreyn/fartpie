@@ -692,3 +692,5 @@ xs/build_rules_ext.py, xs/run_s1_ext.py, xs/run_legs_ext.py. RULES dealer featur
 ## Report 289 (Nov 18 2026): no-tree declared size tilts (x1.5/x0.5 by one mechanism feature per model). Held train+test: M1 absz, V15a absz, ON+ gap (2025-heavy). RA ATRP fails 2025-26. R1 none. Lucid sim pending.
 
 ## Report 290 (Nov 18 2026): RA calm-ATRP edge break. Low-ATRP cell stays positive in 2025-26 (+17/+12, n=13); what changed is high-ATRP: -8.8 (2024) -> +29/+24 (2025/26), flip starts 2024Q3-Q4 (ADR 353 pts). Calm edge was mostly 2022-23 (n=35, +38/+31). Cells are n<=9/yr: noise-limited; no ATRP tilt on RA.
+
+## Report 291 (Nov 18 2026): Rule A with ADR-scaled exits (same entries). Fixed 75/50: train +10.2, test +10.2/trade. ADR 0.48/0.40: +12.1 / +12.2 (worst yr +3.3); 0.60/0.40: +15.4 / +11.0 but 2025 collapses (+0.2 vs +22). ADR scaling ~equal to fixed in pts, not a new edge; benefit is constant risk vs price/vol drift. Lucid sizing (contracts by stop) not yet run.
