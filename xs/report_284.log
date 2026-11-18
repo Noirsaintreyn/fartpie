@@ -1,0 +1,24 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  S1 up-lever days (low vanna or room>0.5ATR) in regime-ON trades: 61 of 193 | IFVG near-wall trades: 248 of 656
+  S1 regime-ON trades: below/at ON VWAP 48 above 145 no data 0
+  V15a LVR train 2/3 cut 0.254 high-LVR trades 343 of 1058
+  ACCD cut 0.38 IFVG high-acceptance trades 186 of 656 | LON_R cut 0.362 S1 regime-ON high-London trades 61 of 193
+  tp168 rows 656 IFVG rows 656 date match True R2 vs pts max diff 0.0
+  corrected FIG-V trades 635 original 656
+  V15a stop (0.15 ADR) median 21.3 pts; contracts at $100: (array([ 1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12., 13.]), array([474, 102,  78,  58,  82,  55,  94,  32,  23,  25,  16,  14,   5]))
+== paymin 2000.0
+2 identical x1.0                   1.17/mo | months>=1 47% >=2 47% | longest gap 197d | evals 34 | net $179,340
+2 split accounts (A|B) x1.0        0.50/mo | months>=1 42% >=2 9% | longest gap 365d | evals 19 | net $65,490
+2 split accounts (A|B) x1.5        0.53/mo | months>=1 47% >=2 9% | longest gap 275d | evals 36 | net $69,360
+2 split accounts (A|B) x2.0        0.55/mo | months>=1 43% >=2 12% | longest gap 544d | evals 54 | net $71,340
+A alone x1.0                       0.20/mo | months>=1 19% >=2 2% | longest gap 671d | evals 10 | net $23,700
+B alone x1.0                       0.30/mo | months>=1 29% >=2 2% | longest gap 426d | evals 10 | net $41,700
+== paymin 500.0
+2 identical x1.0                   1.05/mo | months>=1 42% >=2 42% | longest gap 305d | evals 48 | net $123,620
+2 split accounts (A|B) x1.0        0.65/mo | months>=1 53% >=2 11% | longest gap 322d | evals 29 | net $48,415
+2 split accounts (A|B) x1.5        0.51/mo | months>=1 38% >=2 12% | longest gap 331d | evals 50 | net $33,628
+2 split accounts (A|B) x2.0        0.53/mo | months>=1 42% >=2 12% | longest gap 257d | evals 64 | net $40,949
+A alone x1.0                       0.24/mo | months>=1 21% >=2 3% | longest gap 413d | evals 15 | net $15,332
+B alone x1.0                       0.35/mo | months>=1 29% >=2 6% | longest gap 302d | evals 15 | net $26,275
