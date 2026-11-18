@@ -690,3 +690,5 @@ Leverage note (Rey): gate by size in bad environments, not skip. Pending: retest
 xs/build_rules_ext.py, xs/run_s1_ext.py, xs/run_legs_ext.py. RULES dealer features NaN after greeks end. Unified environment: high overnight range (known at open) lifts RA/M1/R1/V15a (already harvested by the overnight-range sizing); ON legs' own ONrange/ONinv features are contemporaneous = invalid.
 
 ## Report 289 (Nov 18 2026): no-tree declared size tilts (x1.5/x0.5 by one mechanism feature per model). Held train+test: M1 absz, V15a absz, ON+ gap (2025-heavy). RA ATRP fails 2025-26. R1 none. Lucid sim pending.
+
+## Report 290 (Nov 18 2026): RA calm-ATRP edge break. Low-ATRP cell stays positive in 2025-26 (+17/+12, n=13); what changed is high-ATRP: -8.8 (2024) -> +29/+24 (2025/26), flip starts 2024Q3-Q4 (ADR 353 pts). Calm edge was mostly 2022-23 (n=35, +38/+31). Cells are n<=9/yr: noise-limited; no ATRP tilt on RA.
