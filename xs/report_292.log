@@ -1,0 +1,27 @@
+  NZ engine: 2956 trades; pts/day (1 contract) 2014-21 +2.12 | 2022-26 +5.02
+    long: 1464 trades, avg +4.24 pts | 2014-21 +2.39 | 2022-26 +7.93
+    short: 1492 trades, avg +2.27 pts | 2014-21 +2.12 | 2022-26 +2.53
+  S1 up-lever days (low vanna or room>0.5ATR) in regime-ON trades: 61 of 193 | IFVG near-wall trades: 248 of 656
+  S1 regime-ON trades: below/at ON VWAP 48 above 145 no data 0
+  V15a LVR train 2/3 cut 0.254 high-LVR trades 343 of 1058
+  ACCD cut 0.38 IFVG high-acceptance trades 186 of 656 | LON_R cut 0.362 S1 regime-ON high-London trades 61 of 193
+  tp168 rows 656 IFVG rows 656 date match True R2 vs pts max diff 0.0
+  corrected FIG-V trades 635 original 656
+  V15a stop (0.15 ADR) median 21.3 pts; contracts at $100: (array([ 1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12., 13.]), array([474, 102,  78,  58,  82,  55,  94,  32,  23,  25,  16,  14,   5]))
+RA ADR sims 329
+
+=== payout min $2000 ===
+base: RA fixed 75/50               evals 17 pass 14 nopay  5 | pays 56 (0.58/mo) $100,800 net $89,670 | 1st 112d | gap med 27 p90 136 max 197 | mo paid 44% | worst12 $1,800 med12 $12,600
+      by year {2018: 0, 2019: 9000, 2020: 9000, 2021: 10800, 2022: 14400, 2023: 16200, 2024: 14400, 2025: 27000, 2026: 0}
+RA ADR exits .48/.40, same size    evals 19 pass 14 nopay  8 | pays 51 (0.53/mo) $91,800 net $80,490 | 1st 97d | gap med 24 p90 128 max 391 | mo paid 42% | worst12 $0 med12 $12,600
+      by year {2018: 1800, 2019: 3600, 2020: 9000, 2021: 10800, 2022: 18000, 2023: 12600, 2024: 18000, 2025: 18000, 2026: 0}
+RA ADR exits + constant $ risk     evals 20 pass 15 nopay  9 | pays 48 (0.50/mo) $86,400 net $75,000 | 1st 111d | gap med 25 p90 167 max 212 | mo paid 40% | worst12 $3,600 med12 $10,800
+      by year {2018: 1800, 2019: 7200, 2020: 9000, 2021: 10800, 2022: 14400, 2023: 10800, 2024: 18000, 2025: 12600, 2026: 1800}
+
+=== payout min $500 ===
+base: RA fixed 75/50               evals 24 pass 20 nopay  8 | pays 51 (0.53/mo) $73,833 net $62,073 | 1st 84d | gap med 22 p90 161 max 305 | mo paid 41% | worst12 $713 med12 $7,694
+      by year {2018: 1666, 2019: 5040, 2020: 7694, 2021: 2461, 2022: 8598, 2023: 6838, 2024: 15416, 2025: 26120, 2026: 0}
+RA ADR exits .48/.40, same size    evals 24 pass 17 nopay 10 | pays 51 (0.53/mo) $78,368 net $66,608 | 1st 84d | gap med 24 p90 183 max 272 | mo paid 40% | worst12 $1,566 med12 $9,000
+      by year {2018: 1888, 2019: 3531, 2020: 7141, 2021: 11328, 2022: 14068, 2023: 5669, 2024: 16743, 2025: 18000, 2026: 0}
+RA ADR exits + constant $ risk     evals 27 pass 21 nopay 10 | pays 47 (0.49/mo) $66,475 net $54,445 | 1st 78d | gap med 29 p90 156 max 242 | mo paid 41% | worst12 $651 med12 $6,973
+      by year {2018: 1765, 2019: 4397, 2020: 6973, 2021: 2199, 2022: 10821, 2023: 5915, 2024: 15579, 2025: 18827, 2026: 0}
