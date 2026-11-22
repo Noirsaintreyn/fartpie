@@ -838,3 +838,15 @@ HIGH first | LOW first (CAGR/DD/Sharpe; train | test CAGR): vol20 14.0/-27.9/1.5
 
 ## Report 358 (Nov 22 2026): ATRP / Yang-Zhang / fixed-weight HAR as slot pick order, alone and mixed (live 23.6%/-23.5%/2.60; train 33.8 | test 17.5)
 Level HIGH first | LOW first (CAGR/Sharpe; train | test CAGR): ATRP 12.7/1.40 (35.0|0.6) | 16.7/2.04 (29.5|9.3); YZ20 14.8/1.63 (34.9|3.6) | 19.2/2.32 (29.7|13.0); HAR 18.4/1.98 (33.1|10.1) | 19.6/2.34 (30.2|13.3). Relative to own 252d median: ATRP 23.1/2.48/DD -19.1 (36.1|15.5) | 19.7/2.30 (35.4|10.7); YZ 16.7/1.93 | 17.9/2.06; HAR 17.2/1.92 | 15.0/1.79. Mixes (percentile mean): M1 ATRP+YZ+HAR 15.1/1.65 | 17.4/2.12; M2 +ratio 18.3/1.98 | 15.8/1.91; M3 relative vols + ratio 21.1/2.30 (31.2|15.1) | 15.4/1.81. No volatility ordering beats the ratio order: high-vol-first wins the train half (35-36%) and collapses in 2022-26 (0.6-4%), calm-first is lower in both halves; best is relative ATRP high-first, a drawdown cut (-19%) at the same CAGR with a lower test half (15.5 vs 17.5): not admitted. Mixing adds nothing because each member points the same way as the era effect.
+
+## Report 359 (Nov 22 2026): 115-feature brute-force rank-IC scan
+27 features pass FDR + test (0.03 expected by luck), all volatility/drawdown family (vol60, vol250, idio60, dd120, atrp, range20). They raise hit rate, not the book's heavy-tail mean. NOT admitted.
+
+## Report 360 (Nov 22 2026): 228 pick-order books vs 200 random-order null
+Live order 23.6% / -23.5% / Sharpe 2.60 (train 33.8 | test 17.5). Null p95 CAGR 23.0%. 3 of 228 beat live in both halves (updown20 HIGH, rel_sector20 HIGH, b_rvol LOW); ~11 expected above a 95th line by luck, so nothing admitted. Live order stays.
+
+## Report 361 (Nov 22 2026): advanced statistics (xs/report_361_advanced_stats.py, 361b_score_gate.py)
+A. Block bootstrap (21d) of the live book: CAGR 90% range 10.4-37.7%, maxDD -35.2 to -14.0%, Sharpe 1.20-4.05; P(CAGR<0) 0.1%, P(DD<-30%) 13.4%, P(DD<-40%) 1.8%. Trade mean +0.276%, month-clustered 90% range +0.16 to +0.40%.
+B. Extreme values: Hill alpha 2.1-2.4, GPD xi 0.35; top 5% of trades = 54% of gross profit; mean trade with top 1% removed +0.03%, top 5% removed -0.37%. The edge IS the right tail.
+C. Empirical-Bayes name shrinkage as pick order: 16.7% / Sharpe 1.88 (test 8.9%) - fails. Name means 2019-21 vs 2022-26 Spearman 0.23 (p 0.27, 25 names).
+D. Big-winner logistic (train <2022, judged 2022+): TEST AUC 0.60-0.61, top-decile mean +0.77% vs +0.22% (t 2.9), P(+5%) 13.9% vs 6.4%. Real out-of-sample tail predictability, but as book pick order test CAGR 6.9% vs live 17.5%; as a gate (6 test-half looks, non-monotone: 9.4/14.5/21.0/17.3% at 40/50/60/80th pct) no clean effect. NOT admitted; candidate for forward pre-registration only (score trained on 2019-21, frozen).
