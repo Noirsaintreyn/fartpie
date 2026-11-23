@@ -894,3 +894,7 @@ Only 26% confirm, median lag 2 bars. Confirm-entry mean +0.30% (win 36%) vs all 
 ## 374 Vector Quant Research Suite confirmations (Nov 22 2026)
 DC leg, CUSUM, semivariance, change-point proxy, noise-RSI, and count>=3, evaluated at the flip bar on the 12,360 live flips (no look-ahead), aligned vs not.
 Result: no admission. Only CUSUM has same-sign diffs (train +0.36pts t 2.2, test +0.01 t 0.1): the declared rule technically passes but the test effect is zero, so it is NOT admitted. DC, semivariance, change-point, RSI, count: signs flip between halves, |t|<1.5 mostly. Flags are mostly always-on (semi 74%, RSI 74%, CUSUM 63%), so they carry little information.
+
+## 375 Outside list of 'room to run' conditions on the 12,360 large-cap flips (Nov 22 2026)
+Volatility transition (VT), its change, first-expansion flag, variance ratio 4/16, efficiency shock, tail imbalance, volatility memory; two-sided terciles on train, week-clustered t.
+Result: 0 SOLID, 0 WEAK by the declared rule. VT flips sign across halves (train +0.59pp t +2.8 | test -0.20pp t -1.8): variance expansion helped in 2019-21 and hurts in 2022+, a regime reversal, not a filter. Others |t|<=1.6 with mixed signs. Already covered earlier: survival (96/98), variance ratio (138/179), change point and semivariance (374).
