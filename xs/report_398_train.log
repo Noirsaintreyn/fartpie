@@ -1,0 +1,26 @@
+windows (31105, 64, 7) train 9658 test2018 2957 test2022-26 18490
+  seed 1: epochs 6, best val IC +0.008
+  seed 2: epochs 5, best val IC +0.011
+  seed 3: epochs 10, best val IC +0.037
+real model trained
+  seed 11: epochs 7, best val IC -0.029
+  seed 12: epochs 5, best val IC -0.018
+control trained
+
+== TRAIN (in-sample, for reference)
+MODEL all flips                    n   9658 | IC +0.031 (weekly IC t +0.1) | top +0.51% bot +0.18% diff +0.33pp t +2.9 | AUC 0.532
+CONTROL(shuffled) all flips        n   9658 | IC -0.010 (weekly IC t -0.6) | top +0.37% bot +0.34% diff +0.02pp t +0.2 | AUC 0.533
+MODEL gated ratio>=1.5             n   2965 | IC +0.037 (weekly IC t -0.4) | top +0.53% bot +0.41% diff +0.12pp t +0.6 | AUC 0.535
+CONTROL(shuffled) gated ratio>=1.5 n   2965 | IC -0.002 (weekly IC t -0.7) | top +0.39% bot +0.43% diff -0.04pp t -0.2 | AUC 0.542
+
+== 2018 held-out
+MODEL all flips                    n   2957 | IC -0.017 (weekly IC t -0.3) | top -0.03% bot +0.13% diff -0.16pp t -0.9 | AUC 0.489
+CONTROL(shuffled) all flips        n   2957 | IC -0.043 (weekly IC t -0.8) | top -0.01% bot +0.05% diff -0.06pp t -0.4 | AUC 0.501
+MODEL gated ratio>=1.5             n    341 | IC +0.015 (weekly IC t +nan) | top +0.44% bot -0.55% diff +0.99pp t +1.7 | AUC 0.498
+CONTROL(shuffled) gated ratio>=1.5 n    341 | IC +0.036 (weekly IC t +nan) | top +0.17% bot -0.87% diff +1.04pp t +2.2 | AUC 0.544
+
+== 2022-26 test
+MODEL all flips                    n  18490 | IC -0.001 (weekly IC t -0.8) | top +0.27% bot +0.07% diff +0.20pp t +2.0 | AUC 0.518
+CONTROL(shuffled) all flips        n  18490 | IC -0.015 (weekly IC t -0.7) | top +0.19% bot +0.11% diff +0.08pp t +0.8 | AUC 0.526
+MODEL gated ratio>=1.5             n   9000 | IC -0.002 (weekly IC t -0.9) | top +0.34% bot +0.17% diff +0.17pp t +1.4 | AUC 0.519
+CONTROL(shuffled) gated ratio>=1.5 n   9000 | IC -0.019 (weekly IC t -0.9) | top +0.28% bot +0.22% diff +0.05pp t +0.5 | AUC 0.526
