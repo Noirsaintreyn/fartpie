@@ -1,0 +1,22 @@
+pool names with a leadership series: 166 of 168
+rows with LEAD: 37852 (S&P share 58%; share of S&P rows with LEAD>=0.5: 78%; of non-S&P: 41%)
+
+== TRADE LEVEL (gated cells), mean flip return, train | test
+  gate, S&P      top-third lead n  7710 | train +0.35% (n 1396) | test +0.29% (n 6314)
+  gate, S&P      lower lead     n  4616 | train +0.57% (n 1371) | test +0.04% (n 3245)
+  gate, not S&P  top-third lead n  2713 | train +0.27% (n 994) | test +0.17% (n 1719)
+  gate, not S&P  lower lead     n  5579 | train +0.69% (n 1425) | test +0.11% (n 4154)
+  OLS train [SP + GATE + SP:GATE]: SP:GATE +0.08 (t +0.3)
+  OLS train [L3 + GATE + L3:GATE]: L3:GATE -0.27 (t -1.5)
+  OLS train [SP + L3 + GATE + SP:GATE + L3:GATE]: SP:GATE +0.10 (t +0.5) | L3:GATE -0.30 (t -1.7)
+  OLS test [SP + GATE + SP:GATE]: SP:GATE +0.28 (t +2.5)
+  OLS test [L3 + GATE + L3:GATE]: L3:GATE +0.32 (t +2.8)
+  OLS test [SP + L3 + GATE + SP:GATE + L3:GATE]: SP:GATE +0.19 (t +1.6) | L3:GATE +0.25 (t +2.2)
+
+== PORTFOLIO, common pool (ratio >= 1.5 always)
+  gate only                      flips 20618 trades  4788 | CAGR  19.7% DD  -43.8% Sh 1.47 | 2019-21  67.8% Sh 4.65 | 2022-26  -3.3% Sh -0.18
+  gate + S&P (live filter)       flips 12326 trades  4252 | CAGR  23.7% DD  -23.5% Sh 2.61 | 2019-21  33.8% Sh 4.15 | 2022-26  17.7% Sh 1.86
+  gate + LEAD >= 0.50            flips 13157 trades  4369 | CAGR  18.4% DD  -30.8% Sh 1.86 | 2019-21  40.6% Sh 4.05 | 2022-26   6.2% Sh 0.66
+  gate + LEAD >= 0.67            flips 10287 trades  4102 | CAGR  15.3% DD  -39.5% Sh 1.60 | 2019-21  23.3% Sh 2.53 | 2022-26  10.6% Sh 1.09
+  gate + LEAD >= 0.75            flips  8478 trades  3912 | CAGR  20.9% DD  -25.8% Sh 2.13 | 2019-21  27.9% Sh 3.07 | 2022-26  16.7% Sh 1.64
+  gate + S&P + LEAD >= 0.5       flips  9561 trades  4036 | CAGR  16.3% DD  -23.5% Sh 1.93 | 2019-21  22.9% Sh 3.20 | 2022-26  12.4% Sh 1.37
