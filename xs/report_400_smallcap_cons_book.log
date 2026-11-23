@@ -1,0 +1,17 @@
+trades 50793 merged sub5 30990
+BASE                   train 19-21 CAGR  -46.1% mdd -85.5% n=3400 | test 22-26 CAGR  -35.2% mdd -90.4% n=5682
+GATE Cany              train 19-21 CAGR  -44.8% mdd -84.7% n=3133 | test 22-26 CAGR  -26.2% mdd -82.9% n=5449
+GATE C15m&C1h          train 19-21 CAGR    9.4% mdd -13.9% n=885 | test 22-26 CAGR  -11.7% mdd -50.9% n=2204
+GATE Sany              train 19-21 CAGR    1.8% mdd -17.5% n=561 | test 22-26 CAGR  -19.3% mdd -67.2% n=1731
+ANTI-GATE (no cons)    train 19-21 CAGR  -33.2% mdd -75.3% n=2050 | test 22-26 CAGR  -38.8% mdd -92.5% n=4158
+PRIORITY cons-first    train 19-21 CAGR  -43.6% mdd -83.3% n=3394 | test 22-26 CAGR  -28.3% mdd -82.3% n=5667
+
+Per-trade mean net (bp) and t, by flag:
+  train 19-21 all      n=  8429 mean   -23.6bp t -3.24
+  train 19-21 Cany     n=  6151 mean   -15.0bp t -1.74
+  train 19-21 no cons  n=  2278 mean   -47.0bp t -3.42
+  train 19-21 Sany     n=   562 mean    16.3bp t  0.45
+  test 22-26 all      n= 22561 mean   -23.0bp t -5.21
+  test 22-26 Cany     n= 17191 mean   -17.0bp t -3.22
+  test 22-26 no cons  n=  5370 mean   -42.1bp t -5.50
+  test 22-26 Sany     n=  1745 mean   -45.6bp t -3.29
