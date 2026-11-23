@@ -890,3 +890,7 @@ Why: published results rest on small/mid-cap, high-vol names and cheap-cost assu
 ## 373 Post-flip confirmation indicator (Nov 22 2026)
 Rey's Pine (wait 2-10 bars, 2 closes > flip high+0.05ATR, progress>=0.5ATR, efficiency>=0.55, adverse<=0.5ATR). 29,288 bull flips (all 54 names, unfiltered by b302 gates), 4bp.
 Only 26% confirm, median lag 2 bars. Confirm-entry mean +0.30% (win 36%) vs all flips at flip entry +0.22% (win 29%): train +0.34 vs +0.30, test +0.27 vs +0.16. The 'confirmed vs unconfirmed' gap at the ORIGINAL entry (+1.1 / +1.35 pts, t 10-13) is look-ahead (confirmation is defined by the future path) and not admissible. Tradable comparison is only the small per-trade gain with 74% fewer trades; needs a slot-book test.
+
+## 374 Vector Quant Research Suite confirmations (Nov 22 2026)
+DC leg, CUSUM, semivariance, change-point proxy, noise-RSI, and count>=3, evaluated at the flip bar on the 12,360 live flips (no look-ahead), aligned vs not.
+Result: no admission. Only CUSUM has same-sign diffs (train +0.36pts t 2.2, test +0.01 t 0.1): the declared rule technically passes but the test effect is zero, so it is NOT admitted. DC, semivariance, change-point, RSI, count: signs flip between halves, |t|<1.5 mostly. Flags are mostly always-on (semi 74%, RSI 74%, CUSUM 63%), so they carry little information.
