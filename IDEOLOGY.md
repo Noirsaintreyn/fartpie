@@ -902,3 +902,7 @@ Result: 0 SOLID, 0 WEAK by the declared rule. VT flips sign across halves (train
 ## 376 Lead-Lag Propagation Index (LLPI), multi-symbol OHLC (Nov 22 2026)
 Market residual (rolling beta vs SPY), sector residual (peers among the 54), delayed transmission theta (500-bar rolling lag-1 slope), PROP = theta x last-3-bar sector shock; plus THETA, SECRUN, STKRES, MKTRUN. 11,774 flips (SPY 15m ends Aug 15 2026), outcomes raw and beta-hedged, two-sided terciles on train.
 Result: 0 SOLID, 0 WEAK of 10. All |t|<=1.7, signs mixed between halves. The transmission itself is absent at 15m: mean theta 0.007, positive in 52% of names-bars in both halves (coin flip), so there is no delayed sector-to-stock propagation to condition on. Stock-specific run-up (STKRES) leans negative in both halves for the hedged residual (t -1.1 | -1.7): residual-dominated run-ups are slightly worse, not better; untested beyond that.
+
+## 377 Cross-Market Propagation Index (CMPI) (Nov 22 2026)
+Outside proposal: stock return predicted from lagged SPY and lagged sector residual (rolling univariate slopes), normalised, atan-bounded; sector ETFs not in cache so sector = peers among the 54. MKTC, SECC, CMPI, acceleration, CMPI>50, raw and beta-hedged, 11,774 flips.
+Result: 0 SOLID, 0 WEAK of 10 (all |t|<=1.9, mixed signs). Combined CMPI does not appear where components do not (CMPI diff +0.02 / +0.05, t 0.1 / 0.5). Predicted contributions average 0.075-0.078 sd per bar: the lagged cross-market information is nearly nil at 15m, same finding as LLPI (376).
