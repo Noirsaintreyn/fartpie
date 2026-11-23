@@ -886,3 +886,7 @@ Research: Baltussen et al (intraday momentum strong on negative net-gamma days, 
 Declared: Zarattini-style ORB (stocks in play, bar0 colour, stop at bar0 extreme, exit 15:45) and Concretum noise band (14d noise, VWAP filter) on the 54 names, 15m, 4bp round trip. Pass = mean>0 and sleeve Sharpe>1 both halves, corr(vector)<0.3.
 Result: FAIL. ORB long-only +0.3bp train / +4.6bp test per trade, sleeve Sharpe 0.25 / 0.46, DD -11%, corr +0.15; 8bp costs erase it. Long+short negative in train. Noise band loses in both halves (-3 / -5bp, win 28%), even gross it is ~2bp. 50/50 blends with the vector are below vector alone (1.84, 1.33 vs 2.60).
 Why: published results rest on small/mid-cap, high-vol names and cheap-cost assumptions; on liquid mega-caps opening range is already efficiently priced. Low correlation to vector is real but there is no edge to diversify with.
+
+## 373 Post-flip confirmation indicator (Nov 22 2026)
+Rey's Pine (wait 2-10 bars, 2 closes > flip high+0.05ATR, progress>=0.5ATR, efficiency>=0.55, adverse<=0.5ATR). 29,288 bull flips (all 54 names, unfiltered by b302 gates), 4bp.
+Only 26% confirm, median lag 2 bars. Confirm-entry mean +0.30% (win 36%) vs all flips at flip entry +0.22% (win 29%): train +0.34 vs +0.30, test +0.27 vs +0.16. The 'confirmed vs unconfirmed' gap at the ORIGINAL entry (+1.1 / +1.35 pts, t 10-13) is look-ahead (confirmation is defined by the future path) and not admissible. Tradable comparison is only the small per-trade gain with 74% fewer trades; needs a slot-book test.
