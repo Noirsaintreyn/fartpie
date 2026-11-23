@@ -1,0 +1,4 @@
+F1 same-name last-3 mean return            train: hi +0.27% lo +0.53% diff -0.26pp t -1.2 (n 1796) | test: hi +0.32% lo +0.15% diff +0.16pp t +1.4 (n 6651)
+F2 same-name last flip win                 train: hi +0.36% lo +0.50% diff -0.14pp t -0.7 (n 2742) | test: hi +0.27% lo +0.19% diff +0.07pp t +0.8 (n 9564)
+F3 cross-section last-30 mean return       train: hi +0.21% lo +0.63% diff -0.43pp t -1.4 (n 1827) | test: hi +0.21% lo +0.31% diff -0.09pp t -0.6 (n 6823)
+F4 cross-section last-30 win rate          train: hi +0.30% lo +0.56% diff -0.26pp t -0.9 (n 2148) | test: hi +0.18% lo +0.22% diff -0.04pp t -0.3 (n 7583)
