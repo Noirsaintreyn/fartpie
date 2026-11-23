@@ -1,0 +1,11 @@
+equal-weight 54                      all   with top5 CAGR  28.0% Sh 1.11 | without  28.0% Sh 1.10 | CAGR lost 0%
+equal-weight 54                      train with top5 CAGR  44.9% Sh 1.52 | without  44.6% Sh 1.53 | CAGR lost 1%
+equal-weight 54                      test  with top5 CAGR  18.5% Sh 0.82 | without  18.6% Sh 0.82 | CAGR lost -1%
+dollar-volume-weight 54 (cap proxy)  all   with top5 CAGR  23.3% Sh 0.88 | without  23.4% Sh 0.87 | CAGR lost -1%
+dollar-volume-weight 54 (cap proxy)  train with top5 CAGR  35.6% Sh 1.25 | without  37.5% Sh 1.31 | CAGR lost -5%
+dollar-volume-weight 54 (cap proxy)  test  with top5 CAGR  16.2% Sh 0.66 | without  15.4% Sh 0.63 | CAGR lost 5%
+SPY buy&hold all   CAGR 15.6% Sh 0.87
+SPY buy&hold test  CAGR 10.8% Sh 0.71
+QQQ buy&hold all   CAGR 22.4% Sh 0.97
+QQQ buy&hold test  CAGR 14.1% Sh 0.69
+vector book (report 384): with top5 23.6% Sh 2.60 | without 14.4% Sh 1.75 | CAGR lost 39%
