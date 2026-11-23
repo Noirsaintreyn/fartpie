@@ -1,0 +1,10 @@
+WMT 12054
+WYNN 12360
+matched 12360 of 12360
+
+LABEL: rejection rate train 38.3% test 39.6%; mean flip return REJ vs BRK: train -0.51% vs +1.06% | test -0.56% vs +0.73%
+T1 prior tests of level (bear run) train: REJ hi 38% lo 37% | ret diff -0.00pp t -0.0 (n 2073) | test: REJ hi 39% lo 41% | ret diff +0.05pp t +0.4 (n 7274)
+T2 prior tests, last 30 bars       train: REJ hi 39% lo 37% | ret diff +0.15pp t +1.0 (n 2357) | test: REJ hi 38% lo 41% | ret diff +0.04pp t +0.4 (n 8227)
+A1 close location in flip bar      train: REJ hi 38% lo 41% | ret diff -0.06pp t -0.3 (n 1808) | test: REJ hi 40% lo 41% | ret diff -0.05pp t -0.5 (n 6285)
+A2 flip-bar body / ATR             train: REJ hi 33% lo 42% | ret diff +0.19pp t +1.0 (n 1846) | test: REJ hi 37% lo 43% | ret diff -0.16pp t -1.4 (n 6507)
+A3 upper-wick fraction             train: REJ hi 41% lo 38% | ret diff +0.06pp t +0.3 (n 1808) | test: REJ hi 41% lo 40% | ret diff +0.05pp t +0.5 (n 6285)
