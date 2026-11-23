@@ -1,0 +1,48 @@
+amd flags matched 100.0%
+windows (78429, 64, 9) train 26940 (A 9658, B 17282)
+  cnn seed 1: epochs 7, best val IC +0.057
+  cnn seed 2: epochs 7, best val IC +0.052
+  cnn seed 3: epochs 11, best val IC +0.060
+  lstm seed 1: epochs 5, best val IC +0.064
+  lstm seed 2: epochs 5, best val IC +0.081
+  lstm seed 3: epochs 5, best val IC +0.090
+  gb: best iters 297, val IC +0.067
+  cnn seed 11: epochs 6, best val IC +0.018
+  cnn seed 12: epochs 8, best val IC +0.012
+  gb: best iters 10, val IC +0.011
+scores saved
+
+== A 2018 (held out)
+    M1 CNN                   n   2957 | IC -0.054 (wk t -1.2) | top -0.07% bot +0.16% diff -0.23pp t -1.1 | AUC 0.487
+    M2 CNN-BiLSTM            n   2957 | IC +0.057 (wk t +1.1) | top +0.06% bot -0.04% diff +0.10pp t +0.5 | AUC 0.491
+    M3 GBM                   n   2957 | IC -0.085 (wk t -1.7) | top -0.05% bot +0.07% diff -0.12pp t -0.7 | AUC 0.472
+    CTRL M1                  n   2957 | IC +0.053 (wk t +0.5) | top +0.18% bot -0.25% diff +0.43pp t +2.5 | AUC 0.516
+    CTRL M3                  n   2957 | IC +0.005 (wk t +1.5) | top +0.09% bot -0.01% diff +0.10pp t +0.6 | AUC 0.498
+
+== A 2022-26
+    M1 CNN                   n  17108 | IC -0.053 (wk t -3.1) | top +0.18% bot +0.08% diff +0.10pp t +0.9 | AUC 0.508
+    M2 CNN-BiLSTM            n  17108 | IC -0.028 (wk t -3.4) | top +0.04% bot +0.28% diff -0.24pp t -2.3 | AUC 0.475
+    M3 GBM                   n  17108 | IC -0.025 (wk t -1.9) | top +0.28% bot +0.12% diff +0.17pp t +1.8 | AUC 0.519
+    CTRL M1                  n  17108 | IC -0.002 (wk t -2.4) | top +0.15% bot +0.18% diff -0.03pp t -0.3 | AUC 0.502
+    CTRL M3                  n  17108 | IC -0.001 (wk t -1.4) | top +0.15% bot +0.18% diff -0.03pp t -0.2 | AUC 0.495
+
+== A 2022-26 gated ratio>=1.5
+    M1 CNN                   n   8400 | IC -0.043 (wk t -1.2) | top +0.24% bot +0.21% diff +0.04pp t +0.4 | AUC 0.506
+    M2 CNN-BiLSTM            n   8400 | IC +0.010 (wk t +2.3) | top +0.19% bot +0.35% diff -0.15pp t -1.2 | AUC 0.475
+    M3 GBM                   n   8400 | IC -0.008 (wk t -0.1) | top +0.40% bot +0.20% diff +0.19pp t +1.5 | AUC 0.519
+    CTRL M1                  n   8400 | IC +0.028 (wk t +0.1) | top +0.30% bot +0.26% diff +0.04pp t +0.4 | AUC 0.499
+    CTRL M3                  n   8400 | IC +0.002 (wk t -1.1) | top +0.27% bot +0.21% diff +0.06pp t +0.4 | AUC 0.496
+
+== B 2022-26 all
+    M1 CNN                   n  31424 | IC +0.004 (wk t +0.2) | top +0.12% bot +0.04% diff +0.09pp t +0.8 | AUC 0.513
+    M2 CNN-BiLSTM            n  31424 | IC +0.013 (wk t +1.1) | top +0.08% bot +0.16% diff -0.08pp t -0.8 | AUC 0.482
+    M3 GBM                   n  31424 | IC +0.005 (wk t +0.7) | top +0.14% bot +0.01% diff +0.13pp t +1.4 | AUC 0.503
+    CTRL M1                  n  31424 | IC +0.009 (wk t +1.9) | top +0.15% bot +0.04% diff +0.11pp t +1.1 | AUC 0.496
+    CTRL M3                  n  31424 | IC +0.001 (wk t +0.5) | top +0.10% bot +0.19% diff -0.09pp t -0.8 | AUC 0.494
+
+== B 2022-26 px<$5 (book)
+    M1 CNN                   n  21545 | IC +0.008 (wk t +0.1) | top +0.22% bot +0.11% diff +0.11pp t +0.9 | AUC 0.520
+    M2 CNN-BiLSTM            n  21545 | IC +0.012 (wk t +0.4) | top +0.14% bot +0.30% diff -0.16pp t -1.2 | AUC 0.486
+    M3 GBM                   n  21545 | IC +0.004 (wk t +0.1) | top +0.19% bot +0.10% diff +0.09pp t +0.8 | AUC 0.505
+    CTRL M1                  n  21545 | IC +0.008 (wk t +1.5) | top +0.25% bot +0.07% diff +0.18pp t +1.5 | AUC 0.493
+    CTRL M3                  n  21545 | IC +0.005 (wk t +1.2) | top +0.21% bot +0.23% diff -0.02pp t -0.2 | AUC 0.494
