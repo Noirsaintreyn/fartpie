@@ -1,0 +1,26 @@
+LIVE (locked benchmark)    trades 4253 CAGR  23.6% DD  -23.5% Sh 2.60 | 2019-21  33.8% Sh 4.15 | 2022-26  17.5% Sh 1.85
+
+== PART A: taken vs skipped flips (full-vector return, per flip)
+  all   taken n 4253 mean +0.32% win 31% | skipped n 8067 mean +0.25% win 31% | gap +0.06pp
+  train taken n 1453 mean +0.45% win 32% | skipped n 1314 mean +0.46% win 34% | gap -0.01pp
+  test  taken n 2800 mean +0.24% win 31% | skipped n 6753 mean +0.21% win 31% | gap +0.03pp
+  days with both a taken and a skipped flip, train: n 322 | mean taken +0.66% | mean skipped +0.32% | best skipped +2.29% | taken beats skipped mean on 57% of days
+  days with both a taken and a skipped flip, test: n 812 | mean taken +0.49% | mean skipped +0.16% | best skipped +3.91% | taken beats skipped mean on 52% of days
+  most-skipped names (skip rate, n flips): [[0.95, 74.0], [0.92, 142.0], [0.91, 70.0], [0.9, 101.0], [0.88, 17.0], [0.87, 78.0], [0.86, 95.0], [0.84, 81.0]] ['ABNB', 'ORCL', 'LULU', 'C', 'GEV', 'COIN', 'OXY', 'SBUX']
+  skipped flips with return > +3%: 983 of 8067 skipped (12.2%); taken flips > +3%: 12.4%
+
+== PART B: ranking variants (identical flips, filters, slots, breaker)
+ratio high first           trades 4253 CAGR  23.6% DD  -23.5% Sh 2.60 | 2019-21  33.8% Sh 4.15 | 2022-26  17.5% Sh 1.85
+ratio low first            trades 4288 CAGR  16.9% DD  -23.9% Sh 1.99 | 2019-21  34.6% Sh 4.30 | 2022-26   7.0% Sh 0.82
+ldv high (leadership)      trades 4215 CAGR  20.6% DD  -22.8% Sh 2.25 | 2019-21  30.7% Sh 3.91 | 2022-26  14.6% Sh 1.51
+ldv low                    trades 4289 CAGR  14.5% DD  -25.7% Sh 1.70 | 2019-21  30.2% Sh 3.77 | 2022-26   5.7% Sh 0.67
+brank only                 trades 4288 CAGR  16.9% DD  -23.9% Sh 1.99 | 2019-21  34.6% Sh 4.30 | 2022-26   7.0% Sh 0.82
+alphabetical               trades 4394 CAGR  15.7% DD  -23.2% Sh 1.82 | 2019-21  27.9% Sh 3.73 | 2022-26   8.6% Sh 0.95
+random order x40           Sharpe median 2.05 [5% 1.63, 95% 2.47] | train Sh median 4.08 | test Sh median 1.00 | CAGR median 18.1%
+live Sharpe percentile among random orders: 98% (train 65%, test 98%)
+  ratio high first         beats live in both halves: False
+  ratio low first          beats live in both halves: False
+  ldv high (leadership)    beats live in both halves: False
+  ldv low                  beats live in both halves: False
+  brank only               beats live in both halves: False
+  alphabetical             beats live in both halves: False
