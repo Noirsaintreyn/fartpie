@@ -1,0 +1,16 @@
+UPS 8410
+WMT 8634
+WYNN 8855
+rows 8855 of 12360
+
+yes = condition true / low position third, no = condition false / high third
+P1 SWEEP_PDL (+)                   train: yes +0.29% (n 671) no +0.62% (n 1324) diff -0.33pp t -1.9 | test: yes +0.23% (n 2302) no +0.19% (n 4558) diff +0.04pp t +0.3
+P2 SWEEP_OR reclaimed (+)          train: yes +0.00% (n 380) no +0.35% (n 856) diff -0.35pp t -1.7 | test: yes +0.43% (n 1216) no +0.13% (n 2820) diff +0.29pp t +1.9
+P3 low third vs high third (+)     train: yes +0.34% (n 665) no +0.41% (n 665) diff -0.07pp t -0.3 | test: yes +0.21% (n 2512) no +0.17% (n 2205) diff +0.04pp t +0.4
+P4 FIRST30 vs later (-)            train: yes +0.94% (n 759) no +0.24% (n 1236) diff +0.70pp t +2.8 | test: yes +0.17% (n 2824) no +0.22% (n 4036) diff -0.05pp t -0.5
+P5 WEEKLY sweep+above open (+)     train: yes +0.36% (n 329) no +0.54% (n 1666) diff -0.18pp t -0.6 | test: yes +0.16% (n 1350) no +0.21% (n 5510) diff -0.05pp t -0.3
+P6 TEXTBOOK distribution (+)       train: yes +0.14% (n 722) no +0.72% (n 1273) diff -0.58pp t -2.8 | test: yes +0.30% (n 2478) no +0.15% (n 4382) diff +0.15pp t +1.2
+
+Descriptive mean flip return %% by weekday (train | test): Mon +0.85|+0.05 Tue +0.28|+0.47 Wed +0.23|+0.03 Thu +0.73|+0.18 Fri +0.49|+0.27
+by flip hour (train | test): 9:+0.94|+0.17 10:+0.29|+0.13 11:+0.21|+0.31 12:+0.21|+0.08 13:+0.19|+0.48 15:+0.24|+0.38
+shares of flips: P1 34%, P2 30% (of >=10:00), P4 40%, P5 19%, P6 36%
