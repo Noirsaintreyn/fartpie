@@ -898,3 +898,7 @@ Result: no admission. Only CUSUM has same-sign diffs (train +0.36pts t 2.2, test
 ## 375 Outside list of 'room to run' conditions on the 12,360 large-cap flips (Nov 22 2026)
 Volatility transition (VT), its change, first-expansion flag, variance ratio 4/16, efficiency shock, tail imbalance, volatility memory; two-sided terciles on train, week-clustered t.
 Result: 0 SOLID, 0 WEAK by the declared rule. VT flips sign across halves (train +0.59pp t +2.8 | test -0.20pp t -1.8): variance expansion helped in 2019-21 and hurts in 2022+, a regime reversal, not a filter. Others |t|<=1.6 with mixed signs. Already covered earlier: survival (96/98), variance ratio (138/179), change point and semivariance (374).
+
+## 376 Lead-Lag Propagation Index (LLPI), multi-symbol OHLC (Nov 22 2026)
+Market residual (rolling beta vs SPY), sector residual (peers among the 54), delayed transmission theta (500-bar rolling lag-1 slope), PROP = theta x last-3-bar sector shock; plus THETA, SECRUN, STKRES, MKTRUN. 11,774 flips (SPY 15m ends Aug 15 2026), outcomes raw and beta-hedged, two-sided terciles on train.
+Result: 0 SOLID, 0 WEAK of 10. All |t|<=1.7, signs mixed between halves. The transmission itself is absent at 15m: mean theta 0.007, positive in 52% of names-bars in both halves (coin flip), so there is no delayed sector-to-stock propagation to condition on. Stock-specific run-up (STKRES) leans negative in both halves for the hedged residual (t -1.1 | -1.7): residual-dominated run-ups are slightly worse, not better; untested beyond that.
