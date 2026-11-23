@@ -1,0 +1,5 @@
+BASE vs live b302 reference: 4253 trades CAGR 23.6% Sharpe 2.60 (train 4.15 | test 1.85)
+BASE  flips(all)  31170 gated 11936 trades 4338 | flip mean train +0.43% test +0.25% | CAGR  26.4% DD  -21.4% Sh 2.71 | 2019-21  47.0% Sh 4.47 | 2022-26  14.9% Sh 1.62
+k1    flips(all)  46171 gated 17853 trades 6486 | flip mean train +0.23% test +0.17% | CAGR  14.5% DD  -28.1% Sh 1.29 | 2019-21  39.2% Sh 3.19 | 2022-26   1.2% Sh 0.17
+k2    flips(all)  32853 gated 12434 trades 4478 | flip mean train +0.41% test +0.23% | CAGR  19.6% DD  -20.5% Sh 2.03 | 2019-21  36.0% Sh 3.65 | 2022-26  10.3% Sh 1.09
+k3    flips(all)  25591 gated  9700 trades 3635 | flip mean train +0.48% test +0.29% | CAGR  16.8% DD  -21.3% Sh 1.94 | 2019-21  40.8% Sh 4.46 | 2022-26   3.8% Sh 0.49
