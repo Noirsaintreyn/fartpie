@@ -1099,3 +1099,6 @@ webull_feed.py (read-only): batch 15m bars + snapshot prices. live_screener.py p
 
 ## Nov 24 2026: chart-only alerts, neg-gamma channel, ratio staleness
 CHART_ONLY=1 (default): a closed-bar BUY/SELL posts only chart_min (15m candles by vector state, vector level, EMA50/200, no text); a mid-bar touch posts the same chart with one line "touched the vector - wait till the close". NEGGAMMA_WEBHOOK_URL / NEGGAMMA_CHANNEL_ID routes 15m flips whose 20d ratio >= 2 and live/neg_gamma.json net_gex < 0 to a separate channel (gamma logger still to build). Ratio staleness cause: tools/ibkr_optvol.py gets IBKR error 10197 (competing live session) -> 0/573 names -> "ratio not refreshed"; live_screener now warns when the file is > RATIO_WARN_DAYS old.
+
+## Report 434 (Nov 24 2026): LVN pass-through and move shape on 15m flips (25 names, 13,029 trades; primary = G20-gated, 5,992)
+H1 thin vs heavy volume overhead (prior-5-session profile): +0.07pp, t +0.6; train +0.17 / test +0.02; no pass. H2a signed-volume support: -0.19pp, t -1.3 (wrong sign in 2020-22); no. H2b expanding vs tapering volume: +0.14pp, t +1.2, win 32.7 vs 27.0 (5-6 pts, same in the ungated arm) but mean/median barely move; same sign train/test, below the 2.4 bar; lead only. 25 names, not 33: 15m cache missing for 8. Exits X1 only; post-entry taper-as-exit not tested.

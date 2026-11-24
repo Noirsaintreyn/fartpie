@@ -1,0 +1,36 @@
+names 25
+13029 trades; 5992 gated
+
+=== PRIMARY: G20-gated flips  (n 5992, win 30.9, med -0.57, mean 0.29) ===
+  H1 THIN overhead (<=0.5) vs HEAVY (>=1.0): predict THIN better
+    better-side n 1799 win 33.5 med -0.53 mean  0.37
+    worse-side  n 2278 win 30.8 med -0.55 mean  0.30
+    contrast +0.07pp  month-clustered t +0.55  |  train +0.17pp (t +0.9, n 582/726)  |  test +0.02pp (t +0.1, n 1217/1552)
+    by era:  18-19 +0.15pp (n 238/250)  20-21 +0.14pp (n 404/549)  22 -0.23pp (n 155/267)  23-26 +0.07pp (n 1002/1212)
+  H2a SUPPORTED (>=+0.10) vs UNSUPPORTED (<=-0.10): predict SUPPORTED better
+    better-side n 3767 win 31.1 med -0.58 mean  0.28
+    worse-side  n 1175 win 33.2 med -0.51 mean  0.47
+    contrast -0.19pp  month-clustered t -1.32  |  train -0.56pp (t -1.8, n 1153/371)  |  test -0.01pp (t -0.1, n 2614/804)
+    by era:  18-19 +0.03pp (n 423/152)  20-21 -0.76pp (n 842/279)  22 -0.48pp (n 406/105)  23-26 +0.07pp (n 2096/639)
+  H2b EXPANDING (>=1.2) vs TAPERING (<=0.8): predict EXPANDING better
+    better-side n 3676 win 32.7 med -0.59 mean  0.33
+    worse-side  n 1435 win 27.0 med -0.57 mean  0.19
+    contrast +0.14pp  month-clustered t +1.22  |  train +0.22pp (t +1.1, n 1182/449)  |  test +0.10pp (t +0.7, n 2494/986)
+    by era:  18-19 -0.12pp (n 432/171)  20-21 +0.45pp (n 873/325)  22 +0.44pp (n 364/145)  23-26 +0.00pp (n 2007/794)
+
+=== ROBUSTNESS: all flips  (n 13029, win 30.0, med -0.55, mean 0.20) ===
+  H1 THIN overhead (<=0.5) vs HEAVY (>=1.0): predict THIN better
+    better-side n 3961 win 31.5 med -0.55 mean  0.22
+    worse-side  n 4921 win 30.1 med -0.52 mean  0.21
+    contrast +0.01pp  month-clustered t +0.08  |  train +0.04pp (t +0.4, n 1445/1726)  |  test -0.02pp (t -0.2, n 2516/3195)
+    by era:  18-19 +0.06pp (n 727/825)  20-21 +0.08pp (n 950/1154)  22 -0.15pp (n 418/672)  23-26 -0.04pp (n 1866/2270)
+  H2a SUPPORTED (>=+0.10) vs UNSUPPORTED (<=-0.10): predict SUPPORTED better
+    better-side n 8042 win 30.4 med -0.55 mean  0.21
+    worse-side  n 2708 win 30.9 med -0.52 mean  0.26
+    contrast -0.05pp  month-clustered t -0.54  |  train -0.23pp (t -1.5, n 2781/989)  |  test +0.06pp (t +0.5, n 5261/1719)
+    by era:  18-19 +0.10pp (n 1344/494)  20-21 -0.30pp (n 1863/669)  22 -0.15pp (n 999/312)  23-26 +0.07pp (n 3836/1233)
+  H2b EXPANDING (>=1.2) vs TAPERING (<=0.8): predict EXPANDING better
+    better-side n 7829 win 31.8 med -0.58 mean  0.19
+    worse-side  n 3216 win 26.6 med -0.52 mean  0.17
+    contrast +0.02pp  month-clustered t +0.22  |  train +0.06pp (t +0.5, n 2800/1122)  |  test -0.01pp (t -0.1, n 5029/2094)
+    by era:  18-19 -0.09pp (n 1319/548)  20-21 +0.16pp (n 1882/749)  22 +0.17pp (n 932/403)  23-26 -0.06pp (n 3696/1516)
