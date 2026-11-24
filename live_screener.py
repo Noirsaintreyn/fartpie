@@ -82,11 +82,24 @@ def now_et(): return pd.Timestamp.now(tz=ET).tz_localize(None)
 LSE_SYM = {'BRKB': 'BRK.B'}; YF_SYM = {'BRKB': 'BRK-B'}                   # feed symbols for tickers stored without the class dot
 LSE_DOWN = {'on': os.getenv('LSE_ENABLED', '0') != '1'}      # Nov 12 2026: the LSE API is retired (410s since Oct 26) -> never try it unless LSE_ENABLED=1 (saved a failing call per ticker per scan)
 _YF_BATCH = {}
+WYM = {'BRKB': 'BRK.B', 'BFB': 'BF.B'}                                 # Webull symbol spelling (same as webull_watch.py)
 def prefetch_bars(tks):
     """Nov 12 2026: ONE multi-threaded Yahoo call for every ticker in the scan (was one sequential history() call per ticker = the main reason alerts were minutes late)"""
     _YF_BATCH.clear(); tks = list(tks)
     if not tks: return
     t0 = time.time()
+    try:                                                                  # Nov 24 2026: Webull market data first (Yahoo publishes closed bars late); Yahoo only fills what it misses
+        import webull_feed as WF
+        if WF.enabled():
+            B = WF.bars15([WYM.get(t, t) for t in tks]); inv0 = {WYM.get(t, t): t for t in tks}
+            for sy, df in B.items():
+                if sy in inv0 and len(df): _YF_BATCH[inv0[sy]] = WF.to_screener_frame(df)
+            print(f'  webull prefetch: {len(_YF_BATCH)}/{len(tks)} tickers in {time.time() - t0:.1f}s')
+            mm = now_et().hour * 60 + now_et().minute
+            if len(_YF_BATCH) >= 0.9 * len(tks) and RTH0 + 1 <= mm <= RTH1 + 5: return          # in RTH a full Webull batch is enough: skip the slow Yahoo call
+            tks = [t for t in tks if t not in _YF_BATCH] if RTH0 + 1 <= mm <= RTH1 + 5 else tks    # premarket: Yahoo still adds the pre-open bars
+    except Exception as e: print(f'  ! webull prefetch failed ({str(e)[:60]}); Yahoo')
+    if not tks: return
     try:
         import yfinance as yf
         syms = [YF_SYM.get(t, t) for t in tks]; inv = {YF_SYM.get(t, t): t for t in tks}
@@ -94,7 +107,7 @@ def prefetch_bars(tks):
         for sy in syms:
             try:
                 Y = (D[sy] if len(syms) > 1 else D).dropna(subset=['Close'])
-                if len(Y): _YF_BATCH[inv[sy]] = Y
+                if len(Y) and inv[sy] not in _YF_BATCH: _YF_BATCH[inv[sy]] = Y
             except Exception: pass
     except Exception as e: print(f'  ! batch prefetch failed ({str(e)[:60]}); per-ticker fallback')
     print(f'  prefetch: {len(_YF_BATCH)}/{len(tks)} tickers in {time.time() - t0:.1f}s')
@@ -174,6 +187,12 @@ def options_ratio():
     O = pd.read_csv(f, parse_dates=['date']); O = O[O.sh > 0]; O['r'] = O.opt_contracts * 100 / O.sh
     R = O.pivot_table(index='date', columns='tk', values='r').sort_index()
     last = O.groupby('tk').date.max(); thru = O.date.max()
+    if (pd.Timestamp.now().normalize() - thru).days > int(os.getenv('RATIO_WARN_DAYS', '4')):     # Nov 24 2026: the daily IBKR pull silently fails when TWS is logged out
+        print(f'  ! OPTIONS RATIO FILE STALE: last row {thru:%Y-%m-%d} - tools/daily_ratio.sh has not refreshed it (check live/daily_ratio.log)')
+        try:
+            k = f"ratio_stale|{pd.Timestamp.now():%Y-%m-%d}"; _st = _state()
+            if os.getenv('OPS_CHANNEL_ID') and k not in _st.get('signals', []) and post(f'options ratio file is stale: last row {thru:%Y-%m-%d}', [], channel=os.getenv('OPS_CHANNEL_ID')): _st.setdefault('signals', []).append(k); _save(_st)
+        except Exception: pass
     R = R.rolling(252, min_periods=60).median().shift(1)
     R[list(last[last < thru - pd.Timedelta(days=int(os.getenv('OPT_STALE_DAYS', '45')))].index)] = np.nan       # options history not current -> not eligible
     ff = os.getenv('RATIO_FROZEN', 'live_data/optvol_ratio_frozen_20261021.csv')        # the ratios the bot actually used before the Oct 22
@@ -539,12 +558,12 @@ def scan(args):
     def held_at(tk, ts): return any(a['tk'] == tk and pd.Timestamp(a['t0']) <= ts and (a['status'] != 'CLOSED' or pd.Timestamp(a['t1']) > ts) for a in AL)
     def n_open(ts): return sum(1 for a in AL if pd.Timestamp(a['t0']) <= ts and (a['status'] != 'CLOSED' or pd.Timestamp(a['t1']) > ts))
     hm_all = []
-    for t in TR_all:
+    for t in sorted(TR_all, key=lambda z: (pd.Timestamp(z['t0']), z['track'] != '15m')):   # Nov 15 2026: 15m first, so a name's 15m flip is the one that counts
         ts = pd.Timestamp(t['t0'])
         if t['tk'] == 'QQQ' or not t.get('px') or t.get('blocked') or ts < START or (t['tk'], t['track'], ts) in akeys: continue
         if t['status'] not in ('HOLD', 'SELL', 'CLOSED') or n_open(ts) < slots_at(t['t0']): continue
         if held_at(t['tk'], ts): continue                                     # Oct 27 2026: the book already owns this name - not a missed trade
-        if any(x['tk'] == t['tk'] and pd.Timestamp(x['t0']) == ts for x in hm_all): continue    # same name + same entry on both tracks: count once
+        if any(x['tk'] == t['tk'] and pd.Timestamp(x['t0']) <= ts and (x['status'] != 'CLOSED' or pd.Timestamp(x['t1']) > ts) for x in hm_all): continue    # Nov 15 2026 (Rey): one mention per name - a 1h flip on a name already mentioned and still open does not count again
         h = dict(t)
         if h['status'] == 'CLOSED' and 'xpx' not in h: h['xpx'] = float(HS[h['tk']].open.values[min(h['x'], len(HS[h['tk']]) - 1)])
         hm_all.append(h)
@@ -1042,6 +1061,52 @@ def history_card(rows, meta, path, fetch=True, hm=False):
     fig.text(.045, .1 / H_in, 'RETURN = trade return; PEAK = highest return while held (RTH highs); BOOK = its share of the book (1 slot). Book P&L = sum of slot returns (not compounded), before costs.', fontsize=7.5, color=MUT)
     fig.savefig(path, dpi=140, facecolor=BG); plt.close(fig)
 
+def chart_min(H, tk, path, kind='BUY', live=None, bars=96):
+    """Nov 24 2026 (Rey): the ONLY thing posted on a close - 15m candles coloured by vector state, vector level, EMA50 / EMA200, no other text.
+    kind 'CROSS' (price touched the vector mid-bar) also draws the live price and the trigger line."""
+    X = H.tail(bars).reset_index(drop=True); n = len(X); t = np.arange(n); c = H.close
+    e50 = c.ewm(span=50, adjust=False).mean().tail(bars).values; e200 = c.ewm(span=200, adjust=False).mean().tail(bars).values
+    rg = X.reg.values; lvl = np.where(rg == 1, X['stop'].values, X.trig.values)
+    fig, ax = plt.subplots(figsize=(10, 5.6), facecolor=BG, dpi=140); ax.set_facecolor(PANEL)
+    for sp in ax.spines.values(): sp.set_visible(False)
+    col = np.where(rg == 1, BLUE, np.where(rg == -1, CRIT, MUT))
+    ax.vlines(t, X.low, X.high, color=col, lw=1, zorder=3)
+    top, bot = np.maximum(X.open, X.close), np.minimum(X.open, X.close)
+    ax.bar(t, np.maximum(top - bot, (X.high.max() - X.low.min()) * .0025), bottom=bot, width=.7, color=col, zorder=4)
+    ax.step(t, lvl, where='mid', color='#a3e635', lw=1.8, zorder=5)
+    ax.plot(t, e50, color='#fbbf24', lw=1.3, zorder=5); ax.plot(t, e200, color='#c084fc', lw=1.5, zorder=5)
+    if live is not None:
+        ax.axhline(live, color=T1, lw=1, ls=(0, (4, 3)), zorder=6); ax.text(n + .3, live, f'{live:.2f}', color=T1, fontsize=9, va='center')
+    mk = {'BUY': ('^', GOOD), 'SELL': ('v', CRIT)}.get(kind)
+    if mk: ax.scatter([n - 1], [X.close.iloc[-1]], marker=mk[0], s=140, color=mk[1], zorder=7)
+    ax.set_xlim(-1, n + 6); ax.tick_params(colors=MUT, labelsize=8); ax.grid(color=GRID, lw=.5, alpha=.6)
+    lo, hi = X.low.min(), X.high.max(); pad = (hi - lo) * .06; ax.set_ylim(lo - pad, hi + pad)
+    ix = np.linspace(0, n - 1, 6).astype(int); ax.set_xticks(ix); ax.set_xticklabels([f'{X.dt.iloc[i]:%a %H:%M}' for i in ix])
+    ax.set_title(f'{tk}  15m', color=T1, fontsize=14, fontweight='bold', loc='left')
+    fig.tight_layout(); fig.savefig(path, facecolor=BG); plt.close(fig)
+
+NEGG = {'day': None, 'ratio': {}, 'gam': {}}
+def neg_gamma_ok(base):
+    """intraday negative-gamma flip model gate (reports 426-433): ratio gate = 20d median options ratio >= 2 (shifted 1d) AND prior-close net gamma < 0.
+    Gamma comes from live/neg_gamma.json {ticker: net_gex} written by the daily gamma logger; no file -> the channel stays quiet."""
+    d = now_et().strftime('%Y-%m-%d')
+    if NEGG['day'] != d:
+        NEGG.update(day=d, ratio={}, gam={})
+        try:
+            O = pd.read_csv(OPTVOL_FILE, parse_dates=['date']); O = O[O.sh > 0]; O['r'] = O.opt_contracts * 100 / O.sh
+            R = O.pivot_table(index='date', columns='tk', values='r').sort_index().rolling(20, min_periods=10).median().shift(1)
+            NEGG['ratio'] = R.ffill().iloc[-1].to_dict()
+        except Exception as e: print(f'  ! neg-gamma ratio: {str(e)[:60]}')
+        try: NEGG['gam'] = json.load(open(f'{LIVE}/neg_gamma.json'))
+        except Exception: pass
+    return (NEGG['ratio'].get(base) or 0) >= 2 and (NEGG['gam'].get(base) is not None and float(NEGG['gam'][base]) < 0)
+def post_neg_gamma(r, path):
+    tgt = os.getenv('NEGGAMMA_CHANNEL_ID'); hook = os.getenv('NEGGAMMA_WEBHOOK_URL')
+    if not (tgt or hook) or r.get('track', '15m') != '15m': return
+    try:
+        if neg_gamma_ok(r.get('base') or r['ticker']): post('', [path], channel=tgt, hook=hook)
+    except Exception as e: print(f'  ! neg-gamma post: {str(e)[:60]}')
+
 def signal_card(r, meta, path):
     buy = r['action'] == 'BUY'; accent = GOOD if buy else CRIT; H = r['H']
     fig = plt.figure(figsize=(10, 6.2), facecolor=BG); _frame(fig, accent)
@@ -1077,8 +1142,8 @@ def post_long(text, channel=None):
         chunk += line + '\n'
     return (post(chunk, [], channel=channel) if chunk.strip() else True) and ok
 
-def post(text, files, channel=None):
-    ch, tok, hook = channel or os.getenv('LARGECAP_CHANNEL_ID') or '1570332365186793522', os.getenv('DISCORD_TOKEN'), os.getenv('DISCORD_WEBHOOK_URL')   # Nov 12 2026: the mega-cap screener posts to #large-cap (LARGECAP_CHANNEL_ID); the mid/small one has its own (MIDSMALL_CHANNEL_ID)
+def post(text, files, channel=None, hook=None):
+    ch, tok, hook = channel or (None if hook else (os.getenv('LARGECAP_CHANNEL_ID') or os.getenv('VECTOR_CHANNEL_ID'))), os.getenv('DISCORD_TOKEN'), hook or os.getenv('DISCORD_WEBHOOK_URL')   # Nov 12 2026: the mega-cap screener posts to #large-cap (LARGECAP_CHANNEL_ID); the mid/small one has its own (MIDSMALL_CHANNEL_ID)
     if ch and tok: url, hdr = f'https://discord.com/api/v10/channels/{ch}/messages', {'Authorization': f'Bot {tok}'}
     elif hook: url, hdr = hook, {}
     else: print('  ! no Discord target: set VECTOR_CHANNEL_ID (bot) or DISCORD_WEBHOOK_URL in .env'); return False
@@ -1097,6 +1162,14 @@ def wait_for_bar(target, timeout=90):
     """poll Yahoo (SPY) until the 15m bar that closes at `target` ET is published, so the scan starts seconds after the close"""
     t0 = time.time()
     while time.time() - t0 < timeout:
+        try:                                                              # Nov 24 2026: Webull SPY bar first
+            import webull_feed as WF
+            if WF.enabled():
+                B = WF.bars15(['SPY'], count=3).get('SPY')
+                if B is not None and len(B):
+                    last = B.datetime.iloc[-1].tz_convert(ET).tz_localize(None)
+                    if last >= target or (now_et() >= target + pd.Timedelta('6s') and last >= target - pd.Timedelta('15min')): print(f'  bar {target:%H:%M} ready (webull) after {time.time() - t0:.0f}s'); return True
+        except Exception: pass
         try:
             import yfinance as yf
             y = yf.Ticker('SPY').history(period='1d', interval='15m', prepost=True)
@@ -1417,6 +1490,17 @@ def post_new_signals(rows, meta, st):
         if key in st['signals']: continue
         if r['action'] == 'SELL' and now_et().hour * 60 + now_et().minute < RTH0:
             late = f"\u26a0\ufe0f PREMARKET FLIP: {tk} vector turned bearish premarket ({r['bar']:%H:%M} bar, last {r['last']:.2f}). Rule exits at the 09:30 open."
+        if os.getenv('CHART_ONLY', '1') == '1':                           # Nov 24 2026 (Rey): a close posts ONLY the chart (EMA + vector), no writing
+            p = f"{LIVE}/card_{tk.replace(' ', '_')}_{r['action']}.png"
+            try: chart_min(r['H'], tk, p, r['action'])
+            except Exception as e: print(f'  ! chart_min failed ({str(e)[:80]}); simple card'); signal_card(r, meta, p)
+            if r['action'] == 'BUY':
+                try: d_ = spy_downtrend(); save_score(tk, dict(grade='A+' if (d_ and d_['down']) else 'STD', score=0.0))
+                except Exception as e: print(f'  ! grade: {str(e)[:60]}')
+            if not post('', [p]): continue
+            st['signals'].append(key); _save(st); post_neg_gamma(r, p)
+            pd.DataFrame([dict(run_at=now_et(), ticker=r['ticker'], action=r['action'], bar=r['bar'], price=r['last'], stop=r['stop'], entry=r['px'], pnl=r['pnl'])]).to_csv(f'{LIVE}/signal_log.csv', mode='a', header=not os.path.exists(f'{LIVE}/signal_log.csv'), index=False)
+            continue
         fk = key + '|fast'                                                # Nov 12 2026: one-line alert goes out FIRST; the chart card (slow to render/upload) follows
         if fk not in st['signals']:
             try:
@@ -1643,6 +1727,12 @@ def show(rows, meta):
 
 # ================================================================ intrabar cross watch (heads-up only; the BUY still needs the 15m close)
 def live_px(tk):
+    try:                                                                  # Nov 24 2026: Webull snapshot first (one call, seconds-fresh)
+        import webull_feed as WF
+        if WF.enabled():
+            p = WF.prices([WYM.get(tk, tk)]).get(WYM.get(tk, tk))
+            if p: return float(p)
+    except Exception: pass
     from fetch_lse_ohlcv import _fetch_range
     s0 = pd.Timestamp.utcnow().tz_localize(None) - pd.Timedelta(hours=6)
     for tf in (() if LSE_DOWN['on'] else ('1m', '15m')):
@@ -1702,7 +1792,10 @@ def watch_crosses(rows, st, until):
             if px and px > r['trig']:
                 full = len({q['base'] for q in rows if q['action'] == 'HOLD' and q['px']}) >= slots_at(now_et())
                 tail = f" Slots are full ({slots_at(now_et())}/{slots_at(now_et())}): no buy even if it holds." if full else f" BUY only if the {end:%H:%M} 15m close holds above."
-                if post(f"\u26a1 CROSS {tk} {px:.2f} is above the vector ({r['trig']:.2f}).{tail}", []):
+                pc = f"{LIVE}/cross_{tk.replace(' ', '_')}.png"
+                try: chart_min(r['H'], tk, pc, 'CROSS', live=px); cfiles = [pc]
+                except Exception as e: print(f'  ! cross chart: {str(e)[:60]}'); cfiles = []
+                if post(f"\u26a1 {tk} touched the vector - wait till the close", cfiles) if os.getenv('CHART_ONLY', '1') == '1' else post(f"\u26a1 CROSS {tk} {px:.2f} is above the vector ({r['trig']:.2f}).{tail}", []):
                     st['signals'].append(key); xp[tk] = [f'{bar:%Y-%m-%d %H:%M}', r['trig']]; _save(st)
         if RTH0 <= now_et().hour * 60 + now_et().minute < RTH1:
             for r in P:
