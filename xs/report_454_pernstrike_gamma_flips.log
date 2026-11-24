@@ -1,31 +1,43 @@
+QQQ split factors seen [1]
 QQQ trades so far 559
+SPY split factors seen [1]
 SPY trades so far 1073
+IWM split factors seen [1]
 IWM trades so far 1605
+DIA split factors seen [1]
 DIA trades so far 2142
+TSLA split factors seen [1, 3, 15]
 TSLA trades so far 2654
+NVDA split factors seen [1, 10, 40]
 NVDA trades so far 3163
+AAPL split factors seen [1, 4]
 AAPL trades so far 3679
+AMD split factors seen [1]
 AMD trades so far 4014
+AMZN split factors seen [1, 20]
 AMZN trades so far 4517
+MSFT split factors seen [1]
 MSFT trades so far 4873
+META split factors seen [1]
 META trades so far 5117
+COST split factors seen [1]
 COST trades so far 5530
 
-===== 15m flips: 4412 trades, mean 4.6bp, BELOW share 0.45, daily-NEG share 0.40
+===== 15m flips: 4412 trades, mean 4.6bp, BELOW share 0.31, daily-NEG share 0.40
 PASS BASE daily net gamma <0 vs >=0     A   10.7bp (n 1761) B    0.6bp (n 2651) diff  +10.2 t +2.67 | train   +7.3 (t +1.2) test  +11.9 (t +2.5)
-PASS HA below ZG vs above               A   10.1bp (n 1964) B    0.2bp (n 2448) diff   +9.8 t +2.93 | train   +8.1 (t +1.6) test   +9.9 (t +2.3)
-     HB recent cross vs established     A    9.2bp (n  488) B   13.1bp (n  955) diff   -3.9 t -0.51 | train   -8.0 (t -0.5) test   -2.5 (t -0.3)
-     HC room top vs bottom tercile      A   13.8bp (n  613) B    5.3bp (n  613) diff   +8.4 t +1.33 | train   +8.2 (t +1.3) test  +11.3 (t +1.0)
-     HD high vs low ATM IV (in below)   A   11.2bp (n 1209) B    8.3bp (n  755) diff   +2.9 t +0.44 | train  +13.3 (t +1.6) test   -4.2 (t -0.5)
-   by era (below vs above, bp / n): 18-19 +4(480) / -4(206) | 20-21 +19(482) / +7(496) | 22 +13(361) / +8(198) | 23-26 +6(641) / -2(1548)
-   by name (below vs above bp): QQQ +17/+2 | SPY +5/-2 | IWM -0/-1 | DIA +2/-6 | TSLA +27/-6 | NVDA +7/+0 | AAPL +22/+7 | AMD +27/+7 | AMZN +18/-3 | MSFT -9/-2 | META -49/-6 | COST -11/+8
+     HA below ZG vs above               A    9.6bp (n 1376) B    2.4bp (n 3036) diff   +7.3 t +1.78 | train   +9.8 (t +1.2) test   +6.8 (t +1.4)
+     HB recent cross vs established     A    4.5bp (n  402) B   13.2bp (n  926) diff   -8.7 t -1.06 | train   -7.9 (t -0.4) test   -9.3 (t -1.2)
+     HC room top vs bottom tercile      A    1.3bp (n  417) B   -2.0bp (n  417) diff   +3.3 t +0.51 | train  +18.2 (t +1.5) test   -2.1 (t -0.3)
+     HD high vs low ATM IV (in below)   A   10.5bp (n  914) B    7.8bp (n  462) diff   +2.7 t +0.38 | train  +13.6 (t +1.1) test   -1.7 (t -0.2)
+   by era (below vs above, bp / n): 18-19 +8(240) / -2(446) | 20-21 +21(240) / +10(738) | 22 +9(308) / +14(251) | 23-26 +6(588) / -2(1601)
+   by name (below vs above bp): QQQ +17/+2 | SPY +5/-2 | IWM -0/-1 | DIA +2/-6 | TSLA +51/-2 | NVDA -8/+6 | AAPL +32/+10 | AMD +27/+7 | AMZN +32/+5 | MSFT -9/-2 | META -49/-6 | COST -11/+8
 
-===== 1h flips: 1118 trades, mean 0.3bp, BELOW share 0.43, daily-NEG share 0.43
+===== 1h flips: 1118 trades, mean 0.3bp, BELOW share 0.28, daily-NEG share 0.43
      BASE daily net gamma <0 vs >=0     A    2.6bp (n  477) B   -1.4bp (n  641) diff   +4.0 t +0.71 | train   +8.1 (t +1.2) test   +1.3 (t +0.2)
-     HA below ZG vs above               A    4.3bp (n  484) B   -2.8bp (n  634) diff   +7.0 t +1.32 | train   +5.0 (t +0.9) test   +5.6 (t +0.7)
-     HB recent cross vs established     A   18.7bp (n  115) B   -0.4bp (n  229) diff  +19.2 t +1.94 | train  +30.2 (t +2.6) test   +7.6 (t +0.5)
-     HC room top vs bottom tercile      A   18.6bp (n  152) B   -1.8bp (n  152) diff  +20.5 t +1.87 | train  +10.1 (t +1.1) test  +39.4 (t +1.5)
-     HD high vs low ATM IV (in below)   A    7.8bp (n  289) B   -0.9bp (n  195) diff   +8.7 t +0.99 | train   +8.9 (t +0.8) test   +9.6 (t +0.7)
-   by era (below vs above, bp / n): 18-19 +17(119) / -3(38) | 20-21 +6(147) / +4(119) | 22 -9(78) / -25(55) | 23-26 -1(140) / -2(422)
-   by name (below vs above bp): QQQ -9/+6 | SPY +1/-7 | IWM -0/+20 | DIA +1/-6 | TSLA +14/+12 | NVDA +8/+6 | AAPL +13/-0 | AMD +66/-7 | AMZN +16/-33 | MSFT -83/+5 | META +nan/-5 | COST -11/-5
+     HA below ZG vs above               A    1.2bp (n  312) B   -0.1bp (n  806) diff   +1.2 t +0.25 | train   +9.0 (t +1.4) test   -2.9 (t -0.4)
+     HB recent cross vs established     A   10.5bp (n   90) B   -1.6bp (n  220) diff  +12.1 t +1.30 | train  +32.6 (t +2.4) test   -5.1 (t -0.4)
+PASS HC room top vs bottom tercile      A   -9.9bp (n   95) B   12.5bp (n   95) diff  -22.4 t -2.49 | train  -22.1 (t -1.8) test  -22.1 (t -1.8)
+     HD high vs low ATM IV (in below)   A    2.4bp (n  206) B   -1.1bp (n  106) diff   +3.5 t +0.43 | train   +3.5 (t +0.3) test   +2.0 (t +0.2)
+   by era (below vs above, bp / n): 18-19 +16(59) / +10(98) | 20-21 +6(73) / +5(193) | 22 -11(58) / -18(75) | 23-26 -3(122) / -1(440)
+   by name (below vs above bp): QQQ -9/+6 | SPY +1/-7 | IWM -0/+20 | DIA +1/-6 | TSLA +29/+10 | NVDA +40/+6 | AAPL +47/+1 | AMD +66/-7 | AMZN -6/-6 | MSFT -83/+5 | META +nan/-5 | COST -11/-5
 done

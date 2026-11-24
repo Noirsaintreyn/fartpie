@@ -1,0 +1,39 @@
+QQQ split factors seen [1]
+QQQ trades so far 559
+SPY split factors seen [1]
+SPY trades so far 1073
+IWM split factors seen [1]
+IWM trades so far 1605
+DIA split factors seen [1]
+DIA trades so far 2142
+TSLA split factors seen [1, 3, 15]
+TSLA trades so far 2654
+NVDA split factors seen [1, 10, 40]
+NVDA trades so far 3163
+AAPL split factors seen [1, 4]
+AAPL trades so far 3679
+AMD split factors seen [1]
+AMD trades so far 4014
+AMZN split factors seen [1, 20]
+AMZN trades so far 4517
+MSFT split factors seen [1]
+MSFT trades so far 4873
+META split factors seen [1]
+META trades so far 5117
+COST split factors seen [1]
+COST trades so far 5530
+
+===== 15m: below-ZG flips 1376, room cutoff (train 67th pct) 1.78 sigma, E1 n 302, E2 n 34
+PASS E1 vol&room RETURN             A    1.9bp (n 302) B   11.8bp (n 1074) diff   -9.8 t -2.36 | train   -2.5 (t -0.3) test  -13.5 (t -2.7)
+PASS E1 vol&room MFE (ran further)  A   69.9bp (n 302) B   83.4bp (n 1074) diff  -13.5 t -2.47 | train   -9.0 (t -0.8) test  -16.2 (t -3.0)
+PASS E2 vol&room&recent RETURN      A  -23.8bp (n  34) B   10.5bp (n 1342) diff  -34.3 t -3.06 | train  -19.1 (t -0.8) test  -40.7 (t -3.2)
+     E2 vol&room&recent MFE (ran further) A   78.1bp (n  34) B   80.5bp (n 1342) diff   -2.4 t -0.10 | train  +65.9 (t +1.0) test  -31.1 (t -2.7)
+   E1 by era bp/n: 18-19 +0(94) | 20-21 +30(38) | 22 -0(75) | 23-26 -6(95)   by name: QQQ +12(74) SPY +10(62) IWM -5(97) DIA -5(35) NVDA -126(6) AAPL +63(11) COST -22(10)
+
+===== 1h: below-ZG flips 312, room cutoff (train 67th pct) 1.29 sigma, E1 n 76, E2 n 11
+     E1 vol&room RETURN             A   -2.1bp (n  76) B    2.2bp (n  236) diff   -4.4 t -0.54 | train  -14.3 (t -1.4) test   +0.7 (t +0.1)
+PASS E1 vol&room MFE (ran further)  A   47.8bp (n  76) B   62.6bp (n  236) diff  -14.8 t -2.27 | train  -27.8 (t -2.3) test   -8.2 (t -1.1)
+     E2 vol&room&recent RETURN      A    3.9bp (n  11) B    1.1bp (n  301) diff   +2.8 t +0.16 | train   +nan (t +nan) test   +nan (t +nan)
+     E2 vol&room&recent MFE (ran further) A   47.1bp (n  11) B   59.5bp (n  301) diff  -12.3 t -1.51 | train   +nan (t +nan) test   +nan (t +nan)
+   E1 by era bp/n: 18-19 +3(22) | 20-21 -5(14) | 22 -25(23) | 23-26 +24(17)   by name: QQQ -10(23) SPY +7(20) IWM +3(25) DIA +5(6)
+done
