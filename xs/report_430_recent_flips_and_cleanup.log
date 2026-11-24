@@ -1,0 +1,29 @@
+[ex-2026] G20 X3: base n428 win 43.9 med -0.27 mean 0.20 | N2dn n199 win 47.7 med -0.15 mean 0.41 | diff +0.40pp
+[ex-2026] G20 X1: base n428 win 32.9 med -0.57 mean 0.31 | N2dn n199 win 34.7 med -0.51 mean 0.65 | diff +0.63pp
+thresholds (train): avg corr median 0.264, VRP median 5.29; share of days allowed (full): I2  67%, I3  53%, I4a 40%, I4b 58%
+HAR pooled coefs (const, d, w, m): [-0.286  0.325  0.413  0.202]
+
+Monthly % (true MTM, 6 slots, 2bp each side):
+            live  live+N2   SPY
+day                            
+2025-07-31  -0.2      0.8   2.2
+2025-08-31   4.6     -0.0   2.2
+2025-09-30   6.5      5.4   3.0
+2025-10-31   2.3      5.7   2.6
+2025-11-30   4.2     -1.5  -0.0
+2025-12-31   1.6     -0.9  -0.1
+2026-01-31  -1.8      2.9   1.2
+2026-02-28  -3.7     -0.6  -1.0
+2026-03-31  -5.2     -8.4  -4.6
+2026-04-30  19.8      7.6  10.4
+2026-05-31   6.3     10.0   5.0
+2026-06-30  -5.1     -0.2  -1.2
+2026-07-31   1.5     -1.8  -0.3
+2026-08-31   4.9      0.7   4.3
+2026 YTD                     live   15.3% (MDD -15.3) | live+N2    9.5% (MDD -10.7) | SPY   13.7% (MDD  -9.5)
+last 3 months of book data   live    3.5% (MDD  -9.6) | live+N2    4.6% (MDD -10.1) | SPY    4.4% (MDD  -4.8)
+2025                         live   12.0% (MDD -23.7) | live+N2   24.7% (MDD -11.7) | SPY   16.3% (MDD -19.9)
+book data ends 2026-08-14
+live-book trades 2019-25       n 3789 win  30.6 med -0.61 mean  0.29
+live-book trades 2026 YTD      n  378 win  31.7 med -0.92 mean  0.25
+live-book trades 2026 May-Aug  n  154 win  33.1 med -0.84 mean  0.08
