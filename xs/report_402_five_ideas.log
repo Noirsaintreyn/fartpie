@@ -1,0 +1,21 @@
+thresholds (train): avg corr median 0.264, VRP median 5.29; share of days allowed (full): I2  67%, I3  53%, I4a 40%, I4b 58%
+LIVE (baseline)                        n 4167 win 30.7% med -0.62% | CAGR 27.6% Sh 1.36 MDD -25.5% Cal 1.09 | +mo  66% worstMo  -9.4% worst12m -17.5% top5   47% | 19-21 MDD -11.3% Cal 3.29 | 22-26 MDD -25.5% Cal 0.86
+   live CAGR ex-top5 names 18.0% MDD -24.9%  (top5: ['NVDA', 'CMG', 'AAPL', 'FDX', 'BA'])
+I1a vol-managed (book own vol)         n 4167 win 30.7% med -0.62% | CAGR 23.4% Sh 1.39 MDD -24.5% Cal 0.96 | +mo  65% worstMo  -9.3% worst12m -14.8% top5   47% | 19-21 MDD -11.3% Cal 2.94 | 22-26 MDD -24.5% Cal 0.72 | avg exposure 0.86
+I1b vol-managed (SPY vol)              n 4167 win 30.7% med -0.62% | CAGR 22.5% Sh 1.38 MDD -20.0% Cal 1.12 | +mo  66% worstMo  -9.2% worst12m -14.2% top5   47% | 19-21 MDD -11.1% Cal 2.51 | 22-26 MDD -20.0% Cal 0.95 | avg exposure 0.84
+I2 credit vector bull                  n 3103 win 28.3% med -0.65% | CAGR  6.9% Sh 0.50 MDD -33.5% Cal 0.21 | +mo  50% worstMo  -9.7% worst12m -32.4% top5   94% | 19-21 MDD -14.4% Cal 0.89 | 22-26 MDD -29.4% Cal 0.11 | flips kept 65%
+I3 low avg corr (<= train median)      n 2558 win 29.3% med -0.62% | CAGR  9.2% Sh 0.75 MDD -23.6% Cal 0.39 | +mo  38% worstMo  -8.7% worst12m -12.9% top5   73% | 19-21 MDD  -9.7% Cal 1.13 | 22-26 MDD -23.6% Cal 0.34 | flips kept 65%
+I4a high VRP (>= train median)         n 2345 win 30.4% med -0.62% | CAGR 13.6% Sh 0.94 MDD -15.3% Cal 0.89 | +mo  57% worstMo  -9.9% worst12m  -8.6% top5   58% | 19-21 MDD -13.0% Cal 1.41 | 22-26 MDD -15.3% Cal 0.70 | flips kept 48%
+I4b VIX stress relief                  n 2528 win 31.6% med -0.59% | CAGR 24.5% Sh 1.51 MDD -13.2% Cal 1.85 | +mo  62% worstMo  -6.7% worst12m  -4.2% top5   42% | 19-21 MDD  -9.7% Cal 2.36 | 22-26 MDD -13.2% Cal 1.94 | flips kept 48%
+I5a skip if max corr > 0.75            n 4058 win 30.7% med -0.62% | CAGR 29.1% Sh 1.45 MDD -23.3% Cal 1.25 | +mo  65% worstMo  -9.3% worst12m -17.7% top5   48% | 19-21 MDD -11.3% Cal 3.37 | 22-26 MDD -23.3% Cal 1.02
+I5b skip if max corr > 0.65            n 3980 win 30.7% med -0.61% | CAGR 24.5% Sh 1.34 MDD -25.1% Cal 0.98 | +mo  71% worstMo  -9.3% worst12m -22.5% top5   49% | 19-21 MDD -10.8% Cal 2.77 | 22-26 MDD -23.1% Cal 0.91
+
+PASS TABLE (Calmar higher & MDD lower than live in BOTH halves):
+  I1a vol-managed (book own vol)         half1 Cal 2.94 vs 3.29, MDD -11.3% vs -11.3% | half2 Cal 0.72 vs 0.86, MDD -24.5% vs -25.5% | win 30.7% vs 30.7%, med -0.62 vs -0.62, top5 47% vs 47% -> fail
+  I1b vol-managed (SPY vol)              half1 Cal 2.51 vs 3.29, MDD -11.1% vs -11.3% | half2 Cal 0.95 vs 0.86, MDD -20.0% vs -25.5% | win 30.7% vs 30.7%, med -0.62 vs -0.62, top5 47% vs 47% -> fail
+  I2 credit vector bull                  half1 Cal 0.89 vs 3.29, MDD -14.4% vs -11.3% | half2 Cal 0.11 vs 0.86, MDD -29.4% vs -25.5% | win 28.3% vs 30.7%, med -0.65 vs -0.62, top5 94% vs 47% -> fail
+  I3 low avg corr (<= train median)      half1 Cal 1.13 vs 3.29, MDD -9.7% vs -11.3% | half2 Cal 0.34 vs 0.86, MDD -23.6% vs -25.5% | win 29.3% vs 30.7%, med -0.62 vs -0.62, top5 73% vs 47% -> fail
+  I4a high VRP (>= train median)         half1 Cal 1.41 vs 3.29, MDD -13.0% vs -11.3% | half2 Cal 0.70 vs 0.86, MDD -15.3% vs -25.5% | win 30.4% vs 30.7%, med -0.62 vs -0.62, top5 58% vs 47% -> fail
+  I4b VIX stress relief                  half1 Cal 2.36 vs 3.29, MDD -9.7% vs -11.3% | half2 Cal 1.94 vs 0.86, MDD -13.2% vs -25.5% | win 31.6% vs 30.7%, med -0.59 vs -0.62, top5 42% vs 47% -> fail
+  I5a skip if max corr > 0.75            half1 Cal 3.37 vs 3.29, MDD -11.3% vs -11.3% | half2 Cal 1.02 vs 0.86, MDD -23.3% vs -25.5% | win 30.7% vs 30.7%, med -0.62 vs -0.62, top5 48% vs 47% -> fail
+  I5b skip if max corr > 0.65            half1 Cal 2.77 vs 3.29, MDD -10.8% vs -11.3% | half2 Cal 0.91 vs 0.86, MDD -23.1% vs -25.5% | win 30.7% vs 30.7%, med -0.61 vs -0.62, top5 49% vs 47% -> fail

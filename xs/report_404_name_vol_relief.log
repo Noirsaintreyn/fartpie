@@ -1,0 +1,21 @@
+thresholds (train): avg corr median 0.264, VRP median 5.29; share of days allowed (full): I2  67%, I3  53%, I4a 40%, I4b 58%
+HAR pooled coefs (const, d, w, m): [-0.286  0.325  0.413  0.202]
+LIVE                                   n 4167 win 30.7% med -0.62% | CAGR 27.6% Sh 1.36 MDD -25.5% Cal 1.09 | +mo  66% worstMo  -9.4% worst12m -17.5% top5   47% | 19-21 MDD -11.3% Cal 3.29 | 22-26 MDD -25.5% Cal 0.86
+   CAGR halves 37.1% | 21.9%
+N1 name close-RV10 relief              n 3473 win 30.7% med -0.61% | CAGR 27.4% Sh 1.48 MDD -21.0% Cal 1.30 | +mo  67% worstMo  -9.6% worst12m  -6.7% top5   44% | 19-21 MDD  -9.4% Cal 3.78 | 22-26 MDD -21.0% Cal 1.07 | kept 52% | CAGR halves 35.4% | 22.5%
+N2 name 15m-RV5 relief                 n 3269 win 31.0% med -0.60% | CAGR 29.4% Sh 1.66 MDD -15.6% Cal 1.89 | +mo  66% worstMo  -8.4% worst12m   1.1% top5   45% | 19-21 MDD  -8.4% Cal 4.65 | 22-26 MDD -15.6% Cal 1.50 | kept 52% | CAGR halves 39.2% | 23.4%
+N3 name HAR forecast <= 22d mean       n 3538 win 30.2% med -0.64% | CAGR 29.4% Sh 1.55 MDD -14.2% Cal 2.08 | +mo  68% worstMo  -9.5% worst12m  -3.3% top5   51% | 19-21 MDD  -8.0% Cal 4.87 | 22-26 MDD -14.2% Cal 1.68 | kept 60% | CAGR halves 38.7% | 23.8%
+M1 SPY RV10 relief (no VIX)            n 2694 win 30.8% med -0.62% | CAGR 20.5% Sh 1.31 MDD -17.9% Cal 1.14 | +mo  60% worstMo  -9.3% worst12m  -6.9% top5   53% | 19-21 MDD  -9.0% Cal 3.29 | 22-26 MDD -17.9% Cal 0.83 | kept 54% | CAGR halves 29.7% | 14.9%
+C1 VIX relief AND N2                   n 2151 win 31.4% med -0.57% | CAGR 19.3% Sh 1.35 MDD -17.8% Cal 1.08 | +mo  63% worstMo -10.3% worst12m  -8.9% top5   47% | 19-21 MDD -11.1% Cal 1.46 | 22-26 MDD -17.8% Cal 1.20 | kept 32% | CAGR halves 16.2% | 21.4%
+C2 VIX relief AND N1                   n 2138 win 29.2% med -0.61% | CAGR 13.9% Sh 1.01 MDD -25.1% Cal 0.56 | +mo  60% worstMo -10.1% worst12m -20.5% top5   51% | 19-21 MDD  -7.1% Cal 2.35 | 22-26 MDD -25.1% Cal 0.48 | kept 29% | CAGR halves 16.8% | 12.1%
+
+PASS TABLE:
+  N1 name close-RV10 relief          half1 Cal 3.78 (live 3.29) MDD -9.4% (live -11.3%) | half2 Cal 1.07 (0.86) MDD -21.0% (-25.5%) | win 30.7% med -0.61% top5 44% -> PASS
+  N2 name 15m-RV5 relief             half1 Cal 4.65 (live 3.29) MDD -8.4% (live -11.3%) | half2 Cal 1.50 (0.86) MDD -15.6% (-25.5%) | win 31.0% med -0.60% top5 45% -> PASS
+  N3 name HAR forecast <= 22d mean   half1 Cal 4.87 (live 3.29) MDD -8.0% (live -11.3%) | half2 Cal 1.68 (0.86) MDD -14.2% (-25.5%) | win 30.2% med -0.64% top5 51% -> PASS
+  M1 SPY RV10 relief (no VIX)        half1 Cal 3.29 (live 3.29) MDD -9.0% (live -11.3%) | half2 Cal 0.83 (0.86) MDD -17.9% (-25.5%) | win 30.8% med -0.62% top5 53% -> fail
+  C1 VIX relief AND N2               half1 Cal 1.46 (live 3.29) MDD -11.1% (live -11.3%) | half2 Cal 1.20 (0.86) MDD -17.8% (-25.5%) | win 31.4% med -0.57% top5 47% -> fail
+  C2 VIX relief AND N1               half1 Cal 2.35 (live 3.29) MDD -7.1% (live -11.3%) | half2 Cal 0.48 (0.86) MDD -25.1% (-25.5%) | win 29.2% med -0.61% top5 51% -> fail
+
+NULL for 'N2 name 15m-RV5 relief' (60 random per-name block gates, keep 51%): MDD median -21.5% [5-95 -28.4%, -16.8%] | Calmar median 1.02 | Sharpe median 1.18
+real: MDD -15.6% better than 95% of null; Calmar higher than 100%; Sharpe higher than 97%

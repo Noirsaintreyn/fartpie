@@ -1,0 +1,8 @@
+thresholds (train): avg corr median 0.264, VRP median 5.29; share of days allowed (full): I2  67%, I3  53%, I4a 40%, I4b 58%
+HAR pooled coefs (const, d, w, m): [-0.286  0.325  0.413  0.202]
+N2 (5d <= 20d mean)                    n 3269 win 31.0% med -0.60% | CAGR 29.4% Sh 1.66 MDD -15.6% Cal 1.89 | +mo  66% worstMo  -8.4% worst12m   1.1% top5   45% | 19-21 MDD  -8.4% Cal 4.65 | 22-26 MDD -15.6% Cal 1.50 | kept 52% | CAGR halves 39.2% | 23.4% -> PASS
+N2 (3d <= 20d mean)                    n 3350 win 29.8% med -0.62% | CAGR 22.5% Sh 1.31 MDD -20.7% Cal 1.08 | +mo  71% worstMo  -9.3% worst12m -17.4% top5   59% | 19-21 MDD  -7.5% Cal 4.66 | 22-26 MDD -20.7% Cal 0.72 | kept 53% | CAGR halves 35.2% | 15.0% -> fail
+N2 (5d <= 10d mean)                    n 3371 win 29.7% med -0.62% | CAGR 19.2% Sh 1.18 MDD -15.8% Cal 1.22 | +mo  61% worstMo  -7.7% worst12m  -8.7% top5   51% | 19-21 MDD  -8.9% Cal 2.83 | 22-26 MDD -15.8% Cal 0.98 | kept 49% | CAGR halves 25.2% | 15.5% -> fail
+N2 (5d <= 40d mean)                    n 3351 win 29.5% med -0.62% | CAGR 21.6% Sh 1.29 MDD -19.6% Cal 1.10 | +mo  65% worstMo  -7.5% worst12m  -8.3% top5   52% | 19-21 MDD  -8.3% Cal 4.00 | 22-26 MDD -19.6% Cal 0.74 | kept 54% | CAGR halves 33.2% | 14.6% -> fail
+N2 (10d <= 20d mean)                   n 3193 win 30.7% med -0.60% | CAGR 25.0% Sh 1.41 MDD -22.3% Cal 1.12 | +mo  62% worstMo -10.0% worst12m  -7.3% top5   50% | 19-21 MDD  -7.8% Cal 4.04 | 22-26 MDD -22.3% Cal 0.94 | kept 50% | CAGR halves 31.5% | 21.0% -> PASS
+neighbours passing: 1/4 (live: CAGR halves 37.1% | 21.9%, MDD halves -11.3% | -25.5%)

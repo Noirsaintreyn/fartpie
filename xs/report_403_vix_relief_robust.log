@@ -1,0 +1,12 @@
+thresholds (train): avg corr median 0.264, VRP median 5.29; share of days allowed (full): I2  67%, I3  53%, I4a 40%, I4b 58%
+LIVE                                   n 4167 win 30.7% med -0.62% | CAGR 27.6% Sh 1.36 MDD -25.5% Cal 1.09 | +mo  66% worstMo  -9.4% worst12m -17.5% top5   47% | 19-21 MDD -11.3% Cal 3.29 | 22-26 MDD -25.5% Cal 0.86
+   CAGR halves 37.1% | 21.9%
+relief 20d (the 402 gate)              n 2528 win 31.6% med -0.59% | CAGR 24.5% Sh 1.51 MDD -13.2% Cal 1.85 | +mo  62% worstMo  -6.7% worst12m  -4.2% top5   42% | 19-21 MDD  -9.7% Cal 2.36 | 22-26 MDD -13.2% Cal 1.94 | kept 48% | CAGR halves 22.9% | 25.6%
+relief 10d                             n 2630 win 32.1% med -0.59% | CAGR 26.3% Sh 1.58 MDD -12.1% Cal 2.18 | +mo  65% worstMo  -7.3% worst12m  -4.9% top5   50% | 19-21 MDD  -9.0% Cal 2.46 | 22-26 MDD -12.1% Cal 2.42 | kept 47% | CAGR halves 22.1% | 29.2%
+relief 50d                             n 2576 win 30.2% med -0.61% | CAGR 19.0% Sh 1.27 MDD -16.0% Cal 1.19 | +mo  55% worstMo  -9.2% worst12m  -9.0% top5   48% | 19-21 MDD  -7.0% Cal 3.34 | 22-26 MDD -16.0% Cal 1.01 | kept 51% | CAGR halves 23.5% | 16.2%
+VIX <= VIX 5d ago                      n 2566 win 31.8% med -0.60% | CAGR 25.5% Sh 1.58 MDD -14.4% Cal 1.77 | +mo  67% worstMo  -6.3% worst12m -10.6% top5   46% | 19-21 MDD  -8.3% Cal 3.15 | 22-26 MDD -14.4% Cal 1.75 | kept 46% | CAGR halves 26.0% | 25.3%
+VIX level < 20 (contrast)              n 2762 win 30.1% med -0.59% | CAGR 15.3% Sh 1.13 MDD -16.0% Cal 0.96 | +mo  47% worstMo  -8.6% worst12m -15.0% top5   48% | 19-21 MDD -10.5% Cal 1.26 | 22-26 MDD -15.7% Cal 1.06 | kept 63% | CAGR halves 13.2% | 16.7%
+relief20 + I5a corr-aware slots        n 2485 win 31.3% med -0.59% | CAGR 23.1% Sh 1.49 MDD -13.2% Cal 1.75 | +mo  61% worstMo  -6.6% worst12m  -1.5% top5   44% | 19-21 MDD  -6.6% Cal 3.61 | 22-26 MDD -13.2% Cal 1.72 | CAGR halves 23.7% | 22.7%
+
+RANDOM BLOCK-GATE NULL (n=100, keep share ~58%): MDD median -20.8% [5-95 -30.2%, -15.1%] | worst12m median -15.8% | Calmar median 0.86 | CAGR median 17.2% | Sharpe median 1.11
+real gate percentile: MDD better than 98% of null, worst12m better than 94%, Calmar higher than 98%, Sharpe higher than 94%
