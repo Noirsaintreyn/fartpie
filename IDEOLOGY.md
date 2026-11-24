@@ -1019,3 +1019,8 @@ Declared: hot sector = XL* 20d RS vs SPY top 3 of 11 AND 20d/60d dollar volume >
 Result 21d: ALL win 50.6% med +0.12%; HOT 50.0 / +0.01; HOT&TOP (n777) 51.2 / +0.33, t -0.5 vs ALL, 20-21 47.1%/-0.90, 22 41.9%/-2.96, 23-26 53.1%/+0.72; HOT&BOT 47.3 / -0.71; rank-only TOP-any 51.5 / +0.35 t -0.2. FAIL. Theme flag adds nothing, within-sector fundamentals rank adds nothing; concentration worse (HOT&TOP top-5 names 65% of profit).
 Era effect dwarfs every layer: ALL 21d win 61.8% (18-19), 55.5% (20-21), 35.3% med -8% (2022), 51.3% (23-26). Rey: analysis in 2020 differs from post-2023 trend years -> report by era, pass only if sign holds in each.
 NHP = neural Hawkes process (Rey); only plain Hawkes exists in repo -> volatility exit = Hawkes intensity + volume, untested.
+
+## Report 414 (Nov 24 2026) - catalyst proxy (volume spike >=2x or gap >=3% in prior 5d; earnings filing) -> gated 15m flip entry
+Rey's example: institutional discretionary pitches (dated catalyst + overextension + headlines). Proxies only; no news feed.
+21d hold: ALL win 49.9% med -0.03%; CAT (n2255) 50.6 / +0.11, t +1.2; NOCAT 49.7 / -0.08; EARN 49.7 / -0.05. CAT&UPGAP (n202) 54.0% / +2.16% but 78.7%/+12.7% in 2020-21 and 38.5%/-8.1% in 2023-26 (era-dependent, top-5 names 64%). FAIL (needs every era, |t|>=2).
+Note: the only sizeable effect (up-gap + flip) is a 2020-21 effect; reverses post-2023.
