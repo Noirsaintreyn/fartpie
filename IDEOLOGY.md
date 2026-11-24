@@ -1136,3 +1136,6 @@ Static equity DD 3/6/8%, daily loss 3/3/4%, target 10%, 0.06% taker/fill + 10.95
 
 ## Report 444 (Nov 24 2026): separate eval/funded leverage, Fantasy rules, flat ratio-gated book
 Best cell High tier, Ge 1 / Gf 1: passed by 30/60/90d 10/29/45%, first payout by 60/90/120d 9/20/31%, net/attempt 10K +$634 (18-21 +1,216, 22+ +$177, ROI 1.1x). Aggressive eval (Ge 2-4) passes faster (27-35% by 30d) but breaches 55-66% and 22+ net ~0 or negative. Funded Gf 1 beats 0.5. Fails the declared bar (first payout by 90d >=25%) except marginally; edge too thin post-2021.
+
+## Report 445 (Nov 24 2026): universes + drawdown-aware sizing, Fantasy High tier
+57-name wide ratio-gated stock universe (10.6k trades) is WORSE than the 19 gex names (22+ net -$41..-$84/attempt, breach 61-76%); index ETFs ungated long+short (QQQ SPY IWM DIA) ~no edge (pass <=12% by 90d, breach 88-93%); combined worse. Drawdown-aware sizing (x clip((eq+DD)/DD,.3,1.5)) does not help. Nothing meets first payout by 90d >=25% with net>0 in both halves. NB: 200d eval horizon makes U1 (22+ -$37) differ from report 444 (+$177, no cap): both say the 22+ edge is ~zero. Crypto 15m bars not available in the data (untested).
