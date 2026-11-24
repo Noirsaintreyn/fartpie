@@ -1,0 +1,7 @@
+thresholds (train): avg corr median 0.264, VRP median 5.29; share of days allowed (full): I2  67%, I3  53%, I4a 40%, I4b 58%
+flips matched 12319 of 12320
+LIVE exit              n 12319 win 30.9% med -0.61% mean  0.26% hold mean  2.97d med  1.00d | train win 32.6% med -0.53 | test win 30.4% med -0.64
+EXIT B close<vector    n 12319 win 31.3% med -0.51% mean  0.14% hold mean  1.55d med  0.92d | train win 32.7% med -0.46 | test win 30.8% med -0.52
+
+LIVE                                   n 4167 win 30.7% med -0.62% | CAGR 27.6% Sh 1.36 MDD -25.5% Cal 1.09 | +mo  66% worstMo  -9.4% worst12m -17.5% top5   47% | 19-21 MDD -11.3% Cal 3.29 | 22-26 MDD -25.5% Cal 0.86 | CAGR halves 37.1% | 21.9%
+book: EXIT B close<vector              n 6312 win 31.0% med -0.51% | CAGR 21.6% Sh 1.17 MDD -21.0% Cal 1.03 | +mo  61% worstMo  -9.1% worst12m -16.0% top5   43% | 19-21 MDD -12.2% Cal 2.09 | 22-26 MDD -18.9% Cal 1.02 | CAGR halves 25.5% | 19.2%

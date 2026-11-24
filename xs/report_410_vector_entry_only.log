@@ -1,0 +1,28 @@
+thresholds (train): avg corr median 0.264, VRP median 5.29; share of days allowed (full): I2  67%, I3  53%, I4a 40%, I4b 58%
+
+HOLD 5 TRADING DAYS, -8% close stop, entry at flip-day close
+arm           n | FLIP entry: win% med% mean% | RANDOM-day control (mean of 20 draws): mean% | flip-ctrl mean pp (t) train | test | win train/test | med train/test
+BASE      10984 |  52.1   0.23   0.26 |   0.08 | +0.18 (t +2.5) train +0.39 | test +0.13 | win 54.5/51.4 | med  0.42/ 0.17
+F40        5191 |  52.6   0.32   0.31 |   0.17 | +0.14 (t +2.0) train +0.37 | test +0.09 | win 58.0/51.3 | med  0.81/ 0.18
+R          4755 |  53.3   0.35   0.35 |   0.31 | +0.04 (t +0.7) train +0.27 | test -0.02 | win 56.1/52.6 | med  0.54/ 0.29
+M          5660 |  53.2   0.34   0.47 |   0.33 | +0.13 (t -0.2) train +0.40 | test +0.06 | win 55.5/52.6 | med  0.55/ 0.27
+F40&R      2260 |  53.4   0.35   0.28 |   0.36 | -0.08 (t +0.2) train +0.32 | test -0.18 | win 58.4/52.1 | med  0.98/ 0.24
+F40&R&M    1479 |  53.5   0.34   0.28 |   0.56 | -0.28 (t -1.5) train +0.20 | test -0.41 | win 58.1/52.2 | med  0.99/ 0.24
+
+HOLD 21 TRADING DAYS, -8% close stop, entry at flip-day close
+arm           n | FLIP entry: win% med% mean% | RANDOM-day control (mean of 20 draws): mean% | flip-ctrl mean pp (t) train | test | win train/test | med train/test
+BASE      10984 |  49.9  -0.03   1.02 |   0.39 | +0.64 (t +2.7) train +0.88 | test +0.57 | win 56.0/48.2 | med  1.42/-0.48
+F40        5191 |  51.3   0.33   1.40 |   0.70 | +0.70 (t +2.2) train +0.78 | test +0.67 | win 64.3/48.1 | med  3.41/-0.57
+R          4755 |  51.2   0.31   1.23 |   1.09 | +0.14 (t +0.8) train +0.21 | test +0.12 | win 56.4/49.7 | med  1.57/-0.06
+M          5660 |  49.6  -0.09   1.19 |   0.98 | +0.20 (t +0.1) train +0.80 | test +0.05 | win 57.3/47.6 | med  1.58/-0.65
+F40&R      2260 |  52.4   0.60   1.52 |   1.44 | +0.08 (t +0.7) train +0.24 | test +0.05 | win 65.8/49.1 | med  3.35/-0.17
+F40&R&M    1479 |  53.1   0.84   1.74 |   1.86 | -0.12 (t +0.1) train +0.68 | test -0.33 | win 69.2/48.8 | med  4.96/-0.28
+
+HOLD 63 TRADING DAYS, -8% close stop, entry at flip-day close
+arm           n | FLIP entry: win% med% mean% | RANDOM-day control (mean of 20 draws): mean% | flip-ctrl mean pp (t) train | test | win train/test | med train/test
+BASE      10896 |  40.1  -8.18   1.99 |   1.36 | +0.63 (t +2.8) train +0.86 | test +0.57 | win 47.3/38.2 | med -1.98/-8.24
+F40        5150 |  41.8  -8.13   2.22 |   1.65 | +0.57 (t +2.0) train +0.76 | test +0.52 | win 56.4/38.1 | med  3.80/-8.26
+R          4711 |  41.8  -8.10   2.32 |   2.29 | +0.03 (t +0.7) train +0.31 | test -0.04 | win 49.9/39.5 | med -0.19/-8.18
+M          5572 |  40.2  -8.15   1.91 |   1.86 | +0.05 (t +0.1) train +0.56 | test -0.09 | win 50.2/37.5 | med  0.18/-8.25
+F40&R      2234 |  44.4  -7.93   2.85 |   2.75 | +0.10 (t +1.1) train +1.00 | test -0.13 | win 63.1/39.6 | med  7.57/-8.21
+F40&R&M    1453 |  45.4  -5.72   3.23 |   3.44 | -0.20 (t -0.0) train +1.32 | test -0.62 | win 67.0/39.5 | med 10.09/-8.18

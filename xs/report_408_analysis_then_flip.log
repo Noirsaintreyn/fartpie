@@ -1,0 +1,26 @@
+thresholds (train): avg corr median 0.264, VRP median 5.29; share of days allowed (full): I2  67%, I3  53%, I4a 40%, I4b 58%
+
+15m flips (live book candidates, 54 names): flips with fundamentals 10984 of 12320
+arm            n   win%   med%  mean% | train win med | test win med | arm-base mean pp (t) pooled
+BASE       10984   30.6  -0.64   0.24 |  32.0 -0.57 |  30.2 -0.66 | +0.00 (+nan)
+F40         5191   31.1  -0.63   0.28 |  35.6 -0.51 |  30.0 -0.67 | +0.09 (+2.1)
+R           4755   31.0  -0.60   0.29 |  32.8 -0.52 |  30.5 -0.62 | -0.00 (-0.0)
+M           5660   30.6  -0.60   0.31 |  32.3 -0.54 |  30.1 -0.62 | -0.16 (-2.8)
+F40&R       2260   31.3  -0.58   0.30 |  34.4 -0.48 |  30.5 -0.61 | -0.02 (-0.2)
+F40&R&M     1479   30.6  -0.58   0.29 |  33.3 -0.50 |  29.8 -0.61 | -0.19 (-1.6)
+
+LIVE                                   n 4167 win 30.7% med -0.62% | CAGR 27.6% Sh 1.36 MDD -25.5% Cal 1.09 | +mo  66% worstMo  -9.4% worst12m -17.5% top5   47% | 19-21 MDD -11.3% Cal 3.29 | 22-26 MDD -25.5% Cal 0.86 | CAGR halves 37.1% | 21.9%
+book: F40                              n 3368 win 31.1% med -0.62% | CAGR 25.8% Sh 1.46 MDD -16.0% Cal 1.61 | +mo  65% worstMo  -9.6% worst12m  -6.0% top5   55% | 19-21 MDD -12.5% Cal 2.08 | 22-26 MDD -15.4% Cal 1.67 | kept 42% | CAGR halves 25.9% | 25.7%
+book: R                                n 3202 win 31.6% med -0.62% | CAGR 24.3% Sh 1.38 MDD -16.6% Cal 1.47 | +mo  63% worstMo  -8.6% worst12m  -3.6% top5   57% | 19-21 MDD  -9.7% Cal 2.31 | 22-26 MDD -16.6% Cal 1.55 | kept 39% | CAGR halves 22.3% | 25.7%
+book: M                                n 3418 win 30.1% med -0.65% | CAGR 22.4% Sh 1.27 MDD -21.2% Cal 1.06 | +mo  63% worstMo -11.1% worst12m -12.2% top5   58% | 19-21 MDD -10.2% Cal 2.45 | 22-26 MDD -21.2% Cal 0.98 | kept 46% | CAGR halves 24.9% | 20.8%
+book: F40&R                            n 2068 win 32.9% med -0.59% | CAGR 15.5% Sh 1.28 MDD -18.4% Cal 0.84 | +mo  64% worstMo  -5.5% worst12m  -5.9% top5   65% | 19-21 MDD  -9.4% Cal 1.28 | 22-26 MDD -18.4% Cal 0.97 | kept 18% | CAGR halves 12.0% | 17.8%
+book: F40&R&M                          n 1429 win 33.0% med -0.56% | CAGR  9.5% Sh 1.02 MDD -18.1% Cal 0.53 | +mo  61% worstMo  -4.3% worst12m  -4.7% top5   84% | 19-21 MDD  -6.8% Cal 0.03 | 22-26 MDD -18.1% Cal 0.89 | kept 12% | CAGR halves 0.2% | 16.0%
+
+1H flips (wide_T h1, PIT S&P, ratio >= 1.5): flips with fundamentals 4382 of 4979
+arm            n   win%   med%  mean% | train win med | test win med | arm-base mean pp (t) pooled
+BASE        4382   36.5  -0.91   0.41 |  39.4 -0.75 |  35.7 -0.96 | +0.00 (+nan)
+F40         2096   37.4  -0.85   0.51 |  42.6 -0.59 |  36.0 -0.95 | +0.14 (+1.4)
+R           1998   37.0  -0.84   0.52 |  40.7 -0.68 |  35.9 -0.91 | +0.10 (+0.7)
+M           2303   35.8  -0.85   0.47 |  36.9 -0.80 |  35.5 -0.89 | -0.24 (-2.2)
+F40&R        938   37.2  -0.81   0.59 |  40.2 -0.64 |  36.4 -0.89 | +0.01 (+0.0)
+F40&R&M      608   36.7  -0.76   0.71 |  36.4 -0.69 |  36.8 -0.79 | -0.28 (-1.4)
