@@ -1,0 +1,47 @@
+ratio names missing: []
+book: smoothed-spread CAGR 24.1% Sh 2.64 MDD -23.5% | TRUE daily MTM CAGR 27.6% Sh 1.36 MDD -25.5%
+avg exposure w: 0.936 | eligible names/day: 26.1 | days w>0: 0.971
+
+EXPOSURE-MATCHED LAYERS
+                                   CAGR  mean/yr  Sharpe     MDD  Ulcer  | 2019-21 CAGR Sh | 2022-26 CAGR Sh
+SPY (full exposure)               16.0%    16.8%    0.87  -34.2%  0.083  |    23.9%  1.07 |    11.3%  0.71
+SPY x w (beta, same exposure)     23.6%    22.5%    1.43  -18.5%  0.044  |    37.2%  2.06 |    15.5%  1.01
+54-name EW x w (UNIVERSE)         41.1%    36.8%    1.72  -27.7%  0.076  |    62.3%  2.53 |    28.8%  1.25
+eligible EW x w (GATE)            33.0%    30.9%    1.45  -25.2%  0.073  |    54.6%  2.22 |    20.7%  0.98
+LIVE BOOK (VECTOR)                27.6%    26.3%    1.36  -25.5%  0.076  |    37.1%  1.86 |    21.9%  1.08
+
+ANNUAL MEAN-RETURN STEPS (additive): exposure/cash drag +5.7% | universe over SPY +14.3% | S&P+ratio gate over universe -5.9% | vector book over gate -4.6% | total book 26.3%
+book on SPY: beta 0.62 alpha +16.0%/yr (t 3.04) R2 0.38
+gate x w on SPY: beta 0.86 alpha +16.5%/yr (t 3.53) R2 0.61
+book on SPY, universe-SPY, gate-universe: betas {'spy': 0.5, 'uni': 0.54, 'gate': 0.63} alpha +15.1%/yr t 3.07
+
+RANDOM-TIMING CONTROL (daily close-to-close, gross of cost; actual flips entered at the entry-day CLOSE: CAGR 18.9% Sh 1.03 MDD -30.6%; actual book net-of-cost 27.6%)
+  same names+durations, random entry         CAGR median 17.6% [5-95: 8.4%,27.1%] | Sharpe med 0.83 | MDD med -35.2% [5-95: -47.4%,-25.4%] | actual CAGR pct-rank 63%, MDD better-than-control 75%
+  same + must be gate-eligible at entry      CAGR median 15.2% [5-95: 5.9%,24.9%] | Sharpe med 0.73 | MDD med -36.8% [5-95: -49.2%,-27.2%] | actual CAGR pct-rank 73%, MDD better-than-control 84%
+
+REY PROPOSAL: ratio selects, vector only classifies
+                                   CAGR  mean/yr  Sharpe     MDD  Ulcer  | 2019-21 CAGR Sh | 2022-26 CAGR Sh
+SPY                               16.0%    16.8%    0.87  -34.2%  0.083  |    23.9%  1.07 |    11.3%  0.71
+Ratio-top6 ALWAYS (no vector)     29.5%    29.9%    1.06  -39.4%  0.116  |    40.0%  1.27 |    23.2%  0.91
+Ratio-top6 + vector bull only     11.5%    14.0%    0.57  -36.0%  0.146  |    21.2%  0.93 |     5.7%  0.35
+LIVE BOOK (flip entry)            27.6%    26.3%    1.36  -25.5%  0.076  |    37.1%  1.86 |    21.9%  1.08
+Gate EW x w (matched)             33.0%    30.9%    1.45  -25.2%  0.073  |    54.6%  2.22 |    20.7%  0.98
+R6V avg exposure 0.998
+
+STRESS WINDOWS (cumulative return)
+                                    Covid Feb19-Mar23 2020      2022 bear Jan3-Oct12       Apr 2025 Feb19-Apr8
+SPY                                                 -33.9%                    -24.9%                    -18.7%
+Universe EW (full)                                  -34.6%                    -31.0%                    -25.5%
+Gate EW (full)                                      -34.7%                    -33.3%                    -24.5%
+Ratio-top6 always                                   -37.4%                    -35.2%                    -24.6%
+Ratio-top6 + vector bull                            -16.2%                    -29.2%                    -18.5%
+LIVE BOOK                                            -9.3%                    -13.4%                    -19.8%
+
+book avg exposure inside windows vs outside: {'Covid Feb19-Mar23 2020': np.float64(0.51), '2022 bear Jan3-Oct12': np.float64(0.83), 'Apr 2025 Feb19-Apr8': np.float64(0.65)} overall 0.94
+
+UNIVERSE SELECTION CHECK (EW of S&P members, daily rebalanced, full exposure; no ratio gate):
+  SPY                      CAGR  16.0% Sh 0.87 MDD -34.2% | 2019-21  23.9% | 2022-26  11.3%
+  54 research names        CAGR  22.9% Sh 1.01 MDD -33.6% | 2019-21  33.8% | 2022-26  16.3%
+  other 108 pool names     CAGR  17.6% Sh 0.84 MDD -40.3% | 2019-21  21.8% | 2022-26  14.9%
+  book, breaker OFF        trades 4352 CAGR  27.6% Sh 1.26 MDD -23.3% Ulcer 0.077
+  book, 8% breaker (live)  trades 4167 CAGR  27.6% Sh 1.36 MDD -25.5% Ulcer 0.076
