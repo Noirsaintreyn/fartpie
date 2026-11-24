@@ -12,9 +12,10 @@ H = {'Authorization': f'Bot {tok}'}; B = 'https://discord.com/api/v10'
 parent = None
 if vec:
     r = requests.get(f'{B}/channels/{vec}', headers=H, timeout=20)
-    if r.ok: parent = r.json().get('parent_id')
+    if r.ok: parent = r.json().get('parent_id'); guild = r.json().get('guild_id') or guild          # the vector channel knows its own server: more reliable than DISCORD_GUILD_ID
+    else: print(f'note: could not read VECTOR_CHANNEL_ID {vec}: HTTP {r.status_code} (wrong ID, or the bot is not in that server)')
 ex = requests.get(f'{B}/guilds/{guild}/channels', headers=H, timeout=20)
-if not ex.ok: sys.exit(f'could not list channels: HTTP {ex.status_code} {ex.text[:150]}')
+if not ex.ok: sys.exit(f'could not list channels in server {guild}: HTTP {ex.status_code}. DISCORD_GUILD_ID is stale or the bot is not in this server: invite the bot to your current server, then set DISCORD_GUILD_ID (Discord: Settings -> Advanced -> Developer Mode, right-click the server icon -> Copy Server ID).')
 for c in ex.json():
     if c['name'] == name and c['type'] == 0: print(f'channel already exists: #{name}  ID {c["id"]}'); sys.exit(0)
 body = {'name': name, 'type': 0}
