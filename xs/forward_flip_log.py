@@ -31,19 +31,25 @@ def _vix():
     try:
         import yfinance as yf; v = yf.Ticker('^VIX').history(period='2y')['Close']; v.index = pd.to_datetime(v.index).tz_localize(None).normalize(); return (v <= v.rolling(20).mean()).shift(1)
     except Exception: return None
-VIXF = None
+def _spyon():  # added Nov 24 2026 (report 418): risk-on = SPY close > 200d SMA at the prior close
+    try:
+        import yfinance as yf; v = yf.Ticker('SPY').history(period='3y')['Close']; v.index = pd.to_datetime(v.index).tz_localize(None).normalize(); return (v > v.rolling(200).mean()).shift(1)
+    except Exception: return None
+VIXF = None; SPYF = None
 def shadow(H, i):
-    global VIXF
+    global VIXF, SPYF
+    if SPYF is None: SPYF = _spyon()
     if VIXF is None: VIXF = _vix()
     d0 = H.index[i].normalize(); P = H[H.index.normalize() < d0]
-    if len(P) < 30 * 26: return dict(N1=np.nan, N2=np.nan, R=np.nan, M=np.nan)
+    if len(P) < 30 * 26: return dict(N1=np.nan, N2=np.nan, R=np.nan, M=np.nan, ON=np.nan)
     day = P.index.normalize(); cl = P.close.groupby(day).last(); lr = np.log(P.close).groupby(day).diff().fillna(0); rvd = (lr ** 2).groupby(day).sum()
     rv10 = cl.pct_change().rolling(10).std(); N1 = rv10.iloc[-1] <= rv10.rolling(20).mean().iloc[-1]; N2 = rvd.rolling(5).mean().iloc[-1] <= rvd.rolling(20).mean().iloc[-1]
     hi = P.high.groupby(day).max(); lo = P.low.groupby(day).min(); pv = np.log(hi / lo) ** 2 / (4 * np.log(2)); R = (pv.rolling(5).mean() ** .5).iloc[-1] <= (pv ** .5).rolling(20).mean().iloc[-1]
     M = np.nan
     if VIXF is not None and len(VIXF.dropna()): M = float(VIXF.reindex([d0], method='ffill').iloc[0]) if d0 >= VIXF.index.min() else np.nan
     f = lambda x: float(x) if x == x else np.nan
-    return dict(N1=f(N1), N2=f(N2), R=f(R), M=M)
+    on = float(SPYF.reindex([d0], method='ffill').iloc[0]) if SPYF is not None and d0 >= SPYF.index.min() else np.nan
+    return dict(N1=f(N1), N2=f(N2), R=f(R), M=M, ON=on)
 def scan(nsess):
     out = []
     for tk in TK:
@@ -69,14 +75,14 @@ def score():
     L.to_parquet(LOG); print(L[L.exit_time.notna()][['tk', 'entry_time', 'exit_time', 'ret']].tail(20).to_string()); print(f'{L.exit_time.notna().sum()} closed of {len(L)}')
 def backfill():
     L = pd.read_parquet(LOG)
-    for c in ('N1', 'N2', 'R', 'M'):
+    for c in ('N1', 'N2', 'R', 'M', 'ON'):
         if c not in L.columns: L[c] = np.nan
-    for tk in L[L.N1.isna()].tk.unique():
+    for tk in L[L.ON.isna()].tk.unique():
         H = bars(tk)
         if H is None: continue
-        for j in L[(L.tk == tk) & L.N1.isna()].index:
+        for j in L[(L.tk == tk) & L.ON.isna()].index:
             fb = L.loc[j, 'flip_bar']
-            if fb in H.index: L.loc[j, ['N1', 'N2', 'R', 'M']] = list(shadow(H, H.index.get_loc(fb)).values())
+            if fb in H.index: L.loc[j, ['N1', 'N2', 'R', 'M', 'ON']] = list(shadow(H, H.index.get_loc(fb)).values())
     L.to_parquet(LOG); print(L[['tk', 'flip_bar', 'N1', 'N2', 'R', 'M']].tail(12).to_string(index=False)); print('flag coverage', L[['N1', 'N2', 'R', 'M']].notna().mean().round(2).to_dict())
 def thesis(tk, view, note=''):  # python3 xs/forward_flip_log.py thesis NVDA bull "DOE news"  -> data/thesis_log.csv (timestamped BEFORE the flip; joined at evaluation)
     p = 'data/thesis_log.csv'; row = pd.DataFrame([dict(ts=pd.Timestamp.now(tz='America/New_York').tz_localize(None), tk=tk.upper(), view=view, note=note)])
