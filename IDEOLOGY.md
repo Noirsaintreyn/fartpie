@@ -1133,3 +1133,6 @@ QQQ real gex gate only (SPY/IWM volume-gamma proxy failed validation: sign agree
 
 ## Report 443 (Nov 24 2026): flat ratio-gated flip book under Fantasy perps prop rules (usefantasy.xyz)
 Static equity DD 3/6/8%, daily loss 3/3/4%, target 10%, 0.06% taker/fill + 10.95%/yr financing, funded cycles at +5% (payout 4.5%). Best cell High-DD G0.5: pass 83% (100% 18-21, 70% 22+) but median 214 days to pass; net/eval on 10K $+2,054 overall but only +$259 in 22+ starts. Faster G (1.5-2) passes in 21-40d but breach 43-54%; 22+ net ~0 or negative. Low tier fails. Not viable under Rey's time-value bar; edge too thin for static intraday-equity DD at useful leverage.
+
+## Report 444 (Nov 24 2026): separate eval/funded leverage, Fantasy rules, flat ratio-gated book
+Best cell High tier, Ge 1 / Gf 1: passed by 30/60/90d 10/29/45%, first payout by 60/90/120d 9/20/31%, net/attempt 10K +$634 (18-21 +1,216, 22+ +$177, ROI 1.1x). Aggressive eval (Ge 2-4) passes faster (27-35% by 30d) but breaches 55-66% and 22+ net ~0 or negative. Funded Gf 1 beats 0.5. Fails the declared bar (first payout by 90d >=25%) except marginally; edge too thin post-2021.
