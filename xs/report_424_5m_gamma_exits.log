@@ -1,29 +1,35 @@
-names ['AAPL', 'ADBE', 'AMD', 'CAT', 'COST']
-flips (E1) 8146 | NEG share 0.23
+names ['AAPL', 'ADBE', 'AMD', 'CAT', 'COST', 'CRM']
+flips (E1) 9787 | NEG share 0.23
 
 --- exit E1 ---
-ALL entries    n  8146 win  28.8 med  -0.37 mean  0.04 hold  1.00d | train  0.05/-0.35 test  0.04/-0.39 | 18-19 28.1/-0.34 20-21 30.6/-0.36 22 26.0/-0.49 23-26 28.9/-0.36
-NEG entries    n  1913 win  29.2 med  -0.42 mean  0.08 hold  1.04d | train  0.05/-0.40 test  0.09/-0.42 | 18-19 30.1/-0.38 20-21 32.1/-0.47 22 27.4/-0.53 23-26 29.1/-0.36 | NEG-ALL t +3.4
-POS entries    n  6233 win  28.7 med  -0.36 mean  0.03 hold  0.99d | train  0.05/-0.34 test  0.02/-0.38 | 18-19 27.7/-0.33 20-21 30.3/-0.35 22 24.2/-0.45 23-26 28.8/-0.37
+ALL entries    n  9787 win  28.6 med  -0.38 mean  0.03 hold  0.99d | train  0.05/-0.35 test  0.03/-0.40 | 18-19 28.1/-0.34 20-21 30.0/-0.37 22 25.9/-0.52 23-26 28.8/-0.37
+NEG entries    n  2285 win  29.5 med  -0.43 mean  0.07 hold  1.05d | train  0.03/-0.41 test  0.08/-0.44 | 18-19 30.5/-0.39 20-21 32.0/-0.48 22 27.5/-0.56 23-26 29.8/-0.36 | NEG-ALL t +4.6
+POS entries    n  7502 win  28.4 med  -0.36 mean  0.02 hold  0.98d | train  0.05/-0.34 test  0.01/-0.38 | 18-19 27.6/-0.33 20-21 29.7/-0.35 22 23.3/-0.47 23-26 28.6/-0.37
 
 --- exit E2 ---
-ALL entries    n  8147 win  26.8 med  -0.32 mean  0.02 hold  0.79d | train  0.03/-0.29 test  0.02/-0.33 | 18-19 26.3/-0.28 20-21 28.9/-0.31 22 23.7/-0.41 23-26 26.7/-0.31
-NEG entries    n  1913 win  26.8 med  -0.35 mean  0.04 hold  0.82d | train  0.03/-0.35 test  0.04/-0.36 | 18-19 28.7/-0.31 20-21 29.4/-0.43 22 26.5/-0.47 23-26 25.4/-0.30 | NEG-ALL t +3.5
-POS entries    n  6234 win  26.8 med  -0.31 mean  0.02 hold  0.78d | train  0.03/-0.28 test  0.02/-0.32 | 18-19 25.7/-0.27 20-21 28.8/-0.29 22 20.2/-0.36 23-26 27.1/-0.32
+ALL entries    n  9789 win  26.7 med  -0.32 mean  0.02 hold  0.79d | train  0.03/-0.29 test  0.02/-0.33 | 18-19 26.3/-0.28 20-21 28.3/-0.31 22 23.5/-0.42 23-26 26.7/-0.32
+NEG entries    n  2285 win  27.1 med  -0.36 mean  0.03 hold  0.84d | train  0.03/-0.35 test  0.03/-0.37 | 18-19 29.2/-0.32 20-21 29.6/-0.43 22 26.0/-0.47 23-26 26.2/-0.30 | NEG-ALL t +3.8
+POS entries    n  7504 win  26.5 med  -0.31 mean  0.02 hold  0.77d | train  0.03/-0.29 test  0.01/-0.32 | 18-19 25.7/-0.28 20-21 28.1/-0.30 22 19.7/-0.37 23-26 26.9/-0.32
 
 --- exit E3 ---
-ALL entries    n  8146 win  35.5 med  -0.31 mean  0.02 hold  0.71d | train  0.03/-0.27 test  0.01/-0.32 | 18-19 36.8/-0.27 20-21 38.0/-0.28 22 30.5/-0.44 23-26 34.9/-0.31
-NEG entries    n  1913 win  31.4 med  -0.41 mean  0.02 hold  0.84d | train  0.02/-0.38 test  0.02/-0.41 | 18-19 32.6/-0.36 20-21 35.5/-0.45 22 28.1/-0.53 23-26 31.7/-0.35 | NEG-ALL t +2.6
-POS entries    n  6233 win  36.8 med  -0.28 mean  0.01 hold  0.67d | train  0.03/-0.25 test  0.00/-0.29 | 18-19 37.8/-0.24 20-21 38.4/-0.26 22 33.6/-0.36 23-26 35.8/-0.29
+ALL entries    n  9787 win  35.4 med  -0.31 mean  0.01 hold  0.71d | train  0.03/-0.27 test  0.00/-0.33 | 18-19 37.0/-0.27 20-21 37.9/-0.28 22 30.1/-0.47 23-26 34.8/-0.31
+NEG entries    n  2285 win  31.5 med  -0.41 mean  0.02 hold  0.86d | train  0.02/-0.38 test  0.02/-0.42 | 18-19 33.0/-0.37 20-21 35.1/-0.45 22 28.4/-0.56 23-26 32.0/-0.35 | NEG-ALL t +4.4
+POS entries    n  7502 win  36.6 med  -0.28 mean  0.01 hold  0.67d | train  0.03/-0.25 test -0.00/-0.30 | 18-19 37.9/-0.25 20-21 38.3/-0.26 22 32.8/-0.36 23-26 35.5/-0.30
 
 --- exit E4 ---
-ALL entries    n  8147 win  32.5 med  -0.27 mean  0.01 hold  0.60d | train  0.02/-0.24 test  0.01/-0.29 | 18-19 33.5/-0.24 20-21 35.2/-0.25 22 27.1/-0.39 23-26 31.9/-0.27
-NEG entries    n  1913 win  28.8 med  -0.34 mean  0.01 hold  0.70d | train  0.01/-0.32 test  0.01/-0.35 | 18-19 30.9/-0.30 20-21 33.1/-0.39 22 26.7/-0.47 23-26 27.8/-0.28 | NEG-ALL t +3.5
-POS entries    n  6234 win  33.6 med  -0.25 mean  0.01 hold  0.56d | train  0.02/-0.23 test  0.01/-0.26 | 18-19 34.1/-0.22 20-21 35.6/-0.23 22 27.7/-0.30 23-26 33.1/-0.26
+ALL entries    n  9789 win  32.3 med  -0.27 mean  0.01 hold  0.60d | train  0.02/-0.24 test  0.01/-0.29 | 18-19 33.7/-0.24 20-21 34.8/-0.25 22 26.9/-0.40 23-26 31.8/-0.27
+NEG entries    n  2285 win  28.9 med  -0.35 mean  0.01 hold  0.72d | train  0.02/-0.32 test  0.01/-0.36 | 18-19 31.4/-0.31 20-21 32.9/-0.40 22 26.5/-0.47 23-26 28.3/-0.29 | NEG-ALL t +4.0
+POS entries    n  7504 win  33.4 med  -0.25 mean  0.01 hold  0.56d | train  0.02/-0.23 test  0.00/-0.27 | 18-19 34.2/-0.23 20-21 35.2/-0.24 22 27.4/-0.31 23-26 32.7/-0.26
+
+--- exit E5 ---
+ALL entries    n  9773 win  56.9 med   0.21 mean  0.40 hold  3.88d | train  0.34/ 0.19 test  0.44/ 0.23 | 18-19 57.7/ 0.18 20-21 57.7/ 0.21 22 63.6/ 1.03 23-26 54.4/ 0.15
+NEG entries    n  2278 win  73.0 med   1.62 mean  1.59 hold 11.55d | train  1.74/ 1.50 test  1.54/ 1.66 | 18-19 66.7/ 0.87 20-21 79.4/ 2.04 22 73.5/ 2.86 23-26 72.2/ 1.17 | NEG-ALL t +8.0
+POS entries    n  7495 win  52.0 med   0.06 mean  0.04 hold  1.55d | train  0.10/ 0.10 test -0.00/ 0.01 | 18-19 55.7/ 0.12 20-21 54.0/ 0.10 22 48.6/-0.02 23-26 49.8/-0.01
 
 Exit comparison on NEG entries (vs E1): mean diff pp (t)
-E2: -0.05pp (t -2.3) | win 26.8 vs 29.2 | med -0.35 vs -0.42 | hold 0.82d vs 1.04d
-E3: -0.06pp (t -2.5) | win 31.4 vs 29.2 | med -0.41 vs -0.42 | hold 0.84d vs 1.04d
-E4: -0.07pp (t -2.9) | win 28.8 vs 29.2 | med -0.34 vs -0.42 | hold 0.70d vs 1.04d
+E2: -0.04pp (t -3.2) | win 27.1 vs 29.5 | med -0.36 vs -0.43 | hold 0.84d vs 1.05d
+E3: -0.05pp (t -2.6) | win 31.5 vs 29.5 | med -0.41 vs -0.43 | hold 0.86d vs 1.05d
+E4: -0.06pp (t -3.3) | win 28.9 vs 29.5 | med -0.35 vs -0.43 | hold 0.72d vs 1.05d
+E5: +1.52pp (t +5.6) | win 73.0 vs 29.5 | med 1.62 vs -0.43 | hold 11.55d vs 1.05d
 
-per name (E1, NEG vs ALL mean %): {'AAPL': (np.float64(0.015), np.float64(0.066), 1562), 'ADBE': (np.float64(-0.025), np.float64(-0.088), 1678), 'AMD': (np.float64(0.307), np.float64(0.162), 1637), 'CAT': (np.float64(0.135), np.float64(0.052), 1650), 'COST': (np.float64(0.043), np.float64(0.02), 1619)}
+per name (E1, NEG vs ALL mean %): {'AAPL': (np.float64(0.015), np.float64(0.066), 1562), 'ADBE': (np.float64(-0.025), np.float64(-0.088), 1678), 'AMD': (np.float64(0.307), np.float64(0.162), 1637), 'CAT': (np.float64(0.135), np.float64(0.052), 1650), 'COST': (np.float64(0.043), np.float64(0.02), 1619), 'CRM': (np.float64(-0.001), np.float64(-0.007), 1641)}
