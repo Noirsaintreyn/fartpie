@@ -1,0 +1,32 @@
+flips 10984 no sector 277
+flips with within-sector rank 10367 | hot share 0.153
+
+=== HOLD 21d ===  arm n | win% med% mean% | t vs ALL | top5 name share | by era win/med: 18-19 | 20-21 | 22 | 23-26
+/home/claude/fartpie/xs/report_413_theme_then_rank_then_flip.py:42: RuntimeWarning: invalid value encountered in scalar divide
+  m = (d.groupby('mo')[c].mean() - allm).dropna(); t = m.mean() / (m.std(ddof=1) / np.sqrt(len(m))) if len(m) > 3 else np.nan
+ALL      10367 |  50.6  0.12  1.23 | +nan | 41% | 61.8/ 2.28 (n403) | 55.5/ 1.24 (n1853) | 35.3/-8.05 (n1196) | 51.3/ 0.33 (n6915) |
+HOT       1588 |  50.0  0.01  1.08 | -0.0 | 60% | 37.5/-2.35 (n16) | 49.5/-0.25 (n315) | 49.2/-0.57 (n65) | 50.3/ 0.10 (n1192) |
+HOT&TOP    777 |  51.2  0.33  0.37 | -0.5 | 65% | n<15 | 47.1/-0.90 (n136) | 41.9/-2.96 (n43) | 53.1/ 0.72 (n590) |
+HOT&BOT    520 |  47.3 -0.71  1.89 | -0.1 | 84% | n<15 | 45.9/-0.94 (n98) | n<15 | 46.9/-0.73 (n405) |
+TOP-any   5024 |  51.5  0.35  1.07 | -0.2 | 52% | 63.9/ 2.97 (n263) | 56.6/ 1.76 (n807) | 36.1/-6.52 (n523) | 51.7/ 0.39 (n3431) |
+COLD&TOP  4247 |  51.6  0.35  1.20 | +0.0 | 46% | 64.7/ 3.19 (n255) | 58.6/ 2.10 (n671) | 35.6/-6.79 (n480) | 51.4/ 0.33 (n2841) |
+
+=== HOLD 5d ===  arm n | win% med% mean% | t vs ALL | top5 name share | by era win/med: 18-19 | 20-21 | 22 | 23-26
+/home/claude/fartpie/xs/report_413_theme_then_rank_then_flip.py:42: RuntimeWarning: invalid value encountered in scalar divide
+  m = (d.groupby('mo')[c].mean() - allm).dropna(); t = m.mean() / (m.std(ddof=1) / np.sqrt(len(m))) if len(m) > 3 else np.nan
+ALL      10367 |  52.4  0.26  0.32 | +nan | 37% | 55.6/ 0.49 (n403) | 54.7/ 0.43 (n1853) | 45.7/-0.70 (n1196) | 52.8/ 0.29 (n6915) |
+HOT       1588 |  49.7 -0.03  0.23 | +0.5 | 53% | 62.5/ 1.25 (n16) | 57.5/ 0.77 (n315) | 43.1/-0.60 (n65) | 47.8/-0.25 (n1192) |
+HOT&TOP    777 |  48.9 -0.14 -0.11 | -0.1 | 73% | n<15 | 55.1/ 0.53 (n136) | 34.9/-1.40 (n43) | 48.3/-0.16 (n590) |
+HOT&BOT    520 |  49.0 -0.24  0.63 | -0.1 | 83% | n<15 | 54.1/ 0.61 (n98) | n<15 | 47.2/-0.46 (n405) |
+TOP-any   5024 |  53.1  0.30  0.30 | +0.1 | 43% | 54.4/ 0.49 (n263) | 55.9/ 0.38 (n807) | 44.9/-0.74 (n523) | 53.6/ 0.34 (n3431) |
+COLD&TOP  4247 |  53.9  0.35  0.37 | +0.8 | 40% | 54.1/ 0.40 (n255) | 56.0/ 0.38 (n671) | 45.8/-0.54 (n480) | 54.7/ 0.45 (n2841) |
+
+=== HOLD 63d ===  arm n | win% med% mean% | t vs ALL | top5 name share | by era win/med: 18-19 | 20-21 | 22 | 23-26
+/home/claude/fartpie/xs/report_413_theme_then_rank_then_flip.py:42: RuntimeWarning: invalid value encountered in scalar divide
+  m = (d.groupby('mo')[c].mean() - allm).dropna(); t = m.mean() / (m.std(ddof=1) / np.sqrt(len(m))) if len(m) > 3 else np.nan
+ALL      10289 |  41.2 -8.12  2.40 | +nan | 46% | 49.6/-0.37 (n403) | 47.6/-1.61 (n1853) | 23.3/-8.70 (n1196) | 42.2/-8.07 (n6837) |
+HOT       1588 |  39.8 -8.14  2.40 | +0.3 | 61% | 18.8/-8.37 (n16) | 37.8/-8.34 (n315) | 46.2/-2.26 (n65) | 40.3/-8.07 (n1192) |
+HOT&TOP    777 |  41.6 -4.73  1.31 | -0.5 | 62% | n<15 | 30.9/-8.42 (n136) | 27.9/-8.67 (n43) | 45.6/-1.61 (n590) |
+HOT&BOT    520 |  34.8 -8.35  2.86 | -0.3 | 84% | n<15 | 38.8/-8.21 (n98) | n<15 | 32.3/-8.44 (n405) |
+TOP-any   4996 |  43.5 -6.27  1.83 | -0.0 | 52% | 50.6/ 0.55 (n263) | 49.3/-0.30 (n807) | 27.3/-8.67 (n523) | 44.0/-5.43 (n3403) |
+COLD&TOP  4219 |  43.8 -7.00  1.93 | -0.1 | 48% | 52.2/ 1.80 (n255) | 53.1/ 1.56 (n671) | 27.3/-8.67 (n480) | 43.7/-7.19 (n2813) |
