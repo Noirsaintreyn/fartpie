@@ -102,6 +102,8 @@ def selftest():
     assert list(to_screener_frame(B['SPY']).columns) == ['Open', 'High', 'Low', 'Close', 'Volume']
     print('selftest ok')
 def probe():
+    if not (os.getenv('WEBULL_APP_KEY') and os.getenv('WEBULL_APP_SECRET')):
+        sys.exit('WEBULL_APP_KEY / WEBULL_APP_SECRET are not in ~/fartpie/.env (or discord_bot/.env). Add them there yourself, then rerun. Until then the screener just keeps using Yahoo.')
     dc = client()
     r = dc.market_data.get_batch_history_bar('SPY,QQQ', 'US_STOCK', 'M15', count='5', real_time_required=True); j = _json(r)
     print('RAW BARS:', json.dumps(j)[:900]); B = parse_bars(j); print('PARSED:', {k: (len(v), str(v.datetime.iloc[-1]), float(v.close.iloc[-1])) for k, v in B.items()})
