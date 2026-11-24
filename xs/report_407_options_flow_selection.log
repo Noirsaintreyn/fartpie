@@ -1,0 +1,10 @@
+signal (declared dir)              months names/mo | IC train (t) | IC test (t) | pooled t | top-bot tercile excess pp train | test
+P1 put share of 5d volume              89     28.1 | -0.007 (-0.2) | +0.010 (+0.4) | +0.2 | +0.23 | +0.49  
+P2 opening-position imbalance          89     28.1 | +0.024 (+0.6) | +0.010 (+0.4) | +0.7 | +0.70 | +0.25  
+P3 put share of OI                     89     28.1 | -0.065 (-1.5) | +0.037 (+1.4) | -0.0 | -0.15 | +1.05  
+P4 own net-GEX z                       84     23.2 | -0.025 (-0.6) | -0.007 (-0.2) | -0.6 | -0.74 | -0.52  
+P5 IV - 20d RV                         84     23.2 | +0.046 (+1.1) | +0.009 (+0.2) | +0.8 | +0.74 | +0.76  
+F fundamentals                         96     66.5 | +0.055 (+1.5) | -0.002 (-0.1) | +1.0 | +0.25 | -0.59  
+ratio (attention)                      96     74.2 | +0.020 (+0.7) | -0.005 (-0.2) | +0.2 | +0.20 | +0.09  
+V vector bull                           0     75.2 | +nan (+nan) | +nan (+nan) | +nan |  +nan |  +nan  
+R vol relief                            0     75.2 | +nan (+nan) | +nan (+nan) | +nan |  +nan |  +nan  
