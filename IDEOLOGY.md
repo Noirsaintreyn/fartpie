@@ -1127,3 +1127,6 @@ Strike x expiry net-GEX grid (calls +, puts -, $ per 1% move) with PW/CW/VT/SPOT
 
 ## Report 441 (Nov 24 2026): neg-gamma 15m vector flips on index ETFs as prop strat
 QQQ real gex gate only (SPY/IWM volume-gamma proxy failed validation: sign agree 50%, rho -0.30). Long NEG-POS: QQQ +19.5bp t+3.5 (train/test same sign), SPY +7.4 t+1.7, IWM +2.7, DIA +3.6 (fail). Shorts: no cell consistent across eras. Portfolio of NEG longs: QQQ 3.6 trades/mo, 59.8bp/mo, daily Sharpe 1.58; +SPY (corr .88) 84bp/mo Sharpe 1.44; all four 92bp/mo Sharpe 0.92 (DD 3x). Era 23-26 QQQ only +10bp/trade. ETF-proxy, not real futures fills; earlier real-MNQ check (n25) was only +3.5pts.
+
+## Report 442 (Nov 24 2026): ratio-gated flips flat vs negative-gamma leverage (perps prop idea)
+19 names with ratio+gex, 4,146 G20 15m long flips, 6 slots, X1, 4bp. Flat 1x: +523% CAGR 24.8% maxDD -14.7% (realized floor) Sharpe 1.49 (train 2.24, test 0.91). NEG flips +0.39% vs POS +0.29% per trade; NEG>POS in 18-21, equal 22 and 23-26 (+0.28 vs +0.30). 2x on neg: test Calmar 0.54 vs 0.71 flat, Sharpe 0.83 vs 0.91 => leverage-on-neg-gamma FAILS the declared pass rule (adds DD faster than return outside 2018-21). Neg-only book: CAGR 9.4%.
