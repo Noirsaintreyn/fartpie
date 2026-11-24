@@ -16,13 +16,13 @@ def pull(tk):
     if os.path.exists(f): return tk, 'have'
     rows = []; a = '2018-01-01'; last = None
     while True:
-        d = get(tk, a)
+        d = get(tk, a); time.sleep(.5)
         if d is None: return tk, 'FAILED'
         if not d: break
         rows += d; lt = d[-1]['ts']
         if lt == last or len(d) < 5000: break
         last = lt; a = lt[:10]
     H = pd.DataFrame(rows).drop_duplicates('ts').sort_values('ts'); H.to_parquet(f); return tk, f'{len(H)} rows {H.ts.min()} -> {H.ts.max()}'
-with cf.ThreadPoolExecutor(4) as ex:
+with cf.ThreadPoolExecutor(2) as ex:
     for tk, msg in ex.map(pull, NAMES): print(tk, msg, flush=True)
 print('DONE', TF)
