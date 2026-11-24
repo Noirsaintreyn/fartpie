@@ -23,6 +23,27 @@ def feats(H, i):  # i = flip bar index; everything known at that bar's close
     e = lc - np.log(pd.Series(c).ewm(span=20, adjust=False).mean().values); bk = (H.index.hour * 60 + H.index.minute).values; prior = e[:i][bk[:i] == bk[i]][-60:]
     z = (e[i] - np.median(prior)) / (1.4826 * np.median(np.abs(prior - np.median(prior)))) if len(prior) >= 20 else np.nan
     return er, z, J
+
+# ---- FROZEN SHADOW FLAGS (Nov 24 2026, definitions fixed; NOT traded; evaluated only per data/forward_log_PREREG.md) ----
+# All use only days strictly before the flip day (known at the prior close).  N1 close-RV10 <= its 20d mean (report 404); N2 15m-RV (sum sq 15m log rets per RTH day) 5d mean <= 20d mean;
+# R Parkinson 5d <= 20d mean of daily range vol (report 408); M VIX <= its 20d mean (report 402).  N3 (HAR, coefficients fit 2019-21) and the consolidation C_*/S_* flags are not wired (need saved coefficients / report 397 code).
+def _vix():
+    try:
+        import yfinance as yf; v = yf.Ticker('^VIX').history(period='2y')['Close']; v.index = pd.to_datetime(v.index).tz_localize(None).normalize(); return (v <= v.rolling(20).mean()).shift(1)
+    except Exception: return None
+VIXF = None
+def shadow(H, i):
+    global VIXF
+    if VIXF is None: VIXF = _vix()
+    d0 = H.index[i].normalize(); P = H[H.index.normalize() < d0]
+    if len(P) < 30 * 26: return dict(N1=np.nan, N2=np.nan, R=np.nan, M=np.nan)
+    day = P.index.normalize(); cl = P.close.groupby(day).last(); lr = np.log(P.close).groupby(day).diff().fillna(0); rvd = (lr ** 2).groupby(day).sum()
+    rv10 = cl.pct_change().rolling(10).std(); N1 = rv10.iloc[-1] <= rv10.rolling(20).mean().iloc[-1]; N2 = rvd.rolling(5).mean().iloc[-1] <= rvd.rolling(20).mean().iloc[-1]
+    hi = P.high.groupby(day).max(); lo = P.low.groupby(day).min(); pv = np.log(hi / lo) ** 2 / (4 * np.log(2)); R = (pv.rolling(5).mean() ** .5).iloc[-1] <= (pv ** .5).rolling(20).mean().iloc[-1]
+    M = np.nan
+    if VIXF is not None and len(VIXF.dropna()): M = float(VIXF.reindex([d0], method='ffill').iloc[0]) if d0 >= VIXF.index.min() else np.nan
+    f = lambda x: float(x) if x == x else np.nan
+    return dict(N1=f(N1), N2=f(N2), R=f(R), M=M)
 def scan(nsess):
     out = []
     for tk in TK:
@@ -32,7 +53,7 @@ def scan(nsess):
         for i, d in fl:
             if d != 1 or H.index[i].normalize() < sess[0] or i + 1 > last_i: continue
             er, z, J = feats(H, i); ent = H.open.values[i + 1]; px = H.close.values[last_i]; lo = H.low.values[i + 1:last_i + 1].min()
-            out.append(dict(tk=tk, flip_bar=H.index[i], entry_time=H.index[i + 1], entry_px=ent, age_bars=last_i - i, last_time=H.index[last_i], last_px=px, pct_from_entry=px / ent - 1, pulled_back=bool(H.open.values[last_i] <= ent), min_low_since=lo, still_bull=bool(regs[last_i] == 1), vec_stop=lv[last_i], er20=er, z_aligned=z, J=J, exit_time=pd.NaT, exit_px=np.nan, ret=np.nan, logged_at=pd.Timestamp.utcnow().tz_localize(None)))
+            out.append(dict(tk=tk, flip_bar=H.index[i], entry_time=H.index[i + 1], entry_px=ent, age_bars=last_i - i, last_time=H.index[last_i], last_px=px, pct_from_entry=px / ent - 1, pulled_back=bool(H.open.values[last_i] <= ent), min_low_since=lo, still_bull=bool(regs[last_i] == 1), vec_stop=lv[last_i], er20=er, z_aligned=z, J=J, **shadow(H, i), exit_time=pd.NaT, exit_px=np.nan, ret=np.nan, logged_at=pd.Timestamp.utcnow().tz_localize(None)))
     return pd.DataFrame(out)
 def score():
     L = pd.read_parquet(LOG); open_ = L[L.exit_time.isna()]
@@ -46,9 +67,25 @@ def score():
             nxt = [i for i, d in fl if d == -1 and i > i0]
             if nxt and nxt[0] + 1 < len(H): ix = nxt[0] + 1; L.loc[j, ['exit_time', 'exit_px']] = [H.index[ix], H.open.values[ix]]; L.loc[j, 'ret'] = H.open.values[ix] / L.loc[j, 'entry_px'] - 1 - .0004
     L.to_parquet(LOG); print(L[L.exit_time.notna()][['tk', 'entry_time', 'exit_time', 'ret']].tail(20).to_string()); print(f'{L.exit_time.notna().sum()} closed of {len(L)}')
+def backfill():
+    L = pd.read_parquet(LOG)
+    for c in ('N1', 'N2', 'R', 'M'):
+        if c not in L.columns: L[c] = np.nan
+    for tk in L[L.N1.isna()].tk.unique():
+        H = bars(tk)
+        if H is None: continue
+        for j in L[(L.tk == tk) & L.N1.isna()].index:
+            fb = L.loc[j, 'flip_bar']
+            if fb in H.index: L.loc[j, ['N1', 'N2', 'R', 'M']] = list(shadow(H, H.index.get_loc(fb)).values())
+    L.to_parquet(LOG); print(L[['tk', 'flip_bar', 'N1', 'N2', 'R', 'M']].tail(12).to_string(index=False)); print('flag coverage', L[['N1', 'N2', 'R', 'M']].notna().mean().round(2).to_dict())
+def thesis(tk, view, note=''):  # python3 xs/forward_flip_log.py thesis NVDA bull "DOE news"  -> data/thesis_log.csv (timestamped BEFORE the flip; joined at evaluation)
+    p = 'data/thesis_log.csv'; row = pd.DataFrame([dict(ts=pd.Timestamp.now(tz='America/New_York').tz_localize(None), tk=tk.upper(), view=view, note=note)])
+    row.to_csv(p, mode='a', header=not os.path.exists(p), index=False); print('logged', row.iloc[0].to_dict())
 if __name__ == '__main__':
     os.makedirs('data', exist_ok=True)
     if len(sys.argv) > 1 and sys.argv[1] == 'score': score(); sys.exit()
+    if len(sys.argv) > 1 and sys.argv[1] == 'backfill': backfill(); sys.exit()
+    if len(sys.argv) > 1 and sys.argv[1] == 'thesis': thesis(*sys.argv[2:5]); sys.exit()
     n = int(sys.argv[1]) if len(sys.argv) > 1 else 3; N = scan(n)
     if os.path.exists(LOG): L = pd.read_parquet(LOG); N = pd.concat([L, N]).drop_duplicates(['tk', 'flip_bar'], keep='first')
     N.to_parquet(LOG); cur = N[N.flip_bar >= N.flip_bar.max().normalize() - pd.Timedelta(days=n + 2)].sort_values('flip_bar', ascending=False)
