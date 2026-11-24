@@ -1,0 +1,33 @@
+names 25
+names with gex 19
+9253 trades, 3794 gated, 2597 neg
+
+=== PRIMARY: G20-gated (n 3794; neg-gamma 1170; win 31.2 mean 0.31) ===
+  H1 within NEG-gamma flips: A = LOW range used (<=0.5), B = HIGH (>=1.0)
+    A n  341 win 33.7 med -0.43 mean  0.45
+    B n  231 win 36.4 med -0.48 mean  0.27
+    A-B +0.17pp  t +0.56 | train +0.20pp (n 101/65) | test +0.15pp (n 240/166) | 18-19 -0.75 20-21 +0.86 22 -0.13 23-26 +0.33
+  H2 PAIR: A = NEG & LOW-used, B = every other flip
+    A n  341 win 33.7 med -0.43 mean  0.45
+    B n 3453 win 30.9 med -0.55 mean  0.29
+    A-B +0.15pp  t +0.70 | train +0.41pp (n 101/1203) | test +0.07pp (n 240/2250) | 18-19 +0.14 20-21 +0.64 22 +0.00 23-26 +0.19
+  H3 flip AT support (bounce off the day/prior-day low): A = AT, B = NOT
+    A n 1615 win 30.3 med -0.55 mean  0.20
+    B n 2179 win 31.8 med -0.52 mean  0.39
+    A-B -0.18pp  t -1.63 | train -0.24pp (n 544/760) | test -0.15pp (n 1071/1419) | 18-19 -0.39 20-21 -0.14 22 -0.40 23-26 -0.11
+  (context) neg-gamma alone vs not: 0.40 vs 0.27; LOW-used vs HIGH-used (all): 0.29 vs 0.17
+
+=== ROBUSTNESS: all flips (n 9253; neg-gamma 2597; win 30.2 mean 0.20) ===
+  H1 within NEG-gamma flips: A = LOW range used (<=0.5), B = HIGH (>=1.0)
+    A n  705 win 32.2 med -0.51 mean  0.33
+    B n  511 win 35.6 med -0.54 mean  0.20
+    A-B +0.12pp  t +0.49 | train +0.48pp (n 232/151) | test -0.05pp (n 473/360) | 18-19 -0.33 20-21 +0.83 22 +0.00 23-26 +0.04
+  H2 PAIR: A = NEG & LOW-used, B = every other flip
+    A n  705 win 32.2 med -0.51 mean  0.33
+    B n 8548 win 30.0 med -0.50 mean  0.19
+    A-B +0.13pp  t +0.94 | train +0.36pp (n 232/3506) | test +0.04pp (n 473/5042) | 18-19 -0.11 20-21 +0.58 22 +0.08 23-26 +0.17
+  H3 flip AT support (bounce off the day/prior-day low): A = AT, B = NOT
+    A n 3905 win 30.7 med -0.52 mean  0.12
+    B n 5348 win 29.8 med -0.49 mean  0.26
+    A-B -0.14pp  t -2.30 | train -0.18pp (n 1575/2163) | test -0.12pp (n 2330/3185) | 18-19 -0.34 20-21 -0.16 22 +0.07 23-26 -0.10
+  (context) neg-gamma alone vs not: 0.30 vs 0.16; LOW-used vs HIGH-used (all): 0.17 vs 0.12
