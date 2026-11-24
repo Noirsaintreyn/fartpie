@@ -218,6 +218,21 @@ async def pro_cmd(inter: discord.Interaction, ticker: str):
     await _screener_text(inter, ['--pro', ticker.strip().upper()])
 
 
+@tree.command(name='gex', description='Dealer greeks for one ticker: net GEX, gamma flip, walls, DEX, vanna, charm, vega, IV, skew + the GEX heatmap')
+@app_commands.describe(ticker='e.g. QQQ, TSLA, NVDA (names the worker logs a chain for)')
+async def gex_cmd(inter: discord.Interaction, ticker: str = 'QQQ'):
+    await inter.response.defer(thinking=True)
+    import gexcmd
+    t = ticker.strip().upper()
+    try: s, png, asof, fn = await run(gexcmd.build, t)
+    except SystemExit:
+        have = await run(gexcmd.available)
+        return await inter.followup.send(f'No option chain logged for {t} yet. Logged: ' + (', '.join(have) if have else 'none (the Webull job runs at 16:15 ET and 08:30 ET)'))
+    except Exception as e: return await inter.followup.send(f'Could not build {t} greeks: {str(e)[:200]}')
+    stale = (datetime.now(NYTZ).date() - datetime.strptime(asof, '%Y-%m-%d').date()).days > 3
+    await inter.followup.send(gexcmd.text(t, s, asof) + ('\n:warning: chain is more than 3 days old' if stale else ''), file=discord.File(io.BytesIO(png), filename=f'{t}_gex.png'))
+
+
 @tree.command(name='brief', description='Morning report: the book, sector ETFs with their vectors, calendar, news, and a page per position')
 async def brief_cmd(inter: discord.Interaction):
     await inter.response.defer(thinking=True)
