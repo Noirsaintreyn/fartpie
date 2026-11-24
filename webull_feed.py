@@ -16,7 +16,7 @@ ET = 'America/New_York'; LIVE = os.getenv('LIVE_DIR', 'live')
 import logging
 for _n in ('webull', 'webull.core', 'webull.core.client'): logging.getLogger(_n).setLevel(logging.CRITICAL)   # the SDK logs request headers (incl. your access token) on errors: keep that out of logs/pastes
 _DC = {}
-def enabled(): return os.getenv('WEBULL_FEED', '1') != '0' and bool(os.getenv('WEBULL_APP_KEY')) and bool(os.getenv('WEBULL_APP_SECRET'))
+def enabled(): return not _DC.get('off') and os.getenv('WEBULL_FEED', '1') != '0' and bool(os.getenv('WEBULL_APP_KEY')) and bool(os.getenv('WEBULL_APP_SECRET'))
 def client():
     if 'c' not in _DC:
         from webull.core.client import ApiClient
@@ -86,6 +86,8 @@ def bars15(symbols, count=400, chunk=20):
         for k in range(3):
             try: out.update(parse_bars(_bars_call(dc, part, count, kw))); break
             except Exception as e:
+                if 'NOT_SUBSCRIBED' in str(e) or 'HTTP Status: 403' in str(e):
+                    _DC['off'] = True; print('  ! webull: STOCK QUOTES not subscribed (403) - feed off for this run, using Yahoo'); return out
                 if k == 2: print(f'  ! webull bars {part[0]}..: {str(e)[:80]}')
                 else: time.sleep(0.6 * (k + 1))
     return out
@@ -93,7 +95,9 @@ def prices(symbols, chunk=50):
     out = {}; dc = client()
     for i in range(0, len(symbols), chunk):
         try: out.update(parse_prices(_json(dc.market_data.get_snapshot(','.join(symbols[i:i + chunk]), 'US_STOCK'))))
-        except Exception as e: print(f'  ! webull snapshot: {str(e)[:80]}')
+        except Exception as e:
+            if 'NOT_SUBSCRIBED' in str(e) or 'HTTP Status: 403' in str(e): _DC['off'] = True
+            print(f'  ! webull snapshot: {str(e)[:80]}'); break
     return out
 def to_screener_frame(df):
     """screener's fallback frame shape: Open/High/Low/Close/Volume capitalised, tz-aware index (what the Yahoo path produces)"""
