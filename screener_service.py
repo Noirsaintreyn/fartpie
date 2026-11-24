@@ -144,6 +144,32 @@ def run_midsmall():
     threading.Thread(target=loop, daemon=True).start()
 
 
+def webull_env():
+    """Nov 24 2026: Render holds the Webull credentials in ONE variable named 'webull_api'; the Webull code reads WEBULL_APP_KEY and WEBULL_APP_SECRET. If those two are missing, split 'webull_api' into them
+    (accepts JSON {"app_key":..,"app_secret":..}, 'KEY=..,SECRET=..' pairs, or 'key:secret' / 'key,secret' / 'key secret' / two lines). Child processes inherit the result. Never prints the values."""
+    import json as _json, re
+    if os.environ.get('WEBULL_APP_KEY') and os.environ.get('WEBULL_APP_SECRET'): return
+    raw = (os.environ.get('webull_api') or os.environ.get('WEBULL_API') or '').strip()
+    if not raw: return
+    k = sc = None
+    try:
+        j = _json.loads(raw)
+        if isinstance(j, dict):
+            for a, b in j.items():
+                a = str(a).lower().replace('_', '')
+                if 'secret' in a: sc = str(b)
+                elif 'key' in a or a in ('appid', 'id'): k = str(b)
+    except ValueError:
+        pairs = dict((p.group(1).lower().replace('_', ''), p.group(2)) for p in re.finditer(r'([A-Za-z_]+)\s*[=:]\s*([^\s,;|]+)', raw))
+        if any('secret' in a for a in pairs): sc = next(v for a, v in pairs.items() if 'secret' in a); k = next((v for a, v in pairs.items() if 'key' in a and 'secret' not in a), None)
+        else:
+            parts = [t for t in re.split(r'[\s,;:|]+', raw) if t]
+            if len(parts) == 2: k, sc = parts
+            else: return log(f"webull_api found but has {len(parts)} part(s); need an app key AND an app secret (WEBULL_APP_KEY / WEBULL_APP_SECRET)")
+    if k and sc: os.environ['WEBULL_APP_KEY'], os.environ['WEBULL_APP_SECRET'] = k, sc; log('Webull credentials loaded from the webull_api variable')
+    else: log('webull_api found but could not find both an app key and an app secret in it')
+
+
 GAMMA_SYMS = os.environ.get('GAMMA_SYMBOLS', 'QQQ,TSLA,NVDA,AAPL,AMD,AMZN,GOOGL,MSFT,META,COST')
 
 
@@ -175,7 +201,7 @@ def run_gamma_job():
 
 
 def main():
-    setup(); log('screener worker up; args', ARGS)
+    setup(); webull_env(); log('screener worker up; args', ARGS)
     run_midsmall()
     if os.environ.get('RUN_BOT') == '1': run_bot()
     run_site_push(); run_gamma_job()
