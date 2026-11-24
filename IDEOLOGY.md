@@ -1114,3 +1114,6 @@ H1 within negative-gamma flips LOW range used beats HIGH: +0.17pp, t +0.6; H2 NE
 
 ## Report 438 (Nov 24 2026): small-cap fundamentals (buybacks, dilution, profitability) on sub-$5 vector flips (32,370 flips with a PIT annual filing; net of 40bp)
 H1 buyback (>=10% of OCF) vs none: +0.09pp, t +1.0 (train +0.29, test +0.01); H2 shrinking vs diluting shares: +0.09pp, t +0.5; H3 profitable vs unprofitable: -0.16pp, t -1.5 (wrong sign: loss-making names did slightly better). No admission; groups are not profitable after cost either. Annual data only; buyback yield on market cap not built (no price/shares series for these names).
+
+## Report 439 (Nov 24 2026): equity curve of the neg-gamma flip model (report 428 candidate; xs/report_439_neggamma_equity.py, xs/neggamma_backtest.png)
+G20 gate, first gated flip per negative-gamma episode, 11 names, 2018-07..2025-12, 6 slots x 1/6, REALIZED-P&L basis, 4bp. X3 (pos-gamma-or-vector exit): 305 trades (~40/yr), total +10.5%, CAGR 1.3%, max DD -6.1% (floor: open trades not marked), win 42.6%; X1: +18.2%, CAGR 2.2%, DD -7.3%, win 30.5%. Per-trade mean by era (X3): 18-19 +0.85%, 20-21 +0.21%, 22 +0.51%, 23-26 -0.05% -> the edge is concentrated in 2018-22 and absent since 2023; capital mostly idle (few signals, 11 names). Posted to #neg-gamma-flips via tools/post_chart.py. Not deploy-grade.
