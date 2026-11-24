@@ -1024,3 +1024,7 @@ NHP = neural Hawkes process (Rey); only plain Hawkes exists in repo -> volatilit
 Rey's example: institutional discretionary pitches (dated catalyst + overextension + headlines). Proxies only; no news feed.
 21d hold: ALL win 49.9% med -0.03%; CAT (n2255) 50.6 / +0.11, t +1.2; NOCAT 49.7 / -0.08; EARN 49.7 / -0.05. CAT&UPGAP (n202) 54.0% / +2.16% but 78.7%/+12.7% in 2020-21 and 38.5%/-8.1% in 2023-26 (era-dependent, top-5 names 64%). FAIL (needs every era, |t|>=2).
 Note: the only sizeable effect (up-gap + flip) is a 2020-21 effect; reverses post-2023.
+
+## Report 415 (Nov 24 2026) - signal-based exit: daily Hawkes intensity death + vector exit (no time holds, per Rey)
+Declared: event = ret >= 1 sigma20 and volume >= 20d mean; lambda decays tau=5d; exit when lambda <= 0.25 x peak since entry (peak >= 1) or the live vector exit, whichever first. Neighbours tau 3/8, theta .15/.40.
+Result: live avg hold 2.97d, so a daily Hawkes rarely fires (66-557 of 12,320 trades). Trade level win 30.6-31.1% vs 30.6%, median -0.63% unchanged, every era identical. Book: base CAGR 27.6% Sh 1.36 MDD -25.5%; MIN(5,.25) 24.9% / 1.26 / -23.2%; (3,.25) 24.2 / 1.25 / -28.5; (8,.25) 26.8 / 1.32 / -25.2; (5,.15) 27.6 / 1.36 / -24.7; (5,.40) 24.8 / 1.28 / -27.8. 2022-26 half CAGR lower in 4/5. FAIL: no gain, daily timescale mismatched to ~3-day holds. Untested: 15m Hawkes (intraday excitation) as the exit.
