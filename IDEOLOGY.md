@@ -1145,3 +1145,6 @@ Base trade (342 trades 2022-26, +4.5 pts avg, win 47%, avg MAE -35.6 pts vs the 
 
 ## Report 447 (Nov 24 2026): NQ base flip, negative-gamma sizing on Lucid Flex 50K
 Per trade (613, 2018-26): NEG 71% of trades; NEG avg +5.8 pts vs POS -1.8, diff +7.6 t+1.79 (long +10.5 t1.75, short +7.2 t1.28); same sign 18-21 and 24-26, flips in 22-23 (POS n=20). Not t>=2. Sizing: upsizing NEG (N1.5/N2) does not beat flat (eval pass 31->26/22%, funded blown 74->82-87% when funded is upsized); since NEG is 71% of trades it is mostly just more leverage. Lead: halve size on POS-gamma days (P.5 eval / flat funded): net/eval +469 vs +325 flat (22-23 +763 vs +596, 24-25 +175 vs +55), 12m paid 63% vs 59%; small n, unvalidated.
+
+## Report 448 (Nov 24 2026): NQ eval 2x neg + 0.5x pos gamma (Lucid Flex 50K, base flip)
+N2P.5 eval/flat funded: pass 23% (flat 31%), net/eval +250 (22-23 +289, 24-25 +210), 12m paid 83% but p10 -1,848. P.5 eval/flat funded still best on net/eval (+469; 763/175). 2x on neg lowers the pass rate and widens the tail; funded half-on-positive too lowers net/eval. Nothing beats P.5/flat on both halves AND the 22-23 12m paid ties.
