@@ -1102,3 +1102,6 @@ CHART_ONLY=1 (default): a closed-bar BUY/SELL posts only chart_min (15m candles 
 
 ## Report 434 (Nov 24 2026): LVN pass-through and move shape on 15m flips (25 names, 13,029 trades; primary = G20-gated, 5,992)
 H1 thin vs heavy volume overhead (prior-5-session profile): +0.07pp, t +0.6; train +0.17 / test +0.02; no pass. H2a signed-volume support: -0.19pp, t -1.3 (wrong sign in 2020-22); no. H2b expanding vs tapering volume: +0.14pp, t +1.2, win 32.7 vs 27.0 (5-6 pts, same in the ungated arm) but mean/median barely move; same sign train/test, below the 2.4 bar; lead only. 25 names, not 33: 15m cache missing for 8. Exits X1 only; post-entry taper-as-exit not tested.
+
+## Report 435 (Nov 24 2026): cost of a late alert, and chasing extended flips (25 names, G20-gated common set n 5,169)
+Mean net return by entry delay: +0 bars 0.45%, +1 0.39%, +2 0.36%, +3 0.33% (paired delay-3 minus on-time -0.11pp, t -8.4; train -0.09 / test -0.13; every era negative; ungated same). So each 15m bar of lateness costs ~0.04pp (~a quarter of the edge by 3 bars); minutes of lag cost almost nothing. EXT = (flip close - vector level)/ATR15: low-minus-high -0.12pp, t -0.7 (ungated -0.00): extension does not predict worse outcomes (high-EXT wins more often, 37.8% vs 30.1%, similar mean). No admission.

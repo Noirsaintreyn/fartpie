@@ -1,0 +1,21 @@
+names 25
+
+=== PRIMARY: G20-gated (common set n 5169) ===
+ H_LAG mean net return by entry delay (bars of 15m):
+   +0 bars: mean  0.45%  win 33.9  med -0.59
+   +1 bar: mean  0.39%  win 32.5  med -0.60
+   +2 bars: mean  0.36%  win 31.7  med -0.60
+   +3 bars: mean  0.33%  win 31.2  med -0.59
+   delay-3 minus on-time: -0.11pp  month-clustered t -8.35 | train -0.09pp (t -4.8) | test -0.13pp (t -7.0) | 18-19 -0.08 20-21 -0.10 22 -0.18 23-26 -0.12
+ H_EXT (EXT terciles at 1.06/1.82 ATR): low n1723 mean 0.43 win 30.1 | mid mean 0.36 | high n1723 mean 0.55 win 37.8
+   low-minus-high -0.12pp  month-clustered t -0.74 | train +0.03pp | test -0.18pp | 18-19 -0.15 20-21 +0.04 22 -0.20 23-26 -0.13
+
+=== ROBUSTNESS: all (common set n 11199) ===
+ H_LAG mean net return by entry delay (bars of 15m):
+   +0 bars: mean  0.33%  win 33.1  med -0.57
+   +1 bar: mean  0.28%  win 31.9  med -0.57
+   +2 bars: mean  0.24%  win 31.1  med -0.58
+   +3 bars: mean  0.22%  win 30.6  med -0.57
+   delay-3 minus on-time: -0.11pp  month-clustered t -10.92 | train -0.10pp (t -5.2) | test -0.12pp (t -10.0) | 18-19 -0.08 20-21 -0.12 22 -0.12 23-26 -0.12
+ H_EXT (EXT terciles at 1.07/1.80 ATR): low n3733 mean 0.37 win 29.6 | mid mean 0.27 | high n3733 mean 0.37 win 37.3
+   low-minus-high -0.00pp  month-clustered t -0.01 | train -0.03pp | test +0.01pp | 18-19 +0.23 20-21 -0.13 22 -0.13 23-26 +0.03
