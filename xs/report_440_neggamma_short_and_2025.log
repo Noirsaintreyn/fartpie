@@ -1,0 +1,31 @@
+names 25
+(a) 2025, LONG flips on negative-gamma days, by month (G20-gated, X1):
+   2025-01: n  20 mean  0.48% win  30%
+   2025-02: n  14 mean -0.58% win  43%
+   2025-03: n  30 mean -0.07% win  17%
+   2025-04: n  20 mean -1.29% win  20%
+   2025-05: n   2 mean  3.33% win 100%
+   2025-06: n  17 mean -0.37% win  35%
+   2025-07: n  11 mean -0.78% win  27%
+   2025-08: n  10 mean  0.19% win  30%
+   2025-09: n  20 mean -0.02% win  45%
+   2025-10: n  16 mean -0.09% win  31%
+   2025-11: n  14 mean -0.08% win  29%
+   2025-12: n   9 mean -1.03% win  44%
+
+(b) SHORT flips (G20-gated) by year: NEG-gamma vs non-NEG
+   2018: NEG n  33 mean   0.90 win  33 | non-NEG n  84 mean   0.55 win  24
+   2019: NEG n  73 mean  -0.28 win  27 | non-NEG n 258 mean  -0.48 win  18
+   2020: NEG n  42 mean  -0.02 win  24 | non-NEG n 418 mean  -0.26 win  26
+   2021: NEG n  64 mean  -0.12 win  28 | non-NEG n 473 mean   0.03 win  30
+   2022: NEG n 184 mean   0.20 win  31 | non-NEG n 272 mean   1.27 win  43
+   2023: NEG n 130 mean  -0.49 win  18 | non-NEG n 549 mean  -0.20 win  25
+   2024: NEG n 102 mean  -0.49 win  20 | non-NEG n 531 mean  -0.20 win  27
+   2025: NEG n 107 mean  -0.11 win  26 | non-NEG n 506 mean  -0.07 win  26
+
+  H SHORT flips: A = NEG-gamma days, B = other days; predict A > B
+    A n  735 win 25.4 med  -0.61 mean  -0.12
+    B n 3091 win 27.4 med  -0.58 mean  -0.02
+    A-B -0.10pp  t -0.85 | train +0.03pp (n 179/1149) | test -0.18pp (n 556/1942)
+
+   all short flips (G20): n 3826 mean -0.04 win 27.0; NEG shorts alone mean -0.12; NEG longs 0.40 (n 1170)
