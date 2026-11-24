@@ -1093,3 +1093,6 @@ Rey: live screener since deploy has cut losses over both drops (site screenshot:
 
 ## Report 433 (Nov 24 2026): 5d/10d windows on the options-flow model
 Ratio gate G5/G10/G20 (median >= 2) x exits X1 (vector) / X3 (pos-gamma-or-vector) x vol relief RV5<=RV20 vs RV10<=RV20, chain-proxy negative gamma. Result: gate window barely matters (n, win, median within ~1pt across 5/10/20d). RV5 relief does not help (2026 mean negative); RV10 relief is the better of the two but only marginal. No admission. Webull OpenAPI exists (market data + trading) but is not used by the bot yet.
+
+## Nov 24 2026: Webull market-data feed (latency)
+webull_feed.py (read-only): batch 15m bars + snapshot prices. live_screener.py prefetch_bars / live_px / wait_for_bar try Webull first, Yahoo fills gaps (and still supplies premarket bars); in RTH a >=90% Webull batch skips the Yahoo call. Run `python3 webull_feed.py --probe` once (checks field names and bar timestamp convention; set WEBULL_BAR_TS=end if bars are stamped at close), then `--lag` through one 15m close for Webull vs Yahoo publish delay. Options chain already via webull_options_log.py / webull_greeks.py.

@@ -82,11 +82,24 @@ def now_et(): return pd.Timestamp.now(tz=ET).tz_localize(None)
 LSE_SYM = {'BRKB': 'BRK.B'}; YF_SYM = {'BRKB': 'BRK-B'}                   # feed symbols for tickers stored without the class dot
 LSE_DOWN = {'on': os.getenv('LSE_ENABLED', '0') != '1'}      # Nov 12 2026: the LSE API is retired (410s since Oct 26) -> never try it unless LSE_ENABLED=1 (saved a failing call per ticker per scan)
 _YF_BATCH = {}
+WYM = {'BRKB': 'BRK.B', 'BFB': 'BF.B'}                                 # Webull symbol spelling (same as webull_watch.py)
 def prefetch_bars(tks):
     """Nov 12 2026: ONE multi-threaded Yahoo call for every ticker in the scan (was one sequential history() call per ticker = the main reason alerts were minutes late)"""
     _YF_BATCH.clear(); tks = list(tks)
     if not tks: return
     t0 = time.time()
+    try:                                                                  # Nov 24 2026: Webull market data first (Yahoo publishes closed bars late); Yahoo only fills what it misses
+        import webull_feed as WF
+        if WF.enabled():
+            B = WF.bars15([WYM.get(t, t) for t in tks]); inv0 = {WYM.get(t, t): t for t in tks}
+            for sy, df in B.items():
+                if sy in inv0 and len(df): _YF_BATCH[inv0[sy]] = WF.to_screener_frame(df)
+            print(f'  webull prefetch: {len(_YF_BATCH)}/{len(tks)} tickers in {time.time() - t0:.1f}s')
+            mm = now_et().hour * 60 + now_et().minute
+            if len(_YF_BATCH) >= 0.9 * len(tks) and RTH0 + 1 <= mm <= RTH1 + 5: return          # in RTH a full Webull batch is enough: skip the slow Yahoo call
+            tks = [t for t in tks if t not in _YF_BATCH] if RTH0 + 1 <= mm <= RTH1 + 5 else tks    # premarket: Yahoo still adds the pre-open bars
+    except Exception as e: print(f'  ! webull prefetch failed ({str(e)[:60]}); Yahoo')
+    if not tks: return
     try:
         import yfinance as yf
         syms = [YF_SYM.get(t, t) for t in tks]; inv = {YF_SYM.get(t, t): t for t in tks}
@@ -94,7 +107,7 @@ def prefetch_bars(tks):
         for sy in syms:
             try:
                 Y = (D[sy] if len(syms) > 1 else D).dropna(subset=['Close'])
-                if len(Y): _YF_BATCH[inv[sy]] = Y
+                if len(Y) and inv[sy] not in _YF_BATCH: _YF_BATCH[inv[sy]] = Y
             except Exception: pass
     except Exception as e: print(f'  ! batch prefetch failed ({str(e)[:60]}); per-ticker fallback')
     print(f'  prefetch: {len(_YF_BATCH)}/{len(tks)} tickers in {time.time() - t0:.1f}s')
@@ -1097,6 +1110,14 @@ def wait_for_bar(target, timeout=90):
     """poll Yahoo (SPY) until the 15m bar that closes at `target` ET is published, so the scan starts seconds after the close"""
     t0 = time.time()
     while time.time() - t0 < timeout:
+        try:                                                              # Nov 24 2026: Webull SPY bar first
+            import webull_feed as WF
+            if WF.enabled():
+                B = WF.bars15(['SPY'], count=3).get('SPY')
+                if B is not None and len(B):
+                    last = B.datetime.iloc[-1].tz_convert(ET).tz_localize(None)
+                    if last >= target or (now_et() >= target + pd.Timedelta('6s') and last >= target - pd.Timedelta('15min')): print(f'  bar {target:%H:%M} ready (webull) after {time.time() - t0:.0f}s'); return True
+        except Exception: pass
         try:
             import yfinance as yf
             y = yf.Ticker('SPY').history(period='1d', interval='15m', prepost=True)
@@ -1643,6 +1664,12 @@ def show(rows, meta):
 
 # ================================================================ intrabar cross watch (heads-up only; the BUY still needs the 15m close)
 def live_px(tk):
+    try:                                                                  # Nov 24 2026: Webull snapshot first (one call, seconds-fresh)
+        import webull_feed as WF
+        if WF.enabled():
+            p = WF.prices([WYM.get(tk, tk)]).get(WYM.get(tk, tk))
+            if p: return float(p)
+    except Exception: pass
     from fetch_lse_ohlcv import _fetch_range
     s0 = pd.Timestamp.utcnow().tz_localize(None) - pd.Timedelta(hours=6)
     for tf in (() if LSE_DOWN['on'] else ('1m', '15m')):
