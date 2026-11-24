@@ -1,0 +1,61 @@
+names 11 ['AAPL', 'ADBE', 'AMD', 'CAT', 'COST', 'CRM', 'DIS', 'HD', 'IBM', 'MCD', 'NVDA']
+
+[G252 X1]
+FLIP (gated,NEG)     n  637 win  26.8 med  -0.45 mean  0.02 hold   1.0d | train -0.02/-0.54 test  0.04/-0.43 | 18-19 -0.18 20-21 -0.00 22  0.06 23-26  0.04
+FLIP & FLOW          n  341 win  25.2 med  -0.52 mean  0.00 hold   0.9d | train  0.06/-0.58 test -0.01/-0.49 | 18-19 -0.08 20-21  0.05 22  0.19 23-26 -0.15
+OPEN control         n  677 win  41.7 med  -0.17 mean  0.07 hold   0.3d | train  0.17/-0.00 test  0.04/-0.20 | 18-19  0.13 20-21  0.13 22  0.20 23-26 -0.02 | FLIP-OPEN -0.01pp (episode t -0.1, 635 ep)
+
+[G252 X2]
+FLIP (gated,NEG)     n  636 win  65.6 med   0.72 mean  0.44 hold   6.7d | train  0.80/ 0.82 test  0.33/ 0.61 | 18-19 -0.72 20-21  0.80 22  0.33 23-26  0.49
+FLIP & FLOW          n  340 win  64.4 med   0.87 mean  0.51 hold   7.0d | train  1.06/ 0.93 test  0.33/ 0.84 | 18-19 -0.82 20-21  1.05 22  0.33 23-26  0.63
+OPEN control         n  676 win  65.2 med   0.77 mean  0.40 hold   7.1d | train  0.84/ 0.97 test  0.27/ 0.70 | 18-19 -0.69 20-21  0.89 22  0.21 23-26  0.46 | FLIP-OPEN +0.03pp (episode t +0.4, 634 ep)
+
+[G252 X3]
+FLIP (gated,NEG)     n  637 win  30.0 med  -0.42 mean -0.04 hold   0.7d | train -0.07/-0.51 test -0.03/-0.41 | 18-19 -0.07 20-21 -0.07 22  0.05 23-26 -0.07
+FLIP & FLOW          n  341 win  28.4 med  -0.50 mean -0.09 hold   0.7d | train -0.13/-0.54 test -0.08/-0.48 | 18-19  0.19 20-21 -0.20 22  0.11 23-26 -0.24
+OPEN control         n  677 win  42.8 med  -0.16 mean  0.02 hold   0.2d | train  0.15/ 0.03 test -0.02/-0.20 | 18-19  0.20 20-21  0.08 22  0.10 23-26 -0.07 | FLIP-OPEN -0.01pp (episode t -0.2, 635 ep)
+
+[G252 X4]
+FLIP (gated,NEG)     n  637 win  29.4 med  -0.43 mean  0.00 hold   0.8d | train  0.02/-0.52 test -0.00/-0.42 | 18-19 -0.11 20-21  0.04 22  0.10 23-26 -0.05
+FLIP & FLOW          n  341 win  26.1 med  -0.51 mean -0.02 hold   0.9d | train  0.03/-0.57 test -0.03/-0.49 | 18-19  0.02 20-21  0.02 22  0.21 23-26 -0.22
+OPEN control         n  677 win  41.9 med  -0.17 mean  0.05 hold   0.2d | train  0.17/ 0.02 test  0.02/-0.20 | 18-19  0.16 20-21  0.12 22  0.20 23-26 -0.05 | FLIP-OPEN -0.01pp (episode t -0.1, 635 ep)
+
+[G20 X1]
+FLIP (gated,NEG)     n  430 win  27.2 med  -0.46 mean  0.01 hold   0.9d | train -0.35/-0.57 test  0.13/-0.42 | 18-19 -0.31 20-21 -0.39 22  0.28 23-26  0.09
+FLIP & FLOW          n  222 win  25.2 med  -0.51 mean -0.01 hold   0.9d | train -0.35/-0.60 test  0.10/-0.47 | 18-19 -0.20 20-21 -0.49 22  0.41 23-26 -0.11
+OPEN control         n  447 win  41.8 med  -0.16 mean  0.08 hold   0.2d | train  0.10/-0.02 test  0.07/-0.20 | 18-19  0.34 20-21  0.00 22  0.29 23-26 -0.03 | FLIP-OPEN -0.02pp (episode t -0.2, 416 ep)
+
+[G20 X2]
+FLIP (gated,NEG)     n  429 win  65.3 med   0.71 mean  0.39 hold   6.7d | train  0.43/ 0.58 test  0.37/ 0.78 | 18-19 -0.47 20-21  0.34 22  0.17 23-26  0.62
+FLIP & FLOW          n  221 win  64.3 med   0.87 mean  0.42 hold   6.9d | train  0.41/ 0.61 test  0.43/ 1.18 | 18-19 -0.50 20-21  0.17 22  0.25 23-26  0.96
+OPEN control         n  446 win  64.3 med   0.73 mean  0.37 hold   6.6d | train  0.46/ 0.79 test  0.34/ 0.73 | 18-19 -0.33 20-21  0.38 22  0.19 23-26  0.56 | FLIP-OPEN +0.01pp (episode t +0.1, 415 ep)
+
+[G20 X3]
+FLIP (gated,NEG)     n  430 win  30.7 med  -0.43 mean -0.04 hold   0.7d | train -0.36/-0.55 test  0.06/-0.41 | 18-19 -0.13 20-21 -0.40 22  0.27 23-26 -0.03
+FLIP & FLOW          n  222 win  29.7 med  -0.49 mean -0.05 hold   0.8d | train -0.42/-0.58 test  0.08/-0.45 | 18-19  0.04 20-21 -0.59 22  0.37 23-26 -0.18
+OPEN control         n  447 win  43.2 med  -0.15 mean  0.04 hold   0.2d | train  0.12/ 0.02 test  0.02/-0.18 | 18-19  0.42 20-21 -0.01 22  0.19 23-26 -0.07 | FLIP-OPEN -0.04pp (episode t -0.5, 416 ep)
+
+[G20 X4]
+FLIP (gated,NEG)     n  430 win  30.2 med  -0.44 mean -0.01 hold   0.8d | train -0.28/-0.55 test  0.08/-0.41 | 18-19 -0.21 20-21 -0.32 22  0.30 23-26 -0.00
+FLIP & FLOW          n  222 win  26.6 med  -0.49 mean -0.03 hold   0.9d | train -0.31/-0.58 test  0.07/-0.47 | 18-19 -0.10 20-21 -0.43 22  0.42 23-26 -0.20
+OPEN control         n  447 win  42.3 med  -0.16 mean  0.07 hold   0.2d | train  0.11/ 0.01 test  0.05/-0.18 | 18-19  0.38 20-21  0.01 22  0.28 23-26 -0.05 | FLIP-OPEN -0.02pp (episode t -0.3, 416 ep)
+
+[G1 X1]
+FLIP (gated,NEG)     n  269 win  32.0 med  -0.37 mean  0.10 hold   1.1d | train -0.22/-0.53 test  0.15/-0.34 | 18-19 -0.46 20-21 -0.13 22  0.01 23-26  0.24
+FLIP & FLOW          n  124 win  33.1 med  -0.41 mean  0.19 hold   1.2d | train -0.18/-0.75 test  0.25/-0.38 | 18-19 n<15 20-21 n<15 22  0.39 23-26  0.20
+OPEN control         n  235 win  40.9 med  -0.16 mean  0.08 hold   0.2d | train  0.31/ 0.08 test  0.03/-0.20 | 18-19  0.26 20-21  0.19 22  0.33 23-26 -0.06 | FLIP-OPEN -0.03pp (episode t -0.3, 206 ep)
+
+[G1 X2]
+FLIP (gated,NEG)     n  268 win  67.2 med   0.81 mean  0.70 hold   7.4d | train  0.14/ 0.80 test  0.80/ 0.81 | 18-19 -0.96 20-21  0.55 22  0.49 23-26  1.02
+FLIP & FLOW          n  123 win  64.2 med   1.19 mean  1.08 hold   7.3d | train  0.92/ 0.94 test  1.11/ 1.23 | 18-19 n<15 20-21 n<15 22  0.40 23-26  1.53
+OPEN control         n  234 win  65.0 med   0.84 mean  0.61 hold   6.3d | train  1.41/ 1.01 test  0.43/ 0.81 | 18-19  0.61 20-21  1.37 22  0.31 23-26  0.56 | FLIP-OPEN +0.05pp (episode t +0.4, 205 ep)
+
+[G1 X3]
+FLIP (gated,NEG)     n  269 win  34.6 med  -0.34 mean  0.09 hold   0.8d | train -0.21/-0.49 test  0.14/-0.33 | 18-19 -0.36 20-21 -0.11 22  0.05 23-26  0.20
+FLIP & FLOW          n  124 win  36.3 med  -0.32 mean  0.16 hold   1.0d | train -0.16/-0.63 test  0.21/-0.30 | 18-19 n<15 20-21 n<15 22  0.38 23-26  0.10
+OPEN control         n  235 win  41.3 med  -0.16 mean  0.05 hold   0.2d | train  0.36/ 0.08 test -0.01/-0.20 | 18-19  0.34 20-21  0.20 22  0.29 23-26 -0.11 | FLIP-OPEN +0.04pp (episode t +0.3, 206 ep)
+
+[G1 X4]
+FLIP (gated,NEG)     n  269 win  34.2 med  -0.33 mean  0.11 hold   0.9d | train -0.14/-0.49 test  0.15/-0.32 | 18-19 -0.35 20-21 -0.01 22  0.05 23-26  0.21
+FLIP & FLOW          n  124 win  34.7 med  -0.34 mean  0.17 hold   1.1d | train -0.02/-0.63 test  0.20/-0.32 | 18-19 n<15 20-21 n<15 22  0.31 23-26  0.13
+OPEN control         n  235 win  41.3 med  -0.15 mean  0.07 hold   0.2d | train  0.34/ 0.08 test  0.01/-0.20 | 18-19  0.32 20-21  0.19 22  0.23 23-26 -0.06 | FLIP-OPEN +0.02pp (episode t +0.2, 206 ep)
