@@ -5,3 +5,4 @@ numpy
 python-dotenv
 pyarrow>=14,<19
 tzdata
+webull-openapi-python-sdk

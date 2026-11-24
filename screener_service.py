@@ -144,11 +144,41 @@ def run_midsmall():
     threading.Thread(target=loop, daemon=True).start()
 
 
+GAMMA_SYMS = os.environ.get('GAMMA_SYMBOLS', 'QQQ,TSLA,NVDA,AAPL,AMD,AMZN,GOOGL,MSFT,META,COST')
+
+
+def run_gamma_job():
+    """Nov 24 2026: keep live/neg_gamma.json fresh for the negative-gamma Discord channel. Read-only Webull market data (never orders).
+    16:15 ET: log the option chain, then build net gamma (gex_heatmap.py -> live/neg_gamma.json). 08:30 ET: re-pull for the prior-close open interest and rebuild.
+    Needs WEBULL_APP_KEY + WEBULL_APP_SECRET in the environment; without them it logs once and stays off. Never raises into the screener."""
+    import threading
+    if not (os.environ.get('WEBULL_APP_KEY') and os.environ.get('WEBULL_APP_SECRET')): return log('gamma job off (WEBULL_APP_KEY / WEBULL_APP_SECRET not set)')
+    def once(tag, oi):
+        cmd = [sys.executable, '-u', 'webull_options_log.py', '--symbols', GAMMA_SYMS] + (['--oi-refresh'] if oi else [])
+        rc, tail = run_tail(cmd)
+        if rc != 0: return notify(f'⚠️ gamma job ({tag}): option chain pull failed (exit {rc})\n```{tail[-500:]}```')
+        rc, tail = run_tail([sys.executable, '-u', 'gex_heatmap.py', '--symbols', GAMMA_SYMS])
+        log(f'gamma job ({tag}) done, exit {rc}')
+        if rc != 0: notify(f'⚠️ gamma job ({tag}): gamma build failed (exit {rc})\n```{tail[-500:]}```')
+    def loop():
+        done = set()
+        while True:
+            try:
+                n = dt.datetime.now(ET); nm = n.hour * 60 + n.minute
+                if n.weekday() < 5:
+                    for tag, lo, hi, oi in (('close', 16 * 60 + 15, 18 * 60, False), ('oi', 8 * 60 + 30, 9 * 60 + 20, True)):
+                        key = (n.date(), tag)
+                        if lo <= nm < hi and key not in done: done.add(key); once(tag, oi)
+            except Exception as e: log('gamma job error', str(e)[:100])
+            time.sleep(60)
+    threading.Thread(target=loop, daemon=True).start(); log('gamma job on:', GAMMA_SYMS)
+
+
 def main():
     setup(); log('screener worker up; args', ARGS)
     run_midsmall()
     if os.environ.get('RUN_BOT') == '1': run_bot()
-    run_site_push()
+    run_site_push(); run_gamma_job()
     done, warned = None, None
     while True:
         now = dt.datetime.now(ET)
