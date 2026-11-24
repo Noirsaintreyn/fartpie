@@ -1,0 +1,17 @@
+50793 flips; 32370 with a PIT annual filing; 2019-01-03 11:45:00 -> 2026-08-20 13:00:00
+
+ALL flips with data: n 32370 win 34.1 med -1.60 mean -0.31
+  H1 BUYBACK: A = BUYER (>=10% of OCF), B = NON; predict A > B
+    A n 8341 win 34.4 med  -1.58 mean  -0.24
+    B n20070 win 34.4 med  -1.62 mean  -0.34
+    A-B +0.09pp  t +1.01 | train +0.29pp (n 2577/5524) | test +0.01pp (n 5764/14546) | 18-19 +0.19 20-21 +0.33 22 +0.25 23-26 -0.06
+  H2 DILUTION: A = SHRINK (<=-1%), B = DILUTE (>=+5%); predict A > B
+    A n 2707 win 32.7 med  -1.45 mean  -0.24
+    B n11005 win 34.9 med  -1.64 mean  -0.33
+    A-B +0.09pp  t +0.48 | train +0.30pp (n 1373/1964) | test +0.02pp (n 1334/9041) | 18-19 +0.01 20-21 +0.32 22 -0.03 23-26 +0.00
+  H3 PROFITABLE: A = GOOD (NI>0 & OCF>0), B = BAD (both <=0); predict A > B
+    A n 6691 win 30.2 med  -1.52 mean  -0.43
+    B n14038 win 36.3 med  -1.70 mean  -0.27
+    A-B -0.16pp  t -1.47 | train -0.07pp (n 2694/3605) | test -0.21pp (n 3997/10433) | 18-19 -0.39 20-21 +0.02 22 -0.15 23-26 -0.21
+
+(context) buyer-years: names with any buyback 41 of 72 | GOOD 6691 BAD 14038

@@ -1111,3 +1111,6 @@ H1 taper exit (4-bar relative volume <= 0.7 and below running high): win 30.9 ->
 
 ## Report 437 (Nov 24 2026): gamma x range-used x support location (25 names with gex, entries to 2025-12-30, G20-gated n 3,794)
 H1 within negative-gamma flips LOW range used beats HIGH: +0.17pp, t +0.6; H2 NEG & LOW-used vs all other: +0.15pp, t +0.7 (win 33.7 vs 30.9); H3 flip at support (bounce off day / prior-day low) vs not: -0.18pp, t -1.6 (ungated -0.14pp, t -2.3), same sign train/test, OPPOSITE of the declared prediction -> lead only (trend flips do better away from the lows). Net gamma sign alone 0.40 vs 0.27. No admission. Untested: strike-level walls / gamma-flip level as S/R (needs per-strike gamma; theta_compact volume-gamma proxy available).
+
+## Report 438 (Nov 24 2026): small-cap fundamentals (buybacks, dilution, profitability) on sub-$5 vector flips (32,370 flips with a PIT annual filing; net of 40bp)
+H1 buyback (>=10% of OCF) vs none: +0.09pp, t +1.0 (train +0.29, test +0.01); H2 shrinking vs diluting shares: +0.09pp, t +0.5; H3 profitable vs unprofitable: -0.16pp, t -1.5 (wrong sign: loss-making names did slightly better). No admission; groups are not profitable after cost either. Annual data only; buyback yield on market cap not built (no price/shares series for these names).
