@@ -62,7 +62,7 @@ def scan(nsess):
             out.append(dict(tk=tk, flip_bar=H.index[i], entry_time=H.index[i + 1], entry_px=ent, age_bars=last_i - i, last_time=H.index[last_i], last_px=px, pct_from_entry=px / ent - 1, pulled_back=bool(H.open.values[last_i] <= ent), min_low_since=lo, still_bull=bool(regs[last_i] == 1), vec_stop=lv[last_i], er20=er, z_aligned=z, J=J, **shadow(H, i), exit_time=pd.NaT, exit_px=np.nan, ret=np.nan, logged_at=pd.Timestamp.utcnow().tz_localize(None)))
     return pd.DataFrame(out)
 def score():
-    L = pd.read_parquet(LOG); open_ = L[L.exit_time.isna()]
+    L = pd.read_parquet(LOG).reset_index(drop=True); open_ = L[L.exit_time.isna()]
     for tk in open_.tk.unique():
         H = bars(tk)
         if H is None: continue
@@ -74,7 +74,7 @@ def score():
             if nxt and nxt[0] + 1 < len(H): ix = nxt[0] + 1; L.loc[j, ['exit_time', 'exit_px']] = [H.index[ix], H.open.values[ix]]; L.loc[j, 'ret'] = H.open.values[ix] / L.loc[j, 'entry_px'] - 1 - .0004
     L.to_parquet(LOG); print(L[L.exit_time.notna()][['tk', 'entry_time', 'exit_time', 'ret']].tail(20).to_string()); print(f'{L.exit_time.notna().sum()} closed of {len(L)}')
 def backfill():
-    L = pd.read_parquet(LOG)
+    L = pd.read_parquet(LOG).reset_index(drop=True)
     for c in ('N1', 'N2', 'R', 'M', 'ON'):
         if c not in L.columns: L[c] = np.nan
     for tk in L[L.ON.isna()].tk.unique():
@@ -93,6 +93,6 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == 'backfill': backfill(); sys.exit()
     if len(sys.argv) > 1 and sys.argv[1] == 'thesis': thesis(*sys.argv[2:5]); sys.exit()
     n = int(sys.argv[1]) if len(sys.argv) > 1 else 3; N = scan(n)
-    if os.path.exists(LOG): L = pd.read_parquet(LOG); N = pd.concat([L, N]).drop_duplicates(['tk', 'flip_bar'], keep='first')
+    if os.path.exists(LOG): L = pd.read_parquet(LOG); N = pd.concat([L, N]).drop_duplicates(['tk', 'flip_bar'], keep='first').reset_index(drop=True)
     N.to_parquet(LOG); cur = N[N.flip_bar >= N.flip_bar.max().normalize() - pd.Timedelta(days=n + 2)].sort_values('flip_bar', ascending=False)
     pd.set_option('display.width', 250); print(f'{len(N)} flips in log; last bar {N.last_time.max()}'); print(cur[['tk', 'flip_bar', 'entry_px', 'age_bars', 'pct_from_entry', 'pulled_back', 'still_bull', 'vec_stop', 'er20', 'z_aligned', 'J']].round(3).head(40).to_string(index=False))
