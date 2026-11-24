@@ -1151,3 +1151,6 @@ N2P.5 eval/flat funded: pass 23% (flat 31%), net/eval +250 (22-23 +289, 24-25 +2
 
 ## Report 449 (Nov 24 2026): QQQ vector flips traded in synthetic TQQQ (daily-reset 3x, financing drag), 15m / 1h / 1d
 Bull flips -> TQQQ ungated (A): 15m CAGR 37.0% DD -54.9% Sh 0.94 (train 72.4/-19.1, test 18.2/-54.9) vs B&H TQQQ 37.2%/-81.4% Sh 0.80 (test 10.6/-89.8) and QQQ 19.5%/-35.6%; 1h 26.7%/-59.0%; 1d 29.7%/-54.9% (22 trades). Neg-gamma gate (B) fails: 15m NEG-POS +0.56pp t1.23 (train +1.73, test -0.11), 1h t-0.13, 1d t0.26; B test CAGR below A on all three. Bear flips -> SQQQ lose (15m CAGR -23.5%). Synthetic prices, daily marks (DD floor). 15m is the best timeframe.
+
+## Report 450 (Nov 24 2026): REAL TQQQ/SQQQ bars (LSE vault) with QQQ signal; supersedes 449 synthetic
+LSE end date is exclusive: the first pull missed the last day of each 15d chunk (147 days); re-fetched (xs/pull_lse_tqqq_fix.py). Real vs synthetic per-trade corr 0.997 (15m). Bull flips -> TQQQ ungated (A): 15m CAGR 33.7% DD -56.8% Sh 0.89 (train 66.8/-18.6, test 16.2/-56.8) vs B&H TQQQ 34.1%/-81.8% (test 7.0/-90.0); 1h 25.2%/-59.6% (test 8.1); 1d 27.8%/-54.8% (test 7.5, 22 trades). Neg gamma gate fails everywhere (15m NEG-POS +0.50pp t1.11, train +1.63, test -0.13; B test CAGR 9.6% < A 16.2%). Bear flips -> SQQQ lose (15m D CAGR -23.1%). Rey: account is long-only anyway.
