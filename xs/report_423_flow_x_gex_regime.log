@@ -1,0 +1,11 @@
+flips 5233 names 18 | FLOW share 0.34 | NEG share 0.29
+
+2x2
+FLOW=1 NEG=1  n  786 win  31.8 med -0.68 mean  0.23 | >=3% 12.1% top10% mean   8.8%
+FLOW=1 NEG=0  n 1017 win  32.5 med -0.51 mean  0.39 | >=3% 11.8% top10% mean   8.9%
+FLOW=0 NEG=1  n  708 win  31.5 med -0.57 mean  0.21 | >=3% 10.9% top10% mean   7.5%
+FLOW=0 NEG=0  n 2722 win  30.0 med -0.57 mean  0.27 | >=3% 11.1% top10% mean   8.1%
+
+PRIMARY FLOW&NEG vs rest: mean diff -0.06pp (t -0.4) | train mean -0.00 med -0.07 (n 105) | test mean -0.03 med -0.11 (n 681) | eras ? + + -
+regime adds? FLOW&NEG vs FLOW&posGEX: mean diff -0.16pp (t -1.7) | train mean +0.01 med -0.10 (n 105) | test mean -0.17 med -0.16 (n 681) | eras ? + - -
+FLOW alone vs not: mean diff +0.06pp (t +1.8) | train mean -0.01 med +0.02 (n 351) | test mean +0.11 med -0.02 (n 1452) | eras + - + +

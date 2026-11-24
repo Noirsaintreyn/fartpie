@@ -23,6 +23,6 @@ def pull(tk):
         if lt == last or len(d) < 5000: break
         last = lt; a = lt[:10]
     H = pd.DataFrame(rows).drop_duplicates('ts').sort_values('ts'); H.to_parquet(f); return tk, f'{len(H)} rows {H.ts.min()} -> {H.ts.max()}'
-with cf.ThreadPoolExecutor(2) as ex:
-    for tk, msg in ex.map(pull, NAMES): print(tk, msg, flush=True)
+for tk in NAMES:
+    print(*pull(tk), flush=True)
 print('DONE', TF)
