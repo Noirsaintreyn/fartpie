@@ -1096,3 +1096,6 @@ Ratio gate G5/G10/G20 (median >= 2) x exits X1 (vector) / X3 (pos-gamma-or-vecto
 
 ## Nov 24 2026: Webull market-data feed (latency)
 webull_feed.py (read-only): batch 15m bars + snapshot prices. live_screener.py prefetch_bars / live_px / wait_for_bar try Webull first, Yahoo fills gaps (and still supplies premarket bars); in RTH a >=90% Webull batch skips the Yahoo call. Run `python3 webull_feed.py --probe` once (checks field names and bar timestamp convention; set WEBULL_BAR_TS=end if bars are stamped at close), then `--lag` through one 15m close for Webull vs Yahoo publish delay. Options chain already via webull_options_log.py / webull_greeks.py.
+
+## Nov 24 2026: chart-only alerts, neg-gamma channel, ratio staleness
+CHART_ONLY=1 (default): a closed-bar BUY/SELL posts only chart_min (15m candles by vector state, vector level, EMA50/200, no text); a mid-bar touch posts the same chart with one line "touched the vector - wait till the close". NEGGAMMA_WEBHOOK_URL / NEGGAMMA_CHANNEL_ID routes 15m flips whose 20d ratio >= 2 and live/neg_gamma.json net_gex < 0 to a separate channel (gamma logger still to build). Ratio staleness cause: tools/ibkr_optvol.py gets IBKR error 10197 (competing live session) -> 0/573 names -> "ratio not refreshed"; live_screener now warns when the file is > RATIO_WARN_DAYS old.
