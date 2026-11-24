@@ -1154,3 +1154,6 @@ Bull flips -> TQQQ ungated (A): 15m CAGR 37.0% DD -54.9% Sh 0.94 (train 72.4/-19
 
 ## Report 450 (Nov 24 2026): REAL TQQQ/SQQQ bars (LSE vault) with QQQ signal; supersedes 449 synthetic
 LSE end date is exclusive: the first pull missed the last day of each 15d chunk (147 days); re-fetched (xs/pull_lse_tqqq_fix.py). Real vs synthetic per-trade corr 0.997 (15m). Bull flips -> TQQQ ungated (A): 15m CAGR 33.7% DD -56.8% Sh 0.89 (train 66.8/-18.6, test 16.2/-56.8) vs B&H TQQQ 34.1%/-81.8% (test 7.0/-90.0); 1h 25.2%/-59.6% (test 8.1); 1d 27.8%/-54.8% (test 7.5, 22 trades). Neg gamma gate fails everywhere (15m NEG-POS +0.50pp t1.11, train +1.63, test -0.13; B test CAGR 9.6% < A 16.2%). Bear flips -> SQQQ lose (15m D CAGR -23.1%). Rey: account is long-only anyway.
+
+## Report 451 (2026-11-24): TQQQ long-only QQQ-signal flips, same-session exit
+Real TQQQ 15m (LSE), QQQ vector bull flips, entry 09:45-14:30, exit on bear flip or 15:45, 4bp cost. 440 trades (NEG 343 / POS 97). NEG-POS +61.2bp/trade t 3.53 (train +54.6, test +63.9); QQQ same trades +21.1bp t 3.59. Books: ungated CAGR 20.3% DD -15.1% Calmar 1.35; NEG-only 21.8% DD -12.3% Calmar 1.77 (train 1.82 / test 1.76); POS-only -1.2%. B&H TQQQ 32.3% DD -81.8%. PASS rule met. Caveats: exposure ~9-11%, 78% of trades NEG, 22 POS n=1, DD at daily marks, 4bp cost assumption.

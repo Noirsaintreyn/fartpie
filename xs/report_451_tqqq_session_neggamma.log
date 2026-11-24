@@ -1,0 +1,14 @@
+TIMEFRAME 15m
+TQQQ bars 57973 missing vs QQQ (filled from prev close) 0 max |bar log-ret| 0.345
+SQQQ bars 57976 missing vs QQQ (filled from prev close) 0 max |bar log-ret| 0.26
+trades 440 NEG 343 POS 97; avg hold 3.5h
+TQQQ ALL   37.7bp win  55% | NEG   51.2bp win  57% | POS  -10.0bp win  49% | NEG-POS  +61.2bp t +3.53 | train +54.6 test +63.9
+   by era NEG/POS bp: 18-19 +25(n63) / -49(n14) | 20-21 +67(n88) / +37(n16) | 22 +113(n51) / -160(n1) | 23-26 +31(n141) / -11(n66)
+QQQ  ALL   13.7bp win  55% | NEG   18.3bp win  57% | POS   -2.8bp win  49% | NEG-POS  +21.1bp t +3.59 | train +19.0 test +21.9
+   by era NEG/POS bp: 18-19 +9(n63) / -16(n14) | 20-21 +24(n88) / +13(n16) | 22 +40(n51) / -53(n1) | 23-26 +11(n141) / -3(n66)
+
+BOOKS (TQQQ, all equity per trade)
+A ungated          exposure 11.0% | all: CAGR  20.3% DD  -15.1% Calmar 1.35 Sh 1.42 | train: CAGR  22.0% DD  -14.8% Calmar 1.49 Sh 1.78 | test: CAGR  19.3% DD  -15.1% Calmar 1.28 Sh 1.27
+B NEG only         exposure  8.7% | all: CAGR  21.8% DD  -12.3% Calmar 1.77 Sh 1.59 | train: CAGR  22.3% DD  -12.3% Calmar 1.82 Sh 1.89 | test: CAGR  21.5% DD  -12.2% Calmar 1.76 Sh 1.47
+C POS only         exposure  2.2% | all: CAGR  -1.2% DD  -11.5% Calmar -0.11 Sh -0.25 | train: CAGR  -0.3% DD   -7.6% Calmar -0.03 Sh -0.05 | test: CAGR  -1.8% DD  -11.5% Calmar -0.16 Sh -0.34
+B&H TQQQ           exposure 100% | all: CAGR  32.3% DD  -81.8% Calmar 0.40 | train: CAGR 102.2% DD  -69.9% Calmar 1.46 | test: CAGR   3.8% DD  -90.0% Calmar 0.04
