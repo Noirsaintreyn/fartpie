@@ -1148,3 +1148,6 @@ Per trade (613, 2018-26): NEG 71% of trades; NEG avg +5.8 pts vs POS -1.8, diff 
 
 ## Report 448 (Nov 24 2026): NQ eval 2x neg + 0.5x pos gamma (Lucid Flex 50K, base flip)
 N2P.5 eval/flat funded: pass 23% (flat 31%), net/eval +250 (22-23 +289, 24-25 +210), 12m paid 83% but p10 -1,848. P.5 eval/flat funded still best on net/eval (+469; 763/175). 2x on neg lowers the pass rate and widens the tail; funded half-on-positive too lowers net/eval. Nothing beats P.5/flat on both halves AND the 22-23 12m paid ties.
+
+## Report 449 (Nov 24 2026): QQQ vector flips traded in synthetic TQQQ (daily-reset 3x, financing drag), 15m / 1h / 1d
+Bull flips -> TQQQ ungated (A): 15m CAGR 37.0% DD -54.9% Sh 0.94 (train 72.4/-19.1, test 18.2/-54.9) vs B&H TQQQ 37.2%/-81.4% Sh 0.80 (test 10.6/-89.8) and QQQ 19.5%/-35.6%; 1h 26.7%/-59.0%; 1d 29.7%/-54.9% (22 trades). Neg-gamma gate (B) fails: 15m NEG-POS +0.56pp t1.23 (train +1.73, test -0.11), 1h t-0.13, 1d t0.26; B test CAGR below A on all three. Bear flips -> SQQQ lose (15m CAGR -23.5%). Synthetic prices, daily marks (DD floor). 15m is the best timeframe.

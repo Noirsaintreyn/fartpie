@@ -1,0 +1,20 @@
+TIMEFRAME 15m
+PER TRADE (bull flips -> TQQQ)
+ ALL  n 540 win 33.3 mean  0.64% med -1.02% hold  3.1d (QQQ  0.25%)
+ NEG  n 415 win 35.2 mean  0.77% med -0.98% hold  3.2d (QQQ  0.29%)
+ POS  n 125 win 27.2 mean  0.21% med -1.08% hold  2.9d (QQQ  0.10%)
+ NEG-POS +0.56pp t +1.23 | train +1.73 test -0.11
+ by era NEG / POS mean %: 18-19 +0.59(n73) / +0.27(n26) | 20-21 +1.86(n108) / -1.14(n20) | 22 -0.88(n67) / -1.59(n1) | 23-26 +0.79(n167) / +0.56(n78)
+PER TRADE (bear flips -> SQQQ)
+ ALL  n 541 win 22.7 mean -0.34% med -1.39% hold  2.4d (QQQ -0.05%)
+ NEG  n 317 win 24.3 mean -0.26% med -1.61% hold  2.3d (QQQ -0.01%)
+ POS  n 224 win 20.5 mean -0.45% med -1.26% hold  2.4d (QQQ -0.11%)
+
+BOOKS (one position at a time, daily marks, daily-reset 3x compounding)
+A bull ungated -> TQQQ             exposure  71% | all: CAGR   37.0% DD  -54.9% Sh 0.94 | train: CAGR   72.4% DD  -19.1% Sh 1.45 | test: CAGR   18.2% DD  -54.9% Sh 0.61
+B bull NEG -> TQQQ                 exposure  57% | all: CAGR   34.3% DD  -61.3% Sh 0.92 | train: CAGR   83.3% DD  -27.9% Sh 1.62 | test: CAGR   11.3% DD  -61.3% Sh 0.47
+C bull POS -> TQQQ                 exposure  15% | all: CAGR    2.0% DD  -30.4% Sh 0.21 | train: CAGR   -5.4% DD  -29.3% Sh -0.45 | test: CAGR    5.9% DD  -17.7% Sh 0.45
+D bull TQQQ + bear SQQQ            exposure  93% | all: CAGR  -23.5% DD  -93.6% Sh -0.15 | train: CAGR  -17.9% DD  -54.9% Sh -0.04 | test: CAGR  -24.5% DD  -91.8% Sh -0.20
+E bull+bear NEG only               exposure  70% | all: CAGR   -8.9% DD  -82.9% Sh 0.10 | train: CAGR   -2.3% DD  -43.8% Sh 0.22 | test: CAGR  -11.4% DD  -82.9% Sh 0.03
+B&H synthetic TQQQ                 exposure 100% | all: CAGR   37.2% DD  -81.4% Sh 0.80 | train: CAGR  107.4% DD  -69.9% Sh 1.36 | test: CAGR   10.6% DD  -89.8% Sh 0.49
+B&H QQQ                            exposure 100% | all: CAGR   19.5% DD  -35.6% Sh 0.86 | train: CAGR   37.0% DD  -28.4% Sh 1.38 | test: CAGR   11.1% DD  -46.0% Sh 0.57
