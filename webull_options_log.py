@@ -21,6 +21,8 @@ def log(m):
     line = f'{now_et():%Y-%m-%d %H:%M:%S} {m}'; print(line, flush=True)
     os.makedirs(LIVE, exist_ok=True)
     with open(f'{LIVE}/webull_options_log.log', 'a') as f: f.write(line + '\n')
+import logging
+for _n in ('webull', 'webull.core', 'webull.core.client'): logging.getLogger(_n).setLevel(logging.CRITICAL)   # SDK error logs echo request headers incl. the access token
 def client():
     from webull.core.client import ApiClient
     from webull.data.data_client import DataClient
