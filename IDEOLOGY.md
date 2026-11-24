@@ -1130,3 +1130,6 @@ QQQ real gex gate only (SPY/IWM volume-gamma proxy failed validation: sign agree
 
 ## Report 442 (Nov 24 2026): ratio-gated flips flat vs negative-gamma leverage (perps prop idea)
 19 names with ratio+gex, 4,146 G20 15m long flips, 6 slots, X1, 4bp. Flat 1x: +523% CAGR 24.8% maxDD -14.7% (realized floor) Sharpe 1.49 (train 2.24, test 0.91). NEG flips +0.39% vs POS +0.29% per trade; NEG>POS in 18-21, equal 22 and 23-26 (+0.28 vs +0.30). 2x on neg: test Calmar 0.54 vs 0.71 flat, Sharpe 0.83 vs 0.91 => leverage-on-neg-gamma FAILS the declared pass rule (adds DD faster than return outside 2018-21). Neg-only book: CAGR 9.4%.
+
+## Report 443 (Nov 24 2026): flat ratio-gated flip book under Fantasy perps prop rules (usefantasy.xyz)
+Static equity DD 3/6/8%, daily loss 3/3/4%, target 10%, 0.06% taker/fill + 10.95%/yr financing, funded cycles at +5% (payout 4.5%). Best cell High-DD G0.5: pass 83% (100% 18-21, 70% 22+) but median 214 days to pass; net/eval on 10K $+2,054 overall but only +$259 in 22+ starts. Faster G (1.5-2) passes in 21-40d but breach 43-54%; 22+ net ~0 or negative. Low tier fails. Not viable under Rey's time-value bar; edge too thin for static intraday-equity DD at useful leverage.
