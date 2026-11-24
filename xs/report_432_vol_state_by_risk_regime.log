@@ -1,0 +1,25 @@
+trades 7168 | risk-on share 0.73 | 2026 risk-on share 0.87
+
+=== G20 X1 ===
+ALL                | RISK-OFF: relief n 192 win  38.5 med -0.63 mean  1.25 / expansion n 175 win  29.1 med -0.94 mean -0.04 -> diff +1.29pp (t +2.7) | RISK-ON: relief n 575 win  29.9 med -0.52 mean  0.33 / expansion n 502 win  35.1 med -0.58 mean  0.30 -> diff +0.03pp (t +0.2)
+train 2019-21      | RISK-OFF: relief n  35 win  48.6 med -0.26 mean  3.06 / expansion n  25 win  40.0 med -0.65 mean  0.18 -> diff +2.88pp (t +1.6) | RISK-ON: relief n 208 win  33.2 med -0.45 mean  0.85 / expansion n 209 win  35.4 med -0.60 mean  0.21 -> diff +0.64pp (t +1.5)
+test 2018+2022-25  | RISK-OFF: relief n 147 win  36.7 med -0.63 mean  0.96 / expansion n 142 win  26.8 med -0.98 mean -0.11 -> diff +1.07pp (t +2.4) | RISK-ON: relief n 304 win  26.0 med -0.56 mean -0.01 / expansion n 248 win  33.5 med -0.58 mean  0.15 -> diff -0.17pp (t -0.6)
+2026               | RISK-OFF: relief n  10 win  30.0 med -1.55 mean -0.80 / expansion n   8 win  37.5 med -0.39 mean  0.45 -> diff -1.25pp (t -1.4) | RISK-ON: relief n  63 win  38.1 med -0.41 mean  0.25 / expansion n  45 win  42.2 med -0.59 mean  1.48 -> diff -1.23pp (t -1.6)
+
+=== G20 X3 ===
+ALL                | RISK-OFF: relief n 192 win  49.5 med -0.06 mean  0.86 / expansion n 175 win  41.7 med -0.59 mean  0.20 -> diff +0.66pp (t +2.1) | RISK-ON: relief n 575 win  42.1 med -0.30 mean  0.12 / expansion n 502 win  47.2 med -0.26 mean  0.19 -> diff -0.07pp (t -0.5)
+train 2019-21      | RISK-OFF: relief n  35 win  62.9 med  0.72 mean  1.64 / expansion n  25 win  48.0 med -0.41 mean  1.05 -> diff +0.59pp (t +0.6) | RISK-ON: relief n 208 win  45.2 med -0.26 mean  0.27 / expansion n 209 win  49.3 med -0.11 mean  0.29 -> diff -0.02pp (t -0.1)
+test 2018+2022-25  | RISK-OFF: relief n 147 win  46.9 med -0.19 mean  0.74 / expansion n 142 win  40.1 med -0.62 mean  0.02 -> diff +0.72pp (t +2.1) | RISK-ON: relief n 304 win  38.5 med -0.35 mean -0.01 / expansion n 248 win  45.6 med -0.28 mean  0.08 -> diff -0.09pp (t -0.6)
+2026               | RISK-OFF: relief n  10 win  40.0 med -1.10 mean -0.20 / expansion n   8 win  50.0 med -0.02 mean  0.76 -> diff -0.96pp (t -0.9) | RISK-ON: relief n  63 win  49.2 med -0.18 mean  0.31 / expansion n  45 win  46.7 med -0.27 mean  0.33 -> diff -0.02pp (t -0.0)
+
+=== G252 X1 ===
+ALL                | RISK-OFF: relief n 326 win  33.1 med -0.66 mean  0.74 / expansion n 282 win  28.7 med -0.96 mean -0.09 -> diff +0.83pp (t +2.5) | RISK-ON: relief n 823 win  31.3 med -0.51 mean  0.29 / expansion n 709 win  32.3 med -0.61 mean  0.23 -> diff +0.06pp (t +0.4)
+train 2019-21      | RISK-OFF: relief n  54 win  44.4 med -0.50 mean  2.27 / expansion n  34 win  35.3 med -0.85 mean -0.33 -> diff +2.60pp (t +2.0) | RISK-ON: relief n 260 win  36.2 med -0.39 mean  0.92 / expansion n 259 win  34.4 med -0.58 mean  0.28 -> diff +0.64pp (t +1.8)
+test 2018+2022-25  | RISK-OFF: relief n 254 win  31.5 med -0.65 mean  0.52 / expansion n 239 win  27.6 med -0.96 mean -0.07 -> diff +0.59pp (t +1.8) | RISK-ON: relief n 451 win  27.5 med -0.55 mean -0.03 / expansion n 378 win  30.4 med -0.63 mean  0.02 -> diff -0.05pp (t -0.3)
+2026               | RISK-OFF: relief n  18 win  22.2 med -1.29 mean -0.70 / expansion n   9 win  33.3 med -0.59 mean  0.31 -> diff -1.01pp (t -1.3) | RISK-ON: relief n 112 win  35.7 med -0.75 mean  0.09 / expansion n  72 win  34.7 med -0.69 mean  1.09 -> diff -1.00pp (t -1.7)
+
+=== G252 X3 ===
+ALL                | RISK-OFF: relief n 326 win  42.0 med -0.47 mean  0.57 / expansion n 282 win  38.3 med -0.64 mean  0.08 -> diff +0.49pp (t +2.0) | RISK-ON: relief n 823 win  42.0 med -0.30 mean  0.10 / expansion n 709 win  44.0 med -0.33 mean  0.13 -> diff -0.03pp (t -0.3)
+train 2019-21      | RISK-OFF: relief n  54 win  53.7 med  0.05 mean  1.40 / expansion n  34 win  44.1 med -0.46 mean  0.43 -> diff +0.97pp (t +1.1) | RISK-ON: relief n 260 win  46.2 med -0.23 mean  0.30 / expansion n 259 win  48.6 med -0.16 mean  0.26 -> diff +0.04pp (t +0.2)
+test 2018+2022-25  | RISK-OFF: relief n 254 win  40.6 med -0.50 mean  0.46 / expansion n 239 win  37.2 med -0.77 mean  0.01 -> diff +0.45pp (t +1.8) | RISK-ON: relief n 451 win  38.6 med -0.35 mean -0.03 / expansion n 378 win  41.5 med -0.37 mean  0.01 -> diff -0.04pp (t -0.4)
+2026               | RISK-OFF: relief n  18 win  27.8 med -0.78 mean -0.34 / expansion n   9 win  44.4 med -0.19 mean  0.59 -> diff -0.94pp (t -1.0) | RISK-ON: relief n 112 win  46.4 med -0.33 mean  0.16 / expansion n  72 win  40.3 med -0.57 mean  0.26 -> diff -0.10pp (t -0.2)
