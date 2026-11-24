@@ -1,0 +1,8 @@
+LIVE vector exit               n 12320 win  30.6 med  -0.63 mean  0.24 hold  2.97d | 30.7/-0.49 | 32.6/-0.57 | 27.7/-0.93 | 30.5/-0.62 |
+LIVE                                   n 4167 win 30.7% med -0.62% | CAGR 27.6% Sh 1.36 MDD -25.5% Cal 1.09 | +mo  66% worstMo  -9.4% worst12m -17.5% top5   47% | 19-21 MDD -11.3% Cal 3.29 | 22-26 MDD -25.5% Cal 0.86 | CAGR halves 37.1% | 21.9%
+UNDERWATER-ONLY tau8 th0.25 (3029 H-exits) n 12320 win  28.1 med  -0.49 mean  0.17 hold  2.21d | 26.8/-0.42 | 30.2/-0.43 | 26.2/-0.65 | 27.9/-0.49 |
+book MIN tau8 th0.25                   n 5066 win 28.0% med -0.49% | CAGR 21.2% Sh 1.16 MDD -22.3% Cal 0.95 | +mo  64% worstMo  -9.3% worst12m -11.7% top5   52% | 19-21 MDD -11.3% Cal 2.59 | 22-26 MDD -22.3% Cal 0.73 | CAGR halves 29.3% | 16.3%
+UNDERWATER-ONLY tau4 th0.25 (3637 H-exits) n 12320 win  27.6 med  -0.46 mean  0.12 hold  2.07d | 26.8/-0.39 | 29.3/-0.42 | 25.6/-0.60 | 27.6/-0.45 |
+book MIN tau4 th0.25                   n 5276 win 27.2% med -0.47% | CAGR 16.8% Sh 0.98 MDD -22.2% Cal 0.76 | +mo  61% worstMo  -9.9% worst12m -11.1% top5   51% | 19-21 MDD -12.0% Cal 1.94 | 22-26 MDD -22.2% Cal 0.58 | CAGR halves 23.4% | 12.8%
+UNDERWATER-ONLY tau8 th0.4 (3607 H-exits) n 12320 win  27.4 med  -0.46 mean  0.13 hold  2.06d | 26.6/-0.39 | 29.2/-0.41 | 25.9/-0.61 | 27.2/-0.46 |
+book MIN tau8 th0.4                    n 5317 win 27.1% med -0.47% | CAGR 16.4% Sh 0.95 MDD -23.2% Cal 0.71 | +mo  63% worstMo -10.0% worst12m -11.7% top5   55% | 19-21 MDD -15.1% Cal 1.35 | 22-26 MDD -23.2% Cal 0.60 | CAGR halves 20.5% | 13.9%
