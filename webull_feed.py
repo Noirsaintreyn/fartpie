@@ -13,6 +13,8 @@ try:
     from dotenv import load_dotenv; load_dotenv('.env'); load_dotenv('discord_bot/.env')
 except Exception: pass
 ET = 'America/New_York'; LIVE = os.getenv('LIVE_DIR', 'live')
+import logging
+for _n in ('webull', 'webull.core', 'webull.core.client'): logging.getLogger(_n).setLevel(logging.CRITICAL)   # the SDK logs request headers (incl. your access token) on errors: keep that out of logs/pastes
 _DC = {}
 def enabled(): return os.getenv('WEBULL_FEED', '1') != '0' and bool(os.getenv('WEBULL_APP_KEY')) and bool(os.getenv('WEBULL_APP_SECRET'))
 def client():
@@ -69,6 +71,12 @@ def parse_prices(j):
                 try: out[str(sym)] = float(d[k]); break
                 except (TypeError, ValueError): pass
     return out
+def _bars_call(dc, part, count, kw):
+    """Webull's batch-bars body wants `symbols` as a JSON array (a comma string gave HTTP 400 'Request body not readable'); fall back to the string form"""
+    try: return _json(dc.market_data.get_batch_history_bar(list(part), 'US_STOCK', 'M15', count=str(count), real_time_required=True, **kw))
+    except Exception as e:
+        if '400' not in str(e): raise
+        return _json(dc.market_data.get_batch_history_bar(','.join(part), 'US_STOCK', 'M15', count=str(count), real_time_required=True, **kw))
 def bars15(symbols, count=400, chunk=20):
     """15m bars for many symbols, batched. {sym: df}; symbols Webull does not return are simply missing"""
     out = {}; dc = client(); kw = {}
@@ -76,7 +84,7 @@ def bars15(symbols, count=400, chunk=20):
     for i in range(0, len(symbols), chunk):
         part = symbols[i:i + chunk]
         for k in range(3):
-            try: out.update(parse_bars(_json(dc.market_data.get_batch_history_bar(','.join(part), 'US_STOCK', 'M15', count=str(count), real_time_required=True, **kw)))); break
+            try: out.update(parse_bars(_bars_call(dc, part, count, kw))); break
             except Exception as e:
                 if k == 2: print(f'  ! webull bars {part[0]}..: {str(e)[:80]}')
                 else: time.sleep(0.6 * (k + 1))
@@ -105,7 +113,7 @@ def probe():
     if not (os.getenv('WEBULL_APP_KEY') and os.getenv('WEBULL_APP_SECRET')):
         sys.exit('WEBULL_APP_KEY / WEBULL_APP_SECRET are not in ~/fartpie/.env (or discord_bot/.env). Add them there yourself, then rerun. Until then the screener just keeps using Yahoo.')
     dc = client()
-    r = dc.market_data.get_batch_history_bar('SPY,QQQ', 'US_STOCK', 'M15', count='5', real_time_required=True); j = _json(r)
+    j = _bars_call(dc, ['SPY', 'QQQ'], 5, {})
     print('RAW BARS:', json.dumps(j)[:900]); B = parse_bars(j); print('PARSED:', {k: (len(v), str(v.datetime.iloc[-1]), float(v.close.iloc[-1])) for k, v in B.items()})
     s = _json(dc.market_data.get_snapshot('SPY,QQQ', 'US_STOCK')); print('RAW SNAP:', json.dumps(s)[:600]); print('PARSED PRICES:', parse_prices(s))
 def lag():
