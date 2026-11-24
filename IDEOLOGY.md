@@ -1124,3 +1124,6 @@ G20 gate, first gated flip per negative-gamma episode, 11 names, 2018-07..2025-1
 
 ## GEX heatmap (gex_heatmap.py)
 Strike x expiry net-GEX grid (calls +, puts -, $ per 1% move) with PW/CW/VT/SPOT tags; writes live/neg_gamma.json {ticker: net_gex} which the neg-gamma channel gate reads. Needs chain CSVs from webull_options_log.py (OPRA sub). Post: GEX_CHANNEL_ID or NEGGAMMA_CHANNEL_ID.
+
+## Report 441 (Nov 24 2026): neg-gamma 15m vector flips on index ETFs as prop strat
+QQQ real gex gate only (SPY/IWM volume-gamma proxy failed validation: sign agree 50%, rho -0.30). Long NEG-POS: QQQ +19.5bp t+3.5 (train/test same sign), SPY +7.4 t+1.7, IWM +2.7, DIA +3.6 (fail). Shorts: no cell consistent across eras. Portfolio of NEG longs: QQQ 3.6 trades/mo, 59.8bp/mo, daily Sharpe 1.58; +SPY (corr .88) 84bp/mo Sharpe 1.44; all four 92bp/mo Sharpe 0.92 (DD 3x). Era 23-26 QQQ only +10bp/trade. ETF-proxy, not real futures fills; earlier real-MNQ check (n25) was only +3.5pts.
