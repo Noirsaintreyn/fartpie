@@ -1,0 +1,31 @@
+QQQ trades so far 559
+SPY trades so far 1073
+IWM trades so far 1605
+DIA trades so far 2142
+TSLA trades so far 2654
+NVDA trades so far 3163
+AAPL trades so far 3679
+AMD trades so far 4014
+AMZN trades so far 4517
+MSFT trades so far 4873
+META trades so far 5117
+COST trades so far 5530
+
+===== 15m flips: 4412 trades, mean 4.6bp, BELOW share 0.45, daily-NEG share 0.40
+PASS BASE daily net gamma <0 vs >=0     A   10.7bp (n 1761) B    0.6bp (n 2651) diff  +10.2 t +2.67 | train   +7.3 (t +1.2) test  +11.9 (t +2.5)
+PASS HA below ZG vs above               A   10.1bp (n 1964) B    0.2bp (n 2448) diff   +9.8 t +2.93 | train   +8.1 (t +1.6) test   +9.9 (t +2.3)
+     HB recent cross vs established     A    9.2bp (n  488) B   13.1bp (n  955) diff   -3.9 t -0.51 | train   -8.0 (t -0.5) test   -2.5 (t -0.3)
+     HC room top vs bottom tercile      A   13.8bp (n  613) B    5.3bp (n  613) diff   +8.4 t +1.33 | train   +8.2 (t +1.3) test  +11.3 (t +1.0)
+     HD high vs low ATM IV (in below)   A   11.2bp (n 1209) B    8.3bp (n  755) diff   +2.9 t +0.44 | train  +13.3 (t +1.6) test   -4.2 (t -0.5)
+   by era (below vs above, bp / n): 18-19 +4(480) / -4(206) | 20-21 +19(482) / +7(496) | 22 +13(361) / +8(198) | 23-26 +6(641) / -2(1548)
+   by name (below vs above bp): QQQ +17/+2 | SPY +5/-2 | IWM -0/-1 | DIA +2/-6 | TSLA +27/-6 | NVDA +7/+0 | AAPL +22/+7 | AMD +27/+7 | AMZN +18/-3 | MSFT -9/-2 | META -49/-6 | COST -11/+8
+
+===== 1h flips: 1118 trades, mean 0.3bp, BELOW share 0.43, daily-NEG share 0.43
+     BASE daily net gamma <0 vs >=0     A    2.6bp (n  477) B   -1.4bp (n  641) diff   +4.0 t +0.71 | train   +8.1 (t +1.2) test   +1.3 (t +0.2)
+     HA below ZG vs above               A    4.3bp (n  484) B   -2.8bp (n  634) diff   +7.0 t +1.32 | train   +5.0 (t +0.9) test   +5.6 (t +0.7)
+     HB recent cross vs established     A   18.7bp (n  115) B   -0.4bp (n  229) diff  +19.2 t +1.94 | train  +30.2 (t +2.6) test   +7.6 (t +0.5)
+     HC room top vs bottom tercile      A   18.6bp (n  152) B   -1.8bp (n  152) diff  +20.5 t +1.87 | train  +10.1 (t +1.1) test  +39.4 (t +1.5)
+     HD high vs low ATM IV (in below)   A    7.8bp (n  289) B   -0.9bp (n  195) diff   +8.7 t +0.99 | train   +8.9 (t +0.8) test   +9.6 (t +0.7)
+   by era (below vs above, bp / n): 18-19 +17(119) / -3(38) | 20-21 +6(147) / +4(119) | 22 -9(78) / -25(55) | 23-26 -1(140) / -2(422)
+   by name (below vs above bp): QQQ -9/+6 | SPY +1/-7 | IWM -0/+20 | DIA +1/-6 | TSLA +14/+12 | NVDA +8/+6 | AAPL +13/-0 | AMD +66/-7 | AMZN +16/-33 | MSFT -83/+5 | META +nan/-5 | COST -11/-5
+done
