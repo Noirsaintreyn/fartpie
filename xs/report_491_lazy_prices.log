@@ -1,0 +1,21 @@
+  0/295 1s
+  25/295 27s
+  50/295 56s
+  75/295 82s
+  100/295 113s
+  125/295 143s
+  150/295 180s
+  175/295 208s
+  200/295 240s
+  225/295 266s
+  250/295 305s
+  275/295 325s
+
+live sub-$5 group test flips with a text pair: 239 of 295 tried | similarity quartiles [0.988 0.993 0.997]
+  CHANGED (lowest tercile, sim <= 0.992): n   80 REACH 70% win 34% mean +38.8% med -12.5% p10 -23%
+  MIDDLE: n   78 REACH 68% win 27% mean +14.0% med -12.1% p10 -30%
+  SAME (top tercile, sim >= 0.996): n   81 REACH 69% win 37% mean +14.8% med -9.9% p10 -27%
+  SAME - CHANGED mean gap -21.2% t -1.10 (28 months)
+  2022: CHANGED +13.9% (n 9) vs SAME +16.3% (n 10)
+  2023-26: CHANGED +42.0% (n 71) vs SAME +14.6% (n 71)
+  corr(sim, r): -0.005 | corr(sim, REACH): -0.013
