@@ -1,0 +1,11 @@
+daily flips 3105 names 541
+
+=== ALL flips: 3105 trades
+  A daily vector bear -> next open   win 21% mean +2.9% median -5.9% p10 -16% avg hold 37.6d
+  B4 first 4h close below level      win 19% mean +2.6% median -4.7% p10 -14% avg hold 27.6d | exits EARLIER than A in 99%; of those, A later ended better in 27% (A mean +2.9% vs +2.6%); big winners (A>=+30%) cut: 238 of 241, their return +94% vs +115%
+  B1 first 1h close below level      win 18% mean +2.6% median -4.3% p10 -13% avg hold 25.0d | exits EARLIER than A in 99%; of those, A later ended better in 21% (A mean +2.9% vs +2.6%); big winners (A>=+30%) cut: 241 of 241, their return +87% vs +114%
+
+=== top-third ATRP: 1035 trades
+  A daily vector bear -> next open   win 26% mean +11.2% median -9.6% p10 -22% avg hold 44.1d
+  B4 first 4h close below level      win 23% mean +9.6% median -7.9% p10 -18% avg hold 32.3d | exits EARLIER than A in 99%; of those, A later ended better in 26% (A mean +11.2% vs +9.5%); big winners (A>=+30%) cut: 140 of 143, their return +122% vs +147%
+  B1 first 1h close below level      win 22% mean +9.6% median -7.1% p10 -17% avg hold 29.8d | exits EARLIER than A in 100%; of those, A later ended better in 20% (A mean +11.3% vs +9.6%); big winners (A>=+30%) cut: 143 of 143, their return +116% vs +146%
