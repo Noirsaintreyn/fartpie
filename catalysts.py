@@ -172,7 +172,31 @@ def filing_change(tk, asof):
     except Exception: return None
 def _st(x, base=''):
     return f"{x['hits']}/{x['n']} reach +10% ({x['hits'] / x['n']:.0%})" if x and x.get('n') else 'no history'
-def scorecard(tk, asof, atrp, gr=None):
+def short_interest(tk, asof, shares=None):
+    """Latest FINRA bi-monthly short interest usable at asof (settlement + 9 days) -> dict(pct of shares, dtc, settle) or None. Cached per settlement date in live/si_cache."""
+    import io, datetime as _dt, pickle
+    asof = pd.Timestamp(asof); cd = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'live', 'si_cache'); os.makedirs(cd, exist_ok=True)
+    for back in range(9, 40):
+        c = (asof - pd.Timedelta(days=back)).date()
+        if c.weekday() > 4 or not (c.day in (13, 14, 15, 16, 17) or c.day >= 27): continue
+        f = os.path.join(cd, f'{c:%Y%m%d}.pkl')
+        if os.path.exists(f): m = pickle.load(open(f, 'rb'))
+        else:
+            try: r = requests.get(f'https://cdn.finra.org/equity/otcmarket/biweekly/shrt{c:%Y%m%d}.csv', timeout=60)
+            except Exception: return None
+            if r.status_code != 200: continue
+            x = pd.read_csv(io.StringIO(r.text), sep='|') if '|' in r.text[:500] else pd.read_csv(io.StringIO(r.text)); x.columns = [z.strip() for z in x.columns]
+            m = {str(a): (float(b), float(d)) for a, b, d in zip(x.symbolCode, pd.to_numeric(x.currentShortPositionQuantity, errors='coerce'), pd.to_numeric(x.daysToCoverQuantity, errors='coerce'))}; pickle.dump(m, open(f, 'wb'))
+        v = m.get(tk)
+        if v is None: return None
+        if shares is None:
+            try: shares = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'live', 'shares.json'))).get(tk)
+            except Exception: shares = None
+        return dict(short=v[0], dtc=v[1], settle=str(c), pct=(v[0] / shares if shares else None))
+    return None
+
+
+def scorecard(tk, asof, atrp, gr=None, shares=None):
     """-> dict(grade, pts, cohort (all years), cohort_test, rows=[(factor, today, tone '+'/'0'/'-', history stat)]). Points (report 492): +1 ATRP top third of the group, +1 unusual insider buy, +1 stock record >= 60% over >= 5 flips, -1 earnings filed early, -2 bad 8-K. Filing-text change is shown with its measured result but carries NO points (report 491/493: no edge; the paper's direction failed here)."""
     FS = _fstats(); fa = FS.get('factors', {}); rows = []; pts = 0; asof = pd.Timestamp(asof)
     hi = atrp is not None and atrp == atrp and atrp >= FS.get('atrp_cut', 9); pts += hi
@@ -185,6 +209,10 @@ def scorecard(tk, asof, atrp, gr=None):
     rows.append(('Earnings timing', {'early': 'filed EARLIER than last year', 'late': 'filed later than last year', 'normal': 'on the usual schedule / none in 30 days', None: 'unknown (no prior-year date)'}[et], '-' if early else '0', _st(fa.get('EARLY30', {}).get('on')) + ' when early' if early else (_st(fa.get('LATE30', {}).get('on')) + ' when late (no edge)' if et == 'late' else '')))
     nb = negbad(tk, asof); pts -= 2 * bool(nb)
     rows.append(('Bad 8-K (7 days)', nb or 'none', '-' if nb else '0', (_st(fa.get('NEGBAD', {}).get('on')) + ' when present') if nb else ''))
+    si = short_interest(tk, asof, shares); sf = FS.get('si', {}); hs = si is not None and si.get('pct') is not None and si['pct'] >= .15
+    def _s2(k):
+        a, t = sf.get('all', {}).get(k, {}), sf.get('test', {}).get(k, {}); return f"{a.get('hits')}/{a.get('n')} reach +10% ({a.get('reach', 0):.0%}) · test 2022+ {t.get('hits')}/{t.get('n')} ({t.get('reach', 0):.0%})" if a.get('n') else ''
+    rows.append(('Short interest', 'unavailable' if si is None or si.get('pct') is None else f"{si['pct']:.0%} of shares short" + (f" · {si['dtc']:.1f} days to cover" if si.get('dtc') == si.get('dtc') else '') + (' · HIGH' if hs else ''), '+' if hs else '0', ((_s2('si') + ' vs regular ' + (f"{sf['all']['reg']['reach']:.0%}")) if hs else ('regular sub-$5: ' + _s2('reg'))) + ' · no points yet' if sf and si is not None and si.get('pct') is not None else ''))
     sim = filing_change(tk, asof); ft = FS.get('filing', {}); ch = sim is not None and sim <= ft.get('cut', 0)
     rows.append(('Filing text vs last year', 'unavailable' if sim is None else (f"CHANGED (similarity {sim:.3f})" if ch else f"similar ({sim:.3f})"), '0', ('changed: ' + _st(ft.get('changed')) + ' vs same: ' + _st(ft.get('same')) + ' · no edge, not graded') if ft else ''))
     grd = 'A' if pts >= 2 else ('B' if pts == 1 else ('C' if pts == 0 else 'D'))

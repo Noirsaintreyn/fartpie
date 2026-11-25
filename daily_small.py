@@ -121,7 +121,7 @@ def scan(dry=False, asof_check=True):
     for a in fired:
         tk = a['tk']; path = os.path.join(LIVE, f"d5m_{tk}.png"); card = os.path.join(LIVE, f"card_{tk}.png")
         try:
-            import catalysts as C; a['sc'] = C.scorecard(tk, a['day'], a['F']['ATRP']); a['grade'] = a['sc']['grade']
+            import catalysts as C; a['sc'] = C.scorecard(tk, a['day'], a['F']['ATRP'], shares=a.get('shares')); a['grade'] = a['sc']['grade']
         except Exception as e: a['sc'] = None; a['grade'] = None; print('  ! scorecard', str(e)[:80])
         t = alert_text(a)
         try:
