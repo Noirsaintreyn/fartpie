@@ -1,0 +1,18 @@
+
+######## sub-$20 ATRP top-30% group: train n 898 | test n 1361 REACH 60% win 25% mean  +5.9% med -10.2%
+  UPS cuts [0.51 0.6 ]: LOW n  274 REACH 58% win 23% mean +10.6% med -9.5% | HIGH n  669 REACH 64% win 29% mean  +7.7% med -10.6% | gap -0.9% t -0.13 | 2022 hi +1.7% lo -4.8% | 2023-26 hi +9.0% lo +18.4%
+  MAXR cuts [0.14 0.22]: LOW n  519 REACH 54% win 23% mean  +3.0% med -9.9% | HIGH n  368 REACH 65% win 28% mean  +6.9% med -11.8% | gap +1.6% t +0.46 | 2022 hi +3.2% lo -3.5% | 2023-26 hi +7.7% lo +6.4%
+  NJ cuts [0. 2.]: LOW n  573 REACH 55% win 23% mean  +3.6% med -9.9% | HIGH n  121 REACH 66% win 26% mean +25.5% med -14.7% | gap +16.2% t +0.95 | 2022 hi -3.3% lo -3.8% | 2023-26 hi +31.6% lo +7.2%
+  DNJ cuts [0. 1.]: LOW n 1001 REACH 59% win 24% mean  +3.3% med -10.2% | HIGH n   79 REACH 68% win 28% mean +30.6% med -13.0% | gap +15.3% t +0.89 | 2022 hi +4.4% lo -1.9% | 2023-26 hi +37.7% lo +5.3%
+
+######## sub-$10 ATRP top-30% group: train n 370 | test n  691 REACH 61% win 26% mean  +9.3% med -11.0%
+  UPS cuts [0.52 0.61]: LOW n  138 REACH 62% win 28% mean +23.3% med -9.6% | HIGH n  347 REACH 63% win 28% mean  +9.1% med -11.4% | gap -8.8% t -0.77 | 2022 hi +3.8% lo -0.6% | 2023-26 hi +10.1% lo +35.3%
+  MAXR cuts [0.17 0.27]: LOW n  295 REACH 57% win 24% mean  +4.8% med -10.8% | HIGH n  150 REACH 68% win 28% mean  +9.2% med -13.2% | gap -0.9% t -0.16 | 2022 hi +17.1% lo -0.3% | 2023-26 hi +8.1% lo +6.8%
+  NJ cuts [1. 3.]: LOW n  465 REACH 59% win 26% mean  +5.0% med -10.3% | HIGH n   46 REACH 67% win 33% mean +18.4% med -13.1% | gap +6.1% t +0.64 | 2022 hi +11.7% lo -0.4% | 2023-26 hi +20.1% lo +6.7%
+  DNJ cuts [0. 2.]: LOW n  470 REACH 58% win 24% mean  +3.3% med -11.0% | HIGH n   17 REACH 65% win 29% mean  +2.5% med -12.8% | gap +1.1% t +0.12 | 2022 hi -31.2% lo +0.3% | 2023-26 hi +4.6% lo +4.3%
+
+######## sub-$5 ATRP top-30% group: train n 129 | test n  267 REACH 66% win 27% mean +15.4% med -12.0%
+  UPS cuts [0.52 0.63]: LOW n   41 REACH 66% win 39% mean +69.9% med -8.6% | HIGH n  120 REACH 70% win 28% mean  +9.1% med -13.3% | gap -22.0% t -0.92 | 2022 hi +10.5% lo +33.6% | 2023-26 hi +8.9% lo +74.9%
+  MAXR cuts [0.21 0.32]: LOW n  135 REACH 62% win 28% mean +22.6% med -10.1% | HIGH n   54 REACH 78% win 30% mean +16.6% med -13.0% | gap +1.7% t +0.09 | 2022 hi +34.2% lo -2.1% | 2023-26 hi +14.8% lo +27.7%
+  NJ cuts [1. 4.]: LOW n  144 REACH 64% win 26% mean  +4.7% med -11.7% | HIGH n   14 REACH 71% win 50% mean +56.9% med -3.6% | gap +55.6% t +1.57 | 2022 hi +81.5% lo +3.6% | 2023-26 hi +52.8% lo +4.9%
+  DNJ cuts [0. 2.]: LOW n  161 REACH 63% win 26% mean  +5.3% med -12.5% | HIGH n   13 REACH 54% win 15% mean -11.0% med -13.3% | gap -4.8% t -0.39 | 2022 hi +nan% lo +0.8% | 2023-26 hi -11.0% lo +6.3%
