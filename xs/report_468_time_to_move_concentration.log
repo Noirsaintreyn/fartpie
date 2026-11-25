@@ -1,0 +1,34 @@
+HAR fit (train, pooled): n 502677 coef (const, d, w, m): [-0.713  0.25   0.306  0.376] R2 0.642
+flips 8408 train 2993 test 5415
+
+new features passing (BIG or REACH): ['ATRP_HAR', 'SURP', 'VOV', 'GK22', 'GAPABS20', 'HARv']
+
+##### px<10 2022+ (test): group 298 flips, reconciled 298 (100%)
+  reached +10% at some point: 69% | by trading day (of ALL): <=1d 19% <=2d 32% <=3d 40% <=5d 43% <=10d 55% <=20d 63% | median days to reach 3 (p75 9, p90 19)
+  NEVER reach +10% (31%): hold days median 8 p75 12 p90 27; their share of all capital-days (vector exit) 6% | reachers hold at the vector exit: median 68d (but only 3d to the +10%)
+  avg hold if you sell at +10% else vector exit: 8.4d vs 59.8d vector-only; capital-days saved 86%
+  2022: flips  37 names  29 | top-5 names 27% of flips, top month 27%, top SIC 28 32% | open positions: avg 5.0, p90 10, max 12
+  2023: flips  66 names  45 | top-5 names 24% of flips, top month 18%, top SIC 28 30% | open positions: avg 9.4, p90 15, max 18
+  2024: flips  91 names  61 | top-5 names 19% of flips, top month 15%, top SIC 28 38% | open positions: avg 16.2, p90 24, max 29
+  2025: flips  95 names  73 | top-5 names 17% of flips, top month 15%, top SIC 28 41% | open positions: avg 21.9, p90 37, max 40
+  2026: flips   9 names   9 | top-5 names 56% of flips, top month 78%, top SIC 28 44% | open positions: avg 3.1, p90 6, max 8
+
+##### px<10 2019-21 (train): group 124 flips, reconciled 122 (98%)
+  reached +10% at some point: 70% | by trading day (of ALL): <=1d 17% <=2d 27% <=3d 34% <=5d 43% <=10d 56% <=20d 64% | median days to reach 4 (p75 8, p90 18)
+  NEVER reach +10% (30%): hold days median 5 p75 10 p90 17; their share of all capital-days (vector exit) 4% | reachers hold at the vector exit: median 66d (but only 4d to the +10%)
+  avg hold if you sell at +10% else vector exit: 7.6d vs 66.6d vector-only; capital-days saved 89%
+
+##### px<20 2022+ (test): group 604 flips, reconciled 601 (100%)
+  reached +10% at some point: 67% | by trading day (of ALL): <=1d 15% <=2d 26% <=3d 34% <=5d 40% <=10d 52% <=20d 60% | median days to reach 3 (p75 10, p90 22)
+  NEVER reach +10% (33%): hold days median 8 p75 16 p90 27; their share of all capital-days (vector exit) 7% | reachers hold at the vector exit: median 64d (but only 3d to the +10%)
+  avg hold if you sell at +10% else vector exit: 9.3d vs 55.0d vector-only; capital-days saved 83%
+  2022: flips  92 names  73 | top-5 names 12% of flips, top month 15%, top SIC 28 32% | open positions: avg 12.3, p90 21, max 26
+  2023: flips 124 names  87 | top-5 names 15% of flips, top month 15%, top SIC 28 27% | open positions: avg 17.3, p90 28, max 34
+  2024: flips 174 names 118 | top-5 names 12% of flips, top month 16%, top SIC 28 39% | open positions: avg 30.2, p90 43, max 53
+  2025: flips 185 names 140 | top-5 names 10% of flips, top month 15%, top SIC 28 31% | open positions: avg 38.7, p90 65, max 69
+  2026: flips  26 names  25 | top-5 names 23% of flips, top month 62%, top SIC 28 38% | open positions: avg 6.5, p90 12, max 19
+
+##### px<20 2019-21 (train): group 300 flips, reconciled 297 (99%)
+  reached +10% at some point: 69% | by trading day (of ALL): <=1d 14% <=2d 24% <=3d 30% <=5d 39% <=10d 55% <=20d 64% | median days to reach 5 (p75 8, p90 18)
+  NEVER reach +10% (31%): hold days median 6 p75 12 p90 29; their share of all capital-days (vector exit) 5% | reachers hold at the vector exit: median 80d (but only 5d to the +10%)
+  avg hold if you sell at +10% else vector exit: 8.6d vs 71.5d vector-only; capital-days saved 88%
