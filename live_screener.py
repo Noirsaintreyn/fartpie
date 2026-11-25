@@ -1104,11 +1104,19 @@ def heat_file(base, px=None):
     """Nov 24 2026 (Rey): every signal (buy, sell, 'touched the vector') carries the options heatmap at the signal price. Built from the latest chain webull_options_log.py saved for the name (prior-close OI); spot is replaced by the live signal price when within 5%. Names with no chain file get no heatmap. Never blocks or fails the alert."""
     try:
         import gex_heatmap as GH, webull_greeks as WG
-        df, f = WG.load(base); now = pd.Timestamp(now_et()).tz_localize(None) if pd.Timestamp(now_et()).tzinfo is None else pd.Timestamp(now_et()).tz_convert(None)
+        HEAT = globals().setdefault('_HEAT', {}); hit = HEAT.get(base)
+        if hit and time.time() - hit[0] < 900: df, f = hit[1], hit[2]                      # per-name cache, 15 min
+        else:
+            try:                                                                          # live pull for this name; falls back to the last saved chain
+                import webull_options_log as WL
+                df = WL.fetch_flat(base); f = f'{now_et():%Y-%m-%d} live'; HEAT[base] = (time.time(), df, f)
+            except BaseException as e:
+                print(f'  ! live chain {base}: {str(e)[:60]}; saved chain'); df, f = WG.load(base)
+        now = pd.Timestamp(now_et()).tz_localize(None) if pd.Timestamp(now_et()).tzinfo is None else pd.Timestamp(now_et()).tz_convert(None)
         S0 = float(df['spot'].iloc[0])
         if px and abs(float(px) / S0 - 1) < .05: df = df.copy(); df['spot'] = float(px)
         M, S, lv = GH.matrix(df, now); p = f"{LIVE}/heat_{str(base).replace(' ', '_')}.png"
-        GH.render(base, M, S, lv, p, f"{os.path.basename(f)[:10]} chain, signal {now:%H:%M}"); return p
+        GH.render(base, M, S, lv, p, f"{os.path.basename(f)[:10]} {'chain' if 'live' not in f else 'live chain'}, signal {now:%H:%M}"); return p
     except (SystemExit, Exception) as e:
         print(f'  ! heatmap {base}: {str(e)[:70]}'); return None
 def post_neg_gamma(r, path):

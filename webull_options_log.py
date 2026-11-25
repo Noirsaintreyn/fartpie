@@ -69,6 +69,15 @@ def snap(dc, syms):
     for i in range(0, len(syms), 20):
         out += rows_of(js(dc.option_market_data.get_option_snapshot(','.join(syms[i:i + 20]), 'US_OPTION'), 'option snapshot')); time.sleep(.25)
     return out
+
+_DC = {}
+def fetch_flat(sym, days=14, band=.07):
+    """Nov 24 2026: live chain for ONE name, same flat schema as the daily CSV (used to draw the heatmap at signal time). Narrower than the daily log (default 14 days, +-7%) so it stays quick."""
+    dc = _DC.get('dc') or _DC.setdefault('dc', client())
+    last = spot(dc, sym); cs = contracts(dc, sym, last, days, band)
+    if not cs: raise RuntimeError(f'no contracts for {sym}')
+    ss = snap(dc, [osym(c) for c in cs if osym(c)]); by = {osym(c): c for c in cs}; asof = now_et().strftime('%Y-%m-%d %H:%M:%S')
+    return pd.DataFrame([{'asof': asof, 'underlying': sym, 'spot': last, **{f'c_{k}': v for k, v in by.get(osym(s), {}).items() if not isinstance(v, (dict, list))}, **{k: v for k, v in s.items() if not isinstance(v, (dict, list))}} for s in ss])
 def run(a):
     dc = client()
     for sym in a.symbols.split(','):
