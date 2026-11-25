@@ -31,8 +31,16 @@ def make_chart_5m(tk, path, flip_day=None, info=None, sessions=14):
         if m.any(): vw[m] = (tp[m] * X.volume[m]).cumsum() / (X.volume[m].cumsum() + 1e-9)
     fig = plt.figure(figsize=(12.4, 7.2), facecolor=BG, dpi=140); gs = fig.add_gridspec(2, 1, height_ratios=[5.2, 1.3], hspace=.04, left=.05, right=.985, top=.88, bottom=.07); ax = fig.add_subplot(gs[0]); av = fig.add_subplot(gs[1], sharex=ax)
     for a in (ax, av): a.set_facecolor(PANEL); [s.set_color(GRID) for s in a.spines.values()]; a.tick_params(colors=MUT, labelsize=7.5); a.grid(color=GRID, lw=.5, alpha=.7)
-    col = np.where(X.close.values >= X.open.values, UP, DN); al = np.where(rth, 1., .38)
-    for i in range(n): ax.plot([t[i], t[i]], [X.low.iat[i], X.high.iat[i]], color=col[i], lw=.7, alpha=al[i], zorder=3); ax.add_patch(plt.Rectangle((t[i] - .32, min(X.open.iat[i], X.close.iat[i])), .64, max(abs(X.close.iat[i] - X.open.iat[i]), 1e-4), color=col[i], alpha=al[i], zorder=4, lw=0))
+    BULL, BULLE, BEAR, BEARE = '#3b82f6', '#93c5fd', '#fb7185', '#9f1239'
+    rg_bar = np.zeros(n)                                                       # DAILY vector regime in force for each 5m bar = the last COMPLETED daily bar before that session
+    for dd in keep:
+        prev = d.index[d.index < dd]; rg_bar[dayv == dd] = reg.reindex(prev[-1:]).iat[0] if len(prev) else 0
+    upc = X.close.values >= X.open.values; al = np.where(rth, 1., .38)
+    for i in range(n):
+        bull = rg_bar[i] == 1; main, dark = (BULL, BULLE) if bull else (BEAR, BEARE)
+        ax.plot([t[i], t[i]], [X.low.iat[i], X.high.iat[i]], color=main, lw=.8, alpha=al[i], zorder=3)
+        ax.add_patch(plt.Rectangle((t[i] - .34, min(X.open.iat[i], X.close.iat[i])), .68, max(abs(X.close.iat[i] - X.open.iat[i]), 1e-4), facecolor=main if upc[i] else PANEL, edgecolor=main, lw=.6, alpha=al[i], zorder=4))
+    col = np.where(rg_bar == 1, BULL, BEAR)
     ax.plot(t, vw.values, color=VWAP, lw=1.1, alpha=.9, zorder=5, label='session VWAP (RTH)')
     firsts = []; lv_ = []
     for k, dd in enumerate(keep):
@@ -54,6 +62,7 @@ def make_chart_5m(tk, path, flip_day=None, info=None, sessions=14):
     av.bar(t, X.volume.values, color=col, alpha=.55, width=.8); av.set_ylabel('vol', color=MUT, fontsize=7.5)
     for a in (ax, av): a.set_xlim(-1, n + 1)
     av.set_xticks(firsts); av.set_xticklabels([f'{dd:%m-%d}' for dd in keep])
+    fig.text(.985, .915, 'BLUE = daily vector BULL  ·  ROSE = daily vector BEAR  ·  filled = up bar, hollow = down bar  ·  green/rose line = vector level', color=T2, fontsize=8, ha='right')
     ttl = f'{tk}  ·  5m chart of the DAILY vector signal  ·  last {X.close.iat[-1]:.2f}'; fig.text(.05, .945, ttl, color=T1, fontsize=14, fontweight='bold')
     sub = '  ·  '.join([f'{k}: {v}' for k, v in info.items()]) or 'faint candles = pre/post-market, bright = regular hours'; fig.text(.05, .915, sub, color=T2, fontsize=9)
-    ax.legend(loc='lower right', facecolor=PANEL, edgecolor=GRID, labelcolor=T2, fontsize=8, framealpha=.9); fig.savefig(path, facecolor=BG); plt.close(fig); return path
+    ax.legend(loc='upper left', bbox_to_anchor=(0.0, 0.93), facecolor=PANEL, edgecolor=GRID, labelcolor=T2, fontsize=8, framealpha=.9); fig.savefig(path, facecolor=BG); plt.close(fig); return path
