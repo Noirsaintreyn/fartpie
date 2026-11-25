@@ -1,0 +1,105 @@
+
+################ px<20: base group 2503 (train 899, test 1604) | FINRA coverage 94% | REACH base test 60.3% REAL 21.4%
+  == REACH: AUC train / test (z) | n test | PASS
+    SVR      0.502 / 0.510 (z +0.6) n  1531 
+    SVR_CHG  0.490 / 0.497 (z -0.2) n  1531 
+    SVR_5    0.507 / 0.515 (z +1.0) n  1531 
+    SVR_Z    0.489 / 0.500 (z +0.0) n  1530 
+    INS30    0.520 / 0.507 (z +0.5) n  1604 
+    INS90    0.531 / 0.523 (z +1.5) n  1604 
+    INS10    0.505 / 0.507 (z +0.5) n  1604 
+    CLUSTER  0.507 / 0.500 (z -0.0) n  1604 
+    OFFICER  0.507 / 0.507 (z +0.5) n  1604 
+    VAL30    0.553 / 0.483 (z -0.3) n   127 
+    BIGBUY   0.516 / 0.503 (z +0.2) n  1604 
+  == REAL: AUC train / test (z) | n test | PASS
+    SVR      0.470 / 0.517 (z +0.9) n  1531 
+    SVR_CHG  0.482 / 0.497 (z -0.2) n  1531 
+    SVR_5    0.484 / 0.520 (z +1.1) n  1531 
+    SVR_Z    0.477 / 0.507 (z +0.4) n  1530 
+    INS30    0.521 / 0.516 (z +0.9) n  1604 
+    INS90    0.506 / 0.521 (z +1.2) n  1604 
+    INS10    0.512 / 0.503 (z +0.2) n  1604 
+    CLUSTER  0.498 / 0.496 (z -0.2) n  1604 
+    OFFICER  0.511 / 0.510 (z +0.6) n  1604 
+    VAL30    0.453 / 0.423 (z -1.4) n   127 
+    BIGBUY   0.505 / 0.508 (z +0.4) n  1604 
+  SVR quartile REACH (Q1 low..Q4 high): 60% 59% 62% 61% | test only: 61% 57% 63% 61%
+  SVR_CHG quartile REACH (Q1 low..Q4 high): 63% 58% 59% 62% | test only: 63% 58% 58% 62%
+  insider flag lift on REACH by era 2019-21 / 2022 / 2023-26 [n flagged]:
+    INS30    n 217 | REACH 67% v no-insider-90d 59% (z +2.3) | REAL 32% v 23% (z +2.9) | median r -8.1% v -9.5% |  70% v  59% [90] /  48% v  60% [23] /  68% v  59% [104] /
+    INS90    n 596 | REACH 66% v no-insider-90d 59% (z +3.0) | REAL 27% v 23% (z +1.9) | median r -9.8% v -9.5% |  66% v  59% [260] /  62% v  60% [61] /  66% v  59% [275] /
+    INS10    n 103 | REACH 68% v no-insider-90d 59% (z +1.8) | REAL 31% v 23% (z +1.8) | median r -7.5% v -9.5% |  65% v  59% [46] /  67% v  60% [9] /  71% v  59% [48] /
+    CLUSTER  n  72 | REACH 64% v no-insider-90d 59% (z +0.9) | REAL 21% v 23% (z -0.5) | median r -10.4% v -9.5% |  70% v  59% [30] /  40% v  60% [10] /  66% v  59% [32] /
+    OFFICER  n 123 | REACH 67% v no-insider-90d 59% (z +1.9) | REAL 33% v 23% (z +2.3) | median r -8.7% v -9.5% |  67% v  59% [51] /  50% v  60% [16] /  73% v  59% [56] /
+    BIGBUY   n 131 | REACH 67% v no-insider-90d 59% (z +1.9) | REAL 29% v 23% (z +1.5) | median r -8.6% v -9.5% |  75% v  59% [48] /  44% v  60% [18] /  68% v  59% [65] /
+
+################ px<10: base group 1179 (train 370, test 809) | FINRA coverage 93% | REACH base test 63.0% REAL 23.6%
+  == REACH: AUC train / test (z) | n test | PASS
+    SVR      0.538 / 0.531 (z +1.4) n   769 
+    SVR_CHG  0.495 / 0.517 (z +0.8) n   769 
+    SVR_5    0.549 / 0.531 (z +1.4) n   769 
+    SVR_Z    0.512 / 0.521 (z +1.0) n   768 
+    INS30    0.544 / 0.507 (z +0.3) n   809 
+    INS90    0.576 / 0.515 (z +0.7) n   809 
+    INS10    0.520 / 0.509 (z +0.4) n   809 
+    CLUSTER  0.504 / 0.503 (z +0.2) n   809 
+    OFFICER  0.511 / 0.509 (z +0.4) n   809 
+    VAL30    nan / 0.484 (z -0.2) n    72 
+    BIGBUY   0.516 / 0.502 (z +0.1) n   809 
+  == REAL: AUC train / test (z) | n test | PASS
+    SVR      0.483 / 0.507 (z +0.3) n   769 
+    SVR_CHG  0.476 / 0.485 (z -0.6) n   769 
+    SVR_5    0.499 / 0.521 (z +0.9) n   769 
+    SVR_Z    0.483 / 0.498 (z -0.1) n   768 
+    INS30    0.533 / 0.517 (z +0.7) n   809 
+    INS90    0.530 / 0.510 (z +0.4) n   809 
+    INS10    0.512 / 0.503 (z +0.1) n   809 
+    CLUSTER  0.501 / 0.493 (z -0.3) n   809 
+    OFFICER  0.517 / 0.509 (z +0.4) n   809 
+    VAL30    0.391 / 0.401 (z -1.3) n    72 
+    BIGBUY   0.496 / 0.505 (z +0.2) n   809 
+  SVR quartile REACH (Q1 low..Q4 high): 62% 60% 65% 66% | test only: 63% 57% 64% 66%
+  SVR_CHG quartile REACH (Q1 low..Q4 high): 64% 60% 64% 65% | test only: 64% 58% 60% 68%
+  insider flag lift on REACH by era 2019-21 / 2022 / 2023-26 [n flagged]:
+    INS30    n 113 | REACH 73% v no-insider-90d 61% (z +2.3) | REAL 35% v 24% (z +2.3) | median r -10.2% v -10.7% |  83% v  60% [41] /  36% v  59% [11] /  72% v  63% [61] /
+    INS90    n 296 | REACH 70% v no-insider-90d 61% (z +2.6) | REAL 28% v 24% (z +1.4) | median r -10.8% v -10.7% |  75% v  60% [118] /  56% v  59% [27] /  68% v  63% [151] /
+    INS10    n  55 | REACH 76% v no-insider-90d 61% (z +2.2) | REAL 31% v 24% (z +1.1) | median r -9.7% v -10.7% |  81% v  60% [21] /  50% v  59% [4] /  77% v  63% [30] /
+    CLUSTER  n  38 | REACH 68% v no-insider-90d 61% (z +0.9) | REAL 21% v 24% (z -0.5) | median r -11.1% v -10.7% |  69% v  60% [13] /  25% v  59% [4] /  76% v  63% [21] /
+    OFFICER  n  66 | REACH 71% v no-insider-90d 61% (z +1.6) | REAL 33% v 24% (z +1.6) | median r -9.4% v -10.7% |  73% v  60% [22] /  44% v  59% [9] /  77% v  63% [35] /
+    BIGBUY   n  59 | REACH 69% v no-insider-90d 61% (z +1.2) | REAL 27% v 24% (z +0.5) | median r -10.2% v -10.7% |  79% v  60% [19] /  33% v  59% [9] /  74% v  63% [31] /
+
+################ px<5: base group 441 (train 129, test 312) | FINRA coverage 93% | REACH base test 67.9% REAL 25.6%
+  == REACH: AUC train / test (z) | n test | PASS
+    SVR      0.480 / 0.491 (z -0.3) n   294 
+    SVR_CHG  0.443 / 0.484 (z -0.4) n   294 
+    SVR_5    0.516 / 0.510 (z +0.3) n   294 
+    SVR_Z    0.446 / 0.473 (z -0.8) n   294 
+    INS30    0.534 / 0.512 (z +0.3) n   312 
+    INS90    0.572 / 0.496 (z -0.1) n   312 
+    INS10    0.525 / 0.514 (z +0.4) n   312 
+    CLUSTER  0.483 / 0.512 (z +0.3) n   312 
+    OFFICER  0.498 / 0.510 (z +0.3) n   312 
+    VAL30    nan / nan (z +nan) n    30 
+    BIGBUY   0.498 / 0.504 (z +0.1) n   312 
+  == REAL: AUC train / test (z) | n test | PASS
+    SVR      0.419 / 0.487 (z -0.3) n   294 
+    SVR_CHG  0.382 / 0.435 (z -1.7) n   294 
+    SVR_5    0.444 / 0.560 (z +1.6) n   294 
+    SVR_Z    0.415 / 0.446 (z -1.4) n   294 
+    INS30    0.515 / 0.528 (z +0.7) n   312 
+    INS90    0.495 / 0.522 (z +0.6) n   312 
+    INS10    0.516 / 0.508 (z +0.2) n   312 
+    CLUSTER  0.505 / 0.500 (z -0.0) n   312 
+    OFFICER  0.487 / 0.516 (z +0.4) n   312 
+    VAL30    nan / 0.464 (z -0.3) n    30 
+    BIGBUY   0.487 / 0.512 (z +0.3) n   312 
+  SVR quartile REACH (Q1 low..Q4 high): 70% 68% 75% 65% | test only: 68% 65% 75% 61%
+  SVR_CHG quartile REACH (Q1 low..Q4 high): 75% 65% 70% 69% | test only: 70% 67% 61% 70%
+  insider flag lift on REACH by era 2019-21 / 2022 / 2023-26 [n flagged]:
+    INS30    n  45 | REACH 78% v no-insider-90d 69% (z +1.2) | REAL 38% v 27% (z +1.5) | median r -10.2% v -10.9% |  87% v  72% [15] /  40% v  66% [5] /  80% v  69% [25] /
+    INS90    n 103 | REACH 74% v no-insider-90d 69% (z +0.9) | REAL 31% v 27% (z +0.8) | median r -12.2% v -10.9% |  85% v  72% [39] /  50% v  66% [8] /  70% v  69% [56] /
+    INS10    n  21 | REACH 86% v no-insider-90d 69% (z +1.6) | REAL 38% v 27% (z +1.1) | median r -7.5% v -10.9% |  89% v  72% [9] /   0% v  66% [1] /  91% v  69% [11] /
+    CLUSTER  n  13 | REACH 77% v no-insider-90d 69% (z +0.6) | REAL 31% v 27% (z +0.3) | median r -10.6% v -10.9% |  60% v  72% [5] /  50% v  66% [2] / 100% v  69% [6] /
+    OFFICER  n  28 | REACH 75% v no-insider-90d 69% (z +0.6) | REAL 32% v 27% (z +0.6) | median r -11.3% v -10.9% |  75% v  72% [8] /  40% v  66% [5] /  87% v  69% [15] /
+    BIGBUY   n  22 | REACH 73% v no-insider-90d 69% (z +0.3) | REAL 32% v 27% (z +0.5) | median r -9.1% v -10.9% |  75% v  72% [8] /  40% v  66% [5] /  89% v  69% [9] /
