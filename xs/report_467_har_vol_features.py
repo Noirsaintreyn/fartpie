@@ -43,3 +43,20 @@ for tgt, yv in T.items():
 # incremental: add passing NEW features (BIG or REACH) to the 466 six-feature score
 src = open('xs/report_465_mover_features.py').read(); 
 add = [f for f in NEW if any(res[(t, f)][2] for t in ('BIG>=30%', 'REACH>=10%'))]; print('\nnew features passing (BIG or REACH):', add)
+
+# ---- stage 2 (declared after stage 1 results, before running): do the new vol features ADD to the structure_small part of the report-466 score? ----
+# base5 = ATRP(+), F11(+), VOLX(+), LTURN(+), LMC(-) (the 466 features available here; runway needs SEC data); NEWV = base5 + GAPABS20(+, overnight gap activity) + SURP(+) + ATRP_HAR(-, ATR low vs forecast) + VOV(+). Train-ECDF ranks, frozen cuts, top 10% group, test 2022+.
+def score(feats):
+    R = pd.DataFrame(index=O.index)
+    for f, s in feats.items():
+        x = O[f].astype(float); ref = np.sort(x[tr & x.notna()].values); q = np.searchsorted(ref, x.values) / len(ref); R[f] = q if s > 0 else 1 - q; R.loc[x.isna(), f] = np.nan
+    return R.mean(axis=1)
+b5 = {'ATRP': 1, 'F11': 1, 'VOLX': 1, 'LTURN': 1, 'LMC': -1}
+variants = {'ATRP only': {'ATRP': 1}, 'base5': b5, 'base5 + GAPABS20': {**b5, 'GAPABS20': 1}, 'base5 + SURP': {**b5, 'SURP': 1}, 'base5 + ATRP_HAR(-)': {**b5, 'ATRP_HAR': -1}, 'base5 + VOV': {**b5, 'VOV': 1}, 'NEWV (all four added)': {**b5, 'GAPABS20': 1, 'SURP': 1, 'ATRP_HAR': -1, 'VOV': 1}}
+te = O[~tr].copy(); trn = O[tr]; print('\n=== stage 2: top 10% group (train cut), test 2022+; px<10 | px<20 ===')
+for lab, fs in variants.items():
+    sc = score(fs); O['s_'] = sc; out = []
+    for sub, nm in ((lambda D: D[D.px < 10], 'px<10'), (lambda D: D, 'px<20')):
+        T_ = sub(O[~tr]).dropna(subset=['s_']); cut = np.quantile(sub(O[tr]).s_.dropna(), .9); a = T_[T_.s_ >= cut]
+        out.append(f"{nm}: n {len(a):4d} REAL {(a.r >= .1).mean():4.0%} REACH {(a.PEAKv >= .1).mean():4.0%} mean {a.r.mean() * 100:+5.1f}% med {a.r.median() * 100:+5.1f}% [2022 {(a[a.era3 == '2022'].PEAKv >= .1).mean():.0%} | 23-26 {(a[a.era3 == '2023-26'].PEAKv >= .1).mean():.0%} REACH]")
+    print(f'{lab:24s} ' + ' || '.join(out))

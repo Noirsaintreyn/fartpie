@@ -44,3 +44,12 @@ flips 8408 train 2993 test 5415
   HARv       0.664 | 0.648 (z +18.7) same PASS
 
 new features passing (BIG or REACH): ['ATRP_HAR', 'SURP', 'VOV', 'GK22', 'GAPABS20', 'HARv']
+
+=== stage 2: top 10% group (train cut), test 2022+; px<10 | px<20 ===
+ATRP only                px<10: n  163 REAL  29% REACH  69% mean +21.3% med -13.4% [2022 74% | 23-26 68% REACH] || px<20: n  391 REAL  25% REACH  66% mean +11.1% med -12.6% [2022 60% | 23-26 68% REACH]
+base5                    px<10: n  298 REAL  27% REACH  69% mean +18.3% med -12.7% [2022 59% | 23-26 71% REACH] || px<20: n  604 REAL  23% REACH  67% mean  +8.8% med -12.0% [2022 61% | 23-26 68% REACH]
+base5 + GAPABS20         px<10: n  249 REAL  28% REACH  69% mean +20.4% med -12.4% [2022 63% | 23-26 70% REACH] || px<20: n  539 REAL  25% REACH  68% mean +11.4% med -12.0% [2022 61% | 23-26 69% REACH]
+base5 + SURP             px<10: n  297 REAL  27% REACH  70% mean +16.3% med -13.2% [2022 62% | 23-26 71% REACH] || px<20: n  654 REAL  23% REACH  65% mean  +8.2% med -12.0% [2022 65% | 23-26 66% REACH]
+base5 + ATRP_HAR(-)      px<10: n  306 REAL  26% REACH  70% mean +16.7% med -13.7% [2022 68% | 23-26 70% REACH] || px<20: n  686 REAL  23% REACH  65% mean  +7.7% med -12.0% [2022 66% | 23-26 65% REACH]
+base5 + VOV              px<10: n  322 REAL  25% REACH  67% mean +14.0% med -12.6% [2022 62% | 23-26 68% REACH] || px<20: n  648 REAL  24% REACH  68% mean  +8.9% med -11.7% [2022 66% | 23-26 68% REACH]
+NEWV (all four added)    px<10: n  333 REAL  25% REACH  67% mean +12.9% med -13.7% [2022 59% | 23-26 68% REACH] || px<20: n  686 REAL  24% REACH  65% mean  +8.0% med -11.9% [2022 65% | 23-26 65% REACH]
