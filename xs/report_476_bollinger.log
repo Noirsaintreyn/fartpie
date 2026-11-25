@@ -1,0 +1,54 @@
+trades 9162
+
+########## sub-$5 book B + E+V: 1700 trades | base ann +112% DD -22% H1 +60 H2 +469 win 29% mean net +3.13%
+  %B 1h: <0 +13.2%(2) | 0-.25 -1.1%(8) | .25-.5 +1.1%(90) | .5-.75 +0.8%(167) | .75-1 +1.3%(326) | >1 +4.2%(1107)
+  SQUEEZE 1h: bottom-third bandwidth +3.12%(510) [H1 +0.2 H2 +5.1] vs rest +3.14%(1190) [H1 +2.3 H2 +3.7]
+  %B 4h: <0 +9.3%(3) | 0-.25 +2.3%(18) | .25-.5 +1.7%(236) | .5-.75 +3.2%(505) | .75-1 +4.6%(434) | >1 +2.5%(504)
+  SQUEEZE 4h: bottom-third bandwidth +2.41%(869) [H1 +0.9 H2 +3.4] vs rest +3.87%(797) [H1 +2.3 H2 +5.0]
+  %B  d: <0 +16.7%(1) | 0-.25 -0.9%(30) | .25-.5 +3.2%(530) | .5-.75 +2.5%(659) | .75-1 +5.5%(330) | >1 +1.1%(150)
+  SQUEEZE  d: bottom-third bandwidth +2.33%(713) [H1 +3.3 H2 +1.7] vs rest +4.09%(875) [H1 +0.7 H2 +6.1]
+  1h BE-stop after upper-band reject   ann   +17 DD  -34 H1   +57 H2    +1 win 11% mean +0.47% changed 72% 
+  1h exit after upper-band reject      ann   -12 DD  -50 H1    +9 H2   -37 win 38% mean -0.17% changed 83% 
+  1h exit on close below basis         ann   +71 DD  -22 H1   +73 H2  +177 win 32% mean +1.10% changed 76% 
+  4h BE-stop after upper-band reject   ann   +34 DD  -33 H1   +66 H2   +43 win 16% mean +1.18% changed 52% 
+  4h exit after upper-band reject      ann   +17 DD  -24 H1   +36 H2   +15 win 41% mean +0.40% changed 67% 
+  4h exit on close below basis         ann  +111 DD  -26 H1  +155 H2  +254 win 28% mean +1.99% changed 55% 
+   d BE-stop after upper-band reject   ann   +76 DD  -24 H1   +66 H2  +220 win 21% mean +2.39% changed 27% 
+   d exit after upper-band reject      ann   +44 DD  -27 H1   +22 H2  +138 win 40% mean +0.85% changed 46% 
+   d exit on close below basis         ann   +53 DD  -32 H1   +54 H2  +125 win 29% mean +2.32% changed 42% 
+
+########## sub-$10 book B + E+V: 3606 trades | base ann +41% DD -32% H1 +1 H2 +172 win 25% mean net +1.66%
+  %B 1h: <0 +13.2%(2) | 0-.25 +0.1%(16) | .25-.5 +0.0%(196) | .5-.75 +1.2%(332) | .75-1 +1.1%(722) | >1 +2.0%(2338)
+  SQUEEZE 1h: bottom-third bandwidth +1.81%(1098) [H1 -0.4 H2 +3.4] vs rest +1.60%(2508) [H1 +0.9 H2 +2.1]
+  %B 4h: <0 +7.1%(5) | 0-.25 +0.2%(41) | .25-.5 +1.0%(467) | .5-.75 +1.8%(1089) | .75-1 +2.5%(939) | >1 +1.1%(1065)
+  SQUEEZE 4h: bottom-third bandwidth +1.20%(1853) [H1 -0.3 H2 +2.2] vs rest +2.08%(1693) [H1 +1.0 H2 +2.8]
+  %B  d: <0 +4.2%(2) | 0-.25 -1.7%(58) | .25-.5 +1.8%(1065) | .5-.75 +1.4%(1400) | .75-1 +2.9%(735) | >1 +0.1%(346)
+  SQUEEZE  d: bottom-third bandwidth +1.13%(1492) [H1 +0.7 H2 +1.4] vs rest +2.23%(1870) [H1 +0.3 H2 +3.3]
+  1h BE-stop after upper-band reject   ann    +0 DD  -46 H1    +9 H2    -8 win 11% mean +0.16% changed 71% 
+  1h exit after upper-band reject      ann   -31 DD  -75 H1   -15 H2   -60 win 36% mean -0.31% changed 82% 
+  1h exit on close below basis         ann   +32 DD  -36 H1   +51 H2   +49 win 30% mean +0.34% changed 75% 
+  4h BE-stop after upper-band reject   ann   +10 DD  -35 H1   +20 H2   +11 win 15% mean +0.75% changed 51% 
+  4h exit after upper-band reject      ann   -10 DD  -48 H1   +12 H2   -34 win 38% mean +0.08% changed 66% 
+  4h exit on close below basis         ann   +51 DD  -30 H1    +9 H2  +211 win 26% mean +0.98% changed 52% <-- beats base on all four
+   d BE-stop after upper-band reject   ann   +48 DD  -33 H1  +109 H2   +52 win 21% mean +1.22% changed 27% 
+   d exit after upper-band reject      ann   +13 DD  -40 H1   +22 H2   +19 win 37% mean +0.28% changed 45% 
+   d exit on close below basis         ann   +23 DD  -33 H1   +12 H2   +63 win 26% mean +1.17% changed 39% 
+
+########## sub-$20 book B + E+V: 6024 trades | base ann +33% DD -28% H1 +12 H2 +98 win 25% mean net +0.91%
+  %B 1h: <0 +13.2%(2) | 0-.25 -0.6%(25) | .25-.5 -0.2%(329) | .5-.75 +0.8%(555) | .75-1 +0.6%(1260) | >1 +1.1%(3853)
+  SQUEEZE 1h: bottom-third bandwidth +0.85%(1781) [H1 -0.7 H2 +2.0] vs rest +0.93%(4243) [H1 +0.3 H2 +1.4]
+  %B 4h: <0 +3.8%(7) | 0-.25 -0.4%(60) | .25-.5 +0.8%(753) | .5-.75 +0.9%(1836) | .75-1 +1.3%(1604) | >1 +0.6%(1764)
+  SQUEEZE 4h: bottom-third bandwidth +0.64%(3089) [H1 -0.4 H2 +1.4] vs rest +1.11%(2837) [H1 +0.2 H2 +1.7]
+  %B  d: <0 -0.2%(4) | 0-.25 -1.8%(85) | .25-.5 +1.1%(1682) | .5-.75 +0.8%(2382) | .75-1 +1.3%(1275) | >1 +0.0%(596)
+  SQUEEZE  d: bottom-third bandwidth +0.65%(2480) [H1 +0.1 H2 +1.0] vs rest +1.21%(3119) [H1 -0.0 H2 +1.9]
+  1h BE-stop after upper-band reject   ann   -25 DD  -68 H1    -3 H2   -56 win 10% mean -0.08% changed 71% 
+  1h exit after upper-band reject      ann   -42 DD  -84 H1   -20 H2   -75 win 35% mean -0.35% changed 81% 
+  1h exit on close below basis         ann    +5 DD  -54 H1   +25 H2    -6 win 30% mean +0.09% changed 74% 
+  4h BE-stop after upper-band reject   ann   -11 DD  -58 H1   +23 H2   -42 win 15% mean +0.30% changed 51% 
+  4h exit after upper-band reject      ann   -18 DD  -61 H1   +13 H2   -51 win 38% mean -0.05% changed 65% 
+  4h exit on close below basis         ann   +32 DD  -46 H1   +15 H2   +95 win 26% mean +0.42% changed 51% 
+   d BE-stop after upper-band reject   ann    +2 DD  -45 H1   +32 H2   -22 win 19% mean +0.61% changed 27% 
+   d exit after upper-band reject      ann    +2 DD  -43 H1    +6 H2    -1 win 36% mean +0.09% changed 45% 
+   d exit on close below basis         ann   +16 DD  -44 H1   +23 H2   +22 win 27% mean +0.56% changed 37% 
+
+PASS counts: {('4h', 'mx'): 1}

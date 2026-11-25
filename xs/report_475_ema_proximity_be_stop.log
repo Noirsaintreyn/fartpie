@@ -1,0 +1,124 @@
+trades 9162
+
+########## sub-$5 book B + E+V: 1700 trades | base ann +112% DD -22% H1 +60 H2 +469 win 29% mean net +3.13%
+--- (1) PROXIMITY: mean net % (n) by distance bucket of flip close to the EMA (ATR); H1/H2 means of the NEAR group vs FAR-BELOW (<-1)
+  1h20   +16.7(  1) |  -1.2( 10) |  +1.3( 29) |  +1.3( 61) |  +0.4(175) |  +3.5(1050) |  +3.8(374)  || NEAR +0.72%/265 (H1 -0.2 H2 +1.3) | BELOW<-1 +0.40%/11 (H1 -2.9 H2 +2.3) | ABOVE>1 +3.60%/1424
+  1h50    +6.6(  2) |  +2.6( 37) |  +1.3( 60) |  +0.9( 95) |  +0.8(208) |  +3.6(949) |  +4.1(349)  || NEAR +0.89%/363 (H1 +0.3 H2 +1.3) | BELOW<-1 +2.79%/39 (H1 -1.4 H2 +5.7) | ABOVE>1 +3.77%/1298
+  1h100   +6.6( 35) |  +2.6(113) |  +0.9(129) |  -0.0(128) |  +3.2(269) |  +3.7(760) |  +3.7(266)  || NEAR +1.85%/526 (H1 +1.3 H2 +2.2) | BELOW<-1 +3.56%/148 (H1 -0.2 H2 +6.1) | ABOVE>1 +3.72%/1026
+  1h200   +1.9(231) |  +6.8(253) |  +0.9(148) |  +2.9(133) |  +4.5(202) |  +2.1(436) |  +2.7(297)  || NEAR +2.97%/483 (H1 +3.8 H2 +2.3) | BELOW<-1 +4.47%/484 (H1 +1.4 H2 +6.6) | ABOVE>1 +2.35%/733
+  4h20   +12.6( 10) |  +3.3( 62) |  -0.7( 72) |  +1.9(104) |  +1.1(242) |  +3.6(881) |  +4.3(329)  || NEAR +0.98%/418 (H1 -0.4 H2 +1.9) | BELOW<-1 +4.62%/72 (H1 +0.3 H2 +7.1) | ABOVE>1 +3.78%/1210
+  4h50    +2.4(180) |  +6.2(232) |  +1.3(148) |  +4.6(129) |  +2.7(216) |  +2.4(497) |  +2.9(298)  || NEAR +2.79%/493 (H1 +2.9 H2 +2.7) | BELOW<-1 +4.56%/412 (H1 +1.0 H2 +6.9) | ABOVE>1 +2.59%/795
+  4h100   +4.2(526) |  +4.3(257) |  +3.6(111) |  +1.0( 72) |  -0.4(106) |  -0.1(264) |  +4.4(364)  || NEAR +1.47%/289 (H1 +1.6 H2 +1.4) | BELOW<-1 +4.26%/783 (H1 +2.5 H2 +5.5) | ABOVE>1 +2.48%/628
+  4h200   +3.8(770) |  +2.5(166) |  +4.3( 60) |  +4.0( 40) |  +2.5( 62) |  -0.1(142) |  +3.0(400)  || NEAR +3.55%/162 (H1 +2.9 H2 +4.0) | BELOW<-1 +3.54%/939 (H1 +1.8 H2 +4.7) | ABOVE>1 +2.18%/542
+   d20    +2.5(102) |  +2.0(180) |  +2.6(148) |  +2.9(139) |  +5.9(237) |  +3.0(615) |  +2.4(279)  || NEAR +4.20%/524 (H1 +1.4 H2 +6.4) | BELOW<-1 +2.16%/282 (H1 +1.8 H2 +2.4) | ABOVE>1 +2.81%/894
+   d50    +4.4(518) |  +4.4(257) |  +2.6(118) |  +1.6( 68) |  -0.7(109) |  +0.1(264) |  +4.2(366)  || NEAR +1.17%/295 (H1 +1.3 H2 +1.1) | BELOW<-1 +4.37%/775 (H1 +2.6 H2 +5.6) | ABOVE>1 +2.52%/630
+   d100   +3.8(771) |  +2.8(159) |  +3.5( 65) |  +1.3( 38) |  +3.7( 69) |  +0.1(140) |  +3.0(398)  || NEAR +3.09%/172 (H1 +2.7 H2 +3.4) | BELOW<-1 +3.59%/933 (H1 +1.8 H2 +4.7) | ABOVE>1 +2.23%/538
+   d200   +4.3(880) |  +0.7( 88) |  +4.1( 43) |  +1.3( 20) |  +0.3( 26) |  -0.6( 88) |  +2.7(370)  || NEAR +2.35%/89 (H1 +1.9 H2 +2.8) | BELOW<-1 +3.92%/971 (H1 +1.7 H2 +5.0) | ABOVE>1 +2.07%/458
+--- (2) stop variants per EMA: ann% / DD% / H1 / H2 / win% / mean net   (base above)
+  1h20   BE-stop after rejection  ann  +100 DD  -29 H1  +125 H2  +242 win 16% mean +1.88% changed 62% 
+  1h20   exit after rejection     ann   +70 DD  -25 H1   +59 H2  +198 win 30% mean +1.05% changed 77% 
+  1h50   BE-stop after rejection  ann   +93 DD  -23 H1   +63 H2  +326 win 18% mean +1.98% changed 54% 
+  1h50   exit after rejection     ann   +79 DD  -19 H1  +104 H2  +171 win 28% mean +1.81% changed 69% 
+  1h100  BE-stop after rejection  ann  +111 DD  -26 H1  +100 H2  +353 win 18% mean +2.29% changed 52% 
+  1h100  exit after rejection     ann  +125 DD  -24 H1  +160 H2  +318 win 29% mean +2.32% changed 59% 
+  1h200  BE-stop after rejection  ann  +100 DD  -24 H1   +81 H2  +324 win 21% mean +2.08% changed 41% 
+  1h200  exit after rejection     ann   +96 DD  -26 H1   +92 H2  +277 win 32% mean +2.02% changed 47% 
+  4h20   BE-stop after rejection  ann  +109 DD  -19 H1   +89 H2  +360 win 18% mean +2.01% changed 52% 
+  4h20   exit after rejection     ann  +144 DD  -20 H1  +236 H2  +310 win 28% mean +2.21% changed 63% 
+  4h50   BE-stop after rejection  ann  +110 DD  -22 H1   +85 H2  +378 win 20% mean +2.01% changed 44% 
+  4h50   exit after rejection     ann  +106 DD  -26 H1   +94 H2  +332 win 32% mean +1.97% changed 49% 
+  4h100  BE-stop after rejection  ann   +80 DD  -25 H1   +26 H2  +343 win 22% mean +2.52% changed 29% 
+  4h100  exit after rejection     ann   +51 DD  -29 H1   +44 H2  +131 win 32% mean +1.50% changed 36% 
+  4h200  BE-stop after rejection  ann   +92 DD  -26 H1   +32 H2  +416 win 24% mean +2.67% changed 16% 
+  4h200  exit after rejection     ann   +59 DD  -36 H1   +17 H2  +232 win 30% mean +1.71% changed 25% 
+   d20   BE-stop after rejection  ann  +102 DD  -25 H1   +60 H2  +392 win 19% mean +2.41% changed 47% 
+   d20   exit after rejection     ann  +110 DD  -26 H1  +123 H2  +298 win 30% mean +2.29% changed 53% 
+   d50   BE-stop after rejection  ann   +82 DD  -23 H1   +26 H2  +365 win 22% mean +2.52% changed 28% 
+   d50   exit after rejection     ann   +43 DD  -31 H1   +37 H2  +107 win 32% mean +1.46% changed 36% 
+   d100  BE-stop after rejection  ann   +76 DD  -27 H1   +32 H2  +300 win 23% mean +2.63% changed 16% 
+   d100  exit after rejection     ann   +53 DD  -36 H1   +26 H2  +178 win 30% mean +1.66% changed 25% 
+   d200  BE-stop after rejection  ann   +90 DD  -25 H1   +38 H2  +378 win 25% mean +2.95% changed 8% 
+   d200  exit after rejection     ann   +84 DD  -26 H1   +29 H2  +369 win 30% mean +2.41% changed 16% 
+
+########## sub-$10 book B + E+V: 3606 trades | base ann +41% DD -32% H1 +1 H2 +172 win 25% mean net +1.66%
+--- (1) PROXIMITY: mean net % (n) by distance bucket of flip close to the EMA (ATR); H1/H2 means of the NEAR group vs FAR-BELOW (<-1)
+  1h20   +16.7(  1) |  +0.0( 22) |  -0.8( 65) |  +1.0(121) |  +1.2(342) |  +1.7(2180) |  +1.9(875)  || NEAR +0.90%/528 (H1 +0.5 H2 +1.2) | BELOW<-1 +0.75%/23 (H1 -1.8 H2 +2.7) | ABOVE>1 +1.80%/3055
+  1h50    +0.8(  8) |  +1.4( 68) |  +2.1(117) |  +0.7(179) |  +0.0(414) |  +2.0(1966) |  +1.8(854)  || NEAR +0.53%/710 (H1 +0.4 H2 +0.6) | BELOW<-1 +1.31%/76 (H1 -1.1 H2 +3.0) | ABOVE>1 +1.96%/2820
+  1h100   +2.8( 62) |  +1.1(219) |  +0.3(260) |  +0.7(236) |  +1.8(541) |  +2.2(1609) |  +1.1(679)  || NEAR +1.20%/1037 (H1 +0.4 H2 +1.7) | BELOW<-1 +1.50%/281 (H1 -0.0 H2 +2.5) | ABOVE>1 +1.90%/2288
+  1h200   +1.7(477) |  +3.6(494) |  -0.1(288) |  +2.2(247) |  +2.7(382) |  +0.8(950) |  +1.5(768)  || NEAR +1.66%/917 (H1 +1.4 H2 +1.9) | BELOW<-1 +2.65%/971 (H1 +0.4 H2 +4.1) | ABOVE>1 +1.11%/1718
+  4h20    +7.5( 16) |  +2.2(119) |  -0.2(141) |  +0.8(193) |  +0.7(499) |  +1.9(1836) |  +2.0(802)  || NEAR +0.58%/833 (H1 -0.6 H2 +1.4) | BELOW<-1 +2.82%/135 (H1 +2.1 H2 +3.3) | ABOVE>1 +1.95%/2638
+  4h50    +1.5(353) |  +3.8(483) |  +0.3(268) |  +2.1(253) |  +1.5(423) |  +1.2(1069) |  +1.5(757)  || NEAR +1.30%/944 (H1 +1.0 H2 +1.6) | BELOW<-1 +2.80%/836 (H1 +0.1 H2 +4.5) | ABOVE>1 +1.33%/1826
+  4h100   +2.8(1048) |  +1.9(477) |  +1.3(215) |  +0.4(148) |  -0.3(223) |  -0.2(580) |  +2.3(915)  || NEAR +0.46%/586 (H1 -0.1 H2 +0.9) | BELOW<-1 +2.50%/1525 (H1 +0.8 H2 +3.6) | ABOVE>1 +1.29%/1495
+  4h200   +2.1(1528) |  +1.4(296) |  +1.0(127) |  +2.3( 73) |  +1.1(133) |  +0.7(303) |  +1.3(1024)  || NEAR +1.31%/333 (H1 -0.4 H2 +2.7) | BELOW<-1 +1.99%/1827 (H1 +0.5 H2 +2.8) | ABOVE>1 +1.16%/1327
+   d20    +0.7(200) |  +1.2(363) |  +1.5(306) |  +2.5(248) |  +3.1(481) |  +1.7(1298) |  +0.9(710)  || NEAR +2.48%/1035 (H1 +0.1 H2 +4.2) | BELOW<-1 +1.05%/563 (H1 +0.9 H2 +1.1) | ABOVE>1 +1.42%/2008
+   d50    +2.8(1039) |  +2.1(481) |  +0.6(216) |  +0.6(145) |  -0.4(232) |  -0.1(576) |  +2.2(917)  || NEAR +0.22%/593 (H1 -0.3 H2 +0.6) | BELOW<-1 +2.58%/1520 (H1 +0.8 H2 +3.7) | ABOVE>1 +1.31%/1493
+   d100   +2.1(1526) |  +1.5(291) |  +1.0(132) |  -0.4( 72) |  +1.8(143) |  +0.9(302) |  +1.3(1019)  || NEAR +1.05%/347 (H1 -0.6 H2 +2.4) | BELOW<-1 +2.01%/1820 (H1 +0.5 H2 +2.9) | ABOVE>1 +1.20%/1321
+   d200   +2.4(1711) |  +0.4(174) |  +1.7( 82) |  -0.4( 39) |  -0.5( 61) |  -0.3(193) |  +1.1(986)  || NEAR +0.50%/182 (H1 -0.4 H2 +1.1) | BELOW<-1 +2.24%/1892 (H1 +0.4 H2 +3.1) | ABOVE>1 +0.91%/1179
+--- (2) stop variants per EMA: ann% / DD% / H1 / H2 / win% / mean net   (base above)
+  1h20   BE-stop after rejection  ann   +38 DD  -40 H1   +42 H2   +84 win 15% mean +0.84% changed 61% 
+  1h20   exit after rejection     ann   +17 DD  -45 H1   +27 H2   +24 win 29% mean +0.36% changed 77% 
+  1h50   BE-stop after rejection  ann   +33 DD  -32 H1   +18 H2   +98 win 17% mean +0.98% changed 53% 
+  1h50   exit after rejection     ann   +32 DD  -38 H1   +36 H2   +66 win 27% mean +0.77% changed 67% 
+  1h100  BE-stop after rejection  ann   +40 DD  -34 H1   +29 H2  +108 win 18% mean +1.22% changed 49% 
+  1h100  exit after rejection     ann   +37 DD  -45 H1   +32 H2   +92 win 26% mean +1.18% changed 56% 
+  1h200  BE-stop after rejection  ann   +16 DD  -39 H1   -25 H2  +107 win 19% mean +1.01% changed 37% 
+  1h200  exit after rejection     ann   +27 DD  -34 H1    -8 H2  +117 win 29% mean +0.90% changed 42% 
+  4h20   BE-stop after rejection  ann   +53 DD  -28 H1   +19 H2  +191 win 18% mean +1.11% changed 50% <-- beats base on all four
+  4h20   exit after rejection     ann   +83 DD  -30 H1   +80 H2  +230 win 27% mean +1.06% changed 61% <-- beats base on all four
+  4h50   BE-stop after rejection  ann   +49 DD  -29 H1   +30 H2  +149 win 20% mean +0.98% changed 40% 
+  4h50   exit after rejection     ann   +43 DD  -36 H1   +34 H2  +114 win 29% mean +0.87% changed 45% 
+  4h100  BE-stop after rejection  ann   +28 DD  -42 H1   -14 H2  +144 win 20% mean +1.36% changed 26% 
+  4h100  exit after rejection     ann    +7 DD  -45 H1   +18 H2    +4 win 31% mean +0.74% changed 33% 
+  4h200  BE-stop after rejection  ann   +26 DD  -39 H1    -9 H2  +114 win 20% mean +1.46% changed 15% 
+  4h200  exit after rejection     ann   +12 DD  -40 H1   -30 H2  +100 win 28% mean +1.01% changed 22% 
+   d20   BE-stop after rejection  ann   +62 DD  -32 H1   +71 H2  +141 win 19% mean +1.19% changed 43% 
+   d20   exit after rejection     ann   +51 DD  -40 H1   +59 H2  +112 win 27% mean +1.08% changed 49% 
+   d50   BE-stop after rejection  ann   +42 DD  -44 H1   -13 H2  +219 win 21% mean +1.35% changed 26% 
+   d50   exit after rejection     ann   +13 DD  -42 H1   +17 H2   +21 win 31% mean +0.71% changed 33% 
+   d100  BE-stop after rejection  ann   +15 DD  -50 H1   -24 H2  +101 win 21% mean +1.45% changed 15% 
+   d100  exit after rejection     ann    +7 DD  -44 H1   -25 H2   +64 win 28% mean +0.99% changed 22% 
+   d200  BE-stop after rejection  ann   +51 DD  -35 H1   +12 H2  +197 win 23% mean +1.65% changed 9% 
+   d200  exit after rejection     ann   +57 DD  -33 H1   +10 H2  +243 win 28% mean +1.38% changed 15% 
+
+########## sub-$20 book B + E+V: 6024 trades | base ann +33% DD -28% H1 +12 H2 +98 win 25% mean net +0.91%
+--- (1) PROXIMITY: mean net % (n) by distance bucket of flip close to the EMA (ATR); H1/H2 means of the NEAR group vs FAR-BELOW (<-1)
+  1h20    +5.3(  2) |  +0.5( 30) |  -0.6(109) |  -0.1(215) |  +0.8(559) |  +0.9(3587) |  +1.1(1522)  || NEAR +0.39%/883 (H1 -0.1 H2 +0.7) | BELOW<-1 +0.78%/32 (H1 -1.9 H2 +2.4) | ABOVE>1 +1.00%/5109
+  1h50    -0.2( 13) |  +0.6(109) |  +1.2(186) |  -0.1(295) |  +0.4(691) |  +1.1(3238) |  +1.0(1492)  || NEAR +0.39%/1172 (H1 -0.1 H2 +0.8) | BELOW<-1 +0.50%/122 (H1 -1.4 H2 +1.7) | ABOVE>1 +1.05%/4730
+  1h100   +1.4( 96) |  +0.5(319) |  +0.4(400) |  +0.2(404) |  +0.8(903) |  +1.3(2670) |  +0.6(1232)  || NEAR +0.58%/1707 (H1 -0.3 H2 +1.2) | BELOW<-1 +0.75%/415 (H1 -0.4 H2 +1.6) | ABOVE>1 +1.07%/3902
+  1h200   +1.1(709) |  +1.9(805) |  -0.1(470) |  +1.7(391) |  +1.4(639) |  +0.3(1612) |  +0.9(1398)  || NEAR +1.00%/1500 (H1 +0.7 H2 +1.3) | BELOW<-1 +1.49%/1514 (H1 -0.5 H2 +2.9) | ABOVE>1 +0.57%/3010
+  4h20    +3.8( 29) |  +1.3(168) |  -0.4(224) |  +0.2(332) |  +0.8(823) |  +1.0(3039) |  +1.0(1409)  || NEAR +0.43%/1379 (H1 -0.7 H2 +1.3) | BELOW<-1 +1.69%/197 (H1 +0.9 H2 +2.2) | ABOVE>1 +1.02%/4448
+  4h50    +0.9(520) |  +2.2(769) |  +0.2(444) |  +1.1(402) |  +0.8(715) |  +0.6(1809) |  +0.9(1365)  || NEAR +0.72%/1561 (H1 +0.3 H2 +1.0) | BELOW<-1 +1.64%/1289 (H1 -0.6 H2 +3.2) | ABOVE>1 +0.70%/3174
+  4h100   +1.5(1613) |  +1.0(788) |  +0.7(351) |  +1.6(266) |  -0.6(374) |  -0.3(983) |  +1.2(1649)  || NEAR +0.44%/991 (H1 -0.3 H2 +1.0) | BELOW<-1 +1.37%/2401 (H1 -0.1 H2 +2.4) | ABOVE>1 +0.67%/2632
+  4h200   +1.1(2383) |  +0.5(494) |  +0.6(213) |  +2.0(151) |  +0.8(218) |  +0.6(541) |  +0.7(1831)  || NEAR +1.05%/582 (H1 -0.2 H2 +2.0) | BELOW<-1 +0.96%/2881 (H1 -0.4 H2 +1.8) | ABOVE>1 +0.65%/2372
+   d20    +0.4(289) |  +0.6(567) |  +0.9(499) |  +1.5(400) |  +1.4(780) |  +1.1(2174) |  +0.4(1315)  || NEAR +1.29%/1679 (H1 -0.3 H2 +2.5) | BELOW<-1 +0.54%/856 (H1 -0.2 H2 +1.0) | ABOVE>1 +0.82%/3489
+   d50    +1.6(1598) |  +1.1(788) |  +0.1(352) |  +1.8(269) |  -0.8(386) |  -0.1(977) |  +1.2(1654)  || NEAR +0.21%/1007 (H1 -0.4 H2 +0.7) | BELOW<-1 +1.44%/2386 (H1 -0.0 H2 +2.5) | ABOVE>1 +0.69%/2631
+   d100   +1.1(2375) |  +0.5(492) |  +0.5(220) |  +0.6(142) |  +1.8(235) |  +0.5(545) |  +0.7(1822)  || NEAR +1.04%/597 (H1 -0.3 H2 +2.0) | BELOW<-1 +0.97%/2871 (H1 -0.4 H2 +1.8) | ABOVE>1 +0.63%/2367
+   d200   +1.3(2632) |  +0.4(322) |  +0.3(126) |  -0.9( 82) |  +0.3(121) |  +0.6(327) |  +0.7(1774)  || NEAR +0.02%/329 (H1 -0.7 H2 +0.5) | BELOW<-1 +1.19%/2966 (H1 -0.4 H2 +2.0) | ABOVE>1 +0.66%/2102
+--- (2) stop variants per EMA: ann% / DD% / H1 / H2 / win% / mean net   (base above)
+  1h20   BE-stop after rejection  ann   +27 DD  -43 H1   +16 H2   +73 win 16% mean +0.36% changed 61% 
+  1h20   exit after rejection     ann    -3 DD  -59 H1   +14 H2   -20 win 29% mean +0.10% changed 76% 
+  1h50   BE-stop after rejection  ann    +2 DD  -40 H1   +18 H2   -12 win 17% mean +0.45% changed 51% 
+  1h50   exit after rejection     ann   +22 DD  -44 H1   +15 H2   +54 win 26% mean +0.41% changed 65% 
+  1h100  BE-stop after rejection  ann   +25 DD  -43 H1   +25 H2   +54 win 17% mean +0.56% changed 47% 
+  1h100  exit after rejection     ann   +34 DD  -45 H1   +52 H2   +55 win 26% mean +0.57% changed 54% 
+  1h200  BE-stop after rejection  ann   +27 DD  -43 H1   +10 H2   +79 win 19% mean +0.46% changed 37% 
+  1h200  exit after rejection     ann   +32 DD  -45 H1   +28 H2   +70 win 28% mean +0.41% changed 41% 
+  4h20   BE-stop after rejection  ann   +44 DD  -28 H1   +22 H2  +134 win 18% mean +0.50% changed 49% 
+  4h20   exit after rejection     ann   +60 DD  -24 H1   +61 H2  +143 win 28% mean +0.54% changed 59% <-- beats base on all four
+  4h50   BE-stop after rejection  ann   +34 DD  -39 H1   +19 H2   +96 win 20% mean +0.46% changed 39% 
+  4h50   exit after rejection     ann   +34 DD  -31 H1   +22 H2   +91 win 29% mean +0.39% changed 44% 
+  4h100  BE-stop after rejection  ann   +14 DD  -41 H1    +6 H2   +36 win 20% mean +0.65% changed 26% 
+  4h100  exit after rejection     ann    -8 DD  -49 H1   -11 H2   -13 win 28% mean +0.32% changed 32% 
+  4h200  BE-stop after rejection  ann    +4 DD  -37 H1   -23 H2   +40 win 22% mean +0.75% changed 16% 
+  4h200  exit after rejection     ann    +5 DD  -45 H1   -37 H2   +78 win 27% mean +0.52% changed 22% 
+   d20   BE-stop after rejection  ann   +38 DD  -45 H1   +60 H2   +58 win 19% mean +0.56% changed 42% 
+   d20   exit after rejection     ann   +37 DD  -51 H1   +76 H2   +40 win 27% mean +0.49% changed 47% 
+   d50   BE-stop after rejection  ann   +11 DD  -46 H1   +12 H2   +19 win 20% mean +0.64% changed 26% 
+   d50   exit after rejection     ann    -3 DD  -46 H1    -3 H2    -6 win 29% mean +0.29% changed 32% 
+   d100  BE-stop after rejection  ann    +2 DD  -35 H1   -21 H2   +29 win 21% mean +0.75% changed 16% 
+   d100  exit after rejection     ann    -2 DD  -53 H1   -48 H2   +77 win 27% mean +0.52% changed 22% 
+   d200  BE-stop after rejection  ann   +37 DD  -27 H1   +30 H2   +88 win 25% mean +0.89% changed 9% 
+   d200  exit after rejection     ann   +44 DD  -25 H1   +38 H2  +104 win 28% mean +0.75% changed 14% <-- beats base on all four
+
+PASS count (beats base on ann, DD, H1, H2) over the 3 price buckets:
+  4h20   rx: 2/3
