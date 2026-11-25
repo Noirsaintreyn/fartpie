@@ -9,7 +9,10 @@ BADIT = {'3.01', '1.02', '1.03', '2.05', '2.06', '4.02'}
 def _cik(tk):
     global _CIK
     if _CIK is None:
-        p = os.path.join(_HERE, 'data/fund/company_tickers.json'); _CIK = {v['ticker']: v['cik_str'] for v in json.load(open(p)).values()} if os.path.exists(p) else {}
+        p = os.path.join(_HERE, 'data/fund/company_tickers.json')
+        try: j = json.load(open(p)) if os.path.exists(p) else requests.get('https://www.sec.gov/files/company_tickers.json', headers=H, timeout=25).json()
+        except Exception: j = {}
+        _CIK = {v['ticker']: v['cik_str'] for v in j.values()}
     return _CIK.get(tk)
 def catalyst_block(tk, asof=None, days=10):
     asof = pd.Timestamp(asof) if asof is not None else pd.Timestamp.now().normalize(); lines, tags, bad, good = [], [], [], []
@@ -42,3 +45,49 @@ def catalyst_block(tk, asof=None, days=10):
             cc = x.get('content', x); lines.append('news: ' + str(cc.get('title') or x.get('title'))[:100])
     except Exception: pass
     return dict(text='\n'.join(lines) or 'no catalysts found', bad=bad, good=good, flag='BAD CATALYST: ' + '; '.join(bad) if bad else ('catalyst: ' + '; '.join(good) if good else 'no clear catalyst'))
+
+def _script(t):
+    """bold script ('cursive') letters for the sign-off; Discord has no cursive font, these are Unicode letters"""
+    o = ''
+    for ch in t:
+        if ch.isupper(): o += chr(0x1D4D0 + ord(ch) - 65)
+        elif ch.islower(): o += chr(0x1D4EA + ord(ch) - 97)
+        else: o += ch
+    return o
+SIGN = '*~' + _script('Valiant') + '*'
+def insiders(tk, days=30, asof=None, maxf=8):
+    """open-market insider trades from the Form 4 XML (code P = buy, S = sale) over the last `days`; -> dict(buys, sells, buy_usd, sell_usd, who)"""
+    import xml.etree.ElementTree as ET
+    asof = pd.Timestamp(asof) if asof is not None else pd.Timestamp.now().normalize(); out = dict(buys=0, sells=0, buy_usd=0., sell_usd=0., who=[])
+    c = _cik(tk)
+    if not c: return out
+    s = requests.get(f'https://data.sec.gov/submissions/CIK{c:010d}.json', headers=H, timeout=25).json()['filings']['recent']
+    df = pd.DataFrame({k: s[k] for k in ('filingDate', 'form', 'accessionNumber', 'primaryDocument')}); df['filingDate'] = pd.to_datetime(df.filingDate)
+    df = df[(df.form == '4') & (df.filingDate >= asof - pd.Timedelta(days=days)) & (df.filingDate <= asof + pd.Timedelta(days=1))].head(maxf)
+    for r in df.itertuples():
+        try:
+            x = requests.get(f"https://www.sec.gov/Archives/edgar/data/{c}/{r.accessionNumber.replace('-', '')}/{r.primaryDocument.split('/')[-1]}", headers=H, timeout=20).text
+            R = ET.fromstring(x); who = (R.findtext('.//reportingOwner/reportingOwnerRelationship/officerTitle') or ('Director' if R.findtext('.//reportingOwner/reportingOwnerRelationship/isDirector') in ('1', 'true') else 'Owner'))
+            for t in R.findall('.//nonDerivativeTransaction'):
+                code = t.findtext('transactionCoding/transactionCode'); sh = float(t.findtext('transactionAmounts/transactionShares/value') or 0); px = float(t.findtext('transactionAmounts/transactionPricePerShare/value') or 0)
+                if code == 'P': out['buys'] += 1; out['buy_usd'] += sh * px; out['who'].append(f'{who} bought')
+                elif code == 'S': out['sells'] += 1; out['sell_usd'] += sh * px
+        except Exception: continue
+    return out
+def _usd(v): return f'${v/1e6:.1f}M' if v >= 1e6 else f'${v/1e3:.0f}k'
+def report(tk, asof=None, extra=None):
+    """quick catalyst / news / insider report for a flip alert, ends with the Valiant sign-off. Never raises: a failed source just drops its line."""
+    cb = catalyst_block(tk, asof); L = [f'**Catalyst report \u00b7 {tk}**']
+    for ln in cb['text'].split('\n'):
+        if ln and not ln.startswith('news:') and 'Form 4' not in ln and ln != 'no catalysts found': L.append('\u2022 ' + ln)
+    try:
+        i = insiders(tk, asof=asof)
+        if i['buys'] or i['sells']: L.append('\u2022 insiders 30d (open market): ' + ' \u00b7 '.join(x for x in (f"{i['buys']} buy(s) {_usd(i['buy_usd'])}" if i['buys'] else '', f"{i['sells']} sale(s) {_usd(i['sell_usd'])}" if i['sells'] else '') if x) + (f" ({', '.join(sorted(set(i['who'])))})" if i['who'] else ''))
+        else: L.append('\u2022 insiders 30d: no open-market buys or sales')
+        if i['buys'] and not i['sells']: cb['good'].append('insider buying')
+    except Exception: pass
+    nw = [ln[6:] for ln in cb['text'].split('\n') if ln.startswith('news:')]
+    if nw: L += ['\u2022 news: ' + n for n in nw[:3]]
+    for e in (extra or []): L.append('\u2022 ' + e)
+    L.append(('\u26a0\ufe0f ' if cb['bad'] else '\u2022 ') + cb['flag'] + ('' if not cb['bad'] else ' (warning: size down or skip)')); L.append(SIGN)
+    return '\n'.join(L)
