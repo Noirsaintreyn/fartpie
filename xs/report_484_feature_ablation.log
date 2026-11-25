@@ -1,0 +1,42 @@
+
+######## sub-$20: all test flips n 5415 REACH 45% win 23% mean  +1.5% med -5.9% | 2022 -2.2% | 2023-26 +2.4%
+  only ATRP          n 1361 REACH 60% win 25% mean  +5.9% med -10.2% | 2022 -2.0% | 2023-26 +8.6%
+  only F11           n 1665 REACH 61% win 28% mean  +4.7% med -11.0% | 2022 -2.4% | 2023-26 +6.5%
+  only VOLX          n 1710 REACH 52% win 26% mean  +3.8% med -7.0% | 2022 -2.0% | 2023-26 +4.9%
+  only LTURN         n 1800 REACH 56% win 26% mean  +3.7% med -7.7% | 2022 -2.1% | 2023-26 +4.8%
+  only LMC           n 1467 REACH 52% win 24% mean  +4.8% med -7.7% | 2022 +0.1% | 2023-26 +5.8%
+  BASE5 (all 5)      n 1604 REACH 60% win 28% mean  +5.5% med -10.0% | 2022 -1.2% | 2023-26 +7.1%
+  base5 minus ATRP   n 1696 REACH 59% win 28% mean  +5.0% med -9.2% | 2022 -1.0% | 2023-26 +6.2%
+  base5 minus F11    n 1584 REACH 58% win 27% mean  +5.3% med -9.4% | 2022 -0.7% | 2023-26 +6.7%
+  base5 minus VOLX   n 1593 REACH 60% win 26% mean  +4.9% med -10.2% | 2022 -1.4% | 2023-26 +6.4%
+  base5 minus LTURN  n 1587 REACH 60% win 27% mean  +5.3% med -10.3% | 2022 -2.0% | 2023-26 +7.1%
+  base5 minus LMC    n 1641 REACH 60% win 28% mean  +5.2% med -9.8% | 2022 -1.3% | 2023-26 +6.7%
+  best single = only ATRP; base5 - only ATRP by month: -1.29% t -1.33 (50 months)
+
+######## sub-$10: all test flips n 2632 REACH 49% win 24% mean  +3.5% med -6.5% | 2022 -0.4% | 2023-26 +4.3%
+  only ATRP          n  691 REACH 61% win 26% mean  +9.3% med -11.0% | 2022 +0.3% | 2023-26 +12.0%
+  only F11           n  874 REACH 65% win 30% mean  +8.1% med -11.9% | 2022 -0.0% | 2023-26 +9.9%
+  only VOLX          n  874 REACH 56% win 28% mean  +7.2% med -8.0% | 2022 +1.4% | 2023-26 +8.2%
+  only LTURN         n  840 REACH 60% win 28% mean  +8.1% med -8.6% | 2022 +3.7% | 2023-26 +8.9%
+  only LMC           n  850 REACH 54% win 26% mean  +7.8% med -8.2% | 2022 +2.1% | 2023-26 +9.0%
+  BASE5 (all 5)      n  809 REACH 63% win 29% mean  +9.7% med -11.0% | 2022 +1.5% | 2023-26 +11.4%
+  base5 minus ATRP   n  871 REACH 62% win 30% mean  +9.1% med -10.0% | 2022 +3.0% | 2023-26 +10.2%
+  base5 minus F11    n  806 REACH 61% win 29% mean +10.7% med -10.2% | 2022 +3.5% | 2023-26 +12.1%
+  base5 minus VOLX   n  790 REACH 65% win 29% mean +10.2% med -11.3% | 2022 +1.3% | 2023-26 +12.3%
+  base5 minus LTURN  n  815 REACH 64% win 31% mean +10.0% med -11.0% | 2022 +3.9% | 2023-26 +11.3%
+  base5 minus LMC    n  836 REACH 64% win 29% mean  +8.7% med -10.9% | 2022 +1.8% | 2023-26 +10.2%
+  best single = only ATRP; base5 - only ATRP by month: -0.43% t -0.27 (50 months)
+
+######## sub-$5: all test flips n 1076 REACH 54% win 25% mean  +7.4% med -7.0% | 2022 +2.3% | 2023-26 +8.4%
+  only ATRP          n  267 REACH 66% win 27% mean +15.4% med -12.0% | 2022 +4.3% | 2023-26 +17.6%
+  only F11           n  372 REACH 68% win 31% mean +15.2% med -12.9% | 2022 -0.4% | 2023-26 +17.4%
+  only VOLX          n  334 REACH 63% win 30% mean +10.7% med -9.8% | 2022 +1.5% | 2023-26 +11.7%
+  only LTURN         n  301 REACH 66% win 31% mean +17.3% med -9.3% | 2022 +3.1% | 2023-26 +19.2%
+  only LMC           n  369 REACH 59% win 28% mean +13.1% med -7.9% | 2022 +5.6% | 2023-26 +14.2%
+  BASE5 (all 5)      n  312 REACH 68% win 30% mean +16.8% med -12.2% | 2022 +4.3% | 2023-26 +18.6%
+  base5 minus ATRP   n  320 REACH 67% win 30% mean +17.3% med -11.5% | 2022 +1.0% | 2023-26 +19.4%
+  base5 minus F11    n  283 REACH 65% win 28% mean +15.9% med -12.0% | 2022 +3.3% | 2023-26 +17.7%
+  base5 minus VOLX   n  295 REACH 68% win 31% mean +18.9% med -11.4% | 2022 +4.0% | 2023-26 +21.2%
+  base5 minus LTURN  n  338 REACH 66% win 29% mean +15.0% med -12.2% | 2022 +4.4% | 2023-26 +16.6%
+  base5 minus LMC    n  307 REACH 67% win 30% mean +18.5% med -12.2% | 2022 +0.4% | 2023-26 +20.9%
+  best single = only LTURN; base5 - only LTURN by month: -1.30% t -0.50 (49 months)
