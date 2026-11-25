@@ -233,6 +233,20 @@ async def gex_cmd(inter: discord.Interaction, ticker: str = 'QQQ'):
     await inter.followup.send(gexcmd.text(t, s, asof + (' (live)' if fn == 'live' else ' (saved chain)')) + ('\n:warning: chain is more than 3 days old' if stale else ''), file=discord.File(io.BytesIO(png), filename=f'{t}_gex.png'))
 
 
+@tree.command(name='pcv', description='Put/call volume chart for a ticker: 120 days, rank, z-score, whether the P/C VOL signal is on, backtest')
+@app_commands.describe(ticker='e.g. NVDA, TSLA, AAPL (the option-model names)')
+async def pcv_cmd(inter: discord.Interaction, ticker: str = 'NVDA'):
+    await inter.response.defer(thinking=True)
+    import pcvcmd
+    t = ticker.strip().upper()
+    try: d, png = await run(pcvcmd.build, t)
+    except KeyError:
+        have = await run(pcvcmd.available)
+        return await inter.followup.send(f'No put/call volume history for {t}. Tracked: ' + ', '.join(have))
+    except Exception as e: return await inter.followup.send(f'Could not build {t} put/call volume: {str(e)[:200]}')
+    await inter.followup.send(pcvcmd.text(d), file=discord.File(io.BytesIO(png), filename=f'{t}_pcv.png'))
+
+
 @tree.command(name='brief', description='Morning report: the book, sector ETFs with their vectors, calendar, news, and a page per position')
 async def brief_cmd(inter: discord.Interaction):
     await inter.response.defer(thinking=True)
