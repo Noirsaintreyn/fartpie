@@ -12,6 +12,14 @@ import argparse, glob, json, os, sys
 import numpy as np, pandas as pd
 ROOT = os.path.dirname(os.path.abspath(__file__)); LIVE = os.getenv('LIVE_DIR', f'{ROOT}/live'); SEED = f'{ROOT}/live_data/opt_feat_seed'; OPT = f'{LIVE}/options'
 NAMES = [x for x in os.getenv('OPT_MODEL_NAMES', ','.join(sorted(os.path.basename(f)[:-4] for f in glob.glob(f'{SEED}/*.csv')))).split(',') if x]
+def _allexp():
+    out = set()
+    for f in glob.glob(f'{SEED}/*.csv'):
+        try:
+            if pd.read_csv(f, usecols=['gex']).gex.notna().sum() == 0: out.add(os.path.basename(f)[:-4])
+        except Exception: pass
+    return out
+ALLEXP = _allexp()   # Nov 24 2026: 31 more live-universe names, put/call VOLUME only (all expiries; rank corr 0.93-1.0 with the <=45 DTE ratio); no skew/charm tags for these
 def feat_path(tk): return f'{LIVE}/opt_feat/{tk}.csv'
 
 def row_from_chain(df, now=None):
@@ -24,6 +32,7 @@ def row_from_chain(df, now=None):
     if vol is not None:
         v = pd.to_numeric(vol, errors='coerce').reindex(df.index); kd = WG.pick(df, 'kind').astype(str).str.upper().str.startswith('C'); ex = pd.to_datetime(WG.pick(df, 'expiry'), errors='coerce'); dd = (ex - now.normalize()).dt.days; ok = (dd >= 0) & (dd <= 45)
         cv = float(v[ok & kd].sum()); pv = float(v[ok & ~kd].sum()); out['pc_vol'] = pv / max(cv, 1.0)
+        out['pc_vol_all'] = float(v[~kd].sum()) / max(float(v[kd].sum()), 1.0)
     mo = g.K / S; mid = (dte >= 14) & (dte <= 45)
     pu = g[(~g.call) & (mo > .93) & (mo < .97) & mid].iv; ca = g[g.call & (mo > 1.03) & (mo < 1.07) & mid].iv
     out['skew'] = float(pu.median() - ca.median()) if len(pu) and len(ca) else np.nan
@@ -54,6 +63,7 @@ def tags(tk, track='15m', max_age_days=5):
         t = []
         if track == '15m' and r.get('pc_z') is not None and r['pc_z'] > 1: t.append('PCZ')      # stronger version (Nov 24 2026): z vs own trailing 252d > 1, replaces plain PCV
         elif track == '15m' and r['pc_vol'] is not None and r['pc_vol'] >= 2 / 3: t.append('PCV')
+        if tk in ALLEXP: return t
         if r['skew'] is not None and r['skew'] >= 2 / 3: t.append('SKW')
         if r['charm'] is not None and r['charm'] >= 2 / 3: t.append('CHM')
         return t
@@ -69,7 +79,9 @@ def update():
         if not fs: continue
         day = os.path.basename(fs[-1])[:10]; same = [f for f in fs if os.path.basename(f).startswith(day)]; f = next((x for x in same if x.endswith('_oi.csv')), same[-1])
         try:
-            r = row_from_chain(pd.read_csv(f)); r['date'] = day; p = feat_path(tk)
+            r = row_from_chain(pd.read_csv(f)); r['date'] = day
+            if tk in ALLEXP and r.get('pc_vol_all') is not None: r['pc_vol'] = r['pc_vol_all']
+            r.pop('pc_vol_all', None); p = feat_path(tk)
             old = pd.read_csv(p) if os.path.exists(p) else pd.DataFrame(); new = pd.concat([old, pd.DataFrame([r])]).drop_duplicates('date', keep='last'); new.to_csv(p, index=False); n += 1
         except Exception as e: print(f'  {tk}: skipped ({str(e)[:80]})')
     print(f'option_models: updated {n}/{len(NAMES)} names')

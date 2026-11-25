@@ -173,6 +173,7 @@ def webull_env():
 GAMMA_SYMS = os.environ.get('GAMMA_SYMBOLS', 'QQQ,TSLA,NVDA,AAPL,AMD,AMZN,GOOGL,MSFT,META,COST,ADBE,CAT,CRM,DIS,HD,IBM,JPM,MCD,ORCL,SBUX,TGT,UNH,UPS,WMT')   # 24 names: QQQ + the 23 signal-model names (option_models.py)
 
 
+PCV_EXTRA = os.environ.get('PCV_EXTRA_SYMBOLS', 'ABNB,APP,AVGO,BA,BKNG,C,CMG,COIN,CRWD,CVNA,DLTR,ENPH,FDX,GEV,GS,HOOD,LLY,LMT,LRCX,LULU,MU,NFLX,OXY,PANW,PENN,PLTR,PYPL,QCOM,SMCI,UBER,WYNN')   # Nov 24 2026: 31 more live-universe names for the put/call volume signal (chain pull only, no heatmap)
 def run_gamma_job():
     """Nov 24 2026: keep live/neg_gamma.json fresh for the negative-gamma Discord channel. Read-only Webull market data (never orders).
     16:15 ET: log the option chain, then build net gamma (gex_heatmap.py -> live/neg_gamma.json). 08:30 ET: re-pull for the prior-close open interest and rebuild.
@@ -180,7 +181,7 @@ def run_gamma_job():
     import threading
     if not (os.environ.get('WEBULL_APP_KEY') and os.environ.get('WEBULL_APP_SECRET')): return log('gamma job off (WEBULL_APP_KEY / WEBULL_APP_SECRET not set)')
     def once(tag, oi):
-        cmd = [sys.executable, '-u', 'webull_options_log.py', '--symbols', GAMMA_SYMS] + (['--oi-refresh'] if oi else [])
+        cmd = [sys.executable, '-u', 'webull_options_log.py', '--symbols', GAMMA_SYMS + ('' if oi or not PCV_EXTRA else ',' + PCV_EXTRA)] + (['--oi-refresh'] if oi else [])
         rc, tail = run_tail(cmd)
         if rc != 0: return notify(f'⚠️ gamma job ({tag}): option chain pull failed (exit {rc})\n```{tail[-500:]}```')
         rc, tail = run_tail([sys.executable, '-u', 'gex_heatmap.py', '--symbols', GAMMA_SYMS])

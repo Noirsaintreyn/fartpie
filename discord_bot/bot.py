@@ -233,7 +233,7 @@ async def gex_cmd(inter: discord.Interaction, ticker: str = 'QQQ'):
     await inter.followup.send(gexcmd.text(t, s, asof + (' (live)' if fn == 'live' else ' (saved chain)')) + ('\n:warning: chain is more than 3 days old' if stale else ''), file=discord.File(io.BytesIO(png), filename=f'{t}_gex.png'))
 
 
-@tree.command(name='pcv', description='Put/call volume chart for a ticker: 120 days, rank, z-score, whether the P/C VOL signal is on, backtest')
+@tree.command(name='pcv', description='Put/call volume chart, rank, z-score and whether the P/C VOL signal is on, with backtest')
 @app_commands.describe(ticker='e.g. NVDA, TSLA, AAPL (the option-model names)')
 async def pcv_cmd(inter: discord.Interaction, ticker: str = 'NVDA'):
     await inter.response.defer(thinking=True)
