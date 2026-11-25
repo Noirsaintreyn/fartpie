@@ -1,0 +1,59 @@
+names with flips + theta: ['AAPL', 'AMD', 'AMZN', 'COST', 'META', 'MSFT', 'NVDA', 'TSLA'] flips 4549 of which 1h 1321
+
+=== 15m: flips 3228 (with features 3103) base mean +44.5bp ===
+F1 net gamma < 0 vs >= 0                      n  1011/ 2092   +35.9 vs  +49.5  diff  +25.2bp t  1.22 | train +42.0/t1.04 | test +15.6/t0.67 
+F2 vanna rank high vs low                     n  1645/  751   +46.2 vs  +21.0  diff   +3.7bp t  0.11 | train -7.8/t-0.14 | test +9.5/t0.22 
+      in neg-gamma  n   293/  508 diff  +38.6bp t  0.44
+      in pos-gamma  n  1352/  243 diff  +41.0bp t  1.31
+F3 charm rank high vs low                     n   758/ 1387   +33.3 vs  +42.6  diff  +23.7bp t  0.79 | train +69.3/t1.44 | test -4.0/t-0.11 
+      in neg-gamma  n   435/  291 diff  -66.0bp t -1.35
+      in pos-gamma  n   323/ 1096 diff  +29.2bp t  0.97
+F4 put/call volume rank high vs low           n  1310/  822   +52.8 vs  +39.0  diff  +67.1bp t  2.48 | train +56.5/t1.44 | test +73.9/t2.00  PASS
+      in neg-gamma  n   644/  108 diff +123.1bp t  2.21
+      in pos-gamma  n   666/  714 diff  +70.1bp t  1.81
+F5 ATM IV 30d rank high vs low                n  1139/ 1042   +44.0 vs  +59.0  diff  +41.0bp t  1.29 | train +29.1/t0.52 | test +46.9/t1.20 
+      in neg-gamma  n   503/  240 diff  -82.0bp t -1.17
+      in pos-gamma  n   636/  802 diff  +32.5bp t  0.94
+F6 term inverted vs not                       n  1635/ 1468   +31.8 vs  +59.8  diff   -9.8bp t -0.49 | train -1.8/t-0.06 | test -14.7/t-0.55 
+      in neg-gamma  n   632/  379 diff  -99.2bp t -1.92
+      in pos-gamma  n  1003/ 1089 diff   -3.7bp t -0.14
+F7 skew rank high vs low                      n  1117/ 1106   +58.0 vs  +38.1  diff  +45.0bp t  1.54 | train +67.4/t1.68 | test +30.4/t0.75 
+      in neg-gamma  n   519/  244 diff  +13.9bp t  0.25
+      in pos-gamma  n   598/  862 diff  +46.3bp t  1.40
+F8 DEX rank high vs low                       n   735/ 1431   +52.6 vs  +30.1  diff  -71.0bp t -2.74 | train -107.0/t-2.82 | test -50.4/t-1.46 
+      in neg-gamma  n    11/  832 diff +336.3bp t  2.42
+      in pos-gamma  n   724/  599 diff -113.8bp t -3.16
+F9 short-dated gamma<0 vs only-long-dated<0   n   527/  677   +43.1 vs  +37.9  diff  -26.5bp t -0.66 | train -45.6/t-0.64 | test -17.8/t-0.37 
+      in neg-gamma  n   367/  644 diff  -25.3bp t -0.65
+      in pos-gamma  n   160/   33 diff   +1.2bp t  0.01
+  by era (bp) F1 neg-pos: 18-19 +26 | 20-21 +49 | 22 +55 | 23-26 +5
+
+=== 1h: flips 1321 (with features 1272) base mean +67.7bp ===
+F1 net gamma < 0 vs >= 0                      n   253/ 1019   +51.6 vs  +71.5  diff  +21.2bp t  0.48 | train +93.4/t1.02 | test -12.7/t-0.26 
+F2 vanna rank high vs low                     n   714/  262   +66.9 vs  +71.5  diff  -87.2bp t -1.41 | train -133.0/t-1.21 | test -64.3/t-0.85 
+      in neg-gamma  n    73/  114 diff  -13.5bp t -0.17
+      in pos-gamma  n   641/  148 diff  -47.7bp t -0.72
+F3 charm rank high vs low                     n   265/  613   +80.8 vs  +46.2  diff  +62.1bp t  1.27 | train +84.5/t1.05 | test +52.1/t0.85 
+      in neg-gamma  n    93/   80 diff  +20.4bp t  0.16
+      in pos-gamma  n   172/  533 diff  +76.9bp t  1.54
+F4 put/call volume rank high vs low           n   511/  362   +73.9 vs  +84.6  diff  -19.8bp t -0.31 | train +17.5/t0.12 | test -43.9/t-0.92 
+      in neg-gamma  n   164/   23 diff -260.4bp t -0.83
+      in pos-gamma  n   347/  339 diff  +21.4bp t  0.50
+F5 ATM IV 30d rank high vs low                n   427/  465   +33.3 vs +107.1  diff  +64.7bp t  1.12 | train +50.3/t0.43 | test +71.3/t1.09 
+      in neg-gamma  n   116/   56 diff  +61.7bp t  0.88
+      in pos-gamma  n   311/  409 diff  +62.7bp t  0.91
+F6 term inverted vs not                       n   609/  663   +16.7 vs +114.2  diff  -90.9bp t -2.59 | train -94.5/t-1.63 | test -88.6/t-1.99 
+      in neg-gamma  n   146/  107 diff  -89.2bp t -0.78
+      in pos-gamma  n   463/  556 diff  -58.6bp t -1.84
+F7 skew rank high vs low                      n   473/  441   +73.2 vs  +59.6  diff  +53.3bp t  1.04 | train +100.9/t1.13 | test +23.7/t0.38 
+      in neg-gamma  n   139/   48 diff  -40.7bp t -0.31
+      in pos-gamma  n   334/  393 diff  +38.4bp t  0.68
+F8 DEX rank high vs low                       n   367/  498   +62.5 vs  +51.7  diff  -67.9bp t -0.78 | train -155.3/t-0.74 | test -18.3/t-0.26 
+      in neg-gamma  n     4/  204 diff -346.3bp t -1.17
+      in pos-gamma  n   363/  294 diff  -48.2bp t -0.49
+F9 short-dated gamma<0 vs only-long-dated<0   n   127/  204  +150.9 vs  +25.5  diff +180.8bp t  1.88 | train +70.0/t0.27 | test +213.8/t2.16 
+      in neg-gamma  n    73/  180 diff +182.0bp t  2.21
+      in pos-gamma  n    54/   24 diff +133.2bp t  2.01
+  by era (bp) F1 neg-pos: 18-19 -3 | 20-21 +145 | 22 +30 | 23-26 -27
+
+PASS count: 1 of 18
