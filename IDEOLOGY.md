@@ -1314,3 +1314,7 @@ Daily high-ATRP group, test 2022+, entries next open, 30bp. Close-exit (A open v
 ## 492–493: setup grade + filing-text change (verdict)
 - Grade = +1 ATRP top third, +1 unusual first-time insider buy, +1 stock record (≥5 flips, ≥60% hit), −1 EARLY30 earnings, −2 bad 8-K. A≥2, B=1, C=0, D<0. Test 2022+ reach: A 13/14, B 57/90, C 123/173, D 8/18 (in-sample rule, A tiny n).
 - Filing-text change (Lazy Prices): shown with stats, carries 0 points; no edge / opposite direction (491, 493).
+
+## 494: weighted-factor score -> probability -> A-E (FAIL, not shipped)
+- Ridge logistic on 5 flags, fit train 2019-21 (n 129), judged test 2022+ (n 295). Weights unstable: only ATRP-top-third positive (+0.61); FIRST/REC negative in train (flag n 7/15), NEGBAD positive (n 4). Test AUC 0.466 vs 0.524 for the 492 points rule. All flips land in grades A/B (p 65-81%); predicted 81% for A vs actual 64% in test; D/E empty.
+- Also: the 492 points grade itself has ~no overall discrimination in test (AUC 0.52); its A (13/14) is a tiny-n pocket. Grade stays a descriptive label with hits/n shown; probabilities not shown. Honest limit: the flags have too few events (4-15 train) to weight; only volatility has enough n.

@@ -1,0 +1,17 @@
+train n 129 test n 295 | base train reach 74% test 68%
+weights (log-odds; x4 ~ pts of reach): intercept +0.89 | HI +0.61 (n flag train 43) | FIRST -0.24 (n flag train 7) | REC -0.05 (n flag train 15) | EARLY30 +0.09 (n flag train 10) | NEGBAD +0.28 (n flag train 4)
+TEST AUC weighted 0.466 vs 492 points 0.524
+ALL years
+  grade A:  74/ 99 = 75% reach | pred 81% | mean +81.0% med -9.6%
+  grade B: 218/319 = 68% reach | pred 70% | mean +31.5% med -11.0%
+  grade C:   5/  6 = 83% reach | pred 65% | mean  -3.2% med -8.9%
+  grade D: n 0
+  grade E: n 0
+TEST 2022+
+  grade A:  34/ 53 = 64% reach | pred 81% | mean +51.7% med -13.3%
+  grade B: 162/237 = 68% reach | pred 70% | mean +11.9% med -11.3%
+  grade C:   5/  5 = 100% reach | pred 65% | mean  -0.4% med -4.5%
+  grade D: n 0
+  grade E: n 0
+TEST era split reach by grade: A: 2022 71% (n 7) 23-26 63% (n 46) | B: 2022 59% (n 32) 23-26 70% (n 205) | C: 2022 100% (n 1) 23-26 100% (n 4) | D: 2022 nan% (n 0) 23-26 nan% (n 0) | E: 2022 nan% (n 0) 23-26 nan% (n 0)
+{'intercept': 0.8901441803360339, 'HI': 0.6106607553826023, 'FIRST': -0.23765515786241195, 'REC': -0.052988909288389514, 'EARLY30': 0.09218140722003647, 'NEGBAD': 0.28139264283531307}
