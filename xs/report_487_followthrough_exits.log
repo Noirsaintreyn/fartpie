@@ -1,0 +1,16 @@
+
+######## sub-$5 4-feature group, flips with a resolved baseline exit: 295 of 295 | structure_small r vs sim BASE mean +18.9% vs +18.9%
+  BASE    mean +18.9% med -11.4% win 31% p10 -27% | +30% winners kept >=+30%: 100% of 54 | 2022 +4.0% (base +4.0%) 2023-26 +21.2% (base +21.2%) | diff vs BASE +0.00% t +nan
+  X1      mean +15.2% med -10.6% win 26% p10 -24% | +30% winners kept >=+30%: 83% of 54 | 2022 +6.1% (base +4.0%) 2023-26 +16.7% (base +21.2%) | diff vs BASE -2.90% t -1.75
+  X2      mean +12.5% med -11.7% win 22% p10 -19% | +30% winners kept >=+30%: 74% of 54 | 2022 -2.3% (base +4.0%) 2023-26 +14.8% (base +21.2%) | diff vs BASE -4.63% t -2.15
+  X3      mean +16.0% med -10.9% win 29% p10 -25% | +30% winners kept >=+30%: 89% of 54 | 2022 +5.6% (base +4.0%) 2023-26 +17.7% (base +21.2%) | diff vs BASE -2.04% t -1.76
+  X4      mean  +2.6% med -0.3% win 50% p10 -22% | +30% winners kept >=+30%: 19% of 54 | 2022 -0.7% (base +4.0%) 2023-26 +3.1% (base +21.2%) | diff vs BASE -8.67% t -1.62
+  X1+X4   mean  +1.5% med -1.6% win 44% p10 -18% | +30% winners kept >=+30%: 15% of 54 | 2022 -1.1% (base +4.0%) 2023-26 +1.9% (base +21.2%) | diff vs BASE -9.59% t -1.74
+
+######## sub-$10 4-feature group, flips with a resolved baseline exit: 790 of 790 | structure_small r vs sim BASE mean +10.2% vs +10.2%
+  BASE    mean +10.2% med -11.3% win 29% p10 -24% | +30% winners kept >=+30%: 100% of 130 | 2022 +1.3% (base +1.3%) 2023-26 +12.3% (base +12.3%) | diff vs BASE +0.00% t +nan
+  X1      mean  +7.7% med -9.2% win 25% p10 -21% | +30% winners kept >=+30%: 82% of 130 | 2022 +2.1% (base +1.3%) 2023-26 +9.0% (base +12.3%) | diff vs BASE -1.92% t -2.00
+  X2      mean  +7.3% med -10.1% win 23% p10 -18% | +30% winners kept >=+30%: 81% of 130 | 2022 -0.6% (base +1.3%) 2023-26 +9.1% (base +12.3%) | diff vs BASE -2.24% t -1.87
+  X3      mean  +9.4% med -9.8% win 29% p10 -23% | +30% winners kept >=+30%: 91% of 130 | 2022 +2.7% (base +1.3%) 2023-26 +10.9% (base +12.3%) | diff vs BASE -0.49% t -0.74
+  X4      mean  +2.0% med +0.9% win 52% p10 -20% | +30% winners kept >=+30%: 24% of 130 | 2022 +1.2% (base +1.3%) 2023-26 +2.2% (base +12.3%) | diff vs BASE -4.71% t -1.84
+  X1+X4   mean  +1.4% med -1.9% win 46% p10 -17% | +30% winners kept >=+30%: 19% of 130 | 2022 +1.3% (base +1.3%) 2023-26 +1.5% (base +12.3%) | diff vs BASE -4.92% t -1.86
