@@ -203,11 +203,27 @@ def run_gamma_job():
     threading.Thread(target=loop, daemon=True).start(); log('gamma job on:', GAMMA_SYMS)
 
 
+def run_daily_small():
+    """Nov 25 2026: sub-$5 DAILY vector flip alert (daily_small.py), weekdays once after the close (16:20-18:00 ET). Posts to DAILYSMALL_CHANNEL_ID (falls back to the mid/small channel). Never raises into the worker; DAILYSMALL_OFF=1 disables it."""
+    import threading
+    if os.environ.get('DAILYSMALL_OFF') == '1': return log('daily small job off (DAILYSMALL_OFF=1)')
+    def loop():
+        done = set()
+        while True:
+            try:
+                n = dt.datetime.now(ET); nm = n.hour * 60 + n.minute
+                if n.weekday() < 5 and 16 * 60 + 20 <= nm < 18 * 60 and n.date() not in done:
+                    done.add(n.date()); import daily_small; fired, exits = daily_small.scan(); log(f'daily small job: {len(fired)} alerts, {len(exits)} exits')
+            except Exception as e: log('daily small job error', str(e)[:120]); notify(f'\u26a0\ufe0f daily small job failed: {str(e)[:300]}')
+            time.sleep(60)
+    threading.Thread(target=loop, daemon=True).start(); log('daily small job on')
+
+
 def main():
     setup(); webull_env(); log('screener worker up; args', ARGS)
     run_midsmall()
     if os.environ.get('RUN_BOT') == '1': run_bot()
-    run_site_push(); run_gamma_job()
+    run_site_push(); run_gamma_job(); run_daily_small()
     done, warned = None, None
     while True:
         now = dt.datetime.now(ET)
