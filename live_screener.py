@@ -1124,8 +1124,40 @@ def heat_file(base, px=None):
         GH.render(base, M, S, lv, p, f"{os.path.basename(f)[:10]} {'chain' if 'live' not in f else 'live chain'}, signal {now:%H:%M}"); return p
     except (SystemExit, Exception) as e:
         print(f'  ! heatmap {base}: {str(e)[:70]}'); return None
+def _mstat(k, track, tk):
+    try:
+        d = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'live_data', 'model_stats.json')))
+        return d.get(f'{k}|{track}|ALL'), d.get(f'{k}|{track}|{tk}')
+    except Exception: return None, None
+
+def pcv_chart(base, px=None):
+    """put/call volume for the name: last ~120 days of the daily ratio, the top-third line (own trailing 252d 67th pct), latest print marked. Replaces the heatmap on P/C VOL signals."""
+    import option_models as OM
+    h, _ = OM.history(base); h = h.dropna(subset=['pc_vol']).tail(380).reset_index(drop=True)
+    if len(h) < 60: return None
+    thr = h.pc_vol.rolling(252, min_periods=60).quantile(2 / 3).shift(1); v = h.tail(120); th = thr.tail(120)
+    fig, ax = plt.subplots(figsize=(10, 4.6), facecolor=BG); ax.set_facecolor(BG)
+    ax.plot(v.date, v.pc_vol, color='#60a5fa', lw=1.6); ax.plot(v.date, th, color='#e5e7eb', lw=1, ls=(0, (5, 2)))
+    hi = v.pc_vol >= th; ax.scatter(v.date[hi], v.pc_vol[hi], s=14, color='#f59e0b', zorder=4)
+    ax.scatter([v.date.iloc[-1]], [v.pc_vol.iloc[-1]], s=60, color='#f59e0b', ec='white', zorder=5)
+    ax.set_title(f'{base}  put/call volume (<=45 DTE) \u00b7 dashed = top-third line \u00b7 orange = above it', color=T2, fontsize=10, loc='left')
+    ax.tick_params(colors=MUT, labelsize=8)
+    for sp_ in ax.spines.values(): sp_.set_color('#374151')
+    ax.grid(color='#1f2937', lw=.6); p = os.path.join(LIVE, f'pcv_{base}.png'); fig.tight_layout(); fig.savefig(p, dpi=110, facecolor=BG); plt.close(fig); return p
+
+def stamp(path, left, right, out):
+    """header strip on top of an existing PNG: left lines top-left, right lines top-right."""
+    from PIL import Image, ImageDraw, ImageFont
+    import matplotlib.font_manager as fm
+    im = Image.open(path).convert('RGB'); n = max(len(left), len(right), 1); H = 14 + 26 * n
+    ft = ImageFont.truetype(fm.findfont('DejaVu Sans:bold'), 17); bg = tuple(int(BG.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4)) if isinstance(BG, str) and BG.startswith('#') else (17, 24, 39)
+    c = Image.new('RGB', (im.width, im.height + H), bg); c.paste(im, (0, H)); d = ImageDraw.Draw(c)
+    for i, t in enumerate(left): d.text((14, 8 + 26 * i), t, font=ft, fill=(245, 158, 11) if i == 0 or True else (229, 231, 235))
+    for i, t in enumerate(right): w = d.textlength(t, font=ft); d.text((im.width - 14 - w, 8 + 26 * i), t, font=ft, fill=(229, 231, 235))
+    c.save(out); return out
+
 def post_neg_gamma(r, path):
-    """The signal-models channel (Nov 24 2026). Same flip as the main screener, posted here when at least one option model fires: NEG (negative gamma, 15m), PCV (put/call volume, 15m), SKW (skew), CHM (charm); caption names the models. See option_models.py."""
+    """The signal-models channel (Nov 24 2026). Same flip as the main screener, posted here when at least one option model fires: NEG (negative gamma, 15m), PCV (put/call volume, 15m), SKW (skew), CHM (charm); caption names the models. Top-left of the chart: model + its backtest (all names); top-right: the same model on this ticker. P/C VOL signals swap the heatmap for the put/call volume chart. See option_models.py."""
     tgt = os.getenv('NEGGAMMA_CHANNEL_ID'); hook = os.getenv('NEGGAMMA_WEBHOOK_URL')
     if not (tgt or hook): return
     try:
@@ -1133,7 +1165,20 @@ def post_neg_gamma(r, path):
         base = r.get('base') or r['ticker']; track = r.get('track', '15m'); tg = []
         if track == '15m' and neg_gamma_ok(base): tg.append('NEG')
         if (NEGG['ratio'].get(base) or 0) >= 1.5: tg += OM.tags(base, track)
-        if tg: post(' \u00b7 '.join(OM.LABEL[x] for x in tg), path if isinstance(path, list) else [path], channel=tgt, hook=hook)
+        if not tg: return
+        files = path if isinstance(path, list) else [path]; L = []; R = []
+        for k in tg:
+            a, b = _mstat(k, track, base)
+            L.append(f"{OM.LABEL[k]} {track}" + (f"  n {a['n']} \u00b7 {a['bp']:+.0f}bp \u00b7 {a['win']}% win" if a else ''))
+            R.append(f"{base}  n {b['n']} \u00b7 {b['bp']:+.0f}bp \u00b7 {b['win']}% win" if b else f'{base}  n<5')
+        try: files = [stamp(files[0], L, R, os.path.join(LIVE, f'ng_{base}.png'))] + files[1:]
+        except Exception as e: print(f'  ! stamp: {str(e)[:60]}')
+        if 'PCV' in tg:
+            try:
+                pc = pcv_chart(base)
+                if pc: files = files[:1] + [pc]
+            except Exception as e: print(f'  ! pcv chart: {str(e)[:60]}')
+        post(' \u00b7 '.join(OM.LABEL[x] for x in tg), files, channel=tgt, hook=hook)
     except Exception as e: print(f'  ! signal-model post: {str(e)[:60]}')
 
 def signal_card(r, meta, path):
