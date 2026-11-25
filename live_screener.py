@@ -1120,11 +1120,16 @@ def heat_file(base, px=None):
     except (SystemExit, Exception) as e:
         print(f'  ! heatmap {base}: {str(e)[:70]}'); return None
 def post_neg_gamma(r, path):
+    """The signal-models channel (Nov 24 2026). Same flip as the main screener, posted here when at least one option model fires: NEG (negative gamma, 15m), PCV (put/call volume, 15m), SKW (skew), CHM (charm); caption names the models. See option_models.py."""
     tgt = os.getenv('NEGGAMMA_CHANNEL_ID'); hook = os.getenv('NEGGAMMA_WEBHOOK_URL')
-    if not (tgt or hook) or r.get('track', '15m') != '15m': return
+    if not (tgt or hook): return
     try:
-        if neg_gamma_ok(r.get('base') or r['ticker']): post('', path if isinstance(path, list) else [path], channel=tgt, hook=hook)
-    except Exception as e: print(f'  ! neg-gamma post: {str(e)[:60]}')
+        import option_models as OM
+        base = r.get('base') or r['ticker']; track = r.get('track', '15m'); tg = []
+        if track == '15m' and neg_gamma_ok(base): tg.append('NEG')
+        if (NEGG['ratio'].get(base) or 0) >= 1.5: tg += OM.tags(base, track)
+        if tg: post(' \u00b7 '.join(OM.LABEL[x] for x in tg), path if isinstance(path, list) else [path], channel=tgt, hook=hook)
+    except Exception as e: print(f'  ! signal-model post: {str(e)[:60]}')
 
 def signal_card(r, meta, path):
     buy = r['action'] == 'BUY'; accent = GOOD if buy else CRIT; H = r['H']

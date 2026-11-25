@@ -170,7 +170,7 @@ def webull_env():
     else: log('webull_api found but could not find both an app key and an app secret in it')
 
 
-GAMMA_SYMS = os.environ.get('GAMMA_SYMBOLS', 'QQQ,TSLA,NVDA,AAPL,AMD,AMZN,GOOGL,MSFT,META,COST')
+GAMMA_SYMS = os.environ.get('GAMMA_SYMBOLS', 'QQQ,TSLA,NVDA,AAPL,AMD,AMZN,GOOGL,MSFT,META,COST,ADBE,CAT,CRM,DIS,HD,IBM,JPM,MCD,ORCL,SBUX,TGT,UNH,UPS,WMT')   # 24 names: QQQ + the 23 signal-model names (option_models.py)
 
 
 def run_gamma_job():
@@ -185,6 +185,8 @@ def run_gamma_job():
         if rc != 0: return notify(f'⚠️ gamma job ({tag}): option chain pull failed (exit {rc})\n```{tail[-500:]}```')
         rc, tail = run_tail([sys.executable, '-u', 'gex_heatmap.py', '--symbols', GAMMA_SYMS])
         log(f'gamma job ({tag}) done, exit {rc}')
+        if not oi:                                                       # close run only: the 08:30 refresh has pre-market volume = 0
+            rc2, tail2 = run_tail([sys.executable, '-u', 'option_models.py', '--update']); log('option models update:', tail2.strip().splitlines()[-1][:120] if tail2.strip() else rc2)
         if rc != 0: notify(f'⚠️ gamma job ({tag}): gamma build failed (exit {rc})\n```{tail[-500:]}```')
     def loop():
         done = set()
