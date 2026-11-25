@@ -1173,7 +1173,7 @@ def post_neg_gamma(r, path):
             R.append(f"{base}  n {b['n']} \u00b7 {b['bp']:+.0f}bp \u00b7 {b['win']}% win" if b else f'{base}  n<5')
         try: files = [stamp(files[0], L, R, os.path.join(LIVE, f'ng_{base}.png'))] + files[1:]
         except Exception as e: print(f'  ! stamp: {str(e)[:60]}')
-        if 'PCV' in tg:
+        if 'PCV' in tg or 'PCZ' in tg:
             try:
                 pc = pcv_chart(base)
                 if pc: files = files[:1] + [pc]

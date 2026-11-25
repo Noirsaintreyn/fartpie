@@ -41,6 +41,7 @@ def ranks(tk, upto=None):
     last = h.iloc[-1]; prev = h.iloc[-253:-1]; r = {'date': str(pd.Timestamp(last.date).date())}
     for c in ('pc_vol', 'skew', 'charm'):
         a = prev[c].dropna().values; r[c] = float((a < last[c]).mean()) if len(a) > 30 and pd.notna(last[c]) else None
+    a = prev['pc_vol'].dropna().values; r['pc_z'] = float((last['pc_vol'] - a.mean()) / a.std()) if len(a) > 30 and pd.notna(last['pc_vol']) and a.std() > 0 else None
     r['gex'] = float(last.gex) if pd.notna(last.gex) else None
     return r
 
@@ -51,14 +52,15 @@ def tags(tk, track='15m', max_age_days=5):
         r = ranks(tk)
         if not r or (pd.Timestamp.now() - pd.Timestamp(r['date'])).days > max_age_days: return []
         t = []
-        if track == '15m' and r['pc_vol'] is not None and r['pc_vol'] >= 2 / 3: t.append('PCV')
+        if track == '15m' and r.get('pc_z') is not None and r['pc_z'] > 1: t.append('PCZ')      # stronger version (Nov 24 2026): z vs own trailing 252d > 1, replaces plain PCV
+        elif track == '15m' and r['pc_vol'] is not None and r['pc_vol'] >= 2 / 3: t.append('PCV')
         if r['skew'] is not None and r['skew'] >= 2 / 3: t.append('SKW')
         if r['charm'] is not None and r['charm'] >= 2 / 3: t.append('CHM')
         return t
     except Exception as e:
         print(f'  ! option_models tags {tk}: {str(e)[:60]}'); return []
 
-LABEL = dict(NEG='NEG γ', PCV='P/C VOL', SKW='SKEW', CHM='CHARM')
+LABEL = dict(NEG='NEG γ', PCV='P/C VOL', PCZ='P/C VOL z>1', SKW='SKEW', CHM='CHARM')
 
 def update():
     os.makedirs(f'{LIVE}/opt_feat', exist_ok=True); n = 0
