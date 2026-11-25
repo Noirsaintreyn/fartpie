@@ -1323,3 +1323,7 @@ Daily high-ATRP group, test 2022+, entries next open, 30bp. Close-exit (A open v
 - n 1504 (train 428 / test 1076). 16 flags, month-clustered. Insider: FIRST raw test reach 67% vs 53% (n 36) but adjusted reach effect ~0 (t 0.0), mean +12% t 1.6, n 49 total = lead-level only; BIG/CLUS/OFF/DIR negative or null; routine buyers n 2 (placebo untestable).
 - 8-K: only 5.02 (officer/director change) flagged LEAD, negative on mean (t -2.4) but reach sign flips train/test and it is 1 of ~32 tests (~1.5 |t|>2 expected by chance) -> not real. 3.02 dilution reach +0.24 (t 2.6) but train n 3, wrong sign for the dilution mechanism -> noise. Placebos (5.07) null.
 - Takeaway: events too rare to resolve at sub-$5 alone (FIRST 49, 3.02 13). Next: pool px<10/<20 flips (more events, check ATRP/size adjusted) before judging; hypothesis stays alive, evidence is nil.
+
+## 496: 495 repeated on px<10 (n 3863) and px<20 (n 8408), same ATRP x size controls — no leads
+- Zero flags pass at either cap. FIRST adj reach +0.02/+0.04 (t 0.5/1.3), mean +5.8%/+1.7%; raw 57%/50% vs 48%/44% is explained by volatility/size. BIG, CLUS, OFF, DIR null. 5.02 lead from 495 vanished (t -0.9/-0.4) = noise. 3.02 reach positive but t ~1, wrong mechanism sign. I_9only t -4.4 on n 10 = outlier artifact.
+- Verdict: insider buys and 8-K items add nothing beyond volatility/size on these flips, even with 3-5x events. Informed-buying edge, if any, needs different data (cluster/size/role-title, short interest, float change), not these flags.
