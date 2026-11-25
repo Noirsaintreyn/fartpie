@@ -1,0 +1,40 @@
+//@version=6
+indicator("XLU/SPY Risk Gate", shorttitle="XLU/SPY z", overlay=false, format=format.price, precision=2)
+
+// Defensive-vs-market relative strength: z-score of ln(XLU / SPY) on DAILY bars, whatever the chart timeframe.
+// High z = utilities leading = money rotating defensive = risk-off.
+// Default reads the PRIOR completed daily bar, so the state is known at the open and never repaints.
+
+grpA = "Z-score"
+lb      = input.int(252, "Lookback (daily bars)", minval=60, group=grpA)
+riskOff = input.float(1.5, "Risk-off above z", step=0.1, group=grpA)
+caution = input.float(1.0, "Caution above z", step=0.1, group=grpA)
+priorD  = input.bool(true, "Use prior completed daily bar (no repaint)", group=grpA)
+
+grpB = "Symbols"
+defSym = input.symbol("AMEX:XLU", "Defensive ETF", group=grpB)
+mktSym = input.symbol("AMEX:SPY", "Market ETF", group=grpB)
+
+zExpr() =>
+    lr = math.log(close)
+    (lr - ta.sma(lr, lb)) / ta.stdev(lr, lb)
+
+pair = defSym + "/" + mktSym
+z = request.security(pair, "D", priorD ? zExpr()[1] : zExpr(), lookahead = priorD ? barmerge.lookahead_on : barmerge.lookahead_off)
+
+state = z > riskOff ? 2 : z > caution ? 1 : 0
+col = state == 2 ? color.new(color.red, 0) : state == 1 ? color.new(color.orange, 0) : color.new(color.teal, 0)
+
+plot(z, "XLU/SPY z", color = col, style = plot.style_columns)
+hline(0, "Mean", color.new(color.gray, 60))
+hline(caution, "Caution", color.new(color.orange, 40), hline.style_dashed)
+hline(riskOff, "Risk-off", color.new(color.red, 40), hline.style_dashed)
+bgcolor(state == 2 ? color.new(color.red, 88) : na)
+
+var table t = table.new(position.top_right, 1, 2, bgcolor = color.new(color.black, 20), border_width = 1)
+if barstate.islast
+    table.cell(t, 0, 0, "XLU/SPY z " + str.tostring(z, "#.00"), text_color = color.white, text_size = size.small)
+    table.cell(t, 0, 1, state == 2 ? "RISK-OFF" : state == 1 ? "CAUTION" : "RISK-ON", text_color = col, text_size = size.small)
+
+alertcondition(ta.crossover(z, riskOff), "XLU/SPY risk-off", "XLU/SPY z crossed above the risk-off level")
+alertcondition(ta.crossunder(z, riskOff), "XLU/SPY back below risk-off", "XLU/SPY z fell back below the risk-off level")
