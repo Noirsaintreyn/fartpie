@@ -20,5 +20,19 @@ for h1 in (False, True):
         for tk, g in x.groupby('tk'): out[f'{k}|{tf}|{tk}'] = st(g)
     out[f'BASE|{tf}|ALL'] = st(D)
     for tk, g in D.groupby('tk'): out[f'BASE|{tf}|{tk}'] = st(g)
+
+# Nov 24 2026: P/C VOL and P/C VOL z>1 now run on the whole live universe (all-expiry put/call volume from data/theta_vol_all.csv = concat of data/theta_vol/*.csv); these stats REPLACE the 23-name PCV/PCZ ones.
+V = pd.read_csv(UP + 'data/theta_vol_all.csv'); V = V[pd.to_datetime(V.date, errors='coerce').notna()].copy(); V['date'] = pd.to_datetime(V.date)
+for c in ('opt_contracts', 'call_c'): V[c] = pd.to_numeric(V[c], errors='coerce')
+V['pc'] = ((V.opt_contracts - V.call_c) / V.call_c.replace(0, np.nan)).replace([np.inf, -np.inf], np.nan); V = V.dropna(subset=['pc'])
+Wd = pd.read_parquet(UP + 'xs/ext/wide_T.parquet'); Wd = Wd[Wd.sp & (Wd.ratio >= 1.5) & (~Wd.h1)].copy(); Wd['entry'] = pd.to_datetime(Wd.entry); Wd['day'] = Wd.entry.dt.normalize(); Wd['mon'] = Wd.entry.dt.strftime('%Y-%m')
+FF = {}
+for tk, g in V.groupby('tk'):
+    x = g.drop_duplicates('date').set_index('date').sort_index().pc; r_ = x.rolling(252, min_periods=60)
+    FF[tk] = pd.DataFrame({'rk': x.rolling(252, min_periods=60).apply(lambda a: (a[:-1] < a[-1]).mean() if len(a) > 1 else np.nan, raw=True), 'z': (x - r_.mean().shift(1)) / r_.std().shift(1)}).shift(1)
+Dw = Wd.merge(pd.concat(FF, names=['tk', 'day']).reset_index(), on=['tk', 'day'], how='left').dropna(subset=['rk'])
+for k, m in (('PCV', Dw.rk >= 2 / 3), ('PCZ', Dw.z > 1)):
+    x = Dw[m]; out[f'{k}|15m|ALL'] = st(x)
+    for tk, g in x.groupby('tk'): out[f'{k}|15m|{tk}'] = st(g)
 json.dump({k: v for k, v in out.items() if v}, open('live_data/model_stats.json', 'w'), indent=0)
 print(len(out))
