@@ -42,6 +42,15 @@ def get_daily(tks):
                 except Exception: pass
         except Exception as e: print('  ! download', str(e)[:80])
         time.sleep(1)
+    try:
+        import lse_data
+        miss = [t for t in tks if t not in out]
+        if miss and lse_data.available():
+            print(f'  Yahoo missed {len(miss)} names; filling from LSE (RTH bars rebuilt from 15m candles)')
+            for t in miss:
+                q = lse_data.daily_rth(t)
+                if q is not None and len(q) > 150: out[t] = q
+    except Exception as e: print('  ! LSE fallback', str(e)[:80])
     return out
 def analyze(tk, q, cache, need_flip=True):
     reg, lev, atr, _ = run_state_machine(q.assign(datetime=q.index)); i = len(q) - 1; c = q.close.values; v = q.volume.values.astype(float)
@@ -71,9 +80,15 @@ def post(text, path=None):
             r.raise_for_status()
         except Exception as e: print('  ! discord post failed:', str(e)[:100]); ok = False
     return ok
+def sc_text(a):
+    sc = a.get('sc')
+    if not sc: return ''
+    co = sc.get('cohort') or {}
+    return f"GRADE {sc['grade']}: setups like this reached +10% in {co.get('hits', 0)}/{co.get('n', 0)} since 2019\n" + '\n'.join(f"{ {'+': '\u25b2', '0': '\u25cf', '-': '\u25bc'}[t] } {n}: {tod} \u2014 {st}" if st else f"{ {'+': '\u25b2', '0': '\u25cf', '-': '\u25bc'}[t] } {n}: {tod}" for n, tod, t, st in sc['rows'])
 def alert_text(a):
     F = a['F']; bt = REF['bt']; risk = F['F11']; size = SLOT * float(np.clip(0.10 / risk, 0.3, 1.0)) if risk == risk and risk > 0 else SLOT
-    return (f"\U0001f4c8 DAILY BUY {a['tk']} (sub-$5 high-vol group) · daily vector bull flip on the {a['day']:%a %b %d} close {a['px']:.2f}\n"
+    a['size'] = size
+    return (f"\U0001f4c8 DAILY BUY {a['tk']}{' \u00b7 GRADE ' + a['grade'] if a.get('grade') else ''} (sub-$5 high-vol group) · daily vector bull flip on the {a['day']:%a %b %d} close {a['px']:.2f}\n"
             f"Entry next open. Exit = the DAILY vector's bear flip (no other stop). Broke above {a['prev']:.2f}; the new vector level is {a['lev']:.2f} ({risk:.0%} below price = what a failed flip costs; risk sizing input).\n"
             f"Size: ~{size:.1%} of the book (1/8 slot = {SLOT:.1%}, scaled by 10%/distance-to-level, floor 30%).\n"
             f"Score {a['score']:.2f} (cut {REF['cut']:.2f}) · ATRP {F['ATRP']:.1%} · volume {F['VOLX']:.1f}x" + (f" · mcap ${np.exp(F['LMC'])/1e6:,.0f}M" if F['LMC'] == F['LMC'] else '') + "\n"
@@ -104,14 +119,28 @@ def scan(dry=False, asof_check=True):
         t = f"\U0001f534 DAILY SELL {tk}: the daily vector flipped bear on the {a['day']:%a %b %d} close {a['px']:.2f}. Exit next open. In from {p['px']:.2f} ({p['day'][:10]}): {a['px']/p['px']-1:+.1%} on the close (before costs).\n" + __import__('catalysts').SIGN
         print(t); (None if dry else post(t)); st['pos'].pop(tk, None)
     for a in fired:
-        t = alert_text(a); path = os.path.join(LIVE, f"d5m_{a['tk']}.png")
+        tk = a['tk']; path = os.path.join(LIVE, f"d5m_{tk}.png"); card = os.path.join(LIVE, f"card_{tk}.png")
         try:
-            import chart5m; chart5m.make_chart_5m(a['tk'], path, flip_day=a['day'], info={'DAILY flip': f"{a['day']:%b %d}", 'level': f"{a['lev']:.2f}"})
+            import catalysts as C; a['sc'] = C.scorecard(tk, a['day'], a['F']['ATRP']); a['grade'] = a['sc']['grade']
+        except Exception as e: a['sc'] = None; a['grade'] = None; print('  ! scorecard', str(e)[:80])
+        t = alert_text(a)
+        try:
+            import chart5m; chart5m.make_chart_5m(tk, path, flip_day=a['day'], info={'DAILY flip': f"{a['day']:%b %d}", 'level': f"{a['lev']:.2f}"})
         except Exception as e: print('  ! chart', str(e)[:80]); path = None
         try:
-            import catalysts as C; rep = C.report(a['tk'], asof=a['day'])
+            import catalysts as C; rep = C.report(tk, asof=a['day'])
         except Exception as e: rep = ''; print('  ! catalyst report', str(e)[:60])
-        full = t + ('\n\n' + rep if rep else ''); print(full); (None if dry else post(full, path)); st['pos'][a['tk']] = dict(px=a['px'], day=str(a['day']), lev=a['lev'])
+        sent = False
+        try:
+            import report_card; nm = ''
+            try: nm = C.name(tk)
+            except Exception: pass
+            report_card.make_card(a, rep or '\n\n', D[tk], path, card, REF, name=nm.title() if nm else None)
+            cap = f"\U0001f4c8 DAILY BUY {tk}{' \u00b7 GRADE ' + a['grade'] if a.get('grade') else ''} \u00b7 sub-$5 high-vol group \u00b7 daily flip {a['day']:%a %b %d} close {a['px']:.2f} \u00b7 level {a['lev']:.2f}\n" + __import__('catalysts').SIGN
+            print(cap); sent = True if dry else post(cap, card)
+        except Exception as e: print('  ! report card', str(e)[:100])
+        if not sent: full = t + ('\n\n' + sc_text(a) if a.get('sc') else '') + ('\n\n' + rep if rep else ''); print(full); (None if dry else post(full, path))
+        st['pos'][tk] = dict(px=a['px'], day=str(a['day']), lev=a['lev'])
     print(f'daily_small: {len(D)} names, {len(fired)} alerts, {len(exits)} exits')
     if not dry: save_state(st)
     return fired, exits
