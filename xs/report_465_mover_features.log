@@ -1,0 +1,55 @@
+flips 8408 | train 2993 test 5415 | BIG rate train 12.9% test 7.7% | features tested 62
+
+=== target BIG>=30%: top features by |test AUC-.5| (AUC>.5 = higher feature value -> more big movers; train | test, test z, same side?) ===
+  technical/volatility     ATRP         train 0.699 | test 0.660  z +10.9  n  5415  same  PASS
+  technical/volatility     F11          train 0.664 | test 0.654  z +10.5  n  5415  same  PASS
+  technical/volatility     OS           train 0.674 | test 0.648  z +10.1  n  5415  same  PASS
+  technical/volatility     EXT          train 0.644 | test 0.621  z  +8.2  n  5415  same  PASS
+  fundamentals             loga         train 0.477 | test 0.398  z  -4.9  n  2656  same  
+  cash/runway              log_runway   train 0.376 | test 0.406  z  -4.5  n  2656  same  PASS
+  technical/volatility     LTURN        train 0.596 | test 0.591  z  +6.2  n  5415  same  PASS
+  technical/volatility     LMC          train 0.393 | test 0.412  z  -6.0  n  5415  same  PASS
+  technical/volatility     LPX          train 0.428 | test 0.413  z  -5.9  n  5415  same  PASS
+  fundamentals             ni_margin    train 0.357 | test 0.414  z  -4.0  n  2504  same  PASS
+  technical/volatility     VR           train 0.541 | test 0.578  z  +5.3  n  5415  same  PASS
+  overnight gap + volume   VOLX         train 0.543 | test 0.576  z  +5.2  n  5415  same  PASS
+  technical/volatility     F2           train 0.556 | test 0.575  z  +5.1  n  5415  same  PASS
+  technical/volatility     F10          train 0.472 | test 0.433  z  -4.6  n  5415  same  
+  technical/volatility     F4           train 0.336 | test 0.433  z  -4.6  n  5415  same  PASS
+  fundamentals             dil          train 0.499 | test 0.565  z  +3.0  n  2551  FLIPS  
+  best by family:
+    cash/runway              log_runway   train 0.376 test 0.406 z -4.5
+    deals/news/insider       n8k30        train 0.530 test 0.534 z +2.1
+    fundamentals             loga         train 0.477 test 0.398 z -4.9
+    macro (annual horizon)   curve        train 0.591 test 0.558 z +3.9
+    overnight gap + volume   VOLX         train 0.543 test 0.576 z +5.2
+    sector rotation          sect_rs20    train 0.496 test 0.484 z -1.0
+    technical/volatility     ATRP         train 0.699 test 0.660 z +10.9
+  PASS: ATRP, VR, EXT, LMC, LTURN, LPX, OS, MVR, F2, F4, F11, r20, VOLX, log_runway, ni_margin, curve
+
+=== target r>=10%: top features by |test AUC-.5| (AUC>.5 = higher feature value -> more big movers; train | test, test z, same side?) ===
+  technical/volatility     F11          train 0.655 | test 0.604  z  +9.5  n  5415  same  PASS
+  technical/volatility     OS           train 0.642 | test 0.579  z  +7.1  n  5415  same  PASS
+  technical/volatility     ATRP         train 0.658 | test 0.576  z  +6.9  n  5415  same  PASS
+  technical/volatility     F10          train 0.464 | test 0.434  z  -6.0  n  5415  same  
+  fundamentals             loga         train 0.481 | test 0.435  z  -4.1  n  2656  same  
+  cash/runway              log_runway   train 0.425 | test 0.437  z  -4.0  n  2656  same  PASS
+  technical/volatility     F2           train 0.553 | test 0.561  z  +5.6  n  5415  same  PASS
+  technical/volatility     LTURN        train 0.579 | test 0.561  z  +5.5  n  5415  same  PASS
+  overnight gap + volume   VOLX         train 0.549 | test 0.559  z  +5.4  n  5415  same  PASS
+  technical/volatility     EXT          train 0.620 | test 0.559  z  +5.4  n  5415  same  PASS
+  fundamentals             ni_margin    train 0.424 | test 0.442  z  -3.6  n  2504  same  PASS
+  technical/volatility     VR           train 0.547 | test 0.548  z  +4.4  n  5415  same  PASS
+  cash/runway              loss         train 0.577 | test 0.546  z  +2.9  n  2656  same  
+  technical/volatility     MVR          train 0.604 | test 0.541  z  +3.7  n  5415  same  PASS
+  technical/volatility     LPX          train 0.460 | test 0.459  z  -3.7  n  5415  same  PASS
+  technical/volatility     LMC          train 0.412 | test 0.459  z  -3.7  n  5415  same  PASS
+  best by family:
+    cash/runway              log_runway   train 0.425 test 0.437 z -4.0
+    deals/news/insider       EARN         train 0.524 test 0.528 z +2.5
+    fundamentals             loga         train 0.481 test 0.435 z -4.1
+    macro (annual horizon)   oil_12m      train 0.284 test 0.464 z -3.3
+    overnight gap + volume   VOLX         train 0.549 test 0.559 z +5.4
+    sector rotation          sect_rank20  train 0.473 test 0.518 z +1.5
+    technical/volatility     F11          train 0.655 test 0.604 z +9.5
+  PASS: ATRP, VR, EXT, LMC, LTURN, LPX, OS, MVR, F2, F11, VOLX, log_runway, ni_margin
