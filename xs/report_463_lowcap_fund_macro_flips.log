@@ -1,0 +1,30 @@
+NaN rates before filtering: {'rev_yoy': 0.02, 'ni_margin': 0.06, 'loss': 0.0, 'runway': 0.0, 'debt_a': 0.0, 'eq_a': 0.01, 'dil': 0.04, 'loga': 0.0, 'd10_12m': 0.0, 'curve': 0.0, 'usd_12m': 0.0, 'oil_12m': 0.0, 'vix': 0.0, 'OS': 0.0} rows 3842
+flips with fundamentals+macro: 3776 names 357 | px<10: 1857 | train 1170 test 2606
+
+##### px < $10: n 1857 (train 517, test 1340) | base P(r>=10%) train 24.6% test 16.2%; P(r>=30%) 18.6% / 10.0%; test median -7.3% win 23%
+--- target r >= 10%
+M0 OS                    test AUC 0.614 | top-quintile n 200 P(hit) 27.0% vs rest 14.3% | mean +22.2% med -11.0% win 30% (rest mean +0.9%) month-paired diff +10.7pp t 1.57 | 2022-26Q1: top 27% vs rest 14% | top10/mo basket n 494 hit 19.4% mean +7.7% med -9.9%
+M1 FUND                  test AUC 0.559 | top-quintile n 188 P(hit) 20.7% vs rest 15.5% | mean +15.8% med -7.0% win 26% (rest mean +2.2%) month-paired diff +4.9pp t 0.74 | 2022-26Q1: top 21% vs rest 15% | top10/mo basket n 494 hit 17.6% mean +6.0% med -7.8%
+M2 FUND+MACRO            test AUC 0.614 | top-quintile n 77 P(hit) 35.1% vs rest 15.0% | mean +15.7% med -4.2% win 40% (rest mean +3.4%) month-paired diff +23.8pp t 1.21 | 2022-26Q1: top 35% vs rest 15% | top10/mo basket n 494 hit 19.4% mean +9.1% med -7.8%
+M3 OS+FUND+MACRO         test AUC 0.621 | top-quintile n 98 P(hit) 33.7% vs rest 14.8% | mean +15.5% med -5.7% win 37% (rest mean +3.2%) month-paired diff +21.1pp t 1.27 | 2022-26Q1: top 34% vs rest 15% | top10/mo basket n 494 hit 20.2% mean +9.7% med -8.4%
+M4 HGB OS+FUND+MACRO     test AUC 0.612 | top-quintile n 77 P(hit) 32.5% vs rest 15.2% | mean +9.8% med -6.9% win 35% (rest mean +3.7%) month-paired diff +18.3pp t 1.54 | 2022-26Q1: top 32% vs rest 15% | top10/mo basket n 494 hit 19.0% mean +4.7% med -9.2%
+--- target r >= 30%
+M0 OS                    test AUC 0.656 | top-quintile n 200 P(hit) 20.0% vs rest 8.2% | mean +22.2% med -11.0% win 30% (rest mean +0.9%) month-paired diff +10.7pp t 1.57 | 2022-26Q1: top 20% vs rest 8% | top10/mo basket n 494 hit 12.6% mean +7.7% med -9.9%
+M1 FUND                  test AUC 0.564 | top-quintile n 253 P(hit) 13.0% vs rest 9.3% | mean +12.6% med -8.3% win 26% (rest mean +2.1%) month-paired diff +5.3pp t 0.88 | 2022-26Q1: top 13% vs rest 9% | top10/mo basket n 494 hit 11.5% mean +6.9% med -8.6%
+M2 FUND+MACRO            test AUC 0.609 | top-quintile n 44 P(hit) 25.0% vs rest 9.5% | mean +25.0% med -4.5% win 41% (rest mean +3.4%) month-paired diff +50.2pp t 1.80 | 2022-26Q1: top 25% vs rest 9% | top10/mo basket n 494 hit 12.6% mean +9.7% med -9.1%
+M3 OS+FUND+MACRO         test AUC 0.621 | top-quintile n 55 P(hit) 21.8% vs rest 9.5% | mean +20.0% med -5.2% win 38% (rest mean +3.4%) month-paired diff +13.5pp t 1.29 | 2022-26Q1: top 22% vs rest 9% | top10/mo basket n 494 hit 13.4% mean +10.6% med -9.1%
+M4 HGB OS+FUND+MACRO     test AUC 0.598 | top-quintile n 28 P(hit) 28.6% vs rest 9.6% | mean +27.5% med -2.6% win 46% (rest mean +3.6%) month-paired diff +32.7pp t 1.77 | 2022-26Q1: top 29% vs rest 10% | top10/mo basket n 494 hit 12.1% mean +8.3% med -8.8%
+
+##### px < $20 (robustness): n 3776 (train 1170, test 2606) | base P(r>=10%) train 20.9% test 14.6%; P(r>=30%) 14.0% / 7.8%; test median -6.5% win 22%
+--- target r >= 10%
+M0 OS                    test AUC 0.600 | top-quintile n 410 P(hit) 22.4% vs rest 13.1% | mean +11.6% med -11.0% win 28% (rest mean -0.3%) month-paired diff +5.2pp t 1.45 | 2022-26Q1: top 22% vs rest 13% | top10/mo basket n 500 hit 19.2% mean +5.6% med -10.5%
+M1 FUND                  test AUC 0.575 | top-quintile n 349 P(hit) 20.9% vs rest 13.6% | mean +11.3% med -7.4% win 25% (rest mean +0.0%) month-paired diff +6.1pp t 1.59 | 2022-26Q1: top 21% vs rest 14% | top10/mo basket n 500 hit 19.0% mean +7.3% med -7.9%
+M2 FUND+MACRO            test AUC 0.577 | top-quintile n 1391 P(hit) 17.3% vs rest 11.5% | mean +4.1% med -6.2% win 26% (rest mean -1.4%) month-paired diff +3.4pp t 1.45 | 2022-26Q1: top 17% vs rest 12% | top10/mo basket n 500 hit 20.0% mean +3.9% med -7.8%
+M3 OS+FUND+MACRO         test AUC 0.579 | top-quintile n 1641 P(hit) 17.8% vs rest 9.1% | mean +4.3% med -6.4% win 26% (rest mean -3.1%) month-paired diff +4.7pp t 1.52 | 2022-26Q1: top 18% vs rest 9% | top10/mo basket n 500 hit 21.4% mean +7.9% med -8.9%
+M4 HGB OS+FUND+MACRO     test AUC 0.571 | top-quintile n 295 P(hit) 19.3% vs rest 14.0% | mean +2.3% med -6.1% win 27% (rest mean +1.5%) month-paired diff +10.2pp t 1.29 | 2022-26Q1: top 19% vs rest 14% | top10/mo basket n 500 hit 19.4% mean +9.0% med -8.5%
+--- target r >= 30%
+M0 OS                    test AUC 0.665 | top-quintile n 410 P(hit) 15.4% vs rest 6.4% | mean +11.6% med -11.0% win 28% (rest mean -0.3%) month-paired diff +5.2pp t 1.45 | 2022-26Q1: top 15% vs rest 6% | top10/mo basket n 500 hit 11.0% mean +5.6% med -10.5%
+M1 FUND                  test AUC 0.591 | top-quintile n 383 P(hit) 12.8% vs rest 6.9% | mean +10.1% med -8.0% win 25% (rest mean +0.1%) month-paired diff +6.3pp t 1.61 | 2022-26Q1: top 13% vs rest 7% | top10/mo basket n 500 hit 11.2% mean +6.0% med -8.4%
+M2 FUND+MACRO            test AUC 0.621 | top-quintile n 368 P(hit) 13.9% vs rest 6.8% | mean +14.5% med -7.1% win 29% (rest mean -0.6%) month-paired diff +35.1pp t 1.47 | 2022-26Q1: top 14% vs rest 7% | top10/mo basket n 500 hit 12.0% mean +7.8% med -8.2%
+M3 OS+FUND+MACRO         test AUC 0.635 | top-quintile n 650 P(hit) 12.3% vs rest 6.3% | mean +8.5% med -7.4% win 28% (rest mean -0.8%) month-paired diff +9.5pp t 2.90 | 2022-26Q1: top 12% vs rest 6% | top10/mo basket n 500 hit 11.2% mean +7.0% med -9.3%
+M4 HGB OS+FUND+MACRO     test AUC 0.611 | top-quintile n 104 P(hit) 12.5% vs rest 7.6% | mean +3.7% med -8.1% win 29% (rest mean +1.5%) month-paired diff +20.2pp t 1.72 | 2022-26Q1: top 12% vs rest 8% | top10/mo basket n 500 hit 11.2% mean +7.6% med -9.2%
