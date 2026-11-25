@@ -1250,3 +1250,10 @@ Group = top 10% base5 score (ATRP,F11,VOLX,LTURN,LMC), 2022+ test, trades recons
 - Non-reachers (31-33%) are cut by the vector exit at median 8d (p90 27) = only 6-7% of capital-days. The long holds are the REACHERS riding the vector (median 55-68d). Selling at +10% else vector exit: avg hold 8-9d vs 55-60d (83-86% capital-days saved).
 - Concentration (px<10, 2022-25): 37/66/91/95 flips, 29-73 names, top-5 names 17-27%, top month 15-27%, SIC 28 (chem/pharma/biotech) 30-41% every year. 2026 has only 9 flips (data ends Q1) - too thin to judge. All-flips-held-to-vector concurrency avg 5->22 open (max 40); sell-at-+10% brings it to ~3-7.
 Caveat: +10% touch is intraday high, not guaranteed fill; flips/yr ~90 (px<10) / ~185 (px<20).
+
+## 469 (2026-11-24) real-world reasons INSIDE the high-vol group, px<20 / <10 / <5 (all FAIL)
+Base group = top 30% base5 score (REACH>=10% already 60% / 63% / 68% test; REAL 21 / 24 / 26%). SEC facts extended to 1,017 names (93% of group covered). Features: RUNWAY (cash / monthly operating burn; short = more), SQ (burning & <12m), RAISE90 (8-K 3.02), SECMAC (sector macro driver favourable), DEAL, INS, EV5, GATE2 (any reason). Rule: same side train/test, |AUC-.5|>=.04 both, test z>=3.3.
+- NOTHING passes in any bucket or target. Best test AUCs: GATE2 on REAL .543/.546 (z 2.4/1.9), RUNWAY_SHORT on REACH .527 (train .503/.474, wrong side in px<10 train), all others .50-.52.
+- DEAL (+6pp REACH at <20, +7 at <10) and INS (+7 / +10pp) lead in 2019-21 and 2023-26 but INS REACH was BELOW no-flag in 2022 in all three buckets (n 23/11/5); flags are 4-9% of group. Leads only, as in 67b/464.
+- Short runway is not the catalyst: SQ REACH 62% v 60% (<20), 64 v 63 (<10), 66 v 72 (<5, wrong sign). Median r stays -9 to -12% either way.
+Conclusion: volatility/ATRP base carries the whole REACH edge; known catalysts (8-K, insider, sector macro, runway) add <= a few pp and no reliable AUC. Untested: dated forward catalysts (ClinicalTrials/PDUFA), award size / market cap.

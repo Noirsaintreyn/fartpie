@@ -1,0 +1,84 @@
+
+################ px<20: all flips 8408, base group (top 30%) 2503 (train 899, test 1604) | fundamentals coverage in group 93% | REACH base train 60.6% test 60.3% | REAL test 21.4%
+  == REACH: feature | AUC train / test (z) | n test | PASS
+    RUNWAY_SHORT  0.503 / 0.527 (z +1.8) n  1511 
+    SQ            0.505 / 0.515 (z +1.0) n  1511 
+    RAISE90       0.498 / 0.501 (z +0.1) n  1604 
+    SECMAC        0.513 / 0.521 (z +1.2) n  1255 
+    DEAL          0.512 / 0.503 (z +0.2) n  1604 
+    INS           0.520 / 0.507 (z +0.5) n  1604 
+    EV5           0.515 / 0.492 (z -0.5) n  1604 
+    GATE2         0.514 / 0.520 (z +1.3) n  1588 
+  == REAL: feature | AUC train / test (z) | n test | PASS
+    RUNWAY_SHORT  0.494 / 0.504 (z +0.2) n  1511 
+    SQ            0.498 / 0.513 (z +0.7) n  1511 
+    RAISE90       0.498 / 0.507 (z +0.4) n  1604 
+    SECMAC        0.505 / 0.519 (z +1.0) n  1255 
+    DEAL          0.506 / 0.510 (z +0.6) n  1604 
+    INS           0.521 / 0.516 (z +0.9) n  1604 
+    EV5           0.499 / 0.500 (z +0.0) n  1604 
+    GATE2         0.503 / 0.543 (z +2.4) n  1588 
+  flag lift on REACH (flag vs no flag) by era 2019-21 / 2022 / 2023-26 [n flagged]:
+    SQ         63% v  61% [124] /   60% v  59% [75] /   63% v  59% [364] /  ALL: REACH 62% v 60% | REAL 24% v 24% | median r -10.5% v -9.3%
+    RAISE90    59% v  61% [61] /   50% v  61% [20] /   63% v  60% [103] /  ALL: REACH 60% v 60% | REAL 26% v 24% | median r -9.9% v -9.5%
+    SECMAC     61% v  58% [385] /   64% v  57% [151] /   62% v  59% [462] /  ALL: REACH 62% v 59% | REAL 25% v 22% | median r -9.2% v -10.4%
+    DEAL       73% v  60% [41] /   56% v  60% [16] /   65% v  60% [62] /  ALL: REACH 66% v 60% | REAL 30% v 24% | median r -7.9% v -9.6%
+    INS        70% v  60% [90] /   48% v  61% [23] /   68% v  60% [104] /  ALL: REACH 67% v 60% | REAL 32% v 23% | median r -8.1% v -9.6%
+    EV5        63% v  60% [265] /   61% v  60% [87] /   59% v  61% [459] /  ALL: REACH 60% v 60% | REAL 24% v 24% | median r -9.4% v -9.6%
+    GATE2      62% v  60% [519] /   61% v  59% [201] /   62% v  58% [754] /  ALL: REACH 62% v 58% | REAL 26% v 22% | median r -9.4% v -9.8%
+
+################ px<10: all flips 3863, base group (top 30%) 1179 (train 370, test 809) | fundamentals coverage in group 93% | REACH base train 64.6% test 63.0% | REAL test 23.6%
+  == REACH: feature | AUC train / test (z) | n test | PASS
+    RUNWAY_SHORT  0.474 / 0.527 (z +1.2) n   760 
+    SQ            0.475 / 0.517 (z +0.8) n   760 
+    RAISE90       0.498 / 0.503 (z +0.1) n   809 
+    SECMAC        0.498 / 0.509 (z +0.4) n   625 
+    DEAL          0.511 / 0.508 (z +0.4) n   809 
+    INS           0.544 / 0.507 (z +0.3) n   809 
+    EV5           0.483 / 0.505 (z +0.2) n   809 
+    GATE2         0.499 / 0.505 (z +0.2) n   799 
+  == REAL: feature | AUC train / test (z) | n test | PASS
+    RUNWAY_SHORT  0.475 / 0.524 (z +1.0) n   760 
+    SQ            0.473 / 0.532 (z +1.3) n   760 
+    RAISE90       0.502 / 0.516 (z +0.7) n   809 
+    SECMAC        0.511 / 0.516 (z +0.6) n   625 
+    DEAL          0.517 / 0.515 (z +0.6) n   809 
+    INS           0.533 / 0.517 (z +0.7) n   809 
+    EV5           0.496 / 0.502 (z +0.1) n   809 
+    GATE2         0.498 / 0.546 (z +1.9) n   799 
+  flag lift on REACH (flag vs no flag) by era 2019-21 / 2022 / 2023-26 [n flagged]:
+    SQ         60% v  67% [73] /   56% v  58% [45] /   67% v  62% [236] /  ALL: REACH 64% v 63% | REAL 26% v 25% | median r -10.8% v -10.7%
+    RAISE90    64% v  65% [33] /   38% v  60% [8] /   68% v  64% [57] /  ALL: REACH 64% v 63% | REAL 31% v 25% | median r -10.0% v -10.8%
+    SECMAC     65% v  65% [177] /   63% v  54% [57] /   64% v  64% [236] /  ALL: REACH 64% v 63% | REAL 27% v 24% | median r -10.0% v -11.4%
+    DEAL       73% v  64% [22] /   50% v  59% [6] /   71% v  63% [48] /  ALL: REACH 70% v 63% | REAL 34% v 25% | median r -8.4% v -11.0%
+    INS        83% v  62% [41] /   36% v  61% [11] /   72% v  63% [61] /  ALL: REACH 73% v 63% | REAL 35% v 24% | median r -10.2% v -10.9%
+    EV5        62% v  66% [105] /   56% v  60% [39] /   65% v  63% [242] /  ALL: REACH 63% v 64% | REAL 25% v 25% | median r -10.8% v -10.7%
+    GATE2      65% v  65% [243] /   57% v  60% [89] /   64% v  63% [419] /  ALL: REACH 64% v 63% | REAL 27% v 22% | median r -10.6% v -11.1%
+
+################ px<5: all flips 1504, base group (top 30%) 441 (train 129, test 312) | fundamentals coverage in group 93% | REACH base train 76.0% test 67.9% | REAL test 25.6%
+  == REACH: feature | AUC train / test (z) | n test | PASS
+    RUNWAY_SHORT  0.455 / 0.477 (z -0.6) n   288 
+    SQ            0.460 / 0.473 (z -0.7) n   288 
+    RAISE90       0.531 / 0.522 (z +0.6) n   312 
+    SECMAC        0.493 / 0.556 (z +1.4) n   233 
+    DEAL          0.520 / 0.512 (z +0.3) n   312 
+    INS           0.534 / 0.512 (z +0.3) n   312 
+    EV5           0.542 / 0.523 (z +0.7) n   312 
+    GATE2         0.464 / 0.512 (z +0.3) n   306 
+  == REAL: feature | AUC train / test (z) | n test | PASS
+    RUNWAY_SHORT  0.420 / 0.487 (z -0.3) n   288 
+    SQ            0.453 / 0.497 (z -0.1) n   288 
+    RAISE90       0.534 / 0.522 (z +0.6) n   312 
+    SECMAC        0.501 / 0.541 (z +1.0) n   233 
+    DEAL          0.505 / 0.517 (z +0.5) n   312 
+    INS           0.515 / 0.528 (z +0.7) n   312 
+    EV5           0.536 / 0.489 (z -0.3) n   312 
+    GATE2         0.455 / 0.539 (z +1.0) n   306 
+  flag lift on REACH (flag vs no flag) by era 2019-21 / 2022 / 2023-26 [n flagged]:
+    SQ         70% v  77% [37] /   55% v  67% [22] /   67% v  70% [110] /  ALL: REACH 66% v 72% | REAL 26% v 30% | median r -12.2% v -10.8%
+    RAISE90   100% v  75% [6] /   60% v  63% [5] /   85% v  67% [20] /  ALL: REACH 84% v 69% | REAL 42% v 27% | median r -3.3% v -11.5%
+    SECMAC     75% v  76% [64] /   77% v  44% [13] /   71% v  64% [97] /  ALL: REACH 73% v 66% | REAL 31% v 26% | median r -10.3% v -11.7%
+    DEAL       88% v  75% [8] /  100% v  62% [1] /   73% v  68% [26] /  ALL: REACH 77% v 70% | REAL 34% v 28% | median r -9.2% v -11.2%
+    INS        87% v  75% [15] /   40% v  66% [5] /   80% v  68% [25] /  ALL: REACH 78% v 69% | REAL 38% v 27% | median r -10.2% v -11.2%
+    EV5        83% v  74% [29] /   67% v  62% [6] /   72% v  67% [85] /  ALL: REACH 74% v 69% | REAL 28% v 28% | median r -10.0% v -11.6%
+    GATE2      74% v  80% [88] /   61% v  64% [28] /   70% v  66% [178] /  ALL: REACH 70% v 70% | REAL 29% v 26% | median r -11.9% v -11.0%
