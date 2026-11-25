@@ -1,0 +1,27 @@
+names with flips + theta: ['AAPL', 'ADBE', 'AMD', 'AMZN', 'CAT', 'COST', 'CRM', 'DIS', 'GOOGL', 'HD', 'IBM', 'JPM', 'MCD', 'META', 'MSFT', 'NVDA', 'ORCL', 'SBUX', 'TGT', 'TSLA', 'UNH', 'UPS', 'WMT'] flips 9868 of which 1h 2891
+
+=== 15m: all gated flips with features n 6501  mean +31.8bp  hold 73.5h ===
+A neg gamma              n  2425 mean  +45.8bp t  3.45 win 32% hold 66.5h  bp/h  +0.4 | train +47 (t2.1) test +45 (t2.7) | lift vs rest +13.2bp t 0.95 | overlap with A nan%
+                         eras 18-19 +15(78) 20-21 +67(381) 22 -9(605) 23-26 +30(1361)
+B put/call volume high   n  2656 mean  +66.2bp t  5.30 win 33% hold 74.9h  bp/h  +0.6 | train +90 (t4.4) test +52 (t3.3) | lift vs rest +38.3bp t 3.13 | overlap with A 51%
+                         eras 18-19 +50(92) 20-21 +80(566) 22 +10(557) 23-26 +42(1441)
+C skew high              n  2447 mean  +74.1bp t  3.30 win 35% hold 76.1h  bp/h  +0.6 | train +128 (t3.2) test +40 (t1.5) | lift vs rest +60.2bp t 2.64 | overlap with A 50%
+                         eras 18-19 +67(103) 20-21 +78(553) 22 +1(537) 23-26 +42(1254)
+D charm high             n  1750 mean  +49.7bp t  4.11 win 33% hold 65.6h  bp/h  +0.4 | train +70 (t3.1) test +37 (t2.8) | lift vs rest +9.5bp t 0.84 | overlap with A 59%
+                         eras 18-19 +44(65) 20-21 +60(271) 22 -17(445) 23-26 +36(969)
+B or C or D              n  4296 mean  +56.6bp t  5.29 win 33% hold 75.5h  bp/h  +0.5 | train +73 (t4.2) test +46 (t3.4) | lift vs rest +51.3bp t 4.66 | overlap with A 46%
+                         eras 18-19 +27(180) 20-21 +74(886) 22 +2(795) 23-26 +39(2435)
+A or B or C or D         n  4727 mean  +52.7bp t  5.12 win 33% hold 74.8h  bp/h  +0.5 | train +69 (t4.0) test +42 (t3.3) | lift vs rest +49.3bp t 4.18 | overlap with A 51%
+                         eras 18-19 +25(191) 20-21 +69(956) 22 -1(823) 23-26 +37(2757)
+
+=== 1h: all gated flips with features n 2706  mean +49.6bp  hold 143.3h ===
+A neg gamma              n   704 mean  +70.4bp t  2.45 win 37% hold 133.6h  bp/h  +0.3 | train +122 (t2.6) test +44 (t1.2) | lift vs rest +18.6bp t 0.72 | overlap with A nan%
+                         eras 18-19 -7(34) 20-21 +198(95) 22 -22(182) 23-26 +35(393)
+C skew high              n  1055 mean  +80.1bp t  3.48 win 37% hold 141.7h  bp/h  +0.3 | train +131 (t3.0) test +48 (t1.9) | lift vs rest +39.7bp t 1.54 | overlap with A 36%
+                         eras 18-19 +56(63) 20-21 +101(260) 22 -10(208) 23-26 +46(524)
+D charm high             n   616 mean +113.2bp t  3.52 win 36% hold 138.0h  bp/h  +0.5 | train +127 (t2.9) test +105 (t2.4) | lift vs rest +64.7bp t 2.20 | overlap with A 42%
+                         eras 18-19 +123(32) 20-21 +133(105) 22 +2(127) 23-26 +74(352)
+B or C or D              n  1764 mean  +74.9bp t  3.97 win 37% hold 144.1h  bp/h  +0.4 | train +125 (t3.8) test +43 (t2.0) | lift vs rest +49.1bp t 2.14 | overlap with A 33%
+                         eras 18-19 +68(91) 20-21 +119(388) 22 -16(310) 23-26 +53(975)
+A or B or C or D         n  1882 mean  +74.1bp t  4.02 win 36% hold 143.9h  bp/h  +0.4 | train +123 (t3.8) test +43 (t2.0) | lift vs rest +48.8bp t 2.24 | overlap with A 37%
+                         eras 18-19 +62(95) 20-21 +126(402) 22 -19(319) 23-26 +49(1066)
