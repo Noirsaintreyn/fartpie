@@ -1,0 +1,27 @@
+
+######## sub-$20 4-feature group test 2022+: n 1593 REACH 60% win 26% mean  +4.9% med -10.2% p10 -22%
+  EARNP    FLAG n  320 REACH 63% win 31% mean  +5.0% med -10.1% p10 -24% | REST n 1273 REACH 60% win 25% mean  +4.9% med -10.2% p10 -22% | gap -3.9% t -1.74 | 2022 -3.1% vs -1.1% (n 51) | 2023-26 +6.5% vs +6.4%
+  DEAL     FLAG n   79 REACH 66% win 34% mean  +8.5% med -10.6% p10 -25% | REST n 1514 REACH 60% win 26% mean  +4.7% med -10.2% p10 -22% | gap +4.7% t +0.80 | 2022 -4.9% vs -1.3% (n 14) | 2023-26 +11.3% vs +6.2%
+  INS      FLAG n  142 REACH 65% win 30% mean  +9.5% med -9.7% p10 -20% | REST n 1451 REACH 60% win 26% mean  +4.5% med -10.3% p10 -23% | gap +4.8% t +0.99 | 2022 +3.0% vs -1.8% (n 25) | 2023-26 +10.9% vs +6.0%
+  ACT      FLAG n  105 REACH 60% win 30% mean  +6.1% med -9.3% p10 -20% | REST n 1488 REACH 60% win 26% mean  +4.8% med -10.3% p10 -22% | gap -0.6% t -0.14 | 2022 -4.6% vs -1.3% (n 17) | 2023-26 +8.1% vs +6.3%
+  SPIKE    FLAG n   82 REACH 66% win 23% mean  +3.9% med -13.6% p10 -31% | REST n 1511 REACH 60% win 27% mean  +5.0% med -10.2% p10 -22% | gap +0.4% t +0.06 | 2022 +12.0% vs -2.0% (n 12) | 2023-26 +2.5% vs +6.7%
+  GOODANY  FLAG n  618 REACH 64% win 30% mean  +6.0% med -10.1% p10 -23% | REST n  975 REACH 58% win 24% mean  +4.3% med -10.3% p10 -22% | gap +0.6% t +0.30 | 2022 -2.1% vs -1.1% (n 105) | 2023-26 +7.6% vs +5.6%
+  NEGBAD   FLAG n   28 REACH 46% win 14% mean  -8.0% med -13.1% p10 -32% | REST n 1565 REACH 61% win 27% mean  +5.2% med -10.2% p10 -22% | gap -16.7% t -2.77 | 2022 -25.2% vs -1.2% (n 3) | 2023-26 -5.9% vs +6.7%
+
+######## sub-$10 4-feature group test 2022+: n  790 REACH 65% win 29% mean +10.2% med -11.3% p10 -24%
+  EARNP    FLAG n  158 REACH 69% win 31% mean  +9.4% med -11.0% p10 -26% | REST n  632 REACH 63% win 29% mean +10.4% med -11.4% p10 -24% | gap -3.6% t -0.77 | 2022 +0.6% vs +1.4% (n 21) | 2023-26 +10.7% vs +12.7%
+  DEAL     FLAG n   51 REACH 71% win 37% mean +13.6% med -11.0% p10 -25% | REST n  739 REACH 64% win 29% mean +10.0% med -11.4% p10 -24% | gap +1.4% t +0.18 | 2022 -7.5% vs +1.8% (n 7) | 2023-26 +16.9% vs +11.9%
+  INS      FLAG n   72 REACH 68% win 33% mean +13.4% med -11.4% p10 -22% | REST n  718 REACH 64% win 29% mean  +9.9% med -11.3% p10 -25% | gap +5.9% t +0.62 | 2022 +4.8% vs +1.0% (n 12) | 2023-26 +15.1% vs +12.0%
+  ACT      FLAG n   55 REACH 67% win 36% mean +16.9% med -8.8% p10 -23% | REST n  735 REACH 64% win 29% mean  +9.7% med -11.4% p10 -24% | gap +8.1% t +0.83 | 2022 -7.0% vs +1.9% (n 9) | 2023-26 +21.6% vs +11.5%
+  SPIKE    FLAG n   52 REACH 65% win 23% mean  +3.8% med -14.6% p10 -34% | REST n  738 REACH 64% win 30% mean +10.7% med -11.2% p10 -24% | gap -5.0% t -0.52 | 2022 -7.2% vs +1.6% (n 4) | 2023-26 +4.8% vs +12.9%
+  GOODANY  FLAG n  321 REACH 68% win 31% mean +10.3% med -11.4% p10 -26% | REST n  469 REACH 62% win 28% mean +10.2% med -11.2% p10 -24% | gap -0.2% t -0.05 | 2022 -1.4% vs +2.6% (n 47) | 2023-26 +12.3% vs +12.2%
+  NEGBAD   FLAG n   20 REACH 55% win 15% mean  -6.2% med -15.2% p10 -43% | REST n  770 REACH 65% win 30% mean +10.7% med -11.2% p10 -24% | gap -17.1% t -1.55 | 2022 -23.6% vs +1.5% (n 1) | 2023-26 -5.2% vs +12.8%
+
+######## sub-$5 4-feature group test 2022+: n  295 REACH 68% win 31% mean +18.9% med -11.4% p10 -27%
+  EARNP    FLAG n   50 REACH 74% win 26% mean  +2.2% med -12.0% p10 -28% | REST n  245 REACH 67% win 32% mean +22.3% med -11.1% p10 -27% | gap -15.7% t -1.34 | 2022 -15.6% vs +5.0% (n 2) | 2023-26 +2.9% vs +25.4%
+  DEAL     FLAG n   25 REACH 72% win 36% mean  +1.2% med -11.5% p10 -29% | REST n  270 REACH 68% win 30% mean +20.5% med -11.3% p10 -27% | gap -7.2% t -1.14 | 2022 -9.2% vs +4.3% (n 1) | 2023-26 +1.6% vs +23.2%
+  INS      FLAG n   31 REACH 71% win 35% mean +25.4% med -12.0% p10 -22% | REST n  264 REACH 68% win 30% mean +18.1% med -11.3% p10 -27% | gap -12.5% t -0.69 | 2022 +14.8% vs +1.7% (n 7) | 2023-26 +28.5% vs +20.4%
+  ACT      FLAG n   30 REACH 70% win 43% mean +16.9% med -7.5% p10 -28% | REST n  265 REACH 68% win 29% mean +19.1% med -11.7% p10 -27% | gap +4.7% t +0.26 | 2022 -9.7% vs +6.0% (n 5) | 2023-26 +22.2% vs +21.1%
+  SPIKE    FLAG n   24 REACH 71% win 25% mean +13.3% med -18.6% p10 -39% | REST n  271 REACH 68% win 31% mean +19.4% med -11.0% p10 -26% | gap -2.2% t -0.14 | 2022 -18.1% vs +4.6% (n 1) | 2023-26 +14.6% vs +21.8%
+  GOODANY  FLAG n  126 REACH 72% win 33% mean +10.8% med -12.0% p10 -28% | REST n  169 REACH 65% win 30% mean +24.9% med -11.0% p10 -26% | gap -13.0% t -1.29 | 2022 +3.4% vs +4.3% (n 13) | 2023-26 +11.7% vs +28.8%
+  NEGBAD   FLAG n   11 REACH 64% win 18% mean  -8.6% med -16.2% p10 -43% | REST n  284 REACH 68% win 31% mean +19.9% med -11.2% p10 -26% | gap -6.6% t -0.43 | 2022 -23.6% vs +4.7% (n 1) | 2023-26 -7.1% vs +22.3%
