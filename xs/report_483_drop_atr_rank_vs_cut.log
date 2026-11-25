@@ -1,0 +1,36 @@
+
+######## sub-$20: 1604 flips | train DX tercile cuts [2.28 3.05] (median DX 2.7 ATRs)
+  tercile 1 (DX~1.9): n  524 REACH 58% win 26% mean +5.5% median -9.9% p10 -21% | 2022 +4.6% (107) / 2023-26 +5.7% (417)
+  tercile 2 (DX~2.7): n  524 REACH 61% win 31% mean +9.1% median -9.5% p10 -23% | 2022 -0.9% (101) / 2023-26 +11.5% (423)
+  tercile 3 (DX~3.7): n  556 REACH 62% win 26% mean +2.2% median -10.6% p10 -22% | 2022 -7.5% (103) / 2023-26 +4.4% (453)
+  deep(top tercile): n  556 REACH 62% win 26% mean +2.2% median -10.6% p10 -22%
+    UNEXPL: n  286 REACH 61% win 21% mean -1.6% median -11.5% p10 -23% | 2022 -6.4% (64) / 2023-26 -0.2% (222)
+    EXPL  : n  270 REACH 62% win 31% mean +6.1% median -9.7% p10 -21% | 2022 -9.3% (39) / 2023-26 +8.7% (231)
+    spread UNEXPL-EXPL full: months 45 mean -4.2% t -1.62
+    spread UNEXPL-EXPL 2022: months 11 mean +0.2% t +0.05
+  CUT explained-deep: mean +2.3% vs ALL +2.5% | paired diff -0.22% t -0.44 | kept 83% of flips
+  RANK 2/1/.5: mean +2.0% vs ALL +2.5% | paired diff -0.49% t -1.34 | kept 83% of flips
+
+######## sub-$10: 809 flips | train DX tercile cuts [2.29 3.03] (median DX 2.7 ATRs)
+  tercile 1 (DX~1.9): n  262 REACH 61% win 25% mean +6.6% median -10.7% p10 -23% | 2022 +10.4% (54) / 2023-26 +5.6% (208)
+  tercile 2 (DX~2.6): n  261 REACH 62% win 31% mean +16.7% median -10.7% p10 -27% | 2022 +0.9% (42) / 2023-26 +19.7% (219)
+  tercile 3 (DX~3.7): n  286 REACH 66% win 30% mean +6.1% median -11.7% p10 -24% | 2022 -9.5% (42) / 2023-26 +8.8% (244)
+  deep(top tercile): n  286 REACH 66% win 30% mean +6.1% median -11.7% p10 -24%
+    UNEXPL: n  147 REACH 62% win 27% mean +4.5% median -12.6% p10 -24% | 2022 -7.2% (27) / 2023-26 +7.1% (120)
+    EXPL  : n  139 REACH 71% win 35% mean +7.7% median -10.0% p10 -23% | 2022 -13.6% (15) / 2023-26 +10.3% (124)
+    spread UNEXPL-EXPL full: months 34 mean +0.9% t +0.16
+    spread UNEXPL-EXPL 2022: months 7 mean +3.2% t +0.57
+  CUT explained-deep: mean +5.2% vs ALL +5.2% | paired diff +0.05% t +0.06 | kept 83% of flips
+  RANK 2/1/.5: mean +5.1% vs ALL +5.2% | paired diff -0.04% t -0.07 | kept 83% of flips
+
+######## sub-$5: 312 flips | train DX tercile cuts [2.29 3.01] (median DX 2.7 ATRs)
+  tercile 1 (DX~1.9): n   95 REACH 68% win 22% mean +5.8% median -13.3% p10 -24% | 2022 +12.7% (16) / 2023-26 +4.4% (79)
+  tercile 2 (DX~2.6): n  104 REACH 68% win 38% mean +35.6% median -10.6% p10 -28% | 2022 +16.7% (9) / 2023-26 +37.4% (95)
+  tercile 3 (DX~3.6): n  113 REACH 67% win 30% mean +8.6% median -12.2% p10 -24% | 2022 -12.1% (15) / 2023-26 +11.8% (98)
+  deep(top tercile): n  113 REACH 67% win 30% mean +8.6% median -12.2% p10 -24%
+    UNEXPL: n   58 REACH 64% win 31% mean +11.6% median -11.7% p10 -22% | 2022 -9.7% (10) / 2023-26 +16.0% (48)
+    EXPL  : n   55 REACH 71% win 29% mean +5.5% median -13.0% p10 -24% | 2022 -17.0% (5) / 2023-26 +7.7% (50)
+    spread UNEXPL-EXPL full: months 11 mean +5.2% t +0.25
+    spread UNEXPL-EXPL 2022: months 1 mean +38.3% t +nan
+  CUT explained-deep: mean +8.0% vs ALL +7.6% | paired diff +0.40% t +0.29 | kept 82% of flips
+  RANK 2/1/.5: mean +8.0% vs ALL +7.6% | paired diff +0.44% t +0.38 | kept 82% of flips
