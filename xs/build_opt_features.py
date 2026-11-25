@@ -31,7 +31,8 @@ def feat(x, e, ed_d, vol_d):
     g = sgn * w * gam * 100 * S * S * .01
     r = dict(gex=g.sum(), gex_short=g[sh].sum(), gex_long=g[~sh].sum(), short_share=np.abs(g[sh]).sum() / max(np.abs(g).sum(), 1e-9),
              vanna=(sgn * w * vanna * 100 * S * .01).sum(), charm=(sgn * w * charm * 100 * S).sum(), vega=(sgn * w * vega * 100).sum(), dex=(w * delta * 100 * S).sum(),
-             pc_oi=w[sgn < 0].sum() / max(w[sgn > 0].sum(), 1.0))
+             pc_oi=w[sgn < 0].sum() / max(w[sgn > 0].sum(), 1.0),
+             charm_d7=(sgn * w * charm * 100 * S)[dte <= 7].sum(), charm_d30=(sgn * w * charm * 100 * S)[(dte > 7) & (dte <= 30)].sum(), charm_dl=(sgn * w * charm * 100 * S)[dte > 30].sum())
     return r
 for tk in sys.argv[1:]:
     rows = []
@@ -49,6 +50,7 @@ for tk in sys.argv[1:]:
         best = cp.sort_values('gap').groupby(['d', 'expiration']).head(1); best['S'] = best.strike + best.c - best.p; spot = best.groupby('d').S.median()
         ed = ed.join(spot.rename('S'), on='d')
         vol = ed[ed.S.notna() & (ed.dte >= 0) & (ed.dte <= 45)].groupby(['d', 'call']).volume.sum().unstack().rename(columns={True: 'cv', False: 'pv'}); vol['pc_vol'] = vol.pv / vol.cv.clip(lower=1); vol['tot_vol'] = vol.pv + vol.cv
+        va = ed[ed.S.notna() & (ed.dte >= 0)].groupby(['d', 'call']).volume.sum().unstack().rename(columns={True: 'cva', False: 'pva'}); vol['pc_vol_all'] = va.pva / va.cva.clip(lower=1)
         e = ed[ed.S.notna() & ed.mid.notna() & (ed.dte >= 1) & (ed.dte <= 70) & (ed.mid >= .05) & (ed.strike > .7 * ed.S) & (ed.strike < 1.3 * ed.S)].copy()
         e = e[(e.call & (e.strike >= e.S)) | (~e.call & (e.strike <= e.S))]
         if not len(e): continue
@@ -63,6 +65,6 @@ for tk in sys.argv[1:]:
             r = feat(xx, e, None, None); r['date'] = d_; r['spot'] = float(xx.S.iloc[0]); r['n'] = len(xx); res.append(r)
         if not res: continue
         r = pd.DataFrame(res).set_index('date'); r['iv30'] = iv30; r['iv_short'] = iv_s; r['iv_long'] = iv_l; r['term'] = iv_l - iv_s; r['skew'] = pu - ca
-        r = r.join(vol[['pc_vol', 'tot_vol']]); rows.append(r.reset_index())
+        r = r.join(vol[['pc_vol', 'tot_vol', 'pc_vol_all']]); rows.append(r.reset_index())
     if not rows: print(tk, 'no rows'); continue
     X = pd.concat(rows).drop_duplicates('date', keep='last').sort_values('date'); X.to_csv(f'data/theta_feat2/{tk}.csv', index=False); print(tk, len(X), X.date.min().date(), X.date.max().date(), flush=True)
