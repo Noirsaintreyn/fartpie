@@ -260,6 +260,10 @@ def scan_once(dry, data=None, asof=None):
     for m in fired: print(m); (None if dry else post(m))                                                           # alerts first (fast) ...
     for m, c in zip(fired, ctxs):                                                                                   # ... then the context for each
         if c: print(c); (None if dry else post(c))
+        if c and m.startswith('\u26a1 BUY'):                                                                            # Nov 25 2026: catalyst / news / insider report + Valiant sign-off
+            try:
+                import catalysts as CAT; r_ = CAT.report(m.split()[2].rstrip(':')); print(r_); (None if dry else post(r_))
+            except Exception as e: print(f'  ! catalyst report: {str(e)[:60]}')
     for tk_, kind_, px_ in charts:                                                                                  # chart under each BUY / SELL (fails soft)
         try:
             if SCH is None or tk_ not in CH: continue
