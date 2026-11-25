@@ -10,8 +10,15 @@ BG, PANEL, GRID, T1, T2, MUT = '#080c16', '#0f1626', '#1b2438', '#f1f5f9', '#94a
 UP, DN, LVL, VWAP, GOLD = '#3b82f6', '#fb7185', '#a3e635', '#e2e8f0', '#fcd34d'
 ET = 'America/New_York'
 def _dl(tk, interval, period, prepost):
-    import yfinance as yf
-    D = yf.download(tk, period=period, interval=interval, prepost=prepost, progress=False, auto_adjust=False, threads=False)
+    try:
+        import yfinance as yf
+        D = yf.download(tk, period=period, interval=interval, prepost=prepost, progress=False, auto_adjust=False, threads=False)
+    except Exception: D = None
+    if D is None or not len(D):
+        import lse_data                                                                   # Yahoo rate-limited: LSE candles (5m incl. pre/post; daily rebuilt to RTH bars)
+        E = lse_data.bars_5m(tk, 30) if interval == '5m' else lse_data.daily_rth(tk)
+        if E is not None: return E
+        raise RuntimeError(f'no data for {tk}')
     if isinstance(D.columns, pd.MultiIndex): D.columns = D.columns.get_level_values(0)
     D = D.dropna(subset=['Close']).rename(columns=str.lower)[['open', 'high', 'low', 'close', 'volume']]
     if D.index.tz is not None: D.index = D.index.tz_convert(ET).tz_localize(None)
