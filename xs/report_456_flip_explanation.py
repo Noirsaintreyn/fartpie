@@ -30,7 +30,7 @@ for t in NAMES:
     secidx[t] = np.log(1 + r).values; secstate[t] = np.asarray(regs, float)
 # events: 8-K 2.02 reaction sessions
 K8 = pd.read_csv(UP + 'xs/ext/8k_items.csv'); K8 = K8[K8['items'].astype(str).str.contains('2.02') & K8.ticker.isin(NAMES)].copy(); K8['acc'] = pd.to_datetime(K8.accept, utc=True).dt.tz_convert(ET).dt.tz_localize(None)
-K8['react'] = np.where(K8.acc.dt.hour >= 16, K8.acc.dt.normalize() + pd.Timedelta(days=1), K8.acc.dt.normalize()); EV = {t: np.sort(np.array([pos.get(d, np.searchsorted(idx.values, d)) for d in pd.to_datetime(g.react)])) for t, g in K8.groupby('ticker')}
+K8['react'] = np.where(K8.acc.dt.hour >= 16, K8.acc.dt.normalize() + pd.Timedelta(days=1), K8.acc.dt.normalize()); EV = {t: np.sort(np.array([idx.searchsorted(d) for d in pd.to_datetime(g.react)])) for t, g in K8.groupby('ticker')}
 # value: price/sales percentile from quarterly SEC facts
 Q = pd.read_parquet(SP + 'sec_q.parquet'); Q['start'] = pd.to_datetime(Q.start); Q['end'] = pd.to_datetime(Q.end); Q['filed'] = pd.to_datetime(Q.filed); Q['dur'] = (Q.end - Q.start).dt.days
 def ps_series(tk):
