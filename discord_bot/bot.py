@@ -218,7 +218,7 @@ async def pro_cmd(inter: discord.Interaction, ticker: str):
     await _screener_text(inter, ['--pro', ticker.strip().upper()])
 
 
-@tree.command(name='gex', description='Dealer greeks for one ticker: net GEX, gamma flip, walls, DEX, vanna, charm, vega, IV, skew + the GEX heatmap')
+@tree.command(name='gex', description='Dealer greeks for a ticker: net GEX, gamma flip, walls, DEX, vanna, charm, vega, IV + heatmap')
 @app_commands.describe(ticker='e.g. QQQ, TSLA, NVDA (names the worker logs a chain for)')
 async def gex_cmd(inter: discord.Interaction, ticker: str = 'QQQ'):
     await inter.response.defer(thinking=True)
