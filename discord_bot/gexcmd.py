@@ -19,8 +19,13 @@ def available():
 def build(sym):
     """-> (summary dict, heatmap PNG bytes, asof 'YYYY-MM-DD', file name). Raises SystemExit if no chain was logged for sym."""
     import webull_greeks as WG, gex_heatmap as GH
-    sym = sym.strip().upper(); df, f = WG.load(sym); asof = os.path.basename(f)[:10]
-    now = pd.Timestamp.now(tz='America/New_York').tz_localize(None)
+    sym = sym.strip().upper(); now = pd.Timestamp.now(tz='America/New_York').tz_localize(None)
+    try:                                                              # Nov 24 2026 (Rey): any time, any optionable ticker - pull the chain live from Webull; after hours it returns the last close
+        import webull_options_log as WL
+        df = WL.fetch_flat(sym, days=21, band=.08); f = 'live'; asof = f'{now:%Y-%m-%d}'
+    except BaseException as e:                                        # live pull failed -> the last saved chain (previous day's)
+        print(f'  ! /gex live chain {sym}: {str(e)[:80]}; using saved chain', flush=True)
+        df, f = WG.load(sym); asof = os.path.basename(f)[:10]
     s = WG.summarize(sym, df, now); M, S, lv = GH.matrix(df, now)
     p = os.path.join(tempfile.gettempdir(), f'gex_{sym}.png'); GH.render(sym, M, S, lv, p, asof)
     return s, open(p, 'rb').read(), asof, os.path.basename(f)
