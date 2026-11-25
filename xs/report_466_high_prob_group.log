@@ -1,0 +1,19 @@
+flips 8408 train 2993 test 5415 | test years [np.int32(2022), np.int32(2023), np.int32(2024), np.int32(2025), np.int32(2026)] | base test: P(REAL>=10%) 14.9% P(REACH>=10%) 44.6% median -5.9%
+
+##### px < $10: test flips 2632
+score top 19% (train cut)  n  562 ( 135/yr) | P(REAL>=10%) 26.5% P(REACH>=10%) 66.5% | mean  +12.7% median  -11.5% win 31% | vs rest  +8.1pp t 2.15 | 2022: REAL 21% REACH 65% (n85) | 2023-26: REAL 27% REACH 67% (n477)
+score top 9% (train cut)   n  293 (  70/yr) | P(REAL>=10%) 26.3% P(REACH>=10%) 70.0% | mean  +16.7% median  -13.2% win 29% | vs rest  +7.9pp t 1.55 | 2022: REAL 16% REACH 58% (n38) | 2023-26: REAL 28% REACH 72% (n255)
+score top 5% (train cut)   n  126 (  30/yr) | P(REAL>=10%) 27.8% P(REACH>=10%) 72.2% | mean  +24.4% median  -16.2% win 31% | vs rest +12.7pp t 1.07 | 2022: REAL 27% REACH 67% (n15) | 2023-26: REAL 28% REACH 73% (n111)
+OS top 10% (train cut)     n  218 (  52/yr) | P(REAL>=10%) 25.2% P(REACH>=10%) 70.6% | mean  +20.6% median  -12.8% win 28% | vs rest +11.8pp t 1.60 | 2022: REAL 21% REACH 74% (n34) | 2023-26: REAL 26% REACH 70% (n184)
+top-10 per month by score  n  500 ( 120/yr) | P(REAL>=10%) 23.0% P(REACH>=10%) 63.4% | mean   +9.3% median  -11.8% win 28% | vs rest  +8.5pp t 1.70 | 2022: REAL 19% REACH 57% (n120) | 2023-26: REAL 24% REACH 66% (n380)
+   per-year in score top 20%: 2022: REAL 21% REACH 65% n85 2023: REAL 23% REACH 69% n119 2024: REAL 24% REACH 63% n170 2025: REAL 35% REACH 69% n171 2026: REAL 24% REACH 71% n17
+   P(REAL>=10%) by score decile of TEST (train cuts): 15% 14% 10% 9% 11% 16% 19% 20% 27% 26%
+
+##### px < $20: test flips 5415
+score top 19% (train cut)  n 1119 ( 269/yr) | P(REAL>=10%) 22.5% P(REACH>=10%) 62.5% | mean   +6.7% median  -11.0% win 29% | vs rest  +3.1pp t 1.65 | 2022: REAL 17% REACH 61% (n192) | 2023-26: REAL 24% REACH 63% (n927)
+score top 9% (train cut)   n  604 ( 145/yr) | P(REAL>=10%) 24.7% P(REACH>=10%) 67.4% | mean  +10.4% median  -11.8% win 31% | vs rest  +6.1pp t 1.86 | 2022: REAL 19% REACH 64% (n89) | 2023-26: REAL 26% REACH 68% (n515)
+score top 5% (train cut)   n  344 (  83/yr) | P(REAL>=10%) 24.7% P(REACH>=10%) 69.2% | mean  +13.4% median  -13.4% win 29% | vs rest  +8.0pp t 1.71 | 2022: REAL 16% REACH 57% (n44) | 2023-26: REAL 26% REACH 71% (n300)
+OS top 10% (train cut)     n  464 ( 112/yr) | P(REAL>=10%) 22.4% P(REACH>=10%) 67.2% | mean  +10.4% median  -11.7% win 27% | vs rest  +4.8pp t 1.20 | 2022: REAL 15% REACH 64% (n75) | 2023-26: REAL 24% REACH 68% (n389)
+top-10 per month by score  n  500 ( 120/yr) | P(REAL>=10%) 23.0% P(REACH>=10%) 64.0% | mean   +8.6% median  -12.1% win 29% | vs rest  +8.6pp t 1.74 | 2022: REAL 15% REACH 56% (n120) | 2023-26: REAL 26% REACH 67% (n380)
+   per-year in score top 20%: 2022: REAL 17% REACH 61% n192 2023: REAL 18% REACH 63% n240 2024: REAL 22% REACH 61% n296 2025: REAL 29% REACH 64% n343 2026: REAL 19% REACH 58% n48
+   P(REAL>=10%) by score decile of TEST (train cuts): 11% 13% 9% 11% 14% 13% 15% 18% 20% 25%

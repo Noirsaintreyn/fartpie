@@ -1,0 +1,46 @@
+HAR fit (train, pooled): n 502677 coef (const, d, w, m): [-0.713  0.25   0.306  0.376] R2 0.642
+flips 8408 train 2993 test 5415
+
+=== BIG>=30%: AUC train | test (test z), same side, PASS ===
+  ATRP       0.699 | 0.660 (z +10.9) same PASS
+  ATRP_HAR   0.456 | 0.426 (z  -5.1) same PASS
+  SURP       0.553 | 0.575 (z  +5.1) same PASS
+  RV5_22     0.530 | 0.573 (z  +4.9) same 
+  RV22_252   0.467 | 0.536 (z  +2.5) FLIPS 
+  VOV        0.551 | 0.562 (z  +4.2) same PASS
+  GK22       0.690 | 0.652 (z +10.3) same PASS
+  CC_RANGE   0.506 | 0.495 (z  -0.4) FLIPS 
+  GAPABS20   0.669 | 0.636 (z  +9.3) same PASS
+  UPSH       0.469 | 0.455 (z  -3.0) same 
+  DVOL_Z     0.486 | 0.572 (z  +4.9) FLIPS 
+  HARv       0.693 | 0.663 (z +11.1) same PASS
+
+=== r>=10%: AUC train | test (test z), same side, PASS ===
+  ATRP       0.658 | 0.576 (z  +6.9) same PASS
+  ATRP_HAR   0.456 | 0.444 (z  -5.1) same PASS
+  SURP       0.551 | 0.568 (z  +6.1) same PASS
+  RV5_22     0.539 | 0.540 (z  +3.6) same 
+  RV22_252   0.486 | 0.510 (z  +0.9) FLIPS 
+  VOV        0.548 | 0.546 (z  +4.2) same PASS
+  GK22       0.651 | 0.575 (z  +6.8) same PASS
+  CC_RANGE   0.509 | 0.513 (z  +1.2) same 
+  GAPABS20   0.637 | 0.580 (z  +7.2) same PASS
+  UPSH       0.470 | 0.469 (z  -2.8) same 
+  DVOL_Z     0.501 | 0.536 (z  +3.3) same 
+  HARv       0.657 | 0.586 (z  +7.8) same PASS
+
+=== REACH>=10%: AUC train | test (test z), same side, PASS ===
+  ATRP       0.660 | 0.637 (z +17.3) same PASS
+  ATRP_HAR   0.442 | 0.416 (z -10.6) same PASS
+  SURP       0.578 | 0.586 (z +10.9) same PASS
+  RV5_22     0.535 | 0.564 (z  +8.1) same 
+  RV22_252   0.531 | 0.538 (z  +4.8) same 
+  VOV        0.531 | 0.545 (z  +5.7) same 
+  GK22       0.654 | 0.632 (z +16.7) same PASS
+  CC_RANGE   0.489 | 0.516 (z  +2.0) FLIPS 
+  GAPABS20   0.613 | 0.600 (z +12.7) same PASS
+  UPSH       0.470 | 0.463 (z  -4.7) same 
+  DVOL_Z     0.503 | 0.548 (z  +6.1) same 
+  HARv       0.664 | 0.648 (z +18.7) same PASS
+
+new features passing (BIG or REACH): ['ATRP_HAR', 'SURP', 'VOV', 'GK22', 'GAPABS20', 'HARv']
