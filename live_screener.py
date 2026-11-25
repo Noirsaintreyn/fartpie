@@ -1130,17 +1130,17 @@ def _mstat(k, track, tk):
         return d.get(f'{k}|{track}|ALL'), d.get(f'{k}|{track}|{tk}')
     except Exception: return None, None
 
-def pcv_chart(base, px=None):
+def pcv_chart(base, px=None, z=False):
     """put/call volume for the name: last ~120 days of the daily ratio, the top-third line (own trailing 252d 67th pct), latest print marked. Replaces the heatmap on P/C VOL signals."""
     import option_models as OM
     h, _ = OM.history(base); h = h.dropna(subset=['pc_vol']).tail(380).reset_index(drop=True)
     if len(h) < 60: return None
-    thr = h.pc_vol.rolling(252, min_periods=60).quantile(2 / 3).shift(1); v = h.tail(120); th = thr.tail(120)
+    rr = h.pc_vol.rolling(252, min_periods=60); thr = (rr.mean() + rr.std()).shift(1) if z else rr.quantile(2 / 3).shift(1); v = h.tail(120); th = thr.tail(120)
     fig, ax = plt.subplots(figsize=(10, 4.6), facecolor=BG); ax.set_facecolor(BG)
     ax.plot(v.date, v.pc_vol, color='#60a5fa', lw=1.6); ax.plot(v.date, th, color='#e5e7eb', lw=1, ls=(0, (5, 2)))
     hi = v.pc_vol >= th; ax.scatter(v.date[hi], v.pc_vol[hi], s=14, color='#f59e0b', zorder=4)
     ax.scatter([v.date.iloc[-1]], [v.pc_vol.iloc[-1]], s=60, color='#f59e0b', ec='white', zorder=5)
-    ax.set_title(f'{base}  put/call volume (<=45 DTE) \u00b7 dashed = top-third line \u00b7 orange = above it', color=T2, fontsize=10, loc='left')
+    ax.set_title(f'{base}  put/call volume (<=45 DTE) \u00b7 dashed = ' + ('1 std above its 1-yr average (z>1)' if z else 'top-third line') + ' \u00b7 orange = above it', color=T2, fontsize=10, loc='left')
     ax.tick_params(colors=MUT, labelsize=8)
     for sp_ in ax.spines.values(): sp_.set_color('#374151')
     ax.grid(color='#1f2937', lw=.6); p = os.path.join(LIVE, f'pcv_{base}.png'); fig.tight_layout(); fig.savefig(p, dpi=110, facecolor=BG); plt.close(fig); return p
@@ -1175,7 +1175,7 @@ def post_neg_gamma(r, path):
         except Exception as e: print(f'  ! stamp: {str(e)[:60]}')
         if 'PCV' in tg or 'PCZ' in tg:
             try:
-                pc = pcv_chart(base)
+                pc = pcv_chart(base, z='PCZ' in tg)
                 if pc: files = files[:1] + [pc]
             except Exception as e: print(f'  ! pcv chart: {str(e)[:60]}')
         post(' \u00b7 '.join(OM.LABEL[x] for x in tg), files, channel=tgt, hook=hook)
