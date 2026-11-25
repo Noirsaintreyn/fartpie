@@ -1,1 +1,25 @@
 names with flips + theta: ['AAPL', 'ADBE', 'AMD', 'AMZN', 'CAT', 'COST', 'CRM', 'DIS', 'GOOGL', 'HD', 'IBM', 'JPM', 'MCD', 'META', 'MSFT', 'NVDA', 'ORCL', 'SBUX', 'TGT', 'TSLA', 'UNH', 'UPS', 'WMT'] flips 9868 of which 1h 2891
+
+=== K=3 15m: flips 6501 (train 1723, test 4778) | state means on TRAIN (bp, n): 0:+25(286) 1:+69(821) 2:+37(616) -> chosen state 1
+  state centers (ranks pc_vol, skew, charm, iv30; gz): 0: 0.36 0.38 0.43 0.33 0.98 | 1: 0.58 0.64 0.44 0.58 -0.07 | 2: 0.44 0.44 0.42 0.40 0.78
+  chosen-vs-rest: train +81bp t 3.07 | TEST -7bp t -0.27  (n state 2963, rest 1815)  win 31% vs 31%
+  circular-shift null p (test spread) = 0.710   eras (state 1 vs rest, bp): 18-19 +27/+9 20-21 +78/+38 22 -0/-28 23-26 +25/+39
+  no pass
+
+=== K=3 1h: flips 2706 (train 747, test 1959) | state means on TRAIN (bp, n): 0:+37(145) 1:+112(326) 2:+94(276) -> chosen state 1
+  state centers (ranks pc_vol, skew, charm, iv30; gz): 0: 0.36 0.38 0.43 0.33 0.98 | 1: 0.58 0.64 0.44 0.58 -0.07 | 2: 0.44 0.44 0.42 0.40 0.78
+  chosen-vs-rest: train +99bp t 2.33 | TEST -36bp t -1.00  (n state 1131, rest 828)  win 32% vs 37%
+  circular-shift null p (test spread) = 0.943   eras (state 1 vs rest, bp): 18-19 +60/+87 20-21 +129/+73 22 -22/-50 23-26 +26/+66
+  no pass
+
+=== K=2 15m: flips 6501 (train 1723, test 4778) | state means on TRAIN (bp, n): 0:+34(638) 1:+60(1085) -> chosen state 1
+  state centers (ranks pc_vol, skew, charm, iv30; gz): 0: 0.39 0.39 0.44 0.35 0.93 | 1: 0.55 0.60 0.42 0.55 0.13
+  chosen-vs-rest: train +37bp t 2.30 | TEST +4bp t 0.13  (n state 3610, rest 1168)  win 31% vs 32%
+  circular-shift null p (test spread) = 0.427   eras (state 1 vs rest, bp): 18-19 +22/+11 20-21 +68/+38 22 -1/-54 23-26 +32/+30
+  no pass
+
+=== K=2 1h: flips 2706 (train 747, test 1959) | state means on TRAIN (bp, n): 0:+60(289) 1:+110(458) -> chosen state 1
+  state centers (ranks pc_vol, skew, charm, iv30; gz): 0: 0.39 0.39 0.44 0.35 0.93 | 1: 0.55 0.60 0.42 0.55 0.13
+  chosen-vs-rest: train +63bp t 1.58 | TEST -33bp t -0.76  (n state 1423, rest 536)  win 34% vs 36%
+  circular-shift null p (test spread) = 0.923   eras (state 1 vs rest, bp): 18-19 +82/+33 20-21 +118/+64 22 -22/-126 23-26 +40/+58
+  no pass
