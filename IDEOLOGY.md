@@ -1318,3 +1318,8 @@ Daily high-ATRP group, test 2022+, entries next open, 30bp. Close-exit (A open v
 ## 494: weighted-factor score -> probability -> A-E (FAIL, not shipped)
 - Ridge logistic on 5 flags, fit train 2019-21 (n 129), judged test 2022+ (n 295). Weights unstable: only ATRP-top-third positive (+0.61); FIRST/REC negative in train (flag n 7/15), NEGBAD positive (n 4). Test AUC 0.466 vs 0.524 for the 492 points rule. All flips land in grades A/B (p 65-81%); predicted 81% for A vs actual 64% in test; D/E empty.
 - Also: the 492 points grade itself has ~no overall discrimination in test (AUC 0.52); its A (13/14) is a tiny-n pocket. Grade stays a descriptive label with hits/n shown; probabilities not shown. Honest limit: the flags have too few events (4-15 train) to weight; only volatility has enough n.
+
+## 495: insider buys + 8-K items on ALL sub-$5 flips, controlled for ATRP x size terciles (no REAL, nothing passes)
+- n 1504 (train 428 / test 1076). 16 flags, month-clustered. Insider: FIRST raw test reach 67% vs 53% (n 36) but adjusted reach effect ~0 (t 0.0), mean +12% t 1.6, n 49 total = lead-level only; BIG/CLUS/OFF/DIR negative or null; routine buyers n 2 (placebo untestable).
+- 8-K: only 5.02 (officer/director change) flagged LEAD, negative on mean (t -2.4) but reach sign flips train/test and it is 1 of ~32 tests (~1.5 |t|>2 expected by chance) -> not real. 3.02 dilution reach +0.24 (t 2.6) but train n 3, wrong sign for the dilution mechanism -> noise. Placebos (5.07) null.
+- Takeaway: events too rare to resolve at sub-$5 alone (FIRST 49, 3.02 13). Next: pool px<10/<20 flips (more events, check ATRP/size adjusted) before judging; hypothesis stays alive, evidence is nil.
