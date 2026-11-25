@@ -1,0 +1,48 @@
+flips with a DEAL event 246
+.. 0
+.. 40
+.. 80
+.. 120
+.. 160
+.. 200
+.. 240
+classified: {'FIN': 155, 'COM': 85, 'OTH': 6} | size parsed 218 | ratio 218
+
+######## px<20: all flips 8408 | base group 2503 | DEAL flips in group 119 (COM 36, FIN 81, OTH 2, NA 0) | no-DEAL REACH 60.1% REAL 23.9%
+  COM                      n  36 | REACH 67% v 60% (z +0.8) | REAL 31% v 24% (z +0.9) | median r -5.6% v -9.6% | era REACH:  83% v  60% [12] /  40% v  60% [5] /  63% v  60% [19] /
+  FIN                      n  81 | REACH 67% v 60% (z +1.2) | REAL 30% v 24% (z +1.2) | median r -8.7% v -9.6% | era REACH:  68% v  60% [28] /  70% v  60% [10] /  65% v  60% [43] /
+  OTH                      n   2 | REACH 50% v 60% (z +nan) | REAL 50% v 24% (z +nan) | median r +82.8% v -9.6% | era REACH: 100% v  60% [1] /   0% v  60% [1] / - /
+  BIGDEAL(COM,>=10% mcap)  n  19 | REACH 68% v 60% (z +0.7) | REAL 26% v 24% (z +0.2) | median r -3.1% v -9.6% | era REACH: 100% v  60% [5] /   0% v  60% [2] /  67% v  60% [12] /
+  COM+INS                  n   3 | REACH 100% v 60% (z +nan) | REAL 67% v 24% (z +nan) | median r +11.6% v -9.6% | era REACH: 100% v  60% [1] / - / 100% v  60% [2] /
+  [all px<20 flips, no volatility base] COM n 85 REACH 49% v no-DEAL 45% (z +0.8) | FIN n 155 57%
+
+######## px<10: all flips 3863 | base group 1179 | DEAL flips in group 76 (COM 28, FIN 48, OTH 0, NA 0) | no-DEAL REACH 63.1% REAL 24.8%
+  COM                      n  28 | REACH 64% v 63% (z +0.1) | REAL 32% v 25% (z +0.9) | median r -9.0% v -11.0% | era REACH:  71% v  64% [7] /  50% v  59% [4] /  65% v  63% [17] /
+  FIN                      n  48 | REACH 73% v 63% (z +1.4) | REAL 35% v 25% (z +1.7) | median r -7.5% v -11.0% | era REACH:  73% v  64% [15] /  50% v  59% [2] /  74% v  63% [31] /
+  OTH                      n   0 | REACH nan% v 63% (z +nan) | REAL nan% v 25% (z +nan) | median r +nan% v -11.0% | era REACH: - / - / - /
+  BIGDEAL(COM,>=10% mcap)  n  16 | REACH 69% v 63% (z +0.5) | REAL 31% v 25% (z +0.6) | median r -6.2% v -11.0% | era REACH: 100% v  64% [3] /   0% v  59% [1] /  67% v  63% [12] /
+  COM+INS                  n   2 | REACH 100% v 63% (z +nan) | REAL 50% v 25% (z +nan) | median r +2.1% v -11.0% | era REACH: 100% v  64% [1] / - / 100% v  63% [1] /
+  [all px<10 flips, no volatility base] COM n 50 REACH 58% v no-DEAL 49% (z +1.3) | FIN n 86 62%
+
+######## px<5: all flips 1504 | base group 441 | DEAL flips in group 35 (COM 12, FIN 23, OTH 0, NA 0) | no-DEAL REACH 69.7% REAL 27.6%
+  COM                      n  12 | REACH 83% v 70% (z +1.0) | REAL 50% v 28% (z +1.7) | median r +8.7% v -11.2% | era REACH: 100% v  75% [3] / - /  78% v  68% [9] /
+  FIN                      n  23 | REACH 74% v 70% (z +0.4) | REAL 26% v 28% (z -0.2) | median r -11.5% v -11.2% | era REACH:  80% v  75% [5] / 100% v  62% [1] /  71% v  68% [17] /
+  OTH                      n   0 | REACH nan% v 70% (z +nan) | REAL nan% v 28% (z +nan) | median r +nan% v -11.2% | era REACH: - / - / - /
+  BIGDEAL(COM,>=10% mcap)  n   8 | REACH 75% v 70% (z +0.3) | REAL 50% v 28% (z +1.4) | median r +8.7% v -11.2% | era REACH: 100% v  75% [1] / - /  71% v  68% [7] /
+  COM+INS                  n   1 | REACH 100% v 70% (z +nan) | REAL 100% v 28% (z +nan) | median r +19.7% v -11.2% | era REACH: - / - / 100% v  68% [1] /
+  [all px<5 flips, no volatility base] COM n 21 REACH 67% v no-DEAL 54% (z +1.2) | FIN n 38 68%
+
+examples COM/FIN (tk date size ratio):
+        tk          d dcls         dsize         ratio      PEAK         r
+8135  VRRM 2021-12-21  COM           NaN           NaN  0.208667 -0.023667
+6701  SABR 2022-03-16  FIN  6.250000e+08  1.812262e-01  0.127996 -0.106547
+3194  GERN 2026-01-12  FIN  2.500000e+08  2.738682e-01  0.395833 -0.037722
+3419  GRNT 2024-11-06  FIN  3.000000e+08  3.613482e-01  0.075591 -0.039220
+7418  TARS 2023-01-10  FIN  1.750000e+08  4.288328e-01  0.082840 -0.074663
+144   ACCO 2024-11-04  FIN  7.280000e+07  1.409710e-01  0.160360 -0.010207
+3314   GNL 2025-11-07  FIN  1.000000e-02  5.645271e-12  0.000000 -0.046424
+1072   BHC 2023-07-07  COM  1.750000e+09  5.768995e-01  0.217026 -0.116909
+6029   PMT 2024-03-21  FIN  2.000000e+09  1.565965e+00  0.007448 -0.026697
+8386  ZVRA 2023-11-24  COM  3.500000e+07  2.021686e-01  0.523013  0.089050
+8254   WTI 2019-09-10  COM  1.676000e+08  2.349641e-01  0.151163 -0.154163
+4507  LQDA 2022-12-01  COM  5.000000e+02  1.459990e-06  0.884470  0.356848

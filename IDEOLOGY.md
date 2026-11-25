@@ -1257,3 +1257,9 @@ Base group = top 30% base5 score (REACH>=10% already 60% / 63% / 68% test; REAL 
 - DEAL (+6pp REACH at <20, +7 at <10) and INS (+7 / +10pp) lead in 2019-21 and 2023-26 but INS REACH was BELOW no-flag in 2022 in all three buckets (n 23/11/5); flags are 4-9% of group. Leads only, as in 67b/464.
 - Short runway is not the catalyst: SQ REACH 62% v 60% (<20), 64 v 63 (<10), 66 v 72 (<5, wrong sign). Median r stays -9 to -12% either way.
 Conclusion: volatility/ATRP base carries the whole REACH edge; known catalysts (8-K, insider, sector macro, runway) add <= a few pp and no reliable AUC. Untested: dated forward catalysts (ClinicalTrials/PDUFA), award size / market cap.
+
+## 470 (2026-11-24) DEAL lead split by mechanism (financing vs commercial) and size, inside the high-vol group - NO PASS
+246 DEAL flips (8-K 1.01/2.01, 7d), main doc text pulled from EDGAR, classified by earliest keyword: FIN 155, COM 85, OTH 6. Inside base group (top 30%): px<20 COM n36 REACH 67% v 60% no-DEAL (z+0.8), FIN n81 67% (z+1.2); px<10 COM n28 64% v 63% (z+0.1), FIN n48 73% (z+1.4, REAL 35% v 25% z+1.7); px<5 COM n12 83% v 70% (z+1.0, REAL 50% v 28% z+1.7, median r +8.7%), FIN n23 74% (z+0.4).
+- Prediction (COM leads, FIN does not) NOT supported: FIN is as good or better at <20 and <10. COM alone is not a reliable lead (z <= 1.0 on REACH; era signs mixed, 2022 n 2-5). BIGDEAL (COM, size >= 10% mcap, first-$ parse is noisy: par values, tiny figures) n 8-19, z<=0.7.
+- The only visible tilt is COM at <5 on REAL (+22pp, n12, z1.7) - 12 trades, not a finding.
+- Reading: a DEAL 8-K of any kind is a small attention catalyst (+3-10pp REACH) and the financing/commercial label doesn't separate it. Size needs a proper amount parser (deal value tag, not first $ in text) before it can be judged.
