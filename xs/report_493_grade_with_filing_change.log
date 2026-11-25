@@ -1,0 +1,20 @@
+
+BASE: test flips with a text pair 239
+  grade A:  10/ 11 = 91% reach | mean +47.3% med +17.1%
+  grade B:  49/ 76 = 64% reach | mean +42.8% med -10.6%
+  grade C: 102/139 = 73% reach | mean +12.5% med -11.5%
+  grade D:   4/ 13 = 31% reach | mean  -9.6% med -20.8%
+
+PAPER (changed -1): test flips with a text pair 239
+  grade A:   8/  9 = 89% reach | mean +55.9% med +17.1%
+  grade B:  36/ 53 = 68% reach | mean +22.0% med -10.6%
+  grade C:  80/118 = 68% reach | mean +24.0% med -11.5%
+  grade D:  41/ 59 = 69% reach | mean +15.1% med -14.1%
+
+OPPOSITE (changed +1): test flips with a text pair 239
+  grade A:  25/ 36 = 69% reach | mean +72.8% med -8.8%
+  grade B:  71/ 97 = 73% reach | mean +22.4% med -10.6%
+  grade C:  65/ 96 = 68% reach | mean  +6.8% med -11.9%
+  grade D:   4/ 10 = 40% reach | mean  -5.3% med -18.0%
+
+CHANGED (sim <= 0.992) n 80: reach 70% mean +38.8% | SAME-ish n 159: reach 69% mean +14.4%

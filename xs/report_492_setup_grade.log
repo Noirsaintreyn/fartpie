@@ -1,0 +1,28 @@
+
+######## sub-$5 live group: 424 flips 2019-Mar 2026 (train 129, test 295); ATRP top-third cut 0.101
+  ALL years:
+    grade A:  18/ 20 = 90% reach | mean +48.4% med +14.9%
+    grade B:  92/136 = 68% reach | mean +74.6% med -9.9%
+    grade C: 174/243 = 72% reach | mean +27.8% med -11.0%
+    grade D:  13/ 25 = 52% reach | mean  +8.0% med -18.0%
+  TEST 2022+:
+    grade A:  13/ 14 = 93% reach | mean +46.4% med +14.9%
+    grade B:  57/ 90 = 63% reach | mean +37.5% med -11.5%
+    grade C: 123/173 = 71% reach | mean +10.3% med -11.3%
+    grade D:   8/ 18 = 44% reach | mean -13.5% med -22.1%
+  components (TEST, flag vs rest): HI 45: +62.8%/67% vs +10.9%/68% | FIRST 21: +37.9%/71% vs +17.4%/68% | REC 64: +15.4%/72% vs +19.8%/67% | EARLY30 17: -8.4%/47% vs +20.5%/69% | NEGBAD 11: -8.6%/64% vs +19.9%/68%
+  era split of grade means (TEST): A: 2022 +67.2% (n 3) 2023-26 +40.8% (n 11) | B: 2022 -10.8% (n 13) 2023-26 +45.6% (n 77) | C: 2022 +6.6% (n 22) 2023-26 +10.8% (n 151) | D: 2022 -23.7% (n 2) 2023-26 -12.2% (n 16)
+
+######## sub-$10 live group: 1160 flips 2019-Mar 2026 (train 370, test 790); ATRP top-third cut 0.086
+  ALL years:
+    grade A:  39/ 47 = 83% reach | mean +72.3% med +2.5%
+    grade B: 271/404 = 67% reach | mean +27.6% med -11.2%
+    grade C: 413/637 = 65% reach | mean +19.4% med -10.5%
+    grade D:  40/ 72 = 56% reach | mean  +7.4% med -13.8%
+  TEST 2022+:
+    grade A:  26/ 32 = 81% reach | mean +23.1% med -3.2%
+    grade B: 174/271 = 64% reach | mean +16.9% med -12.2%
+    grade C: 285/437 = 65% reach | mean  +6.9% med -10.8%
+    grade D:  25/ 50 = 50% reach | mean  -5.2% med -15.6%
+  components (TEST, flag vs rest): HI 171: +21.9%/70% vs +7.0%/63% | FIRST 45: +20.6%/69% vs +9.6%/64% | REC 157: +9.7%/66% vs +10.4%/64% | EARLY30 59: -1.3%/58% vs +11.2%/65% | NEGBAD 20: -6.2%/55% vs +10.7%/65%
+  era split of grade means (TEST): A: 2022 +31.4% (n 6) 2023-26 +21.2% (n 26) | B: 2022 +5.2% (n 56) 2023-26 +20.0% (n 215) | C: 2022 -1.5% (n 76) 2023-26 +8.7% (n 361) | D: 2022 -19.0% (n 9) 2023-26 -2.2% (n 41)
