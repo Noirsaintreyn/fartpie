@@ -1,0 +1,36 @@
+daily bars built 55 sessions 2166
+value series 53 names
+wide flips featurized 17146
+           n     mean_bp  leg_share
+tf                                 
+15m    12153   26.637563   0.832634
+1h      4993   45.215980   0.798117
+daily   1005  693.800171   0.646766
+
+===== 15m: 12153 flips, mean 26.6bp, with a leg 9906
+      X1 no-news vs earnings in leg      A    30.2bp (n 4783) B    25.4bp (n 5123) diff    +4.8 t +0.47 | train    +4.4 (t +0.3) test    +1.5 (t +0.1)
+      X2 systematic>=.5 vs stock-specific A    50.7bp (n 2458) B    20.2bp (n 7448) diff   +30.6 t +1.97 | train   +34.2 (t +0.8) test   +30.6 (t +1.9)
+      X3 cheap(<=1/3) vs expensive(>=2/3) A    31.9bp (n 3436) B    24.2bp (n 4917) diff    +7.7 t +0.66 | train   +22.6 (t +0.6) test   +10.4 (t +0.8)
+      X4 sector vector bull vs bear      A    26.5bp (n 7982) B    26.9bp (n 4171) diff    -0.4 t -0.03 | train    -1.8 (t -0.1) test    -3.0 (t -0.2)
+      X5 extended(<=-2) vs shallow(>-1)  A    12.8bp (n 1221) B    37.1bp (n 3638) diff   -24.3 t -1.41 | train   -54.4 (t -1.4) test   -15.2 (t -0.8)
+   labels (n, mean bp): earnings-driven 5123 +25 | market/sector-driven 1521 +48 | no leg 2247 +22 | stock-specific no news 3262 +22
+   by era, no-news vs earnings (bp): 19-21 +50/+46 | 22 -11/+2 | 23-26 +31/+25
+
+===== 1h: 4993 flips, mean 45.2bp, with a leg 3933
+      X1 no-news vs earnings in leg      A    47.0bp (n 1967) B    47.1bp (n 1966) diff    -0.2 t -0.01 | train   -15.4 (t -0.5) test    -7.1 (t -0.3)
+      X2 systematic>=.5 vs stock-specific A    70.4bp (n 1039) B    38.7bp (n 2894) diff   +31.8 t +1.30 | train   +39.5 (t +0.7) test   +31.2 (t +1.2)
+      X3 cheap(<=1/3) vs expensive(>=2/3) A    55.4bp (n 1341) B    35.3bp (n 2086) diff   +20.1 t +0.82 | train  +128.9 (t +2.3) test   +13.5 (t +0.5)
+      X4 sector vector bull vs bear      A    45.5bp (n 3321) B    44.7bp (n 1672) diff    +0.7 t +0.04 | train   -51.6 (t -1.4) test    +5.8 (t +0.2)
+      X5 extended(<=-2) vs shallow(>-1)  A    20.4bp (n  300) B    63.1bp (n 1715) diff   -42.7 t -1.22 | train   -27.6 (t -0.4) test   -37.9 (t -1.0)
+   labels (n, mean bp): earnings-driven 1966 +47 | market/sector-driven 659 +66 | no leg 1060 +38 | stock-specific no news 1308 +38
+   by era, no-news vs earnings (bp): 19-21 +101/+117 | 22 -37/-33 | 23-26 +39/+47
+
+===== daily: 1005 flips, mean 693.8bp, with a leg 633
+      X1 no-news vs earnings in leg      A   527.8bp (n  256) B   980.6bp (n  377) diff  -452.8 t -1.15 | train  -564.0 (t -1.0) test  -453.7 (t -0.9)
+      X2 systematic>=.5 vs stock-specific A  1333.4bp (n  208) B   535.2bp (n  425) diff  +798.1 t +1.36 | train  +811.7 (t +1.4) test  +800.5 (t +0.9)
+      X3 cheap(<=1/3) vs expensive(>=2/3) A   659.6bp (n  309) B   640.9bp (n  387) diff   +18.7 t +0.04 | train  +787.0 (t +0.8) test  -437.6 (t -1.5)
+      X4 sector vector bull vs bear      A   633.1bp (n  683) B   822.6bp (n  322) diff  -189.5 t -0.45 | train  -836.9 (t -1.0) test  +145.3 (t +0.3)
+      X5 extended(<=-2) vs shallow(>-1)  A  -320.2bp (n    7) B   803.9bp (n  498) diff    +nan t  +nan | train    +nan (t +nan) test    +nan (t +nan)
+   labels (n, mean bp): earnings-driven 377 +981 | market/sector-driven 99 +950 | no leg 372 +517 | stock-specific no news 157 +261
+   by era, no-news vs earnings (bp): 19-21 +651/+1215 | 22 -290/+943 | 23-26 +754/+826
+done
