@@ -41,7 +41,14 @@ def make_chart_5m(tk, path, flip_day=None, info=None, sessions=14):
         ax.plot([t[i], t[i]], [X.low.iat[i], X.high.iat[i]], color=main, lw=.8, alpha=al[i], zorder=3)
         ax.add_patch(plt.Rectangle((t[i] - .34, min(X.open.iat[i], X.close.iat[i])), .68, max(abs(X.close.iat[i] - X.open.iat[i]), 1e-4), facecolor=main if upc[i] else PANEL, edgecolor=main, lw=.6, alpha=al[i], zorder=4))
     col = np.where(rg_bar == 1, BULL, BEAR)
-    ax.plot(t, vw.values, color=VWAP, lw=1.1, alpha=.9, zorder=5, label='session VWAP (RTH)')
+    for n_, cl_ in ((100, '#fbbf24'), (200, '#c084fc')):                                                         # Nov 25 2026: session VWAP dropped (report 485); slow daily EMAs as context only (as of the prior close, constant per session)
+        ema = d.close.ewm(span=n_, adjust=False).mean(); ev_ = np.array([ema.reindex(d.index[d.index < dd][-1:]).iat[0] if (d.index < dd).any() else np.nan for dd in dayv])
+        ev_ = np.full(n, np.nan)
+        for dd in keep:
+            prev = d.index[d.index < dd]
+            if len(prev): ev_[dayv == dd] = ema.reindex(prev[-1:]).iat[0]
+        lo_, hi_ = X.low.min(), X.high.max()
+        if np.nanmin(ev_) < hi_ * 1.25 and np.nanmax(ev_) > lo_ * .8: ax.plot(t, np.where((ev_ > lo_ * .85) & (ev_ < hi_ * 1.15), ev_, np.nan), color=cl_, lw=1.0, alpha=.8, zorder=5, label=f'daily EMA{n_}')
     firsts = []; lv_ = []
     for k, dd in enumerate(keep):
         idx = np.where(dayv == dd)[0]; i0, i1 = idx[0], idx[-1]; firsts.append(i0)

@@ -77,7 +77,7 @@ def alert_text(a):
             f"Entry next open. Exit = the DAILY vector's bear flip (no other stop). Broke above {a['prev']:.2f}; the new vector level is {a['lev']:.2f} ({risk:.0%} below price = what a failed flip costs; risk sizing input).\n"
             f"Size: ~{size:.1%} of the book (1/8 slot = {SLOT:.1%}, scaled by 10%/distance-to-level, floor 30%).\n"
             f"Score {a['score']:.2f} (cut {REF['cut']:.2f}) · ATRP {F['ATRP']:.1%} · volume {F['VOLX']:.1f}x" + (f" · mcap ${np.exp(F['LMC'])/1e6:,.0f}M" if F['LMC'] == F['LMC'] else '') + "\n"
-            f"Backtest 2022-26Q1 same group (n {bt['n']}): mean {bt['mean']:+.0%}, win {bt['win']:.0%}, median {bt['median']:+.0%}, p10 {bt['p10']:+.0%}; reaches +10% at some point {bt['reach']:.0%}. The money is in the minority of big winners: expect most trades to lose ~10-15%. In-sample, survivorship-biased.")
+            f"Backtest (sub-$5 high-vol group, 2022+): {bt['reach']:.0%} of these flips reach +10% at some point, usually within about 3 trading days (median); the rest lose. Not a promise.")
 def scan(dry=False, asof_check=True):
     st = load_state(); cache = {}
     try: cache = json.load(open(SH_F))
