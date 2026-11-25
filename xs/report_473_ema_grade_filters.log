@@ -1,0 +1,31 @@
+flips with features 5725 {'WEAK': 3375, 'TOP': 1345, 'STRONG': 1005}
+
+=== sub-$5 C vol>=1.5x + low-vol day + E+V base: 652 flips | grade mix {'WEAK': 385, 'TOP': 157, 'STRONG': 110}
+rule                               kept   ann%   DD%     H1     H2   2026  win% hold d kept mean skip mean  p(rand)
+base (E+V)                          652    +85   -19   +119   +141    +17    28   10.6    +3.88%     +nan%    0.823
+grade>=STRONG (live default)        267    +39   -16    +50    +40    +24    30   11.6    +4.19%    +3.66%    0.379
+grade=TOP only                      157    +14   -16     +3    +36     +6    29   11.0    +2.44%    +4.34%    0.754
+A200 (above 1h EMA200)              333    +41   -18    +44    +63    +18    28   10.9    +3.49%    +4.29%    0.656
+A50                                 600    +73   -22   +101   +123    +12    28   10.5    +3.90%    +3.70%    0.566
+STACK 20>50>200                      60     +8   -11     -4     +6    +24    25    8.9    +3.91%    +3.88%    0.422
+RISE50                              206    +22   -17    +41    +23     +2    25    8.9    +2.78%    +4.39%    0.745
+not REJ (not just rejected EMA50)   617    +76   -22   +101   +130    +14    28   10.4    +4.05%    +0.86%    0.298
+DAILYAL                              99    +13   -15     -9    +26    +26    24    9.7    +3.70%    +3.91%    0.480
+A200 & RISE50                       138    +10   -21    +34     -2     +1    23    9.1    +2.13%    +4.35%    0.793
+  mean net by grade: {'STRONG': (110, np.float64(6.69), '34% win'), 'TOP': (157, np.float64(2.44), '29% win'), 'WEAK': (385, np.float64(3.66), '28% win')}
+  REJ vs not: {'False': (617, np.float64(4.05)), 'True': (35, np.float64(0.86))}
+
+=== sub-$5 B vol>=1.5x + E+V base: 1700 flips | grade mix {'WEAK': 923, 'TOP': 446, 'STRONG': 331}
+rule                               kept   ann%   DD%     H1     H2   2026  win% hold d kept mean skip mean  p(rand)
+base (E+V)                         1700   +112   -22    +60   +361    +25    29   11.8    +3.13%     +nan%    1.000
+grade>=STRONG (live default)        777    +74   -22    +72   +137    +17    28   11.6    +3.37%    +2.93%    0.410
+grade=TOP only                      446    +46   -23    +38   +133     -7    27   11.2    +3.16%    +3.12%    0.473
+A200 (above 1h EMA200)              996    +48   -30    +22   +116    +20    28   11.2    +2.69%    +3.76%    0.737
+A50                                1564   +124   -21    +84   +391    +14    28   11.7    +3.28%    +1.42%    0.269
+STACK 20>50>200                     192    +21   -15     +3    +43    +19    25    9.9    +2.82%    +3.17%    0.491
+RISE50                              590    +54   -23     -3   +215    +16    24   10.0    +3.49%    +2.94%    0.347
+not REJ (not just rejected EMA50)  1596   +110   -27    +46   +365    +25    28   11.8    +3.33%    +0.11%    0.117
+DAILYAL                             264    +28   -22    -13   +103    +18    24   10.7    +2.98%    +3.16%    0.493
+A200 & RISE50                       435    +35   -20    +39    +61     +9    24   10.2    +2.38%    +3.39%    0.691
+  mean net by grade: {'STRONG': (331, np.float64(3.65), '33% win'), 'TOP': (446, np.float64(3.16), '27% win'), 'WEAK': (923, np.float64(2.93), '27% win')}
+  REJ vs not: {'False': (1596, np.float64(3.33)), 'True': (104, np.float64(0.11))}
