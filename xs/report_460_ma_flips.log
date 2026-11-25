@@ -1,0 +1,55 @@
+
+=== 15m flips n 12366 base +25.9bp, win 31% ===
+15m   EMA  20: above n  9826  +22.4bp win 31% | below n  2540  +39.3bp win 33% | diff  -14.0bp t -1.34 | train +11/t0.7 test -29/t-2.3
+15m   EMA  50: above n  8090  +23.3bp win 31% | below n  4276  +30.9bp win 32% | diff  -10.6bp t -1.20 | train -5/t-0.3 test -14/t-1.4
+15m   EMA 100: above n  6062  +23.2bp win 31% | below n  6304  +28.5bp win 32% | diff  -17.8bp t -2.05 | train -16/t-1.1 test -19/t-1.8
+15m   EMA 200: above n  5061  +26.0bp win 30% | below n  7305  +25.8bp win 32% | diff  -23.7bp t -2.67 | train -27/t-1.6 test -21/t-2.1
+15m   SMA  20: above n  9826  +23.6bp win 31% | below n  2540  +34.7bp win 32% | diff   -7.2bp t -0.75 | train +16/t1.1 test -21/t-1.7
+15m   SMA  50: above n  7870  +20.7bp win 31% | below n  4496  +35.0bp win 32% | diff  -14.5bp t -1.53 | train +1/t0.1 test -24/t-2.2
+15m   SMA 100: above n  5655  +23.1bp win 31% | below n  6711  +28.3bp win 32% | diff  -12.7bp t -1.45 | train -4/t-0.2 test -18/t-1.8
+15m   SMA 200: above n  4715  +22.7bp win 30% | below n  7651  +27.9bp win 32% | diff  -21.0bp t -2.32 | train -11/t-0.6 test -27/t-2.8
+1h    EMA  20: above n  6840  +22.5bp win 31% | below n  5526  +30.1bp win 32% | diff  -15.2bp t -1.75 | train -5/t-0.3 test -21/t-2.2
+1h    EMA  50: above n  5105  +26.8bp win 31% | below n  7261  +25.3bp win 32% | diff  -19.9bp t -2.26 | train -21/t-1.3 test -19/t-1.8
+1h    EMA 100: above n  5001  +30.8bp win 31% | below n  7365  +22.6bp win 31% | diff  -19.9bp t -2.11 | train -29/t-1.6 test -15/t-1.3
+1h    EMA 200: above n  5285  +32.0bp win 32% | below n  7081  +21.4bp win 31% | diff  -20.6bp t -2.03 | train -38/t-2.1 test -10/t-0.8
+1h    SMA  20: above n  6470  +19.7bp win 31% | below n  5896  +32.7bp win 32% | diff  -20.6bp t -2.51 | train -14/t-1.0 test -25/t-2.4
+1h    SMA  50: above n  4741  +22.4bp win 30% | below n  7625  +28.1bp win 32% | diff  -21.1bp t -2.29 | train -11/t-0.7 test -27/t-2.5
+1h    SMA 100: above n  4929  +25.6bp win 31% | below n  7437  +26.1bp win 31% | diff  -29.4bp t -3.55 | train -39/t-2.6 test -23/t-2.4
+1h    SMA 200: above n  5231  +33.0bp win 32% | below n  7135  +20.7bp win 31% | diff  -12.1bp t -1.21 | train -34/t-2.2 test +2/t0.1
+daily EMA  20: above n  5136  +30.9bp win 31% | below n  7230  +22.3bp win 31% | diff  -21.4bp t -2.12 | train -31/t-1.7 test -15/t-1.3
+daily EMA  50: above n  5740  +29.9bp win 31% | below n  6626  +22.4bp win 31% | diff  -20.4bp t -2.04 | train -35/t-2.0 test -11/t-0.9
+daily EMA 100: above n  6343  +29.4bp win 31% | below n  6023  +22.2bp win 32% | diff  -13.5bp t -1.01 | train -37/t-1.4 test +1/t0.1
+daily EMA 200: above n  7054  +23.7bp win 30% | below n  5312  +28.9bp win 32% | diff  -42.5bp t -2.13 | train -83/t-1.7 test -18/t-1.4
+daily SMA  20: above n  5093  +29.8bp win 31% | below n  7273  +23.2bp win 31% | diff  -23.0bp t -2.32 | train -33/t-1.7 test -17/t-1.6
+daily SMA  50: above n  5648  +29.8bp win 31% | below n  6718  +22.6bp win 31% | diff  -12.2bp t -1.26 | train -10/t-0.6 test -14/t-1.2
+daily SMA 100: above n  6314  +29.2bp win 31% | below n  6052  +22.5bp win 32% | diff   -8.5bp t -0.86 | train -16/t-0.9 test -4/t-0.4
+daily SMA 200: above n  6949  +24.1bp win 31% | below n  5417  +28.3bp win 32% | diff  -20.8bp t -1.01 | train -27/t-0.5 test -18/t-1.4
+
+=== 1h flips n 5081 base +44.0bp, win 36% ===
+15m   EMA  20: above n  4517  +39.3bp win 36% | below n   564  +82.0bp win 38% | diff  -85.2bp t -1.32 | train +55/t1.3 test -169/t-1.7
+15m   EMA  50: above n  4322  +36.7bp win 36% | below n   759  +86.2bp win 39% | diff  -54.0bp t -1.70 | train +16/t0.4 test -97/t-2.1
+15m   EMA 100: above n  4070  +39.3bp win 36% | below n  1011  +63.1bp win 37% | diff  -35.0bp t -1.50 | train -7/t-0.2 test -52/t-1.7
+15m   EMA 200: above n  3630  +46.2bp win 37% | below n  1451  +38.6bp win 35% | diff  -12.8bp t -0.71 | train -5/t-0.1 test -18/t-1.0
+15m   SMA  20: above n  4506  +39.7bp win 36% | below n   575  +78.5bp win 38% | diff  -61.6bp t -1.01 | train +56/t1.4 test -136/t-1.4
+15m   SMA  50: above n  4277  +35.6bp win 36% | below n   804  +89.2bp win 38% | diff -107.8bp t -1.77 | train -14/t-0.3 test -165/t-1.8
+15m   SMA 100: above n  3895  +35.7bp win 36% | below n  1186  +71.6bp win 37% | diff  -25.8bp t -1.25 | train +29/t0.9 test -60/t-2.3
+15m   SMA 200: above n  3388  +45.5bp win 37% | below n  1693  +41.1bp win 36% | diff   -1.9bp t -0.12 | train +7/t0.2 test -8/t-0.4
+1h    EMA  20: above n  4198  +36.4bp win 36% | below n   883  +80.2bp win 39% | diff  -50.4bp t -1.95 | train -10/t-0.3 test -75/t-2.1
+1h    EMA  50: above n  3683  +46.0bp win 37% | below n  1398  +38.8bp win 35% | diff   -9.9bp t -0.56 | train -3/t-0.1 test -14/t-0.7
+1h    EMA 100: above n  3094  +51.8bp win 37% | below n  1987  +31.9bp win 35% | diff  -18.1bp t -1.09 | train -62/t-1.8 test +9/t0.6
+1h    EMA 200: above n  2768  +51.4bp win 36% | below n  2313  +35.3bp win 36% | diff  -23.1bp t -1.26 | train -85/t-2.2 test +15/t0.9
+1h    SMA  20: above n  4074  +34.9bp win 36% | below n  1007  +81.2bp win 38% | diff  -47.1bp t -1.97 | train -17/t-0.4 test -66/t-2.2
+1h    SMA  50: above n  3446  +43.1bp win 36% | below n  1635  +46.1bp win 36% | diff   -9.4bp t -0.59 | train -11/t-0.4 test -9/t-0.5
+1h    SMA 100: above n  2948  +50.5bp win 37% | below n  2133  +35.1bp win 35% | diff  -16.0bp t -0.99 | train -44/t-1.4 test +1/t0.1
+1h    SMA 200: above n  2657  +53.6bp win 37% | below n  2424  +33.6bp win 36% | diff  -17.0bp t -0.93 | train -66/t-1.8 test +13/t0.7
+daily EMA  20: above n  2903  +52.6bp win 37% | below n  2178  +32.6bp win 36% | diff   -6.2bp t -0.34 | train -32/t-0.8 test +10/t0.6
+daily EMA  50: above n  2762  +46.0bp win 36% | below n  2319  +41.7bp win 37% | diff  -30.1bp t -1.52 | train -84/t-2.1 test +2/t0.1
+daily EMA 100: above n  2916  +47.7bp win 36% | below n  2165  +39.1bp win 37% | diff  -21.6bp t -0.79 | train -65/t-1.0 test +5/t0.2
+daily EMA 200: above n  3128  +42.9bp win 35% | below n  1953  +45.9bp win 38% | diff  -36.6bp t -1.17 | train -101/t-1.3 test +0/t0.0
+daily SMA  20: above n  2742  +49.9bp win 37% | below n  2339  +37.2bp win 36% | diff  -27.5bp t -1.62 | train -78/t-2.2 test +4/t0.2
+daily SMA  50: above n  2666  +44.4bp win 36% | below n  2415  +43.6bp win 37% | diff  -33.9bp t -1.77 | train -62/t-1.7 test -17/t-0.8
+daily SMA 100: above n  2856  +45.1bp win 35% | below n  2225  +42.7bp win 37% | diff  -18.3bp t -0.78 | train -36/t-0.7 test -8/t-0.3
+daily SMA 200: above n  3044  +44.0bp win 36% | below n  2037  +44.1bp win 38% | diff  -31.9bp t -0.99 | train -98/t-1.2 test +6/t0.3
+
+PASS: []
+leads (t>=2, same sign): []
