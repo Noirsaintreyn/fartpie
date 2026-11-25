@@ -2,7 +2,7 @@
 import numpy as np, pandas as pd, json
 SP = '/tmp/claude-0/-home-claude/6d3c83e1-1a4a-5a0a-8647-c2590d1d30a4/scratchpad/'
 O = pd.read_pickle(SP + 'ext/structure_small.pkl'); O['d'] = pd.to_datetime(O.d); S = O[O.px < 5].copy(); tr = S[S.d.dt.year <= 2021]
-B = {'ATRP': 1, 'F11': 1, 'VOLX': 1, 'LTURN': 1, 'LMC': -1}; qs = np.linspace(0, 1, 101); ref = {f: np.nanquantile(tr[f].astype(float), qs).tolist() for f in B}
+B = {'ATRP': 1, 'F11': 1, 'LTURN': 1, 'LMC': -1}   # Nov 25 2026: VOLX dropped (report 484 ablation; train and test both >= base5 without it at sub-$10 and sub-$5); qs = np.linspace(0, 1, 101); ref = {f: np.nanquantile(tr[f].astype(float), qs).tolist() for f in B}
 def score(D):
     R = []
     for f, s in B.items():
