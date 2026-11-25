@@ -1075,6 +1075,11 @@ def chart_min(H, tk, path, kind='BUY', live=None, bars=96):
     ax.bar(t, np.maximum(top - bot, (X.high.max() - X.low.min()) * .0025), bottom=bot, width=.7, color=col, zorder=4)
     ax.step(t, lvl, where='mid', color='#a3e635', lw=1.8, zorder=5)
     ax.plot(t, e50, color='#fbbf24', lw=1.3, zorder=5); ax.plot(t, e200, color='#c084fc', lw=1.5, zorder=5)
+    try:                                                                  # Nov 24 2026 (report 460): 1h SMA 100, the one MA that cleared the 48-test bar (flips BELOW it did ~29bp better, t -3.55 for 'above'); drawn from completed 1h bars
+        h1 = resample_1h(H); s100 = pd.DataFrame({'known': h1.dt + pd.Timedelta('1h'), 'v': h1.close.rolling(100).mean().values}).dropna().sort_values('known')
+        mm = pd.merge_asof(pd.DataFrame({'t': X.dt + pd.Timedelta('15min')}), s100, left_on='t', right_on='known', direction='backward')
+        if mm.v.notna().any(): ax.step(t, mm.v.values, where='post', color='#e5e7eb', lw=1.2, ls=(0, (5, 2)), zorder=5)
+    except Exception as e: print(f'  ! 1h SMA100: {str(e)[:50]}')
     if live is not None:
         ax.axhline(live, color=T1, lw=1, ls=(0, (4, 3)), zorder=6); ax.text(n + .3, live, f'{live:.2f}', color=T1, fontsize=9, va='center')
     mk = {'BUY': ('^', GOOD), 'SELL': ('v', CRIT)}.get(kind)
