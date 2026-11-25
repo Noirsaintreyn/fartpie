@@ -128,6 +128,7 @@ def run_site_push():
 def run_midsmall():
     """Nov 12 2026: the mid/small-cap ($1-2) screener runs in this same worker (no second paid service): started 09:25 ET on weekdays, it posts to #mid-small-cap and exits itself at the close; restarted if it crashes inside the session."""
     import threading
+    if os.environ.get('MIDSMALL_ON') != '1': return log('old 1h mid/small screener OFF (replaced Nov 25 2026 by the sub-$5 daily-flip alert, daily_small.py); MIDSMALL_ON=1 restores it')
     args = os.environ.get('MIDSMALL_ARGS', '--loop').split()
     def loop():
         while True:
