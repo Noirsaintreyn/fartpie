@@ -1,0 +1,48 @@
+title join: 46% of buys have a title; top 34%, down 12%; examples down: {'See Remarks': 1768, 'Executive Vice President': 1087, 'Chief Operating Officer': 1058, 'Vice President': 618, 'SENIOR VICE PRESIDENT': 543, 'Senior Vice President': 372}
+XBRL shares for 981 tickers; flips covered: 100%
+short interest matched for 93% of flips; pct-of-shares for 92%
+
+######## px<10 (with SI match): n 3538
+dose-response (raw | adj vs <5%):
+  <5%     n 2179  reach 45%  PEAK med +7.6%  mean rw +3.2%  adj vs <5%: ref
+  5-15%   n 1076  reach 55%  PEAK med +12.5%  mean rw +5.3%  adj vs <5%: +0.027 (t +1.3)
+  15-25%  n  212  reach 63%  PEAK med +23.3%  mean rw +14.6%  adj vs <5%: +0.069 (t +1.6)
+  25%+    n   71  reach 70%  PEAK med +16.1%  mean rw +15.5%  adj vs <5%: +0.148 (t +2.6)
+  era train    n flag  97: adj reach +0.050 (t +0.8)
+  era 2022     n flag  12: adj reach +0.051 (t +0.4)
+  era 2023-26  n flag 174: adj reach +0.086 (t +2.0)
+  era ALL      n flag 283: adj reach +0.076 (t +2.3)
+  harder control (continuous ATRP, LMC, LTURN): adj reach +0.030 (t +0.9)
+  flagged events 283, tickers 88, top-5 share 18% (NVAX 13, GOGO 11, RIG 9, RIOT 9, DDD 8)
+  leave-top-ticker-out: NVAX: +0.081, GOGO: +0.083, RIG: +0.084, RIOT: +0.077, DDD: +0.079
+  ATRP med flag 0.065 vs 0.046; LMC 3.01 vs 3.02; PEAK med +22.0% vs +9.0%; mean rw +14.8% vs +3.9%; median r -7.9% vs -6.1%
+  SI_DTC alone: n 1480 adj reach +0.012 (t +0.7)
+  SI_PCT & DTC>=5: n 205 adj reach +0.059 (t +1.6)
+  SI_PCT & DTC<5: n 78 adj reach +0.104 (t +1.7)
+  high-ATRP slice (top 30% ATRP, proxy for live group): n 966, flag n 165, reach flag 76% vs rest 62%; adj +0.139 (t +3.7)
+
+######## px<20 (with SI match): n 7720
+dose-response (raw | adj vs <5%):
+  <5%     n 4784  reach 42%  PEAK med +6.9%  mean rw +2.2%  adj vs <5%: ref
+  5-15%   n 2368  reach 50%  PEAK med +9.7%  mean rw +3.2%  adj vs <5%: +0.021 (t +1.3)
+  15-25%  n  452  reach 59%  PEAK med +15.3%  mean rw +8.0%  adj vs <5%: +0.068 (t +2.3)
+  25%+    n  116  reach 64%  PEAK med +15.0%  mean rw +11.0%  adj vs <5%: +0.114 (t +2.4)
+  era train    n flag 210: adj reach +0.047 (t +1.1)
+  era 2022     n flag  27: adj reach +0.094 (t +1.2)
+  era 2023-26  n flag 331: adj reach +0.071 (t +2.3)
+  era ALL      n flag 568: adj reach +0.068 (t +2.8)
+  harder control (continuous ATRP, LMC, LTURN): adj reach +0.023 (t +1.0)
+  flagged events 568, tickers 156, top-5 share 12% (AAOI 14, NVAX 14, GOGO 13, RIOT 13, CHRS 12)
+  leave-top-ticker-out: AAOI: +0.071, NVAX: +0.072, GOGO: +0.070, RIOT: +0.069, CHRS: +0.071
+  ATRP med flag 0.059 vs 0.040; LMC 3.03 vs 3.04; PEAK med +15.2% vs +7.6%; mean rw +8.6% vs +2.6%; median r -8.6% vs -5.4%
+  SI_DTC alone: n 3460 adj reach +0.014 (t +1.0)
+  SI_PCT & DTC>=5: n 432 adj reach +0.035 (t +1.4)
+  SI_PCT & DTC<5: n 136 adj reach +0.156 (t +3.2)
+
+######## decisive check: inside the high-ATRP slice (top 30% ATRP, px<10 and px<20) with CONTINUOUS ATRP + LMC + LTURN (+ SI_DTC) controls
+  px<10 ALL   n 966 flag 165: adj reach +0.108 (t +2.9); raw 76% vs 62%
+  px<10 train n 322 flag 52: adj reach +0.086 (t +1.6); raw 79% vs 70%
+  px<10 test  n 644 flag 113: adj reach +0.119 (t +2.4); raw 74% vs 58%
+  px<20 ALL   n 2028 flag 329: adj reach +0.076 (t +2.2); raw 71% vs 59%
+  px<20 train n 780 flag 103: adj reach +0.068 (t +1.3); raw 71% vs 61%
+  px<20 test  n 1248 flag 226: adj reach +0.082 (t +2.1); raw 70% vs 58%
