@@ -23,7 +23,11 @@ def fit(K):
         if best is None or sc > best[0]: best = (sc, m)
     return best[1]
 def filtered(m, f):
-    lp = m._compute_log_likelihood(f.values); _, fw = m._do_forward_pass(lp); p = np.exp(fw - fw.max(1, keepdims=True)); p /= p.sum(1, keepdims=True); return pd.Series(p.argmax(1), index=f.index)
+    """forward (filtering) pass only: P(state_t | x_1..t). No smoothing, so no look-ahead."""
+    lp = m._compute_log_likelihood(f.values); lp = lp - lp.max(1, keepdims=True); B = np.exp(lp); A = m.transmat_; a = m.startprob_ * B[0]; a /= a.sum(); out = [a.argmax()]
+    for t in range(1, len(B)):
+        a = (a @ A) * B[t]; a /= a.sum(); out.append(a.argmax())
+    return pd.Series(out, index=f.index)
 def paired(a, b):
     d = (a.groupby('mon').ret.mean() - b.groupby('mon').ret.mean()).dropna(); return d.mean() * 1e4, (d.mean() / (d.std() / np.sqrt(len(d))) if len(d) > 2 and d.std() > 0 else np.nan)
 def run(K, h1):
