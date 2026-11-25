@@ -1100,11 +1100,22 @@ def neg_gamma_ok(base):
         try: NEGG['gam'] = json.load(open(f'{LIVE}/neg_gamma.json'))
         except Exception: pass
     return (NEGG['ratio'].get(base) or 0) >= 2 and (NEGG['gam'].get(base) is not None and float(NEGG['gam'][base]) < 0)
+def heat_file(base, px=None):
+    """Nov 24 2026 (Rey): every signal (buy, sell, 'touched the vector') carries the options heatmap at the signal price. Built from the latest chain webull_options_log.py saved for the name (prior-close OI); spot is replaced by the live signal price when within 5%. Names with no chain file get no heatmap. Never blocks or fails the alert."""
+    try:
+        import gex_heatmap as GH, webull_greeks as WG
+        df, f = WG.load(base); now = pd.Timestamp(now_et()).tz_localize(None) if pd.Timestamp(now_et()).tzinfo is None else pd.Timestamp(now_et()).tz_convert(None)
+        S0 = float(df['spot'].iloc[0])
+        if px and abs(float(px) / S0 - 1) < .05: df = df.copy(); df['spot'] = float(px)
+        M, S, lv = GH.matrix(df, now); p = f"{LIVE}/heat_{str(base).replace(' ', '_')}.png"
+        GH.render(base, M, S, lv, p, f"{os.path.basename(f)[:10]} chain, signal {now:%H:%M}"); return p
+    except (SystemExit, Exception) as e:
+        print(f'  ! heatmap {base}: {str(e)[:70]}'); return None
 def post_neg_gamma(r, path):
     tgt = os.getenv('NEGGAMMA_CHANNEL_ID'); hook = os.getenv('NEGGAMMA_WEBHOOK_URL')
     if not (tgt or hook) or r.get('track', '15m') != '15m': return
     try:
-        if neg_gamma_ok(r.get('base') or r['ticker']): post('', [path], channel=tgt, hook=hook)
+        if neg_gamma_ok(r.get('base') or r['ticker']): post('', path if isinstance(path, list) else [path], channel=tgt, hook=hook)
     except Exception as e: print(f'  ! neg-gamma post: {str(e)[:60]}')
 
 def signal_card(r, meta, path):
@@ -1497,8 +1508,9 @@ def post_new_signals(rows, meta, st):
             if r['action'] == 'BUY':
                 try: d_ = spy_downtrend(); save_score(tk, dict(grade='A+' if (d_ and d_['down']) else 'STD', score=0.0))
                 except Exception as e: print(f'  ! grade: {str(e)[:60]}')
-            if not post('', [p]): continue
-            st['signals'].append(key); _save(st); post_neg_gamma(r, p)
+            hp = heat_file(r.get('base') or tk, r['last']); pf = [p] + ([hp] if hp else [])
+            if not post('', pf): continue
+            st['signals'].append(key); _save(st); post_neg_gamma(r, pf)
             pd.DataFrame([dict(run_at=now_et(), ticker=r['ticker'], action=r['action'], bar=r['bar'], price=r['last'], stop=r['stop'], entry=r['px'], pnl=r['pnl'])]).to_csv(f'{LIVE}/signal_log.csv', mode='a', header=not os.path.exists(f'{LIVE}/signal_log.csv'), index=False)
             continue
         fk = key + '|fast'                                                # Nov 12 2026: one-line alert goes out FIRST; the chart card (slow to render/upload) follows
@@ -1795,6 +1807,7 @@ def watch_crosses(rows, st, until):
                 pc = f"{LIVE}/cross_{tk.replace(' ', '_')}.png"
                 try: chart_min(r['H'], tk, pc, 'CROSS', live=px); cfiles = [pc]
                 except Exception as e: print(f'  ! cross chart: {str(e)[:60]}'); cfiles = []
+                hp = heat_file(r['base'], px); cfiles = cfiles + ([hp] if hp else [])
                 if post(f"\u26a1 {tk} touched the vector - wait till the close", cfiles) if os.getenv('CHART_ONLY', '1') == '1' else post(f"\u26a1 CROSS {tk} {px:.2f} is above the vector ({r['trig']:.2f}).{tail}", []):
                     st['signals'].append(key); xp[tk] = [f'{bar:%Y-%m-%d %H:%M}', r['trig']]; _save(st)
         if RTH0 <= now_et().hour * 60 + now_et().minute < RTH1:
