@@ -1,5 +1,5 @@
 """Daily option volume from the Webull OpenAPI (Nov 26 2026, Rey: 'wire the Webull api for live data'): replaces the Mac-only TWS/Theta pull.
-Keys are YOURS and only read from the environment (never printed or logged): WEBULL_APP_KEY, WEBULL_APP_SECRET, optional WEBULL_REGION (default 'us'), WEBULL_TOKEN_DIR (where the 2FA token lives).
+Uses the same Webull env as webull_options_log.py (WEBULL_APP_KEY, WEBULL_APP_SECRET, WEBULL_API_HOST, token folder live/webull_token); keys are never printed or logged.
 Needs the paid Webull options market-data subscription. Run after the close (screener_service does it at ~16:12 ET once the screener has finished).
   python3 tools/webull_optvol.py --probe AAPL     print the raw field NAMES of one contract + one snapshot (no values of keys) so we can confirm the response layout
   python3 tools/webull_optvol.py --test AAPL MSFT print the call/put volume totals, write nothing
@@ -9,13 +9,22 @@ import os, sys, json, time, datetime as dt, pandas as pd
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); os.chdir(ROOT)
 OUT = 'live/optvol_webull.csv'; ETF = {'GLD', 'SLV', 'TLT', 'QQQ', 'SPY', 'IWM', 'IEF', 'DIA'}
 MAXDTE = int(os.getenv('WB_MAX_DTE', '120')); BAND = float(os.getenv('WB_BAND', '0.35')); SLEEP = float(os.getenv('WB_SLEEP', '0.15'))
+import logging
+for _n in ('webull', 'webull.core', 'webull.core.client'): logging.getLogger(_n).setLevel(logging.CRITICAL)   # SDK error logs echo request headers incl. the access token
 def client():
+    """same setup as webull_options_log.py (the keys, host and token folder the negative-gamma side already uses on Render)"""
     from webull.core.client import ApiClient; from webull.data.data_client import DataClient
-    k, s = os.getenv('WEBULL_APP_KEY'), os.getenv('WEBULL_APP_SECRET')
-    if not k or not s: sys.exit('set WEBULL_APP_KEY and WEBULL_APP_SECRET (your Webull OpenAPI app key/secret) in the environment')
-    reg = os.getenv('WEBULL_REGION', 'us'); c = ApiClient(k, s, reg)
-    if os.getenv('WEBULL_TOKEN_DIR'): c.set_token_dir(os.getenv('WEBULL_TOKEN_DIR'))
-    return DataClient(c)
+    os.environ.setdefault('WEBULL_OPENAPI_TOKEN_DIR', 'live/webull_token')
+    if not os.getenv('WEBULL_APP_KEY') or not os.getenv('WEBULL_APP_SECRET'): sys.exit('WEBULL_APP_KEY / WEBULL_APP_SECRET not set')
+    api = ApiClient(os.environ['WEBULL_APP_KEY'], os.environ['WEBULL_APP_SECRET'], 'us'); api.add_endpoint('us', os.getenv('WEBULL_API_HOST', 'api.webull.com'))
+    return DataClient(api)
+def jsn(res, what, tries=4):
+    for k in range(tries):
+        if res.status_code == 200:
+            try: return res.json()
+            except ValueError: return {}
+        time.sleep(1.5 * (k + 1))
+    raise RuntimeError(f'{what}: HTTP {res.status_code}')
 def items(js):
     """first list of dicts found in a response body (the layout is confirmed with --probe)"""
     if isinstance(js, list): return [x for x in js if isinstance(x, dict)]
@@ -36,9 +45,7 @@ def contracts(D, tk, spot):
     out, key = [], None; end = (dt.date.today() + dt.timedelta(days=MAXDTE)).isoformat()
     for _ in range(60):
         kw = dict(underlying_symbols=tk, status='LISTING', end_date=end, strike_price_gte=round(spot * (1 - BAND), 2), strike_price_lte=round(spot * (1 + BAND), 2), pagination_key=key)
-        r = D.instrument.list_option_contracts(**kw)
-        if r.status_code != 200: raise RuntimeError(f'contracts {tk} http {r.status_code}')
-        js = r.json(); out += [pick(x, SYMK) for x in items(js) if pick(x, SYMK)]
+        js = jsn(D.instrument.list_option_contracts(**kw), f'contracts {tk}'); out += [pick(x, SYMK) for x in items(js) if pick(x, SYMK)]
         key = js.get('pagination_key') if isinstance(js, dict) else None
         if not key: break
         time.sleep(SLEEP)
@@ -46,9 +53,7 @@ def contracts(D, tk, spot):
 def volume(D, syms):
     tot = 0.; miss = 0
     for i in range(0, len(syms), 20):
-        r = D.option_market_data.get_option_snapshot(','.join(syms[i:i + 20]), 'US_OPTION')
-        if r.status_code != 200: raise RuntimeError(f'snapshot http {r.status_code}')
-        for x in items(r.json()):
+        for x in items(jsn(D.option_market_data.get_option_snapshot(','.join(syms[i:i + 20]), 'US_OPTION'), 'option snapshot')):
             v = pick(x, VOLK)
             try: tot += float(v)
             except Exception: miss += 1
