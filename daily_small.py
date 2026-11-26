@@ -128,7 +128,7 @@ def scan(dry=False, asof_check=True):
             import chart5m; chart5m.make_chart_5m(tk, path, flip_day=a['day'], info={'DAILY flip': f"{a['day']:%b %d}", 'level': f"{a['lev']:.2f}"})
         except Exception as e: print('  ! chart', str(e)[:80]); path = None
         try:
-            import catalysts as C; rep = C.report(tk, asof=a['day'])
+            import catalysts as C; rep = C.report(tk, asof=a['day'], px=a['px'])
         except Exception as e: rep = ''; print('  ! catalyst report', str(e)[:60])
         sent = False
         try:
