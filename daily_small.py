@@ -73,9 +73,11 @@ def post(text, path=None):
     for k, p in enumerate(parts):
         try:
             if path and k == 0:
-                with open(path, 'rb') as fh:
-                    d = {'payload_json': json.dumps({'content': p})}; fl = {'files[0]': (os.path.basename(path), fh, 'image/png')}
-                    r = requests.post(f'https://discord.com/api/v10/channels/{ch}/messages', headers={'Authorization': f'Bot {tok}'}, data=d, files=fl, timeout=40) if (ch and tok) else requests.post(hook, data=d, files=fl, timeout=40)
+                ps = path if isinstance(path, (list, tuple)) else [path]; fhs = [open(x, 'rb') for x in ps]
+                try:
+                    d = {'payload_json': json.dumps({'content': p})}; fl = {f'files[{i}]': (os.path.basename(x), fh, 'image/png') for i, (x, fh) in enumerate(zip(ps, fhs))}
+                    r = requests.post(f'https://discord.com/api/v10/channels/{ch}/messages', headers={'Authorization': f'Bot {tok}'}, data=d, files=fl, timeout=60) if (ch and tok) else requests.post(hook, data=d, files=fl, timeout=60)
+                finally: [fh.close() for fh in fhs]
             else: r = requests.post(f'https://discord.com/api/v10/channels/{ch}/messages', headers={'Authorization': f'Bot {tok}'}, json={'content': p}, timeout=20) if (ch and tok) else requests.post(hook, json={'content': p}, timeout=20)
             r.raise_for_status()
         except Exception as e: print('  ! discord post failed:', str(e)[:100]); ok = False
@@ -97,7 +99,7 @@ def scan(dry=False, asof_check=True):
     st = load_state(); cache = {}
     try: cache = json.load(open(SH_F))
     except Exception: pass
-    tks = universe(); D = get_daily(tks); today = now_et().normalize(); fired = []; exits = []
+    tks = universe(); D = get_daily(tks); today = now_et().normalize(); fired = []; exits = []; nfl = 0
     for tk, q in D.items():
         if asof_check and q.index[-1] != today and not dry: continue                                        # only today's completed bar
         try:
@@ -105,8 +107,9 @@ def scan(dry=False, asof_check=True):
                 a = analyze(tk, q, cache, need_flip=False)
                 if a and a['reg'] != 1: exits.append((tk, a, st['pos'][tk]))
                 continue
-            if q.close.iat[-1] >= MAX_PX: continue
             a = analyze(tk, q, cache)
+            if a is not None: nfl += 1                                                                   # Nov 26 2026: flips across the universe today = breadth
+            if q.close.iat[-1] >= MAX_PX: continue
             if a is None or a['dv'] < MIN_DV: continue
             key = f"{tk}|{a['day']:%Y-%m-%d}"
             if key in st['seen']: continue
@@ -115,6 +118,7 @@ def scan(dry=False, asof_check=True):
             else: print(f"  skipped {tk}: daily flip, score {a['score']:.2f} < cut {REF['cut']:.2f}")
         except Exception as e: print(f'  ! {tk}: {str(e)[:70]}')
     json.dump(cache, open(SH_F, 'w'))
+    for a_ in fired: a_['brd'] = nfl
     for tk, a, p in exits:
         t = f"\U0001f534 DAILY SELL {tk}: the daily vector flipped bear on the {a['day']:%a %b %d} close {a['px']:.2f}. Exit next open. In from {p['px']:.2f} ({p['day'][:10]}): {a['px']/p['px']-1:+.1%} on the close (before costs).\n" + __import__('catalysts').SIGN
         print(t); (None if dry else post(t)); st['pos'].pop(tk, None)
@@ -137,7 +141,11 @@ def scan(dry=False, asof_check=True):
             except Exception: pass
             report_card.make_card(a, rep or '\n\n', D[tk], path, card, REF, name=nm.title() if nm else None)
             cap = f"\U0001f4c8 DAILY BUY {tk}{' \u00b7 GRADE ' + a['grade'] if a.get('grade') else ''} \u00b7 sub-$5 high-vol group \u00b7 daily flip {a['day']:%a %b %d} close {a['px']:.2f} \u00b7 level {a['lev']:.2f}\n" + __import__('catalysts').SIGN
-            print(cap); sent = True if dry else post(cap, card)
+            pages = [card]
+            try:
+                import report_pages as RP; p2 = os.path.join(LIVE, f'ctx_{tk}.png'); p3 = os.path.join(LIVE, f'cat_{tk}.png'); RP.context_page(a, D[tk], p2, name=nm.title() if nm else None); RP.catalyst_page(a, rep, p3, name=nm.title() if nm else None); pages += [p2, p3]
+            except Exception as e: print('  ! pages 2-3', str(e)[:100])
+            print(cap); sent = True if dry else post(cap, pages)
         except Exception as e: print('  ! report card', str(e)[:100])
         if not sent: full = t + ('\n\n' + sc_text(a) if a.get('sc') else '') + ('\n\n' + rep if rep else ''); print(full); (None if dry else post(full, path))
         st['pos'][tk] = dict(px=a['px'], day=str(a['day']), lev=a['lev'])
