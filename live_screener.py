@@ -1815,9 +1815,19 @@ def check_failed(rows, st):
             post(f"\u2139\ufe0f {tk} closed {r['last']:.2f}, above the vector ({trig:.2f}), but no buy: {why}.", []); continue
         post(f"\u2717 {tk} cross failed: closed {r['last']:.2f}, below the vector ({trig:.2f}). No trade.", [])
 
+NYSE_HOLIDAYS = {'2026-01-01', '2026-01-19', '2026-02-16', '2026-04-03', '2026-05-25', '2026-06-19', '2026-07-03', '2026-09-07', '2026-11-26', '2026-12-25',
+                 '2027-01-01', '2027-01-18', '2027-02-15', '2027-03-26', '2027-05-31', '2027-06-18', '2027-07-05', '2027-09-06', '2027-11-25', '2027-12-24'}
+NYSE_EARLY = {'2026-11-27': 13 * 60, '2026-12-24': 13 * 60, '2027-11-26': 13 * 60}       # 13:00 ET close
+def market_day_open(now):
+    """Nov 26 2026: no 'DATA STALE' warnings or scans on NYSE holidays, none after an early close (Rey saw the warning on Thanksgiving)."""
+    d = f'{now:%Y-%m-%d}'
+    if now.dayofweek >= 5 or d in NYSE_HOLIDAYS: return False
+    return now.hour * 60 + now.minute <= NYSE_EARLY.get(d, 16 * 60) + 20
+
 def check_stale(rows, st):
     """Post a Discord warning when the newest completed 15m bar is too old (data feed down) - once per 30 min."""
     now = now_et(); exp = now.floor('15min') - pd.Timedelta('15min')      # start of the bar that should have completed
+    if not market_day_open(now): st.pop('stale', None); return
     old = [(r['ticker'], r['bar']) for r in rows if pd.Timestamp(r['bar']) < exp - pd.Timedelta('15min')]
     if not old: st.pop('stale', None); return
     last = st.get('stale')
