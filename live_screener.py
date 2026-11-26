@@ -1061,6 +1061,13 @@ def history_card(rows, meta, path, fetch=True, hm=False):
     fig.text(.045, .1 / H_in, 'RETURN = trade return; PEAK = highest return while held (RTH highs); BOOK = its share of the book (1 slot). Book P&L = sum of slot returns (not compounded), before costs.', fontsize=7.5, color=MUT)
     fig.savefig(path, dpi=140, facecolor=BG); plt.close(fig)
 
+def gamma_lines(tk):
+    """Nov 26 2026 (Rey: 'throw the flip on there'): zero-gamma (VT), call wall, put wall from live/gamma_levels.json (written by gex_heatmap.py), if fresh (<= 5 days)."""
+    try:
+        L = json.load(open(f'{LIVE}/gamma_levels.json')).get(tk)
+        if not L or (pd.Timestamp.now() - pd.Timestamp(L['asof'])).days > 5: return []
+        return [(k, float(L[k.lower()]), c) for k, c in (('VT', '#b45cf0'), ('CW', '#2ac06e'), ('PW', '#f59e0b')) if L.get(k.lower()) is not None]
+    except Exception: return []
 def chart_min(H, tk, path, kind='BUY', live=None, bars=96):
     """Nov 24 2026 (Rey): the ONLY thing posted on a close - 15m candles coloured by vector state, vector level, EMA50 / EMA200, no other text.
     kind 'CROSS' (price touched the vector mid-bar) also draws the live price and the trigger line."""
@@ -1075,17 +1082,15 @@ def chart_min(H, tk, path, kind='BUY', live=None, bars=96):
     ax.bar(t, np.maximum(top - bot, (X.high.max() - X.low.min()) * .0025), bottom=bot, width=.7, color=col, zorder=4)
     ax.step(t, lvl, where='mid', color='#a3e635', lw=1.8, zorder=5)
     ax.plot(t, e50, color='#fbbf24', lw=1.3, zorder=5); ax.plot(t, e200, color='#c084fc', lw=1.5, zorder=5)
-    try:                                                                  # Nov 24 2026 (report 460): 1h SMA 100, the one MA that cleared the 48-test bar (flips BELOW it did ~29bp better, t -3.55 for 'above'); drawn from completed 1h bars
-        h1 = resample_1h(H); s100 = pd.DataFrame({'known': h1.dt + pd.Timedelta('1h'), 'v': h1.close.rolling(100).mean().values}).dropna().sort_values('known')
-        mm = pd.merge_asof(pd.DataFrame({'t': X.dt + pd.Timedelta('15min')}), s100, left_on='t', right_on='known', direction='backward')
-        if mm.v.notna().any(): ax.step(t, mm.v.values, where='post', color='#e5e7eb', lw=1.2, ls=(0, (5, 2)), zorder=5)
-    except Exception as e: print(f'  ! 1h SMA100: {str(e)[:50]}')
     if live is not None:
         ax.axhline(live, color=T1, lw=1, ls=(0, (4, 3)), zorder=6); ax.text(n + .3, live, f'{live:.2f}', color=T1, fontsize=9, va='center')
     mk = {'BUY': ('^', GOOD), 'SELL': ('v', CRIT)}.get(kind)
     if mk: ax.scatter([n - 1], [X.close.iloc[-1]], marker=mk[0], s=140, color=mk[1], zorder=7)
     ax.set_xlim(-1, n + 6); ax.tick_params(colors=MUT, labelsize=8); ax.grid(color=GRID, lw=.5, alpha=.6)
-    lo, hi = X.low.min(), X.high.max(); pad = (hi - lo) * .06; ax.set_ylim(lo - pad, hi + pad)
+    lo, hi = X.low.min(), X.high.max()
+    for nm, v, cc in gamma_lines(tk):
+        if lo * .93 <= v <= hi * 1.07: ax.axhline(v, color=cc, lw=1.3, ls=(0, (6, 3)), zorder=4); ax.text(n + 5.5, v, f'{nm} {v:.2f}', color=cc, fontsize=8.5, va='bottom', ha='right'); lo, hi = min(lo, v), max(hi, v)
+    pad = (hi - lo) * .06; ax.set_ylim(lo - pad, hi + pad)
     ix = np.linspace(0, n - 1, 6).astype(int); ax.set_xticks(ix); ax.set_xticklabels([f'{X.dt.iloc[i]:%a %H:%M}' for i in ix])
     ax.set_title(f'{tk}  15m', color=T1, fontsize=14, fontweight='bold', loc='left')
     fig.tight_layout(); fig.savefig(path, facecolor=BG); plt.close(fig)
@@ -1105,85 +1110,12 @@ def neg_gamma_ok(base):
         try: NEGG['gam'] = json.load(open(f'{LIVE}/neg_gamma.json'))
         except Exception: pass
     return (NEGG['ratio'].get(base) or 0) >= 2 and (NEGG['gam'].get(base) is not None and float(NEGG['gam'][base]) < 0)
-def heat_file(base, px=None):
-    """Nov 24 2026 (Rey): every signal (buy, sell, 'touched the vector') carries the options heatmap at the signal price. Built from the latest chain webull_options_log.py saved for the name (prior-close OI); spot is replaced by the live signal price when within 5%. Names with no chain file get no heatmap. Never blocks or fails the alert."""
-    try:
-        import gex_heatmap as GH, webull_greeks as WG
-        HEAT = globals().setdefault('_HEAT', {}); hit = HEAT.get(base)
-        if hit and time.time() - hit[0] < 900: df, f = hit[1], hit[2]                      # per-name cache, 15 min
-        else:
-            try:                                                                          # live pull for this name; falls back to the last saved chain
-                import webull_options_log as WL
-                df = WL.fetch_flat(base); f = f'{now_et():%Y-%m-%d} live'; HEAT[base] = (time.time(), df, f)
-            except BaseException as e:
-                print(f'  ! live chain {base}: {str(e)[:60]}; saved chain'); df, f = WG.load(base)
-        now = pd.Timestamp(now_et()).tz_localize(None) if pd.Timestamp(now_et()).tzinfo is None else pd.Timestamp(now_et()).tz_convert(None)
-        S0 = float(df['spot'].iloc[0])
-        if px and abs(float(px) / S0 - 1) < .05: df = df.copy(); df['spot'] = float(px)
-        M, S, lv = GH.matrix(df, now); p = f"{LIVE}/heat_{str(base).replace(' ', '_')}.png"
-        GH.render(base, M, S, lv, p, f"{os.path.basename(f)[:10]} {'chain' if 'live' not in f else 'live chain'}, signal {now:%H:%M}"); return p
-    except (SystemExit, Exception) as e:
-        print(f'  ! heatmap {base}: {str(e)[:70]}'); return None
-def _mstat(k, track, tk):
-    try:
-        d = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'live_data', 'model_stats.json')))
-        return d.get(f'{k}|{track}|ALL'), d.get(f'{k}|{track}|{tk}')
-    except Exception: return None, None
-
-def pcv_chart(base, px=None, z=False):
-    """put/call volume for the name: last ~120 days of the daily ratio, the top-third line (own trailing 252d 67th pct), latest print marked. Replaces the heatmap on P/C VOL signals."""
-    import option_models as OM
-    h, _ = OM.history(base); h = h.dropna(subset=['pc_vol']).tail(380).reset_index(drop=True)
-    if len(h) < 60: return None
-    rr = h.pc_vol.rolling(252, min_periods=60); thr = (rr.mean() + rr.std()).shift(1) if z else rr.quantile(2 / 3).shift(1); v = h.tail(120); th = thr.tail(120)
-    fig, ax = plt.subplots(figsize=(10, 4.6), facecolor=BG); ax.set_facecolor(BG)
-    ax.plot(v.date, v.pc_vol, color='#60a5fa', lw=1.6); ax.plot(v.date, th, color='#e5e7eb', lw=1, ls=(0, (5, 2)))
-    hi = v.pc_vol >= th; ax.scatter(v.date[hi], v.pc_vol[hi], s=14, color='#f59e0b', zorder=4)
-    ax.scatter([v.date.iloc[-1]], [v.pc_vol.iloc[-1]], s=60, color='#f59e0b', ec='white', zorder=5)
-    ax.set_title(f'{base}  put/call volume (<=45 DTE) \u00b7 dashed = ' + ('1 std above its 1-yr average (z>1)' if z else 'top-third line') + ' \u00b7 orange = above it', color=T2, fontsize=10, loc='left')
-    ax.tick_params(colors=MUT, labelsize=8)
-    for sp_ in ax.spines.values(): sp_.set_color('#374151')
-    ax.grid(color='#1f2937', lw=.6); p = os.path.join(LIVE, f'pcv_{base}.png'); fig.tight_layout(); fig.savefig(p, dpi=110, facecolor=BG); plt.close(fig); return p
-
-def stamp(path, left, right, out):
-    """header strip on top of an existing PNG: left lines top-left, right lines top-right."""
-    from PIL import Image, ImageDraw, ImageFont
-    import matplotlib.font_manager as fm
-    im = Image.open(path).convert('RGB'); n = max(len(left), len(right), 1); H = 14 + 26 * n
-    ft = ImageFont.truetype(fm.findfont('DejaVu Sans:bold'), 17); bg = tuple(int(BG.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4)) if isinstance(BG, str) and BG.startswith('#') else (17, 24, 39)
-    c = Image.new('RGB', (im.width, im.height + H), bg); c.paste(im, (0, H)); d = ImageDraw.Draw(c)
-    for i, t in enumerate(left): d.text((14, 8 + 26 * i), t, font=ft, fill=(245, 158, 11) if i == 0 or True else (229, 231, 235))
-    for i, t in enumerate(right): w = d.textlength(t, font=ft); d.text((im.width - 14 - w, 8 + 26 * i), t, font=ft, fill=(229, 231, 235))
-    c.save(out); return out
-
 def post_neg_gamma(r, path):
-    """The signal-models channel (Nov 24 2026). Same flip as the main screener, posted here when at least one option model fires: NEG (negative gamma, 15m), PCV (put/call volume, 15m), SKW (skew), CHM (charm); caption names the models. Top-left of the chart: model + its backtest (all names); top-right: the same model on this ticker. P/C VOL signals swap the heatmap for the put/call volume chart. See option_models.py."""
     tgt = os.getenv('NEGGAMMA_CHANNEL_ID'); hook = os.getenv('NEGGAMMA_WEBHOOK_URL')
-    if not (tgt or hook): return
+    if not (tgt or hook) or r.get('track', '15m') != '15m': return
     try:
-        import option_models as OM
-        base = r.get('base') or r['ticker']; track = r.get('track', '15m'); tg = []
-        if track == '15m' and neg_gamma_ok(base): tg.append('NEG')
-        if (NEGG['ratio'].get(base) or 0) >= 1.5: tg += OM.tags(base, track)
-        if not tg: return
-        files = path if isinstance(path, list) else [path]; L = []; R = []
-        for k in tg:
-            a, b = _mstat(k, track, base)
-            L.append(f"{OM.LABEL[k]} {track}" + (f"  n {a['n']} \u00b7 {a['bp']:+.0f}bp \u00b7 {a['win']}% win" if a else ''))
-            R.append(f"{base}  n {b['n']} \u00b7 {b['bp']:+.0f}bp \u00b7 {b['win']}% win" if b else f'{base}  n<5')
-        try: files = [stamp(files[0], L, R, os.path.join(LIVE, f'ng_{base}.png'))] + files[1:]
-        except Exception as e: print(f'  ! stamp: {str(e)[:60]}')
-        if 'PCV' in tg or 'PCZ' in tg:
-            try:
-                pc = pcv_chart(base, z='PCZ' in tg)
-                if pc: files = files[:1] + [pc]
-            except Exception as e: print(f'  ! pcv chart: {str(e)[:60]}')
-        cap = ' \u00b7 '.join(OM.LABEL[x] for x in tg)
-        try:
-            import catalysts as CAT; cap += '\n' + CAT.report(base, extra=None)       # Nov 25 2026: catalyst / news / insider report + Valiant sign-off on every signal-model alert
-        except Exception as e: print(f'  ! catalyst report: {str(e)[:60]}')
-        post(cap, files, channel=tgt, hook=hook)
-    except Exception as e: print(f'  ! signal-model post: {str(e)[:60]}')
+        if neg_gamma_ok(r.get('base') or r['ticker']): post('', [path], channel=tgt, hook=hook)
+    except Exception as e: print(f'  ! neg-gamma post: {str(e)[:60]}')
 
 def signal_card(r, meta, path):
     buy = r['action'] == 'BUY'; accent = GOOD if buy else CRIT; H = r['H']
@@ -1575,9 +1507,8 @@ def post_new_signals(rows, meta, st):
             if r['action'] == 'BUY':
                 try: d_ = spy_downtrend(); save_score(tk, dict(grade='A+' if (d_ and d_['down']) else 'STD', score=0.0))
                 except Exception as e: print(f'  ! grade: {str(e)[:60]}')
-            hp = heat_file(r.get('base') or tk, r['last']); pf = [p] + ([hp] if hp else [])
-            if not post('', pf): continue
-            st['signals'].append(key); _save(st); post_neg_gamma(r, pf)
+            if not post('', [p]): continue
+            st['signals'].append(key); _save(st); post_neg_gamma(r, p)
             pd.DataFrame([dict(run_at=now_et(), ticker=r['ticker'], action=r['action'], bar=r['bar'], price=r['last'], stop=r['stop'], entry=r['px'], pnl=r['pnl'])]).to_csv(f'{LIVE}/signal_log.csv', mode='a', header=not os.path.exists(f'{LIVE}/signal_log.csv'), index=False)
             continue
         fk = key + '|fast'                                                # Nov 12 2026: one-line alert goes out FIRST; the chart card (slow to render/upload) follows
@@ -1874,7 +1805,6 @@ def watch_crosses(rows, st, until):
                 pc = f"{LIVE}/cross_{tk.replace(' ', '_')}.png"
                 try: chart_min(r['H'], tk, pc, 'CROSS', live=px); cfiles = [pc]
                 except Exception as e: print(f'  ! cross chart: {str(e)[:60]}'); cfiles = []
-                hp = heat_file(r['base'], px); cfiles = cfiles + ([hp] if hp else [])
                 if post(f"\u26a1 {tk} touched the vector - wait till the close", cfiles) if os.getenv('CHART_ONLY', '1') == '1' else post(f"\u26a1 CROSS {tk} {px:.2f} is above the vector ({r['trig']:.2f}).{tail}", []):
                     st['signals'].append(key); xp[tk] = [f'{bar:%Y-%m-%d %H:%M}', r['trig']]; _save(st)
         if RTH0 <= now_et().hour * 60 + now_et().minute < RTH1:
