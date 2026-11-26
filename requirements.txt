@@ -29,3 +29,4 @@ statsmodels
 yfinance
 PyWavelets
 python-dotenv
+webull-openapi-python-sdk

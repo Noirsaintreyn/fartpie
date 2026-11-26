@@ -55,6 +55,8 @@ def optvol_age_days():
     if not os.path.exists(f): return None, None
     import pandas as pd
     last = pd.read_csv(f, usecols=['date'], parse_dates=['date']).date.max()
+    wf = os.path.join(ROOT, 'live', 'optvol_webull.csv')
+    if os.path.exists(wf): last = max(last, pd.read_csv(wf, usecols=['date'], parse_dates=['date']).date.max())
     return (dt.datetime.now(ET).replace(tzinfo=None) - last.to_pydatetime()).days, last.date()
 
 
@@ -145,6 +147,11 @@ def main():
             restarts += 1; notify(f'⚠️ screener stopped (exit {rc}) after {(time.time() - t0) / 60:.0f} min - restarting ({restarts}/8)' + (f'\n```{tail}```' if restarts in (1, 8) else '')); time.sleep(30)
         else: notify('🛑 screener crashed 8 times today - not restarting until tomorrow. Check the Render logs.')
         SCREENER_RUNNING['on'] = False
+        if os.environ.get('WEBULL_APP_KEY') and os.environ.get('WEBULL_APP_SECRET'):      # Nov 26 2026: today's option volume from the Webull API, after the close
+            try:
+                rc, tail = run_tail([sys.executable, '-u', 'tools/webull_optvol.py']); log('webull optvol rc', rc, tail[-200:])
+                if rc != 0: notify(f'⚠️ Webull option-volume pull failed (exit {rc}):\n```{tail[-600:]}```')
+            except Exception as e: log('webull optvol error', str(e)[:100])
         done = dt.datetime.now(ET).date()
         if os.environ.get('SERVICE_ONCE'): return
 
