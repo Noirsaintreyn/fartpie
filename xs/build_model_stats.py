@@ -10,13 +10,13 @@ def st(x):
     if len(x) < 5: return None
     m = x.groupby('mon').ret.mean(); t = m.mean() / (m.std() / np.sqrt(len(m))) if len(m) > 2 and m.std() > 0 else None
     return dict(n=int(len(x)), bp=round(float(x.ret.mean() * 1e4), 1), win=round(float((x.ret > 0).mean() * 100)), t=None if t is None else round(float(t), 2))
-out = {}
+out = {}; FL = []
 for h1 in (False, True):
     tf = '1h' if h1 else '15m'; D = W[(W.h1 == h1) & W.gex.notna()].copy()
     D['NEG'] = D.gex < 0; D['PCV'] = D.r_pc_vol >= 2 / 3; D['PCZ'] = D.pcz > 1; D['SKW'] = D.r_skew >= 2 / 3; D['CHM'] = D.r_charm >= 2 / 3
     for k in ('NEG', 'PCV', 'PCZ', 'SKW', 'CHM'):
         if k in ('PCV', 'PCZ') and h1: continue
-        x = D[D[k].fillna(False)]; out[f'{k}|{tf}|ALL'] = st(x)
+        x = D[D[k].fillna(False)]; out[f'{k}|{tf}|ALL'] = st(x); FL.append(x[['tk', 'entry', 'ret']].assign(tf=tf, tag=k))
         for tk, g in x.groupby('tk'): out[f'{k}|{tf}|{tk}'] = st(g)
     out[f'BASE|{tf}|ALL'] = st(D)
     for tk, g in D.groupby('tk'): out[f'BASE|{tf}|{tk}'] = st(g)
@@ -32,7 +32,8 @@ for tk, g in V.groupby('tk'):
     FF[tk] = pd.DataFrame({'rk': x.rolling(252, min_periods=60).apply(lambda a: (a[:-1] < a[-1]).mean() if len(a) > 1 else np.nan, raw=True), 'z': (x - r_.mean().shift(1)) / r_.std().shift(1)}).shift(1)
 Dw = Wd.merge(pd.concat(FF, names=['tk', 'day']).reset_index(), on=['tk', 'day'], how='left').dropna(subset=['rk'])
 for k, m in (('PCV', Dw.rk >= 2 / 3), ('PCZ', Dw.z > 1)):
-    x = Dw[m]; out[f'{k}|15m|ALL'] = st(x)
+    x = Dw[m]; out[f'{k}|15m|ALL'] = st(x); FL = [(f[~f.tk.isin(set(x.tk))] if (len(f) and f.tag.iloc[0] == k and f.tf.iloc[0] == '15m') else f) for f in FL] + [x[['tk', 'entry', 'ret']].assign(tf='15m', tag=k)]      # names the whole-universe pull does not cover keep their 23-name rows (their per-name stats stay too)
     for tk, g in x.groupby('tk'): out[f'{k}|15m|{tk}'] = st(g)
+pd.concat(FL).sort_values(['tag', 'tk', 'entry']).to_csv('live_data/model_flips.csv', index=False)      # Nov 26 2026: every flip each model tagged (the 'last time it happened' rows on the model pages)
 json.dump({k: v for k, v in out.items() if v}, open('live_data/model_stats.json', 'w'), indent=0)
 print(len(out))
