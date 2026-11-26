@@ -1,0 +1,6 @@
+flips n 436 names 18; H1: GF_PN in prior 3d on 12.9% of all days vs 6.7% of vector bull flips (rate ratio 0.52, n flips with GF_PN 29)
+base: mean r +3.13% win 30% PEAK med +5.4% hold med 21d
+flag    | n tr/te | raw mean r on vs off | raw PEAK med on vs off | ADJ PEAK effect train test all (t) | ADJ r effect train test all (t)
+GF_PN   |  11/ 18 | +3.82% vs +3.08% | +7.9% vs +5.3% | +0.070 -0.045 -0.031 (t -0.6) | +0.046 -0.028 +0.009 (t +0.3)
+GF_NP   |  40/ 69 | +3.78% vs +2.91% | +6.7% vs +4.9% | +0.462 +0.128 +0.227 (t +1.2) | +0.008 -0.003 +0.007 (t +0.3)
+NEG     |   9/  6 | +3.60% vs +3.11% | +4.8% vs +5.5% | -0.488 +nan -0.079 (t -0.9) | -0.101 +nan +0.003 (t +0.1)
