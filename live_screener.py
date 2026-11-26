@@ -184,7 +184,11 @@ def add_1h(H):
 def options_ratio():
     f = OPTVOL_FILE
     if not os.path.exists(f): sys.exit('missing xs/ext/optvol_ratio.csv - run: python3 xs/options_volume_ratio.py')
-    O = pd.read_csv(f, parse_dates=['date']); O = O[O.sh > 0]; O['r'] = O.opt_contracts * 100 / O.sh
+    O = pd.read_csv(f, parse_dates=['date'])
+    wf = os.getenv('WEBULL_OPTVOL_FILE', 'live/optvol_webull.csv')      # Nov 26 2026: daily rows from the Webull API (tools/webull_optvol.py) on top of the committed file
+    if os.path.exists(wf):
+        W = pd.read_csv(wf, parse_dates=['date']); O = pd.concat([O, W[~pd.MultiIndex.from_frame(W[['tk', 'date']]).isin(pd.MultiIndex.from_frame(O[['tk', 'date']]))]])
+    O = O[O.sh > 0]; O['r'] = O.opt_contracts * 100 / O.sh
     R = O.pivot_table(index='date', columns='tk', values='r').sort_index()
     last = O.groupby('tk').date.max(); thru = O.date.max()
     if (pd.Timestamp.now().normalize() - thru).days > int(os.getenv('RATIO_WARN_DAYS', '4')):     # Nov 24 2026: the daily IBKR pull silently fails when TWS is logged out
