@@ -217,3 +217,40 @@ def scorecard(tk, asof, atrp, gr=None, shares=None):
     rows.append(('Filing text vs last year', 'unavailable' if sim is None else (f"CHANGED (similarity {sim:.3f})" if ch else f"similar ({sim:.3f})"), '0', ('changed: ' + _st(ft.get('changed')) + ' vs same: ' + _st(ft.get('same')) + ' · no edge, not graded') if ft else ''))
     grd = 'A' if pts >= 2 else ('B' if pts == 1 else ('C' if pts == 0 else 'D'))
     return dict(grade=grd, pts=int(pts), cohort=FS.get('grades', {}).get(grd), cohort_test=FS.get('grades_test', {}).get(grd), rows=rows)
+
+
+def report_image(tk, asof=None, extra=None, path=None):
+    """Nov 26 2026 (Rey: 'the catalysts I wanted it to be a picture also'): the catalyst report as a card image (same palette as the daily report card). Returns the png path, or None on failure."""
+    import textwrap, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+    from matplotlib.patches import FancyBboxPatch
+    BG, PANEL, GRID, T1, T2, MUT = '#080c16', '#0f1626', '#1b2438', '#f1f5f9', '#94a3b8', '#56627a'; GOOD, BAD, AMB, BLUE = '#34d399', '#f87171', '#f59e0b', '#60a5fa'
+    try: txt = report(tk, asof=asof, extra=extra)
+    except Exception: return None
+    items = []
+    for ln in txt.split('\n')[1:]:
+        s = ln.replace('• ', '', 1).strip()
+        if not s or s == SIGN: continue
+        if s.startswith('★'): items.append(('INSIDER BUY', GOOD, s.lstrip('★ ').replace('GRADE A: ', 'Grade A: ')))
+        elif s.startswith('8-K') or s.startswith('offering filing'): items.append(('FILING', AMB if 'offering' in s or '5.03' in s else BLUE, s))
+        elif s.startswith('insiders'):
+            sells = 'sale(s)' in s; buys = 'buy(s)' in s and 'no open-market' not in s; items.append(('INSIDERS', GOOD if buys and not sells else (AMB if sells else MUT), s.replace('insiders 30d (open market): ', '').replace('insiders 30d: ', '')))
+        elif s.startswith('news:'): items.append(('NEWS', BLUE, s[5:].strip()))
+        elif s.startswith('⚠'): items.append(('WARNING', BAD, s.lstrip('⚠️ ').strip()))
+        else: items.append(('CATALYST' if 'no clear' not in s else 'VERDICT', GOOD if 'deal' in s or 'buying' in s else MUT, s))
+    wrapped = [textwrap.wrap(t, 78) or [''] for _, _, t in items]; rh = [.032 + .021 * len(w) for w in wrapped]; H_ = 2.15 + sum(rh) * 9.2 + .35
+    fig = plt.figure(figsize=(9.6, H_), facecolor=BG); u = 1 / H_
+    fig.patches.append(plt.Rectangle((0, 1 - .12 * u), 1, .12 * u, transform=fig.transFigure, fc=GOOD, ec='none', zorder=-5))
+    fig.text(.04, 1 - .45 * u, 'CATALYST REPORT', fontsize=9, color=GOOD, fontweight='bold', va='top'); fig.text(.04, 1 - .75 * u, tk, fontsize=28, color=T1, fontweight='bold', va='top')
+    try: nm = name(tk).title()[:56]
+    except Exception: nm = ''
+    fig.text(.04, 1 - 1.3 * u, f"{nm}  ·  filings, insiders and news around the alert" + (f"  ·  as of {pd.Timestamp(asof):%b %d}" if asof is not None else ''), fontsize=9.5, color=T2, va='top')
+    y = 1 - 1.85 * u
+    for (lab, col, t), w, h in zip(items, wrapped, rh):
+        hh = h * 9.2 * u; fig.patches.append(FancyBboxPatch((.04, y - hh), .92, hh * .94, boxstyle='round,pad=0,rounding_size=0.006', transform=fig.transFigure, fc=PANEL, ec=GRID, lw=.8, zorder=-8))
+        fig.patches.append(plt.Rectangle((.04, y - hh), .006, hh * .94, transform=fig.transFigure, fc=col, ec='none', zorder=-7)); fig.text(.062, y - hh * .12, lab, fontsize=7.8, color=col, fontweight='bold', va='top')
+        for k, l in enumerate(w): fig.text(.062, y - hh * .12 - (.17 + .21 * k) * (hh / (len(w) * .21 + .3)) , l, fontsize=11, color=T1, va='top')
+        y -= hh
+    fig.text(.955, .5 * u, '~Valiant', fontsize=15, color=T1, style='italic', family='DejaVu Serif', ha='right', va='center')
+    path = path or os.path.join(os.path.dirname(os.path.abspath(__file__)), 'live', f'catalyst_{tk}.png'); os.makedirs(os.path.dirname(path), exist_ok=True)
+    try: fig.savefig(path, dpi=190, facecolor=BG); plt.close(fig); return path
+    except Exception: return None

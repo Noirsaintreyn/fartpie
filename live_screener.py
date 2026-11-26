@@ -1180,7 +1180,9 @@ def post_neg_gamma(r, path):
             except Exception as e: print(f'  ! pcv chart: {str(e)[:60]}')
         cap = ' \u00b7 '.join(OM.LABEL[x] for x in tg)
         try:
-            import catalysts as CAT; cap += '\n' + CAT.report(base, extra=None)       # Nov 25 2026: catalyst / news / insider report + Valiant sign-off on every signal-model alert
+            import catalysts as CAT; _ci = CAT.report_image(base)       # Nov 26 2026: the catalyst / news / insider report is a picture (Rey); text only if the image fails
+            if _ci: files = list(files) + [_ci]
+            else: cap += '\n' + CAT.report(base, extra=None)
         except Exception as e: print(f'  ! catalyst report: {str(e)[:60]}')
         post(cap, files, channel=tgt, hook=hook)
     except Exception as e: print(f'  ! signal-model post: {str(e)[:60]}')
