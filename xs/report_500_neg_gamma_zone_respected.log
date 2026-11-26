@@ -1,0 +1,25 @@
+rows 32024 names 12; neg-gamma zones up 5463 down 9
+
+######## NEGATIVE gamma (net_gex<0)
+h=1 UP zone   all                      n 5463 | A train +0.086 test -0.013 pooled +0.010 (t +0.3) | reach zg 22% vs mirror 22% | contained 8% vs mirror 8%
+h=1 UP zone   high IV                  n 2765 | A train +0.232 test -0.001 pooled +0.061 (t +1.2) | reach zg 20% vs mirror 19% | contained 7% vs mirror 7%
+h=1 UP zone   Q top (vol covers zone)  n 1308 | A train +0.113 test +0.032 pooled +0.052 (t +1.2) | reach zg 61% vs mirror 55% | contained 13% vs mirror 12%
+h=1 UP zone   Q low                    n 2409 | A train +0.083 test -0.051 pooled -0.021 (t -0.5) | reach zg 1% vs mirror 3% | contained 1% vs mirror 2%
+h=5 UP zone   all                      n 5459 | A train +0.144 test +0.006 pooled +0.039 (t +1.4) | reach zg 48% vs mirror 44% | contained 11% vs mirror 12%
+h=5 UP zone   high IV                  n 2761 | A train +0.274 test +0.009 pooled +0.080 (t +1.9) | reach zg 45% vs mirror 39% | contained 11% vs mirror 12%
+h=5 UP zone   Q top (vol covers zone)  n 2863 | A train +0.145 test +0.046 pooled +0.071 (t +2.5) | reach zg 73% vs mirror 65% | contained 11% vs mirror 11%
+h=5 UP zone   Q low                    n  804 | A train +0.381 test -0.104 pooled -0.023 (t -0.4) | reach zg 2% vs mirror 6% | contained 2% vs mirror 5%
+
+######## CONTROL positive gamma (net_gex>0)
+h=1 UP zone   all                      n   58 | A train +nan test -0.069 pooled -0.034 (t -0.2) | reach zg 74% vs mirror 66% | contained 5% vs mirror 3%
+h=1 UP zone   Q top (vol covers zone)  n   55 | A train +nan test -0.056 pooled -0.020 (t -0.1) | reach zg 78% vs mirror 69% | contained 5% vs mirror 4%
+h=1 DOWN zone all                      n 10494 | A train -0.083 test -0.023 pooled -0.042 (t -1.9) | reach zg 16% vs mirror 17% | contained 6% vs mirror 7%
+h=1 DOWN zone high IV                  n 2546 | A train -0.108 test -0.050 pooled -0.069 (t -1.7) | reach zg 21% vs mirror 24% | contained 8% vs mirror 10%
+h=1 DOWN zone Q top (vol covers zone)  n 1805 | A train -0.132 test +0.006 pooled -0.032 (t -0.8) | reach zg 53% vs mirror 58% | contained 11% vs mirror 13%
+h=1 DOWN zone Q low                    n 5510 | A train -0.073 test -0.050 pooled -0.058 (t -2.4) | reach zg 2% vs mirror 1% | contained 1% vs mirror 1%
+h=5 UP zone   all                      n   58 | A train +nan test -0.089 pooled -0.031 (t -0.2) | reach zg 86% vs mirror 90% | contained 2% vs mirror 9%
+h=5 UP zone   Q top (vol covers zone)  n   56 | A train +nan test -0.030 pooled +0.025 (t +0.1) | reach zg 89% vs mirror 89% | contained 2% vs mirror 5%
+h=5 DOWN zone all                      n 10474 | A train -0.135 test -0.050 pooled -0.077 (t -3.9) | reach zg 35% vs mirror 40% | contained 10% vs mirror 12%
+h=5 DOWN zone high IV                  n 2546 | A train -0.114 test -0.030 pooled -0.057 (t -1.8) | reach zg 44% vs mirror 50% | contained 12% vs mirror 13%
+h=5 DOWN zone Q top (vol covers zone)  n 4570 | A train -0.116 test -0.000 pooled -0.034 (t -1.3) | reach zg 61% vs mirror 69% | contained 12% vs mirror 14%
+h=5 DOWN zone Q low                    n 1950 | A train -0.257 test -0.123 pooled -0.172 (t -5.9) | reach zg 3% vs mirror 3% | contained 2% vs mirror 2%
