@@ -1,0 +1,36 @@
+population px<5: n 1504 train 428 test 1076 | base reach train 55% test 54% | mean rw train +15.7% test +4.4%; BIGCAP cuts (train top-10% of buys) 0.720% cap, sells 0.602%
+
+HOW MUCH IS NOISE (share of flips by class, whole sample)
+  buy: NONE 1392 (92.6%) | NEW 14 (0.9%) | ELEV 50 (3.3%) | ROUTINE 48 (3.2%)  | of insider-active: ROUTINE 43%
+  sell: NONE 1373 (91.3%) | NEW 3 (0.2%) | ELEV 33 (2.2%) | ROUTINE 95 (6.3%)  | of insider-active: ROUTINE 73%
+
+flag       | n tr/te   | raw reach flag vs rest (test)    | ADJ reach effect: train  test  all (t) | ADJ mean r effect: train  test  all (t) | verdict
+B_ANY      |  34/ 78  | 56% vs 54%                     | +0.02 -0.03 -0.01 (t -0.3) | +0.036 +0.033 +0.037 (t +0.8) | -
+B_NEW      |   5/  9  | 67% vs 54%                     | +0.03 +0.10 +0.06 (t +0.5) | -0.103 +0.191 +0.085 (t +0.6) | -
+B_ELEV     |  11/ 39  | 49% vs 54%                     | -0.13 -0.12 -0.13 (t -1.9) | -0.182 -0.147 -0.170 (t -4.1) | REAL?
+B_ROUTINE  |  18/ 30  | 63% vs 54%                     | +0.11 +0.05 +0.09 (t +1.4) | +0.207 +0.209 +0.231 (t +2.2) | LEAD
+B_BIGCAP   |   4/ 13  | 38% vs 54%                     | +nan -0.24 -0.17 (t -1.4) | +nan -0.232 -0.195 (t -3.8) | -
+S_ANY      |  14/117  | 51% vs 54%                     | -0.16 -0.10 -0.12 (t -2.5) | +0.139 -0.001 -0.022 (t -0.4) | LEAD
+S_NEW      |   0/  3  | 100% vs 54%                    | +nan +nan +nan (t +nan) | +nan +nan +nan (t +nan) | -
+S_ELEV     |  10/ 23  | 43% vs 54%                     | -0.18 -0.17 -0.18 (t -1.8) | +0.037 +0.032 +0.033 (t +0.4) | -
+S_ROUTINE  |   4/ 91  | 52% vs 54%                     | +nan -0.09 -0.11 (t -1.9) | +nan -0.006 -0.034 (t -0.6) | -
+S_BIGCAP   |   2/ 12  | 58% vs 54%                     | +nan +0.02 -0.02 (t -0.2) | +nan +0.248 +0.135 (t +0.8) | -
+
+DOLLAR SIZES by class (median window $ | median own avg per-30d $)
+  buy NEW      n   14  window $     273,412  own avg $           0  %cap med 0.10
+  buy ELEV     n   50  window $     684,960  own avg $      40,359  %cap med 0.21
+  buy ROUTINE  n   48  window $      44,650  own avg $     415,577  %cap med 0.02
+  sell NEW      n    3  window $     291,780  own avg $           0  %cap med 0.18
+  sell ELEV     n   33  window $     691,566  own avg $      35,220  %cap med 0.11
+  sell ROUTINE  n   95  window $      91,260  own avg $     145,310  %cap med 0.02
+
+LEADS: ['B_ELEV', 'B_ROUTINE', 'S_ANY']
+
+-- B_ELEV: n 50, tickers 36, top5 tickers share 30%; ATRP med 0.065 vs 0.054; PEAK med +9.0% vs +12.1%; reach by era 2019-21 45% 2022+ 49%
+   leave-top-ticker-out ADJ reach effect: XERS: -0.11, ACRS: -0.13, LAB: -0.12, MERC: -0.13
+
+-- B_ROUTINE: n 48, tickers 30, top5 tickers share 44%; ATRP med 0.066 vs 0.054; PEAK med +28.4% vs +11.7%; reach by era 2019-21 78% 2022+ 63%
+   leave-top-ticker-out ADJ reach effect: OPK: +0.10, SVRA: +0.13, DOUG: +0.09, CDE: +0.07
+
+-- S_ANY: n 131, tickers 56, top5 tickers share 29%; ATRP med 0.071 vs 0.053; PEAK med +10.8% vs +12.0%; reach by era 2019-21 50% 2022+ 51%
+   leave-top-ticker-out ADJ reach effect: EGHT: -0.13, BBAI: -0.12, NRGV: -0.10, AEVA: -0.11

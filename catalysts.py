@@ -103,27 +103,33 @@ def grade(tk, asof=None):
             res['a'] = bool(res['buyers'])
     except Exception: pass
     _GR[key] = res; return res
-_IB = None
-def size_read(i, tk, px=None):
-    """how big is this insider activity for a sub-$5 stock? Baseline = insider_baseline.json (xs/build_insider_baseline.py): 1,504 history sub-$5 flips (buys 2018-26) and the 14 that had open-market sales (Apr-Oct 2025 only, thin). Sized as % of market cap when shares and price are known, else in dollars. -> list of short strings"""
-    global _IB
-    if _IB is None:
-        try: _IB = json.load(open(os.path.join(_HERE, 'insider_baseline.json')))
-        except Exception: _IB = {}
-    if not _IB or not px or px >= 5: return []   # baseline is sub-$5 flips only: no size read for anything else
-    try: sh = json.load(open(os.path.join(_HERE, 'live', 'shares.json'))).get(tk)
-    except Exception: sh = None
-    cap = sh * px if sh and px else None; out = []
-    for key, n, usd, word in (('buy', i['buys'], i['buy_usd'], 'buying'), ('sell', i['sells'], i['sell_usd'], 'selling')):
-        b = _IB.get(key)
-        if not n or not b: continue
-        if cap: v = usd / cap * 100; c = b['pcap']; unit = f'{v:.2f}% of the company'
-        else: v = usd; c = b['usd']; unit = _usd(usd)
-        lab = 'outlier, top 2.5% of small-cap flips' if v >= c['0.975'] else 'notable, top 10%' if v >= c['0.9'] else 'above normal, top 25%' if v >= c['0.75'] else 'normal for small caps' if v >= c['0.5'] else 'small, routine'
-        out.append(f"{word} {unit}: {lab}" + (' (thin sample)' if key == 'sell' else ''))
-    if not out: out.append(f"no insider trades: normal, only {b_any(_IB):.0%} of small-cap flips see any buy or sale")
+_IO = None
+def size_read(i, tk, px=None, asof=None):
+    """Nov 26 2026 (Rey: 'is it normal for the STOCK?'): sizes the 30d insider activity against the SAME stock's prior 24 months (report 503). Classes per side: NEW (dormant stock, nobody traded in 24m), ELEV (>= 3x its own usual 30d dollars), ROUTINE (everyday flow). History = insider_own.json (through 2026-03-31) + a live Form 4 scan of the gap. Each line carries the measured reach/median of that class on sub-$5 flips. sub-$5 only. -> list of strings"""
+    global _IO
+    if not px or px >= 5: return []
+    if _IO is None:
+        try: _IO = json.load(open(os.path.join(_HERE, 'insider_own.json')))
+        except Exception: _IO = {}
+    if not _IO: return []
+    asof = pd.Timestamp(asof) if asof is not None else pd.Timestamp.now().normalize(); w0 = asof - pd.Timedelta(days=30); b0 = w0 - pd.Timedelta(days=730); h = _IO['hist'].get(tk, {})
+    gap = []
+    try:
+        g0 = pd.Timestamp(_IO.get('through', '2026-03-31')) + pd.Timedelta(days=1)
+        if w0 > g0: gap = buys(tk, g0, w0, 40)
+    except Exception: gap = []
+    st = _IO['stats']; out = []; base_r = _IO['base']['reach']
+    for key, sd, n, usd, word in (('buy', 'b', i['buys'], i['buy_usd'], 'buying'), ('sell', 's', i['sells'], i['sell_usd'], 'selling')):
+        if not n: continue
+        rows = [(pd.Timestamp(str(d)), u) for d, u in h.get(sd, [])] + [(g['date'], g['usd']) for g in gap if g['side'] == ('P' if sd == 'b' else 'S')]
+        base = [u for d, u in rows if b0 < d <= w0]; avg = sum(base) / (730 / 30)
+        c = 'NEW' if not base else ('ELEV' if usd >= 3 * avg else 'ROUTINE'); k = st.get(f'{key}_{c}', {})
+        stat = f" | past flips like this: {k['n']}, reach {k['reach']:.0%} vs {base_r:.0%} all, median {k['med']:+.0%}" if k.get('n', 0) >= 10 else ' | too few past cases to read'
+        txt = {'NEW': f"first {word} here in 24+ months ({_usd(usd)})", 'ELEV': f"{word} {_usd(usd)} is {usd / avg:.0f}x this stock's usual 30d ({_usd(avg)})" if avg else f"{word} {_usd(usd)}", 'ROUTINE': f"{word} {_usd(usd)} is everyday flow for this stock (usual {_usd(avg)} per 30d)"}[c]
+        out.append(txt + stat)
+    if not out: out.append(f"no insider trades in 30d: the usual state, {1 - (S_ANY_SHARE):.0%} of small-cap flips are quiet")
     return out
-def b_any(B): return max(B.get('buy', {}).get('any', 0.07), B.get('sell', {}).get('any', 0.07))
+S_ANY_SHARE = 0.10
 def _usd(v): return f'${v/1e6:.1f}M' if v >= 1e6 else f'${v/1e3:.0f}k'
 def report(tk, asof=None, extra=None, px=None):
     """quick catalyst / news / insider report for a flip alert, ends with the Valiant sign-off. Never raises: a failed source just drops its line."""
@@ -136,7 +142,7 @@ def report(tk, asof=None, extra=None, px=None):
         i = insiders(tk, asof=asof)
         if i['buys'] or i['sells']: L.append('\u2022 insiders 30d (open market): ' + ' \u00b7 '.join(x for x in (f"{i['buys']} buy(s) {_usd(i['buy_usd'])}" if i['buys'] else '', f"{i['sells']} sale(s) {_usd(i['sell_usd'])}" if i['sells'] else '') if x) + (f" ({', '.join(sorted(set(i['who'])))})" if i['who'] else ''))
         else: L.append('\u2022 insiders 30d: no open-market buys or sales')
-        for z in size_read(i, tk, px): L.append('\u2022 insider size: ' + z)
+        for z in size_read(i, tk, px, asof): L.append('\u2022 insider size: ' + z)
         if i['buys'] and not i['sells']: cb['good'].append('insider buying')
     except Exception: pass
     nw = [ln[6:] for ln in cb['text'].split('\n') if ln.startswith('news:')]
@@ -256,7 +262,7 @@ def report_image(tk, asof=None, extra=None, path=None, px=None):
         elif s.startswith('8-K') or s.startswith('offering filing'): items.append(('FILING', AMB if 'offering' in s or '5.03' in s else BLUE, s))
         elif s.startswith('insiders'):
             sells = 'sale(s)' in s; buys = 'buy(s)' in s and 'no open-market' not in s; items.append(('INSIDERS', GOOD if buys and not sells else (AMB if sells else MUT), s.replace('insiders 30d (open market): ', '').replace('insiders 30d: ', '')))
-        elif s.startswith('insider size:'): z = s[13:].strip(); items.append(('SIZE', (GOOD if z.startswith('buying') else AMB) if ('notable' in z or 'outlier' in z or 'above normal' in z) else MUT, z))
+        elif s.startswith('insider size:'): z = s[13:].strip(); items.append(('INSIDER SIZE', AMB if 'usual 30d' in z else (GOOD if z.startswith('first buying') else MUT), z))
         elif s.startswith('news:'): items.append(('NEWS', BLUE, s[5:].strip()))
         elif s.startswith('⚠'): items.append(('WARNING', BAD, s.lstrip('⚠️ ').strip()))
         else: items.append(('CATALYST' if 'no clear' not in s else 'VERDICT', GOOD if 'deal' in s or 'buying' in s else MUT, s))
