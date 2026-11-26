@@ -1061,13 +1061,6 @@ def history_card(rows, meta, path, fetch=True, hm=False):
     fig.text(.045, .1 / H_in, 'RETURN = trade return; PEAK = highest return while held (RTH highs); BOOK = its share of the book (1 slot). Book P&L = sum of slot returns (not compounded), before costs.', fontsize=7.5, color=MUT)
     fig.savefig(path, dpi=140, facecolor=BG); plt.close(fig)
 
-def gamma_lines(tk):
-    """Nov 26 2026 (Rey: 'throw the flip on there'): zero-gamma (VT), call wall, put wall from live/gamma_levels.json (written by gex_heatmap.py), if fresh (<= 5 days)."""
-    try:
-        L = json.load(open(f'{LIVE}/gamma_levels.json')).get(tk)
-        if not L or (pd.Timestamp.now() - pd.Timestamp(L['asof'])).days > 5: return []
-        return [(k, float(L[k.lower()]), c) for k, c in (('VT', '#b45cf0'), ('CW', '#2ac06e'), ('PW', '#f59e0b')) if L.get(k.lower()) is not None]
-    except Exception: return []
 def chart_min(H, tk, path, kind='BUY', live=None, bars=96):
     """Nov 24 2026 (Rey): the ONLY thing posted on a close - 15m candles coloured by vector state, vector level, EMA50 / EMA200, no other text.
     kind 'CROSS' (price touched the vector mid-bar) also draws the live price and the trigger line."""
@@ -1087,10 +1080,7 @@ def chart_min(H, tk, path, kind='BUY', live=None, bars=96):
     mk = {'BUY': ('^', GOOD), 'SELL': ('v', CRIT)}.get(kind)
     if mk: ax.scatter([n - 1], [X.close.iloc[-1]], marker=mk[0], s=140, color=mk[1], zorder=7)
     ax.set_xlim(-1, n + 6); ax.tick_params(colors=MUT, labelsize=8); ax.grid(color=GRID, lw=.5, alpha=.6)
-    lo, hi = X.low.min(), X.high.max()
-    for nm, v, cc in gamma_lines(tk):
-        if lo * .93 <= v <= hi * 1.07: ax.axhline(v, color=cc, lw=1.3, ls=(0, (6, 3)), zorder=4); ax.text(n + 5.5, v, f'{nm} {v:.2f}', color=cc, fontsize=8.5, va='bottom', ha='right'); lo, hi = min(lo, v), max(hi, v)
-    pad = (hi - lo) * .06; ax.set_ylim(lo - pad, hi + pad)
+    lo, hi = X.low.min(), X.high.max(); pad = (hi - lo) * .06; ax.set_ylim(lo - pad, hi + pad)
     ix = np.linspace(0, n - 1, 6).astype(int); ax.set_xticks(ix); ax.set_xticklabels([f'{X.dt.iloc[i]:%a %H:%M}' for i in ix])
     ax.set_title(f'{tk}  15m', color=T1, fontsize=14, fontweight='bold', loc='left')
     fig.tight_layout(); fig.savefig(path, facecolor=BG); plt.close(fig)
