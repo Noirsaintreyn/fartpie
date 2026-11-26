@@ -234,7 +234,7 @@ def main():
             nxt = next_start(now); log('idle until', nxt.strftime('%a %Y-%m-%d %H:%M ET')); time.sleep(max(30, min(1800, (nxt - now).total_seconds()))); continue
         age, last = optvol_age_days()
         if age is None: notify('⚠️ screener: the options-ratio file is missing - run tools/weekly_ratio.sh on the Mac (it commits + pushes it).')
-        elif age > MAX_AGE and warned != now.date(): notify(f'⚠️ screener: the options-ratio file is {age} days old (last row {last}). Run tools/weekly_ratio.sh on the Mac.'); warned = now.date()
+        elif age > MAX_AGE and warned != now.date() and not (os.environ.get('WEBULL_APP_KEY') and os.environ.get('WEBULL_APP_SECRET')): notify(f'⚠️ screener: the options-ratio file is {age} days old (last row {last}). Run tools/weekly_ratio.sh on the Mac.'); warned = now.date()
         restarts = 0; SCREENER_RUNNING['on'] = True
         while restarts < 8:
             t0 = time.time(); log('starting live_screener.py', ' '.join(ARGS))
