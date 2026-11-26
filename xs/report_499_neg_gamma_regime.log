@@ -1,0 +1,16 @@
+n 37927, names 19, days 2190, neg-gamma share 23%, by year: 2018 25%, 2019 18%, 2020 18%, 2021 12%, 2022 44%, 2023 24%, 2024 18%, 2025 23%, 2026 58%
+outcome                     | slice     | n tr/te    | NEG coef train | test | pooled (t) | means off -> on
+H1 log range                | all       | 14174/23753 | +0.0946 | +0.0801 | +0.0834 (t +10.0) | -3.9332 -> -3.7425  PASS
+H1 log range                | high-vol  |  3910/ 8737 | +0.1334 | +0.1242 | +0.1232 (t +8.8) | -3.6948 -> -3.5290  PASS
+H1 log range                | low-vol   |  5712/ 6936 | +0.0845 | +0.0443 | +0.0564 (t +4.5) | -4.1178 -> -4.0953  PASS
+H2 trend efficiency         | all       | 14174/23753 | +0.0154 | +0.0118 | +0.0147 (t +3.5) | +0.4533 -> +0.4727  PASS
+H2 trend efficiency         | high-vol  |  3910/ 8737 | +0.0211 | +0.0111 | +0.0164 (t +2.4) | +0.4556 -> +0.4755  PASS
+H2 trend efficiency         | low-vol   |  5712/ 6936 | +0.0134 | +0.0053 | +0.0066 (t +0.8) | +0.4528 -> +0.4666  
+H3 continuation (ret x sign prior)| all       | 14174/23753 | -0.0030 | -0.0005 | -0.0008 (t -1.7) | +0.0000 -> -0.0016  
+H3 continuation (ret x sign prior)| high-vol  |  3910/ 8737 | -0.0049 | -0.0005 | -0.0008 (t -0.9) | -0.0005 -> -0.0027  
+H3 continuation (ret x sign prior)| low-vol   |  5712/ 6936 | -0.0013 | -0.0005 | -0.0009 (t -1.6) | +0.0002 -> -0.0003  
+H4 quiet-day share          | all       | 14174/23753 | -0.0661 | -0.0491 | -0.0544 (t -6.9) | +0.6390 -> +0.6152  PASS
+H4 quiet-day share          | high-vol  |  3910/ 8737 | -0.0886 | -0.0710 | -0.0764 (t -6.0) | +0.6984 -> +0.6336  PASS
+H4 quiet-day share          | low-vol   |  5712/ 6936 | -0.0651 | -0.0200 | -0.0339 (t -2.3) | +0.5944 -> +0.5682  PASS
+
+high-vol days: neg gamma 36% of them; median range on neg 2.84% vs pos 2.37% (raw; ATR bucket not equal), share closing in the top/bottom 20% of the day's range: neg 51% pos 46%

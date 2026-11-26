@@ -1336,3 +1336,8 @@ Daily high-ATRP group, test 2022+, entries next open, 30bp. Close-exit (A open v
 
 ## 498b: short interest inside the LIVE sub-$5 group (base5 top 30%), SI>=15% vs regular
 - All years: SI>=15% n 81 reach 80% (65/81) mean +91% median -7.6% | regular n 307 reach 66% (204/307) mean +31% median -11%. TEST 2022+: SI n 55 reach 76% vs regular 66% (n 224); mean +13.6% vs +20.9% (SI lower), median -8.5% vs -11.9%. Eras: train 88% vs 69%, 2022 n 3, 2023-26 75% vs 67% (mean 14.5% vs 23.9%). Reach higher, mean not better; shown on card as info row, 0 points.
+
+## 499: negative gamma as a volatility/range regime (19 large caps, 2018-2025, n 37,927 name-days)
+- Feasibility: historical gex files hold only daily net_gex (no strike grid) -> a zero-gamma/VT level or wall "respected" test needs historical chains (Theta, Mac). Not testable here.
+- Regime test (prior-close net_gex<0 vs >=0, ATR14% + name FE, date-clustered): H1 log range +0.083 (t 10.0; +8.7% wider day), train +0.095 / test +0.080; high-vol +0.123 (t 8.8, ~+13%), low-vol +0.056. H2 trend efficiency +0.015 (t 3.5; high-vol t 2.4; small). H4 quiet-day share -5.4 pts (t -6.9), high-vol -7.6 pts (t -6.0). H3 continuation null (t -1.7, wrong sign, ~0).
+- Read: neg gamma = real range/vol expansion (amplification mechanism holds, same sign in train and test, both vol slices), small extra trend-closing, NO directional edge after a move. Neg-gamma share 12-25% most years, 44% in 2022, 58% in 2026 so far.
