@@ -73,18 +73,20 @@ def selftest():
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--symbols', default='QQQ,SPY'); ap.add_argument('--csv', default=None); ap.add_argument('--date', default=None); ap.add_argument('--post', action='store_true'); ap.add_argument('--selftest', action='store_true'); a = ap.parse_args()
     if a.selftest: return selftest()
-    now = pd.Timestamp.now(tz='America/New_York').tz_localize(None); os.makedirs(LIVE, exist_ok=True); ng = {}
+    now = pd.Timestamp.now(tz='America/New_York').tz_localize(None); os.makedirs(LIVE, exist_ok=True); ng = {}; lvls = {}
     try: ng = json.load(open(f'{LIVE}/neg_gamma.json'))
+    except Exception: pass
+    try: lvls = json.load(open(f'{LIVE}/gamma_levels.json'))
     except Exception: pass
     for sym in a.symbols.split(','):
         try:
             if a.csv: df, f = pd.read_csv(a.csv), a.csv
             else: df, f = WG.load(sym, a.date)
-            M, S, lv = matrix(df, now); asof = os.path.basename(f)[:10]; p = f'{LIVE}/gex_{sym}.png'; render(sym, M, S, lv, p, asof); ng[sym] = lv['net']
+            M, S, lv = matrix(df, now); asof = os.path.basename(f)[:10]; p = f'{LIVE}/gex_{sym}.png'; render(sym, M, S, lv, p, asof); ng[sym] = lv['net']; lvls[sym] = dict(vt=lv['vt'], cw=lv['cw'], pw=lv['pw'], asof=asof)
             print(sym, f"net GEX {fmt(lv['net'])}/1%  CW {lv['cw']} PW {lv['pw']} VT {lv['vt']}  -> {p}")
             if a.post: post_image(p)
         except SystemExit as e: print(sym, 'skipped:', e)
         except Exception as e: print(sym, 'failed:', repr(e)[:200])
-    json.dump(ng, open(f'{LIVE}/neg_gamma.json', 'w'), indent=1); print(f'wrote {LIVE}/neg_gamma.json')
+    json.dump(lvls, open(f'{LIVE}/gamma_levels.json', 'w'), indent=1); json.dump(ng, open(f'{LIVE}/neg_gamma.json', 'w'), indent=1); print(f'wrote {LIVE}/neg_gamma.json')
 
 if __name__ == '__main__': main()
