@@ -1177,11 +1177,13 @@ def post_neg_gamma(r, path):
             R.append(f"{base}  n {b['n']} \u00b7 {b['bp']:+.0f}bp \u00b7 {b['win']}% win" if b else f'{base}  n<5')
         try: files = [stamp(files[0], L, R, os.path.join(LIVE, f'ng_{base}.png'))] + files[1:]
         except Exception as e: print(f'  ! stamp: {str(e)[:60]}')
-        if 'PCV' in tg or 'PCZ' in tg:
-            try:
+        try:                                                              # Nov 26 2026: one page per model that tagged the flip: the paired feature chart + the backtest of the last times it fired (model_pages.py)
+            import model_pages as MP; pages = [MP.model_page(base, track, k, os.path.join(LIVE, f'mp_{base}_{k}.png')) for k in tg]; pages = [p_ for p_ in pages if p_]
+            if pages: files = files[:1] + pages + (files[1:] if 'NEG' in tg else [])
+            elif 'PCV' in tg or 'PCZ' in tg:
                 pc = pcv_chart(base, z='PCZ' in tg)
                 if pc: files = files[:1] + [pc]
-            except Exception as e: print(f'  ! pcv chart: {str(e)[:60]}')
+        except Exception as e: print(f'  ! model pages: {str(e)[:60]}')
         cap = ' \u00b7 '.join(OM.LABEL[x] for x in tg)
         try:
             import catalysts as CAT; _ci = CAT.report_image(base)       # Nov 26 2026: the catalyst / news / insider report is a picture (Rey); text only if the image fails
