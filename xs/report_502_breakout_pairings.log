@@ -1,0 +1,35 @@
+daily bars for 1656 tickers; flips with bars: 100% (px<5: 100%)
+
+######## px<5: n 1504 (OVH known 100%) train 428 test 1076 | base reach 55%/54%
+flag    | n tr/te | raw test reach on vs off | ADJ reach train test all (t) | ADJ mean r train test all (t) | verdict
+OVH_HI  | 143/374 | 46% vs 58% | -0.03 -0.06 -0.05 (t -1.8) | -0.022 +0.021 +0.007 (t +0.3) | -
+OVH_LO  | 143/332 | 60% vs 51% | +0.05 +0.05 +0.05 (t +1.9) | -0.021 +0.006 +0.003 (t +0.1) | -
+BRD_HI  | 144/353 | 57% vs 52% | +0.10 +0.05 +0.08 (t +2.4) | +0.112 -0.007 +0.039 (t +0.9) | LEAD
+BRD_LO  | 157/240 | 51% vs 55% | -0.04 -0.04 -0.05 (t -1.5) | -0.127 -0.047 -0.067 (t -3.1) | LEAD
+
+######## px<10: n 3863 (OVH known 100%) train 1231 test 2632 | base reach 51%/49%
+flag    | n tr/te | raw test reach on vs off | ADJ reach train test all (t) | ADJ mean r train test all (t) | verdict
+OVH_HI  | 410/971 | 43% vs 52% | -0.06 -0.04 -0.04 (t -2.7) | -0.036 -0.016 -0.022 (t -1.2) | LEAD
+OVH_LO  | 410/801 | 53% vs 47% | +0.04 +0.02 +0.03 (t +1.5) | -0.001 +0.017 +0.012 (t +0.9) | -
+BRD_HI  | 441/918 | 52% vs 47% | +0.08 +0.06 +0.07 (t +2.7) | +0.102 +0.011 +0.043 (t +1.6) | LEAD
+BRD_LO  | 424/580 | 47% vs 49% | -0.05 -0.03 -0.04 (t -1.8) | -0.067 -0.011 -0.023 (t -1.6) | -
+
+######## px<20: n 8408 (OVH known 99%) train 2993 test 5415 | base reach 47%/45%
+flag    | n tr/te | raw test reach on vs off | ADJ reach train test all (t) | ADJ mean r train test all (t) | verdict
+OVH_HI  | 991/1882 | 40% vs 47% | -0.07 -0.03 -0.04 (t -3.1) | -0.055 -0.010 -0.024 (t -2.0) | LEAD
+OVH_LO  | 991/1618 | 49% vs 43% | +0.06 +0.04 +0.05 (t +3.8) | +0.020 +0.007 +0.012 (t +1.3) | LEAD
+BRD_HI  | 1076/1978 | 46% vs 44% | +0.05 +0.03 +0.04 (t +1.4) | +0.062 +0.008 +0.032 (t +1.5) | -
+BRD_LO  | 1250/1577 | 44% vs 45% | -0.01 -0.02 -0.02 (t -0.9) | -0.038 +0.000 -0.011 (t -0.9) | -
+######## decisive: inside the high-ATRP slice (top 30% ATRP, the live regime) with CONTINUOUS ATRP + LMC + LTURN controls
+  px<5 OVH_LO : ALL +0.082 (t +1.7, n flag 204) | train +0.134 (t +1.3, n flag 77) | test +0.040 (t +0.7, n flag 127)
+  px<5 OVH_HI : ALL +0.022 (t +0.3, n flag 61) | train -0.061 (t -0.4, n flag 17) | test +0.070 (t +1.0, n flag 44)
+  px<5 BRD_HI : ALL +0.051 (t +1.0, n flag 132) | train -0.034 (t -0.4, n flag 58) | test +0.039 (t +0.7, n flag 74)
+  px<5 BRD_LO : ALL -0.102 (t -2.0, n flag 114) | train -0.041 (t -0.5, n flag 38) | test -0.102 (t -1.7, n flag 76)
+  px<10 OVH_LO : ALL +0.045 (t +1.3, n flag 490) | train +0.114 (t +1.9, n flag 181) | test +0.003 (t +0.1, n flag 309)
+  px<10 OVH_HI : ALL +0.016 (t +0.4, n flag 201) | train -0.052 (t -0.7, n flag 79) | test +0.052 (t +1.0, n flag 122)
+  px<10 BRD_HI : ALL +0.057 (t +1.2, n flag 386) | train +0.001 (t +0.0, n flag 168) | test +0.062 (t +1.5, n flag 218)
+  px<10 BRD_LO : ALL -0.049 (t -1.3, n flag 279) | train -0.018 (t -0.3, n flag 103) | test -0.053 (t -1.1, n flag 176)
+  px<20 OVH_LO : ALL +0.037 (t +1.8, n flag 929) | train +0.079 (t +2.7, n flag 370) | test +0.005 (t +0.2, n flag 559)
+  px<20 OVH_HI : ALL -0.037 (t -1.3, n flag 502) | train -0.117 (t -3.0, n flag 237) | test +0.028 (t +0.9, n flag 265)
+  px<20 BRD_HI : ALL +0.028 (t +0.6, n flag 890) | train -0.004 (t -0.0, n flag 447) | test +0.043 (t +1.2, n flag 443)
+  px<20 BRD_LO : ALL -0.033 (t -0.9, n flag 712) | train +0.004 (t +0.1, n flag 287) | test -0.050 (t -1.5, n flag 425)
