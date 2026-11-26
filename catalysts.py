@@ -103,8 +103,29 @@ def grade(tk, asof=None):
             res['a'] = bool(res['buyers'])
     except Exception: pass
     _GR[key] = res; return res
+_IB = None
+def size_read(i, tk, px=None):
+    """how big is this insider activity for a sub-$5 stock? Baseline = insider_baseline.json (xs/build_insider_baseline.py): 1,504 history sub-$5 flips (buys 2018-26) and the 14 that had open-market sales (Apr-Oct 2025 only, thin). Sized as % of market cap when shares and price are known, else in dollars. -> list of short strings"""
+    global _IB
+    if _IB is None:
+        try: _IB = json.load(open(os.path.join(_HERE, 'insider_baseline.json')))
+        except Exception: _IB = {}
+    if not _IB or not px or px >= 5: return []   # baseline is sub-$5 flips only: no size read for anything else
+    try: sh = json.load(open(os.path.join(_HERE, 'live', 'shares.json'))).get(tk)
+    except Exception: sh = None
+    cap = sh * px if sh and px else None; out = []
+    for key, n, usd, word in (('buy', i['buys'], i['buy_usd'], 'buying'), ('sell', i['sells'], i['sell_usd'], 'selling')):
+        b = _IB.get(key)
+        if not n or not b: continue
+        if cap: v = usd / cap * 100; c = b['pcap']; unit = f'{v:.2f}% of the company'
+        else: v = usd; c = b['usd']; unit = _usd(usd)
+        lab = 'outlier, top 2.5% of small-cap flips' if v >= c['0.975'] else 'notable, top 10%' if v >= c['0.9'] else 'above normal, top 25%' if v >= c['0.75'] else 'normal for small caps' if v >= c['0.5'] else 'small, routine'
+        out.append(f"{word} {unit}: {lab}" + (' (thin sample)' if key == 'sell' else ''))
+    if not out: out.append(f"no insider trades: normal, only {b_any(_IB):.0%} of small-cap flips see any buy or sale")
+    return out
+def b_any(B): return max(B.get('buy', {}).get('any', 0.07), B.get('sell', {}).get('any', 0.07))
 def _usd(v): return f'${v/1e6:.1f}M' if v >= 1e6 else f'${v/1e3:.0f}k'
-def report(tk, asof=None, extra=None):
+def report(tk, asof=None, extra=None, px=None):
     """quick catalyst / news / insider report for a flip alert, ends with the Valiant sign-off. Never raises: a failed source just drops its line."""
     cb = catalyst_block(tk, asof); L = [f'**Catalyst report \u00b7 {tk}**']
     for ln in cb['text'].split('\n'):
@@ -115,6 +136,7 @@ def report(tk, asof=None, extra=None):
         i = insiders(tk, asof=asof)
         if i['buys'] or i['sells']: L.append('\u2022 insiders 30d (open market): ' + ' \u00b7 '.join(x for x in (f"{i['buys']} buy(s) {_usd(i['buy_usd'])}" if i['buys'] else '', f"{i['sells']} sale(s) {_usd(i['sell_usd'])}" if i['sells'] else '') if x) + (f" ({', '.join(sorted(set(i['who'])))})" if i['who'] else ''))
         else: L.append('\u2022 insiders 30d: no open-market buys or sales')
+        for z in size_read(i, tk, px): L.append('\u2022 insider size: ' + z)
         if i['buys'] and not i['sells']: cb['good'].append('insider buying')
     except Exception: pass
     nw = [ln[6:] for ln in cb['text'].split('\n') if ln.startswith('news:')]
@@ -219,12 +241,12 @@ def scorecard(tk, asof, atrp, gr=None, shares=None):
     return dict(grade=grd, pts=int(pts), cohort=FS.get('grades', {}).get(grd), cohort_test=FS.get('grades_test', {}).get(grd), rows=rows)
 
 
-def report_image(tk, asof=None, extra=None, path=None):
+def report_image(tk, asof=None, extra=None, path=None, px=None):
     """Nov 26 2026 (Rey: 'the catalysts I wanted it to be a picture also'): the catalyst report as a card image (same palette as the daily report card). Returns the png path, or None on failure."""
     import textwrap, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
     from matplotlib.patches import FancyBboxPatch
     BG, PANEL, GRID, T1, T2, MUT = '#080c16', '#0f1626', '#1b2438', '#f1f5f9', '#94a3b8', '#56627a'; GOOD, BAD, AMB, BLUE = '#34d399', '#f87171', '#f59e0b', '#60a5fa'
-    try: txt = report(tk, asof=asof, extra=extra)
+    try: txt = report(tk, asof=asof, extra=extra, px=px)
     except Exception: return None
     items = []
     for ln in txt.split('\n')[1:]:
@@ -234,9 +256,11 @@ def report_image(tk, asof=None, extra=None, path=None):
         elif s.startswith('8-K') or s.startswith('offering filing'): items.append(('FILING', AMB if 'offering' in s or '5.03' in s else BLUE, s))
         elif s.startswith('insiders'):
             sells = 'sale(s)' in s; buys = 'buy(s)' in s and 'no open-market' not in s; items.append(('INSIDERS', GOOD if buys and not sells else (AMB if sells else MUT), s.replace('insiders 30d (open market): ', '').replace('insiders 30d: ', '')))
+        elif s.startswith('insider size:'): z = s[13:].strip(); items.append(('SIZE', (GOOD if z.startswith('buying') else AMB) if ('notable' in z or 'outlier' in z or 'above normal' in z) else MUT, z))
         elif s.startswith('news:'): items.append(('NEWS', BLUE, s[5:].strip()))
         elif s.startswith('⚠'): items.append(('WARNING', BAD, s.lstrip('⚠️ ').strip()))
         else: items.append(('CATALYST' if 'no clear' not in s else 'VERDICT', GOOD if 'deal' in s or 'buying' in s else MUT, s))
+    items = [(a, b, t.replace('$', r'\$')) for a, b, t in items]   # matplotlib reads $..$ as math
     wrapped = [textwrap.wrap(t, 78) or [''] for _, _, t in items]; rh = [.032 + .021 * len(w) for w in wrapped]; H_ = 2.15 + sum(rh) * 9.2 + .35
     fig = plt.figure(figsize=(9.6, H_), facecolor=BG); u = 1 / H_
     fig.patches.append(plt.Rectangle((0, 1 - .12 * u), 1, .12 * u, transform=fig.transFigure, fc=GOOD, ec='none', zorder=-5))
