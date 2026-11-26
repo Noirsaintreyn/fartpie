@@ -1921,6 +1921,8 @@ def check_stale(rows, st):
     last = st.get('stale')
     if last and now - pd.Timestamp(last) < pd.Timedelta('30min'): return
     names = ', '.join(f"{t} ({b:%H:%M})" for t, b in old[:8])
+    if os.getenv('STALE_ALERTS') != '1':                                  # Nov 26 2026 (Rey: 'delete the data stale message, it's annoying'): log only; set STALE_ALERTS=1 to post it again
+        print(f'  ! data stale (not posted): {names}'); st['stale'] = str(now); return
     if post(f"\u26a0\ufe0f DATA STALE - newest bars: {names}. Signals and exits can't be trusted until this clears; check positions manually.", []):
         st['stale'] = str(now); _save(st)
 
