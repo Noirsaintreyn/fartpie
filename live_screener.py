@@ -488,8 +488,19 @@ def scan(args):
         o.update(tk=v['tk'], track=v['track'], ratio=99.0, forced=True)
         TR = [t for t in TR if not (t['tk'] == o['tk'] and t['track'] == o['track'] and t['t0'] >= o['t0'] and t['t0'] < o['t1'])] + [o]
     TR_all = list(TR)                                                           # every replayed trade (honorable-mention history uses them)
+    if os.getenv('CATCHUP_BLOCKED', '1') == '1' and not LG.get('__catchup__'):         # Nov 27 2026 (Rey): flips the 8% breaker blocked (TSLA, AMD...) go into the book once, at the replayed entry price
+        global BREAKER
+        _b, BREAKER = BREAKER, 0.08
+        try:
+            cp = [dict(t) for t in TR]; allocate(cp)
+            bl = {_lkey(t['tk'], t['track'], t['t0']) for t in cp if t.get('blocked') and t['px']}
+        finally: BREAKER = _b
+        n = 0
+        for t in TR:
+            if t['px'] and _lkey(t['tk'], t['track'], t['t0']) in bl and _lkey(t['tk'], t['track'], t['t0']) not in LT: t['catchup'] = True; n += 1
+        LG['__catchup__'] = f'{now_et():%Y-%m-%d %H:%M} {n} trades'; print(f'  catch-up: {n} breaker-blocked flips entered the book')
     cut_old = np.datetime64(asof - pd.Timedelta('30min'))                     # trades that start before the last scan but were never recorded = phantoms
-    TR = [t for t in TR if t.get('forced') or not t['px'] or t['t0'] >= cut_old or pd.Timestamp(t['t0']) < START]
+    TR = [t for t in TR if t.get('forced') or t.get('catchup') or not t['px'] or t['t0'] >= cut_old or pd.Timestamp(t['t0']) < START]
     for t in TR:
         if t['status'] == 'CLOSED':
             k = _lkey(t['tk'], t['track'], t['t0']); v = LT.get(k)
