@@ -1,0 +1,29 @@
+all 2019-25: n=558 pass by 30/60/90/180/365d 1/11/17/40/61%  | passers median 145d (25-75%: 82-219) | first payout by 90/180/365d 3/15/47%  median 235d from purchase (25-75%: 157-303) | failed anywhere 14% | payout amount median $241
+train 19-21: n=254 pass by 30/60/90/180/365d 1/9/13/40/67%  | passers median 164d (25-75%: 108-224) | first payout by 90/180/365d 3/14/50%  median 246d from purchase (25-75%: 189-308) | failed anywhere 9% | payout amount median $241
+test 22-25: n=304 pass by 30/60/90/180/365d 1/13/21/41/57%  | passers median 124d (25-75%: 67-212) | first payout by 90/180/365d 3/16/43%  median 219d from purchase (25-75%: 139-298) | failed anywhere 18% | payout amount median $378
+eval $/calendar day for passers (900/days): median 6.2  | % of account per calendar day 0.062
+
+2026 accounts bought on the 1st trading day of each month (data through 2026-10-20):
+  bought Jan 01: failed in eval   pass day None payout day None fail day 172 bal $9700
+  bought Feb 02: failed in eval   pass day None payout day None fail day 140 bal $9700
+  bought Mar 02: failed in eval   pass day None payout day None fail day 112 bal $9700
+  bought Apr 01: failed in funded pass day 49 payout day None fail day 82 bal $9699
+  bought May 01: failed in eval   pass day None payout day None fail day 52 bal $9698
+  bought Jun 01: failed in eval   pass day None payout day None fail day 21 bal $9699
+  bought Jul 01: open in eval     pass day None payout day None fail day None bal $9959
+  bought Aug 03: open in eval     pass day None payout day None fail day None bal $9986
+  bought Sep 01: open in eval     pass day None payout day None fail day None bal $10071
+
+2026 PCV 14-name flips: 229 avg 24.2 bp, win 35 %
+      n     bp   tot
+mon                 
+01   26  -48.2 -12.5
+02   43    0.9   0.4
+03   44 -113.6 -50.0
+04   25  271.5  67.9
+05    7  746.7  52.3
+06   25 -202.5 -50.6
+07   18   71.6  12.9
+08   21   69.3  14.6
+09   19   85.9  16.3
+10    1  418.7   4.2
