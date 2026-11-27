@@ -1,0 +1,36 @@
+edge bp by ntag:
+               n     bp
+era   ntag             
+test  0     2349   50.5
+      1     1100   49.0
+      2      631   54.6
+      3      241   68.5
+      4       70   39.8
+train 0      592   61.9
+      1      506   81.8
+      2      206   83.3
+      3       67  171.7
+      4       17  211.1
+edge bp by trailing-30 sign:
+                n     bp
+era   bad               
+test  False  2075   66.2
+      True   2316   38.3
+train False   827   50.8
+      True    561  121.7
+{'era': 'train 2019-21', 'ctx': 'flat', 'cushion': '6x5', 'n': 254, 'passed': 53, 'failed': 24, 'p_before_f': 69, 'pass90': 26, 'med_days': 92.5}
+{'era': 'train 2019-21', 'ctx': 'flat', 'cushion': '10x5', 'n': 254, 'passed': 41, 'failed': 59, 'p_before_f': 41, 'pass90': 31, 'med_days': 47.5}
+{'era': 'train 2019-21', 'ctx': 'A agree', 'cushion': '6x5', 'n': 254, 'passed': 48, 'failed': 49, 'p_before_f': 49, 'pass90': 28, 'med_days': 75.0}
+{'era': 'train 2019-21', 'ctx': 'A agree', 'cushion': '10x5', 'n': 254, 'passed': 37, 'failed': 63, 'p_before_f': 37, 'pass90': 30, 'med_days': 45.0}
+{'era': 'train 2019-21', 'ctx': 'B persist', 'cushion': '6x5', 'n': 254, 'passed': 54, 'failed': 15, 'p_before_f': 79, 'pass90': 25, 'med_days': 96.5}
+{'era': 'train 2019-21', 'ctx': 'B persist', 'cushion': '10x5', 'n': 254, 'passed': 44, 'failed': 56, 'p_before_f': 44, 'pass90': 31, 'med_days': 57.0}
+{'era': 'train 2019-21', 'ctx': 'A+B', 'cushion': '6x5', 'n': 254, 'passed': 52, 'failed': 19, 'p_before_f': 73, 'pass90': 28, 'med_days': 84.0}
+{'era': 'train 2019-21', 'ctx': 'A+B', 'cushion': '10x5', 'n': 254, 'passed': 45, 'failed': 55, 'p_before_f': 45, 'pass90': 33, 'med_days': 60.0}
+{'era': 'test 2022-25', 'ctx': 'flat', 'cushion': '6x5', 'n': 331, 'passed': 37, 'failed': 46, 'p_before_f': 45, 'pass90': 24, 'med_days': 65.5}
+{'era': 'test 2022-25', 'ctx': 'flat', 'cushion': '10x5', 'n': 331, 'passed': 24, 'failed': 76, 'p_before_f': 24, 'pass90': 23, 'med_days': 34.5}
+{'era': 'test 2022-25', 'ctx': 'A agree', 'cushion': '6x5', 'n': 331, 'passed': 37, 'failed': 50, 'p_before_f': 43, 'pass90': 25, 'med_days': 67.0}
+{'era': 'test 2022-25', 'ctx': 'A agree', 'cushion': '10x5', 'n': 331, 'passed': 29, 'failed': 66, 'p_before_f': 30, 'pass90': 25, 'med_days': 49.0}
+{'era': 'test 2022-25', 'ctx': 'B persist', 'cushion': '6x5', 'n': 331, 'passed': 47, 'failed': 17, 'p_before_f': 74, 'pass90': 24, 'med_days': 89.0}
+{'era': 'test 2022-25', 'ctx': 'B persist', 'cushion': '10x5', 'n': 331, 'passed': 31, 'failed': 37, 'p_before_f': 46, 'pass90': 21, 'med_days': 53.0}
+{'era': 'test 2022-25', 'ctx': 'A+B', 'cushion': '6x5', 'n': 331, 'passed': 47, 'failed': 33, 'p_before_f': 59, 'pass90': 26, 'med_days': 84.0}
+{'era': 'test 2022-25', 'ctx': 'A+B', 'cushion': '10x5', 'n': 331, 'passed': 34, 'failed': 55, 'p_before_f': 38, 'pass90': 24, 'med_days': 62.0}
