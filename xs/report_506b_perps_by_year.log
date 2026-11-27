@@ -1,0 +1,61 @@
+perp14 done
+all54 done
+
+ perp14 pay180
+year                      2019  2020  2021  2022  2023  2024  2025  2026  ALL
+set                                                                          
+ALL flips                   48    35    33    10    34    45    26    13   32
+CHM                         34     2    49     2    15    31    29    23   23
+PCV                         50    23    62    17    35    76    25    13   40
+PCZ                         18    26    76    36     5    27    26    18   30
+SKW                         46    16    46    30    11    14    18    13   25
+tagged (PCV,PCZ,SKW,CHM)    39    38    44    12    28    36    28     8   31
+
+ perp14 fail90
+year                      2019  2020  2021  2022  2023  2024  2025  2026  ALL
+set                                                                          
+ALL flips                   52    64    67    90    65    55    74    87   68
+CHM                         24    32    44    98    33    48    68    46   50
+PCV                         27    26    36    82     9    24    70    87   41
+PCZ                          0     0    20    64     0    50    73    74   32
+SKW                         51    57    54    67    23    66    69    79   56
+tagged (PCV,PCZ,SKW,CHM)    55    50    56    88    48    60    70    92   62
+
+ all54 pay180
+year                      2019  2020  2021  2022  2023  2024  2025  2026  ALL
+set                                                                          
+ALL flips                   51    27    12    18     5     3     0     0   16
+CHM                         18    45    12    10    43    43    22    26   28
+PCV                         66    48    18    20    15    10    21     0   27
+PCZ                         46    56    55    24    21     5    14    15   31
+SKW                         46    35    31    27    35     2    22    18   28
+tagged (PCV,PCZ,SKW,CHM)    53    50     9    18    17    15    11     0   23
+
+ all54 fail90
+year                      2019  2020  2021  2022  2023  2024  2025  2026  ALL
+set                                                                          
+ALL flips                   49    73    88    82    92    94    91   100   82
+CHM                         42    34    76    90    42    54    76    74   60
+PCV                         34    48    80    80    69    88    79   100   70
+PCZ                          9    21    39    76    39    87    86    85   53
+SKW                         52    49    69    71    35    79    74    82   62
+tagged (PCV,PCZ,SKW,CHM)    46    50    87    82    72    80    85   100   73
+        uni                       set  size  slots year    n  trades  pass90  pay90  pay180  fail90  med_pay
+8    perp14                 ALL flips  2000      5  ALL  941    5779      33     29      43      54     72.0
+17   perp14                 ALL flips  3000      5  ALL  941    5779      30     28      32      68     53.0
+26   perp14                 ALL flips  4000      4  ALL  941    5779      30     27      30      69     49.0
+35   perp14  tagged (PCV,PCZ,SKW,CHM)  2000      5  ALL  941    2838      22     19      35      47    101.0
+44   perp14  tagged (PCV,PCZ,SKW,CHM)  3000      5  ALL  941    2838      24     23      31      62     63.0
+53   perp14  tagged (PCV,PCZ,SKW,CHM)  4000      4  ALL  941    2838      29     28      33      63     53.0
+62   perp14                       PCZ  2000      5  ALL  941     734      12     12      27      24    120.0
+71   perp14                       PCZ  3000      5  ALL  941     734      17     17      30      32    102.0
+80   perp14                       PCZ  4000      4  ALL  941     734      24     24      31      36     72.5
+89   perp14                       SKW  2000      5  ALL  941    1623      11     11      24      40    151.5
+98   perp14                       SKW  3000      5  ALL  941    1623      18     17      25      56     70.0
+107  perp14                       SKW  4000      4  ALL  941    1623      24     23      30      57     59.0
+116  perp14                       PCV  2000      5  ALL  941    1204      16     15      30      32    120.5
+125  perp14                       PCV  3000      5  ALL  941    1204      24     24      40      41     85.0
+134  perp14                       PCV  4000      4  ALL  941    1204      31     30      41      48     61.5
+143  perp14                       CHM  2000      5  ALL  941     991       8      7      16      40    121.0
+152  perp14                       CHM  3000      5  ALL  941     991      11     11      23      50    120.0
+161  perp14                       CHM  4000      4  ALL  941     991      18     18      29      52     84.0
