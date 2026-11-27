@@ -1,0 +1,41 @@
+uni,set,cfg,n,pass_,fail,open_,p_before_f,pass90,med_pass_days
+perp14,ALL flips,fixed 1500x5,584,49,51,0,49,31,76.5
+perp14,ALL flips,fixed 3000x5,584,32,68,0,32,31,39.0
+perp14,ALL flips,fixed 4000x5,584,27,73,0,27,27,31.0
+perp14,ALL flips,fixed 5000x4,584,24,76,0,24,24,28.0
+perp14,ALL flips,fixed 6000x4,584,21,79,0,21,21,26.0
+perp14,ALL flips,fixed 7500x4,584,18,82,0,18,18,19.5
+perp14,ALL flips,fixed 10000x3,584,20,80,0,20,20,16.0
+perp14,ALL flips,cushion 6x5,584,43,37,20,54,26,72.0
+perp14,ALL flips,cushion 10x5,584,31,69,0,31,27,44.0
+perp14,ALL flips,cushion 15x4,584,25,75,0,25,21,36.0
+perp14,PCV,fixed 1500x5,584,53,34,13,61,10,191.0
+perp14,PCV,fixed 3000x5,584,48,51,1,49,26,83.0
+perp14,PCV,fixed 4000x5,584,41,59,0,41,30,59.0
+perp14,PCV,fixed 5000x4,584,38,62,0,38,31,47.0
+perp14,PCV,fixed 6000x4,584,36,64,0,36,31,45.0
+perp14,PCV,fixed 7500x4,584,31,69,0,31,27,37.0
+perp14,PCV,fixed 10000x3,584,25,75,0,25,23,29.5
+perp14,PCV,cushion 6x5,584,60,14,27,82,17,137.5
+perp14,PCV,cushion 10x5,584,53,28,19,66,27,91.0
+perp14,PCV,cushion 15x4,584,56,40,5,59,33,69.5
+perp14,"tagged (PCV,PCZ,SKW,CHM)",fixed 1500x5,584,59,41,0,59,20,124.0
+perp14,"tagged (PCV,PCZ,SKW,CHM)",fixed 3000x5,584,36,64,0,36,24,57.0
+perp14,"tagged (PCV,PCZ,SKW,CHM)",fixed 4000x5,584,31,69,0,31,29,40.0
+perp14,"tagged (PCV,PCZ,SKW,CHM)",fixed 5000x4,584,30,70,0,30,30,35.0
+perp14,"tagged (PCV,PCZ,SKW,CHM)",fixed 6000x4,584,27,73,0,27,27,33.0
+perp14,"tagged (PCV,PCZ,SKW,CHM)",fixed 7500x4,584,23,77,0,23,23,26.0
+perp14,"tagged (PCV,PCZ,SKW,CHM)",fixed 10000x3,584,21,79,0,21,21,21.0
+perp14,"tagged (PCV,PCZ,SKW,CHM)",cushion 6x5,584,51,32,18,62,20,112.0
+perp14,"tagged (PCV,PCZ,SKW,CHM)",cushion 10x5,584,39,59,1,40,24,66.5
+perp14,"tagged (PCV,PCZ,SKW,CHM)",cushion 15x4,584,22,73,4,23,21,34.0
+perp14,PCZ,fixed 1500x5,584,50,15,35,77,5,177.0
+perp14,PCZ,fixed 3000x5,584,51,42,7,55,17,120.0
+perp14,PCZ,fixed 4000x5,584,53,47,0,53,24,107.5
+perp14,PCZ,fixed 5000x4,584,52,48,0,52,26,90.5
+perp14,PCZ,fixed 6000x4,584,50,50,0,50,25,94.0
+perp14,PCZ,fixed 7500x4,584,47,53,0,47,28,68.0
+perp14,PCZ,fixed 10000x3,584,36,64,0,36,28,42.0
+perp14,PCZ,cushion 6x5,584,56,24,20,70,13,152.5
+perp14,PCZ,cushion 10x5,584,55,32,14,63,22,139.0
+perp14,PCZ,cushion 15x4,584,56,34,10,62,24,124.0

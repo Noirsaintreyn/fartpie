@@ -1,0 +1,40 @@
+{'uni': 'perp14', 'set': 'ALL flips', 'cfg': 'fixed 1500x5', 'n': 584, 'pass_': 49, 'fail': 51, 'open_': 0, 'p_before_f': 49, 'pass90': 31, 'med_pass_days': 76.5}
+{'uni': 'perp14', 'set': 'ALL flips', 'cfg': 'fixed 3000x5', 'n': 584, 'pass_': 32, 'fail': 68, 'open_': 0, 'p_before_f': 32, 'pass90': 31, 'med_pass_days': 39.0}
+{'uni': 'perp14', 'set': 'ALL flips', 'cfg': 'fixed 4000x5', 'n': 584, 'pass_': 27, 'fail': 73, 'open_': 0, 'p_before_f': 27, 'pass90': 27, 'med_pass_days': 31.0}
+{'uni': 'perp14', 'set': 'ALL flips', 'cfg': 'fixed 5000x4', 'n': 584, 'pass_': 24, 'fail': 76, 'open_': 0, 'p_before_f': 24, 'pass90': 24, 'med_pass_days': 28.0}
+{'uni': 'perp14', 'set': 'ALL flips', 'cfg': 'fixed 6000x4', 'n': 584, 'pass_': 21, 'fail': 79, 'open_': 0, 'p_before_f': 21, 'pass90': 21, 'med_pass_days': 26.0}
+{'uni': 'perp14', 'set': 'ALL flips', 'cfg': 'fixed 7500x4', 'n': 584, 'pass_': 18, 'fail': 82, 'open_': 0, 'p_before_f': 18, 'pass90': 18, 'med_pass_days': 19.5}
+{'uni': 'perp14', 'set': 'ALL flips', 'cfg': 'fixed 10000x3', 'n': 584, 'pass_': 20, 'fail': 80, 'open_': 0, 'p_before_f': 20, 'pass90': 20, 'med_pass_days': 16.0}
+{'uni': 'perp14', 'set': 'ALL flips', 'cfg': 'cushion 6x5', 'n': 584, 'pass_': 43, 'fail': 37, 'open_': 20, 'p_before_f': 54, 'pass90': 26, 'med_pass_days': 72.0}
+{'uni': 'perp14', 'set': 'ALL flips', 'cfg': 'cushion 10x5', 'n': 584, 'pass_': 31, 'fail': 69, 'open_': 0, 'p_before_f': 31, 'pass90': 27, 'med_pass_days': 44.0}
+{'uni': 'perp14', 'set': 'ALL flips', 'cfg': 'cushion 15x4', 'n': 584, 'pass_': 25, 'fail': 75, 'open_': 0, 'p_before_f': 25, 'pass90': 21, 'med_pass_days': 36.0}
+{'uni': 'perp14', 'set': 'PCV', 'cfg': 'fixed 1500x5', 'n': 584, 'pass_': 53, 'fail': 34, 'open_': 13, 'p_before_f': 61, 'pass90': 10, 'med_pass_days': 191.0}
+{'uni': 'perp14', 'set': 'PCV', 'cfg': 'fixed 3000x5', 'n': 584, 'pass_': 48, 'fail': 51, 'open_': 1, 'p_before_f': 49, 'pass90': 26, 'med_pass_days': 83.0}
+{'uni': 'perp14', 'set': 'PCV', 'cfg': 'fixed 4000x5', 'n': 584, 'pass_': 41, 'fail': 59, 'open_': 0, 'p_before_f': 41, 'pass90': 30, 'med_pass_days': 59.0}
+{'uni': 'perp14', 'set': 'PCV', 'cfg': 'fixed 5000x4', 'n': 584, 'pass_': 38, 'fail': 62, 'open_': 0, 'p_before_f': 38, 'pass90': 31, 'med_pass_days': 47.0}
+{'uni': 'perp14', 'set': 'PCV', 'cfg': 'fixed 6000x4', 'n': 584, 'pass_': 36, 'fail': 64, 'open_': 0, 'p_before_f': 36, 'pass90': 31, 'med_pass_days': 45.0}
+{'uni': 'perp14', 'set': 'PCV', 'cfg': 'fixed 7500x4', 'n': 584, 'pass_': 31, 'fail': 69, 'open_': 0, 'p_before_f': 31, 'pass90': 27, 'med_pass_days': 37.0}
+{'uni': 'perp14', 'set': 'PCV', 'cfg': 'fixed 10000x3', 'n': 584, 'pass_': 25, 'fail': 75, 'open_': 0, 'p_before_f': 25, 'pass90': 23, 'med_pass_days': 29.5}
+{'uni': 'perp14', 'set': 'PCV', 'cfg': 'cushion 6x5', 'n': 584, 'pass_': 60, 'fail': 14, 'open_': 27, 'p_before_f': 82, 'pass90': 17, 'med_pass_days': 137.5}
+{'uni': 'perp14', 'set': 'PCV', 'cfg': 'cushion 10x5', 'n': 584, 'pass_': 53, 'fail': 28, 'open_': 19, 'p_before_f': 66, 'pass90': 27, 'med_pass_days': 91.0}
+{'uni': 'perp14', 'set': 'PCV', 'cfg': 'cushion 15x4', 'n': 584, 'pass_': 56, 'fail': 40, 'open_': 5, 'p_before_f': 59, 'pass90': 33, 'med_pass_days': 69.5}
+{'uni': 'perp14', 'set': 'tagged (PCV,PCZ,SKW,CHM)', 'cfg': 'fixed 1500x5', 'n': 584, 'pass_': 59, 'fail': 41, 'open_': 0, 'p_before_f': 59, 'pass90': 20, 'med_pass_days': 124.0}
+{'uni': 'perp14', 'set': 'tagged (PCV,PCZ,SKW,CHM)', 'cfg': 'fixed 3000x5', 'n': 584, 'pass_': 36, 'fail': 64, 'open_': 0, 'p_before_f': 36, 'pass90': 24, 'med_pass_days': 57.0}
+{'uni': 'perp14', 'set': 'tagged (PCV,PCZ,SKW,CHM)', 'cfg': 'fixed 4000x5', 'n': 584, 'pass_': 31, 'fail': 69, 'open_': 0, 'p_before_f': 31, 'pass90': 29, 'med_pass_days': 40.0}
+{'uni': 'perp14', 'set': 'tagged (PCV,PCZ,SKW,CHM)', 'cfg': 'fixed 5000x4', 'n': 584, 'pass_': 30, 'fail': 70, 'open_': 0, 'p_before_f': 30, 'pass90': 30, 'med_pass_days': 35.0}
+{'uni': 'perp14', 'set': 'tagged (PCV,PCZ,SKW,CHM)', 'cfg': 'fixed 6000x4', 'n': 584, 'pass_': 27, 'fail': 73, 'open_': 0, 'p_before_f': 27, 'pass90': 27, 'med_pass_days': 33.0}
+{'uni': 'perp14', 'set': 'tagged (PCV,PCZ,SKW,CHM)', 'cfg': 'fixed 7500x4', 'n': 584, 'pass_': 23, 'fail': 77, 'open_': 0, 'p_before_f': 23, 'pass90': 23, 'med_pass_days': 26.0}
+{'uni': 'perp14', 'set': 'tagged (PCV,PCZ,SKW,CHM)', 'cfg': 'fixed 10000x3', 'n': 584, 'pass_': 21, 'fail': 79, 'open_': 0, 'p_before_f': 21, 'pass90': 21, 'med_pass_days': 21.0}
+{'uni': 'perp14', 'set': 'tagged (PCV,PCZ,SKW,CHM)', 'cfg': 'cushion 6x5', 'n': 584, 'pass_': 51, 'fail': 32, 'open_': 18, 'p_before_f': 62, 'pass90': 20, 'med_pass_days': 112.0}
+{'uni': 'perp14', 'set': 'tagged (PCV,PCZ,SKW,CHM)', 'cfg': 'cushion 10x5', 'n': 584, 'pass_': 39, 'fail': 59, 'open_': 1, 'p_before_f': 40, 'pass90': 24, 'med_pass_days': 66.5}
+{'uni': 'perp14', 'set': 'tagged (PCV,PCZ,SKW,CHM)', 'cfg': 'cushion 15x4', 'n': 584, 'pass_': 22, 'fail': 73, 'open_': 4, 'p_before_f': 23, 'pass90': 21, 'med_pass_days': 34.0}
+{'uni': 'perp14', 'set': 'PCZ', 'cfg': 'fixed 1500x5', 'n': 584, 'pass_': 50, 'fail': 15, 'open_': 35, 'p_before_f': 77, 'pass90': 5, 'med_pass_days': 177.0}
+{'uni': 'perp14', 'set': 'PCZ', 'cfg': 'fixed 3000x5', 'n': 584, 'pass_': 51, 'fail': 42, 'open_': 7, 'p_before_f': 55, 'pass90': 17, 'med_pass_days': 120.0}
+{'uni': 'perp14', 'set': 'PCZ', 'cfg': 'fixed 4000x5', 'n': 584, 'pass_': 53, 'fail': 47, 'open_': 0, 'p_before_f': 53, 'pass90': 24, 'med_pass_days': 107.5}
+{'uni': 'perp14', 'set': 'PCZ', 'cfg': 'fixed 5000x4', 'n': 584, 'pass_': 52, 'fail': 48, 'open_': 0, 'p_before_f': 52, 'pass90': 26, 'med_pass_days': 90.5}
+{'uni': 'perp14', 'set': 'PCZ', 'cfg': 'fixed 6000x4', 'n': 584, 'pass_': 50, 'fail': 50, 'open_': 0, 'p_before_f': 50, 'pass90': 25, 'med_pass_days': 94.0}
+{'uni': 'perp14', 'set': 'PCZ', 'cfg': 'fixed 7500x4', 'n': 584, 'pass_': 47, 'fail': 53, 'open_': 0, 'p_before_f': 47, 'pass90': 28, 'med_pass_days': 68.0}
+{'uni': 'perp14', 'set': 'PCZ', 'cfg': 'fixed 10000x3', 'n': 584, 'pass_': 36, 'fail': 64, 'open_': 0, 'p_before_f': 36, 'pass90': 28, 'med_pass_days': 42.0}
+{'uni': 'perp14', 'set': 'PCZ', 'cfg': 'cushion 6x5', 'n': 584, 'pass_': 56, 'fail': 24, 'open_': 20, 'p_before_f': 70, 'pass90': 13, 'med_pass_days': 152.5}
+{'uni': 'perp14', 'set': 'PCZ', 'cfg': 'cushion 10x5', 'n': 584, 'pass_': 55, 'fail': 32, 'open_': 14, 'p_before_f': 63, 'pass90': 22, 'med_pass_days': 139.0}
+{'uni': 'perp14', 'set': 'PCZ', 'cfg': 'cushion 15x4', 'n': 584, 'pass_': 56, 'fail': 34, 'open_': 10, 'p_before_f': 62, 'pass90': 24, 'med_pass_days': 124.0}
