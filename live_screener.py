@@ -341,7 +341,7 @@ def replay_track(H, elig, track='15m', carry=None):
     for t in T: t['track'] = track
     return T
 
-BREAKER = float(os.getenv('BREAKER', '0.08'))                                  # Oct 20 2026: no new entries while the book is > 8% below its 20-day high
+BREAKER = float(os.getenv('BREAKER', '0'))                                  # Nov 27 2026: OFF by default (Rey: it was blocking new positions; set BREAKER=0.08 to turn it back on). Oct 20 2026: no new entries while the book is > 8% below its 20-day high
 BREAKER_START = pd.Timestamp(os.getenv('BREAKER_START', '2026-10-13 09:30'))   # (realized P&L of closed trades, 28 calendar days; existing positions keep their stops)
 def breaker_on(out, t0):
     """book drawdown from the trailing 28-day high of realized equity (closed trades only, same as the backtest) is worse than -BREAKER"""
