@@ -1,0 +1,40 @@
+{'set': 'ALL flips', 'size': 1000, 'slots': 5, 'n': 630, 'pass30': 0, 'pass60': 2, 'pass90': 5, 'pay30': 0, 'pay60': 0, 'pay90': 2, 'pay180': 13, 'fail90': 49, 'fail_ever': 62, 'med_days_to_pay': 187.5}
+{'set': 'ALL flips', 'size': 2000, 'slots': 5, 'n': 630, 'pass30': 2, 'pass60': 11, 'pass90': 17, 'pay30': 0, 'pay60': 4, 'pay90': 9, 'pay180': 20, 'fail90': 73, 'fail_ever': 76, 'med_days_to_pay': 109.5}
+{'set': 'ALL flips', 'size': 2000, 'slots': 8, 'n': 630, 'pass30': 5, 'pass60': 11, 'pass90': 16, 'pay30': 1, 'pay60': 5, 'pay90': 8, 'pay180': 13, 'fail90': 85, 'fail_ever': 86, 'med_days_to_pay': 79.0}
+{'set': 'ALL flips', 'size': 3000, 'slots': 5, 'n': 630, 'pass30': 6, 'pass60': 15, 'pass90': 19, 'pay30': 1, 'pay60': 6, 'pay90': 11, 'pay180': 16, 'fail90': 82, 'fail_ever': 84, 'med_days_to_pay': 73.0}
+{'set': 'ALL flips', 'size': 4000, 'slots': 4, 'n': 630, 'pass30': 7, 'pass60': 16, 'pass90': 19, 'pay30': 1, 'pay60': 6, 'pay90': 11, 'pay180': 13, 'fail90': 85, 'fail_ever': 87, 'med_days_to_pay': 63.0}
+{'set': 'tagged (PCV,PCZ,SKW,CHM)', 'size': 1000, 'slots': 5, 'n': 630, 'pass30': 0, 'pass60': 3, 'pass90': 5, 'pay30': 0, 'pay60': 1, 'pay90': 4, 'pay180': 10, 'fail90': 41, 'fail_ever': 58, 'med_days_to_pay': 195.0}
+{'set': 'tagged (PCV,PCZ,SKW,CHM)', 'size': 2000, 'slots': 5, 'n': 630, 'pass30': 3, 'pass60': 11, 'pass90': 17, 'pay30': 1, 'pay60': 7, 'pay90': 13, 'pay180': 24, 'fail90': 65, 'fail_ever': 72, 'med_days_to_pay': 97.0}
+{'set': 'tagged (PCV,PCZ,SKW,CHM)', 'size': 2000, 'slots': 8, 'n': 630, 'pass30': 5, 'pass60': 12, 'pass90': 18, 'pay30': 1, 'pay60': 7, 'pay90': 13, 'pay180': 18, 'fail90': 75, 'fail_ever': 78, 'med_days_to_pay': 79.0}
+{'set': 'tagged (PCV,PCZ,SKW,CHM)', 'size': 3000, 'slots': 5, 'n': 630, 'pass30': 6, 'pass60': 15, 'pass90': 22, 'pay30': 2, 'pay60': 10, 'pay90': 18, 'pay180': 23, 'fail90': 74, 'fail_ever': 77, 'med_days_to_pay': 64.5}
+{'set': 'tagged (PCV,PCZ,SKW,CHM)', 'size': 4000, 'slots': 4, 'n': 630, 'pass30': 8, 'pass60': 18, 'pass90': 25, 'pay30': 4, 'pay60': 13, 'pay90': 21, 'pay180': 24, 'fail90': 75, 'fail_ever': 76, 'med_days_to_pay': 55.0}
+{'set': 'tagged + NEG', 'size': 1000, 'slots': 5, 'n': 630, 'pass30': 0, 'pass60': 3, 'pass90': 4, 'pay30': 0, 'pay60': 1, 'pay90': 3, 'pay180': 10, 'fail90': 43, 'fail_ever': 60, 'med_days_to_pay': 206.0}
+{'set': 'tagged + NEG', 'size': 2000, 'slots': 5, 'n': 630, 'pass30': 1, 'pass60': 9, 'pass90': 15, 'pay30': 0, 'pay60': 4, 'pay90': 10, 'pay180': 23, 'fail90': 66, 'fail_ever': 72, 'med_days_to_pay': 109.5}
+{'set': 'tagged + NEG', 'size': 2000, 'slots': 8, 'n': 630, 'pass30': 4, 'pass60': 11, 'pass90': 16, 'pay30': 0, 'pay60': 6, 'pay90': 10, 'pay180': 17, 'fail90': 78, 'fail_ever': 80, 'med_days_to_pay': 87.0}
+{'set': 'tagged + NEG', 'size': 3000, 'slots': 5, 'n': 630, 'pass30': 6, 'pass60': 13, 'pass90': 19, 'pay30': 2, 'pay60': 8, 'pay90': 14, 'pay180': 19, 'fail90': 78, 'fail_ever': 80, 'med_days_to_pay': 67.0}
+{'set': 'tagged + NEG', 'size': 4000, 'slots': 4, 'n': 630, 'pass30': 7, 'pass60': 15, 'pass90': 20, 'pay30': 3, 'pay60': 11, 'pay90': 17, 'pay180': 22, 'fail90': 78, 'fail_ever': 78, 'med_days_to_pay': 60.0}
+{'set': 'PCV', 'size': 1000, 'slots': 5, 'n': 630, 'pass30': 0, 'pass60': 1, 'pass90': 2, 'pay30': 0, 'pay60': 0, 'pay90': 1, 'pay180': 7, 'fail90': 33, 'fail_ever': 54, 'med_days_to_pay': 222.0}
+{'set': 'PCV', 'size': 2000, 'slots': 5, 'n': 630, 'pass30': 1, 'pass60': 8, 'pass90': 13, 'pay30': 0, 'pay60': 5, 'pay90': 10, 'pay180': 25, 'fail90': 61, 'fail_ever': 71, 'med_days_to_pay': 114.5}
+{'set': 'PCV', 'size': 2000, 'slots': 8, 'n': 630, 'pass30': 3, 'pass60': 9, 'pass90': 15, 'pay30': 1, 'pay60': 5, 'pay90': 8, 'pay180': 22, 'fail90': 67, 'fail_ever': 74, 'med_days_to_pay': 120.0}
+{'set': 'PCV', 'size': 3000, 'slots': 5, 'n': 630, 'pass30': 4, 'pass60': 11, 'pass90': 18, 'pay30': 2, 'pay60': 7, 'pay90': 14, 'pay180': 25, 'fail90': 72, 'fail_ever': 74, 'med_days_to_pay': 83.0}
+{'set': 'PCV', 'size': 4000, 'slots': 4, 'n': 630, 'pass30': 6, 'pass60': 11, 'pass90': 17, 'pay30': 3, 'pay60': 8, 'pay90': 16, 'pay180': 20, 'fail90': 77, 'fail_ever': 80, 'med_days_to_pay': 67.0}
+{'set': 'PCZ', 'size': 1000, 'slots': 5, 'n': 630, 'pass30': 0, 'pass60': 1, 'pass90': 3, 'pay30': 0, 'pay60': 1, 'pay90': 3, 'pay180': 12, 'fail90': 25, 'fail_ever': 37, 'med_days_to_pay': 175.5}
+{'set': 'PCZ', 'size': 2000, 'slots': 5, 'n': 630, 'pass30': 1, 'pass60': 7, 'pass90': 10, 'pay30': 1, 'pay60': 6, 'pay90': 8, 'pay180': 24, 'fail90': 44, 'fail_ever': 57, 'med_days_to_pay': 147.0}
+{'set': 'PCZ', 'size': 2000, 'slots': 8, 'n': 630, 'pass30': 3, 'pass60': 8, 'pass90': 12, 'pay30': 1, 'pay60': 7, 'pay90': 10, 'pay180': 26, 'fail90': 46, 'fail_ever': 57, 'med_days_to_pay': 139.0}
+{'set': 'PCZ', 'size': 3000, 'slots': 5, 'n': 630, 'pass30': 4, 'pass60': 11, 'pass90': 18, 'pay30': 2, 'pay60': 10, 'pay90': 16, 'pay180': 30, 'fail90': 53, 'fail_ever': 61, 'med_days_to_pay': 101.0}
+{'set': 'PCZ', 'size': 4000, 'slots': 4, 'n': 630, 'pass30': 4, 'pass60': 13, 'pass90': 19, 'pay30': 3, 'pay60': 10, 'pay90': 18, 'pay180': 33, 'fail90': 59, 'fail_ever': 65, 'med_days_to_pay': 90.5}
+{'set': 'SKW', 'size': 1000, 'slots': 5, 'n': 630, 'pass30': 0, 'pass60': 1, 'pass90': 3, 'pay30': 0, 'pay60': 1, 'pay90': 2, 'pay180': 10, 'fail90': 27, 'fail_ever': 35, 'med_days_to_pay': 192.0}
+{'set': 'SKW', 'size': 2000, 'slots': 5, 'n': 630, 'pass30': 1, 'pass60': 8, 'pass90': 14, 'pay30': 1, 'pay60': 6, 'pay90': 9, 'pay180': 30, 'fail90': 49, 'fail_ever': 62, 'med_days_to_pay': 131.0}
+{'set': 'SKW', 'size': 2000, 'slots': 8, 'n': 630, 'pass30': 3, 'pass60': 10, 'pass90': 14, 'pay30': 1, 'pay60': 7, 'pay90': 9, 'pay180': 22, 'fail90': 57, 'fail_ever': 73, 'med_days_to_pay': 132.0}
+{'set': 'SKW', 'size': 3000, 'slots': 5, 'n': 630, 'pass30': 4, 'pass60': 14, 'pass90': 22, 'pay30': 2, 'pay60': 8, 'pay90': 14, 'pay180': 27, 'fail90': 63, 'fail_ever': 72, 'med_days_to_pay': 90.5}
+{'set': 'SKW', 'size': 4000, 'slots': 4, 'n': 630, 'pass30': 7, 'pass60': 16, 'pass90': 22, 'pay30': 4, 'pay60': 10, 'pay90': 16, 'pay180': 27, 'fail90': 67, 'fail_ever': 73, 'med_days_to_pay': 78.0}
+{'set': 'CHM', 'size': 1000, 'slots': 5, 'n': 630, 'pass30': 0, 'pass60': 0, 'pass90': 2, 'pay30': 0, 'pay60': 0, 'pay90': 1, 'pay180': 4, 'fail90': 19, 'fail_ever': 33, 'med_days_to_pay': 233.0}
+{'set': 'CHM', 'size': 2000, 'slots': 5, 'n': 630, 'pass30': 0, 'pass60': 6, 'pass90': 12, 'pay30': 0, 'pay60': 5, 'pay90': 11, 'pay180': 27, 'fail90': 49, 'fail_ever': 60, 'med_days_to_pay': 150.0}
+{'set': 'CHM', 'size': 2000, 'slots': 8, 'n': 630, 'pass30': 1, 'pass60': 7, 'pass90': 12, 'pay30': 1, 'pay60': 6, 'pay90': 11, 'pay180': 26, 'fail90': 55, 'fail_ever': 63, 'med_days_to_pay': 142.5}
+{'set': 'CHM', 'size': 3000, 'slots': 5, 'n': 630, 'pass30': 3, 'pass60': 12, 'pass90': 16, 'pay30': 2, 'pay60': 10, 'pay90': 14, 'pay180': 27, 'fail90': 60, 'fail_ever': 68, 'med_days_to_pay': 99.0}
+{'set': 'CHM', 'size': 4000, 'slots': 4, 'n': 630, 'pass30': 4, 'pass60': 15, 'pass90': 19, 'pay30': 3, 'pay60': 13, 'pay90': 18, 'pay180': 27, 'fail90': 65, 'fail_ever': 71, 'med_days_to_pay': 67.5}
+{'set': 'NEG', 'size': 1000, 'slots': 5, 'n': 630, 'pass30': 0, 'pass60': 1, 'pass90': 1, 'pay30': 0, 'pay60': 1, 'pay90': 1, 'pay180': 3, 'fail90': 37, 'fail_ever': 60, 'med_days_to_pay': 221.0}
+{'set': 'NEG', 'size': 2000, 'slots': 5, 'n': 630, 'pass30': 1, 'pass60': 4, 'pass90': 6, 'pay30': 1, 'pay60': 4, 'pay90': 6, 'pay180': 12, 'fail90': 62, 'fail_ever': 82, 'med_days_to_pay': 98.0}
+{'set': 'NEG', 'size': 2000, 'slots': 8, 'n': 630, 'pass30': 2, 'pass60': 6, 'pass90': 9, 'pay30': 2, 'pay60': 6, 'pay90': 7, 'pay180': 14, 'fail90': 66, 'fail_ever': 81, 'med_days_to_pay': 92.5}
+{'set': 'NEG', 'size': 3000, 'slots': 5, 'n': 630, 'pass30': 2, 'pass60': 7, 'pass90': 8, 'pay30': 2, 'pay60': 7, 'pay90': 8, 'pay180': 12, 'fail90': 75, 'fail_ever': 87, 'med_days_to_pay': 56.0}
+{'set': 'NEG', 'size': 4000, 'slots': 4, 'n': 630, 'pass30': 4, 'pass60': 7, 'pass90': 10, 'pay30': 2, 'pay60': 7, 'pay90': 9, 'pay180': 13, 'fail90': 78, 'fail_ever': 87, 'med_days_to_pay': 59.5}
