@@ -1,0 +1,31 @@
+{'era': 'train 2019-21', 'ctx': 'flat', 'cushion': '6x5', 'n': 254, 'passed': 67, 'failed': 7, 'p_before_f': 90, 'pass90': 13, 'med_days': 162.0}
+{'era': 'train 2019-21', 'ctx': 'flat', 'cushion': '10x5', 'n': 254, 'passed': 59, 'failed': 14, 'p_before_f': 81, 'pass90': 24, 'med_days': 110.0}
+{'era': 'train 2019-21', 'ctx': 'persist20', 'cushion': '6x5', 'n': 254, 'passed': 62, 'failed': 9, 'p_before_f': 87, 'pass90': 10, 'med_days': 167.0}
+{'era': 'train 2019-21', 'ctx': 'persist20', 'cushion': '10x5', 'n': 254, 'passed': 69, 'failed': 7, 'p_before_f': 91, 'pass90': 19, 'med_days': 167.0}
+{'era': 'train 2019-21', 'ctx': 'persist30', 'cushion': '6x5', 'n': 254, 'passed': 74, 'failed': 0, 'p_before_f': 100, 'pass90': 10, 'med_days': 186.0}
+{'era': 'train 2019-21', 'ctx': 'persist30', 'cushion': '10x5', 'n': 254, 'passed': 68, 'failed': 7, 'p_before_f': 91, 'pass90': 21, 'med_days': 154.0}
+{'era': 'train 2019-21', 'ctx': 'persist60', 'cushion': '6x5', 'n': 254, 'passed': 71, 'failed': 1, 'p_before_f': 98, 'pass90': 12, 'med_days': 181.5}
+{'era': 'train 2019-21', 'ctx': 'persist60', 'cushion': '10x5', 'n': 254, 'passed': 63, 'failed': 7, 'p_before_f': 90, 'pass90': 22, 'med_days': 145.0}
+{'era': 'test 2022-25', 'ctx': 'flat', 'cushion': '6x5', 'n': 331, 'passed': 55, 'failed': 19, 'p_before_f': 74, 'pass90': 21, 'med_days': 116.0}
+{'era': 'test 2022-25', 'ctx': 'flat', 'cushion': '10x5', 'n': 331, 'passed': 49, 'failed': 38, 'p_before_f': 56, 'pass90': 29, 'med_days': 69.0}
+{'era': 'test 2022-25', 'ctx': 'persist20', 'cushion': '6x5', 'n': 331, 'passed': 49, 'failed': 21, 'p_before_f': 70, 'pass90': 17, 'med_days': 127.0}
+{'era': 'test 2022-25', 'ctx': 'persist20', 'cushion': '10x5', 'n': 331, 'passed': 52, 'failed': 24, 'p_before_f': 68, 'pass90': 24, 'med_days': 105.0}
+{'era': 'test 2022-25', 'ctx': 'persist30', 'cushion': '6x5', 'n': 331, 'passed': 50, 'failed': 21, 'p_before_f': 70, 'pass90': 17, 'med_days': 120.0}
+{'era': 'test 2022-25', 'ctx': 'persist30', 'cushion': '10x5', 'n': 331, 'passed': 54, 'failed': 24, 'p_before_f': 70, 'pass90': 25, 'med_days': 98.0}
+{'era': 'test 2022-25', 'ctx': 'persist60', 'cushion': '6x5', 'n': 331, 'passed': 51, 'failed': 23, 'p_before_f': 69, 'pass90': 14, 'med_days': 125.0}
+{'era': 'test 2022-25', 'ctx': 'persist60', 'cushion': '10x5', 'n': 331, 'passed': 52, 'failed': 24, 'p_before_f': 68, 'pass90': 25, 'med_days': 93.5}
+    year        ctx   n  passed  failed  open_  pass90
+0   2019       flat  87      66      18     16       0
+1   2019  persist30  87      91       0      9       0
+2   2020       flat  87      37       0     63       7
+3   2020  persist30  87      30       0     70       0
+4   2021       flat  87      95       1      3      32
+5   2021  persist30  87      95       0      5      29
+6   2022       flat  87      28      10     62       9
+7   2022  persist30  87      26       7     67       8
+8   2023       flat  87      61       0     39       9
+9   2023  persist30  87      57       0     43       6
+10  2024       flat  87      92       8      0      36
+11  2024  persist30  87      85      15      0      30
+12  2025       flat  70      33      67      0      24
+13  2025  persist30  70      23      73      4      23
