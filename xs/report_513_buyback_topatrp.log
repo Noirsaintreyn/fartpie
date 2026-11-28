@@ -1,0 +1,112 @@
+flips 8408 with PROFIT 0.62 NSI 0.56 BB 0.47 | rates PROFIT 0.53 NOISSUE 0.56 BUYBACK 0.51
+coverage: BUYER10 known 0.78  share buyer 0.2 | BBANY share 0.4
+
+=== px<5, top third ATRP (cut 0.082)
+  train 19-21 all        n  80 reach  81%  mean  +88.9%  trim-mean  +58.5%  median   -6.4%  win  45%
+  train 19-21 BUYER10    n   7 reach  71%  mean  +14.9%  trim-mean   +nan%  median  -11.1%  win  43%
+  train 19-21 BBANY      n  18 reach  83%  mean  +55.4%  trim-mean  +15.1%  median   +2.8%  win  50%
+  train 19-21 non-buyer  n  62 reach  81%  mean  +98.6%  trim-mean  +59.5%  median   -8.3%  win  44%
+  test 22-26 all        n 126 reach  66%  mean  +28.6%  trim-mean   +9.5%  median  -12.2%  win  32%
+  test 22-26 BUYER10    n   5 reach  80%  mean  +12.7%  trim-mean   +nan%  median  -15.9%  win  20%
+  test 22-26 BBANY      n  17 reach  71%  mean  +32.7%  trim-mean   -2.9%  median  -15.0%  win  29%
+  test 22-26 non-buyer  n 109 reach  65%  mean  +28.0%  trim-mean   +7.0%  median  -11.5%  win  32%
+
+=== px<5, top fifth ATRP (cut 0.095)
+  train 19-21 all        n  48 reach  85%  mean +121.2%  trim-mean  +71.8%  median   -1.0%  win  50%
+  train 19-21 BUYER10    n   5 reach  80%  mean  +27.0%  trim-mean   +nan%  median   +9.4%  win  60%
+  train 19-21 BBANY      n  13 reach  92%  mean  +71.9%  trim-mean  +15.9%  median   +9.4%  win  54%
+  train 19-21 non-buyer  n  35 reach  83%  mean +139.5%  trim-mean  +71.6%  median  -10.3%  win  49%
+  test 22-26 all        n  59 reach  68%  mean  +57.2%  trim-mean  +19.3%  median  -13.2%  win  37%
+  test 22-26 BUYER10    n   3 reach 100%  mean  -26.4%  trim-mean   +nan%  median  -25.7%  win   0%
+  test 22-26 BBANY      n  10 reach  70%  mean  +10.9%  trim-mean   +nan%  median  -19.1%  win  20%
+  test 22-26 non-buyer  n  49 reach  67%  mean  +66.7%  trim-mean  +21.4%  median  -10.6%  win  41%
+
+=== px<5, top tenth ATRP (cut 0.110)
+  train 19-21 all        n  24 reach  88%  mean  +75.4%  trim-mean  +29.8%  median   +3.6%  win  54%
+  train 19-21 BUYER10    n   2 reach 100%  mean  -13.0%  trim-mean   +nan%  median  -13.0%  win  50%
+  train 19-21 BBANY      n   6 reach 100%  mean  +87.0%  trim-mean   +nan%  median  +11.7%  win  67%
+  train 19-21 non-buyer  n  18 reach  83%  mean  +71.6%  trim-mean  +17.6%  median   -6.5%  win  50%
+  test 22-26 all        n  22 reach  64%  mean +115.6%  trim-mean  +14.0%  median  -11.8%  win  41%
+  test 22-26 BUYER10    n   1 reach 100%  mean  -15.9%  trim-mean   +nan%  median  -15.9%  win   0%
+  test 22-26 BBANY      n   5 reach  60%  mean   +2.5%  trim-mean   +nan%  median  -15.9%  win  20%
+  test 22-26 non-buyer  n  17 reach  65%  mean +148.8%  trim-mean  +18.8%  median  -10.0%  win  47%
+
+=== px<10, top third ATRP (cut 0.066)
+  train 19-21 all        n 256 reach  72%  mean  +47.9%  trim-mean  +37.6%  median   -7.4%  win  42%
+  train 19-21 BUYER10    n  32 reach  72%  mean  +11.4%  trim-mean   +2.5%  median  -13.1%  win  41%
+  train 19-21 BBANY      n  72 reach  78%  mean  +24.4%  trim-mean  +14.6%  median   -4.9%  win  44%
+  train 19-21 non-buyer  n 184 reach  70%  mean  +57.1%  trim-mean  +43.0%  median   -8.1%  win  41%
+  test 22-26 all        n 479 reach  63%  mean  +11.8%  trim-mean   +6.1%  median  -12.3%  win  26%
+  test 22-26 BUYER10    n  19 reach  47%  mean   -7.4%  trim-mean  -14.5%  median  -14.2%  win  16%
+  test 22-26 BBANY      n  76 reach  67%  mean  +12.5%  trim-mean   +4.7%  median  -11.1%  win  30%
+  test 22-26 non-buyer  n 403 reach  62%  mean  +11.6%  trim-mean   +4.9%  median  -12.6%  win  26%
+
+=== px<10, top fifth ATRP (cut 0.080)
+  train 19-21 all        n 154 reach  73%  mean  +55.6%  trim-mean  +39.0%  median   -9.5%  win  37%
+  train 19-21 BUYER10    n  18 reach  67%  mean   -4.2%  trim-mean  -13.7%  median  -14.4%  win  22%
+  train 19-21 BBANY      n  41 reach  76%  mean  +20.0%  trim-mean   +0.7%  median  -11.1%  win  34%
+  train 19-21 non-buyer  n 113 reach  73%  mean  +68.5%  trim-mean  +46.3%  median   -9.4%  win  38%
+  test 22-26 all        n 231 reach  64%  mean  +17.1%  trim-mean   +6.7%  median  -13.2%  win  29%
+  test 22-26 BUYER10    n   7 reach  57%  mean   -3.7%  trim-mean   +nan%  median  -25.7%  win  14%
+  test 22-26 BBANY      n  30 reach  63%  mean  +20.5%  trim-mean   +2.4%  median  -15.2%  win  27%
+  test 22-26 non-buyer  n 201 reach  64%  mean  +16.6%  trim-mean   +5.2%  median  -12.4%  win  29%
+
+=== px<10, top tenth ATRP (cut 0.094)
+  train 19-21 all        n  77 reach  79%  mean  +87.2%  trim-mean  +55.1%  median   -8.1%  win  42%
+  train 19-21 BUYER10    n  10 reach  80%  mean   +4.7%  trim-mean   +nan%  median  -13.8%  win  40%
+  train 19-21 BBANY      n  24 reach  83%  mean  +35.0%  trim-mean   +2.5%  median   -5.6%  win  42%
+  train 19-21 non-buyer  n  53 reach  77%  mean +110.9%  trim-mean  +65.3%  median  -10.3%  win  42%
+  test 22-26 all        n  95 reach  71%  mean  +38.1%  trim-mean  +14.7%  median  -13.7%  win  35%
+  test 22-26 BUYER10    n   4 reach  75%  mean  -32.1%  trim-mean   +nan%  median  -31.7%  win   0%
+  test 22-26 BBANY      n  12 reach  58%  mean   +3.3%  trim-mean   +nan%  median  -21.6%  win  17%
+  test 22-26 non-buyer  n  83 reach  72%  mean  +43.1%  trim-mean  +16.5%  median  -13.0%  win  37%
+
+=== px<20, top third ATRP (cut 0.055)
+  train 19-21 all        n 727 reach  63%  mean  +36.1%  trim-mean  +27.9%  median   -8.0%  win  35%
+  train 19-21 BUYER10    n 149 reach  66%  mean  +19.2%  trim-mean  +15.5%  median   -7.3%  win  40%
+  train 19-21 BBANY      n 279 reach  65%  mean  +38.0%  trim-mean  +21.4%  median   -7.1%  win  38%
+  train 19-21 non-buyer  n 448 reach  61%  mean  +34.8%  trim-mean  +28.1%  median   -8.7%  win  34%
+  test 22-26 all        n1157 reach  61%  mean   +5.0%  trim-mean   +2.7%  median  -10.9%  win  25%
+  test 22-26 BUYER10    n  62 reach  58%  mean   -6.3%  trim-mean   -8.6%  median  -10.3%  win  23%
+  test 22-26 BBANY      n 205 reach  68%  mean   +2.4%  trim-mean   -0.6%  median  -10.6%  win  24%
+  test 22-26 non-buyer  n 952 reach  59%  mean   +5.6%  trim-mean   +2.7%  median  -11.0%  win  25%
+
+=== px<20, top fifth ATRP (cut 0.066)
+  train 19-21 all        n 436 reach  66%  mean  +36.9%  trim-mean  +30.7%  median   -8.2%  win  37%
+  train 19-21 BUYER10    n  89 reach  64%  mean  +13.9%  trim-mean  +10.5%  median   -9.9%  win  38%
+  train 19-21 BBANY      n 170 reach  66%  mean  +25.3%  trim-mean  +18.7%  median   -8.2%  win  38%
+  train 19-21 non-buyer  n 266 reach  65%  mean  +44.2%  trim-mean  +34.3%  median   -8.2%  win  37%
+  test 22-26 all        n 640 reach  63%  mean   +8.4%  trim-mean   +4.1%  median  -12.2%  win  25%
+  test 22-26 BUYER10    n  29 reach  55%  mean   -8.7%  trim-mean  -13.3%  median  -13.7%  win  17%
+  test 22-26 BBANY      n 110 reach  65%  mean   +4.4%  trim-mean   -1.2%  median  -13.3%  win  25%
+  test 22-26 non-buyer  n 530 reach  62%  mean   +9.2%  trim-mean   +4.0%  median  -12.1%  win  25%
+
+=== px<20, top tenth ATRP (cut 0.080)
+  train 19-21 all        n 218 reach  69%  mean  +47.5%  trim-mean  +35.6%  median   -9.5%  win  37%
+  train 19-21 BUYER10    n  44 reach  66%  mean   +7.3%  trim-mean   +0.3%  median  -13.1%  win  34%
+  train 19-21 BBANY      n  81 reach  69%  mean  +25.3%  trim-mean  +13.8%  median  -10.6%  win  38%
+  train 19-21 non-buyer  n 137 reach  69%  mean  +60.5%  trim-mean  +42.0%  median   -9.4%  win  36%
+  test 22-26 all        n 278 reach  64%  mean  +14.4%  trim-mean   +5.7%  median  -13.5%  win  28%
+  test 22-26 BUYER10    n   9 reach  67%  mean   -7.1%  trim-mean   +nan%  median  -25.7%  win  11%
+  test 22-26 BBANY      n  42 reach  64%  mean  +11.3%  trim-mean   -2.2%  median  -15.2%  win  24%
+  test 22-26 non-buyer  n 236 reach  64%  mean  +15.0%  trim-mean   +5.1%  median  -12.8%  win  28%
+
+### BY YEAR, px<10, top third: BUYER10 vs non-buyer (net of 40bp)
+  2019  BUYER10 n   0 reach nan%  mean   +nan%  trim-mean   +nan%  median   +nan%  win nan%   | non n  26 reach  54%  mean   -7.0%  trim-mean  -10.2%  median  -10.6%  win  19%
+  2020  BUYER10 n  32 reach  72%  mean  +11.4%  trim-mean   +2.5%  median  -13.1%  win  41%   | non n 139 reach  76%  mean  +74.3%  trim-mean  +56.2%  median   -6.8%  win  45%
+  2021  BUYER10 n   0 reach nan%  mean   +nan%  trim-mean   +nan%  median   +nan%  win nan%   | non n  19 reach  53%  mean  +18.7%  trim-mean   -3.3%  median   -7.4%  win  37%
+  2022  BUYER10 n   3 reach  33%  mean  -18.4%  trim-mean   +nan%  median  -12.9%  win   0%   | non n  93 reach  51%  mean   -1.6%  trim-mean   -6.1%  median  -14.4%  win  19%
+  2023  BUYER10 n   5 reach  80%  mean  -13.6%  trim-mean   +nan%  median  -15.9%  win  20%   | non n  87 reach  57%  mean  +23.3%  trim-mean   -3.2%  median  -13.5%  win  18%
+  2024  BUYER10 n   3 reach  33%  mean  +42.7%  trim-mean   +nan%  median  -14.2%  win  33%   | non n 105 reach  66%  mean   +5.4%  trim-mean   -0.3%  median  -12.2%  win  29%
+  2025  BUYER10 n   7 reach  43%  mean  -19.1%  trim-mean   +nan%  median  -14.6%  win  14%   | non n 108 reach  71%  mean  +19.2%  trim-mean  +11.2%  median  -10.6%  win  32%
+  2026  BUYER10 n   1 reach   0%  mean  -12.3%  trim-mean   +nan%  median  -12.3%  win   0%   | non n  10 reach  60%  mean  +17.3%  trim-mean   +nan%  median   -8.0%  win  40%
+
+### BY YEAR, px<20, top third
+  2019  BUYER10 n   4 reach  75%  mean   -5.7%  trim-mean   +nan%  median  -11.6%  win  25%   | non n  61 reach  59%  mean   -3.8%  trim-mean   -7.3%  median  -10.5%  win  20%
+  2020  BUYER10 n 143 reach  66%  mean  +20.3%  trim-mean  +16.5%  median   -7.1%  win  41%   | non n 322 reach  62%  mean  +47.7%  trim-mean  +38.4%  median   -7.9%  win  37%
+  2021  BUYER10 n   2 reach  50%  mean  -12.9%  trim-mean   +nan%  median  -12.9%  win   0%   | non n  65 reach  58%  mean   +7.4%  trim-mean   +0.4%  median   -9.1%  win  29%
+  2022  BUYER10 n  11 reach  64%  mean  -12.4%  trim-mean   +nan%  median  -11.1%  win   9%   | non n 231 reach  54%  mean   -2.9%  trim-mean   -4.5%  median  -11.3%  win  19%
+  2023  BUYER10 n  16 reach  56%  mean   -7.9%  trim-mean  -10.5%  median  -10.2%  win  19%   | non n 199 reach  61%  mean   +9.2%  trim-mean   -2.6%  median  -11.0%  win  21%
+  2024  BUYER10 n  12 reach  50%  mean   +3.4%  trim-mean   +nan%  median   -9.7%  win  25%   | non n 233 reach  60%  mean   +4.4%  trim-mean   +1.4%  median  -11.0%  win  28%
+  2025  BUYER10 n  21 reach  67%  mean   -7.3%  trim-mean   -7.2%  median   -8.4%  win  33%   | non n 255 reach  61%  mean  +12.4%  trim-mean   +8.8%  median  -10.4%  win  31%
+  2026  BUYER10 n   2 reach   0%  mean   -9.6%  trim-mean   +nan%  median   -9.6%  win   0%   | non n  34 reach  62%  mean   -1.7%  trim-mean   -7.1%  median  -11.1%  win  29%
