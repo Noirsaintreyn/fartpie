@@ -1,0 +1,33 @@
+sectors: {'CONSUMER': 43, 'ENERGY': 37, 'FIN': 77, 'HEALTH': 112, 'INDUS': 55, 'MINING': 18, 'OTHER': 34, 'TECH': 121, 'UTIL': 11} | stock-days {'HEALTH': 60442, 'TECH': 53989, 'FIN': 33398, 'INDUS': 26565, 'ENERGY': 18506, 'CONSUMER': 15003, 'OTHER': 13987, 'MINING': 12972, 'UTIL': 7774}
+coverage RDI: 0.24 | coverage SMI: 0.08 | coverage GM: 0.19 | coverage R40: 0.35 | coverage CAPINT: 0.35 | coverage ROTCE: 0.42 | coverage COMP: 0.24 | 
+  sector    feature    n1    n0  2018  2019-21  2022  2023-26  pooled    t  agree verdict
+    TECH     SMI_hi  5067  1745   0.0    -30.3   0.0     -7.5    -8.6 -2.4      2       -
+    TECH     RDI_hi  6638  5760   NaN    -11.4   0.0      5.1     1.8  0.6      1       -
+    TECH     R40_hi  4498 11898   NaN     -2.2   0.0     -1.2    -1.3 -1.5      2       -
+    TECH      GM_hi  4880  7032   1.3    -17.8   0.0      0.1    -3.1 -1.2      2       -
+    TECH     dGM_hi  4094  6748   NaN      0.0   0.0     -5.0    -4.0 -1.6      1       -
+    TECH   OPLEV_hi  5698  6560   NaN      0.3   0.0     -2.8    -1.7 -1.1      1       -
+    TECH       RDGM  3031 11504   NaN    -18.9   0.0      0.2    -3.1 -1.0      1       -
+    TECH       COMP  4099 15531   0.0    -11.5   0.0      0.9    -1.8 -1.2      1       -
+   INDUS  CAPINT_hi  4609  3135   NaN     -0.0   0.0      2.9     2.1  1.1      1       -
+   INDUS dCAPINT_hi  2855  2544   NaN     -3.2   NaN     10.7     9.2  1.7      1       -
+   INDUS      GM_hi  4489  1678   NaN    -16.0   0.0      5.3    -1.4 -0.2      1       -
+   INDUS   OPLEV_hi  3297  2327   NaN    -26.2   NaN     -2.5   -10.7 -1.2      2       -
+   INDUS    REVG_hi  3772  1921   NaN    -23.5   NaN     -0.5    -7.3 -1.1      2       -
+   INDUS       COMP   334  5212   NaN      NaN   NaN      2.6     2.6  0.4      1       -
+     FIN   ROTCE_hi  3503  2764   NaN      NaN   6.5      3.9     2.6  0.8      2       -
+     FIN  TANGTA_hi  5157  7209   5.8      4.0   1.9     -1.4     0.6  0.2      3       -
+     FIN    TBVG_hi  3217  6680   NaN      0.8   8.3     -1.4     0.4  0.4      2       -
+CONSUMER     ADI_hi   899  1114   NaN      NaN   NaN      NaN     NaN  NaN      0       -
+CONSUMER      GM_hi  2443  1191   NaN      0.0   NaN      0.0     0.0  NaN      0       -
+CONSUMER    REVG_hi  1134  1795   NaN      NaN   NaN      NaN     NaN  NaN      0       -
+CONSUMER       COMP     0  2562   NaN      NaN   NaN      NaN     NaN  NaN      0       -
+  HEALTH     RDI_hi  5498  7013   NaN      5.2   0.4      1.0     1.9  0.9      3       -
+  HEALTH     OCFPOS 11442 41222  -5.2      0.4  -2.0     -1.1    -1.1 -1.1      3       -
+  HEALTH     dGM_hi  4636  2041   0.0     -0.4   NaN    -11.6    -5.8 -1.7      2       -
+  HEALTH       COMP  1311 23370   0.0     -1.3   0.6      4.3     2.6  0.8      2       -
+  ENERGY       COMP     0   694   NaN      NaN   NaN      NaN     NaN  NaN      0       -
+  ENERGY     OCFPOS 12018   360   0.0      NaN   NaN    -33.3   -12.5 -1.0      1       -
+  ENERGY    REVG_hi   920  2378   NaN    -25.4   NaN      NaN   -25.4 -2.1      1       -
+  MINING       COMP     0   243   NaN      NaN   NaN      NaN     NaN  NaN      0       -
+  MINING     OCFPOS  2108  1272   NaN      0.0   0.0      NaN     0.0  NaN      0       -
