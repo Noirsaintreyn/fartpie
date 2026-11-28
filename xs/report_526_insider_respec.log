@@ -1,0 +1,15 @@
+relationship values: {'Director': 78571, 'Director,Officer': 36359, 'Officer': 32208, 'Director,TenPercentOwner': 24852, 'Director,Officer,TenPercentOwner': 20458, 'DirectorOther': 2806, 'Officer,TenPercentOwner': 2629, 'Director,TenPercentOwnerOther': 1725}
+
+== HEALTH: n=360 base test reach 59% mean 12.9 med -9.0
+ROLE     n=103 reach  65% mean  36.3 med  -9.6 | train n26 reach 69% | test n77 reach 64% mean 41.2 med -9.0 | p 0.2206 x10 1.000
+CLUS     n= 46 reach  72% mean  70.7 med  -7.1 | train n15 reach 60% | test n31 reach 77% mean 93.9 med -6.5 | p 0.0216 x10 0.216
+BIG      n= 88 reach  64% mean  39.4 med  -9.7 | train n22 reach 68% | test n66 reach 62% mean 42.8 med -9.7 | p 0.3226 x10 1.000
+ROLEBIG  n= 88 reach  64% mean  39.4 med  -9.7 | train n22 reach 68% | test n66 reach 62% mean 42.8 med -9.7 | p 0.3284 x10 1.000
+JOINT    n= 36 reach  50% mean  77.4 med  -9.2 | train n11 reach 55% | test n25 reach 48% mean 102.6 med -9.6 | p 0.8994 x10 1.000
+
+== ALL sectors: n=1504 base test reach 54% mean 7.4 med -7.0
+ROLE     n=262 reach  60% mean  26.1 med  -8.9 | train n82 reach 67% | test n180 reach 57% mean 19.8 med -9.0 | p 0.2062 x10 1.000
+CLUS     n=124 reach  61% mean  34.2 med  -9.3 | train n49 reach 63% | test n75 reach 60% mean 37.9 med -8.8 | p 0.1746 x10 1.000
+BIG      n=229 reach  59% mean  26.5 med  -9.0 | train n73 reach 67% | test n156 reach 56% mean 19.0 med -9.2 | p 0.3466 x10 1.000
+ROLEBIG  n=229 reach  59% mean  26.5 med  -9.0 | train n73 reach 67% | test n156 reach 56% mean 19.0 med -9.2 | p 0.3344 x10 1.000
+JOINT    n= 85 reach  55% mean  29.5 med  -9.6 | train n29 reach 59% | test n56 reach 54% mean 41.6 med -9.8 | p 0.5670 x10 1.000

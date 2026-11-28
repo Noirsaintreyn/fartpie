@@ -1450,3 +1450,7 @@ Catch: the passes are rank-IC = shallower typical losses, NOT bigger winners. Te
 Declared before results; proxies only (PIPE investor identity/discount/catalyst dates need 8-K exhibit text, not reachable): PIPE = 8-K 3.02 in 365d (neg), INS = open-mkt insider buy 90d (pos), RUN12 = cash runway >=12m (pos), FQ = INS+RUN12-PIPE. 360 health flips, 4 trials, test 2022+ reach vs permutation null.
 Base test reach 59% / mean +12.9 / med -9.0. PIPE=1 reach 53% (neg as declared) but mean +36.7 (tail). INS=1 reach 63% (p .26). RUN12=1 reach 67% (raw p .062, x4 .25). FQ>=1 reach 67% (train 74%), raw p .046, x4 .18 -> LEAD not PASS; train n=19 only. Medians unchanged (-9) everywhere: none of it touches typical loser depth.
 Read: runway is the only direction-consistent hint (survive-to-catalyst mechanism); 3.02 is dilution but also precedes the big winners (financing precedes runs). Not wired live.
+
+## Report 526 (Nov 27 2026): insider flag re-specified (Consensus #6) — NO PASS
+Declared: ROLE (officer/director buy 90d), CLUS (>=2 distinct owners), BIG (>=$25k), ROLEBIG, JOINT (ROLE & 3.02 in 365d); health (360) and all sectors (1,504); 10 trials x10.
+HEALTH test reach: ROLE 64% (p .22), BIG 62%, JOINT 48% (worse); CLUS n=31 reach 77% mean +93.9 med -6.5, raw p .022, x10 .22 -> lead only. ALL sectors: CLUS reach 60% (p .17), nothing passes. Medians stay -9. JOINT (PIPE+insider) does NOT beat either alone. Only direction-consistent hint: clustered insider buying in health (n=46, train 60% / test 77%).
