@@ -1,0 +1,34 @@
+universe names 1656 days 2230
+flips 1502 train 427 test 1075
+
+B50 cuts +0.556 +0.698
+  TRAIN HI-ATRP | BOT n 47 reach  81% mean +101.4 med  -1.9 p(<=:0.57,0.89) | MID n 32 reach  75% mean  +62.1 med  -6.7 | TOP n 63 reach  84% mean  +56.0 med  -0.1 p(>=:0.27,0.83)
+  TRAIN ALL     | BOT n143 reach  49% mean  +33.4 med  -5.3 p(<=:0.04,0.40) | MID n142 reach  49% mean  +50.2 med  -5.5 | TOP n142 reach  68% mean  +36.4 med  -3.7 p(>=:0.00,0.52)
+  TEST HI-ATRP | BOT n140 reach  71% mean  +14.3 med -11.1 p(<=:1.00,0.55) | MID n 91 reach  62% mean   -3.2 med -12.0 | TOP n 74 reach  57% mean  +36.5 med -11.2 p(>=:0.97,0.10)
+  TEST ALL     | BOT n476 reach  57% mean   +6.9 med  -6.2 p(<=:0.97,0.48) | MID n346 reach  51% mean   +4.0 med  -7.7 | TOP n253 reach  52% mean  +13.2 med  -7.5 p(>=:0.80,0.11)
+
+B50CH cuts +0.010 +0.109
+  TRAIN HI-ATRP | BOT n 26 reach  73% mean  +59.7 med  -8.7 p(<=:0.20,0.41) | MID n 51 reach  82% mean  +63.7 med  -8.3 | TOP n 65 reach  83% mean  +84.3 med +19.8 p(>=:0.36,0.27)
+  TRAIN ALL     | BOT n144 reach  46% mean  +14.4 med  -6.5 p(<=:0.01,0.02) | MID n141 reach  57% mean  +58.7 med  -6.1 | TOP n142 reach  63% mean  +47.3 med  -2.2 p(>=:0.02,0.34)
+  TEST HI-ATRP | BOT n115 reach  66% mean  +13.6 med -10.1 p(<=:0.71,0.58) | MID n103 reach  62% mean  +24.1 med -13.0 | TOP n 87 reach  67% mean   +4.2 med  -9.9 p(>=:0.40,0.82)
+  TEST ALL     | BOT n385 reach  55% mean   +5.0 med  -7.6 p(<=:0.67,0.25) | MID n373 reach  50% mean  +11.2 med  -7.5 | TOP n317 reach  57% mean   +6.0 med  -6.5 p(>=:0.09,0.58)
+
+HL cuts +0.082 +0.223
+  TRAIN HI-ATRP | BOT n 40 reach  75% mean +101.8 med  -1.6 p(<=:0.18,0.87) | MID n 38 reach  89% mean  +80.2 med  +8.6 | TOP n 64 reach  80% mean  +49.4 med  -7.0 p(>=:0.72,0.90)
+  TRAIN ALL     | BOT n143 reach  45% mean  +35.2 med  -6.5 p(<=:0.00,0.47) | MID n142 reach  59% mean  +55.1 med  -4.0 | TOP n142 reach  61% mean  +29.6 med  -5.1 p(>=:0.04,0.70)
+  TEST HI-ATRP | BOT n147 reach  65% mean  +10.8 med -10.8 p(<=:0.61,0.40) | MID n 84 reach  68% mean   +5.7 med -10.9 | TOP n 74 reach  61% mean  +31.7 med -13.3 p(>=:0.82,0.19)
+  TEST ALL     | BOT n485 reach  54% mean   +3.7 med  -7.3 p(<=:0.67,0.07) | MID n312 reach  52% mean   +6.9 med  -6.3 | TOP n278 reach  55% mean  +14.5 med  -7.4 p(>=:0.31,0.06)
+
+B5 cuts +0.405 +0.583
+  TRAIN HI-ATRP | BOT n 57 reach  75% mean  +85.6 med  -7.0 p(<=:0.12,0.73) | MID n 34 reach  85% mean  +70.8 med  -3.0 | TOP n 51 reach  84% mean  +58.7 med  +3.2 p(>=:0.29,0.71)
+  TRAIN ALL     | BOT n149 reach  48% mean  +34.7 med  -5.7 p(<=:0.02,0.46) | MID n140 reach  54% mean  +51.9 med  -5.4 | TOP n138 reach  64% mean  +33.6 med  -4.0 p(>=:0.02,0.58)
+  TEST HI-ATRP | BOT n145 reach  70% mean  +10.7 med -11.1 p(<=:0.97,0.45) | MID n 97 reach  66% mean   +8.6 med -10.2 | TOP n 63 reach  52% mean  +32.3 med -12.8 p(>=:1.00,0.19)
+  TEST ALL     | BOT n462 reach  58% mean   +5.9 med  -7.0 p(<=:0.99,0.35) | MID n391 reach  52% mean   +7.0 med  -6.3 | TOP n222 reach  49% mean  +11.4 med  -8.6 p(>=:0.97,0.18)
+
+B5CH cuts +0.015 +0.121
+  TRAIN HI-ATRP | BOT n 28 reach  68% mean  +78.2 med -13.0 p(<=:0.04,0.58) | MID n 56 reach  88% mean  +79.4 med  +5.3 | TOP n 58 reach  81% mean  +62.8 med  +1.1 p(>=:0.58,0.68)
+  TRAIN ALL     | BOT n144 reach  47% mean  +20.2 med  -6.7 p(<=:0.02,0.07) | MID n141 reach  57% mean  +65.2 med  -4.2 | TOP n142 reach  62% mean  +35.0 med  -4.0 p(>=:0.02,0.53)
+  TEST HI-ATRP | BOT n108 reach  69% mean  +17.7 med  -9.9 p(<=:0.88,0.68) | MID n131 reach  65% mean  +19.3 med -12.5 | TOP n 66 reach  59% mean   -0.3 med -10.2 p(>=:0.88,0.95)
+  TEST ALL     | BOT n382 reach  55% mean   +7.2 med  -6.9 p(<=:0.72,0.54) | MID n448 reach  54% mean   +9.3 med  -7.6 | TOP n245 reach  52% mean   +4.4 med  -6.5 p(>=:0.81,0.70)
+
+mean feature by era: {'B50': {'test': 0.5556017020686301, 'train': 0.6136007911266653}, 'B50CH': {'test': 0.05413389056777872, 'train': 0.07880424998360455}, 'HL': {'test': 0.11925357743776542, 'train': 0.1786782897935346}, 'B5': {'test': 0.4344056333412363, 'train': 0.4848440916774408}}
