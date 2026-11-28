@@ -1,0 +1,27 @@
+stock-days 242636 base y 0.0524 | flag share % {'ANY': np.float64(15.91), 'ROLE': np.float64(15.91), 'CLUS': np.float64(7.78), 'BIGV': np.float64(13.96), 'CLUSBIG': np.float64(7.64)}
+
+POOLED lift on P(+100% in 40d), pp
+   cell    n1  2018  2019-21  2022  2023-26  pooled_pp   t
+    ANY 38598   3.0     -0.1  -0.7     -0.3        0.1 0.2
+   ROLE 38598   3.0     -0.1  -0.7     -0.3        0.1 0.2
+   CLUS 18875  11.8      0.1   0.4     -0.3        1.3 1.2
+   BIGV 33883   4.0      0.1  -1.2     -0.8        0.0 0.0
+CLUSBIG 18529  11.8      0.2   0.3     -0.1        1.3 1.2
+
+CLUS (>=2 insiders, 90d) splits
+               cell    n1  2018  2019-21  2022  2023-26  pooled_pp    t
+      CLUS | HEALTH  7348   8.9     -1.5  -0.4      0.4        0.6  0.6
+        CLUS | TECH  3828   0.0     -1.6   0.7     -2.7       -1.7 -3.0
+      CLUS | ENERGY  2242   NaN      1.4  -1.5      1.4        1.1  1.2
+      CLUS | MINING  1150   NaN     -1.2   0.0      8.9        3.5  1.0
+         CLUS | FIN  1473   NaN      2.5   0.2      3.5        2.6  0.9
+        CLUS | UTIL   175   NaN     -7.1   NaN      NaN      -10.3 -1.8
+       CLUS | OTHER  2659   NaN     -3.1   1.4     -2.2       -1.9 -1.0
+       CLUS | loser 11690   0.0     -1.2   0.6     -0.2       -0.5 -0.7
+   CLUS | non-loser  7185  12.0     -1.7   1.5      0.2        1.0  0.9
+    CLUS | high DTC  8395   0.0     -1.5  -1.0     -0.5       -0.9 -1.5
+CLUS | not high DTC 10480  11.8      2.8   1.0      1.2        2.9  2.2
+        ANY | loser 23481  -0.0      2.1  -0.6      0.2        0.8  0.8
+    ANY | non-loser 15117   3.2     -0.9  -0.1      0.4        0.2  0.4
+
+MECHANISM (ex-post): P(PR/DEAL 8-K in next 30d)  ANY=1 0.306 vs 0 0.213 | CLUS=1 0.315 vs 0 0.221 | base y when news follows 0.093 vs not 0.041
