@@ -1,0 +1,24 @@
+flip tickers with daily bars 1.0
+covered CS 1.0  NEG known 0.74  NEG share 0.02  LOSER share 0.2
+== COVER: NEGLECTED (no analyst EPS estimate) vs covered
+  test 22-26   n   12/ 808 | REACH 50% vs 55% adj -3.0pp (t -0.21) | mean r +1.4% vs +6.9% adj -4.8pp (t -0.53)
+  train 19-21  n    8/ 287 | REACH 75% vs 57% adj +18.2pp (t +1.60) | mean r +96.2% vs +22.4% adj +74.7pp (t +1.30)
+  pooled       n   20/1095 | REACH 60% vs 56% adj +6.4pp (t +0.63) | mean r +39.3% vs +10.9% adj +30.3pp (t +1.20)
+== TAX: LOSER x December vs other-month flips
+  test 22-26   n   19/ 944 | REACH 79% vs 53% adj +17.1pp (t +2.13) | mean r +22.6% vs +6.1% adj +14.2pp (t +0.94)
+  train 19-21  n 7 too few
+  pooled       n   26/1336 | REACH 77% vs 54% adj +12.1pp (t +1.67) | mean r +14.3% vs +12.0% adj -5.2pp (t -0.33)
+== TAX: LOSER x January vs other-month flips
+  test 22-26   n   23/ 974 | REACH 65% vs 53% adj +5.4pp (t +0.45) | mean r +2.5% vs +5.9% adj -5.1pp (t -1.57)
+  train 19-21  n 4 too few
+  pooled       n   27/1359 | REACH 67% vs 54% adj +3.4pp (t +0.30) | mean r +0.6% vs +11.5% adj -17.1pp (t -2.55)
+
+== COST: Corwin-Schultz spread terciles (train cuts); gross vs net of spread (full round trip = 1 spread)
+                  n  spread  reach  gross    net  med_net
+era         c3                                           
+test 22-26  0   339    0.57     45   3.32   2.75    -5.11
+            1   387    1.19     55   6.60   5.41    -8.92
+            2   350    2.12     61   7.69   5.57   -12.50
+train 19-21 0   143    0.51     37   5.73   5.23    -3.93
+            1   142    1.20     55  19.61  18.41    -9.01
+            2   143    2.22     73  45.27  43.06    -9.51
