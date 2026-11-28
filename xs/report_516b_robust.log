@@ -1,0 +1,25 @@
+== (b) finer control: ATRP DECILE x price bucket, month-clustered; by year
+HEALTH RND_hi pooled finer-control lift +4.7pp t 4.0 (raw P1 0.089 P0 0.031)
+   by year: {np.int32(2018): '+0.3', np.int32(2019): '+13.3', np.int32(2020): '+12.1', np.int32(2021): '+0.8', np.int32(2022): '+1.8', np.int32(2023): '+3.1', np.int32(2024): '+9.6', np.int32(2025): '+0.8', np.int32(2026): '+2.2'}
+HEALTH CASHTA_hi pooled finer-control lift +2.0pp t 1.6 (raw P1 0.072 P0 0.050)
+   by year: {np.int32(2018): '+4.5', np.int32(2019): '+3.1', np.int32(2020): '+10.5', np.int32(2021): '+0.0', np.int32(2022): '+2.8', np.int32(2023): '-0.7', np.int32(2024): '+5.3', np.int32(2025): '-7.2', np.int32(2026): '-0.8'}
+TECH MARGIN_hi pooled finer-control lift -2.8pp t -3.4 (raw P1 0.019 P0 0.071)
+   by year: {np.int32(2018): '-0.2', np.int32(2019): '+0.0', np.int32(2020): '+1.5', np.int32(2022): '+0.0', np.int32(2023): '-3.8', np.int32(2024): '-10.0', np.int32(2025): '-5.0', np.int32(2026): '-2.4'}
+OTHER MARGIN_hi pooled finer-control lift -2.0pp t -0.7 (raw P1 0.070 P0 0.089)
+   by year: {np.int32(2018): '+nan', np.int32(2019): '+0.0', np.int32(2020): '+2.1', np.int32(2022): '+0.0', np.int32(2023): '+0.0', np.int32(2024): '-1.4', np.int32(2025): '-6.5', np.int32(2026): '-4.1'}
+HEALTH RND_hi: names with a double 39 of 50 | top-5 names share of doubling stock-days 0.31
+
+== (a) SECTOR-SPECIFIC contagion (episode sector labels shuffled across episodes, dates fixed: removes the market-wide timing of runs)
+sector  episodes  obs_same_sector_neighbors  label_shuffle_mean  ratio     p
+ENERGY        71                       9.69                8.97   1.08 0.195
+   FIN        81                       6.67                8.06   0.83 0.990
+HEALTH       228                       5.66                4.04   1.40 0.000
+MINING        47                       3.49                7.28   0.48 1.000
+ OTHER       121                       5.95                6.30   0.94 0.765
+  TECH       163                       5.17                4.36   1.18 0.000
+
+== (c) HEALTH sub-$5 vector flips (flip_history), n = 360 with RND 252
+all      RND_hi n= 84 reach 0.667 mean r +0.182 med -0.084 | RND_lo n= 50 reach 0.520 mean r +0.036 med -0.081
+2019-21  RND_hi n= 17 reach 0.647 mean r +0.505 med -0.083 | RND_lo n= 16 reach 0.625 mean r +0.126 med -0.100
+2022     RND_hi n=  6 reach 0.500 mean r -0.095 med -0.082 | RND_lo n=  5 reach 0.600 mean r +0.119 med -0.092
+2023-26  RND_hi n= 61 reach 0.689 mean r +0.119 med -0.085 | RND_lo n= 29 reach 0.448 mean r -0.028 med -0.065

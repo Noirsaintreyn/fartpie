@@ -1,0 +1,76 @@
+panel 242636 | stock-days by sector: {'HEALTH': 60442, 'TECH': 58905, 'OTHER': 43590, 'FIN': 33398, 'MINING': 20021, 'ENERGY': 18506, 'UTIL': 7774} | names: {'ENERGY': 37, 'FIN': 77, 'HEALTH': 112, 'MINING': 29, 'OTHER': 106, 'TECH': 136, 'UTIL': 11}
+fundamental coverage 0.54 {'HEALTH': np.float64(0.83), 'MINING': np.float64(0.25), 'ENERGY': np.float64(0.52), 'OTHER': np.float64(0.51), 'FIN': np.float64(0.2), 'TECH': np.float64(0.62), 'UTIL': np.float64(0.22)}
+
+SECTOR BASE RATES P(double<=40d) by era:
+era4     2018  2019-21   2022  2023-26
+sector                                
+ENERGY  0.058    0.131  0.026    0.019
+FIN     0.006    0.055  0.020    0.045
+HEALTH  0.033    0.098  0.044    0.063
+MINING  0.010    0.045  0.016    0.044
+OTHER   0.001    0.067  0.040    0.044
+TECH    0.016    0.062  0.029    0.056
+UTIL    0.026    0.028  0.000    0.000
+
+WITHIN-ATRP LIFT (percentage points of P(double<=40d)), flag=1 minus flag=0, by era, month-clustered pooled t:
+sector    feature    n1    n0  2018  2019-21  2022  2023-26  pooled  pooled_t  agree verdict
+ENERGY SECWAVE_hi  3518 10312   NaN     -1.4   2.9      0.3    -0.1      -0.1      2       -
+ENERGY     oil_up  9572  8934   4.6     -0.5   0.5     -0.4     0.1       0.3      2       -
+ENERGY    XLE_rel  7937 10569   8.0      0.6  -0.8     -0.2     0.5       0.8      2       -
+ENERGY     LEV_hi  6678  2729   NaN     -0.1   NaN      0.5     0.2       0.3      1       -
+ENERGY    REVG_hi   920  2378   NaN    -15.7   NaN      NaN   -15.7      -0.9      1       -
+ENERGY       Z_hi  2020  5164   NaN     -3.4   NaN     -0.4    -2.3      -2.5      2       -
+ENERGY  MARGIN_hi  2079  2440   NaN     12.7   NaN     -2.9     5.6       1.4      1       -
+   FIN SECWAVE_hi 12268 18872  -1.8     -2.3  -1.5      0.9    -0.5      -0.7      3       -
+   FIN      steep 15987 17411   0.0      0.0   0.7      1.1     0.6       1.7      3       -
+   FIN   hy_tight  6314 27084   NaN      NaN   NaN     -1.1    -1.1      -2.5      1       -
+   FIN    XLF_rel 15547 17851  -0.6      0.2  -0.8      0.0    -0.1      -0.3      2       -
+   FIN     LEV_hi  6685  6064  -4.5     -8.4  -3.0      0.4    -2.5      -1.6      3       -
+   FIN       Z_hi  2309   939   NaN     10.0   NaN      NaN     9.2       1.6      1       -
+   FIN    REVG_hi  3887  3802   NaN     19.5   0.0     -0.0     3.7       1.7      1       -
+HEALTH SECWAVE_hi 14914 12846  -5.1     -2.5   0.7     -2.4    -2.3      -1.1      3       -
+HEALTH    XLV_rel 28049 32393  -1.0      0.4   0.5     -0.5    -0.1      -0.3      2       -
+HEALTH    IWM_rel 25618 34824  -0.3      0.4   0.2     -0.8    -0.2      -0.7      2       -
+HEALTH       y_dn 27634 32808   0.3     -0.1   0.1     -0.4    -0.2      -0.4      2       -
+HEALTH  RUNWAY_hi 20534  9417  -0.4      3.6   3.4     -1.0     1.0       0.8      2       -
+HEALTH  CASHTA_hi 25444  9840   5.7      4.5   4.0      1.2     3.1       2.7      4    lead
+HEALTH     RND_hi 17474  8741   0.4      8.0   1.9      5.6     5.4       4.9      4    PASS
+HEALTH       Z_hi 19250 12871   1.9     -2.5   3.8      0.7     0.2       0.2      3       -
+MINING SECWAVE_hi  5755 10851   2.5     -1.0  -0.0      0.2    -0.1      -0.1      2       -
+MINING     usd_dn  9437 10584  -1.1     -0.3  -0.2     -0.8    -0.6      -1.2      4       -
+MINING    real_dn 10220  9801  -1.6      0.8   0.5      0.2     0.2       0.6      3       -
+MINING    XLB_rel  8622 11399  -1.0     -0.7   0.5      1.3     0.3       0.4      2       -
+MINING     LEV_hi  1703  3260   NaN      2.1   NaN     -9.0    -4.2      -0.9      1       -
+MINING  CASHTA_hi  2861  1794   NaN     -0.4   NaN     12.8     4.6       1.0      1       -
+MINING       Z_hi  1383  2116   NaN      6.1   NaN     -8.8    -1.8      -0.3      1       -
+ OTHER SECWAVE_hi  9413 16536  -0.5     -3.1   1.6     -5.3    -3.1      -2.1      3    lead
+ OTHER    IWM_rel 18607 24983   0.0     -0.0  -0.5     -1.0    -0.6      -2.1      3    lead
+ OTHER   hy_tight 12799 30791   NaN      NaN   NaN     -1.2    -1.2      -2.7      1       -
+ OTHER       y_dn 19910 23680   0.0      2.8  -1.0     -1.4     0.2       0.3      2       -
+ OTHER    REVG_hi  6550  3387   NaN     -1.7   0.0     -3.9    -3.0      -1.2      2       -
+ OTHER  MARGIN_hi  2285  6337   NaN     -2.6  -3.1     -9.6    -7.2      -2.8      3    lead
+ OTHER     LEV_hi  9746  8180   NaN     -1.4   6.5      1.0     0.9       0.5      2       -
+ OTHER       Z_hi  6659  5760   0.0     -2.8   6.4     -5.4    -3.3      -1.5      2       -
+  TECH SECWAVE_hi 14284 15682  -2.4      3.0   0.2     -1.3     0.3       0.2      2       -
+  TECH    XLK_rel 32497 26408  -1.7      0.1   0.4     -0.5    -0.3      -0.8      2       -
+  TECH       y_dn 26948 31957  -0.1      0.3   0.5     -0.0     0.1       0.5      2       -
+  TECH    IWM_rel 24232 34673  -4.1     -0.2   0.1     -0.1    -0.4      -1.0      3       -
+  TECH    REVG_hi  6278 12132   NaN      2.1   4.1      3.3     3.0       2.0      3       -
+  TECH  MARGIN_hi  4094 15375  -0.0      0.2  -0.8     -6.4    -3.4      -3.7      3    PASS
+  TECH  RUNWAY_hi  3602  4155   NaN      NaN  15.2     -9.4    -3.6      -0.8      1       -
+  TECH       Z_hi  8654 11197   NaN      6.5   0.0     -1.3     1.0       0.6      1       -
+  UTIL SECWAVE_hi    16   187   NaN      NaN   NaN      NaN     NaN       NaN      0       -
+  UTIL       y_dn  3719  4055  -4.7     -0.5   0.0      0.0    -0.6      -1.8      2       -
+  UTIL    XLU_rel  3655  4119   2.3      0.4   0.0      0.0     0.4       1.0      2       -
+  UTIL     LEV_hi   326   724   NaN      NaN   NaN      NaN     NaN       NaN      0       -
+  UTIL       Z_hi   517   251   NaN      NaN   NaN      NaN     NaN       NaN      0       -
+  UTIL    REVG_hi   102   251   NaN      NaN   NaN      NaN     NaN       NaN      0       -
+
+CONTAGION: avg # of OTHER same-sector episodes starting within +-20d of an episode (obs vs within-sector date shuffle, 100 sims; p = share of sims >= obs)
+sector  episodes  obs_neighbors  shuffle_mean  ratio   p
+ENERGY        71           9.69          0.86  11.21 0.0
+   FIN        81           6.67          0.96   6.91 0.0
+HEALTH       228           5.66          2.81   2.01 0.0
+MINING        47           3.49          0.54   6.42 0.0
+ OTHER       121           5.95          1.49   4.00 0.0
+  TECH       163           5.17          2.03   2.54 0.0
