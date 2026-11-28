@@ -1,0 +1,19 @@
+n 1504 train 428 test 1076 cuts {'ATRP': np.float64(0.067), 'VOLR': np.float64(1.73), 'S_BODY': np.float64(0.936), 'S_RANGE': np.float64(1.433)}
+
+TRAIN 2019-21
+LO-ATRP        n 143 reach  35.0% mean r   +4.8 med r   -4.0  
+HI-ATRP        n 143 reach  81.1% mean r  +72.0 med r   -1.9  
+HI&VOL         n  58 reach  81.0% mean r  +77.6 med r   -4.2  perm p reach 0.625 mean 0.392
+HI&FAST        n  55 reach  81.8% mean r  +86.6 med r   -8.1  perm p reach 0.536 mean 0.255
+HI&FASTR       n  59 reach  83.1% mean r  +80.9 med r   -7.5  perm p reach 0.386 mean 0.319
+HI&VOL&FAST    n  36 reach  80.6% mean r  +71.4 med r   -9.3  perm p reach 0.634 mean 0.492
+HI&(VOL|FAST)  n  77 reach  81.8% mean r  +86.9 med r   -4.9  perm p reach 0.476 mean 0.168
+
+TEST 2022+
+LO-ATRP        n 317 reach  39.4% mean r   +2.0 med r   -4.5  
+HI-ATRP        n 307 reach  64.5% mean r  +14.3 med r  -11.7  
+HI&VOL         n 135 reach  68.1% mean r  +11.4 med r  -14.8  perm p reach 0.147 mean 0.505
+HI&FAST        n 158 reach  69.6% mean r  +10.1 med r  -15.2  perm p reach 0.033 mean 0.607
+HI&FASTR       n 167 reach  70.1% mean r  +22.6 med r  -15.2  perm p reach 0.015 mean 0.097
+HI&VOL&FAST    n  98 reach  69.4% mean r  +13.2 med r  -15.9  perm p reach 0.138 mean 0.389
+HI&(VOL|FAST)  n 195 reach  68.7% mean r   +9.4 med r  -14.0  perm p reach 0.026 mean 0.728
