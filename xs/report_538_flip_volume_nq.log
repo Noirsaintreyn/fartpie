@@ -1,0 +1,13 @@
+trades with volume ratio 471; train cuts VOLR 0.96 / 1.26; mean VOLR by era train 1.23 test 1.54
+net pts/trade | TRAIN | TEST
+ALL  TOP third  | n  55   -6.7 (t-0.7) w36% | n 113  +32.5 (t+3.1) w58%
+ALL  MID        | n  56   +9.2 (t+1.4) w59% | n  99  +19.7 (t+1.8) w63%
+ALL  BOT third  | n  55  +12.9 (t+1.4) w53% | n  93   +6.7 (t+0.8) w53%
+   ALL TOP-BOT train: -19.7 pts (matched-day diff +6.7, n days 4)
+   ALL TOP-BOT test: +25.8 pts (matched-day diff +81.7, n days 2)
+NEG  TOP third  | n  32  -10.7 (t-0.8) w41% | n  69  +35.7 (t+2.7) w57%
+NEG  MID        | n  35   +8.9 (t+1.0) w57% | n  71  +24.7 (t+1.8) w65%
+NEG  BOT third  | n  42  +18.3 (t+1.6) w60% | n  69  +16.8 (t+1.6) w58%
+   NEG TOP-BOT train: -29.0 pts (matched-day diff +78.6, n days 1)
+   NEG TOP-BOT test: +18.8 pts (matched-day diff +91.0, n days 1)
+Spearman(VOLR, pts): ALL train -0.139 test 0.103 | NEG train -0.133 test 0.081
