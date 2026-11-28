@@ -1,0 +1,9 @@
+names with 2.02 coverage 415 days 172131 share E14 0.16 E40 0.44
+E14 train 2019-21  P1 0.124 P0 0.100  within-ATRP lift +0.027 t 1.0
+E14 2018           P1 0.049 P0 0.026  within-ATRP lift +0.014 t 1.1
+E14 2022           P1 0.021 P0 0.035  within-ATRP lift -0.007 t -1.1
+E14 2023-26        P1 0.070 P0 0.057  within-ATRP lift +0.023 t 3.5
+E40 train 2019-21  P1 0.121 P0 0.092  within-ATRP lift +0.005 t 0.5
+E40 2018           P1 0.054 P0 0.013  within-ATRP lift -0.000 t -0.0
+E40 2022           P1 0.026 P0 0.038  within-ATRP lift -0.006 t -0.5
+E40 2023-26        P1 0.061 P0 0.057  within-ATRP lift +0.015 t 2.3
