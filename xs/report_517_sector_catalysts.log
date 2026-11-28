@@ -1,0 +1,95 @@
+== STEP 1: 8-K item in [trigger day-2, trigger day]  (share of episodes) vs same window on random sub-$5 stock-days of that sector
+sector  n_episodes                DEAL                  PR                 EARN                 NEG
+HEALTH         215 0.10 vs 0.01 (7.1x) 0.22 vs 0.04 (5.8x)  0.16 vs 0.04 (4.6x) 0.05 vs 0.01 (8.8x)
+  TECH         135 0.07 vs 0.02 (4.6x) 0.10 vs 0.03 (3.0x)  0.21 vs 0.04 (5.5x) 0.04 vs 0.01 (5.4x)
+ENERGY          58 0.03 vs 0.02 (2.1x) 0.14 vs 0.05 (2.9x)  0.14 vs 0.04 (3.5x) 0.02 vs 0.01 (2.7x)
+MINING          33 0.03 vs 0.02 (1.4x) 0.06 vs 0.04 (1.4x)  0.15 vs 0.04 (4.3x) 0.00 vs 0.01 (0.0x)
+   FIN          74 0.04 vs 0.02 (1.7x) 0.09 vs 0.03 (2.7x)  0.15 vs 0.04 (4.0x) 0.01 vs 0.01 (2.5x)
+ OTHER          95 0.13 vs 0.02 (7.8x) 0.19 vs 0.03 (5.4x) 0.38 vs 0.04 (10.8x) 0.04 vs 0.01 (6.2x)
+
+== hand-searched headline causes by sector (32-run sample, headline-level):
+kind    analyst  analyst (BofA) and market-wide tariff-pause rally, date not fully matched  analyst + gov  analyst/earnings  business  clinical  competitor event  deal  earnings  market-wide  not found  not found (+40% alert)  not found (ticker ambiguity)  not matched to date  policy  regulatory  sector
+sector                                                                                                                                                                                                                                                                                                          
+FIN           0                                                                          1              0                 0         0         0                 0     0         0            0          1                       0                             0                    0       0           0       0
+HEALTH        1                                                                          0              0                 0         0         2                 0     2         1            0          3                       1                             0                    0       0           1       0
+MINING        0                                                                          0              0                 0         0         0                 0     1         0            0          0                       0                             0                    0       0           0       0
+OTHER         0                                                                          0              1                 1         0         0                 1     0         1            0          0                       0                             0                    1       0           0       1
+TECH          0                                                                          0              0                 0         3         0                 0     0         1            1          2                       0                             2                    2       1           0       0
+
+== STEP 2: within-ATRP-decile x price lift (pp of P(double<=40d)), flag=1 minus flag=0
+sector   feature    n1  2018  2019-21  2022  2023-26  pooled    t  agree verdict
+ENERGY     DEAL7   685  -5.4      0.9   0.0     -0.1    -0.1 -0.1      2       -
+ENERGY       PR7  1665  -6.6      1.0   0.0      2.3     0.9  1.0      2       -
+ENERGY     EARN7  1423   6.2     -5.5   0.0      0.1    -1.7 -1.2      2       -
+ENERGY      NEG7   242  -7.2      6.6   0.0      0.0     1.4  0.8      1       -
+ENERGY       E14  2404  -8.6     -1.2  -0.6      0.4    -1.0 -1.1      3       -
+ENERGY     INS30  1505  -1.5     -4.3  -0.1      0.7    -1.6 -1.5      3       -
+ENERGY    DTC_hi  5473   NaN     -1.8   1.4     -1.3    -1.1 -1.3      2       -
+   FIN     DEAL7  1252  -1.9     -0.9   0.0      1.4     0.3  0.2      2       -
+   FIN       PR7  1766  -3.7      0.8   1.0      4.7     2.3  1.5      3       -
+   FIN     EARN7  1784   0.0      0.7   0.0     -3.0    -1.4 -1.0      1       -
+   FIN      NEG7   297   NaN     -0.7   0.0      4.8     3.0  1.2      1       -
+   FIN       E14  2935   0.0     -0.8   0.7      0.9     0.4  0.3      2       -
+   FIN     INS30  1692   NaN      1.7   0.6     -3.5    -1.5 -0.7      2       -
+   FIN    DTC_hi 13239   0.0     -0.8   0.9      1.2     0.4  0.5      2       -
+HEALTH     DEAL7  2172  -3.9     -2.1   0.5     -4.2    -3.0 -3.0      3    lead
+HEALTH       PR7  5201  -3.3     -1.2  -2.9     -1.1    -1.6 -2.2      4    lead
+HEALTH     EARN7  5589  -2.0     -4.8  -1.0     -1.6    -2.6 -2.8      4    lead
+HEALTH      NEG7   870  -2.6     -3.4  -2.1     -1.7    -2.3 -1.1      4       -
+HEALTH       E14  9213   3.4      0.4  -0.0      1.0     0.9  1.5      3       -
+HEALTH     INS30  6347   3.1     -2.5  -0.4     -1.9    -1.4 -1.4      3       -
+HEALTH    DTC_hi 19066  -1.0     -0.4   0.2     -0.2    -0.3 -0.4      3       -
+HEALTH    RND_hi 17474   0.3      8.7   1.8      3.9     4.7  4.0      4    PASS
+MINING     DEAL7   441  -7.1      0.4  -3.8     -2.3    -2.4 -1.4      3       -
+MINING       PR7   802  -1.6      6.0   0.0     -1.8     0.7  0.4      2       -
+MINING     EARN7   749   0.0     -0.2   0.0     -4.5    -1.6 -1.3      2       -
+MINING      NEG7   161   NaN      0.0   0.0      0.0     0.0  NaN      0       -
+MINING       E14  1247   0.0      3.8  -3.3      5.1     2.7  1.9      2       -
+MINING     INS30  1072   0.0     -0.8   0.0      2.3     1.0  0.3      1       -
+MINING    DTC_hi  4181   0.0     -0.2   1.4     -2.2    -1.0 -0.8      2       -
+ OTHER     DEAL7  1234   0.0      1.1  -5.4      1.3     0.5  0.4      2       -
+ OTHER       PR7  2512   0.0     -3.1   0.6      0.3    -0.5 -0.5      2       -
+ OTHER     EARN7  2669   0.0      0.4  -3.1     -0.3    -0.3 -0.2      2       -
+ OTHER      NEG7   486   NaN     -2.0   NaN      0.1    -0.1 -0.1      1       -
+ OTHER       E14  4386   0.0      3.9   3.5      3.4     3.2  2.4      3    lead
+ OTHER     INS30  2391   0.0     -1.3  -2.8     -2.1    -1.8 -1.9      3       -
+ OTHER    DTC_hi 15609   0.0      1.6   2.8      2.7     2.3  2.7      3    lead
+  TECH     DEAL7  1916   7.8      8.3  -2.4      1.6     3.1  1.8      3       -
+  TECH       PR7  3771  -1.1      4.5   1.1     -0.5     1.1  1.1      2       -
+  TECH     EARN7  4671   0.8     -3.2  -1.3     -0.4    -1.2 -1.1      3       -
+  TECH      NEG7   777  21.6     14.3  -2.0      0.3     2.8  0.9      3       -
+  TECH       E14  7642   0.1      2.1  -0.7      1.4     1.2  1.6      3       -
+  TECH     INS30  3333   0.0     -0.6   0.4      2.4     1.1  0.9      2       -
+  TECH    DTC_hi 15081   0.0      3.1  -2.3      1.0     1.3  1.5      2       -
+  TECH MARGIN_hi  4094  -0.2      0.7   0.0     -5.3    -2.8 -3.4      2       -
+
+== STEP 3: sub-$5 vector FLIPS, lead present vs not (reach = peak>=+10% before exit; mean/median r of the flip trade)
+leads carried to flips: [['HEALTH', 'DEAL7'], ['HEALTH', 'PR7'], ['HEALTH', 'EARN7'], ['HEALTH', 'RND_hi'], ['OTHER', 'E14'], ['OTHER', 'DTC_hi']]
+HEALTH  DEAL7     all      lead n= 21 reach 0.76 mean +0.159 med -0.069 | none n=339 reach 0.59 mean +0.144 med -0.093
+HEALTH  DEAL7     2019-21  lead n=  6 reach 0.67 mean +0.277 med -0.068 | none n= 69 reach 0.64 mean +0.200 med -0.094
+HEALTH  DEAL7     2022     lead n=  1 reach 1.00 mean -0.092 med -0.092 | none n= 40 reach 0.53 mean +0.042 med -0.100
+HEALTH  DEAL7     2023-26  lead n= 14 reach 0.79 mean +0.126 med -0.057 | none n=230 reach 0.58 mean +0.145 med -0.090
+HEALTH  PR7       all      lead n= 37 reach 0.73 mean +0.087 med -0.091 | none n=323 reach 0.58 mean +0.152 med -0.090
+HEALTH  PR7       2019-21  lead n=  8 reach 0.62 mean +0.105 med -0.119 | none n= 67 reach 0.64 mean +0.218 med -0.087
+HEALTH  PR7       2022     lead n=  3 reach 1.00 mean +0.277 med -0.023 | none n= 38 reach 0.50 mean +0.020 med -0.102
+HEALTH  PR7       2023-26  lead n= 26 reach 0.73 mean +0.060 med -0.080 | none n=218 reach 0.58 mean +0.154 med -0.090
+HEALTH  EARN7     all      lead n= 49 reach 0.57 mean +0.035 med -0.098 | none n=311 reach 0.60 mean +0.162 med -0.090
+HEALTH  EARN7     2019-21  lead n= 14 reach 0.43 mean -0.006 med -0.109 | none n= 61 reach 0.69 mean +0.255 med -0.088
+HEALTH  EARN7     2022     lead n=  5 reach 0.40 mean -0.007 med -0.177 | none n= 36 reach 0.56 mean +0.045 med -0.097
+HEALTH  EARN7     2023-26  lead n= 30 reach 0.67 mean +0.061 med -0.090 | none n=214 reach 0.58 mean +0.156 med -0.090
+HEALTH  RND_hi    all      lead n= 84 reach 0.67 mean +0.182 med -0.084 | none n= 50 reach 0.52 mean +0.036 med -0.081
+HEALTH  RND_hi    2019-21  lead n= 17 reach 0.65 mean +0.505 med -0.083 | none n= 16 reach 0.62 mean +0.126 med -0.100
+HEALTH  RND_hi    2022     lead n=  6 reach 0.50 mean -0.095 med -0.082 | none n=  5 reach 0.60 mean +0.119 med -0.092
+HEALTH  RND_hi    2023-26  lead n= 61 reach 0.69 mean +0.119 med -0.085 | none n= 29 reach 0.45 mean -0.028 med -0.065
+OTHER   E14       all      lead n= 18 reach 0.28 mean +0.278 med -0.140 | none n=216 reach 0.59 mean +0.284 med -0.064
+OTHER   E14       2019-21  lead n=  3 reach 0.67 mean +0.910 med -0.054 | none n= 48 reach 0.44 mean +1.236 med -0.063
+OTHER   E14       2022     lead n=  3 reach 0.00 mean -0.128 med -0.099 | none n= 27 reach 0.67 mean -0.007 med -0.070
+OTHER   E14       2023-26  lead n= 12 reach 0.25 mean +0.222 med -0.163 | none n=141 reach 0.62 mean +0.016 med -0.063
+HEALTH  E14       all      lead n= 52 reach 0.73 mean +0.183 med -0.082 | none n=308 reach 0.57 mean +0.139 med -0.091
+HEALTH  E14       2019-21  lead n= 17 reach 0.82 mean +0.327 med -0.093 | none n= 58 reach 0.59 mean +0.171 med -0.089
+HEALTH  E14       2022     lead n=  8 reach 0.88 mean +0.179 med -0.069 | none n= 33 reach 0.45 mean +0.005 med -0.108
+HEALTH  E14       2023-26  lead n= 27 reach 0.63 mean +0.093 med -0.086 | none n=217 reach 0.59 mean +0.151 med -0.090
+ALL     E14       all      lead n=155 reach 0.55 mean +0.161 med -0.070 | none n=1349 reach 0.54 mean +0.167 med -0.065
+ALL     E14       2019-21  lead n= 49 reach 0.67 mean +0.261 med -0.076 | none n=379 reach 0.54 mean +0.417 med -0.050
+ALL     E14       2022     lead n= 18 reach 0.50 mean +0.064 med -0.073 | none n=150 reach 0.52 mean +0.018 med -0.061
+ALL     E14       2023-26  lead n= 88 reach 0.50 mean +0.124 med -0.066 | none n=820 reach 0.55 mean +0.079 med -0.072
