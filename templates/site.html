@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>L'Argent Parle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Pinyon+Script&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0a0e1a;--ink:#e8e6e3;--white:#fff;--gold:#c9a227;--gold-2:#b39a52;--muted:#9a9890;--line:rgba(201,162,39,.15);--line-2:rgba(201,162,39,.1);--panel:rgba(201,162,39,.03);--up:#6fcf97;--dn:#eb5757;--bull:#5b8def;--bull-2:#3a62b0;--bear:#ef6f8a;--bear-2:#b24b63}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -126,6 +126,65 @@ body,button,input,select,table,th,td{font-style:italic}
 .brief .held td:first-child{color:var(--gold)}
 @media (max-width:700px){.mkt-grid{grid-template-columns:1fr}.essay p{font-size:17px;text-align:left}.cur{font-size:44px}.rng-cells{grid-template-columns:repeat(2,minmax(0,1fr))}.rng-cells .r{text-align:left}.rng7 .mid{grid-column:1 / -1;order:-1;border:none;border-bottom:1px solid var(--line);padding-bottom:6px}}
 @media (max-width:900px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.holds{grid-template-columns:repeat(3,minmax(0,1fr))}.hwrap,main{padding-left:16px;padding-right:16px}.ph h1{font-size:40px}.chartbox{height:420px}}
+
+/* ===== TERMINAL SKIN (Nov 27 2026): same navy/gold, real terminal ===== */
+:root{--mono:'JetBrains Mono','IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--glow:0 0 8px rgba(201,162,39,.35)}
+html{font-size:13px}
+body,button,input,select,table,th,td,.serif,.tnr,.tnr *,.brand,.v,.cur,.chip b,.panel h2,.sec-name,.ph h1,.ph p,.essay p,.rng svg{font-family:var(--mono)!important;font-style:normal!important}
+body{background:radial-gradient(ellipse at 50% -20%,#101830 0,#0a0e1a 55%,#070a13 100%) fixed;line-height:1.5;padding-bottom:34px;letter-spacing:0}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:50;background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
+::selection{background:var(--gold);color:#0a0e1a}
+header{background:#070a13;border-bottom:1px solid var(--gold);backdrop-filter:none}
+.hwrap{padding:8px 20px;gap:16px}
+.brand{font-size:14px!important;letter-spacing:0;color:var(--gold);text-shadow:var(--glow);text-transform:none}
+.brand::before{content:'rey@lap';color:var(--up)}.brand::after{content:':~$';color:var(--muted)}
+.brand{font-size:0!important}.brand::before,.brand::after{font-size:14px}
+nav{gap:0}
+nav button{font-size:12px;letter-spacing:0;text-transform:lowercase;padding:6px 12px;min-height:28px;border:none;border-right:1px solid var(--line);color:var(--gold-2)}
+nav button::before{content:'['attr(data-k)'] ';color:var(--muted)}
+nav button[aria-current=page]{background:var(--gold);color:#0a0e1a;border-bottom:none}nav button[aria-current=page]::before{color:#0a0e1a}
+.logout{border:none;padding:6px 10px;font-size:12px;letter-spacing:0;text-transform:lowercase}.logout::before{content:'exit ';color:var(--muted)}
+#tape{border-bottom:1px solid var(--line);background:#080b15;overflow:hidden;white-space:nowrap;font-size:12px;height:24px;line-height:24px;color:var(--muted)}
+#tape .in{display:inline-block;padding-left:100%;animation:tape 70s linear infinite}#tape:hover .in{animation-play-state:paused}
+#tape b{color:var(--ink);font-weight:500;margin-left:22px}#tape .up{margin-left:6px}#tape .dn{margin-left:6px}
+@keyframes tape{to{transform:translateX(-100%)}}
+main{padding:18px 20px 40px;gap:16px;max-width:1500px}
+.ph{align-items:center}
+.ph h1{font-size:20px!important;font-weight:500;color:var(--gold);text-shadow:var(--glow);text-transform:lowercase}
+.ph h1::before{content:'$ ';color:var(--up)}.ph h1::after{content:'\2588';margin-left:6px;animation:blink 1.1s steps(1) infinite;color:var(--gold)}
+@keyframes blink{50%{opacity:0}}
+.ph p{font-size:12px!important;color:var(--muted);margin-top:4px}.ph p::before{content:'# '}
+.status{font-size:11px;letter-spacing:0;text-transform:lowercase}.dot{border-radius:0;width:8px;height:8px}
+.rule{width:100%;height:0;border-top:1px dashed var(--line)}
+.tile,.panel{border-radius:0;background:rgba(201,162,39,.025);border:1px solid var(--line)}
+.panel{padding:14px 16px;position:relative}
+.panel>.ptop:first-child h2,.panel>h2:first-child{font-size:12px!important;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.panel>.ptop:first-child h2::before,.panel>h2:first-child::before{content:'\250C\2500 ';color:var(--muted)}
+.panel>.ptop:first-child h2::after,.panel>h2:first-child::after{content:' \2500\2500\2510';color:var(--muted)}
+.tile{padding:12px 14px;gap:4px}.k{font-size:10px;letter-spacing:.1em}.v{font-size:22px!important;font-weight:500;text-shadow:var(--glow)}
+th{font-size:10px;letter-spacing:.1em;padding:6px 10px;border-bottom:1px solid var(--line)}td{padding:6px 10px;font-size:12.5px}
+tbody tr:hover td{background:rgba(201,162,39,.07)}
+.tk{text-decoration:none;color:var(--gold);font-weight:600}.tk:hover{background:var(--gold);color:#0a0e1a}
+.chip,.toggle,.seg,.seg button,.tfs button,.zoom button,.search input,.vsel,.logout{border-radius:0}
+.chip{min-height:28px;padding:0 10px}.chip b{font-size:13px!important;font-weight:600}
+.seg button,.toggle{min-height:28px;font-size:11px;letter-spacing:0;text-transform:lowercase}
+.tfs button,.zoom button{min-height:26px}
+.search input{min-height:28px;font-size:13px}
+.chartbox{border-color:var(--line);height:560px}
+.essay p{font-size:13.5px!important;line-height:1.7;text-align:left;color:#cfcbc2}.essay .lead{font-variant:normal;font-size:13.5px}
+.dropcap::first-letter{float:none;font-size:inherit;padding:0;color:inherit}
+.dateline{font-size:12px;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line)}
+.essay h3{letter-spacing:.14em;font-size:11px}.sec-name{font-size:14px!important}.cur{font-size:26px!important}.pos-pnl{font-size:20px}
+.sig{font-size:12px;padding:5px 0}
+.note,.sub{font-size:11.5px}
+.brief-list li::before,.news li::before{border-radius:0;content:'>';background:none;color:var(--gold);width:auto;height:auto;top:0;font-size:12px}
+/* command bar + status line */
+#cmd{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;align-items:center;gap:8px;background:#070a13;border-top:1px solid var(--gold);padding:0 14px;height:30px;font-size:12px;color:var(--muted)}
+#cmd span.p{color:var(--up)}#cmd input{flex:1;background:transparent;border:none;outline:none;color:var(--gold);font:inherit;caret-color:var(--gold);min-height:0;padding:0;text-transform:none}
+#cmd .r{margin-left:auto;display:flex;gap:16px;white-space:nowrap}#cmd #clk{color:var(--gold)}
+#cmdmsg{color:var(--gold);max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#cmd input{min-width:60px}
+@media (max-width:900px){ #cmd .r{display:none}nav button::before{content:''}.hwrap{gap:8px}}
+@media (prefers-reduced-motion:reduce){ #tape .in,.ph h1::after{animation:none}body::after{display:none}}
 </style>
 </head>
 <body>
@@ -133,16 +192,17 @@ body,button,input,select,table,th,td{font-style:italic}
 <div class="hwrap">
 <div class="brand">L'Argent Parle</div>
 <nav aria-label="Main" id="nav">
-<button data-tab="analysis">Daily Analysis</button>
-<button data-tab="morning">Morning Report</button>
-<button data-tab="screener">Screener</button>
-<button data-tab="futures">Futures</button>
-<button data-tab="history">History</button>
-<button data-tab="backtest">Backtest</button>
+<button data-tab="analysis" data-k="1">Daily Analysis</button>
+<button data-tab="morning" data-k="2">Morning Report</button>
+<button data-tab="screener" data-k="3">Screener</button>
+<button data-tab="futures" data-k="4">Futures</button>
+<button data-tab="history" data-k="5">History</button>
+<button data-tab="backtest" data-k="6">Backtest</button>
 </nav>
 <a class="logout" href="/logout">Logout</a>
 </div>
 </header>
+<div id="tape" aria-hidden="true"><div class="in" id="tapeIn">connecting to feed…</div></div>
 
 <main>
 <div class="ph">
@@ -317,6 +377,7 @@ body,button,input,select,table,th,td{font-style:italic}
 </div>
 </section>
 </main>
+<div id="cmd"><span class="p">&gt;</span><input id="cmdIn" autocomplete="off" spellcheck="false" aria-label="command" placeholder="type a ticker (chart), a tab name, or ? for help   ( / to focus )"><span id="cmdmsg"></span><span class="r"><span id="cmdTab"></span><span id="clk"></span></span></div>
 
 <script>
 (function () {
@@ -353,6 +414,7 @@ body,button,input,select,table,th,td{font-style:italic}
     $('stext').textContent = (S.market_open ? 'Market open · ' : 'Market closed · ') + 'updated ' + asof.toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' });
     $('sdot').style.background = S.market_open ? 'var(--up)' : 'var(--muted)';
     var P = S.positions || [], used = P.length, slots = S.slots || 8;
+    if (window.lapTape) window.lapTape(P);
     var avg = P.length ? P.reduce(function (a, p) { return a + (p.pnl || 0); }, 0) / P.length : null;
     var EX = P.filter(function (p) { return p.ext != null && !p.selling; }), xavg = EX.length ? P.reduce(function (a, p) { return a + (p.ext != null && !p.selling ? p.ext_pnl : (p.pnl || 0)); }, 0) / P.length : null;
     $('scrTiles').innerHTML = tile('Slots', used + ' / ' + slots) + tile('Invested', Math.round(used / slots * 100) + '%') + tile('Avg open P&L', avg == null ? '–' : pct(avg), xavg == null ? '' : EX[0].ext_lab + ' ' + pct(xavg), cls(avg)) + tile('Options cutoff', '≥ ' + (S.cutoff || 1.5), '', 'gold');
@@ -829,6 +891,39 @@ body,button,input,select,table,th,td{font-style:italic}
   // ---------------------------------------------------------------- boot
   var t0 = 'analysis'; try { t0 = localStorage.getItem('lap_tab') || t0; } catch (e) {}
   tfButtons(); setTab(TITLES[t0] && t0 !== 'mid' && t0 !== 'extremes' && t0 !== 'charts' && t0 !== 'options' ? t0 : 'analysis'); loadSnap(); setInterval(loadSnap, 60000); loadRead(); setInterval(loadRead, 600000);
+
+  // ---------------------------------------------------------------- terminal layer: hotkeys, command bar, clock, tape
+  (function () {
+    var K = ['analysis', 'morning', 'screener', 'futures', 'history', 'backtest'], inp = $('cmdIn'), msg = $('cmdmsg'), hist = [], hi = 0;
+    function say(t) { msg.textContent = t; clearTimeout(say.t); say.t = setTimeout(function () { msg.textContent = ''; }, 4000); }
+    function clock() { var d = new Date(), f = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, weekday: 'short' }).format(d); $('clk').textContent = f + ' ET'; $('cmdTab').textContent = 'tab:' + tab; }
+    clock(); setInterval(clock, 1000);
+    document.addEventListener('keydown', function (e) {
+      var typing = /INPUT|SELECT|TEXTAREA/.test((e.target.tagName || ''));
+      if (e.key === 'Escape') { inp.blur(); return; }
+      if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === '/' || e.key === ':') { e.preventDefault(); inp.focus(); return; }
+      var n = parseInt(e.key, 10); if (n >= 1 && n <= K.length) setTab(K[n - 1]);
+    });
+    inp.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowUp') { hi = Math.max(0, hi - 1); inp.value = hist[hi] || ''; e.preventDefault(); return; }
+      if (e.key === 'ArrowDown') { hi = Math.min(hist.length, hi + 1); inp.value = hist[hi] || ''; e.preventDefault(); return; }
+      if (e.key !== 'Enter') return;
+      var c = inp.value.trim().toLowerCase(); inp.value = ''; if (!c) return; hist.push(c); hi = hist.length;
+      var m = { daily: 'analysis', analysis: 'analysis', morning: 'morning', screener: 'screener', scr: 'screener', futures: 'futures', nq: 'futures', history: 'history', hist: 'history', backtest: 'backtest', bt: 'backtest', charts: 'charts', chart: 'charts', mid: 'mid', extremes: 'extremes' };
+      if (c === '?' || c === 'help') return say('1-6 tabs | / command | <ticker> opens chart | daily morning screener futures history backtest | logout');
+      if (c === 'logout' || c === 'exit') { location.href = '/logout'; return; }
+      if (m[c] && $('tab-' + m[c])) return setTab(m[c]);
+      if (/^[a-z.\-]{1,6}$/.test(c)) { openChart(c.toUpperCase()); return say('chart ' + c.toUpperCase()); }
+      say('unknown: ' + c + '  (? for help)');
+    });
+    // ticker tape from the open book (snapshot), refreshed with the page's own poll
+    window.lapTape = function (rows) {
+      if (!rows || !rows.length) return;
+      var h = rows.map(function (r) { var v = r.pnl; return '<b>' + esc(r.name || r.tk || r.ticker) + '</b>' + (r.px != null ? ' ' + Number(r.px).toFixed(2) : '') + (v != null ? '<span class="' + cls(v) + '">' + pct(v, 1) + '</span>' : ''); }).join('');
+      $('tapeIn').innerHTML = h + h;
+    };
+  })();
 })();
 </script>
 </body>
