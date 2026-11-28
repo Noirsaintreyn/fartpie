@@ -1,0 +1,39 @@
+
+=== px<5: 1504 flips | top-vol third ATRP >= 0.067 | flag rates DEALf 0.04 INSf 0.07 SECMAC 0.53 SQ 0.30 RAISE90 0.06 SI15 0.09 OVHL 0.32
+  train 19-21: ALL top-vol n143 reach 81% mean r +34.1% med -1.9% | basket>=1 n126 reach 82% mean r +33.2% med -3.0% | basket>=2 n73 reach 85% mean r +30.0% med -7.5% | not in basket n17 reach 76% mean r +40.6% med +4.9%
+  test 22-26: ALL top-vol n307 reach 64% mean r +7.2% med -11.7% | basket>=1 n264 reach 64% mean r +7.9% med -11.8% | basket>=2 n163 reach 66% mean r +8.6% med -11.8% | not in basket n43 reach 70% mean r +2.9% med -9.9%
+
+=== px<10: 3863 flips | top-vol third ATRP >= 0.059 | flag rates DEALf 0.04 INSf 0.07 SECMAC 0.53 SQ 0.21 RAISE90 0.06 SI15 0.08 OVHL 0.31
+  train 19-21: ALL top-vol n411 reach 70% mean r +20.5% med -7.9% | basket>=1 n345 reach 71% mean r +19.9% med -8.0% | basket>=2 n181 reach 78% mean r +24.4% med -7.9% | not in basket n66 reach 62% mean r +23.3% med -6.6%
+  test 22-26: ALL top-vol n766 reach 61% mean r +5.1% med -10.9% | basket>=1 n637 reach 62% mean r +6.1% med -11.0% | basket>=2 n387 reach 63% mean r +8.9% med -10.8% | not in basket n129 reach 60% mean r +0.5% med -9.9%
+
+=== px<20: 8408 flips | top-vol third ATRP >= 0.052 | flag rates DEALf 0.03 INSf 0.07 SECMAC 0.52 SQ 0.15 RAISE90 0.04 SI15 0.07 OVHL 0.31
+  train 19-21: ALL top-vol n998 reach 61% mean r +15.8% med -8.0% | basket>=1 n772 reach 64% mean r +17.4% med -7.8% | basket>=2 n376 reach 69% mean r +20.7% med -8.3% | not in basket n226 reach 52% mean r +10.5% med -8.3%
+  test 22-26: ALL top-vol n1516 reach 59% mean r +3.2% med -10.1% | basket>=1 n1241 reach 59% mean r +3.8% med -10.3% | basket>=2 n700 reach 62% mean r +5.7% med -10.3% | not in basket n275 reach 58% mean r +0.3% med -9.3%
+
+adjusted basket effect inside the top-vol third (pp, month-clustered t):
+bucket         era    basket   y  adj_pp     t  n_basket
+  px<5 train 19-21 basket>=1 hit    4.66  0.44       126
+  px<5 train 19-21 basket>=1  rw  -10.31 -0.43       126
+  px<5 train 19-21 basket>=2 hit    7.61  1.02        73
+  px<5 train 19-21 basket>=2  rw   -9.23 -0.62        73
+  px<5  test 22-26 basket>=1 hit   -6.54 -0.78       264
+  px<5  test 22-26 basket>=1  rw    4.36  0.87       264
+  px<5  test 22-26 basket>=2 hit    3.15  0.51       163
+  px<5  test 22-26 basket>=2  rw    1.98  0.37       163
+ px<10 train 19-21 basket>=1 hit    6.61  0.69       345
+ px<10 train 19-21 basket>=1  rw   -5.65 -0.70       345
+ px<10 train 19-21 basket>=2 hit   14.26  2.27       181
+ px<10 train 19-21 basket>=2  rw    6.07  0.85       181
+ px<10  test 22-26 basket>=1 hit    1.06  0.23       637
+ px<10  test 22-26 basket>=1  rw    4.64  1.48       637
+ px<10  test 22-26 basket>=2 hit    2.88  0.85       387
+ px<10  test 22-26 basket>=2  rw    6.64  2.05       387
+ px<20 train 19-21 basket>=1 hit   10.18  2.15       772
+ px<20 train 19-21 basket>=1  rw    5.15  1.33       772
+ px<20 train 19-21 basket>=2 hit   10.07  1.54       376
+ px<20 train 19-21 basket>=2  rw    6.37  1.08       376
+ px<20  test 22-26 basket>=1 hit    0.39  0.13      1241
+ px<20  test 22-26 basket>=1  rw    3.09  1.79      1241
+ px<20  test 22-26 basket>=2 hit    4.02  1.65       700
+ px<20  test 22-26 basket>=2  rw    4.11  1.77       700
