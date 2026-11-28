@@ -1,0 +1,12 @@
+
+A. LONG: daily up-flips by weekly regime (agree = weekly up): n1989 train545 test1444 HI-ATRP cut 0.069; weekly regime values [np.int64(-1), np.int64(0), np.int64(1)]
+TRAIN HI-ATRP | agree n  20 reach   70% mean +126.2 med   -9.9 p(0.88,0.21) | disagr n 162 reach   79% mean  +88.0 med   -6.8 p(0.24,0.80)
+TRAIN ALL     | agree n  89 reach   44% mean  +17.6 med   -4.9 p(0.69,0.39) | disagr n 274 reach   46% mean  +24.6 med   -5.1 p(0.41,0.61)
+TEST HI-ATRP | agree n  66 reach   62% mean  +12.9 med   -9.1 p(0.78,0.61) | disagr n 334 reach   66% mean  +28.9 med  -12.8 p(0.30,0.37)
+TEST ALL     | agree n 267 reach   47% mean   +3.5 med   -5.6 p(0.91,0.63) | disagr n 775 reach   52% mean   +4.6 med   -7.0 p(0.12,0.39)
+
+B. SHORT: daily down-flips by weekly regime (agree = weekly down), returns are short-side: n1910 train521 test1389 HI-ATRP cut 0.075; weekly regime values [np.int64(-1), np.int64(0), np.int64(1)]
+TRAIN HI-ATRP | agree n 125 reach   63% mean -236.9 med  -14.5 p(0.16,0.72) | disagr n  47 reach   51% mean  -11.8 med  -14.6 p(0.95,0.35)
+TRAIN ALL     | agree n 208 reach   44% mean   -1.0 med   -5.5 p(0.68,0.07) | disagr n 139 reach   46% mean   -3.4 med   -6.6 p(0.35,0.94)
+TEST HI-ATRP | agree n 338 reach   62% mean  -11.5 med  -14.2 p(0.28,0.64) | disagr n 162 reach   59% mean  -10.4 med  -13.2 p(0.74,0.36)
+TEST ALL     | agree n 554 reach   45% mean   -3.5 med   -6.9 p(0.01,0.25) | disagr n 332 reach   37% mean   -4.3 med   -5.7 p(1.00,0.78)
