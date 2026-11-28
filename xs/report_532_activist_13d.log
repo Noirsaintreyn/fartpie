@@ -1,0 +1,14 @@
+stock-days 242636 base y 0.0524 | flag shares {'D10': np.float64(0.6), 'DA10': np.float64(3.17), 'D30': np.float64(8.9), 'G30': np.float64(10.16)}
+
+STOCK-DAY lift on P(+100% in 40d), pp:
+flag    n1  2018  2019-21  2022  2023-26  pooled_pp    t
+ D10  1459  -0.5     -2.6   1.6      2.5        0.5  0.3
+DA10  7685   2.0     -1.7  -1.4     -0.2       -0.7 -1.0
+ D30 21588   1.8     -2.2   1.0      0.3       -0.3 -0.6
+ G30 24645  -1.0      1.4   2.9     -1.5        0.0  0.0
+
+FLIPS (n=1504) base test reach 54% mean 7.4 med -7.0
+D10 n 8 test n 4 too few
+DA10  n= 42 reach  62% mean  13.5 med  -4.3 | train n9 reach 78% | test n33 reach 58% mean 3.3 med -5.0 | p(higher) 0.398 p(lower) 0.727 x8 1.000
+D30   n=106 reach  59% mean  27.5 med  -7.0 | train n23 reach 65% | test n83 reach 58% mean 28.2 med -7.7 | p(higher) 0.276 p(lower) 0.796 x8 1.000
+G30   n=145 reach  52% mean   5.5 med  -7.8 | train n23 reach 52% | test n122 reach 52% mean 2.4 med -8.6 | p(higher) 0.660 p(lower) 0.405 x8 1.000
