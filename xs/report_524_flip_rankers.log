@@ -1,0 +1,9 @@
+coverage {'ILLIQ': np.float64(1.0), 'ISS': np.float64(0.96), 'TURN': np.float64(1.0), 'SIS': np.float64(0.95), 'DTC': np.float64(0.95), 'COMP': np.float64(0.92)}
+ feat declared  IC_train19-21  n_train19-21  IC_2022  n_2022  IC_2023-26  n_2023-26  IC_TEST22+  n_TEST22+  p_test  p_x6                            fav                          unfav
+  ISS        -         -0.092           399   -0.163     158      -0.123        890      -0.130       1048  0.0000 0.000 n260 reach50% mean10.8 med-5.0  n450 reach56% mean9.2 med-8.8
+ILLIQ        +         -0.010           428   -0.155     168      -0.134        908      -0.141       1076  1.0000 1.000 n405 reach57% mean12.5 med-8.7  n314 reach49% mean3.3 med-5.5
+ TURN        -         -0.155           428   -0.166     168      -0.127        908      -0.132       1076  0.0000 0.000  n344 reach43% mean2.9 med-5.4 n303 reach64% mean13.8 med-8.6
+  SIS        -          0.058           400   -0.025     162       0.007        865      -0.000       1027  0.5100 1.000 n345 reach53% mean13.6 med-7.0  n364 reach54% mean6.1 med-7.3
+  DTC        -         -0.059           400   -0.153     162      -0.104        865      -0.117       1027  0.0005 0.003 n268 reach49% mean12.6 med-5.2  n405 reach55% mean7.8 med-8.8
+ COMP        +          0.069           375    0.089     152       0.003        851       0.014       1003  0.3230 1.000 n333 reach50% mean10.2 med-6.3  n384 reach55% mean5.5 med-7.3
+base test: reach 54 mean 7.4 med -7.0 n 1076
