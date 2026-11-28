@@ -1,0 +1,48 @@
+flips 8408 with PROFIT 0.62 NSI 0.56 BB 0.47 | rates PROFIT 0.53 NOISSUE 0.56 BUYBACK 0.51
+
+=== px<5: top-vol flips with data 309 (train 73) | INST dist {0.0: 158, 1.0: 77, 2.0: 66, 3.0: 8}
+  train: all n73 reach 86% mean +39.1% med +1.1% | INST>=2 n33 reach 94% mean +31.4% med +9.8% | INST<=1 n40 reach 80% mean +45.3% med -3.8% | INST=3 n2 reach 100% mean +82.9% med +82.9% | INST=0 n12 reach 92% mean +53.1% med -10.2% | INST>=2 & basket>=2 n13 reach 92% mean +8.4% med -1.9%
+  test : all n236 reach 65% mean +8.3% med -11.6% | INST>=2 n41 reach 80% mean +4.8% med -14.0% | INST<=1 n195 reach 62% mean +9.0% med -11.1% | INST=3 n6 reach 83% mean -5.0% med -14.8% | INST=0 n146 reach 58% mean +5.5% med -11.6% | INST>=2 & basket>=2 n14 reach 71% mean -4.3% med -11.6%
+
+=== px<10: top-vol flips with data 807 (train 213) | INST dist {0.0: 378, 1.0: 221, 2.0: 163, 3.0: 45}
+  train: all n213 reach 69% mean +25.1% med -7.5% | INST>=2 n100 reach 76% mean +25.7% med -4.0% | INST<=1 n113 reach 62% mean +24.5% med -9.2% | INST=3 n24 reach 62% mean +23.8% med -5.9% | INST=0 n42 reach 64% mean +28.7% med -10.6% | INST>=2 & basket>=2 n32 reach 91% mean +27.0% med -4.0%
+  test : all n594 reach 61% mean +6.3% med -10.8% | INST>=2 n108 reach 61% mean +1.1% med -10.8% | INST<=1 n486 reach 61% mean +7.5% med -10.8% | INST=3 n21 reach 62% mean -2.1% med -10.3% | INST=0 n336 reach 58% mean +6.2% med -11.0% | INST>=2 & basket>=2 n42 reach 50% mean +0.9% med -10.1%
+
+=== px<20: top-vol flips with data 1743 (train 557) | INST dist {0.0: 676, 1.0: 497, 2.0: 401, 3.0: 169}
+  train: all n557 reach 61% mean +18.7% med -7.7% | INST>=2 n314 reach 64% mean +20.1% med -6.5% | INST<=1 n243 reach 56% mean +16.9% med -9.2% | INST=3 n120 reach 62% mean +22.7% med -6.0% | INST=0 n87 reach 59% mean +17.8% med -10.0% | INST>=2 & basket>=2 n100 reach 69% mean +23.2% med -6.4%
+  test : all n1186 reach 59% mean +3.6% med -10.2% | INST>=2 n256 reach 59% mean +0.8% med -9.8% | INST<=1 n930 reach 59% mean +4.4% med -10.4% | INST=3 n49 reach 67% mean +3.2% med -8.0% | INST=0 n589 reach 59% mean +5.0% med -10.7% | INST>=2 & basket>=2 n97 reach 56% mean +2.1% med -10.0%
+
+adjusted effect inside the top-vol third (pp, month-clustered t):
+                          adj_pp           n           t      
+era                         test  train test train  test train
+bucket flag           y                                       
+px<10  BUYBACK        hit   8.34  10.54  108    80  1.68  2.50
+                      rw    1.08   4.57  108    80  0.23  0.88
+       INST>=2        hit   0.31  13.60  108   100  0.06  3.11
+                      rw   -5.79   0.92  108   100 -1.67  0.21
+       INST>=2&bkt>=2 hit -11.72  24.08   42    32 -1.57  3.22
+                      rw   -5.36   0.89   42    32 -1.02  0.10
+       NOISSUE        hit   6.46   4.30  176   118  1.60  0.78
+                      rw   -2.92  -9.47  176   118 -0.94 -1.12
+       PROFIT         hit  -2.74  -0.19  103    97 -0.50 -0.03
+                      rw   -1.72   2.43  103    97 -0.42  0.38
+px<20  BUYBACK        hit   9.05   8.08  239   245  2.19  2.28
+                      rw   -0.69  10.84  239   245 -0.23  2.49
+       INST>=2        hit   1.02   6.82  256   314  0.23  2.07
+                      rw   -2.94   2.80  256   314 -1.28  0.66
+       INST>=2&bkt>=2 hit  -3.63   8.19   97   100 -0.59  1.60
+                      rw   -1.32   3.75   97   100 -0.37  0.61
+       NOISSUE        hit   3.56   3.69  388   335  1.02  1.41
+                      rw   -0.83  -2.46  388   335 -0.33 -0.41
+       PROFIT         hit  -4.97  -2.89  275   324 -1.47 -0.55
+                      rw   -3.39  -2.33  275   324 -1.77 -0.51
+px<5   BUYBACK        hit  12.11  -4.07   40    30  1.47 -0.74
+                      rw    5.72  -6.71   40    30  0.56 -0.62
+       INST>=2        hit  18.81  13.62   41    33  3.61  1.39
+                      rw   -3.73 -14.23   41    33 -0.42 -1.54
+       INST>=2&bkt>=2 hit   6.96   6.82   14    13  0.57  0.68
+                      rw  -13.21 -37.81   14    13 -1.83 -4.46
+       NOISSUE        hit  23.48   2.69   66    40  5.24  0.29
+                      rw   -0.48  -4.77   66    40 -0.06 -0.27
+       PROFIT         hit  10.43  14.86   31    26  1.51  1.95
+                      rw    3.92  -9.24   31    26  0.38 -0.58
