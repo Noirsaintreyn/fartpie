@@ -1,0 +1,35 @@
+coverage 13D/G 0.97 | XBRL 0.67 | RPO 0.08 | 13D_new share 0.012 13G_new 0.073
+sector   feature    n1    n0  2018  2019-21  2022  2023-26  pooled    t  agree verdict
+ENERGY   D13_new   197 18309   NaN      0.0   0.0      0.0     0.0  NaN      0       -
+ENERGY D13_amend  1151 17355  -0.4      0.2   0.0     -2.2    -0.7 -0.4      2       -
+ENERGY   G13_new  1236 17270  -4.7     -5.5  11.2      4.5     1.2  0.5      2       -
+ENERGY   PRE_REV  6544  6542 -13.2     -3.7  -1.4      1.3    -1.6 -1.4      3       -
+ENERGY    REVACC  2177  2175   NaN     18.1   NaN      7.5    13.3  1.6      2       -
+   FIN   D13_new   386 31139   NaN     23.3   NaN      6.7    12.8  1.9      2       -
+   FIN D13_amend  1798 29727   NaN      0.5   2.1     -7.2    -3.6 -2.0      2       -
+   FIN   G13_new  2185 29340   0.0     -0.6   1.7     -1.2    -0.5 -0.4      2       -
+   FIN   PRE_REV  6970 11583   7.3     17.2   0.4      0.9     5.2  2.3      4    lead
+   FIN    REVACC  4100  5172   NaN     -4.1   5.6     -0.1    -0.8 -0.8      2       -
+HEALTH   D13_new   653 59789  -2.2     -7.0  -4.4      2.1    -2.1 -0.7      3       -
+HEALTH D13_amend  3778 56664  14.9     -4.5  -5.0     -0.0    -0.9 -0.5      3       -
+HEALTH   G13_new  6540 53902   7.2     -4.1   2.4     -0.5    -0.5 -0.3      2       -
+HEALTH   PRE_REV 24854 28824  -4.2      2.2   3.2      0.8     1.1  1.2      3       -
+HEALTH    REVACC  8870 11773  11.5     -0.4   0.0      2.8     2.2  1.4      2       -
+HEALTH    RPO_hi   796  1685   NaN      NaN   NaN      8.9     8.9  1.5      1       -
+MINING   D13_new   160 17910   0.0      NaN   0.0      7.9     2.4  1.5      1       -
+MINING D13_amend   548 17522   NaN      0.1   2.7      1.7     1.6  1.1      3       -
+MINING   G13_new   546 17524   0.0      6.1   0.0     -0.7     2.2  1.0      1       -
+MINING   PRE_REV  2502  4251   NaN     -2.2   0.0      8.2     2.9  0.7      1       -
+MINING    REVACC  1068  2360   NaN      2.3   NaN      NaN     1.9  1.8      1       -
+ OTHER   D13_new   482 39995   NaN     -6.1   NaN      7.1     2.1  0.4      1       -
+ OTHER D13_amend  2298 38179   0.0     -1.8   0.5     -1.4    -1.3 -0.7      2       -
+ OTHER   G13_new  2889 37588   0.0     -9.7  -3.8     -3.1    -4.1 -3.2      3    PASS
+ OTHER   PRE_REV  7776 17910   0.0     -5.0  -1.7     -2.0    -2.3 -2.1      3    lead
+ OTHER    REVACC  4263  8450   NaN      9.2   NaN     -1.8     2.7  0.7      1       -
+ OTHER    RPO_hi   696  1773   NaN      NaN   NaN     -3.8    -3.8 -1.3      1       -
+  TECH   D13_new   852 58053   0.0     -5.9   9.7     -2.5    -1.3 -0.6      2       -
+  TECH D13_amend  4241 54664   0.0     -5.8  -1.2      1.9    -0.8 -0.7      2       -
+  TECH   G13_new  3562 55343  -9.0     -5.0   1.0     -2.1    -2.5 -1.4      3       -
+  TECH   PRE_REV 13293 29036  14.0     -4.6   0.9      0.2    -0.4 -0.5      3       -
+  TECH    REVACC  8860 12044   0.0     -1.0   0.0     -1.0    -0.9 -0.9      2       -
+  TECH    RPO_hi   840  6028   NaN      NaN   0.0     -7.2    -6.0 -1.1      1       -
