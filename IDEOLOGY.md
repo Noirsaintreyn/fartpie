@@ -1427,3 +1427,7 @@ Conclusion: in this data the health result is not a template for macro sectors. 
 
 ## Report 519 (Nov 27 2026): event/exposure data across all sectors (13D/13G, pre-revenue, backlog, revenue acceleration)
 Same strict template as 518 (xs/report_519_event_data.py). New 13D (activist stake), 13D/A, new 13G, PRE_REV, RPO backlog, revenue acceleration per sector: nothing passes in HEALTH/TECH/ENERGY/MINING. OTHER: new 13G in prior 30d -4.1pp (t -3.2, 3/4 eras): institutions already accumulating = fewer doubles (heterogeneous sector, treat with care). FIN PRE_REV +5.2pp (t 2.3) lead only. Federal award pull (USAspending) in progress, results in report 520.
+
+## Report 520 (Nov 27 2026): federal awards (USAspending) as a sector lead
+Strict recipient-name match gives only 33 names with >=$0.5M awards (204 awards; 15 HEALTH, 9 TECH). Award in prior 90d (not the last 3d): all covered +2.5pp (t 1.0), TECH +1.9pp (t 0.4, only 2023-26 testable), HEALTH +0.1pp (t 0.0); ENERGY/OTHER too few days. Coverage too thin to test; a parent/subsidiary name map would be needed. No lead.
+Across 516-520: the only sector-specific lead that clears the strict bar is HEALTH R&D/assets (+ stale-news filter); everything else is null or too thin. Diversification has to come from the volatility (ATRP) universe across sectors, not from per-sector leads.

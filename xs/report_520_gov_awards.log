@@ -1,0 +1,7 @@
+names with awards 33 | awards 204 | by group {'contracts': 168, 'grants': 36} | sector of covered names {'HEALTH': 15, 'TECH': 9, 'MINING': 3, 'OTHER': 3, 'FIN': 1, 'UTIL': 1, 'ENERGY': 1}
+covered stock-days 18231 AWD=1 share 0.06 base P(y) covered 0.059
+ALL covered  n= 18231 award-in-90d share 0.06  P1 0.059 P0 0.059  within-ATRP lift +2.5pp t 1.0  eras {'2018': np.float64(0.0), '2019-21': np.float64(0.7), '2022': np.float64(-0.4), '2023-26': np.float64(5.2)}
+TECH         n=  5778 award-in-90d share 0.10  P1 0.035 P0 0.048  within-ATRP lift +1.9pp t 0.4  eras {'2018': None, '2019-21': None, '2022': None, '2023-26': np.float64(5.0)}
+ENERGY n too small 91
+HEALTH       n=  8236 award-in-90d share 0.05  P1 0.098 P0 0.052  within-ATRP lift +0.1pp t 0.0  eras {'2018': np.float64(0.0), '2019-21': np.float64(0.3), '2022': np.float64(0.0), '2023-26': np.float64(0.0)}
+OTHER n too small 357
