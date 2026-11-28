@@ -1,0 +1,21 @@
+names 25
+trades 10123 grid 57304
+names with flips + theta: ['AAPL', 'ADBE', 'AMD', 'AMZN', 'CAT', 'COST', 'CRM', 'DIS', 'GOOGL', 'HD', 'IBM', 'JPM', 'MCD', 'META', 'MSFT', 'NVDA', 'ORCL', 'SBUX', 'TGT', 'TSLA', 'UNH', 'UPS', 'WMT'] flips 9868 of which 1h 2891
+trades 10103 with features 9794
+BASE done
+U_ANY done
+U_2 done
+U_NOG2 done
+F_ONLY2 done
+
+arm Ge | trades/mo | passed<=30/60/90d | 1st payout<=90/120d | breach% | net$/attempt 10K all | 18-21 | 22+
+BASE     1 |  39.1 |  11  31  48 |  22  34 |  19 |   +688 |  +1254 |   +245
+BASE     2 |  39.1 |  29  43  46 |  31  38 |  54 |   +422 |   +777 |   +144
+U_ANY    1 |  52.6 |  10  24  39 |  17  26 |  38 |   +385 |   +686 |   +148
+U_ANY    2 |  52.6 |  28  39  40 |  25  29 |  60 |   +264 |   +525 |    +59
+U_2      1 |  46.4 |   9  24  36 |  18  28 |  37 |   +432 |   +681 |   +236
+U_2      2 |  46.4 |  29  40  41 |  25  31 |  58 |   +314 |   +616 |    +76
+U_NOG2   1 |  61.2 |   9  26  37 |  18  27 |  37 |   +356 |   +584 |   +177
+U_NOG2   2 |  61.2 |  27  40  41 |  20  29 |  59 |   +241 |   +504 |    +34
+F_ONLY2  1 |  21.6 |   5   6   9 |   2   4 |  26 |   +165 |   +370 |     +5
+F_ONLY2  2 |  21.6 |  16  26  38 |   7  10 |  44 |   +132 |   +252 |    +38
