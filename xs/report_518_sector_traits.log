@@ -1,0 +1,32 @@
+beta coverage 0.78
+sector                     trait    n1    n0  2018  2019-21  2022  2023-26  pooled    t  agree verdict
+HEALTH                    RND_hi 17474  8741   0.3      8.7   1.8      3.9     4.7  4.0      4    PASS
+HEALTH                  SBETA_hi 24553 16029 -11.5     -2.0  -4.7     -1.8    -3.1 -1.9      4       -
+HEALTH XLV_rel | high-beta names 10153 14400   NaN     -1.5   1.0     -0.3    -0.4 -0.5      2       -
+HEALTH  XLV_rel | low-beta names  8329  7700  -3.2      1.6  -5.0      0.6    -0.1 -0.1      2       -
+  TECH                    RND_hi 10425  8626   NaN    -13.8  -0.1      3.8    -0.6 -0.3      2       -
+  TECH                   REVG_hi  6278 12132   NaN      1.4   0.0      2.7     2.0  1.3      2       -
+  TECH                  CAPEX_hi 12180 16819   0.0     -0.3   1.0     -0.4    -0.2 -0.2      2       -
+  TECH                  SBETA_hi 25181 17546  -0.1      1.8 -12.5      1.5    -0.2 -0.2      2       -
+  TECH XLK_rel | high-beta names 14348 10833   0.0      0.5   0.7     -0.2     0.1  0.2      2       -
+  TECH  XLK_rel | low-beta names  9106  8440   0.0      0.4   2.9      0.2     0.6  1.5      3       -
+ENERGY                  SBETA_hi  5525  5249   3.0      0.9   NaN      1.0     1.2  0.9      3       -
+ENERGY                  CAPEX_hi  3220  2556   NaN      6.2   NaN      2.1     5.4  1.2      2       -
+ENERGY  oil_up | high-beta names  2892  2633   NaN      0.0   NaN     -0.3    -0.1 -0.5      1       -
+ENERGY XLE_rel | high-beta names  2105  3420   NaN     -1.0   NaN      0.6    -0.2 -0.2      1       -
+ENERGY   oil_up | low-beta names  2884  2365   NaN      0.1   0.0     -0.9    -0.4 -0.5      1       -
+ENERGY  XLE_rel | low-beta names  2628  2621  11.1     -0.8   0.0      0.8     0.9  0.8      2       -
+MINING                  SBETA_hi  8299  5009   0.0     -6.8  10.7      1.6    -1.2 -0.5      2       -
+MINING                  CAPEX_hi  1857  1537   NaN     -6.7   NaN      0.0    -5.2 -1.9      1       -
+MINING  usd_dn | high-beta names  3982  4317   0.0      0.8   0.0     -1.6    -0.3 -0.5      1       -
+MINING XLB_rel | high-beta names  3523  4776   0.0     -0.2   0.6      1.8     0.8  0.8      2       -
+MINING real_dn | high-beta names  3951  4348   0.0      1.4   0.0     -1.9    -0.5 -0.5      1       -
+MINING   usd_dn | low-beta names  2082  2927   0.8      0.5   0.0      0.0     0.3  1.4      2       -
+MINING  XLB_rel | low-beta names  1995  3014   0.0      0.1   0.0      2.2     0.5  1.0      2       -
+MINING  real_dn | low-beta names  2815  2194   0.0     -0.4   0.0      1.9     0.4  0.7      1       -
+   FIN                  SBETA_hi 12913 10750   0.0     -3.5   0.9     -0.8    -1.5 -1.4      2       -
+   FIN                    LEV_hi  6685  6064  -4.0     -6.7   0.0      0.6    -1.4 -0.5      2       -
+   FIN XLF_rel | high-beta names  6528  6385   NaN      2.1  -4.1     -0.4     0.2  0.1      2       -
+   FIN   steep | high-beta names  6322  6591   NaN      0.2   0.2      1.8     1.1  1.2      3       -
+   FIN  XLF_rel | low-beta names  4828  5922   0.0     -0.5   0.0     -0.4    -0.3 -1.4      2       -
+   FIN    steep | low-beta names  5090  5660   0.0      0.2   0.3      0.9     0.5  1.8      3       -
