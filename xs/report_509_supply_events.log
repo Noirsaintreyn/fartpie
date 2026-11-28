@@ -1,0 +1,18 @@
+flips 1504  SUPP 143  SHELF 340  DEF(3.01) 24  RUS 56 
+
+== SUPP
+  test 22-26   n flagged  105 | REACH 57% vs 54%  adj +1.9pp (t +0.43) | r(w) median -5.7 vs -7.2  adj mean +7.7pp (t +1.33)
+  train 19-21  n flagged   38 | REACH 32% vs 57%  adj -16.9pp (t -2.08) | r(w) median -4.1 vs -5.4  adj mean -16.6pp (t -3.54)
+  pooled       n flagged  143 | REACH 50% vs 55%  adj -4.7pp (t -1.17) | r(w) median -5.2 vs -6.6  adj mean -2.1pp (t -0.41)
+== SHELF
+  test 22-26   n flagged  248 | REACH 57% vs 53%  adj -2.3pp (t -0.60) | r(w) median -9.8 vs -6.4  adj mean -1.8pp (t -0.58)
+  train 19-21  n flagged   92 | REACH 60% vs 54%  adj -4.8pp (t -0.68) | r(w) median -8.8 vs -4.8  adj mean -3.6pp (t -0.43)
+  pooled       n flagged  340 | REACH 58% vs 53%  adj -3.3pp (t -0.98) | r(w) median -9.6 vs -5.8  adj mean -2.9pp (t -0.92)
+== DEF
+  test 22-26   n flagged   17 | REACH 65% vs 54%  adj +2.5pp (t +0.18) | r(w) median -9.7 vs -7.0  adj mean +14.8pp (t +0.63)
+  train 19-21  n flagged    7 too few
+  pooled       n flagged   24 | REACH 67% vs 54%  adj +0.6pp (t +0.05) | r(w) median -9.7 vs -6.5  adj mean +13.9pp (t +0.62)
+== RUS
+  test 22-26   n flagged   39 | REACH 69% vs 53%  adj +15.7pp (t +3.27) | r(w) median -7.2 vs -7.0  adj mean -1.4pp (t -0.21)
+  train 19-21  n flagged   17 | REACH 35% vs 56%  adj -19.1pp (t -1.96) | r(w) median -4.8 vs -5.3  adj mean +3.1pp (t +0.13)
+  pooled       n flagged   56 | REACH 59% vs 54%  adj +5.0pp (t +0.62) | r(w) median -5.5 vs -6.5  adj mean -0.0pp (t -0.00)
