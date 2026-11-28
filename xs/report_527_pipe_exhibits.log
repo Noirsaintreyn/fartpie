@@ -1,0 +1,5 @@
+health flips 360 | any 3.02 (earlier) 91 | TRUEPIPE 53 HFPIPE 8 OTHERPIPE(non-HF) 45
+base test reach 59 mean 12.9 med -9.0 n 285
+TRUEPIPE   n= 53 reach  70% mean   5.8 med  -7.7 | train n13 reach 85% | test n40 reach 65% mean -0.2 med -9.8 | p(lower) 0.824 p(higher) 0.266  x3 0.797
+HFPIPE     n=  8 reach  50% mean -13.2 med -14.5 | train n0 reach nan% | test n8 reach 50% mean -13.2 med -14.5 | p(lower) 0.452 p(higher) 0.807  x3 1.000
+OTHERPIPE  n= 45 reach  73% mean   9.1 med  -5.4 | train n13 reach 85% | test n32 reach 69% mean 3.0 med -8.8 | p(lower) 0.915 p(higher) 0.162  x3 0.487
