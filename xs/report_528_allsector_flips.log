@@ -1,0 +1,13 @@
+TOPATR cut ATRP > 0.067
+ALL              | 2019-21: n428 (142.7/yr) reach  55% mean  39.9 med  -5.3 | 2022: n168 (168.0/yr) reach  52% mean   2.3 med  -6.2 | 2023-26: n908 (288.3/yr) reach  54% mean   8.4 med  -7.2
+TOPATR           | 2019-21: n141 (47.0/yr) reach  81% mean  72.9 med  -2.6 | 2022: n 51 (51.0/yr) reach  61% mean   2.7 med -10.5 | 2023-26: n254 (80.6/yr) reach  66% mean  16.9 med -11.7
+HEALTH           | 2019-21: n 75 (25.0/yr) reach  64% mean  20.6 med  -9.1 | 2022: n 41 (41.0/yr) reach  54% mean   3.9 med  -9.9 | 2023-26: n244 (77.5/yr) reach  59% mean  14.4 med  -9.0
+HEALTH&TOPATR    | 2019-21: n 35 (11.7/yr) reach  86% mean  19.9 med  -4.9 | 2022: n 26 (26.0/yr) reach  54% mean  -2.1 med -13.5 | 2023-26: n102 (32.4/yr) reach  63% mean  21.8 med -11.0
+CLUS             | 2019-21: n 49 (16.3/yr) reach  63% mean  28.5 med -11.1 | 2022: n  9 ( 9.0/yr) reach  78% mean  13.6 med -10.3 | 2023-26: n 66 (21.0/yr) reach  58% mean  41.2 med  -8.7
+CLUS&TOPATR      | 2019-21: n 29 ( 9.7/yr) reach  79% mean  54.5 med  -8.1 | 2022: n  5 ( 5.0/yr) reach 100% mean  26.3 med -10.3 | 2023-26: n 19 ( 6.0/yr) reach  68% mean 116.1 med -12.0
+
+contrasts vs rest (hurdle |t|>=3 & same sign in train):
+TOPATR         | train: n141 reach 81 vs 43 z 7.50; mean 72.9 vs 23.7 t 2.26 | test2022+: n305 reach 65 vs 50 z 4.56; mean 14.5 vs 4.6 t 1.29
+HEALTH         | train: n75 reach 64 vs 53 z 1.70; mean 20.6 vs 44.0 t -1.38 | test2022+: n285 reach 59 vs 52 z 1.85; mean 12.9 vs 5.4 t 0.93
+CLUS           | train: n49 reach 63 vs 54 z 1.22; mean 28.5 vs 41.3 t -0.46 | test2022+: n75 reach 60 vs 53 z 1.10; mean 37.9 vs 5.1 t 1.15
+CLUS&TOPATR    | train: n29 reach 79 vs 53 z 2.71; mean 54.5 vs 38.8 t 0.36 | test2022+: n24 reach 75 vs 53 z 2.10; mean 97.4 vs 5.4 t 1.06
